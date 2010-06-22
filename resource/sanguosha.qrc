@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/background.png</file>
+        <file>images/logo.png</file>
+        <file>images/photo-back.png</file>
+        <file>images/bottom.png</file>
+        <file>images/avatar-frame.png</file>
+        <file>images/pile.png</file>
+        <file>images/suit/club.png</file>
+        <file>images/suit/diamond.png</file>
+        <file>images/suit/heart.png</file>
+        <file>images/suit/spade.png</file>
+        <file>images/magatamas/1.png</file>
+        <file>images/magatamas/2.png</file>
+        <file>images/magatamas/3.png</file>
+        <file>images/magatamas/4.png</file>
+        <file>images/magatamas/5.png</file>
+    </qresource>
+</RCC>
