@@ -4,7 +4,6 @@
 #include <QParallelAnimationGroup>
 
 StartScene::StartScene()
-    :server_log(NULL)
 {
     setBackgroundBrush(QBrush(QPixmap(":/images/background.png")));
 
@@ -32,7 +31,7 @@ void StartScene::addButton(QAction *action){
     buttons << button;
 }
 
-void StartScene::leave(){
+void StartScene::switchToServer(Server *server){
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
     logo_shift->setEndValue(Config.Rect.topLeft());
@@ -50,16 +49,16 @@ void StartScene::leave(){
     }
     buttons.clear();
 
-    connect(group, SIGNAL(finished()), SLOT(showServerLog()));
+    //connect(group, SIGNAL(finished()), SLOT(showServerLog()));
     group->start(QAbstractAnimation::DeleteWhenStopped);
-}
 
-void StartScene::showServerLog(){
-    server_log = new QTextEdit();
+    QTextEdit *server_log = new QTextEdit();
 
+    // make its background the same as background, looks transparent
     QBrush brush(QPixmap(":/images/background.png"));
     QPalette palette;
     palette.setBrush(QPalette::Base, brush);
+
     server_log->setReadOnly(true);
     server_log->setPalette(palette);
     server_log->resize(600, 420);
@@ -71,5 +70,12 @@ void StartScene::showServerLog(){
     server_log->setText("hello,world");
 
     addWidget(server_log);
+
+    QString server_message;
+    server_message = tr("Server Address: %1 Port: %2").arg(server->serverAddress().toString()).arg(server->serverPort());
+    QGraphicsSimpleTextItem *server_message_item = addSimpleText(server_message, Config.SmallFont);
+    server_message_item->setBrush(Qt::white);
+    server_message_item->setPos(-180, -250);
 }
+
 

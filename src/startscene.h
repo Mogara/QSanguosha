@@ -3,6 +3,7 @@
 
 #include "button.h"
 #include "pixmap.h"
+#include "server.h"
 
 #include <QGraphicsScene>
 #include <QAction>
@@ -13,15 +14,11 @@ Q_OBJECT
 public:
     StartScene();
     void addButton(QAction *action);
-    void leave();
+    void switchToServer(Server *server);
 
 private:
     Pixmap *logo;
     QList<Button*> buttons;
-    QTextEdit *server_log;
-
-private slots:
-    void showServerLog();
 };
 
 #endif // STARTSCENE_H
