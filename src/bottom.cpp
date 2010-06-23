@@ -37,7 +37,7 @@ Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
     addCard(card5);
     addCard(card6);
 
-    avatar.load("release/zhangliao.png");
+    avatar.load("generals/big/zhangliao.png");
 
     general = new General(this);
 }

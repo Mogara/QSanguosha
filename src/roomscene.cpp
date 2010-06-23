@@ -37,7 +37,11 @@ RoomScene::RoomScene()
         group->addAnimation(rotation);
     }
 
-    photos[0]->loadAvatar("release/caocao.png");
+    photos[0]->loadAvatar("generals/small/caocao.png");
+    photos[1]->loadAvatar("generals/small/liubei.png");
+    photos[2]->loadAvatar("generals/small/sunquan.png");
+    photos[3]->loadAvatar("generals/small/simayi.png");
+
 
     {
         bottom = new Bottom;

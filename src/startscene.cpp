@@ -49,7 +49,6 @@ void StartScene::switchToServer(Server *server){
     }
     buttons.clear();
 
-    //connect(group, SIGNAL(finished()), SLOT(showServerLog()));
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     QTextEdit *server_log = new QTextEdit();
@@ -67,7 +66,8 @@ void StartScene::switchToServer(Server *server){
 
     server_log->setFont(QFont("Verdana", 12));
     server_log->setTextColor(QColor("white"));
-    server_log->setText("hello,world");
+    server_log->append("hello, world");
+    server_log->append("hello, China");
 
     addWidget(server_log);
 
