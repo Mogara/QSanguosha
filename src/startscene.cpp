@@ -56,12 +56,20 @@ void StartScene::leave(){
 
 void StartScene::showServerLog(){
     server_log = new QTextEdit();
+
     QBrush brush(QPixmap(":/images/background.png"));
     QPalette palette;
     palette.setBrush(QPalette::Base, brush);
+    server_log->setReadOnly(true);
     server_log->setPalette(palette);
     server_log->resize(600, 420);
     server_log->move(-400, -180);
+    server_log->setFrameShape(QFrame::NoFrame);
+
+    server_log->setFont(QFont("Verdana", 12));
+    server_log->setTextColor(QColor("white"));
+    server_log->setText("hello,world");
+
     addWidget(server_log);
 }
 

@@ -94,6 +94,9 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionStart_Game_triggered()
 {
+    ui->actionStart_Game->setEnabled(false);
+    ui->actionStart_Server->setEnabled(false);
+
     gotoScene(new RoomScene);
 }
 
