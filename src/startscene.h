@@ -7,18 +7,8 @@
 
 class StartScene: public QGraphicsScene{
 Q_OBJECT
-
-private:
-    Button *start_game, *drama_mode, *challenge_mode, *general_preview, *acknowledgement, *quit;
-private slots:
-    void startGame();
-    void leave();
-
 public:
-    StartScene();
-
-signals:
-    void switch_to_scene(QGraphicsScene *);
+    StartScene(QWidget *parent);
 };
 
 #endif // STARTSCENE_H

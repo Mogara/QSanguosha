@@ -23,7 +23,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="86"/>
+        <location filename="src/mainwindow.cpp" line="84"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -33,57 +33,54 @@
         <translation>游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="34"/>
+        <location filename="src/mainwindow.ui" line="35"/>
         <source>Tools</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="44"/>
+        <location filename="src/mainwindow.ui" line="43"/>
+        <source>Help</source>
+        <translation>帮助</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="55"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="49"/>
+        <location filename="src/mainwindow.ui" line="60"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="87"/>
-        <source>Are you sure to exit?</source>
-        <translation>确定要退出?</translation>
+        <location filename="src/mainwindow.ui" line="65"/>
+        <source>Start Server</source>
+        <translation>启动服务器</translation>
     </message>
-</context>
-<context>
-    <name>StartScene</name>
     <message>
-        <location filename="src/startscene.cpp" line="12"/>
+        <location filename="src/mainwindow.ui" line="70"/>
         <source>Start Game</source>
         <translation>开始游戏</translation>
     </message>
     <message>
-        <location filename="src/startscene.cpp" line="13"/>
-        <source>Drama Mode</source>
-        <translation>场景模式</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="14"/>
-        <source>Challenge Mode</source>
-        <translation>挑战模式</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="15"/>
+        <location filename="src/mainwindow.ui" line="75"/>
         <source>General Preview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/startscene.cpp" line="16"/>
+        <location filename="src/mainwindow.ui" line="80"/>
+        <source>About</source>
+        <translation>关于</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="85"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/startscene.cpp" line="17"/>
-        <source>Quit</source>
-        <translation>退出</translation>
+        <location filename="src/mainwindow.cpp" line="85"/>
+        <source>Are you sure to exit?</source>
+        <translation>确定要退出?</translation>
     </message>
 </context>
 </TS>

@@ -15,16 +15,18 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    Ui::MainWindow *ui;
+
 protected:
     virtual void closeEvent(QCloseEvent *);
 
-private:
-    Ui::MainWindow *ui;
+private:    
     QGraphicsScene *scene;
 
     void restoreFromConfig();
 
 private slots:
+    void on_actionStart_Game_triggered();
     void gotoScene(QGraphicsScene *scene);
 
     void on_actionExit_triggered();

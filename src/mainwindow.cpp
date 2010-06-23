@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "startscene.h"
+#include "roomscene.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -38,9 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    StartScene *start_scene = new StartScene;
-    connect(start_scene, SIGNAL(switch_to_scene(QGraphicsScene*)), this, SLOT(gotoScene(QGraphicsScene*)));
-
+    StartScene *start_scene = new StartScene(this);
     scene = start_scene;
     FitView *view = new FitView(scene);
 
@@ -68,11 +67,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene){
-    if(scene == NULL){
-        ui->actionExit->trigger();
-        return;
-    }
-
     QGraphicsView *view = qobject_cast<QGraphicsView *>(centralWidget());
     view->setScene(scene);
     delete this->scene;
@@ -88,4 +82,9 @@ void MainWindow::on_actionExit_triggered()
                                    QMessageBox::Ok | QMessageBox::Cancel);
     if(result == QMessageBox::Ok)
         close();
+}
+
+void MainWindow::on_actionStart_Game_triggered()
+{
+    gotoScene(new RoomScene);
 }

@@ -27,6 +27,7 @@
     <property name="title">
      <string>Game</string>
     </property>
+    <addaction name="actionStart_Game"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
@@ -34,9 +35,19 @@
      <string>Tools</string>
     </property>
     <addaction name="actionConfigure"/>
+    <addaction name="actionStart_Server"/>
+    <addaction name="actionGeneral_Preview"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAcknowledgement"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
@@ -47,6 +58,31 @@
   <action name="actionConfigure">
    <property name="text">
     <string>Configure</string>
+   </property>
+  </action>
+  <action name="actionStart_Server">
+   <property name="text">
+    <string>Start Server</string>
+   </property>
+  </action>
+  <action name="actionStart_Game">
+   <property name="text">
+    <string>Start Game</string>
+   </property>
+  </action>
+  <action name="actionGeneral_Preview">
+   <property name="text">
+    <string>General Preview</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionAcknowledgement">
+   <property name="text">
+    <string>Acknowledgement</string>
    </property>
   </action>
  </widget>
