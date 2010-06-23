@@ -3,7 +3,6 @@
 
 #include <QSettings>
 #include <QFont>
-#include <MediaObject>
 #include <QRectF>
 #include <QPixmap>
 #include <QScriptEngine>
@@ -19,7 +18,6 @@ public:
     const QRectF Rect;
     QFont BigFont;
     QFont SmallFont;
-    Phonon::MediaSource ButtonHoverSource, ButtonDownSource;
     QScriptEngine *engine;
     QString UserName; 
     uint Port;

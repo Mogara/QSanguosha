@@ -3,9 +3,10 @@
 
 #include "settings.h"
 
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QFont>
 #include <QFontMetrics>
+#include <MediaObject>
 
 class Button : public QGraphicsObject
 {
@@ -24,6 +25,9 @@ protected:
 private:
     QString label;
     qreal width, height;
+
+    static Phonon::MediaSource HoverSource, DownSource;
+
 signals:
     void clicked();
 };

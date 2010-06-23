@@ -3,6 +3,9 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 
+Phonon::MediaSource Button::HoverSource("audio/button-hover.wav");
+Phonon::MediaSource Button::DownSource("audio/button-down.mp3");
+
 Button::Button(const QString &label)
     :label(label){
 
@@ -18,7 +21,7 @@ Button::Button(const QString &label)
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, Config.ButtonHoverSource);
+    Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, HoverSource);
     effect->play();
 
     connect(effect, SIGNAL(finished()), effect, SLOT(deleteLater()));
@@ -29,7 +32,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, Config.ButtonDownSource);
+    Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, DownSource);
     effect->play();
 
     emit clicked();
