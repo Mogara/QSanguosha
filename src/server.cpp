@@ -6,13 +6,14 @@ Server::Server(QObject *parent) :
 {
 }
 
-void Server::start(){
+bool Server::start(){
     quint16 port = Config.Port;
 
     connect(this, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
-    listen(QHostAddress::Any, port);
+    return listen(QHostAddress::LocalHost, port);
 }
 
 void Server::processNewConnection(){
     QTcpSocket *socket = nextPendingConnection();
+
 }
