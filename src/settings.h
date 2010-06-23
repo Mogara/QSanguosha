@@ -22,6 +22,7 @@ public:
     Phonon::MediaSource ButtonHoverSource, ButtonDownSource;
     QScriptEngine *engine;
     QString UserName; 
+    uint Port;
     bool FitInView;
 };
 

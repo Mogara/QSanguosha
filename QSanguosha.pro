@@ -4,7 +4,8 @@
 TARGET = QSanguosha
 QT += phonon \
     opengl \
-    script
+    script \
+    network
 TEMPLATE = app
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -17,7 +18,8 @@ SOURCES += src/main.cpp \
     src/bottom.cpp \
     src/card.cpp \
     src/pixmap.cpp \
-    src/general.cpp
+    src/general.cpp \
+    src/server.cpp
 HEADERS += src/gamescene.h \
     src/mainwindow.h \
     src/button.h \
@@ -28,7 +30,8 @@ HEADERS += src/gamescene.h \
     src/bottom.h \
     src/card.h \
     src/pixmap.h \
-    src/general.h
+    src/general.h \
+    src/server.h
 FORMS += src/mainwindow.ui
 OTHER_FILES += 
 RESOURCES += resource/sanguosha.qrc

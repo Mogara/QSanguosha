@@ -4,11 +4,13 @@
 #include "button.h"
 
 #include <QGraphicsScene>
+#include <QAction>
 
 class StartScene: public QGraphicsScene{
 Q_OBJECT
 public:
-    StartScene(QWidget *parent);
+    StartScene();
+    void addButton(QAction *action, int i);
 };
 
 #endif // STARTSCENE_H

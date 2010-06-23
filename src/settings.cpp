@@ -43,5 +43,7 @@ void Settings::init(){
     engine = new QScriptEngine;
 
     UserName = value("UserName", getenv("USERNAME")).toString();
+    Port = value("Port", 9527u).toUInt();
+
     FitInView = value("FitInView", false).toBool();
 }

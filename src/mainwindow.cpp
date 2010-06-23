@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "startscene.h"
 #include "roomscene.h"
+#include "server.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -39,10 +40,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    StartScene *start_scene = new StartScene(this);
+    StartScene *start_scene = new StartScene;
+    QList<QAction*> actions;
+    actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
+            << ui->actionGeneral_Preview << ui->actionAcknowledgement << ui->actionExit;
+    int i;
+    for(i=0; i<actions.size(); i++){
+        start_scene->addButton(actions[i], i);
+    }
+
     scene = start_scene;
     FitView *view = new FitView(scene);
-
     setCentralWidget(view);
 
 //    if(Config.TitleMusic)
@@ -87,4 +95,10 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionStart_Game_triggered()
 {
     gotoScene(new RoomScene);
+}
+
+void MainWindow::on_actionStart_Server_triggered()
+{
+    Server *server = new Server(this);
+    server->start();
 }

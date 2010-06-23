@@ -1,9 +1,6 @@
 #include "startscene.h"
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 
-StartScene::StartScene(QWidget *parent)
-    :QGraphicsScene(parent)
+StartScene::StartScene()
 {
     setBackgroundBrush(QBrush(QPixmap(":/images/background.png")));
 
@@ -11,23 +8,6 @@ StartScene::StartScene(QWidget *parent)
     QGraphicsPixmapItem *logo = addPixmap(QPixmap(":/images/logo.png"));
     logo->setOffset(-logo->pixmap().width()/2, -logo->pixmap().height()/2);
     logo->setPos(0, -Config.Rect.height()/4);
-
-    MainWindow *main_window = qobject_cast<MainWindow*>(parent);
-    Ui::MainWindow *ui = main_window->ui;
-
-    QList<QAction*> actions;
-    actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
-            << ui->actionGeneral_Preview << ui->actionAcknowledgement << ui->actionExit;
-
-    qreal menu_height = Config.BigFont.pixelSize();
-    int i;
-    for(i=0; i< actions.size(); i++){
-        Button *button = new Button(actions[i]->text());
-        connect(button, SIGNAL(clicked()), actions[i], SLOT(trigger()));
-        button->setPos(0, (i-0.8)*menu_height);
-
-        addItem(button);
-    }
 
     //my e-mail address
     QFont email_font(Config.SmallFont);
@@ -38,3 +18,11 @@ StartScene::StartScene(QWidget *parent)
                        Config.Rect.height()/2 - email_text->boundingRect().height());
 }
 
+void StartScene::addButton(QAction *action, int i){
+    qreal menu_height = Config.BigFont.pixelSize();
+    Button *button = new Button(action->text());
+    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+    button->setPos(0, (i-0.8)*menu_height);
+
+    addItem(button);
+}
