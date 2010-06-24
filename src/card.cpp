@@ -115,7 +115,7 @@ bool Card::CompareByType(Card *a, Card *b){
 }
 
 void Card::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    event->accept();
+    //event->accept();
     setOpacity(0.7);
 
     if(isRed())

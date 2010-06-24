@@ -91,3 +91,18 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
+void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+    QGraphicsScene::mouseMoveEvent(event);
+
+    QGraphicsObject *obj = static_cast<QGraphicsObject*>(focusItem());
+    Card *card = qobject_cast<Card*>(obj);
+    if(!card || !card->isUnderMouse())
+        return;
+
+    foreach(Photo *photo, photos){
+        if(photo->isUnderMouse()){
+            photo->setSelected(true);
+        }
+    }
+}
+

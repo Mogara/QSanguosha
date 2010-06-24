@@ -12,12 +12,10 @@ public:
     explicit Photo();
     void loadAvatar(const QString &filename);
 
-    static void init();
-    static void quit();
-
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
     QPixmap avatar;
