@@ -12,12 +12,13 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 public:
     RoomScene();
+    void updatePhotos();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    Photo *photos[7];
+    QList<Photo*> photos;
     Bottom *bottom;
     Pixmap *pile;
     QGraphicsSimpleTextItem *skill_label;
