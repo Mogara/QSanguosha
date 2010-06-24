@@ -20,7 +20,6 @@ Settings::Settings(const QString &organization, const QString &application) :
 
 Settings::~Settings()
 {
-    delete engine;
 }
 
 void Settings::init(){
@@ -34,8 +33,6 @@ void Settings::init(){
 
     BigFont.setPixelSize(64);
     SmallFont.setPixelSize(32);
-
-    engine = new QScriptEngine;
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     Port = value("Port", 9527u).toUInt();
