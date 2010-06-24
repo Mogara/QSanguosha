@@ -41,4 +41,5 @@ void Settings::init(){
     Port = value("Port", 9527u).toUInt();
 
     FitInView = value("FitInView", false).toBool();
+    UseOpenGL = value("UseOpenGL", false).toBool();
 }

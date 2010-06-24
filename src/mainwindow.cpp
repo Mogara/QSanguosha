@@ -18,7 +18,9 @@ class FitView : public QGraphicsView
 public:
     FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
-        setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
+        if(Config.UseOpenGL)
+            setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
     }
 
 protected:

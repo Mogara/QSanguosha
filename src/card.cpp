@@ -16,6 +16,7 @@ Card::Card(const QString name, enum Suit suit, int number)
     if(number < 1 || number > 13)
         number = 0;
 
+    setObjectName(name);
     suit_pixmap.load(QString(":/images/suit/%1.png").arg(SuitNames[suit]));
     pixmap.load("cards/" + name + ".png");
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -117,7 +118,10 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent *event){
     event->accept();
     setOpacity(0.7);
 
-    viewAs("slash");
+    if(isRed())
+        viewAs("slash");
+    else
+        viewAs("jink");
 }
 
 void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){

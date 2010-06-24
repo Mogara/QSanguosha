@@ -41,6 +41,9 @@ RoomScene::RoomScene()
     photos[1]->loadAvatar("generals/small/liubei.png");
     photos[2]->loadAvatar("generals/small/sunquan.png");
     photos[3]->loadAvatar("generals/small/simayi.png");
+    photos[4]->loadAvatar("generals/small/guojia.png");
+    photos[5]->loadAvatar("generals/small/zhugeliang.png");
+    photos[6]->loadAvatar("generals/small/zhouyu.png");
 
 
     {

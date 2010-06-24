@@ -38,9 +38,10 @@ public:
 
     virtual QRectF boundingRect() const;
 
-    // compare static functions
+    // static functions
     static bool CompareBySuitNumber(Card *a, Card *b);
     static bool CompareByType(Card *a, Card *b);
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

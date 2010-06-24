@@ -22,6 +22,7 @@ public:
     QString UserName; 
     uint Port;
     bool FitInView;
+    bool UseOpenGL;
 };
 
 extern Settings Config;
