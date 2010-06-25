@@ -22,11 +22,6 @@ Card::Card(const QString name, enum Suit suit, int number)
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton);
     setPos(home_pos);
-
-    monochrome_effect = new QGraphicsColorizeEffect;
-    monochrome_effect->setColor(QColor(20,20,20));
-
-    connect(this, SIGNAL(enabledChanged()), SLOT(setMonochrome()));
 }
 
 QString Card::getSuit() const{
@@ -139,6 +134,20 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
+QVariant Card::itemChange(GraphicsItemChange change, const QVariant &value){
+    if(change == ItemEnabledChange){
+        if(value.toBool()){
+            setGraphicsEffect(NULL);
+        }else{
+            QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
+            effect->setColor(QColor(20,20,20));
+            setGraphicsEffect(effect);
+        }
+    }
+
+    return QGraphicsObject::itemChange(change, value);
+}
+
 void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     static QRect suit_rect(8,8,18,18);
     painter->drawPixmap(CardRect, pixmap);
@@ -148,8 +157,4 @@ void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if(isRed())
         painter->setPen(Qt::red);
     painter->drawText(8, 50, getNumberString());
-}
-
-void Card::setMonochrome(){
-    setGraphicsEffect(isEnabled()? NULL : monochrome_effect);
 }

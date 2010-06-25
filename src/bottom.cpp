@@ -21,8 +21,6 @@ Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
     sort_widget->setWidget(sort_type);
     connect(sort_type, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards(int)));
 
-
-
     Card *card1 = new Card("savage_assault", Card::Spade, 1);
     Card *card2 = new Card("slash", Card::Club, 7);
     Card *card3 = new Card("jink", Card::Heart, 2);
@@ -36,6 +34,8 @@ Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
     addCard(card4);
     addCard(card5);
     addCard(card6);
+
+    card4->setEnabled(false);
 
     avatar.load("generals/big/zhangliao.png");
 
