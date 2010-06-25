@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     engine = new Engine(this);
     connect(engine, SIGNAL(signalHandlerException(QScriptValue)), this, SLOT(scriptException(QScriptValue)));
+    engine->init();
 
     restoreFromConfig();
 }
@@ -122,7 +123,3 @@ void MainWindow::on_actionStart_Server_triggered()
     }
 }
 
-void MainWindow::scriptException(const QScriptValue &exception){
-    QMessageBox::warning(this, "Script exception!", exception.toString());
-    engine->clearExceptions();
-}

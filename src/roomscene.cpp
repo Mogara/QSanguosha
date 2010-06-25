@@ -5,7 +5,7 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
-RoomScene::RoomScene()
+RoomScene::RoomScene():bust(NULL)
 {
     setBackgroundBrush(QBrush(QPixmap(":/images/background.png")));
     skill_label = addSimpleText(Config.UserName, Config.BigFont);
@@ -86,8 +86,6 @@ RoomScene::RoomScene()
     dashboard->addCard(card6);
 
     card4->setEnabled(false);
-
-
 }
 
 void RoomScene::updatePhotos(){
@@ -104,6 +102,25 @@ void RoomScene::updatePhotos(){
     }
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void RoomScene::showBust(const QString &name)
+{
+    QString filename = "generals/bust/" + name + ".png";
+    if(!bust){
+        bust = new Pixmap(filename);
+        bust->shift();
+        addItem(bust);
+    }else
+        bust->changePixmap(filename);
+
+    QPropertyAnimation *appear = new QPropertyAnimation(bust, "scale");
+    appear->setStartValue(0.2);    
+    appear->setEndValue(1.0);
+
+    appear->start();
+
+    connect(appear, SIGNAL(finished()), bust, SIGNAL(visibleChanged()));
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){

@@ -9,6 +9,8 @@ class Pixmap : public QGraphicsObject
 public:
     Pixmap(const QString &filename);
     virtual QRectF boundingRect() const;
+    void changePixmap(const QString &name);
+    void shift();
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

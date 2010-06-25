@@ -14,6 +14,9 @@ public:
     RoomScene();
     void updatePhotos();
 
+public slots:
+    void showBust(const QString &name);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -24,6 +27,7 @@ private:
     Pixmap *pile;
     QGraphicsSimpleTextItem *skill_label;
     Pixmap *avatar;
+    Pixmap *bust;
 };
 
 #endif // ROOMSCENE_H

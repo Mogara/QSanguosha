@@ -33,7 +33,6 @@ private slots:
     void on_actionExit_triggered();
 
     void gotoScene(QGraphicsScene *scene);
-    void scriptException(const QScriptValue &exception);
 };
 
 #endif // MAINWINDOW_H
