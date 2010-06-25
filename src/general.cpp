@@ -1,23 +1,41 @@
 #include "general.h"
 
-General::General(QObject *parent) :
-    QObject(parent), _hp(5), _max_hp(5)
+General::General(const QString &name, const QString &kingdom, int max_hp, bool male)
+    :kingdom(kingdom), max_hp(max_hp), male(male), is_lord(false)
 {
+    setObjectName(name);
+    hp = max_hp;
+
+    // initialize related pixmaps
 }
 
-int General::max_hp() const{
-    return _max_hp;
+int General::getMaxHp() const{
+    return max_hp;
 }
 
-int General::hp() const{
-    return _hp;
+int General::getHp() const{
+    return hp;
 }
 
 void General::setHp(int hp){
-    if(hp > 0 && hp <= _max_hp)
-        _hp = hp;
+    if(hp > 0 && hp <= max_hp)
+        this->hp = hp;
 }
 
-QString General::kingdom() const{
-    return _kingdom;
+QString General::getKingdom() const{
+    return kingdom;
+}
+
+bool General::isMale() const{
+    return male;
+}
+
+bool General::isFemale() const{
+    return !male;
+}
+
+void General::enthrone(){
+    max_hp ++;
+    hp = max_hp;
+    is_lord = true;
 }

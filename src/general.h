@@ -6,21 +6,31 @@
 class General : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString kingdom READ kingdom CONSTANT)
-    Q_PROPERTY(int max_hp READ max_hp CONSTANT)
-    Q_PROPERTY(int hp READ hp WRITE setHp)
+    Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
+    Q_PROPERTY(int max_hp READ getMaxHp CONSTANT)
+    Q_PROPERTY(int hp READ getHp WRITE setHp)
+    Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
+    Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
 
 public:
-    explicit General(QObject *parent = 0);
-    int max_hp() const;
-    int hp() const;
+    explicit General(const QString &name, const QString &kingdom, int max_hp, bool male);
+
+    // property getters/setters
+    int getMaxHp() const;
+    int getHp() const;
     void setHp(int hp);
-    QString kingdom() const;
+    QString getKingdom() const;
+    bool isMale() const;
+    bool isFemale() const;
+
+    // make this general to lord, thus enable its lord skill and increase its maximal hp
+    void enthrone();
 
 private:
-    int _max_hp;
-    int _hp;
-    QString _kingdom;
+    const QString kingdom;
+    int max_hp, hp;
+    const bool male;
+    bool is_lord;
 };
 
 #endif // GENERAL_H

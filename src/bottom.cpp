@@ -39,7 +39,7 @@ Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
 
     avatar.load("generals/big/zhangliao.png");
 
-    general = new General(this);
+    general = new General("caocao", "wei", 4, true);
 }
 
 void Bottom::addCard(Card *card){
@@ -54,9 +54,10 @@ void Bottom::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     Pixmap::paint(painter, option, widget);
 
     // draw hp
-    QPixmap *magatama = &magatamas[general->hp()-1];
+    int hp = general->getHp();
+    QPixmap *magatama = &magatamas[hp-1];
     int i;
-    for(i=0; i<general->hp(); i++)
+    for(i=0; i<hp; i++)
         painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
 
     // draw general's avatar
