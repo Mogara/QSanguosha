@@ -8,14 +8,13 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
 #include <QMessageBox>
-#include <QGraphicsColorizeEffect>
 
 Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
     avatar_frame(":/images/avatar-frame.png")
 {
     setAcceptHoverEvents(true);
-    setFlags(QGraphicsItem::ItemIsSelectable);
+    setFlags(ItemIsSelectable);
 }
 
 void Photo::loadAvatar(const QString &filename){
@@ -39,16 +38,4 @@ void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     }
 }
 
-QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
-    if(change == QGraphicsItem::ItemSelectedChange){
-        if(value.toBool()){
-            QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
-            effect->setColor(QColor(0xCC, 0x00, 0x00));
-            setGraphicsEffect(effect);
-        }else
-            setGraphicsEffect(NULL);
-    }
-
-    return Pixmap::itemChange(change, value);
-}
 

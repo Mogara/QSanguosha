@@ -3,7 +3,6 @@
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
-
 #include <QGraphicsScene>
 
 static QRect CardRect(0, 0, 150*0.8, 210*0.8);
@@ -19,7 +18,7 @@ Card::Card(const QString name, enum Suit suit, int number)
     setObjectName(name);
     suit_pixmap.load(QString(":/images/suit/%1.png").arg(SuitNames[suit]));
     pixmap.load("cards/" + name + ".png");
-    setFlags(QGraphicsItem::ItemIsFocusable);
+    setFlags(ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton);
     setPos(home_pos);
 }
@@ -134,6 +133,17 @@ void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
+void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    static QRect suit_rect(8,8,18,18);
+    painter->drawPixmap(CardRect, pixmap);
+    painter->drawPixmap(suit_rect, suit_pixmap);
+
+    painter->setFont(CardNumberFont);
+    if(isRed())
+        painter->setPen(Qt::red);
+    painter->drawText(8, 50, getNumberString());
+}
+
 QVariant Card::itemChange(GraphicsItemChange change, const QVariant &value){
     if(change == ItemEnabledChange){
         if(value.toBool()){
@@ -146,15 +156,4 @@ QVariant Card::itemChange(GraphicsItemChange change, const QVariant &value){
     }
 
     return QGraphicsObject::itemChange(change, value);
-}
-
-void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    static QRect suit_rect(8,8,18,18);
-    painter->drawPixmap(CardRect, pixmap);
-    painter->drawPixmap(suit_rect, suit_pixmap);
-
-    painter->setFont(CardNumberFont);
-    if(isRed())
-        painter->setPen(Qt::red);
-    painter->drawText(8, 50, getNumberString());
 }

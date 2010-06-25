@@ -1,5 +1,5 @@
-#ifndef BOTTOM_H
-#define BOTTOM_H
+#ifndef DASHBOARD_H
+#define DASHBOARD_H
 
 #include "pixmap.h"
 #include "card.h"
@@ -7,22 +7,24 @@
 
 #include <QPushButton>
 
-class Bottom : public Pixmap
+class Dashboard : public Pixmap
 {
     Q_OBJECT
 
 public:
-    Bottom();
+    Dashboard();
     void addCard(Card *card);
+    void setGeneral(General *general);
+    Pixmap *getAvatar();
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
     QList<Card*> cards;
     General *general;
     QPixmap magatamas[5];
-    QPixmap avatar;
+    Pixmap *avatar;
     bool use_skill;
 
     void adjustCards();
@@ -31,4 +33,4 @@ private slots:
     void sortCards(int sort_type);
 };
 
-#endif // BOTTOM_H
+#endif // DASHBOARD_H

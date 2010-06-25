@@ -11,7 +11,9 @@ public:
     virtual QRectF boundingRect() const;
 
 protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
     QPixmap pixmap;
 };
 

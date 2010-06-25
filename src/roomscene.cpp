@@ -42,20 +42,24 @@ RoomScene::RoomScene()
 
 
     {
-        bottom = new Bottom;
-        addItem(bottom);
+        dashboard = new Dashboard;
+        dashboard->setGeneral(new General("caocao", "wei", 4, true));
+
+        addItem(dashboard);
+
+        avatar = dashboard->getAvatar();
 
         QPointF start_pos(Config.Rect.topLeft());
-        QPointF end_pos(Config.Rect.x(), Config.Rect.bottom() - bottom->boundingRect().height());
+        QPointF end_pos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
         int duration = 1500;
 
-        QPropertyAnimation *translation = new QPropertyAnimation(bottom, "pos");
+        QPropertyAnimation *translation = new QPropertyAnimation(dashboard, "pos");
         translation->setStartValue(start_pos);
         translation->setEndValue(end_pos);
         translation->setEasingCurve(QEasingCurve::OutBounce);
         translation->setDuration(duration);
 
-        QPropertyAnimation *enlarge = new QPropertyAnimation(bottom, "scale");
+        QPropertyAnimation *enlarge = new QPropertyAnimation(dashboard, "scale");
         enlarge->setStartValue(0.2);
         enlarge->setEndValue(1.0);
         enlarge->setEasingCurve(QEasingCurve::OutBounce);
@@ -66,6 +70,24 @@ RoomScene::RoomScene()
     }
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    Card *card1 = new Card("savage_assault", Card::Spade, 1);
+    Card *card2 = new Card("slash", Card::Club, 7);
+    Card *card3 = new Card("jink", Card::Heart, 2);
+    Card *card4 = new Card("peach", Card::Diamond, 10);
+    Card *card5 = new Card("archery_attack", Card::Heart, 11);
+    Card *card6 = new Card("crossbow", Card::Club, 12);
+
+    dashboard->addCard(card1);
+    dashboard->addCard(card2);
+    dashboard->addCard(card3);
+    dashboard->addCard(card4);
+    dashboard->addCard(card5);
+    dashboard->addCard(card6);
+
+    card4->setEnabled(false);
+
+
 }
 
 void RoomScene::updatePhotos(){
@@ -103,6 +125,10 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
         if(photo->isUnderMouse()){
             photo->setSelected(true);
         }
+    }
+
+    if(avatar->isUnderMouse()){
+        avatar->setSelected(true);
     }
 }
 

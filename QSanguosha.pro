@@ -15,7 +15,7 @@ SOURCES += src/main.cpp \
     src/startscene.cpp \
     src/roomscene.cpp \
     src/photo.cpp \
-    src/bottom.cpp \
+    src/dashboard.cpp \
     src/card.cpp \
     src/pixmap.cpp \
     src/general.cpp \
@@ -28,7 +28,7 @@ HEADERS += src/gamescene.h \
     src/startscene.h \
     src/roomscene.h \
     src/photo.h \
-    src/bottom.h \
+    src/dashboard.h \
     src/card.h \
     src/pixmap.h \
     src/general.h \

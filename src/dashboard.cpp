@@ -1,11 +1,12 @@
-#include "bottom.h"
+#include "dashboard.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
 #include <QComboBox>
 
-Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
+Dashboard::Dashboard()
+    :Pixmap(":/images/dashboard.png"), general(NULL), avatar(NULL), use_skill(false)
 {
     int i;
     for(i=0; i<5; i++){
@@ -20,29 +21,9 @@ Bottom::Bottom():Pixmap(":/images/bottom.png"), use_skill(false)
     QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget(this);
     sort_widget->setWidget(sort_type);
     connect(sort_type, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards(int)));
-
-    Card *card1 = new Card("savage_assault", Card::Spade, 1);
-    Card *card2 = new Card("slash", Card::Club, 7);
-    Card *card3 = new Card("jink", Card::Heart, 2);
-    Card *card4 = new Card("peach", Card::Diamond, 10);
-    Card *card5 = new Card("archery_attack", Card::Heart, 11);
-    Card *card6 = new Card("crossbow", Card::Club, 12);
-
-    addCard(card1);
-    addCard(card2);
-    addCard(card3);
-    addCard(card4);
-    addCard(card5);
-    addCard(card6);
-
-    card4->setEnabled(false);
-
-    avatar.load("generals/big/zhangliao.png");
-
-    general = new General("caocao", "wei", 4, true);
 }
 
-void Bottom::addCard(Card *card){
+void Dashboard::addCard(Card *card){
     card->setParentItem(this);
     card->setParent(this);
     cards << card;
@@ -50,21 +31,33 @@ void Bottom::addCard(Card *card){
     adjustCards();
 }
 
-void Bottom::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    Pixmap::paint(painter, option, widget);
-
-    // draw hp
-    int hp = general->getHp();
-    QPixmap *magatama = &magatamas[hp-1];
-    int i;
-    for(i=0; i<hp; i++)
-        painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
-
-    // draw general's avatar
-    painter->drawPixmap(837, 35, avatar);
+void Dashboard::setGeneral(General *general){
+    this->general = general;
+    avatar = new Pixmap("generals/big/" + general->objectName() + ".png");
+    avatar->setPos(837, 35);
+    avatar->setFlag(ItemIsSelectable);
+    avatar->setParent(this);
+    avatar->setParentItem(this);
 }
 
-void Bottom::adjustCards(){
+Pixmap *Dashboard::getAvatar(){
+    return avatar;
+}
+
+void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    Pixmap::paint(painter, option, widget);
+
+    // draw general's hp
+    if(general){
+        int hp = general->getHp();
+        QPixmap *magatama = &magatamas[hp-1];
+        int i;
+        for(i=0; i<hp; i++)
+            painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
+    }
+}
+
+void Dashboard::adjustCards(){
     int n = cards.size();
     if(n == 0)
         return;
@@ -84,7 +77,7 @@ void Bottom::adjustCards(){
     }
 }
 
-void Bottom::sortCards(int sort_type){
+void Dashboard::sortCards(int sort_type){
     if(sort_type == 0)
         return;
 

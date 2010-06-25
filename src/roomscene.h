@@ -2,7 +2,7 @@
 #define ROOMSCENE_H
 
 #include "photo.h"
-#include "bottom.h"
+#include "dashboard.h"
 #include "card.h"
 
 #include <QGraphicsScene>
@@ -20,9 +20,10 @@ protected:
 
 private:
     QList<Photo*> photos;
-    Bottom *bottom;
+    Dashboard *dashboard;
     Pixmap *pile;
     QGraphicsSimpleTextItem *skill_label;
+    Pixmap *avatar;
 };
 
 #endif // ROOMSCENE_H
