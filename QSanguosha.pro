@@ -20,7 +20,9 @@ SOURCES += src/main.cpp \
     src/pixmap.cpp \
     src/general.cpp \
     src/server.cpp \
-    src/engine.cpp
+    src/engine.cpp \
+    src/servingthread.cpp \
+    src/connectiondialog.cpp
 HEADERS += src/gamescene.h \
     src/mainwindow.h \
     src/button.h \
@@ -33,8 +35,11 @@ HEADERS += src/gamescene.h \
     src/pixmap.h \
     src/general.h \
     src/server.h \
-    src/engine.h
-FORMS += src/mainwindow.ui
+    src/engine.h \
+    src/servingthread.h \
+    src/connectiondialog.h
+FORMS += src/mainwindow.ui \
+    src/connectiondialog.ui
 OTHER_FILES += 
 RESOURCES += resource/sanguosha.qrc
 RC_FILE += resource/icon.rc

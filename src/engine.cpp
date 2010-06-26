@@ -48,7 +48,10 @@ void Engine::addTranslationTable(QVariantMap table)
         itor.next();
         translation->setProperty(itor.key().toAscii(), itor.value());
     }
+}
 
+QString Engine::translate(const QString &to_translate){
+    return translation->property(to_translate.toAscii()).toString();
 }
 
 

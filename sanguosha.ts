@@ -2,6 +2,30 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="zh_CN">
 <context>
+    <name>ConnectionDialog</name>
+    <message>
+        <location filename="src/connectiondialog.ui" line="17"/>
+        <location filename="src/connectiondialog.ui" line="45"/>
+        <source>Connection setup</source>
+        <translation>连接设置</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="66"/>
+        <source>Host:</source>
+        <translation>主机:</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="76"/>
+        <source>Port:</source>
+        <translation>端口:</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="86"/>
+        <source>Name:</source>
+        <translation>名称:</translation>
+    </message>
+</context>
+<context>
     <name>Dashboard</name>
     <message>
         <location filename="src/dashboard.cpp" line="17"/>
@@ -42,7 +66,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="92"/>
+        <location filename="src/mainwindow.cpp" line="93"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -97,14 +121,27 @@
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="93"/>
+        <location filename="src/mainwindow.cpp" line="94"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="111"/>
+        <location filename="src/mainwindow.cpp" line="114"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
+    </message>
+</context>
+<context>
+    <name>Server</name>
+    <message>
+        <location filename="src/server.cpp" line="24"/>
+        <source>Start thread</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="31"/>
+        <source>%1: %2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -4,6 +4,7 @@
 #include "roomscene.h"
 #include "server.h"
 
+
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -32,15 +33,18 @@ protected:
     }
 };
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    :QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    Config.init();
-
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-
     ui->setupUi(this);
+
+    Config.init();
+    connection_dialog = new ConnectionDialog(this);
+    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));
+    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startGame()));
+
+    // initialize random seed for later use
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     StartScene *start_scene = new StartScene;
     QList<QAction*> actions;
@@ -96,14 +100,6 @@ void MainWindow::on_actionExit_triggered()
         close();
 }
 
-void MainWindow::on_actionStart_Game_triggered()
-{
-    ui->actionStart_Game->setEnabled(false);
-    ui->actionStart_Server->setEnabled(false);
-
-    gotoScene(new RoomScene);
-}
-
 void MainWindow::on_actionStart_Server_triggered()
 {
     Server *server = new Server(this);
@@ -119,5 +115,12 @@ void MainWindow::on_actionStart_Server_triggered()
     if(start_scene){
         start_scene->switchToServer(server);
     }
+}
+
+void MainWindow::startGame(){
+    ui->actionStart_Game->setEnabled(false);
+    ui->actionStart_Server->setEnabled(false);
+
+    gotoScene(new RoomScene);
 }
 

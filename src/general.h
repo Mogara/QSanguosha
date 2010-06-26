@@ -11,6 +11,7 @@ class General : public QObject
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
+    Q_PROPERTY(bool wounded READ isWounded STORED false)
 
 public:
     explicit General(const QString &name, const QString &kingdom, int max_hp, bool male);
@@ -22,6 +23,7 @@ public:
     QString getKingdom() const;
     bool isMale() const;
     bool isFemale() const;
+    bool isWounded() const;
 
     // make this general to lord, thus enable its lord skill and increase its maximal hp
     void enthrone();

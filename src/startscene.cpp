@@ -42,14 +42,14 @@ void StartScene::switchToServer(Server *server){
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     group->addAnimation(logo_shift);
     group->addAnimation(logo_shrink);
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 
     foreach(Button *button, buttons){
+        button->setVisible(false);
         removeItem(button);
         delete button;
     }
     buttons.clear();
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
 
     QTextEdit *server_log = new QTextEdit();
 
@@ -76,6 +76,8 @@ void StartScene::switchToServer(Server *server){
     QGraphicsSimpleTextItem *server_message_item = addSimpleText(server_message, Config.SmallFont);
     server_message_item->setBrush(Qt::white);
     server_message_item->setPos(-180, -250);
+
+    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
 }
 
 

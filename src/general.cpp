@@ -34,6 +34,10 @@ bool General::isFemale() const{
     return !male;
 }
 
+bool General::isWounded() const{
+    return hp < max_hp;
+}
+
 void General::enthrone(){
     max_hp ++;
     hp = max_hp;

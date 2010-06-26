@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "engine.h"
+#include "connectiondialog.h"
 
 #include <QMainWindow>
 #include <QGraphicsScene>
@@ -24,14 +25,15 @@ private:
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
     Engine *engine;
+    ConnectionDialog *connection_dialog;
 
     void restoreFromConfig();
 
 private slots:
     void on_actionStart_Server_triggered();
-    void on_actionStart_Game_triggered();
     void on_actionExit_triggered();
 
+    void startGame();
     void gotoScene(QGraphicsScene *scene);
 };
 

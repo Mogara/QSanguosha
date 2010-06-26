@@ -11,9 +11,11 @@ public:
     bool start();
 
 signals:
+    void server_message(const QString &);
 
 private slots:
     void processNewConnection();
+    void processThreadMessage(const QString &message);
 };
 
 #endif // SERVER_H

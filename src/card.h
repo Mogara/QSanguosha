@@ -17,8 +17,8 @@ class Card : public QGraphicsObject
     Q_PROPERTY(QString type READ getType)
 public:
     // enumeration type
-    enum Suit {Spade, Club, Heart, Diamond};
-    enum Type {Basic, Equip, Trick};
+    enum Suit {Spade, Club, Heart, Diamond, NoSuit};
+    enum Type {Basic, Equip, Trick, UserDefined};
 
     // constructor
     Card(const QString name, enum Suit suit, int number);
