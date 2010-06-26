@@ -1,4 +1,16 @@
 #include "general.h"
+#include "engine.h"
+
+General::General(const QString &name){
+    setObjectName(name);
+
+    // initialize other field using name
+    General *copy = Sanguosha->getGeneral(name);
+    kingdom = copy->kingdom;
+    hp = max_hp = copy->max_hp;
+    male = copy->max_hp;
+    is_lord = false;
+}
 
 General::General(const QString &name, const QString &kingdom, int max_hp, bool male)
     :kingdom(kingdom), max_hp(max_hp), male(male), is_lord(false)

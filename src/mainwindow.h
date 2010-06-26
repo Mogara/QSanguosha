@@ -24,7 +24,6 @@ protected:
 private:    
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
-    Engine *engine;
     ConnectionDialog *connection_dialog;
 
     void restoreFromConfig();

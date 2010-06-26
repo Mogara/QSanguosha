@@ -40,4 +40,7 @@ void Settings::init(){
 
     FitInView = value("FitInView", false).toBool();
     UseOpenGL = value("UseOpenGL", false).toBool();
+
+    QString bgbrush = value("BackgroundBrush", ":/images/rock.jpg").toString();
+    BackgroundBrush = QBrush(QPixmap(bgbrush));
 }

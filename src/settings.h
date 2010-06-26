@@ -6,6 +6,7 @@
 #include <QRectF>
 #include <QPixmap>
 #include <QScriptEngine>
+#include <QBrush>
 
 class Settings : public QSettings
 {
@@ -25,6 +26,8 @@ public:
 
     bool FitInView;
     bool UseOpenGL;
+
+    QBrush BackgroundBrush;
 };
 
 extern Settings Config;

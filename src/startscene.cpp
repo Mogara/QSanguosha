@@ -5,7 +5,7 @@
 
 StartScene::StartScene()
 {
-    setBackgroundBrush(QBrush(QPixmap(":/images/background.png")));
+    setBackgroundBrush(Config.BackgroundBrush);
 
     // game logo
     logo = new Pixmap(":/images/logo.png");

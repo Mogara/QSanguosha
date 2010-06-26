@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/background.png</file>
         <file>images/logo.png</file>
         <file>images/photo-back.png</file>
         <file>images/avatar-frame.png</file>
@@ -15,5 +14,6 @@
         <file>images/magatamas/4.png</file>
         <file>images/magatamas/5.png</file>
         <file>images/dashboard.png</file>
+        <file>images/rock.jpg</file>
     </qresource>
 </RCC>

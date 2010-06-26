@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    if(Config.TitleMusic)
 //        Config.TitleMusic->play();
 
-    engine = new Engine(this);
+    Sanguosha = new Engine(this);
 
     restoreFromConfig();
 }
@@ -119,10 +119,16 @@ void MainWindow::on_actionStart_Server_triggered()
 
 void MainWindow::startConnection(){
     // do connection
-    QTcpSocket *socket = new QTcpSocket(this);
-    socket->connectToHost(Config.HostAddress, Config.Port);
-    connect(socket, SIGNAL(connected()), this, SLOT(enterRoom()));
-    socket->waitForConnected();
+//    QTcpSocket *socket = new QTcpSocket(this);
+//    socket->connectToHost(Config.HostAddress, Config.Port);
+//    connect(socket, SIGNAL(connected()), this, SLOT(enterRoom()));
+//
+//    QMessageBox *waiting = new QMessageBox(this);
+//    waiting->setText(tr("Waiting for connection"));
+//    waiting->show();
+//
+//    socket->waitForConnected();
+    enterRoom();
 }
 
 void MainWindow::enterRoom(){

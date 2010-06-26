@@ -16,9 +16,13 @@ public:
     Q_INVOKABLE void addTranslationTable(QVariantMap table);
     Q_INVOKABLE QString translate(const QString &to_translate);
 
+    General *getGeneral(const QString &name);
+
 private:
     QObject *generals;
     QObject *translation;
 };
+
+extern Engine *Sanguosha;
 
 #endif // ENGINE_H
