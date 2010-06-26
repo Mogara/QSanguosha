@@ -11,9 +11,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->nameLineEdit->setText(Config.UserName);
-    ui->hostLineEdit->setText("127.0.0.1");
+    ui->hostLineEdit->setText(Config.HostAddress);
     ui->portLineEdit->setValidator(new QIntValidator(0, 65535, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
+
+    // fix this dialog
+    setFixedSize(size());
 
     // do connection
 //    QTcpSocket *socket = new QTcpSocket(this);

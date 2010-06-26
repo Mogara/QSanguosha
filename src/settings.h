@@ -18,8 +18,11 @@ public:
     const QRectF Rect;
     QFont BigFont;
     QFont SmallFont;
+
     QString UserName; 
+    QString HostAddress;
     uint Port;
+
     bool FitInView;
     bool UseOpenGL;
 };

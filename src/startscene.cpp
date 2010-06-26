@@ -45,7 +45,6 @@ void StartScene::switchToServer(Server *server){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     foreach(Button *button, buttons){
-        button->setVisible(false);
         removeItem(button);
         delete button;
     }
@@ -66,8 +65,6 @@ void StartScene::switchToServer(Server *server){
 
     server_log->setFont(QFont("Verdana", 12));
     server_log->setTextColor(QColor("white"));
-    server_log->append("hello, world");
-    server_log->append("hello, China");
 
     addWidget(server_log);
 
@@ -78,6 +75,8 @@ void StartScene::switchToServer(Server *server){
     server_message_item->setPos(-180, -250);
 
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
+
+    update();
 }
 
 
