@@ -2,8 +2,6 @@
 #include "ui_connectiondialog.h"
 #include "settings.h"
 
-#include <QTcpSocket>
-
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
@@ -17,15 +15,18 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     // fix this dialog
     setFixedSize(size());
-
-    // do connection
-//    QTcpSocket *socket = new QTcpSocket(this);
-//    socket->connectToHost("127.0.0.1", Config.Port);
-//    connect(socket, SIGNAL(connected()), this, SLOT(enterRoom()));
-//    socket->waitForConnected();
 }
 
 ConnectionDialog::~ConnectionDialog()
 {
     delete ui;
+}
+
+void ConnectionDialog::on_connectButton_clicked()
+{
+    Config.setValue("UserName", Config.UserName = ui->nameLineEdit->text());
+    Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());
+    Config.setValue("Port", Config.Port = ui->portLineEdit->text().toInt());
+
+    accept();
 }

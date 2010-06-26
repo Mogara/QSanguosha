@@ -5,24 +5,34 @@
     <name>ConnectionDialog</name>
     <message>
         <location filename="src/connectiondialog.ui" line="17"/>
-        <location filename="src/connectiondialog.ui" line="45"/>
+        <location filename="src/connectiondialog.ui" line="29"/>
         <source>Connection setup</source>
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="66"/>
+        <location filename="src/connectiondialog.ui" line="50"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="76"/>
+        <location filename="src/connectiondialog.ui" line="63"/>
         <source>Port:</source>
         <translation>端口:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="86"/>
+        <location filename="src/connectiondialog.ui" line="76"/>
         <source>Name:</source>
         <translation>名称:</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="96"/>
+        <source>Connect</source>
+        <translation>连接</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="109"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
     </message>
 </context>
 <context>
@@ -66,7 +76,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="93"/>
+        <location filename="src/mainwindow.cpp" line="96"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -121,12 +131,12 @@
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="94"/>
+        <location filename="src/mainwindow.cpp" line="97"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="114"/>
+        <location filename="src/mainwindow.cpp" line="107"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
@@ -147,7 +157,7 @@
 <context>
     <name>StartScene</name>
     <message>
-        <location filename="src/startscene.cpp" line="75"/>
+        <location filename="src/startscene.cpp" line="72"/>
         <source>Server Address: %1 Port: %2</source>
         <translation>服务器地址: %1 端口: %2</translation>
     </message>

@@ -33,7 +33,8 @@ private slots:
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
 
-    void startGame();
+    void startConnection();
+    void enterRoom();
     void gotoScene(QGraphicsScene *scene);
 };
 

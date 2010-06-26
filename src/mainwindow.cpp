@@ -4,7 +4,7 @@
 #include "roomscene.h"
 #include "server.h"
 
-
+#include <QTcpSocket>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     Config.init();
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));
-    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startGame()));
+    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
@@ -117,10 +117,17 @@ void MainWindow::on_actionStart_Server_triggered()
     }
 }
 
-void MainWindow::startGame(){
+void MainWindow::startConnection(){
+    // do connection
+    QTcpSocket *socket = new QTcpSocket(this);
+    socket->connectToHost(Config.HostAddress, Config.Port);
+    connect(socket, SIGNAL(connected()), this, SLOT(enterRoom()));
+    socket->waitForConnected();
+}
+
+void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
     gotoScene(new RoomScene);
 }
-

@@ -9,12 +9,16 @@ namespace Ui {
 
 class ConnectionDialog : public QDialog {
     Q_OBJECT
+
 public:
-    ConnectionDialog(QWidget *parent = 0);
+    ConnectionDialog(QWidget *parent);
     ~ConnectionDialog();
 
 private:
     Ui::ConnectionDialog *ui;
+
+private slots:
+    void on_connectButton_clicked();
 };
 
 #endif // CONNECTIONDIALOG_H
