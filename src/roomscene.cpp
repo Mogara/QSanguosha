@@ -141,6 +141,7 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     foreach(Photo *photo, photos){
         if(photo->isUnderMouse()){
             photo->setSelected(true);
+            break;
         }
     }
 
