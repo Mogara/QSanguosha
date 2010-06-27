@@ -9,7 +9,8 @@ StartScene::StartScene()
 
     // game logo
     logo = new Pixmap(":/images/logo.png");
-    logo->setPos(- logo->boundingRect().width()/2, -Config.Rect.height()/4 - logo->boundingRect().height()/2);
+    logo->shift();
+    logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
 
     //my e-mail address
@@ -68,7 +69,9 @@ void StartScene::switchToServer(Server *server){
     addWidget(server_log);
 
     QString server_message;
-    server_message = tr("Server Address: %1 Port: %2").arg(server->serverAddress().toString()).arg(server->serverPort());
+    server_message = tr("Server Address: %1 Port: %2")
+                     .arg(server->serverAddress().toString())
+                     .arg(server->serverPort());
     QGraphicsSimpleTextItem *server_message_item = addSimpleText(server_message, Config.SmallFont);
     server_message_item->setBrush(Qt::white);
     server_message_item->setPos(-180, -250);

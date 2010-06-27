@@ -9,12 +9,12 @@
 class Card : public QGraphicsObject
 {
     Q_OBJECT
+    // suit
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
-    Q_PROPERTY(QString suit READ getSuit CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
-    Q_PROPERTY(QString type READ getType)
+    Q_PROPERTY(QString type READ getTypeString)
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
@@ -29,7 +29,8 @@ public:
     bool isBlack() const;
     int getNumber() const;
     QString getNumberString() const;
-    QString getType() const;
+    QString getTypeString() const;
+    Type getType() const;
 
     // others
     void setHomePos(QPointF home_pos);
@@ -52,12 +53,13 @@ protected:
 private:
     QString name;
     enum Suit suit;
+    enum Type type;
     int number;
+
     QPixmap pixmap;
     QPixmap suit_pixmap;
     QPointF home_pos;
-    QGraphicsPixmapItem *view_card;
-    Type type;
+    QGraphicsPixmapItem *view_card;    
 };
 
 #endif // CARD_H

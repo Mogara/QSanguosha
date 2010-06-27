@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "card.h"
 
 #include <QFile>
 #include <QStringList>
@@ -16,8 +17,6 @@ Engine::Engine(QObject *parent) :
 
     translation = new QObject(this);
     translation->setObjectName("translation");
-
-    //qScriptRegisterMetaType()
 
     QStringList script_files;
     script_files << "init.js" << "cards.js" << "generals.js";
@@ -41,6 +40,23 @@ QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max
     General *general = new General(name, kingdom, max_hp, male);
     general->setParent(generals);
     return general;
+}
+
+QObject *Engine::addCard(const QString &name, const QString &suit_str, int number){
+    Card::Suit suit;
+    if(suit_str == "spade")
+        suit = Card::Spade;
+    else if(suit_str == "club")
+        suit = Card::Club;
+    else if(suit_str == "heart")
+        suit = Card::Heart;
+    else if(suit_str == "diamond")
+        suit = Card::Diamond;
+    else
+        suit = Card::NoSuit;
+
+    Card *card = new Card(name, suit, number);
+    return card;
 }
 
 void Engine::addTranslationTable(QVariantMap table)

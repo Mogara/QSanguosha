@@ -26,7 +26,7 @@ void ConnectionDialog::on_connectButton_clicked()
 {
     Config.setValue("UserName", Config.UserName = ui->nameLineEdit->text());
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());
-    Config.setValue("Port", Config.Port = ui->portLineEdit->text().toInt());
+    Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
 
     accept();
 }

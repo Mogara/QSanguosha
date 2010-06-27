@@ -21,7 +21,7 @@ public:
 
     QString UserName; 
     QString HostAddress;
-    uint Port;
+    ushort Port;
 
     bool FitInView;
     bool UseOpenGL;
