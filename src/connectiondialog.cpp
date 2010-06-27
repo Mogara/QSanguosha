@@ -10,7 +10,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     ui->nameLineEdit->setText(Config.UserName);
     ui->hostLineEdit->setText(Config.HostAddress);
-    ui->portLineEdit->setValidator(new QIntValidator(0, 65535, ui->portLineEdit));
+    ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
 
     // fix this dialog

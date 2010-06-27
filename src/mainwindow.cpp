@@ -3,8 +3,8 @@
 #include "startscene.h"
 #include "roomscene.h"
 #include "server.h"
+#include "client.h"
 
-#include <QTcpSocket>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -118,16 +118,14 @@ void MainWindow::on_actionStart_Server_triggered()
 }
 
 void MainWindow::startConnection(){
-    // do connection
-    QTcpSocket *socket = new QTcpSocket(this);
-    socket->connectToHost(Config.HostAddress, Config.Port);
+    Client *client = new Client(this);
 
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(connectionError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(connected()), SLOT(enterRoom()));
+    connect(client, SIGNAL(errorMessage(QString)), SLOT(connectionError(QString)));
+    connect(client, SIGNAL(connected()), SLOT(enterRoom()));
 }
 
-void MainWindow::connectionError(QAbstractSocket::SocketError socketError){
-    QMessageBox::warning(this, tr("Connection failed"), tr("Connection failed, error code = %1").arg(socketError));
+void MainWindow::connectionError(const QString &error_msg){
+    QMessageBox::warning(this, tr("Connection failed"), error_msg);
 }
 
 void MainWindow::enterRoom(){

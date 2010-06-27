@@ -22,7 +22,8 @@ SOURCES += src/main.cpp \
     src/server.cpp \
     src/engine.cpp \
     src/servingthread.cpp \
-    src/connectiondialog.cpp
+    src/connectiondialog.cpp \
+    src/client.cpp
 HEADERS += src/gamescene.h \
     src/mainwindow.h \
     src/button.h \
@@ -37,7 +38,8 @@ HEADERS += src/gamescene.h \
     src/server.h \
     src/engine.h \
     src/servingthread.h \
-    src/connectiondialog.h
+    src/connectiondialog.h \
+    src/client.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui
 OTHER_FILES += 
