@@ -5,13 +5,10 @@
 Server::Server(QObject *parent) :
     QTcpServer(parent)
 {
-}
-
-bool Server::start(){
     quint16 port = Config.Port;
 
     connect(this, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
-    return listen(QHostAddress::LocalHost, port);
+    listen(QHostAddress::LocalHost, port);
 }
 
 void Server::processNewConnection(){
@@ -21,7 +18,9 @@ void Server::processNewConnection(){
 
     thread->start();
 
-    emit server_message(tr("Start thread"));
+    emit server_message(tr("%1 connected, port = %2")
+                        .arg(socket->peerAddress().toString())
+                        .arg(socket->peerPort()));
 }
 
 void Server::processThreadMessage(const QString &message){

@@ -7,8 +7,7 @@ class Server : public QTcpServer
 {
 Q_OBJECT
 public:
-    explicit Server(QObject *parent = 0);
-    bool start();
+    explicit Server(QObject *parent);
 
 signals:
     void server_message(const QString &);

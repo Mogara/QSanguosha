@@ -6,10 +6,12 @@ General::General(const QString &name){
 
     // initialize other field using name
     General *copy = Sanguosha->getGeneral(name);
-    kingdom = copy->kingdom;
-    hp = max_hp = copy->max_hp;
-    male = copy->max_hp;
-    is_lord = false;
+    if(copy){
+        kingdom = copy->kingdom;
+        hp = max_hp = copy->max_hp;
+        male = copy->max_hp;
+        is_lord = false;
+    }
 }
 
 General::General(const QString &name, const QString &kingdom, int max_hp, bool male)

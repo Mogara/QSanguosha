@@ -17,11 +17,6 @@ Settings::Settings(const QString &organization, const QString &application) :
 {
 }
 
-
-Settings::~Settings()
-{
-}
-
 void Settings::init(){
     QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
     int font_id = QFontDatabase::addApplicationFont(font_path);

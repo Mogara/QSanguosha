@@ -22,6 +22,10 @@ void Photo::loadAvatar(const QString &filename){
     avatar = avatar.scaled(QSize(128,58));
 }
 
+void Photo::speak(const QString &content){
+
+}
+
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
     if(!avatar.isNull()){

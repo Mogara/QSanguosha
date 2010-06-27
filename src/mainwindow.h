@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QSettings>
+#include <QAbstractSocket>
 
 namespace Ui {
     class MainWindow;
@@ -33,6 +34,7 @@ private slots:
     void on_actionExit_triggered();
 
     void startConnection();
+    void connectionError(QAbstractSocket::SocketError socketError);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
 };

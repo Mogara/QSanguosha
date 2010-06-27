@@ -11,6 +11,7 @@ class Photo : public Pixmap
 public:
     explicit Photo();
     void loadAvatar(const QString &filename);
+    void speak(const QString &content);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

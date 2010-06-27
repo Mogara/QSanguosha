@@ -52,10 +52,9 @@ void StartScene::switchToServer(Server *server){
 
     QTextEdit *server_log = new QTextEdit();
 
-    // make its background the same as background, looks transparent
-    QBrush brush(QPixmap(":/images/background.png"));
+    // make its background the same as background, looks transparent    
     QPalette palette;
-    palette.setBrush(QPalette::Base, brush);
+    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
 
     server_log->setReadOnly(true);
     server_log->setPalette(palette);

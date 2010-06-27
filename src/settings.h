@@ -13,7 +13,6 @@ class Settings : public QSettings
 Q_OBJECT
 public:
     explicit Settings(const QString &organization, const QString &application);
-    ~Settings();
     void init();
 
     const QRectF Rect;

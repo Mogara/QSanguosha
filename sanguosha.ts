@@ -56,7 +56,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="27"/>
+        <location filename="src/engine.cpp" line="29"/>
         <source>%1
 
  Stack trace:
@@ -67,7 +67,7 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="30"/>
+        <location filename="src/engine.cpp" line="32"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
@@ -139,6 +139,16 @@
         <location filename="src/mainwindow.cpp" line="107"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="134"/>
+        <source>Connection failed</source>
+        <translation>连接失败</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="134"/>
+        <source>Connection failed, error code = %1</source>
+        <translation>连接失败，错误代码 = %1</translation>
     </message>
 </context>
 <context>

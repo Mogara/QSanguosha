@@ -103,7 +103,7 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionStart_Server_triggered()
 {
     Server *server = new Server(this);
-    if(!server->start()){
+    if(!server->isListening()){
         QMessageBox::warning(this, "Warning", tr("Can not start server!"));
         return;
     }
@@ -119,16 +119,15 @@ void MainWindow::on_actionStart_Server_triggered()
 
 void MainWindow::startConnection(){
     // do connection
-//    QTcpSocket *socket = new QTcpSocket(this);
-//    socket->connectToHost(Config.HostAddress, Config.Port);
-//    connect(socket, SIGNAL(connected()), this, SLOT(enterRoom()));
-//
-//    QMessageBox *waiting = new QMessageBox(this);
-//    waiting->setText(tr("Waiting for connection"));
-//    waiting->show();
-//
-//    socket->waitForConnected();
-    enterRoom();
+    QTcpSocket *socket = new QTcpSocket(this);
+    socket->connectToHost(Config.HostAddress, Config.Port);
+
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(connectionError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(connected()), SLOT(enterRoom()));
+}
+
+void MainWindow::connectionError(QAbstractSocket::SocketError socketError){
+    QMessageBox::warning(this, tr("Connection failed"), tr("Connection failed, error code = %1").arg(socketError));
 }
 
 void MainWindow::enterRoom(){
