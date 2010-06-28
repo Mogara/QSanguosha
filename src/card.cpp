@@ -23,7 +23,7 @@ Card::Card(const QString name, enum Suit suit, int number)
     setPos(home_pos);
 }
 
-QString Card::getSuit() const{
+QString Card::getSuitString() const{
     switch(suit){
     case Spade: return "Spade";
     case Heart: return "Heart";
@@ -61,6 +61,10 @@ QString Card::getTypeString() const{
     case Trick: return "Trick";
     default: return "UserDefined";
     }
+}
+
+Card::Suit Card::getSuit() const{
+    return suit;
 }
 
 Card::Type Card::getType() const{
@@ -109,6 +113,10 @@ bool Card::CompareBySuitNumber(Card *a, Card *b){
 
 bool Card::CompareByType(Card *a, Card *b){
     // FIXME: Not implemented
+    if(a->type != b->type)
+        return a->type < b->type;
+
+
     return true;
 }
 

@@ -2,6 +2,7 @@
 
 #include <QTranslator>
 #include <QDir>
+#include <QTextCodec>
 
 #include "mainwindow.h"
 
@@ -11,6 +12,8 @@ int main(int argc, char *argv[])
 
     if(QDir::current().dirName() == "release")
         QDir::setCurrent("..");
+
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("GB18030"));
 
     QTranslator translator;
     translator.load("sanguosha.qm");

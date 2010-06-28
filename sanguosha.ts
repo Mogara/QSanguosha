@@ -2,6 +2,33 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="zh_CN">
 <context>
+    <name>Client</name>
+    <message>
+        <location filename="src/client.cpp" line="16"/>
+        <source>Connection was refused or timeout</source>
+        <translation>连接被拒绝或超时</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="17"/>
+        <source>Remote host close this connection</source>
+        <translation>远程主机已关闭此次连接</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="19"/>
+        <source>Unknow error</source>
+        <translation>未知错误</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="22"/>
+        <source>Connection failed, error code = %1
+ reason:
+ %2</source>
+        <translation>连接失败, 错误代码 = %1
+原因:
+ %2</translation>
+    </message>
+</context>
+<context>
     <name>ConnectionDialog</name>
     <message>
         <location filename="src/connectiondialog.ui" line="17"/>
@@ -56,7 +83,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="29"/>
+        <location filename="src/engine.cpp" line="28"/>
         <source>%1
 
  Stack trace:
@@ -67,7 +94,7 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="32"/>
+        <location filename="src/engine.cpp" line="31"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
@@ -141,25 +168,20 @@
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="134"/>
+        <location filename="src/mainwindow.cpp" line="128"/>
         <source>Connection failed</source>
         <translation>连接失败</translation>
-    </message>
-    <message>
-        <location filename="src/mainwindow.cpp" line="134"/>
-        <source>Connection failed, error code = %1</source>
-        <translation>连接失败，错误代码 = %1</translation>
     </message>
 </context>
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="24"/>
-        <source>Start thread</source>
-        <translation type="unfinished"></translation>
+        <location filename="src/server.cpp" line="21"/>
+        <source>%1 connected, port = %2</source>
+        <translation>%1 已连接, 端口 = %2</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="31"/>
+        <location filename="src/server.cpp" line="30"/>
         <source>%1: %2</source>
         <translation type="unfinished"></translation>
     </message>

@@ -9,7 +9,7 @@
 class Card : public QGraphicsObject
 {
     Q_OBJECT
-    // suit
+    Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
@@ -24,13 +24,15 @@ public:
     Card(const QString name, enum Suit suit, int number);
 
     // property getter
-    QString getSuit() const;
+    QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
     int getNumber() const;
     QString getNumberString() const;
     QString getTypeString() const;
-    Type getType() const;
+
+    enum Suit getSuit() const;
+    enum Type getType() const;
 
     // others
     void setHomePos(QPointF home_pos);
