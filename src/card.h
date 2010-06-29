@@ -1,12 +1,9 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include <QGraphicsObject>
-#include <QGraphicsColorizeEffect>
-#include <QSize>
-#include <QPropertyAnimation>
+#include "cardclass.h"
 
-class Card : public QGraphicsObject
+class Card : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
@@ -14,54 +11,34 @@ class Card : public QGraphicsObject
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
-    Q_PROPERTY(QString type READ getTypeString)
+    Q_PROPERTY(QString type READ getTypeString CONSTANT)
+
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
-    enum Type {Basic, Equip, Trick, UserDefined};
 
     // constructor
-    Card(const QString name, enum Suit suit, int number);
+    Card(CardClass *card_class, enum Suit suit, int number, int id);
 
-    // property getter
+    // property getters, as all properties of card is read only, no setter is defined
     QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
     int getNumber() const;
     QString getNumberString() const;
     QString getTypeString() const;
-
     enum Suit getSuit() const;
-    enum Type getType() const;
 
-    // others
-    void setHomePos(QPointF home_pos);
-    void goBack();
-    void viewAs(const QString &view_card_name);
-
-    virtual QRectF boundingRect() const;
 
     // static functions
-    static bool CompareBySuitNumber(Card *a, Card *b);
-    static bool CompareByType(Card *a, Card *b);
-
-protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    static bool CompareBySuitNumber(const Card *a, const Card *b);
+    static bool CompareByType(const Card *a, const Card *b);
 
 private:
-    QString name;
+    CardClass *card_class;
     enum Suit suit;
-    enum Type type;
     int number;
-
-    QPixmap pixmap;
-    QPixmap suit_pixmap;
-    QPointF home_pos;
-    QGraphicsPixmapItem *view_card;    
+    int id;
 };
 
 #endif // CARD_H

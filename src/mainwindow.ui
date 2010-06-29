@@ -36,7 +36,10 @@
     </property>
     <addaction name="actionConfigure"/>
     <addaction name="actionStart_Server"/>
-    <addaction name="actionGeneral_Preview"/>
+    <addaction name="actionGeneral_Overview"/>
+    <addaction name="actionCard_Overview"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnable_Hotkey"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -70,9 +73,9 @@
     <string>Start Game</string>
    </property>
   </action>
-  <action name="actionGeneral_Preview">
+  <action name="actionGeneral_Overview">
    <property name="text">
-    <string>General Preview</string>
+    <string>General Overview</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -83,6 +86,19 @@
   <action name="actionAcknowledgement">
    <property name="text">
     <string>Acknowledgement</string>
+   </property>
+  </action>
+  <action name="actionCard_Overview">
+   <property name="text">
+    <string>Card Overview</string>
+   </property>
+  </action>
+  <action name="actionEnable_Hotkey">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Hotkey</string>
    </property>
   </action>
  </widget>

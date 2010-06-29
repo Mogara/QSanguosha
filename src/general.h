@@ -14,8 +14,8 @@ class General : public QObject
     Q_PROPERTY(bool wounded READ isWounded STORED false)
 
 public:
-    General(const QString &name);
-    explicit General(const QString &name, const QString &kingdom, int max_hp, bool male);
+    static General *getInstance(const QString &name);
+    explicit General(const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
 
     // property getters/setters
     int getMaxHp() const;
@@ -30,6 +30,7 @@ public:
     void enthrone();
 
 private:
+    General(){}; // just construct an invalid and uninitialize instance for internal use
     QString kingdom;
     int max_hp, hp;
     bool male;

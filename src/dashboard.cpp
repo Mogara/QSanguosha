@@ -23,10 +23,10 @@ Dashboard::Dashboard()
     connect(sort_type, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards(int)));
 }
 
-void Dashboard::addCard(Card *card){
-    card->setParentItem(this);
-    card->setParent(this);
-    cards << card;
+void Dashboard::addCardItem(CardItem *card_item){
+    card_item->setParentItem(this);
+    card_item->setParent(this);
+    card_items << card_item;
 
     adjustCards();
 }
@@ -58,11 +58,11 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 }
 
 void Dashboard::adjustCards(){
-    int n = cards.size();
+    int n = card_items.size();
     if(n == 0)
         return;
 
-    int card_width = cards.front()->boundingRect().width();
+    int card_width = card_items.front()->boundingRect().width();
     int card_skip;
     if(n > 5)
         card_skip = (530 - n * card_width)/n + card_width;
@@ -71,20 +71,28 @@ void Dashboard::adjustCards(){
 
     int i;
     for(i=0; i<n; i++){
-        cards[i]->setZValue(0.1 * i);
-        cards[i]->setHomePos(QPointF(180 + i*card_skip, 45));
-        cards[i]->goBack();
+        card_items[i]->setZValue(0.1 * i);
+        card_items[i]->setHomePos(QPointF(180 + i*card_skip, 45));
+        card_items[i]->goBack();
     }
 }
 
-void Dashboard::sortCards(int sort_type){
+static bool CompareBySuitNumber(const CardItem *a, const CardItem *b){
+    return Card::CompareBySuitNumber(a->getCard(), b->getCard());
+}
+
+static bool CompareByType(const CardItem *a, const CardItem *b){
+    return Card::CompareByType(a->getCard(), b->getCard());
+}
+
+void Dashboard::sortCards(int sort_type){    
     if(sort_type == 0)
         return;
 
     if(sort_type == 1)
-        qSort(cards.begin(), cards.end(), Card::CompareBySuitNumber);
+        qSort(card_items.begin(), card_items.end(), CompareBySuitNumber);
     else
-        qSort(cards.begin(), cards.end(), Card::CompareByType);
+        qSort(card_items.begin(), card_items.end(), CompareByType);
 
     adjustCards();
 }

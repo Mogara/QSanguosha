@@ -2,8 +2,10 @@
 #define ENGINE_H
 
 #include "general.h"
+#include "cardclass.h"
 
 #include <QScriptEngine>
+#include <QMap>
 
 class Engine : public QScriptEngine
 {
@@ -12,9 +14,9 @@ public:
     explicit Engine(QObject *parent);
 
     // invokable methods, functions that marked this flags can be called by scripts enironment
-    Q_INVOKABLE QObject *addGeneral(const QString &name, const QString &kingdom, int max_hp, bool male);
-    Q_INVOKABLE QObject *addCard(const QString &card_class, const QString &suit_str, int number);
-    Q_INVOKABLE QObject *addCardClass(const QString &class_name);
+    Q_INVOKABLE QObject *addGeneral(const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
+    Q_INVOKABLE QObject *addCard(const QString &card_class, const QString &suit_str, const QScriptValue &number_value);
+    Q_INVOKABLE QObject *addCardClass(const QString &class_name, const QString &type_str);
 
     Q_INVOKABLE void addTranslationTable(const QScriptValue &table);
     Q_INVOKABLE QString translate(const QString &to_translate);
@@ -24,11 +26,14 @@ public:
     Q_INVOKABLE void quit(const QString &reason = "");
 
     General *getGeneral(const QString &name);
+    CardClass *getCardClass(const QString &name);
+    Card *getCard(int index);
 
 private:
     QObject *generals;
     QObject *translation;
     QObject *card_classes;
+    QList<Card*> cards;
 };
 
 extern Engine *Sanguosha;

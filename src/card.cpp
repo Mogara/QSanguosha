@@ -1,35 +1,23 @@
 #include "card.h"
 #include "settings.h"
 
-#include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
-
-static QRect CardRect(0, 0, 150*0.8, 210*0.8);
-static QFont CardNumberFont("Times", 20, QFont::Bold);
-static const char *SuitNames[] = {"spade", "club", "heart", "diamond"};
-
-Card::Card(const QString name, enum Suit suit, int number)
-    :name(name), suit(suit), number(number), view_card(NULL)
+Card::Card(CardClass *card_class, enum Suit suit, int number, int id)
+    :card_class(card_class), suit(suit), number(number), id(id)
 {
+    Q_ASSERT(card_class != NULL);
     if(number < 1 || number > 13)
         number = 0;
 
-    setObjectName(name);
-    suit_pixmap.load(QString(":/images/suit/%1.png").arg(SuitNames[suit]));
-    pixmap.load("cards/" + name + ".png");
-    setFlags(ItemIsFocusable);
-    setAcceptedMouseButtons(Qt::LeftButton);
-    setPos(home_pos);
+    setObjectName(card_class->objectName());
 }
 
 QString Card::getSuitString() const{
     switch(suit){
-    case Spade: return "Spade";
-    case Heart: return "Heart";
-    case Club: return "Club";
-    case Diamond: return "Diamond";
-    default: return "NoSuit";
+    case Spade: return "spade";
+    case Heart: return "heart";
+    case Club: return "club";
+    case Diamond: return "diamond";
+    default: return "no_suit";
     }
 }
 
@@ -55,10 +43,10 @@ QString Card::getNumberString() const{
 }
 
 QString Card::getTypeString() const{
-    switch(type){
-    case Basic: return "Basic";
-    case Equip: return "Equip";
-    case Trick: return "Trick";
+    switch(card_class->type){
+    case CardClass::Basic: return "Basic";
+    case CardClass::Equip: return "Equip";
+    case CardClass::Trick: return "Trick";
     default: return "UserDefined";
     }
 }
@@ -67,105 +55,19 @@ Card::Suit Card::getSuit() const{
     return suit;
 }
 
-Card::Type Card::getType() const{
-    return type;
-}
-
-void Card::setHomePos(QPointF home_pos){
-    this->home_pos = home_pos;
-}
-
-void Card::goBack(){
-    QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
-    goback->setEndValue(home_pos);
-    goback->setEasingCurve(QEasingCurve::OutBounce);
-    goback->start();
-}
-
-void Card::viewAs(const QString &view_card_name){
-    QPixmap view_card_pixmap("cards/" + view_card_name + ".png");
-    if(view_card){
-        if(view_card->pixmap().cacheKey() == view_card_pixmap.cacheKey()){
-            view_card->setVisible(true);
-            return;
-        }
-
-        scene()->removeItem(view_card);
-        delete view_card;
-    }
-
-    view_card = scene()->addPixmap(view_card_pixmap);
-    view_card->setScale(0.2);
-    view_card->setParentItem(this);
-    view_card->setPos(50, 80);
-}
-
-QRectF Card::boundingRect() const{
-    return CardRect;
-}
-
-bool Card::CompareBySuitNumber(Card *a, Card *b){
+bool Card::CompareBySuitNumber(const Card *a, const Card *b){
     if(a->suit != b->suit)
         return a->suit < b->suit;
     else
         return a->number < b->number;
 }
 
-bool Card::CompareByType(Card *a, Card *b){
-    // FIXME: Not implemented
-    if(a->type != b->type)
-        return a->type < b->type;
-
-
-    return true;
-}
-
-void Card::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    //event->accept();
-    setOpacity(0.7);
-
-    if(isRed())
-        viewAs("slash");
+bool Card::CompareByType(const Card *a, const Card *b){
+    int order1 = a->card_class->type * 10000 + a->card_class->id;
+    int order2 = a->card_class->type * 10000 + b->card_class->id;
+    if(order1 != order2)
+        return order1 < order2;
     else
-        viewAs("jink");
+        return CompareBySuitNumber(a,b);
 }
 
-void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    setOpacity(1.0);
-    if(view_card){
-        view_card->setVisible(false);
-    }
-
-    goBack();
-}
-
-void Card::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
-    if(hasFocus()){
-        setPos(this->mapToParent(event->pos()) - event->buttonDownPos(Qt::LeftButton));
-    }
-}
-
-void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    static QRect suit_rect(8,8,18,18);
-    painter->drawPixmap(CardRect, pixmap);
-    painter->drawPixmap(suit_rect, suit_pixmap);
-
-    painter->setFont(CardNumberFont);
-    if(isRed())
-        painter->setPen(Qt::red);
-    painter->drawText(8, 50, getNumberString());
-}
-
-QVariant Card::itemChange(GraphicsItemChange change, const QVariant &value){
-    if(change == ItemEnabledChange){
-        if(value.toBool()){
-            setGraphicsEffect(NULL);
-        }else{
-            QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
-            effect->setColor(QColor(20,20,20));
-            setGraphicsEffect(effect);
-        }
-    }
-
-    return QGraphicsObject::itemChange(change, value);
-}

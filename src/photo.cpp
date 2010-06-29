@@ -1,6 +1,6 @@
 #include "photo.h"
 #include "settings.h"
-#include "card.h"
+#include "carditem.h"
 
 #include <QPainter>
 #include <QMimeData>
@@ -36,9 +36,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     QGraphicsObject *obj = static_cast<QGraphicsObject*>(scene()->focusItem());
-    Card *card = qobject_cast<Card*>(obj);
-    if(card && card->isUnderMouse()){
-        QMessageBox::information(NULL, "", card->objectName());
+    CardItem *card_item = qobject_cast<CardItem*>(obj);
+    if(card_item && card_item->isUnderMouse()){
+        QMessageBox::information(NULL, "", card_item->getCard()->objectName());
     }
 }
 

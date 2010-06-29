@@ -3,15 +3,20 @@
 
 #include <QObject>
 
+class Card;
+
 class CardClass : public QObject
 {
     Q_OBJECT
 public:
-    explicit CardClass(const QString &name, QObject *parent);
-signals:
+    enum Type {Basic, Equip, Trick, UserDefined};
+    friend class Card;
 
-public slots:
+    explicit CardClass(const QString &name, enum Type type, int id, QObject *parent);
 
+private:
+    enum Type type;
+    int id;    
 };
 
 #endif // CARDCLASS_H

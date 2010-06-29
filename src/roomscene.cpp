@@ -1,5 +1,7 @@
 #include "roomscene.h"
 #include "settings.h"
+#include "carditem.h"
+#include "engine.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -72,21 +74,27 @@ RoomScene::RoomScene():bust(NULL)
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    Card *card1 = new Card("savage_assault", Card::Spade, 1);
-    Card *card2 = new Card("slash", Card::Club, 7);
-    Card *card3 = new Card("jink", Card::Heart, 2);
-    Card *card4 = new Card("peach", Card::Diamond, 10);
-    Card *card5 = new Card("archery_attack", Card::Heart, 11);
-    Card *card6 = new Card("crossbow", Card::Club, 12);
+//    Card *card1 = new Card("savage_assault", Card::Spade, 1);
+//    Card *card2 = new Card("slash", Card::Club, 7);
+//    Card *card3 = new Card("jink", Card::Heart, 2);
+//    Card *card4 = new Card("peach", Card::Diamond, 10);
+//    Card *card5 = new Card("archery_attack", Card::Heart, 11);
+//    Card *card6 = new Card("crossbow", Card::Club, 12);
+//
+//    dashboard->addCard(card1);
+//    dashboard->addCard(card2);
+//    dashboard->addCard(card3);
+//    dashboard->addCard(card4);
+//    dashboard->addCard(card5);
+//    dashboard->addCard(card6);
+//
+//    card4->setEnabled(false);
 
-    dashboard->addCard(card1);
-    dashboard->addCard(card2);
-    dashboard->addCard(card3);
-    dashboard->addCard(card4);
-    dashboard->addCard(card5);
-    dashboard->addCard(card6);
-
-    card4->setEnabled(false);
+    for(i=0; i<5; i++){
+        Card *card = Sanguosha->getCard(i);
+        if(card)
+            dashboard->addCardItem(new CardItem(card));
+    }
 }
 
 void RoomScene::updatePhotos(){
@@ -135,8 +143,8 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsScene::mouseMoveEvent(event);
 
     QGraphicsObject *obj = static_cast<QGraphicsObject*>(focusItem());
-    Card *card = qobject_cast<Card*>(obj);
-    if(!card || !card->isUnderMouse())
+    CardItem *card_item = qobject_cast<CardItem*>(obj);
+    if(!card_item || !card_item->isUnderMouse())
         return;
 
     foreach(Photo *photo, photos){

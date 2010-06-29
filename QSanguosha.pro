@@ -24,7 +24,8 @@ SOURCES += src/main.cpp \
     src/servingthread.cpp \
     src/connectiondialog.cpp \
     src/client.cpp \
-    src/cardclass.cpp
+    src/cardclass.cpp \
+    src/carditem.cpp
 HEADERS += src/gamescene.h \
     src/mainwindow.h \
     src/button.h \
@@ -41,11 +42,13 @@ HEADERS += src/gamescene.h \
     src/servingthread.h \
     src/connectiondialog.h \
     src/client.h \
-    src/cardclass.h
+    src/cardclass.h \
+    src/carditem.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui
 OTHER_FILES += scripts/generals.js \
-    scripts/cards.js
+    scripts/cards.js \
+    scripts/init.js
 RESOURCES += resource/sanguosha.qrc
 RC_FILE += resource/icon.rc
 TRANSLATIONS += sanguosha.ts

@@ -83,7 +83,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="28"/>
+        <location filename="src/engine.cpp" line="100"/>
         <source>%1
 
  Stack trace:
@@ -94,9 +94,20 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="31"/>
+        <location filename="src/engine.cpp" line="105"/>
+        <source>Script file %1 can not be opened for execution!</source>
+        <translation>找不到脚本文件 %1 !</translation>
+    </message>
+    <message>
+        <location filename="src/engine.cpp" line="108"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
+    </message>
+    <message>
+        <location filename="src/engine.cpp" line="116"/>
+        <location filename="src/engine.cpp" line="121"/>
+        <source>Script</source>
+        <translation>脚本</translation>
     </message>
 </context>
 <context>
@@ -118,42 +129,52 @@
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="43"/>
+        <location filename="src/mainwindow.ui" line="46"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="55"/>
+        <location filename="src/mainwindow.ui" line="58"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="60"/>
+        <location filename="src/mainwindow.ui" line="63"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="65"/>
+        <location filename="src/mainwindow.ui" line="68"/>
         <source>Start Server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="70"/>
+        <location filename="src/mainwindow.ui" line="73"/>
         <source>Start Game</source>
         <translation>开始游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="75"/>
-        <source>General Preview</source>
+        <location filename="src/mainwindow.ui" line="78"/>
+        <source>General Overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="80"/>
+        <location filename="src/mainwindow.ui" line="93"/>
+        <source>Card Overview</source>
+        <translation>卡牌一览</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="101"/>
+        <source>Enable Hotkey</source>
+        <translation>启用热键</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="83"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="85"/>
+        <location filename="src/mainwindow.ui" line="88"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
