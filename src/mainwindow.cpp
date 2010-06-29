@@ -49,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
     StartScene *start_scene = new StartScene;
     QList<QAction*> actions;
     actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
-            << ui->actionGeneral_Overview << ui->actionAcknowledgement << ui->actionExit;
+            << ui->actionGeneral_Overview << ui->actionCard_Overview
+            << ui->actionAcknowledgement << ui->actionExit;
 
     foreach(QAction *action, actions){
         start_scene->addButton(action);
