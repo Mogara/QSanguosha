@@ -58,7 +58,73 @@ var dismantlement = sgs.addCardClass("dismantlement", "trick");
 var lightning = sgs.addCardClass("lightning", "trick");
 var indulgence = sgs.addCardClass("indulgence", "trick");
 
+var card_names = [
+     // spade suit
+    "duel", "lightning", // A
+    "double_sword", "eight_diagram", // 2
+    "snatch", "dismantlement", // 3
+    "snatch", "dismantlement", // 4
+    "jueying", "blade", // 5
+    "qinggang_sword", "indulgence", // 6
+    "slash", "savage_assault", // 7
+    "slash", "slash", // 8
+    "slash", "slash", // 9
+    "slash", "slash", // 10
+    "snatch", "nullification", // J
+    "dismantlement", "spear", // Q
+    "savage_assault", "dawan", // K
 
+    // club
+    "duel", "crossbow", // A
+    "slash", "eight_diagram", // 2
+    "slash", "dismantlement", // 3
+    "slash", "dismantlement", // 4
+    "slash", "dilu", // 5
+    "slash", "indulgence", // 6
+    "slash", "savage_assault", // 7
+    "slash", "slash", // 8
+    "slash", "slash", // 9
+    "slash", "slash", // 10
+    "slash", "slash", // J
+    "collateral", "nullification", // Q
+    "collateral", "nullification", // K
 
+    // heart suit
+    "god_salvation", "archery_attack", // A
+    "jink", "jink", // 2
+    "peach", "amazing_grace", // 3
+    "peach", "amazing_grace", // 4
+    "kylin_bow", "chitu", // 5
+    "peach", "indulgence", // 6
+    "peach", "ex_nihilo", // 7
+    "peach", "ex_nihilo", // 8
+    "peach", "ex_nihilo", // 9
+    "slash", "slash", // 10
+    "slash", "ex_nihilo", // J
+    "dismantlement", "peach", // Q
+    "zhuahuangfeidian", "jink", // K
+
+    // diamond
+    "duel", "crossbow", // A
+    "jink", "jink", // 2
+    "jink", "snatch", // 3
+    "jink", "snatch", // 4
+    "jink", "axe", // 5
+    "slash", "jink", // 6
+    "slash", "jink", // 7
+    "slash", "jink", // 8
+    "slash", "jink", // 9
+    "slash", "jink", // 10
+    "jink", "jink", // J
+    "peach", "halberd", // Q
+    "slash", "zixing", // K
+];
+
+for(i=0;i<card_names.length;i++){
+    var name = card_names[i];
+    var suit = Math.floor(i / (card_names.length /4));
+    var number = (i % (card_names.length / 4))/2 + 1;
+    sgs.addCard(name, suit, number);
+}
 
 

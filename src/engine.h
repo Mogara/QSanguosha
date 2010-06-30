@@ -15,7 +15,7 @@ public:
 
     // invokable methods, functions that marked this flags can be called by scripts enironment
     Q_INVOKABLE QObject *addGeneral(const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
-    Q_INVOKABLE QObject *addCard(const QString &card_class, const QString &suit_str, const QScriptValue &number_value);
+    Q_INVOKABLE QObject *addCard(const QString &name, const QScriptValue &suit_value, const QScriptValue &number_value);
     Q_INVOKABLE QObject *addCardClass(const QString &class_name, const QString &type_str);
 
     Q_INVOKABLE void addTranslationTable(const QScriptValue &table);

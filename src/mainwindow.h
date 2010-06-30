@@ -36,6 +36,7 @@ private slots:
     void connectionError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
+    void startGameInAnotherInstance();
 };
 
 #endif // MAINWINDOW_H

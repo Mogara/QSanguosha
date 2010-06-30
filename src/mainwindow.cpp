@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QGLWidget>
 #include <QTime>
+#include <QProcess>
 
 class FitView : public QGraphicsView
 {
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QApplication::setApplicationName(tr("Open Source Sanguosha"));
 
     Config.init();
     connection_dialog = new ConnectionDialog(this);
@@ -111,7 +113,9 @@ void MainWindow::on_actionStart_Server_triggered()
         return;
     }
 
-    ui->actionStart_Game->setEnabled(false);
+    //ui->actionStart_Game->setEnabled(false);
+    ui->actionStart_Game->disconnect();
+    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
     ui->actionStart_Server->setEnabled(false);
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
@@ -136,4 +140,8 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     gotoScene(new RoomScene);
+}
+
+void MainWindow::startGameInAnotherInstance(){
+    QProcess::startDetached(QApplication::applicationFilePath());
 }

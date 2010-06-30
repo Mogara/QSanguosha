@@ -36,18 +36,22 @@ QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max
     return general;
 }
 
-QObject *Engine::addCard(const QString &name, const QString &suit_str, const QScriptValue &number_value){
-    Card::Suit suit;  
-    if(suit_str == "spade")
-        suit = Card::Spade;
-    else if(suit_str == "club")
-        suit = Card::Club;
-    else if(suit_str == "heart")
-        suit = Card::Heart;
-    else if(suit_str == "diamond")
-        suit = Card::Diamond;
-    else
-        suit = Card::NoSuit;
+QObject *Engine::addCard(const QString &name, const QScriptValue &suit_value, const QScriptValue &number_value){
+    Card::Suit suit = Card::NoSuit;
+
+    if(suit_value.isString()){
+        QString suit_str = suit_value.toString();
+        if(suit_str == "spade")
+            suit = Card::Spade;
+        else if(suit_str == "club")
+            suit = Card::Club;
+        else if(suit_str == "heart")
+            suit = Card::Heart;
+        else if(suit_str == "diamond")
+            suit = Card::Diamond;
+    }else if(suit_value.isNumber()){
+        suit = Card::Suit(suit_value.toInt32());
+    }
 
     int number = 0;
     if(number_value.isString()){
@@ -61,7 +65,7 @@ QObject *Engine::addCard(const QString &name, const QString &suit_str, const QSc
         else if(number_str == "K")
             number = 13;
     }else if(number_value.isNumber()){
-        number = number_value.toNumber();
+        number = number_value.toInt32();
     }
 
     CardClass *card_class = getCardClass(name);
