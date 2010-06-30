@@ -113,7 +113,6 @@ void MainWindow::on_actionStart_Server_triggered()
         return;
     }
 
-    //ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
     ui->actionStart_Server->setEnabled(false);

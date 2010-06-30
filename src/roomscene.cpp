@@ -7,8 +7,6 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
-#include <QMessageBox>
-
 RoomScene::RoomScene():bust(NULL)
 {
     setBackgroundBrush(Config.BackgroundBrush);

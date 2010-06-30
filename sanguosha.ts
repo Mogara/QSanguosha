@@ -83,7 +83,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="100"/>
+        <location filename="src/engine.cpp" line="120"/>
         <source>%1
 
  Stack trace:
@@ -94,18 +94,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="105"/>
+        <location filename="src/engine.cpp" line="125"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="108"/>
+        <location filename="src/engine.cpp" line="128"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="116"/>
-        <location filename="src/engine.cpp" line="121"/>
+        <location filename="src/engine.cpp" line="136"/>
+        <location filename="src/engine.cpp" line="141"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
@@ -114,7 +114,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="96"/>
+        <location filename="src/mainwindow.cpp" line="101"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -134,62 +134,72 @@
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="58"/>
+        <location filename="src/mainwindow.ui" line="60"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="63"/>
+        <location filename="src/mainwindow.ui" line="65"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="68"/>
+        <location filename="src/mainwindow.ui" line="70"/>
         <source>Start Server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="73"/>
+        <location filename="src/mainwindow.ui" line="75"/>
         <source>Start Game</source>
         <translation>开始游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="78"/>
+        <location filename="src/mainwindow.ui" line="80"/>
         <source>General Overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="93"/>
+        <location filename="src/mainwindow.ui" line="95"/>
         <source>Card Overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="101"/>
+        <location filename="src/mainwindow.ui" line="103"/>
         <source>Enable Hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="83"/>
+        <location filename="src/mainwindow.ui" line="108"/>
+        <source>About Qt</source>
+        <translation>关于 Qt</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="85"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="88"/>
+        <location filename="src/mainwindow.ui" line="90"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="97"/>
+        <location filename="src/mainwindow.cpp" line="41"/>
+        <source>Open Source Sanguosha</source>
+        <translation>开源三国杀</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="102"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="107"/>
+        <location filename="src/mainwindow.cpp" line="112"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="128"/>
+        <location filename="src/mainwindow.cpp" line="134"/>
         <source>Connection failed</source>
         <translation>连接失败</translation>
     </message>
@@ -200,11 +210,6 @@
         <location filename="src/server.cpp" line="21"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
-    </message>
-    <message>
-        <location filename="src/server.cpp" line="30"/>
-        <source>%1: %2</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
