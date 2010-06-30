@@ -44,10 +44,10 @@ QString Card::getNumberString() const{
 
 QString Card::getTypeString() const{
     switch(card_class->type){
-    case CardClass::Basic: return "Basic";
-    case CardClass::Equip: return "Equip";
-    case CardClass::Trick: return "Trick";
-    default: return "UserDefined";
+    case CardClass::Basic: return "basic";
+    case CardClass::Equip: return "equip";
+    case CardClass::Trick: return "trick";
+    default: return "user_defined";
     }
 }
 
@@ -64,7 +64,7 @@ bool Card::CompareBySuitNumber(const Card *a, const Card *b){
 
 bool Card::CompareByType(const Card *a, const Card *b){
     int order1 = a->card_class->type * 10000 + a->card_class->id;
-    int order2 = a->card_class->type * 10000 + b->card_class->id;
+    int order2 = b->card_class->type * 10000 + b->card_class->id;
     if(order1 != order2)
         return order1 < order2;
     else

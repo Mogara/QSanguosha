@@ -1,22 +1,9 @@
 #include "servingthread.h"
 
-#include <QState>
-#include <QStateMachine>
-
 ServingThread::ServingThread(QObject *parent, QTcpSocket *socket)
     :QThread(parent), socket(socket)
 {
-    QStateMachine *machine = new QStateMachine(this);
-    QState *init = new QState;
-    QState *normal = new QState;
-    QState *prompt = new QState;
 
-    machine->addState(init);
-    machine->addState(normal);
-    machine->addState(prompt);
-
-    machine->setInitialState(init);
-    machine->start();
 }
 
 void ServingThread::run()

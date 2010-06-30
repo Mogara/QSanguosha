@@ -6,6 +6,7 @@
 #include "general.h"
 
 #include <QPushButton>
+#include <QComboBox>
 
 class Dashboard : public Pixmap
 {
@@ -26,11 +27,12 @@ private:
     QPixmap magatamas[5];
     Pixmap *avatar;
     bool use_skill;
+    QComboBox *sort_combobox;
 
     void adjustCards();
 
 private slots:
-    void sortCards(int sort_type);
+    void sortCards();
 };
 
 #endif // DASHBOARD_H

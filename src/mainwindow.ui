@@ -47,6 +47,8 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAcknowledgement"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Qt"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuOptions"/>
@@ -99,6 +101,11 @@
    </property>
    <property name="text">
     <string>Enable Hotkey</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About Qt</string>
    </property>
   </action>
  </widget>

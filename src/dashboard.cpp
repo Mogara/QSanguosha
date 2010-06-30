@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
-#include <QComboBox>
+
 
 Dashboard::Dashboard()
     :Pixmap(":/images/dashboard.png"), general(NULL), avatar(NULL), use_skill(false)
@@ -13,14 +13,14 @@ Dashboard::Dashboard()
         magatamas[i].load(QString(":/images/magatamas/%1.png").arg(i+1));
     }
 
-    QComboBox *sort_type = new QComboBox;
-    sort_type->addItem(tr("No sort"));
-    sort_type->addItem(tr("Sort by suit"));
-    sort_type->addItem(tr("Sort by type"));
-    sort_type->move(0, 32);
+    sort_combobox = new QComboBox;
+    sort_combobox->addItem(tr("No sort"));
+    sort_combobox->addItem(tr("Sort by suit"));
+    sort_combobox->addItem(tr("Sort by type"));
+    sort_combobox->move(0, 32);
     QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget(this);
-    sort_widget->setWidget(sort_type);
-    connect(sort_type, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards(int)));
+    sort_widget->setWidget(sort_combobox);
+    connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -85,14 +85,13 @@ static bool CompareByType(const CardItem *a, const CardItem *b){
     return Card::CompareByType(a->getCard(), b->getCard());
 }
 
-void Dashboard::sortCards(int sort_type){    
-    if(sort_type == 0)
-        return;
-
-    if(sort_type == 1)
-        qSort(card_items.begin(), card_items.end(), CompareBySuitNumber);
-    else
-        qSort(card_items.begin(), card_items.end(), CompareByType);
+void Dashboard::sortCards(){
+    int sort_type = sort_combobox->currentIndex();
+    switch(sort_type){
+    case 0: return;
+    case 1: qSort(card_items.begin(), card_items.end(), CompareBySuitNumber); break;
+    case 2: qSort(card_items.begin(), card_items.end(), CompareByType); break;
+    }
 
     adjustCards();
 }

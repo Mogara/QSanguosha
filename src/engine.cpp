@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "card.h"
+#include "roomthread.h"
 
 #include <QFile>
 #include <QStringList>
@@ -135,6 +136,14 @@ void Engine::quit(const QString &reason){
     if(!reason.isEmpty())
         QMessageBox::warning(NULL, tr("Script"), reason);
     exit(0);
+}
+
+void Engine::pushEvent(const QScriptValue &value){
+    RoomThread *thread = qobject_cast<RoomThread*>(QThread::currentThread());
+    Q_ASSERT(thread != NULL);
+    if(value.isObject()){
+        thread->pushEvent(value);
+    }
 }
 
 General *Engine::getGeneral(const QString &name){

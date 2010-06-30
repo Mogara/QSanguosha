@@ -40,8 +40,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     Config.init();
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));
+    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
+
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
