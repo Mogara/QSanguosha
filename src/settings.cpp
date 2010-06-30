@@ -36,6 +36,6 @@ void Settings::init(){
     FitInView = value("FitInView", false).toBool();
     UseOpenGL = value("UseOpenGL", false).toBool();
 
-    QString bgbrush = value("BackgroundBrush", "background/hge.png").toString();
+    QString bgbrush = value("BackgroundBrush", ":/images/background.png").toString();
     BackgroundBrush = QBrush(QPixmap(bgbrush));
 }
