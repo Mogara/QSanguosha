@@ -11,6 +11,10 @@ void ServingThread::setRoomThread(RoomThread *room_thread){
     this->room_thread = room_thread;
 }
 
+void ServingThread::response(const QString &message){
+    socket->write(message.toAscii());
+}
+
 void ServingThread::run()
 {
     QString request;

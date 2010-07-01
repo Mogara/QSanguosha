@@ -45,6 +45,11 @@ var table = {
     "tiandu" : "天妒",
     "yiji" : "遗计",
     "ganglie" : "刚烈",
+    "fankui" : "反馈",
+    "guicai" : "鬼才",
+    "luoyi" :"裸衣",
+    "luoshen" :"洛神",
+    "qingguo" : "倾国",
 
     "rende" : "仁德",
     "jijiang" : "激将",
@@ -53,6 +58,30 @@ var table = {
     "longdan" : "龙胆",
     "tieji" : "铁骑",
     "mashu" : "马术",
+    "guanxing" : "观星",
+    "kongcheng" : "空城",
+    "jizhi" : "集智",
+    "qicai" : "奇才",
+
+    "zhiheng" : "制衡",
+    "jiuyuan" : "救援",
+    "yingzi" : "英姿",
+    "fanjian" : "反间",
+    "keji" : "克己",
+    "qianxun" : "谦逊",
+    "lianying" : "连营",
+    "qixi" : "奇袭",
+    "kurou" : "苦肉",
+    "guose" : "国色",
+    "liuli" : "流离",
+    "lianyin" :"联姻",
+    "xiaoji" : "枭姬",
+
+    "wushuang" : "无双",
+    "qingnang" : "青囊",
+    "jijiu" : "急救",
+    "lijian" : "离间",
+    "biyue" : "闭月"
 };
 
 sgs.addTranslationTable(table);
@@ -87,5 +116,6 @@ var huanggai = sgs.addGeneral("hunggai", "wu");
 var ganning = sgs.addGeneral("ganning", "wu");
 var daqiao = sgs.addGeneral("daqiao", "wu", 3, false);
 var sunshangxiang = sgs.addGeneral("sunshangxiang", "wu", 3, false);
+
 
 

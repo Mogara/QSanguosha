@@ -15,7 +15,7 @@ signals:
     void server_message(const QString &);
 
 private:
-    QList<RoomThread*> room_threads;
+    RoomThread *room_thread;
 
 private slots:
     void processNewConnection();

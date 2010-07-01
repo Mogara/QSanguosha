@@ -12,6 +12,7 @@ class ServingThread : public QThread
 public:
     explicit ServingThread(QObject *parent, QTcpSocket *socket);
     void setRoomThread(RoomThread *room_thread);
+    void response(const QString &message);
 
 protected:
     virtual void run();
