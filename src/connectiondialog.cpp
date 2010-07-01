@@ -3,6 +3,9 @@
 #include "settings.h"
 #include "engine.h"
 
+static const int ShrinkWidth = 230;
+static const int ExpandWidth = 744;
+
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
@@ -28,10 +31,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
         QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
         QObject *general_obj = (QObject *)general;
         item->setData(Qt::UserRole, qVariantFromValue(general_obj));
-    }    
+    }
 
-    // fix this dialog
-    //setFixedSize(size());
+    ui->avatarList->hide();
+
+    setFixedHeight(height());
+    setFixedWidth(ShrinkWidth);
 }
 
 ConnectionDialog::~ConnectionDialog()
@@ -51,6 +56,7 @@ void ConnectionDialog::on_connectButton_clicked()
 void ConnectionDialog::on_changeAvatarButton_clicked()
 {
     ui->avatarList->show();
+    setFixedWidth(ExpandWidth);
 }
 
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
@@ -64,7 +70,6 @@ void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
         Config.setValue("UserAvatar", general->objectName());
         ui->avatarList->hide();
 
-        QSize shrink_size();
-
+        setFixedWidth(ShrinkWidth);
     }
 }
