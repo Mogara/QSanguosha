@@ -7,7 +7,7 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
-RoomScene::RoomScene():bust(NULL)
+RoomScene::RoomScene(int player_count):bust(NULL)
 {
     setBackgroundBrush(Config.BackgroundBrush);
 
@@ -16,14 +16,20 @@ RoomScene::RoomScene():bust(NULL)
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
+    QStringList general_names;
+    general_names << "caocao" << "liubei" << "sunquan"
+            << "simayi" << "guojia" << "zhugeliang" << "zhouyu";
+
+    qreal start_x = (Config.Rect.width() - 143*(player_count-1))/2 + Config.Rect.x();
     int i;
-    for(i=0;i<7;i++){
+    for(i=0;i<player_count-1;i++){
         Photo *photo = new Photo;
+        photo->loadAvatar("generals/small/" + general_names[i] + ".png");
         photos << photo;
 
         addItem(photo);
 
-        qreal x = i * photo->boundingRect().width() + Config.Rect.x();
+        qreal x = i * photo->boundingRect().width() + start_x;
         qreal y =  Config.Rect.y() + 10;
         int duration = 1500.0 * qrand()/ RAND_MAX;
 
@@ -34,15 +40,6 @@ RoomScene::RoomScene():bust(NULL)
 
         group->addAnimation(translation);
     }
-
-    photos[0]->loadAvatar("generals/small/caocao.png");
-    photos[1]->loadAvatar("generals/small/liubei.png");
-    photos[2]->loadAvatar("generals/small/sunquan.png");
-    photos[3]->loadAvatar("generals/small/simayi.png");
-    photos[4]->loadAvatar("generals/small/guojia.png");
-    photos[5]->loadAvatar("generals/small/zhugeliang.png");
-    photos[6]->loadAvatar("generals/small/zhouyu.png");
-
 
     {
         dashboard = new Dashboard;

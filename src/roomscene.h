@@ -11,7 +11,7 @@ class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene();
+    RoomScene(int player_count = 8);
     void updatePhotos();
 
 public slots:
