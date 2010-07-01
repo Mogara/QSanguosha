@@ -7,8 +7,11 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
-RoomScene::RoomScene(int player_count):bust(NULL)
+RoomScene::RoomScene(Client *client, int player_count)
+    :client(client), bust(NULL)
 {
+    Q_ASSERT(client != NULL);
+
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create skill label
@@ -29,7 +32,7 @@ RoomScene::RoomScene(int player_count):bust(NULL)
 
     // create dashboard
     dashboard = new Dashboard;
-    dashboard->setGeneral(Sanguosha->getGeneral("zhangliao"));
+    dashboard->setGeneral(Sanguosha->getGeneral(Config.UserAvatar));
     addItem(dashboard);
 
     // get dashboard's avatar
@@ -42,6 +45,7 @@ RoomScene::RoomScene(int player_count):bust(NULL)
     }
 
     startEnterAnimation();
+    client->signup();
 }
 
 void RoomScene::startEnterAnimation(){
@@ -93,8 +97,7 @@ void RoomScene::setGeneral(int index, General *general)
         return;
 
     Photo *photo = photos[index];
-    //photo->loadAvatar("generals/small/" + general_names[i] + ".png");
-    photo->loadAvatar("generals/small/" + general->objectName() + ".png");
+    photo->loadAvatar(general->getPixmapPath("small"));
 }
 
 void RoomScene::updatePhotos(){
@@ -115,7 +118,8 @@ void RoomScene::updatePhotos(){
 
 void RoomScene::showBust(const QString &name)
 {
-    QString filename = "generals/bust/" + name + ".png";
+    General *general = Sanguosha->getGeneral(name);
+    QString filename = general->getPixmapPath("bust");
     if(!bust){
         bust = new Pixmap(filename);
         bust->shift();

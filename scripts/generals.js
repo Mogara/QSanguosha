@@ -86,6 +86,8 @@ var table = {
 
 sgs.addTranslationTable(table);
 
+sgs.pixmap_dir = "generals";
+
 // general's skills
 //var jianxiong = sgs.addSkill("jianxiong");
 //var hujia = sgs.addSkill("hujia");

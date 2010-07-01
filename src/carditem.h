@@ -17,7 +17,7 @@ public:
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     void goBack();
-    void viewAs(const QString &view_card_name);
+    void viewAs(const QString &name);
 
     virtual QRectF boundingRect() const;
 
@@ -33,7 +33,7 @@ private:
     QPixmap pixmap;
     QPixmap suit_pixmap;
     QPointF home_pos;
-    QGraphicsPixmapItem *view_card;
+    QGraphicsPixmapItem *view_card_item;
 };
 
 #endif // CARDITEM_H

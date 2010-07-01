@@ -6,11 +6,12 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QScriptValueIterator>
+#include <QDir>
 
 Engine *Sanguosha = NULL;
 
-Engine::Engine(QObject *parent) :
-    QScriptEngine(parent)
+Engine::Engine(QObject *parent)
+    :QScriptEngine(parent), pixmap_dir("")
 {
     globalObject().setProperty("sgs", newQObject(this));
 
@@ -31,7 +32,7 @@ Engine::Engine(QObject *parent) :
 }
 
 QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max_hp, bool male){
-    General *general = new General(name, kingdom, max_hp, male);
+    General *general = new General(name, kingdom, max_hp, male, pixmap_dir);
     general->setParent(generals);
     return general;
 }
@@ -90,7 +91,8 @@ QObject *Engine::addCardClass(const QString &class_name, const QString &type_str
     else
         type = CardClass::UserDefined;
 
-    CardClass *card_class = new CardClass(class_name, type, id, card_classes);
+    CardClass *card_class = new CardClass(class_name, type, id, pixmap_dir);
+    card_class->setParent(card_classes);
     return card_class;
 }
 
@@ -148,6 +150,16 @@ void Engine::pushEvent(const QScriptValue &value){
     if(value.isObject()){
         thread->pushEvent(value);
     }
+}
+
+void Engine::setPixmapDir(const QString &pixmap_dir){
+    QDir dir(pixmap_dir);
+    if(dir.exists())
+        this->pixmap_dir = pixmap_dir;
+}
+
+QString Engine::getPixmapDir() const{
+    return this->pixmap_dir;
 }
 
 General *Engine::getGeneral(const QString &name){

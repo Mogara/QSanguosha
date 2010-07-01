@@ -1,12 +1,16 @@
 #include "client.h"
 #include "settings.h"
 
-Client::Client(QObject *parent) :
-    QTcpSocket(parent)
+Client::Client(QObject *parent)
+    :QTcpSocket(parent)
 {
     connectToHost(Config.HostAddress, Config.Port);
 
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+}
+
+void Client::signup(){
+    write(QString("%1 %2").arg(Config.UserName).arg(Config.UserAvatar).toAscii());
 }
 
 void Client::raiseError(QAbstractSocket::SocketError socket_error){

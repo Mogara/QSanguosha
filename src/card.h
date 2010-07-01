@@ -12,6 +12,7 @@ class Card : public QObject
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getTypeString CONSTANT)
+    Q_PROPERTY(QString pixmap_path READ getPixmapPath)
 
 public:
     // enumeration type
@@ -28,7 +29,7 @@ public:
     QString getNumberString() const;
     QString getTypeString() const;
     enum Suit getSuit() const;
-
+    QString getPixmapPath() const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);

@@ -6,6 +6,8 @@ var table = {
 
 sgs.addTranslationTable(table);
 
+sgs.pixmap_dir = "cards";
+
 // basic cards
 var slash = sgs.addCardClass("slash", "basic");
 var jink = sgs.addCardClass("jink", "basic");

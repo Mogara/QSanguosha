@@ -33,7 +33,7 @@ void Dashboard::addCardItem(CardItem *card_item){
 
 void Dashboard::setGeneral(General *general){
     this->general = general;
-    avatar = new Pixmap("generals/big/" + general->objectName() + ".png");
+    avatar = new Pixmap(general->getPixmapPath("big"));
     avatar->setPos(837, 35);
     avatar->setFlag(ItemIsSelectable);
     avatar->setParent(this);

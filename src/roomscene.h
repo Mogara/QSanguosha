@@ -4,6 +4,7 @@
 #include "photo.h"
 #include "dashboard.h"
 #include "card.h"
+#include "client.h"
 
 #include <QGraphicsScene>
 
@@ -11,7 +12,7 @@ class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene(int player_count = 8);
+    RoomScene(Client *client, int player_count = 8);
     void updatePhotos();
     void setGeneral(int index, General *general);
 
@@ -23,6 +24,7 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    Client *client;
     QList<Photo*> photos;
     Dashboard *dashboard;
     Pixmap *pile;

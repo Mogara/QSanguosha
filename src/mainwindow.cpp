@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     QApplication::setApplicationName(tr("Open Source Sanguosha"));
+    Sanguosha = new Engine(this);
 
     Config.init();
     connection_dialog = new ConnectionDialog(this);
@@ -65,9 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(view);
 
 //    if(Config.TitleMusic)
-//        Config.TitleMusic->play();
-
-    Sanguosha = new Engine(this);
+//        Config.TitleMusic->play();    
 
     restoreFromConfig();
 }
@@ -138,7 +137,8 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    gotoScene(new RoomScene);
+    Client *client = qobject_cast<Client*>(sender());
+    gotoScene(new RoomScene(client));
 }
 
 void MainWindow::startGameInAnotherInstance(){

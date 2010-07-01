@@ -12,11 +12,13 @@ public:
     enum Type {Basic, Equip, Trick, UserDefined};
     friend class Card;
 
-    explicit CardClass(const QString &name, enum Type type, int id, QObject *parent);
+    explicit CardClass(const QString &name, enum Type type, int id, const QString &pixmap_path);
+    QString getPixmapPath() const;
 
 private:
     enum Type type;
-    int id;    
+    int id;
+    QString pixmap_path;
 };
 
 #endif // CARDCLASS_H

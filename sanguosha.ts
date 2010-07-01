@@ -4,22 +4,22 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="16"/>
+        <location filename="src/client.cpp" line="20"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="17"/>
+        <location filename="src/client.cpp" line="21"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="19"/>
+        <location filename="src/client.cpp" line="23"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="22"/>
+        <location filename="src/client.cpp" line="26"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -37,27 +37,37 @@
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="50"/>
+        <location filename="src/connectiondialog.ui" line="60"/>
+        <source>Change avatar</source>
+        <translation>修改头像</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="73"/>
+        <source>Avatar:</source>
+        <translation>头像:</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.ui" line="102"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="63"/>
+        <location filename="src/connectiondialog.ui" line="115"/>
         <source>Port:</source>
         <translation>端口:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="76"/>
+        <location filename="src/connectiondialog.ui" line="89"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="96"/>
+        <location filename="src/connectiondialog.ui" line="138"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="109"/>
+        <location filename="src/connectiondialog.ui" line="151"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -83,7 +93,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="120"/>
+        <location filename="src/engine.cpp" line="122"/>
         <source>%1
 
  Stack trace:
@@ -94,18 +104,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="125"/>
+        <location filename="src/engine.cpp" line="127"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="128"/>
+        <location filename="src/engine.cpp" line="130"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="136"/>
-        <location filename="src/engine.cpp" line="141"/>
+        <location filename="src/engine.cpp" line="138"/>
+        <location filename="src/engine.cpp" line="143"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
@@ -114,7 +124,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="101"/>
+        <location filename="src/mainwindow.cpp" line="100"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -189,17 +199,17 @@
         <translation>开源三国杀</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="102"/>
+        <location filename="src/mainwindow.cpp" line="101"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="112"/>
+        <location filename="src/mainwindow.cpp" line="111"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="134"/>
+        <location filename="src/mainwindow.cpp" line="133"/>
         <source>Connection failed</source>
         <translation>连接失败</translation>
     </message>
@@ -207,7 +217,7 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="21"/>
+        <location filename="src/server.cpp" line="26"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
     </message>

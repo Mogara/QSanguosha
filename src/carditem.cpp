@@ -1,4 +1,5 @@
 #include "carditem.h"
+#include "engine.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -8,12 +9,12 @@ static QRect CardRect(0, 0, 150*0.8, 210*0.8);
 static QFont CardNumberFont("Times", 20, QFont::Bold);
 
 CardItem::CardItem(Card *card)
-    :card(card), view_card(NULL)
+    :card(card), view_card_item(NULL)
 {
     Q_ASSERT(card != NULL);
 
     suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));
-    pixmap.load("cards/" + card->objectName() + ".png");
+    pixmap.load(card->getPixmapPath());
     setFlags(ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
@@ -33,22 +34,19 @@ void CardItem::goBack(){
     goback->start();
 }
 
-void CardItem::viewAs(const QString &view_card_name){
-    QPixmap view_card_pixmap("cards/" + view_card_name + ".png");
-    if(view_card){
-        if(view_card->pixmap().cacheKey() == view_card_pixmap.cacheKey()){
-            view_card->setVisible(true);
-            return;
-        }
+void CardItem::viewAs(const QString &name){
+    CardClass *card_class = Sanguosha->getCardClass(name);
+    QPixmap view_card_pixmap(card_class->getPixmapPath());
 
-        scene()->removeItem(view_card);
-        delete view_card;
-    }
+    if(view_card_item == NULL){
+        view_card_item = scene()->addPixmap(view_card_pixmap);
+        view_card_item->setScale(0.2);
+        view_card_item->setParentItem(this);
+        view_card_item->setPos(50, 80);
+    }else
+        view_card_item->setPixmap(view_card_pixmap);
 
-    view_card = scene()->addPixmap(view_card_pixmap);
-    view_card->setScale(0.2);
-    view_card->setParentItem(this);
-    view_card->setPos(50, 80);
+    view_card_item->setVisible(true);
 }
 
 QRectF CardItem::boundingRect() const{
@@ -66,8 +64,8 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     setOpacity(1.0);
-    if(view_card){
-        view_card->setVisible(false);
+    if(view_card_item){
+        view_card_item->setVisible(false);
     }
 
     goBack();

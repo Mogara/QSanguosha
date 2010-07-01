@@ -19,9 +19,10 @@ public:
     QFont BigFont;
     QFont SmallFont;
 
-    QString UserName; 
+    QString UserName;
     QString HostAddress;
     ushort Port;
+    QString UserAvatar;
 
     bool FitInView;
     bool UseOpenGL;

@@ -15,7 +15,7 @@ class General : public QObject
 
 public:
     static General *getInstance(const QString &name);
-    explicit General(const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
+    explicit General(const QString &name, const QString &kingdom, int max_hp, bool male, const QString &pixmap_dir);
 
     // property getters/setters
     int getMaxHp() const;
@@ -29,12 +29,15 @@ public:
     // make this general to lord, thus enable its lord skill and increase its maximal hp
     void enthrone();
 
+    QString getPixmapPath(const QString &category);
+
 private:
     General(){}; // just construct an invalid and uninitialize instance for internal use
     QString kingdom;
     int max_hp, hp;
     bool male;
     bool is_lord;
+    QString pixmap_dir;
 };
 
 #endif // GENERAL_H

@@ -10,6 +10,7 @@
 class Engine : public QScriptEngine
 {
     Q_OBJECT
+    Q_PROPERTY(QString pixmap_dir READ getPixmapDir WRITE setPixmapDir)
 public:
     explicit Engine(QObject *parent);
 
@@ -29,13 +30,16 @@ public:
 
     General *getGeneral(const QString &name);
     CardClass *getCardClass(const QString &name);
-    Card *getCard(int index);   
+    Card *getCard(int index);
+    void setPixmapDir(const QString &pixmap_dir);
+    QString getPixmapDir() const;
 
 private:
     QObject *generals;
     QObject *translation;
     QObject *card_classes;
     QList<Card*> cards;
+    QString pixmap_dir;
 };
 
 extern Engine *Sanguosha;

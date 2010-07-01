@@ -8,6 +8,7 @@ class Client : public QTcpSocket
 Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
+    void signup();
 
 signals:
     void errorMessage(const QString &msg);

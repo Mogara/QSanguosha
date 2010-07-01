@@ -55,6 +55,10 @@ Card::Suit Card::getSuit() const{
     return suit;
 }
 
+QString Card::getPixmapPath() const{
+    return card_class->getPixmapPath();
+}
+
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){
     if(a->suit != b->suit)
         return a->suit < b->suit;

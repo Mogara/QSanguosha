@@ -1,6 +1,7 @@
 #include "connectiondialog.h"
 #include "ui_connectiondialog.h"
 #include "settings.h"
+#include "engine.h"
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
@@ -12,6 +13,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->hostLineEdit->setText(Config.HostAddress);
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
+
+    General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
+    if(avatar_general){
+        QPixmap avatar(avatar_general->getPixmapPath("big"));
+        ui->avatarPixmap->setPixmap(avatar);
+    }
 
     // fix this dialog
     setFixedSize(size());
@@ -29,4 +36,9 @@ void ConnectionDialog::on_connectButton_clicked()
     Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
 
     accept();
+}
+
+void ConnectionDialog::on_changeAvatarButton_clicked()
+{
+    // FIXME
 }
