@@ -20,8 +20,18 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
         ui->avatarPixmap->setPixmap(avatar);
     }
 
+    QObject *generals_obj = Sanguosha->findChild<QObject*>("generals");
+    QList<General*> generals = generals_obj->findChildren<General*>();
+    foreach(General *general, generals){
+        QIcon icon(general->getPixmapPath("big"));
+        QString text = Sanguosha->translate(general->objectName());
+        QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
+        QObject *general_obj = (QObject *)general;
+        item->setData(Qt::UserRole, qVariantFromValue(general_obj));
+    }    
+
     // fix this dialog
-    setFixedSize(size());
+    //setFixedSize(size());
 }
 
 ConnectionDialog::~ConnectionDialog()
@@ -40,5 +50,21 @@ void ConnectionDialog::on_connectButton_clicked()
 
 void ConnectionDialog::on_changeAvatarButton_clicked()
 {
-    // FIXME
+    ui->avatarList->show();
+}
+
+void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
+{
+    QObject *general_obj = qvariant_cast<QObject*>(item->data(Qt::UserRole));
+    General *general = qobject_cast<General*>(general_obj);
+    if(general){
+        QPixmap avatar(general->getPixmapPath("big"));
+        ui->avatarPixmap->setPixmap(avatar);
+        Config.UserAvatar = general->objectName();
+        Config.setValue("UserAvatar", general->objectName());
+        ui->avatarList->hide();
+
+        QSize shrink_size();
+
+    }
 }

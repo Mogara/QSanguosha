@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>252</width>
-    <height>280</height>
+    <width>744</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>211</width>
-     <height>231</height>
+     <height>241</height>
     </rect>
    </property>
    <property name="title">
@@ -33,15 +33,18 @@
      <rect>
       <x>80</x>
       <y>100</y>
-      <width>91</width>
-      <height>91</height>
+      <width>100</width>
+      <height>100</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>100</width>
+      <height>100</height>
+     </size>
     </property>
     <property name="text">
      <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../generals/big/zhangliao.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -50,8 +53,8 @@
    <widget class="QPushButton" name="changeAvatarButton">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>200</y>
+      <x>90</x>
+      <y>210</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -125,31 +128,53 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QPushButton" name="connectButton">
+  <widget class="QListWidget" name="avatarList">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>250</y>
-     <width>75</width>
-     <height>23</height>
+     <x>240</x>
+     <y>10</y>
+     <width>491</width>
+     <height>261</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Connect</string>
+   <property name="iconSize">
+    <size>
+     <width>80</width>
+     <height>80</height>
+    </size>
+   </property>
+   <property name="movement">
+    <enum>QListView::Static</enum>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::IconMode</enum>
    </property>
   </widget>
-  <widget class="QPushButton" name="cancelButton">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>250</y>
-     <width>75</width>
-     <height>23</height>
+     <x>60</x>
+     <y>260</y>
+     <width>158</width>
+     <height>25</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Cancel</string>
-   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="connectButton">
+      <property name="text">
+       <string>Connect</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cancelButton">
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <tabstops>

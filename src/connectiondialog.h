@@ -2,6 +2,7 @@
 #define CONNECTIONDIALOG_H
 
 #include <QDialog>
+#include <QListWidgetItem>
 
 namespace Ui {
     class ConnectionDialog;
@@ -18,6 +19,7 @@ private:
     Ui::ConnectionDialog *ui;
 
 private slots:
+    void on_avatarList_itemDoubleClicked(QListWidgetItem* item);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();
 };
