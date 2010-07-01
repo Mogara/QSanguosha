@@ -11,25 +11,49 @@ RoomScene::RoomScene(int player_count):bust(NULL)
 {
     setBackgroundBrush(Config.BackgroundBrush);
 
+    // create skill label
     skill_label = addSimpleText(Config.UserName, Config.BigFont);
     skill_label->setPos(-400, -100);
 
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
-
+    // create photos
     QStringList general_names;
     general_names << "caocao" << "liubei" << "sunquan"
             << "simayi" << "guojia" << "zhugeliang" << "zhouyu";
-
-    qreal start_x = (Config.Rect.width() - 143*(player_count-1))/2 + Config.Rect.x();
     int i;
     for(i=0;i<player_count-1;i++){
         Photo *photo = new Photo;
-        photo->loadAvatar("generals/small/" + general_names[i] + ".png");
         photos << photo;
-
+        setGeneral(i, Sanguosha->getGeneral(general_names[i]));
         addItem(photo);
+    }
 
-        qreal x = i * photo->boundingRect().width() + start_x;
+    // create dashboard
+    dashboard = new Dashboard;
+    dashboard->setGeneral(Sanguosha->getGeneral("zhangliao"));
+    addItem(dashboard);
+
+    // get dashboard's avatar
+    avatar = dashboard->getAvatar();
+
+    for(i=0; i<5; i++){
+        Card *card = Sanguosha->getCard(qrand() % 108);
+        if(card)
+            dashboard->addCardItem(new CardItem(card));
+    }
+
+    startEnterAnimation();
+}
+
+void RoomScene::startEnterAnimation(){
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+
+    const qreal photo_width = photos.front()->boundingRect().width();
+    const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
+
+    int i;
+    for(i=0;i<photos.length();i++){
+        Photo *photo = photos[i];
+        qreal x = i * photo_width + start_x;
         qreal y =  Config.Rect.y() + 10;
         int duration = 1500.0 * qrand()/ RAND_MAX;
 
@@ -41,41 +65,36 @@ RoomScene::RoomScene(int player_count):bust(NULL)
         group->addAnimation(translation);
     }
 
-    {
-        dashboard = new Dashboard;
-        dashboard->setGeneral(new General("xiahoudun", "wei", 4, true));
+    QPointF start_pos(Config.Rect.topLeft());
+    QPointF end_pos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
+    int duration = 1500;
 
-        addItem(dashboard);
+    QPropertyAnimation *translation = new QPropertyAnimation(dashboard, "pos");
+    translation->setStartValue(start_pos);
+    translation->setEndValue(end_pos);
+    translation->setEasingCurve(QEasingCurve::OutBounce);
+    translation->setDuration(duration);
 
-        avatar = dashboard->getAvatar();
+    QPropertyAnimation *enlarge = new QPropertyAnimation(dashboard, "scale");
+    enlarge->setStartValue(0.2);
+    enlarge->setEndValue(1.0);
+    enlarge->setEasingCurve(QEasingCurve::OutBounce);
+    enlarge->setDuration(duration);
 
-        QPointF start_pos(Config.Rect.topLeft());
-        QPointF end_pos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
-        int duration = 1500;
-
-        QPropertyAnimation *translation = new QPropertyAnimation(dashboard, "pos");
-        translation->setStartValue(start_pos);
-        translation->setEndValue(end_pos);
-        translation->setEasingCurve(QEasingCurve::OutBounce);
-        translation->setDuration(duration);
-
-        QPropertyAnimation *enlarge = new QPropertyAnimation(dashboard, "scale");
-        enlarge->setStartValue(0.2);
-        enlarge->setEndValue(1.0);
-        enlarge->setEasingCurve(QEasingCurve::OutBounce);
-        enlarge->setDuration(duration);
-
-        group->addAnimation(translation);
-        group->addAnimation(enlarge);
-    }
+    group->addAnimation(translation);
+    group->addAnimation(enlarge);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+}
 
-    for(i=0; i<5; i++){
-        Card *card = Sanguosha->getCard(qrand() % 108);
-        if(card)
-            dashboard->addCardItem(new CardItem(card));
-    }
+void RoomScene::setGeneral(int index, General *general)
+{
+    if(index < 0 || index >= photos.size())
+        return;
+
+    Photo *photo = photos[index];
+    //photo->loadAvatar("generals/small/" + general_names[i] + ".png");
+    photo->loadAvatar("generals/small/" + general->objectName() + ".png");
 }
 
 void RoomScene::updatePhotos(){

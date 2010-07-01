@@ -13,6 +13,7 @@ class RoomScene : public QGraphicsScene
 public:
     RoomScene(int player_count = 8);
     void updatePhotos();
+    void setGeneral(int index, General *general);
 
 public slots:
     void showBust(const QString &name);
@@ -28,6 +29,8 @@ private:
     QGraphicsSimpleTextItem *skill_label;
     Pixmap *avatar;
     Pixmap *bust;
+
+    void startEnterAnimation();
 };
 
 #endif // ROOMSCENE_H
