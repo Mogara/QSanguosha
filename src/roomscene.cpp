@@ -47,8 +47,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     }
 
     startEnterAnimation();
-    int seat_no = client->signup();
-    QMessageBox::information(NULL, "", QString::number(seat_no));
+    client->signup();
 }
 
 void RoomScene::startEnterAnimation(){

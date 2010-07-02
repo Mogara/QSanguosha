@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "roomthread.h"
+#include "room.h"
 
 #include <QTcpServer>
 
@@ -15,7 +15,7 @@ signals:
     void server_message(const QString &);
 
 private:
-    RoomThread *room_thread;
+    Room *room;
 
 private slots:
     void processNewConnection();

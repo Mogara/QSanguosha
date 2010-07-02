@@ -2,7 +2,7 @@
 #include "settings.h"
 
 Server::Server(QObject *parent)
-    :QTcpServer(parent), room_thread(NULL)
+    :QTcpServer(parent), room(NULL)
 {
     quint16 port = Config.Port;
 
@@ -13,11 +13,12 @@ Server::Server(QObject *parent)
 void Server::processNewConnection(){
     QTcpSocket *socket = nextPendingConnection();
 
-    if(room_thread == NULL || room_thread->isFull())
-        room_thread = new RoomThread(this, 8);
+    if(room == NULL || room->isFull()){
+        room = new Room(this, 8);
+        connect(room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+    }
 
-    room_thread->addSocket(socket);
-    room_thread->start();
+    room->addSocket(socket);
 
     emit server_message(tr("%1 connected, port = %2")
                         .arg(socket->peerAddress().toString())

@@ -12,6 +12,7 @@ Client::Client(QObject *parent)
 void Client::request(const QString &message){
     write(message.toAscii());
     write("\n");
+    flush();
 }
 
 int Client::signup(){    
