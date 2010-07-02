@@ -1,33 +1,26 @@
 #ifndef ROOMTHREAD_H
 #define ROOMTHREAD_H
 
-#include "servingthread.h"
-
 #include <QThread>
-#include <QStack>
 #include <QMutex>
 #include <QScriptValue>
+#include <QTcpSocket>
 
 class RoomThread : public QThread
 {
     Q_OBJECT
 public:
     explicit RoomThread(QObject *parent, int player_count);
-    void resume();
-    void pushEvent(const QScriptValue &event);
-    void addServingThread(ServingThread* thread);
-    void broadcast(const QString &message);
-    void processRequest(const QString &request);
+    void addSocket(QTcpSocket *socket);
     bool isFull() const;
-    int threadCount() const;
+    int socketCount() const;
 
 protected:
     virtual void run();
 
 private:
     QMutex mutex;
-    QStack<QScriptValue> events;
-    QList<ServingThread*> serving_threads;
+    QList<QTcpSocket*> sockets;
     int player_count;
 };
 

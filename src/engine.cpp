@@ -145,11 +145,7 @@ void Engine::quit(const QString &reason){
 }
 
 void Engine::pushEvent(const QScriptValue &value){
-    RoomThread *thread = qobject_cast<RoomThread*>(QThread::currentThread());
-    Q_ASSERT(thread != NULL);
-    if(value.isObject()){
-        thread->pushEvent(value);
-    }
+    // FIXME
 }
 
 void Engine::setPixmapDir(const QString &pixmap_dir){

@@ -6,51 +6,22 @@ RoomThread::RoomThread(QObject *parent, int player_count)
 {
 }
 
-void RoomThread::resume()
+void RoomThread::addSocket(QTcpSocket *socket){
+    sockets << socket;
+
+    socket->write((QString::number(socketCount())+"\n").toAscii());
+}
+
+bool RoomThread::isFull() const
 {
-    mutex.unlock();
+    return sockets.length() == player_count;
 }
 
-void RoomThread::pushEvent(const QScriptValue &event)
+int RoomThread::socketCount() const
 {
-    events.push(event);
-}
-
-void RoomThread::addServingThread(ServingThread *thread){
-    serving_threads << thread;
-
-    if(serving_threads.length() == player_count){
-        // start automatically
-        QScriptValue init = Sanguosha->newObject();
-        init.setProperty("name", "init");
-        pushEvent(init);
-        start();
-    }
-}
-
-void RoomThread::broadcast(const QString &message){
-    foreach(ServingThread *thread, serving_threads){
-        thread->response(message);
-    }
-}
-
-void RoomThread::processRequest(const QString &request){
-
-}
-
-bool RoomThread::isFull() const{
-    return serving_threads.length() == player_count;
-}
-
-int RoomThread::threadCount() const{
-    return serving_threads.length();
+    return sockets.length();
 }
 
 void RoomThread::run()
 {
-    while(!events.isEmpty()){
-        QScriptValue event = events.pop();
-
-        // FIXME: process the event
-    }
 }

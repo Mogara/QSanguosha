@@ -21,7 +21,6 @@ SOURCES += src/main.cpp \
     src/general.cpp \
     src/server.cpp \
     src/engine.cpp \
-    src/servingthread.cpp \
     src/connectiondialog.cpp \
     src/client.cpp \
     src/cardclass.cpp \
@@ -41,7 +40,6 @@ HEADERS += src/gamescene.h \
     src/general.h \
     src/server.h \
     src/engine.h \
-    src/servingthread.h \
     src/connectiondialog.h \
     src/client.h \
     src/cardclass.h \

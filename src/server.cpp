@@ -1,6 +1,5 @@
 #include "server.h"
 #include "settings.h"
-#include "servingthread.h"
 
 Server::Server(QObject *parent)
     :QTcpServer(parent), room_thread(NULL)
@@ -13,15 +12,12 @@ Server::Server(QObject *parent)
 
 void Server::processNewConnection(){
     QTcpSocket *socket = nextPendingConnection();
-    ServingThread *thread = new ServingThread(this, socket);
-    connect(thread, SIGNAL(thread_message(QString)), SIGNAL(server_message(QString)));
 
     if(room_thread == NULL || room_thread->isFull())
         room_thread = new RoomThread(this, 8);
-    room_thread->addServingThread(thread);
-    thread->setRoomThread(room_thread);    
-    thread->response(QString::number(room_thread->threadCount()));
-    thread->start();
+
+    room_thread->addSocket(socket);
+    room_thread->start();
 
     emit server_message(tr("%1 connected, port = %2")
                         .arg(socket->peerAddress().toString())
