@@ -13,6 +13,8 @@ public:
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
+    void unicast(QTcpSocket *socket, const QString &message);
+    void broadcast(const QString &message);
 
     Q_INVOKABLE void pushEvent(const QScriptValue &event);
 

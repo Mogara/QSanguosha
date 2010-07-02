@@ -18,6 +18,7 @@ public:
 
 public slots:
     void showBust(const QString &name);
+    void drawCards(const QString &cards_str);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

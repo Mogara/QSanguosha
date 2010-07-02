@@ -126,7 +126,7 @@ void MainWindow::on_actionStart_Server_triggered()
 void MainWindow::startConnection(){
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(errorMessage(QString)), SLOT(connectionError(QString)));
+    connect(client, SIGNAL(error_message(QString)), SLOT(connectionError(QString)));
     connect(client, SIGNAL(connected()), SLOT(enterRoom()));
 }
 

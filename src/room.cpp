@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QHostAddress>
 #include <QCoreApplication>
+#include <QScriptValueIterator>
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count)
@@ -19,6 +20,15 @@ void Room::addSocket(QTcpSocket *socket){
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));
+
+    unicast(socket, ". seat_no " + QString::number(sockets.length()));
+
+    QStringList cards;
+    int i;
+    for(i=0;i<5;i++){
+        cards << QString::number(qrand()%108);
+    }
+    unicast(socket, "! drawCards " + cards.join("+"));
 }
 
 bool Room::isFull() const
@@ -26,15 +36,42 @@ bool Room::isFull() const
     return sockets.length() == player_count;
 }
 
+void Room::unicast(QTcpSocket *socket, const QString &message){
+    socket->write(message.toAscii());
+    socket->write("\n");
+}
+
+void Room::broadcast(const QString &message){
+    foreach(QTcpSocket *socket, sockets){
+        unicast(socket, message);
+    }
+}
+
 void Room::pushEvent(const QScriptValue &event){
-    // FIXME
+    if(event.isObject()){
+        Event *e = new Event(event);
+        QCoreApplication::postEvent(this, e);
+    }
 }
 
 bool Room::event(QEvent *event){
     if(event->type() != Sanguosha->getEventType())
         return false;
 
-    // FIXME
+    Event *e = static_cast<Event*>(event);
+
+    // dump event
+    QString dump_str= "{";
+    QScriptValueIterator itor(e->getValue());
+    while(itor.hasNext()){
+        itor.next();
+        dump_str.append(QString("%1=%2").arg(itor.name()).arg(itor.value().toString()));
+
+        if(itor.hasNext())
+            dump_str.append(", ");
+    }
+    dump_str.append("}");
+    emit room_message(dump_str);
 
     event->accept();
     return true;
@@ -62,18 +99,24 @@ void Room::reportMessage(QTcpSocket *socket, const QString &message){
 
 void Room::getRequest(){
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
-    if(socket && socket->canReadLine()){
-        QString request = socket->readLine(1024);
-        request.chop(1); // remove the ending '\n' character
-        QStringList args = request.split(" ");
-        QString command = args.front();
+    if(socket){
+        while(socket->canReadLine()){
+            QString request = socket->readLine(1024);
+            request.chop(1); // remove the ending '\n' character
+            QStringList args = request.split(" ");
+            QString command = args.front();
 
-        if(command == "set"){
-            QString field = args[1];
-            QString value = args[2];
-            players[socket]->setProperty(field.toAscii(), value);
+            if(command == "set"){
+                QString field = args[1];
+                QString value = args[2];
+                players[socket]->setProperty(field.toAscii(), value);
+            }else if(command == "event"){
+
+            }
+
+            reportMessage(socket, request);
         }
-
-        reportMessage(socket, request);
     }
 }
+
+

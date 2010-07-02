@@ -14,6 +14,7 @@ RoomScene::RoomScene(Client *client, int player_count)
 {
     Q_ASSERT(client != NULL);
 
+    client->setParent(this);
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create skill label
@@ -21,14 +22,10 @@ RoomScene::RoomScene(Client *client, int player_count)
     skill_label->setPos(-400, -100);
 
     // create photos
-    QStringList general_names;
-    general_names << "caocao" << "liubei" << "sunquan"
-            << "simayi" << "guojia" << "zhugeliang" << "zhouyu";
     int i;
     for(i=0;i<player_count-1;i++){
         Photo *photo = new Photo;
         photos << photo;
-        setGeneral(i, Sanguosha->getGeneral(general_names[i]));
         addItem(photo);
     }
 
@@ -39,12 +36,6 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();
-
-    for(i=0; i<5; i++){
-        Card *card = Sanguosha->getCard(qrand() % 108);
-        if(card)
-            dashboard->addCardItem(new CardItem(card));
-    }
 
     startEnterAnimation();
     client->signup();
@@ -136,6 +127,16 @@ void RoomScene::showBust(const QString &name)
     appear->start();
 
     connect(appear, SIGNAL(finished()), bust, SIGNAL(visibleChanged()));
+}
+
+void RoomScene::drawCards(const QString &cards_str)
+{
+    QStringList card_list = cards_str.split("+");
+    foreach(QString card_str, card_list){
+        int card_id = card_str.toInt();
+        Card *card = Sanguosha->getCard(card_id);
+        dashboard->addCardItem(new CardItem(card));
+    }
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
