@@ -19,6 +19,7 @@ public:
     void broadcast(const QString &message);
     void processRequest(const QString &request);
     bool isFull() const;
+    int threadCount() const;
 
 protected:
     virtual void run();

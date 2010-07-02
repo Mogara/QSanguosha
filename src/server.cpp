@@ -19,8 +19,8 @@ void Server::processNewConnection(){
     if(room_thread == NULL || room_thread->isFull())
         room_thread = new RoomThread(this, 8);
     room_thread->addServingThread(thread);
-    thread->setRoomThread(room_thread);
-
+    thread->setRoomThread(room_thread);    
+    thread->response(QString::number(room_thread->threadCount()));
     thread->start();
 
     emit server_message(tr("%1 connected, port = %2")

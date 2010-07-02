@@ -8,13 +8,17 @@ class Client : public QTcpSocket
 Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
-    void signup();
+    void request(const QString &message);
+    int signup();
 
-signals:
-    void errorMessage(const QString &msg);
+private:
+    int seat_no;
 
 private slots:
     void raiseError(QAbstractSocket::SocketError socket_error);
+
+signals:
+    void errorMessage(const QString &msg);
 };
 
 #endif // CLIENT_H

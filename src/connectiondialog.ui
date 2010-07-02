@@ -181,6 +181,10 @@
   <tabstop>nameLineEdit</tabstop>
   <tabstop>hostLineEdit</tabstop>
   <tabstop>portLineEdit</tabstop>
+  <tabstop>changeAvatarButton</tabstop>
+  <tabstop>avatarList</tabstop>
+  <tabstop>connectButton</tabstop>
+  <tabstop>cancelButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -191,8 +195,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>236</x>
-     <y>142</y>
+     <x>188</x>
+     <y>273</y>
     </hint>
     <hint type="destinationlabel">
      <x>241</x>

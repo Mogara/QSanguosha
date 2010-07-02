@@ -7,6 +7,8 @@
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
+#include <QMessageBox>
+
 RoomScene::RoomScene(Client *client, int player_count)
     :client(client), bust(NULL)
 {
@@ -45,7 +47,8 @@ RoomScene::RoomScene(Client *client, int player_count)
     }
 
     startEnterAnimation();
-    client->signup();
+    int seat_no = client->signup();
+    QMessageBox::information(NULL, "", QString::number(seat_no));
 }
 
 void RoomScene::startEnterAnimation(){

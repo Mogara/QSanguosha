@@ -4,7 +4,6 @@
 ServingThread::ServingThread(QObject *parent, QTcpSocket *socket)
     :QThread(parent), socket(socket), room_thread(NULL)
 {
-
 }
 
 void ServingThread::setRoomThread(RoomThread *room_thread){
@@ -13,6 +12,7 @@ void ServingThread::setRoomThread(RoomThread *room_thread){
 
 void ServingThread::response(const QString &message){
     socket->write(message.toAscii());
+    socket->write("\n");
 }
 
 void ServingThread::run()

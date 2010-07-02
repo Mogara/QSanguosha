@@ -29,6 +29,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionGeneral_Overview_triggered();
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
 

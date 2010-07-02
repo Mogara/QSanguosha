@@ -29,8 +29,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
         QIcon icon(general->getPixmapPath("big"));
         QString text = Sanguosha->translate(general->objectName());
         QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
-        QObject *general_obj = (QObject *)general;
-        item->setData(Qt::UserRole, qVariantFromValue(general_obj));
+        item->setData(Qt::UserRole, general->objectName());
     }
 
     ui->avatarList->hide();
@@ -60,14 +59,14 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 }
 
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
-{
-    QObject *general_obj = qvariant_cast<QObject*>(item->data(Qt::UserRole));
-    General *general = qobject_cast<General*>(general_obj);
+{    
+    QString general_name = item->data(Qt::UserRole).toString();
+    General *general = Sanguosha->getGeneral(general_name);
     if(general){
         QPixmap avatar(general->getPixmapPath("big"));
         ui->avatarPixmap->setPixmap(avatar);
-        Config.UserAvatar = general->objectName();
-        Config.setValue("UserAvatar", general->objectName());
+        Config.UserAvatar = general_name;
+        Config.setValue("UserAvatar", general_name);
         ui->avatarList->hide();
 
         setFixedWidth(ShrinkWidth);

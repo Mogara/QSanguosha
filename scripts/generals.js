@@ -114,10 +114,13 @@ var sunquan = sgs.addGeneral("sunquan", "wu");
 var zhouyu = sgs.addGeneral("zhouyu", "wu", 3);
 var lumeng = sgs.addGeneral("lumeng", "wu");
 var luxun = sgs.addGeneral("luxun", "wu", 3);
-var huanggai = sgs.addGeneral("hunggai", "wu");
+var huanggai = sgs.addGeneral("huanggai", "wu");
 var ganning = sgs.addGeneral("ganning", "wu");
 var daqiao = sgs.addGeneral("daqiao", "wu", 3, false);
 var sunshangxiang = sgs.addGeneral("sunshangxiang", "wu", 3, false);
 
+var lubu = sgs.addGeneral("lubu", "qun");
+var huatuo = sgs.addGeneral("huatuo", "qun", 3);
+var diaochan = sgs.addGeneral("diaochan", "qun", 3, false);
 
 

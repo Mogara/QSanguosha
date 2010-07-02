@@ -4,6 +4,7 @@
 #include "roomscene.h"
 #include "server.h"
 #include "client.h"
+#include "generaloverview.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -143,4 +144,10 @@ void MainWindow::enterRoom(){
 
 void MainWindow::startGameInAnotherInstance(){
     QProcess::startDetached(QApplication::applicationFilePath());
+}
+
+void MainWindow::on_actionGeneral_Overview_triggered()
+{
+    GeneralOverview *overview = new GeneralOverview(this);
+    overview->show();
 }

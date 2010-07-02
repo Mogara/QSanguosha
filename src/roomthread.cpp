@@ -42,6 +42,10 @@ bool RoomThread::isFull() const{
     return serving_threads.length() == player_count;
 }
 
+int RoomThread::threadCount() const{
+    return serving_threads.length();
+}
+
 void RoomThread::run()
 {
     while(!events.isEmpty()){

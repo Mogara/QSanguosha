@@ -2,15 +2,23 @@
 #include "settings.h"
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent)
+    :QTcpSocket(parent), seat_no(0)
 {
     connectToHost(Config.HostAddress, Config.Port);
 
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 
-void Client::signup(){
-    write(QString("%1 %2").arg(Config.UserName).arg(Config.UserAvatar).toAscii());
+void Client::request(const QString &message){
+    write(message.toAscii());
+    write("\n");
+}
+
+int Client::signup(){    
+    request(QString("%1 %2").arg(Config.UserName).arg(Config.UserAvatar));
+    QString seat_no_str = readLine(10);
+    seat_no = seat_no_str.toInt();
+    return seat_no;
 }
 
 void Client::raiseError(QAbstractSocket::SocketError socket_error){

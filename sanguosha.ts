@@ -4,22 +4,22 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="20"/>
+        <location filename="src/client.cpp" line="28"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="21"/>
+        <location filename="src/client.cpp" line="29"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="23"/>
+        <location filename="src/client.cpp" line="31"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="26"/>
+        <location filename="src/client.cpp" line="34"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -37,37 +37,37 @@
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="60"/>
+        <location filename="src/connectiondialog.ui" line="63"/>
         <source>Change avatar</source>
         <translation>修改头像</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="73"/>
+        <location filename="src/connectiondialog.ui" line="76"/>
         <source>Avatar:</source>
         <translation>头像:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="102"/>
+        <location filename="src/connectiondialog.ui" line="105"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="115"/>
+        <location filename="src/connectiondialog.ui" line="118"/>
         <source>Port:</source>
         <translation>端口:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="89"/>
+        <location filename="src/connectiondialog.ui" line="92"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="138"/>
+        <location filename="src/connectiondialog.ui" line="166"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.ui" line="151"/>
+        <location filename="src/connectiondialog.ui" line="173"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -121,10 +121,63 @@
     </message>
 </context>
 <context>
+    <name>GeneralOverview</name>
+    <message>
+        <location filename="src/generaloverview.ui" line="17"/>
+        <source>General Overview</source>
+        <translation>武将一览</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="30"/>
+        <source>General</source>
+        <translation>武将</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="35"/>
+        <source>Kingdom</source>
+        <translation>势力</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="40"/>
+        <source>Gender</source>
+        <translation>性别</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="45"/>
+        <source>MaxHP</source>
+        <translation>体力上限</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="50"/>
+        <source>Package</source>
+        <translation>包</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="64"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.ui" line="93"/>
+        <source>Skill</source>
+        <translation>技能</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.cpp" line="21"/>
+        <source>Male</source>
+        <translation>男性</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.cpp" line="21"/>
+        <source>Female</source>
+        <translation>女性</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="100"/>
+        <location filename="src/mainwindow.cpp" line="101"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -194,22 +247,22 @@
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="41"/>
+        <location filename="src/mainwindow.cpp" line="42"/>
         <source>Open Source Sanguosha</source>
         <translation>开源三国杀</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="101"/>
+        <location filename="src/mainwindow.cpp" line="102"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="111"/>
+        <location filename="src/mainwindow.cpp" line="112"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="133"/>
+        <location filename="src/mainwindow.cpp" line="134"/>
         <source>Connection failed</source>
         <translation>连接失败</translation>
     </message>
