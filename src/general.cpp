@@ -17,9 +17,15 @@ General *General::getInstance(const QString &name){
 }
 
 General::General(const QString &name, const QString &kingdom, int max_hp, bool male, const QString &pixmap_dir)
-    :kingdom(kingdom), max_hp(max_hp), hp(max_hp), male(male), is_lord(false), pixmap_dir(pixmap_dir)
+    :kingdom(kingdom), max_hp(max_hp), hp(max_hp), male(male), is_lord(false), pixmap_dir(pixmap_dir), leader(false)
 {
-    setObjectName(name);
+    QChar leader_symbol('!');
+    if(name.contains(leader_symbol)){
+        QString copy = name;
+        setObjectName(copy.remove(leader_symbol));
+        leader = true;
+    }else
+        setObjectName(name);
 }
 
 int General::getMaxHp() const{
@@ -49,6 +55,10 @@ bool General::isFemale() const{
 
 bool General::isWounded() const{
     return hp < max_hp;
+}
+
+bool General::isLeader() const{
+    return leader;
 }
 
 void General::enthrone(){
