@@ -6,6 +6,7 @@
 
 #include <QScriptEngine>
 #include <QMap>
+#include <QEvent>
 
 class Engine : public QScriptEngine
 {
@@ -31,6 +32,7 @@ public:
     Card *getCard(int index);
     void setPixmapDir(const QString &pixmap_dir);
     QString getPixmapDir() const;
+    QEvent::Type getEventType() const;
 
 private:
     QObject *generals;
@@ -38,6 +40,7 @@ private:
     QObject *card_classes;
     QList<Card*> cards;
     QString pixmap_dir;
+    QEvent::Type event_type;
 };
 
 extern Engine *Sanguosha;

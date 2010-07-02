@@ -1,9 +1,8 @@
 #include "player.h"
 
-Player::Player(General *general, QObject *parent)
-    :QObject(parent), general(general)
+Player::Player(QObject *parent)
+    :QObject(parent), general(NULL), hp(-1)
 {
-    hp = general->getMaxHp();
 }
 
 void Player::setHp(int hp){
@@ -17,6 +16,11 @@ int Player::getHp() const{
 
 bool Player::isWounded() const{
     return hp < general->getMaxHp();
+}
+
+void Player::setGeneral(General *general){
+    this->general = general;
+    hp = general->getMaxHp();
 }
 
 General *Player::getGeneral() const{

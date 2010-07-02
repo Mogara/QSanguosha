@@ -10,15 +10,18 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(bool wounded READ isWounded STORED false)
-    Q_PROPERTY(General *general READ getGeneral);
+    Q_PROPERTY(General *general READ getGeneral WRITE setGeneral)
+    // name is just an alias to objectName
+    Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
 
 public:
-    explicit Player(General *general, QObject *parent = 0);
+    explicit Player(QObject *parent = 0);
 
     // property getters
     int getHp() const;
     void setHp(int hp);
     bool isWounded() const;
+    void setGeneral(General *general);
     General *getGeneral() const;
 
 private:

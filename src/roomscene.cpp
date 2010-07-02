@@ -34,7 +34,7 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     // create dashboard
     dashboard = new Dashboard;
-    //dashboard->setGeneral(Sanguosha->getGeneral(Config.UserAvatar));
+    dashboard->setAvatar(Config.UserAvatar);
     addItem(dashboard);
 
     // get dashboard's avatar

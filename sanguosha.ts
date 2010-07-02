@@ -4,22 +4,22 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="28"/>
+        <location filename="src/client.cpp" line="33"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="29"/>
+        <location filename="src/client.cpp" line="34"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="31"/>
+        <location filename="src/client.cpp" line="36"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="34"/>
+        <location filename="src/client.cpp" line="39"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -93,7 +93,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="122"/>
+        <location filename="src/engine.cpp" line="121"/>
         <source>%1
 
  Stack trace:
@@ -104,18 +104,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="127"/>
+        <location filename="src/engine.cpp" line="126"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="130"/>
+        <location filename="src/engine.cpp" line="129"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="138"/>
-        <location filename="src/engine.cpp" line="143"/>
+        <location filename="src/engine.cpp" line="137"/>
+        <location filename="src/engine.cpp" line="142"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
@@ -128,47 +128,47 @@
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="30"/>
+        <location filename="src/generaloverview.ui" line="42"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="35"/>
+        <location filename="src/generaloverview.ui" line="47"/>
         <source>Kingdom</source>
         <translation>势力</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="40"/>
+        <location filename="src/generaloverview.ui" line="52"/>
         <source>Gender</source>
         <translation>性别</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="45"/>
+        <location filename="src/generaloverview.ui" line="57"/>
         <source>MaxHP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="50"/>
+        <location filename="src/generaloverview.ui" line="62"/>
         <source>Package</source>
         <translation>包</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="64"/>
+        <location filename="src/generaloverview.ui" line="76"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="93"/>
+        <location filename="src/generaloverview.ui" line="105"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.cpp" line="21"/>
+        <location filename="src/generaloverview.cpp" line="24"/>
         <source>Male</source>
         <translation>男性</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.cpp" line="21"/>
+        <location filename="src/generaloverview.cpp" line="24"/>
         <source>Female</source>
         <translation>女性</translation>
     </message>
@@ -268,9 +268,22 @@
     </message>
 </context>
 <context>
+    <name>Room</name>
+    <message>
+        <location filename="src/room.cpp" line="39"/>
+        <source>disconnected</source>
+        <translation>断开</translation>
+    </message>
+    <message>
+        <location filename="src/room.cpp" line="47"/>
+        <source>anonymous</source>
+        <translation>匿名</translation>
+    </message>
+</context>
+<context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="26"/>
+        <location filename="src/server.cpp" line="23"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
     </message>

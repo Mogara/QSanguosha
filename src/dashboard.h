@@ -16,6 +16,7 @@ public:
     Dashboard();
     void addCardItem(CardItem *card_item);
     void setPlayer(Player *player);
+    void setAvatar(const QString &name);
     Pixmap *getAvatar();
 
 protected:

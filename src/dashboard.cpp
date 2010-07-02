@@ -1,9 +1,9 @@
 #include "dashboard.h"
+#include "engine.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
-
 
 Dashboard::Dashboard()
     :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), use_skill(false)
@@ -34,11 +34,26 @@ void Dashboard::addCardItem(CardItem *card_item){
 void Dashboard::setPlayer(Player *player){
     this->player = player;
     General *general = player->getGeneral();
-    avatar = new Pixmap(general->getPixmapPath("big"));
-    avatar->setPos(837, 35);
-    avatar->setFlag(ItemIsSelectable);
-    avatar->setParent(this);
-    avatar->setParentItem(this);
+    if(general)
+        setAvatar(player->getGeneral()->objectName());
+    else
+        setAvatar(player->property("avatar").toString());
+}
+
+void Dashboard::setAvatar(const QString &name){
+    General *general = Sanguosha->getGeneral(name);
+    if(general){
+        QString filename = general->getPixmapPath("big");
+        if(avatar)
+            avatar->changePixmap(filename);
+        else
+            avatar = new Pixmap(filename);
+
+        avatar->setPos(837, 35);
+        avatar->setFlag(ItemIsSelectable);
+        avatar->setParent(this);
+        avatar->setParentItem(this);
+    }
 }
 
 Pixmap *Dashboard::getAvatar(){

@@ -6,21 +6,22 @@ Client::Client(QObject *parent)
 {
     connectToHost(Config.HostAddress, Config.Port);
 
-
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 
 void Client::request(const QString &message){
     write(message.toAscii());
     write("\n");
-    flush();
+    waitForBytesWritten();
 }
 
-int Client::signup(){    
-    request(QString("%1 %2").arg(Config.UserName).arg(Config.UserAvatar));
-    QString seat_no_str = readLine(10);
-    seat_no = seat_no_str.toInt();
-    return seat_no;
+void Client::setField(const QString &key, const QString &value){
+    request(QString("set %1 %2").arg(key).arg(value));
+}
+
+void Client::signup(){
+    setField("name", Config.UserName);
+    setField("avatar", Config.UserAvatar);
 }
 
 void Client::raiseError(QAbstractSocket::SocketError socket_error){

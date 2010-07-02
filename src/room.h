@@ -1,6 +1,8 @@
 #ifndef ROOM_H
 #define ROOM_H
 
+#include "player.h"
+
 #include <QScriptValue>
 #include <QTcpSocket>
 
@@ -19,10 +21,12 @@ protected:
 
 private:
     QList<QTcpSocket*> sockets;
+    QMap<QTcpSocket*, Player*> players;
     int player_count;
 
 private slots:
     void reportDisconnection();
+    void reportMessage(QTcpSocket *socket, const QString &message);
     void getRequest();
 
 signals:

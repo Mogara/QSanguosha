@@ -28,6 +28,8 @@ Engine::Engine(QObject *parent)
     foreach(QString filename, script_files){
         doScript("scripts/" + filename);
     }
+
+    event_type = static_cast<QEvent::Type>(QEvent::registerEventType());
 }
 
 QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max_hp, bool male){
@@ -151,6 +153,10 @@ void Engine::setPixmapDir(const QString &pixmap_dir){
 
 QString Engine::getPixmapDir() const{
     return this->pixmap_dir;
+}
+
+QEvent::Type Engine::getEventType() const{
+    return event_type;
 }
 
 General *Engine::getGeneral(const QString &name){

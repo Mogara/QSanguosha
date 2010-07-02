@@ -9,7 +9,8 @@ Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
     void request(const QString &message);
-    int signup();
+    void setField(const QString &key, const QString &value);
+    void signup();
 
 private:
     int seat_no;
