@@ -23,7 +23,7 @@ public:
     bool isFemale() const;
     bool isLeader() const;
 
-    QString getPixmapPath(const QString &category);
+    QString getPixmapPath(const QString &category) const;
 
 private:
     QString kingdom;

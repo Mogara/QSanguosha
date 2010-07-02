@@ -9,7 +9,6 @@ QT += phonon \
 TEMPLATE = app
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
-    src/gamescene.cpp \
     src/button.cpp \
     src/settings.cpp \
     src/startscene.cpp \
@@ -29,8 +28,7 @@ SOURCES += src/main.cpp \
     src/generaloverview.cpp \
     src/player.cpp \
     src/event.cpp
-HEADERS += src/gamescene.h \
-    src/mainwindow.h \
+HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
     src/startscene.h \

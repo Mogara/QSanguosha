@@ -159,7 +159,7 @@ QEvent::Type Engine::getEventType() const{
     return event_type;
 }
 
-General *Engine::getGeneral(const QString &name){
+const General *Engine::getGeneral(const QString &name){
     return generals->findChild<General*>(name);
 }
 

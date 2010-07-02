@@ -17,7 +17,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
 
-    General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
+    const General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
     if(avatar_general){
         QPixmap avatar(avatar_general->getPixmapPath("big"));
         ui->avatarPixmap->setPixmap(avatar);
@@ -61,7 +61,7 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
 {    
     QString general_name = item->data(Qt::UserRole).toString();
-    General *general = Sanguosha->getGeneral(general_name);
+    const General *general = Sanguosha->getGeneral(general_name);
     if(general){
         QPixmap avatar(general->getPixmapPath("big"));
         ui->avatarPixmap->setPixmap(avatar);

@@ -66,6 +66,6 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 {
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-    General *general = Sanguosha->getGeneral(general_name);
+    const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
 }

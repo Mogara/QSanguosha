@@ -93,7 +93,7 @@ void RoomScene::startEnterAnimation(){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void RoomScene::setGeneral(int index, General *general)
+void RoomScene::setGeneral(int index, const General *general)
 {
     if(index < 0 || index >= photos.size())
         return;
@@ -120,7 +120,7 @@ void RoomScene::updatePhotos(){
 
 void RoomScene::showBust(const QString &name)
 {
-    General *general = Sanguosha->getGeneral(name);
+    const General *general = Sanguosha->getGeneral(name);
     QString filename = general->getPixmapPath("bust");
     if(!bust){
         bust = new Pixmap(filename);

@@ -41,7 +41,7 @@ void Dashboard::setPlayer(Player *player){
 }
 
 void Dashboard::setAvatar(const QString &name){
-    General *general = Sanguosha->getGeneral(name);
+    const General *general = Sanguosha->getGeneral(name);
     if(general){
         QString filename = general->getPixmapPath("big");
         if(avatar)

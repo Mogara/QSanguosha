@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE void alert(const QString &message);
     Q_INVOKABLE void quit(const QString &reason = "");
 
-    General *getGeneral(const QString &name);
+    const General *getGeneral(const QString &name);
     CardClass *getCardClass(const QString &name);
     Card *getCard(int index);
     void setPixmapDir(const QString &pixmap_dir);

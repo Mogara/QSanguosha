@@ -35,7 +35,7 @@ bool General::isLeader() const{
     return leader;
 }
 
-QString General::getPixmapPath(const QString &category){
+QString General::getPixmapPath(const QString &category) const{
     return QString("%1/%2/%3.png").arg(pixmap_dir).arg(category).arg(objectName());
 }
 
