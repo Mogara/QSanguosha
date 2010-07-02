@@ -26,7 +26,8 @@ SOURCES += src/main.cpp \
     src/cardclass.cpp \
     src/carditem.cpp \
     src/room.cpp \
-    src/generaloverview.cpp
+    src/generaloverview.cpp \
+    src/player.cpp
 HEADERS += src/gamescene.h \
     src/mainwindow.h \
     src/button.h \
@@ -45,7 +46,8 @@ HEADERS += src/gamescene.h \
     src/cardclass.h \
     src/carditem.h \
     src/room.h \
-    src/generaloverview.h
+    src/generaloverview.h \
+    src/player.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui

@@ -6,6 +6,7 @@ Client::Client(QObject *parent)
 {
     connectToHost(Config.HostAddress, Config.Port);
 
+
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 

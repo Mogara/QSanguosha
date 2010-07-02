@@ -27,7 +27,7 @@ void Room::pushEvent(const QScriptValue &event){
 }
 
 bool Room::event(QEvent *){
-
+    return true;
 }
 
 void Room::reportDisconnection(){

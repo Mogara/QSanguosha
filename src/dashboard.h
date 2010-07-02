@@ -3,7 +3,7 @@
 
 #include "pixmap.h"
 #include "carditem.h"
-#include "general.h"
+#include "player.h"
 
 #include <QPushButton>
 #include <QComboBox>
@@ -15,7 +15,7 @@ class Dashboard : public Pixmap
 public:
     Dashboard();
     void addCardItem(CardItem *card_item);
-    void setGeneral(General *general);
+    void setPlayer(Player *player);
     Pixmap *getAvatar();
 
 protected:
@@ -23,7 +23,7 @@ protected:
 
 private:
     QList<CardItem*> card_items;
-    General *general;
+    Player *player;
     QPixmap magatamas[5];
     Pixmap *avatar;
     bool use_skill;

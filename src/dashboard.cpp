@@ -6,7 +6,7 @@
 
 
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), general(NULL), avatar(NULL), use_skill(false)
+    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), use_skill(false)
 {
     int i;
     for(i=0; i<5; i++){
@@ -31,8 +31,9 @@ void Dashboard::addCardItem(CardItem *card_item){
     adjustCards();
 }
 
-void Dashboard::setGeneral(General *general){
-    this->general = general;
+void Dashboard::setPlayer(Player *player){
+    this->player = player;
+    General *general = player->getGeneral();
     avatar = new Pixmap(general->getPixmapPath("big"));
     avatar->setPos(837, 35);
     avatar->setFlag(ItemIsSelectable);
@@ -48,8 +49,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     Pixmap::paint(painter, option, widget);
 
     // draw general's hp
-    if(general){
-        int hp = general->getHp();
+    if(player){
+        int hp = player->getHp();
         QPixmap *magatama = &magatamas[hp-1];
         int i;
         for(i=0; i<hp; i++)
