@@ -6,7 +6,7 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
-
+#include <MediaObject>
 #include <QMessageBox>
 
 RoomScene::RoomScene(Client *client, int player_count)
@@ -92,18 +92,31 @@ void RoomScene::addPlayer(const QString &player_info){
     QStringList words = player_info.split(":");
     if(words.length() >=2){
         Player *player = new Player(this);
-        player->setObjectName(words[0]);
-        player->setProperty("avatar", words[1]);
+        QString name = words[0];
+        QString avatar = words[1];
+        player->setObjectName(name);
+        player->setProperty("avatar", avatar);
 
         int i;
         for(i=0; i<photos.length(); i++){
             Photo *photo = photos[i];
             if(!photo->isOccupied()){
                 photo->setPlayer(player);
+                photo_map[name] = photo;
+
+                Phonon::MediaSource source("audio/add-player.wav");
+                Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, source);
+                effect->play();
                 return;
             }
         }
     }
+}
+
+void RoomScene::removePlayer(const QString &player_name){
+    Photo *photo = photo_map[player_name];
+    if(photo)
+        photo->setPlayer(NULL);
 }
 
 void RoomScene::updatePhotos(){

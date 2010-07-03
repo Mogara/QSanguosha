@@ -80,8 +80,13 @@ void Room::reportDisconnection(){
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
     if(socket){
         reportMessage(socket, tr("disconnected"));
-        sockets.removeOne(socket);
+
         Player *player = players[socket];
+        if(!player->objectName().isEmpty()){
+            broadcast("! removePlayer " + player->objectName(), socket);
+        }
+
+        sockets.removeOne(socket);        
         players.remove(socket);
         delete player;
     }
@@ -114,38 +119,47 @@ void Room::getRequest(){
         if(player == NULL)
             return;
 
-        if(command == "set"){
-            QString field = args[1];
-            QString value = args[2];
-            player->setProperty(field.toAscii(), value);
-        }else if(command == "signup"){
-            QString name = args[1];
-            QString avatar = args[2];
-
-            player->setObjectName(name);
-            player->setProperty("avatar", avatar);
-
-            // introduce the new joined player to existing players except himself
-            broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), socket);
-
-            // introduce all existing player to the new joined
-            QMapIterator<QTcpSocket*,Player*> itor(players);
-            while(itor.hasNext()){
-                itor.next();
-                Player *to_introduce = itor.value();
-                if(to_introduce == player)
-                    continue;
-
-                QString name = to_introduce->objectName();
-                QString avatar = to_introduce->property("avatar").toString();
-                unicast(socket, QString("! addPlayer %1:%2").arg(name).arg(avatar));
-            }
-        }
+        command.append("Command");
+        QMetaObject::invokeMethod(this,
+                                  command.toAscii(),
+                                  Qt::DirectConnection,
+                                  Q_ARG(QTcpSocket *, socket),
+                                  Q_ARG(Player *, player),
+                                  Q_ARG(QStringList, args));
 
         reportMessage(socket, request);
     }
 }
 
+void Room::setCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+    QString field = args[1];
+    QString value = args[2];
+    player->setProperty(field.toAscii(), value);
+}
+
+void Room::signupCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+    QString name = args[1];
+    QString avatar = args[2];
+
+    player->setObjectName(name);
+    player->setProperty("avatar", avatar);
+
+    // introduce the new joined player to existing players except himself
+    broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), socket);
+
+    // introduce all existing player to the new joined
+    QMapIterator<QTcpSocket*,Player*> itor(players);
+    while(itor.hasNext()){
+        itor.next();
+        Player *to_introduce = itor.value();
+        if(to_introduce == player)
+            continue;
+
+        QString name = to_introduce->objectName();
+        QString avatar = to_introduce->property("avatar").toString();
+        unicast(socket, QString("! addPlayer %1:%2").arg(name).arg(avatar));
+    }
+}
 
 
 

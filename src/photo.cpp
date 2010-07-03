@@ -22,6 +22,9 @@ Photo::Photo()
 void Photo::setPlayer(const Player *player)
 {
     this->player = player;
+    if(player == NULL)
+        return;
+
     const General *general = player->getGeneral();    
     if(general == NULL){
         QString general_name = player->property("avatar").toString();
@@ -45,7 +48,7 @@ void Photo::speak(const QString &content)
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
-    if(!avatar.isNull()){
+    if(player){
         painter->drawPixmap(1, 13, avatar);
         painter->drawPixmap(0, 10, avatar_frame);
         painter->drawPixmap(0,  0, kingdom);
