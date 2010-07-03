@@ -15,8 +15,7 @@ class Dashboard : public Pixmap
 public:
     Dashboard();
     void addCardItem(CardItem *card_item);
-    void setPlayer(Player *player);
-    void setAvatar(const QString &name);
+    void setPlayer(Player *player);    
     Pixmap *getAvatar();
 
 protected:
@@ -31,6 +30,7 @@ private:
     QComboBox *sort_combobox;
 
     void adjustCards();
+    void setAvatar(const QString &name);
 
 private slots:
     void sortCards();

@@ -28,7 +28,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
         name_item->setTextAlignment(Qt::AlignHCenter);
         name_item->setData(Qt::UserRole, general->objectName());
-        if(general->isLeader()){
+        if(general->isLord()){
             name_item->setIcon(leader_icon);
             name_item->setTextAlignment(Qt::AlignLeft);
         }

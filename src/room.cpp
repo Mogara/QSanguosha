@@ -19,9 +19,7 @@ void Room::addSocket(QTcpSocket *socket){
     players[socket] = player;
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));
-
-    unicast(socket, ". seat_no " + QString::number(sockets.length()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));   
 
     QStringList cards;
     int i;
@@ -81,6 +79,10 @@ void Room::reportDisconnection(){
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
     if(socket){
         reportMessage(socket, tr("disconnected"));
+        sockets.removeOne(socket);
+        Player *player = players[socket];
+        players.remove(socket);
+        delete player;
     }
 }
 
@@ -99,24 +101,41 @@ void Room::reportMessage(QTcpSocket *socket, const QString &message){
 
 void Room::getRequest(){
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
-    if(socket){
-        while(socket->canReadLine()){
-            QString request = socket->readLine(1024);
-            request.chop(1); // remove the ending '\n' character
-            QStringList args = request.split(" ");
-            QString command = args.front();
+    if(!socket)
+        return;
 
-            if(command == "set"){
-                QString field = args[1];
-                QString value = args[2];
-                players[socket]->setProperty(field.toAscii(), value);
-            }else if(command == "event"){
+    while(socket->canReadLine()){
+        QString request = socket->readLine(1024);
+        request.chop(1); // remove the ending '\n' character
+        QStringList args = request.split(" ");
+        QString command = args.front();
+        Player *player = players[socket];
+        if(player == NULL)
+            return;
 
+        if(command == "set"){
+            QString field = args[1];
+            QString value = args[2];
+            player->setProperty(field.toAscii(), value);
+        }else if(command == "signup"){
+            QString name = args[1];
+            QString avatar = args[2];
+
+            player->setObjectName(name);
+            player->setProperty("avatar", avatar);
+
+            foreach(QTcpSocket *sock, sockets){
+                if(sock != socket){
+                    //unicast(sock, QString("! addPlayer %1:%2").arg(name).arg(avatar));
+                    unicast(sock, "! drawCards 12");
+                }
             }
-
-            reportMessage(socket, request);
         }
+
+        reportMessage(socket, request);
     }
 }
+
+
 
 

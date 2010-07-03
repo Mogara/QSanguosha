@@ -35,6 +35,10 @@ Engine::Engine(QObject *parent)
 QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max_hp, bool male){
     General *general = new General(name, kingdom, max_hp, male, pixmap_dir);
     general->setParent(generals);
+
+    if(general->isLord())
+        lords << general;
+
     return general;
 }
 

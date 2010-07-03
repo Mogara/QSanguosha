@@ -34,6 +34,10 @@ void Photo::setPlayer(const Player *player)
     kingdom.load(general->getKingdomPath());
 }
 
+bool Photo::isOccupied() const{
+    return this->player != NULL;
+}
+
 void Photo::speak(const QString &content)
 {
 

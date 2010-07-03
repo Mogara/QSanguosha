@@ -41,6 +41,7 @@ private:
     QList<Card*> cards;
     QString pixmap_dir;
     QEvent::Type event_type;
+    QList<const General*> lords;
 };
 
 extern Engine *Sanguosha;

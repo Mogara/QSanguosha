@@ -8,10 +8,10 @@ General::General(const QString &name, const QString &kingdom, int max_hp, bool m
     if(name.contains(leader_symbol)){
         QString copy = name;
         setObjectName(copy.remove(leader_symbol));
-        leader = true;
+        lord = true;
     }else{
         setObjectName(name);
-        leader = false;
+        lord = false;
     }
 }
 
@@ -31,8 +31,8 @@ bool General::isFemale() const{
     return !male;
 }
 
-bool General::isLeader() const{
-    return leader;
+bool General::isLord() const{
+    return lord;
 }
 
 QString General::getPixmapPath(const QString &category) const{

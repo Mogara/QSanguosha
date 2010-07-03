@@ -10,7 +10,7 @@ class General : public QObject
     Q_PROPERTY(int max_hp READ getMaxHp CONSTANT)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
-    Q_PROPERTY(bool leader READ isLeader CONSTANT)
+    Q_PROPERTY(bool lord READ isLord CONSTANT)
 
 public:
     static General *getInstance(const QString &name);
@@ -21,7 +21,7 @@ public:
     QString getKingdom() const;
     bool isMale() const;
     bool isFemale() const;
-    bool isLeader() const;
+    bool isLord() const;
 
     QString getPixmapPath(const QString &category) const;
     QString getKingdomPath() const;
@@ -31,7 +31,7 @@ private:
     int max_hp;
     bool male;
     QString pixmap_dir;
-    bool leader;
+    bool lord;
 };
 
 #endif // GENERAL_H

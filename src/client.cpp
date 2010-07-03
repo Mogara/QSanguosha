@@ -2,22 +2,21 @@
 #include "settings.h"
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this))
+    :QTcpSocket(parent), room(new QObject(this)), self(NULL)
 {
     connectToHost(Config.HostAddress, Config.Port);
 
     connect(this, SIGNAL(readyRead()), this, SLOT(update()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+}
 
-    // default active
-    setProperty("active", true);
+void Client::setSelf(Player *self){
+    this->self = self;
 }
 
 void Client::request(const QString &message){
-    if(property("active").toBool()){
-        write(message.toAscii());
-        write("\n");
-    }
+    write(message.toAscii());
+    write("\n");
 }
 
 void Client::sendField(const QString &field){
@@ -28,11 +27,12 @@ void Client::signup(){
     setProperty("name", Config.UserName);
     setProperty("avatar", Config.UserAvatar);
 
-    sendField("name");
-    sendField("avatar");
+    request(QString("signup %1 %2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
-#include <QMessageBox>
+Player *Client::getPlayer(const QString &name){
+    return parent()->findChild<Player*>(name);
+}
 
 void Client::update(){
     static QChar self_prefix('.');
@@ -50,19 +50,22 @@ void Client::update(){
 
         if(object.startsWith(self_prefix)){
             // client it self
-            setProperty(field, value);
+            if(self)
+                self->setProperty(field, value);
         }else if(object.startsWith(room_prefix)){
             // room
             room->setProperty(field, value);
         }else if(object.startsWith(other_prefix)){
             // others
             object.remove(other_prefix);
-            Player *player = players[object.toInt()];
+            Player *player = getPlayer(object);
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
-            // parent methods
-            const QMetaObject *meta = parent()->metaObject();
-            meta->invokeMethod(parent(), field, Qt::DirectConnection, Q_ARG(QString, value));
+            // invoke parent methods
+            if(parent()){
+                const QMetaObject *meta = parent()->metaObject();
+                meta->invokeMethod(parent(), field, Qt::DirectConnection, Q_ARG(QString, value));
+            }
         }
     }
 }

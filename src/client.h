@@ -10,13 +10,15 @@ class Client : public QTcpSocket
     Q_OBJECT
 public:
     explicit Client(QObject *parent = 0);
+    void setSelf(Player *self);
     void request(const QString &message);
     void sendField(const QString &field);
     void signup();
+    Player *getPlayer(const QString &name);
 
 private:
-    QList<Player*> players;
     QObject *room;
+    Player *self;
 
 private slots:
     void update();

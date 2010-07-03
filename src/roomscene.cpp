@@ -31,7 +31,11 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     // create dashboard
     dashboard = new Dashboard;
-    dashboard->setAvatar(Config.UserAvatar);
+    Player *self = new Player(this);
+    self->setObjectName(Config.UserName);
+    self->setProperty("avatar", Config.UserAvatar);
+    client->setSelf(self);
+    dashboard->setPlayer(self);
     addItem(dashboard);
 
     // get dashboard's avatar
@@ -82,19 +86,24 @@ void RoomScene::startEnterAnimation(){
     group->addAnimation(enlarge);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
-
-    Player *player = new Player(this);
-    player->setProperty("avatar", "zhangliao");
-    setPlayer(2, player);
 }
 
-void RoomScene::setPlayer(int index, const Player *player)
-{
-    if(index < 0 || index >= photos.size())
-        return;
+void RoomScene::addPlayer(const QString &player_info){    
+    QStringList words = player_info.split(":");
+    if(words.length() >=2){
+        Player *player = new Player(this);
+        player->setObjectName(words[0]);
+        player->setProperty("avatar", words[1]);
 
-    Photo *photo = photos[index];
-    photo->setPlayer(player);
+        int i;
+        for(i=0; i<photos.length(); i++){
+            Photo *photo = photos[i];
+            if(!photo->isOccupied()){
+                photo->setPlayer(player);
+                return;
+            }
+        }
+    }
 }
 
 void RoomScene::updatePhotos(){
@@ -141,6 +150,11 @@ void RoomScene::drawCards(const QString &cards_str)
         Card *card = Sanguosha->getCard(card_id);
         dashboard->addCardItem(new CardItem(card));
     }
+}
+
+void RoomScene::nameDuplication(const QString &name){
+    QMessageBox::critical(NULL, tr("Error"), tr("Your name %1 is duplicated!").arg(name));
+    exit(1);
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){

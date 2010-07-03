@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    if(QDir::current().dirName() == "release")
+    QString dir_name = QDir::current().dirName();
+    if(dir_name == "release" || dir_name == "debug")
         QDir::setCurrent("..");
 
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("GB18030"));

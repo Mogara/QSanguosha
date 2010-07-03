@@ -14,11 +14,14 @@ class RoomScene : public QGraphicsScene
 public:
     RoomScene(Client *client, int player_count = 8);
     void updatePhotos();
-    void setPlayer(int index, const Player *player);
+
+    Q_INVOKABLE void addPlayer(const QString &player_info);
+    Q_INVOKABLE void drawCards(const QString &cards_str);
+    Q_INVOKABLE void nameDuplication(const QString &name);
 
 public slots:
     void showBust(const QString &name);
-    void drawCards(const QString &cards_str);
+
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
