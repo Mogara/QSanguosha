@@ -8,8 +8,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include <MediaObject>
 #include <QMessageBox>
+#include <QStatusBar>
+#include <QCheckBox>
 
-RoomScene::RoomScene(Client *client, int player_count)
+RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     :client(client), bust(NULL)
 {
     Q_ASSERT(client != NULL);
@@ -36,6 +38,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     self->setProperty("avatar", Config.UserAvatar);
     client->setSelf(self);
     dashboard->setPlayer(self);
+    createSkillButtons(main_window, self);
     addItem(dashboard);
 
     // get dashboard's avatar
@@ -86,6 +89,34 @@ void RoomScene::startEnterAnimation(){
     group->addAnimation(enlarge);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void RoomScene::createSkillButtons(QMainWindow *main_window, Player *player){
+    QStatusBar *status_bar = main_window->statusBar();
+    const General *general = player->getGeneral();
+    if(general == NULL)
+        general = Sanguosha->getGeneral(player->property("avatar").toString());
+
+    QObjectList skills = general->getSkills();
+    foreach(QObject *skill_obj, skills){
+        Skill *skill = qobject_cast<Skill*>(skill_obj);
+        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
+        if(skill->isCompulsory()){
+            button->setText(button->text() + tr("[Compulsory]"));
+            button->setDisabled(true);
+        }
+
+        if(skill->isLordSkill()){
+            button->setText(button->text() + tr("[Lord Skill]"));
+        }
+
+        status_bar->addPermanentWidget(button);
+        if(skill->isFrequent()){
+            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
+            checkbox->setChecked(true);
+            status_bar->addPermanentWidget(checkbox);
+        }
+    }
 }
 
 void RoomScene::addPlayer(const QString &player_info){    
@@ -166,8 +197,12 @@ void RoomScene::drawCards(const QString &cards_str)
 }
 
 void RoomScene::nameDuplication(const QString &name){
-    QMessageBox::critical(NULL, tr("Error"), tr("Your name %1 is duplicated!").arg(name));
+    QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(name));
     exit(1);
+}
+
+void RoomScene::focusWarn(const QString &){
+    QMessageBox::warning(NULL, tr("Warning"), tr("You are not focus"));
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){

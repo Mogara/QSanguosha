@@ -3,6 +3,7 @@
 
 #include "general.h"
 #include "cardclass.h"
+#include "skill.h"
 
 #include <QScriptEngine>
 #include <QMap>
@@ -19,6 +20,7 @@ public:
     Q_INVOKABLE QObject *addGeneral(const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
     Q_INVOKABLE QObject *addCard(const QString &name, const QScriptValue &suit_value, const QScriptValue &number_value);
     Q_INVOKABLE QObject *addCardClass(const QString &class_name, const QString &type_str);
+    Q_INVOKABLE QObject *addSkill(const QString &name, const QScriptValue &obj);
 
     Q_INVOKABLE void addTranslationTable(const QScriptValue &table);
     Q_INVOKABLE QString translate(const QString &to_translate);
@@ -33,11 +35,14 @@ public:
     void setPixmapDir(const QString &pixmap_dir);
     QString getPixmapDir() const;
     QEvent::Type getEventType() const;
+    Skill *getSkill(const QString &name);
 
 private:
     QObject *generals;
     QObject *translation;
     QObject *card_classes;
+    QObject *skills;
+
     QList<Card*> cards;
     QString pixmap_dir;
     QEvent::Type event_type;

@@ -9,7 +9,7 @@
 #include <QScriptValueIterator>
 
 Room::Room(QObject *parent, int player_count)
-    :QObject(parent), player_count(player_count)
+    :QObject(parent), player_count(player_count), focus(NULL)
 {
 }
 
@@ -118,6 +118,11 @@ void Room::getRequest(){
         Player *player = players[socket];
         if(player == NULL)
             return;
+
+        if(focus && focus != player){
+            unicast(socket, "! focusWarn .");
+            return;
+        }
 
         command.append("Command");
         QMetaObject::invokeMethod(this,

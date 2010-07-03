@@ -139,7 +139,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     Client *client = qobject_cast<Client*>(sender());
-    gotoScene(new RoomScene(client));
+    gotoScene(new RoomScene(client, 8, this));
 }
 
 void MainWindow::startGameInAnotherInstance(){

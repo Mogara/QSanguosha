@@ -16,7 +16,7 @@ class Player : public QObject
 public:
     explicit Player(QObject *parent = 0);
 
-    // property getters
+    // property setters/getters
     int getHp() const;
     void setHp(int hp);
     bool isWounded() const;

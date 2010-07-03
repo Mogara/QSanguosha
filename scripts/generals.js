@@ -89,11 +89,11 @@ sgs.addTranslationTable(table);
 sgs.pixmap_dir = "generals";
 
 // general's skills
-//var jianxiong = sgs.addSkill("jianxiong");
-//var hujia = sgs.addSkill("hujia");
+var jianxiong = sgs.addSkill("jianxiong+", {});
+var hujia = sgs.addSkill("hujia$", {});
 
-var caocao = sgs.addGeneral("caocao!", "wei");
-//caocao.skills = [ jianxiong, hujia ];
+var caocao = sgs.addGeneral("caocao$", "wei");
+caocao.skills = [ jianxiong, hujia];
 
 var zhangliao = sgs.addGeneral("zhangliao", "wei");
 var guojia = sgs.addGeneral("guojia", "wei", 3);
@@ -102,7 +102,7 @@ var simayi = sgs.addGeneral("simayi", "wei", 3);
 var xuchu = sgs.addGeneral("xuchu", "wei");
 var zhenji = sgs.addGeneral("zhenji", "wei", 3, false);
 
-var liubei = sgs.addGeneral("liubei!", "shu");
+var liubei = sgs.addGeneral("liubei$", "shu");
 var guanyu = sgs.addGeneral("guanyu", "shu");
 var zhangfei = sgs.addGeneral("zhangfei", "shu");
 var zhaoyun = sgs.addGeneral("zhaoyun", "shu");
@@ -110,7 +110,7 @@ var machao = sgs.addGeneral("machao", "shu");
 var zhugeliang = sgs.addGeneral("zhugeliang", "shu", 3);
 var huangyueying = sgs.addGeneral("huangyueying", "shu", 3, false);
 
-var sunquan = sgs.addGeneral("sunquan!", "wu");
+var sunquan = sgs.addGeneral("sunquan$", "wu");
 var zhouyu = sgs.addGeneral("zhouyu", "wu", 3);
 var lumeng = sgs.addGeneral("lumeng", "wu");
 var luxun = sgs.addGeneral("luxun", "wu", 3);

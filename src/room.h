@@ -25,6 +25,7 @@ private:
     QList<QTcpSocket*> sockets;
     QMap<QTcpSocket*, Player*> players;
     int player_count;
+    Player *focus;
 
     Q_INVOKABLE void setCommand(QTcpSocket *socket, Player *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(QTcpSocket *socket, Player *player, const QStringList &args);

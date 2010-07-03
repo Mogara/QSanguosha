@@ -23,6 +23,9 @@ Engine::Engine(QObject *parent)
     card_classes = new QObject(this);
     card_classes->setObjectName("card_classes");
 
+    skills = new QObject(this);
+    skills->setObjectName("skills");
+
     QStringList script_files;
     script_files << "init.js" << "cards.js" << "generals.js";
     foreach(QString filename, script_files){
@@ -101,6 +104,14 @@ QObject *Engine::addCardClass(const QString &class_name, const QString &type_str
     return card_class;
 }
 
+QObject *Engine::addSkill(const QString &name, const QScriptValue &obj){
+    if(obj.isObject()){
+        Skill *skill = new Skill(name, obj, skills);    
+        return skill;
+    }else
+        return NULL;
+}
+
 void Engine::addTranslationTable(const QScriptValue &table)
 {
     if(!table.isObject())
@@ -176,4 +187,8 @@ Card *Engine::getCard(int index){
         return NULL;
     else
         return cards[index];
+}
+
+Skill *Engine::getSkill(const QString &name){
+    return skills->findChild<Skill*>(name);
 }

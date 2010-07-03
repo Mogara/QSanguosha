@@ -1,17 +1,19 @@
 #include "general.h"
 #include "engine.h"
+#include "skill.h"
 
 General::General(const QString &name, const QString &kingdom, int max_hp, bool male, const QString &pixmap_dir)
     :kingdom(kingdom), max_hp(max_hp), male(male), pixmap_dir(pixmap_dir)
 {
-    QChar leader_symbol('!');
-    if(name.contains(leader_symbol)){
+    static QChar lord_symbol('$');
+    if(name.contains(lord_symbol)){
         QString copy = name;
-        setObjectName(copy.remove(leader_symbol));
+        copy.remove(lord_symbol);
         lord = true;
+        setObjectName(copy);
     }else{
-        setObjectName(name);
         lord = false;
+        setObjectName(name);
     }
 }
 
@@ -33,6 +35,20 @@ bool General::isFemale() const{
 
 bool General::isLord() const{
     return lord;
+}
+
+QObjectList General::getSkills() const{
+    return skills;
+}
+
+void General::setSkills(const QObjectList &skill_objs){
+    skills.clear();
+
+    foreach(QObject *skill_obj, skill_objs){
+        Skill *skill = qobject_cast<Skill*>(skill_obj);
+        if(skill)
+            skills << skill;
+    }
 }
 
 QString General::getPixmapPath(const QString &category) const{
