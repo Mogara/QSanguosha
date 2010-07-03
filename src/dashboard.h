@@ -30,7 +30,6 @@ private:
     QComboBox *sort_combobox;
 
     void adjustCards();
-    void setAvatar(const QString &name);
 
 private slots:
     void sortCards();

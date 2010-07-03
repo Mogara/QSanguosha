@@ -24,7 +24,7 @@ void Room::addSocket(QTcpSocket *socket){
     QStringList cards;
     int i;
     for(i=0;i<5;i++){
-        cards << QString::number(qrand()%108);
+        cards << QString::number(qrand()%104);
     }
     unicast(socket, "! drawCards " + cards.join("+"));
 }
@@ -39,9 +39,10 @@ void Room::unicast(QTcpSocket *socket, const QString &message){
     socket->write("\n");
 }
 
-void Room::broadcast(const QString &message){
+void Room::broadcast(const QString &message, QTcpSocket *except){
     foreach(QTcpSocket *socket, sockets){
-        unicast(socket, message);
+        if(socket != except)
+            unicast(socket, message);
     }
 }
 
@@ -124,11 +125,20 @@ void Room::getRequest(){
             player->setObjectName(name);
             player->setProperty("avatar", avatar);
 
-            foreach(QTcpSocket *sock, sockets){
-                if(sock != socket){
-                    //unicast(sock, QString("! addPlayer %1:%2").arg(name).arg(avatar));
-                    unicast(sock, "! drawCards 12");
-                }
+            // introduce the new joined player to existing players except himself
+            broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), socket);
+
+            // introduce all existing player to the new joined
+            QMapIterator<QTcpSocket*,Player*> itor(players);
+            while(itor.hasNext()){
+                itor.next();
+                Player *to_introduce = itor.value();
+                if(to_introduce == player)
+                    continue;
+
+                QString name = to_introduce->objectName();
+                QString avatar = to_introduce->property("avatar").toString();
+                unicast(socket, QString("! addPlayer %1:%2").arg(name).arg(avatar));
             }
         }
 

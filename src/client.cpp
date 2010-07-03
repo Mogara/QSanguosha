@@ -42,6 +42,7 @@ void Client::update(){
 
     while(canReadLine()){
         QString update_str = readLine(1024);
+        update_str.chop(1);
         QStringList words = update_str.split(QChar(' '));
 
         QString object = words[0];        
@@ -62,10 +63,7 @@ void Client::update(){
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
             // invoke parent methods
-            if(parent()){
-                const QMetaObject *meta = parent()->metaObject();
-                meta->invokeMethod(parent(), field, Qt::DirectConnection, Q_ARG(QString, value));
-            }
+            QMetaObject::invokeMethod(parent(), field, Qt::DirectConnection, Q_ARG(QString, value));
         }
     }
 }

@@ -14,7 +14,7 @@ public:
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
     void unicast(QTcpSocket *socket, const QString &message);
-    void broadcast(const QString &message);
+    void broadcast(const QString &message, QTcpSocket *except = NULL);
 
     Q_INVOKABLE void pushEvent(const QScriptValue &event);
 

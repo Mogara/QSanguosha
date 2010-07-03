@@ -34,34 +34,27 @@ void Dashboard::addCardItem(CardItem *card_item){
 void Dashboard::setPlayer(Player *player){
     this->player = player;
     const General *general = player->getGeneral();
-    if(general)
-        setAvatar(player->getGeneral()->objectName());
+    if(general == NULL)
+        general = Sanguosha->getGeneral(player->property("avatar").toString());
+
+    QString filename = general->getPixmapPath("big");
+    if(avatar)
+        avatar->changePixmap(filename);
     else
-        setAvatar(player->property("avatar").toString());
-}
+        avatar = new Pixmap(filename);
 
-void Dashboard::setAvatar(const QString &name){
-    const General *general = Sanguosha->getGeneral(name);
-    if(general){
-        QString filename = general->getPixmapPath("big");
-        if(avatar)
-            avatar->changePixmap(filename);
-        else
-            avatar = new Pixmap(filename);
+    avatar->setPos(837, 35);
+    avatar->setFlag(ItemIsSelectable);
+    avatar->setParent(this);
+    avatar->setParentItem(this);
 
-        avatar->setPos(837, 35);
-        avatar->setFlag(ItemIsSelectable);
-        avatar->setParent(this);
-        avatar->setParentItem(this);
-
-        if(kingdom)
-            kingdom->changePixmap(general->getKingdomPath());
-        else{
-            kingdom = new Pixmap(general->getKingdomPath());
-            kingdom->setParent(this);
-            kingdom->setParentItem(this);
-            kingdom->setPos(avatar->pos());
-        }
+    if(kingdom)
+        kingdom->changePixmap(general->getKingdomPath());
+    else{
+        kingdom = new Pixmap(general->getKingdomPath());
+        kingdom->setParent(this);
+        kingdom->setParentItem(this);
+        kingdom->setPos(avatar->pos());
     }
 }
 
