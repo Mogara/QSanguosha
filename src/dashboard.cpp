@@ -6,7 +6,7 @@
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), use_skill(false)
+    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), kingdom(NULL), use_skill(false)
 {
     int i;
     for(i=0; i<5; i++){
@@ -53,6 +53,15 @@ void Dashboard::setAvatar(const QString &name){
         avatar->setFlag(ItemIsSelectable);
         avatar->setParent(this);
         avatar->setParentItem(this);
+
+        if(kingdom)
+            kingdom->changePixmap(general->getKingdomPath());
+        else{
+            kingdom = new Pixmap(general->getKingdomPath());
+            kingdom->setParent(this);
+            kingdom->setParentItem(this);
+            kingdom->setPos(avatar->pos());
+        }
     }
 }
 

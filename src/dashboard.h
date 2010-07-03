@@ -26,7 +26,7 @@ private:
     QList<CardItem*> card_items;
     Player *player;
     QPixmap magatamas[5];
-    Pixmap *avatar;
+    Pixmap *avatar, *kingdom;
     bool use_skill;
     QComboBox *sort_combobox;
 
