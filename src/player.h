@@ -10,7 +10,6 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(bool wounded READ isWounded STORED false)
-    Q_PROPERTY(General *general READ getGeneral WRITE setGeneral)
     // name is just an alias to objectName
     Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
 
@@ -21,11 +20,11 @@ public:
     int getHp() const;
     void setHp(int hp);
     bool isWounded() const;
-    void setGeneral(General *general);
-    General *getGeneral() const;
+    void setGeneral(const General *general);
+    const General *getGeneral() const;
 
 private:
-    General *general;
+    const General *general;
     int hp;
 };
 

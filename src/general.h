@@ -24,6 +24,7 @@ public:
     bool isLeader() const;
 
     QString getPixmapPath(const QString &category) const;
+    QString getKingdomPath() const;
 
 private:
     QString kingdom;

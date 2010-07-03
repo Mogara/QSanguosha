@@ -14,7 +14,7 @@ class RoomScene : public QGraphicsScene
 public:
     RoomScene(Client *client, int player_count = 8);
     void updatePhotos();
-    void setGeneral(int index, const General *general);
+    void setPlayer(int index, const Player *player);
 
 public slots:
     void showBust(const QString &name);

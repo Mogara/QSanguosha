@@ -1,6 +1,7 @@
 #include "photo.h"
 #include "settings.h"
 #include "carditem.h"
+#include "engine.h"
 
 #include <QPainter>
 #include <QMimeData>
@@ -11,18 +12,30 @@
 
 Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
+    player(NULL),
     avatar_frame(":/images/avatar-frame.png")
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
 }
 
-void Photo::loadAvatar(const QString &filename){
-    avatar.load(filename);
+void Photo::setPlayer(const Player *player)
+{
+    this->player = player;
+    const General *general = player->getGeneral();    
+    if(general == NULL){
+        QString general_name = player->property("avatar").toString();
+        if(general_name.isEmpty())
+            return;
+        general = Sanguosha->getGeneral(general_name);
+    }
+    avatar.load(general->getPixmapPath("small"));
     avatar = avatar.scaled(QSize(128,58));
+    kingdom.load(general->getKingdomPath());
 }
 
-void Photo::speak(const QString &content){
+void Photo::speak(const QString &content)
+{
 
 }
 
@@ -31,6 +44,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(!avatar.isNull()){
         painter->drawPixmap(1, 13, avatar);
         painter->drawPixmap(0, 10, avatar_frame);
+        painter->drawPixmap(0,  0, kingdom);
     }
 }
 

@@ -18,11 +18,11 @@ bool Player::isWounded() const{
     return hp < general->getMaxHp();
 }
 
-void Player::setGeneral(General *general){
+void Player::setGeneral(const General *general){
     this->general = general;
     hp = general->getMaxHp();
 }
 
-General *Player::getGeneral() const{
+const General *Player::getGeneral() const{
     return general;
 }

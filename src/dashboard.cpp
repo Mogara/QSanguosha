@@ -33,7 +33,7 @@ void Dashboard::addCardItem(CardItem *card_item){
 
 void Dashboard::setPlayer(Player *player){
     this->player = player;
-    General *general = player->getGeneral();
+    const General *general = player->getGeneral();
     if(general)
         setAvatar(player->getGeneral()->objectName());
     else

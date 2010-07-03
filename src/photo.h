@@ -2,6 +2,7 @@
 #define PHOTO_H
 
 #include "pixmap.h"
+#include "player.h"
 
 #include <QGraphicsObject>
 #include <QPixmap>
@@ -10,7 +11,7 @@ class Photo : public Pixmap
 {
 public:
     explicit Photo();
-    void loadAvatar(const QString &filename);
+    void setPlayer(const Player *player);
     void speak(const QString &content);
 
 protected:
@@ -18,8 +19,10 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 
 private:
+    const Player *player;
     QPixmap avatar;
     QPixmap avatar_frame;
+    QPixmap kingdom;
 };
 
 #endif // PHOTOBACK_H

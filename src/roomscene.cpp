@@ -82,15 +82,19 @@ void RoomScene::startEnterAnimation(){
     group->addAnimation(enlarge);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    Player *player = new Player(this);
+    player->setProperty("avatar", "zhangliao");
+    setPlayer(2, player);
 }
 
-void RoomScene::setGeneral(int index, const General *general)
+void RoomScene::setPlayer(int index, const Player *player)
 {
     if(index < 0 || index >= photos.size())
         return;
 
     Photo *photo = photos[index];
-    photo->loadAvatar(general->getPixmapPath("small"));
+    photo->setPlayer(player);
 }
 
 void RoomScene::updatePhotos(){

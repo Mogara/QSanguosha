@@ -39,3 +39,7 @@ QString General::getPixmapPath(const QString &category) const{
     return QString("%1/%2/%3.png").arg(pixmap_dir).arg(category).arg(objectName());
 }
 
+QString General::getKingdomPath() const{
+    return QString("%1/kingdom/%2").arg(pixmap_dir).arg(kingdom);
+}
+
