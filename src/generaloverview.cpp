@@ -12,7 +12,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     QList<General*> generals = generals_obj->findChildren<General*>();
     ui->tableWidget->setRowCount(generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
-    QIcon leader_icon(":/images/leader.png");
+    QIcon lord_icon(":/images/roles/lord.png");
 
     int i;
     for(i=0; i<generals.length(); i++){
@@ -29,7 +29,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
         name_item->setTextAlignment(Qt::AlignHCenter);
         name_item->setData(Qt::UserRole, general->objectName());
         if(general->isLord()){
-            name_item->setIcon(leader_icon);
+            name_item->setIcon(lord_icon);
             name_item->setTextAlignment(Qt::AlignLeft);
         }
 

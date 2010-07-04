@@ -15,6 +15,9 @@
         <file>images/magatamas/5.png</file>
         <file>images/dashboard.png</file>
         <file>images/background.png</file>
-        <file>images/leader.png</file>
+        <file>images/roles/lord.png</file>
+        <file>images/roles/loyalist.png</file>
+        <file>images/roles/rebel.png</file>
+        <file>images/roles/renegade.png</file>
     </qresource>
 </RCC>

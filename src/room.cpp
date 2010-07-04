@@ -7,6 +7,7 @@
 #include <QHostAddress>
 #include <QCoreApplication>
 #include <QScriptValueIterator>
+#include <QTimer>
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL)
@@ -29,7 +30,7 @@ void Room::addSocket(QTcpSocket *socket){
     unicast(socket, "! drawCards " + cards.join("+"));
 
     if(isFull())
-        startGame();
+        QTimer::singleShot(5000, this, SLOT(startGame()));    
 }
 
 bool Room::isFull() const
@@ -220,6 +221,8 @@ void Room::startGame(){
         else
             unicast(socket, ". role " + player->getRole());
     }
+
+    broadcast("! startGame .");
 }
 
 

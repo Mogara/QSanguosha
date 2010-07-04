@@ -192,5 +192,6 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 }
 
 void MainWindow::updateRoleCombobox(const QString &new_role){
-    role_combobox->setItemText(1, Sanguosha->translate(new_role));
+    role_combobox->setItemText(1, Sanguosha->translate(new_role));    
+    role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
 }
