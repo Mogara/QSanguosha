@@ -2,6 +2,8 @@
 #include "settings.h"
 #include "engine.h"
 
+#include <QMessageBox>
+
 Client::Client(QObject *parent)
     :QTcpSocket(parent), room(new QObject(this))
 {
@@ -58,7 +60,8 @@ void Client::processReply(){
         }else if(object.startsWith(method_prefix)){
             // invoke methods            
             QMetaObject::invokeMethod(this, field, Qt::DirectConnection, Q_ARG(QString, value));
-        }
+        }else
+            QMessageBox::information(NULL, tr("Reply format error!"), reply);
     }
 }
 

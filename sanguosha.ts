@@ -281,6 +281,16 @@
         <source>Network error</source>
         <translation>网络错误</translation>
     </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="176"/>
+        <source>Your role</source>
+        <translation>您的角色</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="177"/>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
 </context>
 <context>
     <name>Room</name>

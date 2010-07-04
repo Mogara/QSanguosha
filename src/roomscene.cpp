@@ -126,6 +126,7 @@ void RoomScene::removePlayer(const QString &player_name){
     Photo *photo = name2photo[player_name];
     if(photo){
         photo->setPlayer(NULL);
+        photo->update();
         name2photo.remove(player_name);
     }
 }

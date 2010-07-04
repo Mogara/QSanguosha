@@ -115,7 +115,11 @@ void Engine::addTranslationTable(const QScriptValue &table)
 }
 
 QString Engine::translate(const QString &to_translate){
-    return translation->property(to_translate.toAscii()).toString();
+    QString translated = translation->property(to_translate.toAscii()).toString();
+    if(translated.isEmpty())
+        return to_translate;
+    else
+        return translated;
 }
 
 QScriptValue Engine::doScript(const QString &filename){

@@ -27,6 +27,9 @@ void Room::addSocket(QTcpSocket *socket){
         cards << QString::number(qrand()%104);
     }
     unicast(socket, "! drawCards " + cards.join("+"));
+
+    if(isFull())
+        startGame();
 }
 
 bool Room::isFull() const

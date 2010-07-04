@@ -7,6 +7,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QSettings>
+#include <QComboBox>
 
 namespace Ui {
     class MainWindow;
@@ -25,6 +26,7 @@ private:
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
+    QComboBox *role_combobox;
 
     void restoreFromConfig();
     void createSkillButtons(const Player *player);
@@ -39,6 +41,7 @@ private slots:
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
     void startGameInAnotherInstance();
+    void updateRoleCombobox(const QString &new_role);
 };
 
 #endif // MAINWINDOW_H

@@ -37,7 +37,7 @@ protected:
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    :QMainWindow(parent), ui(new Ui::MainWindow)
+    :QMainWindow(parent), ui(new Ui::MainWindow), role_combobox(NULL)
 {
     ui->setupUi(this);
     QApplication::setApplicationName(tr("Open Source Sanguosha"));
@@ -166,8 +166,19 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     Client *client = qobject_cast<Client*>(sender());
-    createSkillButtons(client->getPlayer());
-    gotoScene(new RoomScene(client, 3, this));
+    const Player *player = client->getPlayer();
+
+    // add skill buttons
+    createSkillButtons(player);
+
+    // add role combobox
+    role_combobox = new QComboBox;
+    role_combobox->addItem(tr("Your role"));
+    role_combobox->addItem(tr("Unknown"));
+    statusBar()->addPermanentWidget(role_combobox);
+    connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
+
+    gotoScene(new RoomScene(client, 2, this));
 }
 
 void MainWindow::startGameInAnotherInstance(){
@@ -178,4 +189,8 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 {
     GeneralOverview *overview = new GeneralOverview(this);
     overview->show();
+}
+
+void MainWindow::updateRoleCombobox(const QString &new_role){
+    role_combobox->setItemText(1, Sanguosha->translate(new_role));
 }
