@@ -16,14 +16,11 @@ public:
     RoomScene(Client *client, int player_count, QMainWindow *main_window);
     void updatePhotos();
 
-    Q_INVOKABLE void addPlayer(const QString &player_info);
-    Q_INVOKABLE void removePlayer(const QString &player_name);
-    Q_INVOKABLE void drawCards(const QString &cards_str);
-    Q_INVOKABLE void nameDuplication(const QString &name);
-    Q_INVOKABLE void focusWarn(const QString &);
-
 public slots:
     void showBust(const QString &name);
+    void addPlayer(Player *player);
+    void removePlayer(const QString &player_name);
+    void drawCards(const QList<Card *> &cards);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -32,7 +29,7 @@ protected:
 private:
     Client *client;
     QList<Photo*> photos;
-    QMap<QString, Photo*> photo_map;
+    QMap<QString, Photo*> name2photo;
     Dashboard *dashboard;
     Pixmap *pile;
     QGraphicsSimpleTextItem *skill_label;

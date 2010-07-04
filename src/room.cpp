@@ -166,5 +166,58 @@ void Room::signupCommand(QTcpSocket *socket, Player *player, const QStringList &
     }
 }
 
+void Room::startGame(){
+    struct assign_table{
+        int lords;
+        int loyalists;
+        int rebels;
+        int renegades;
+    };
+
+    struct assign_table role_assign_table[] = {
+        {},
+        {},
+
+        { 1, 0, 1, 0}, // 2
+        { 1, 0, 1, 1}, // 3
+        { 1, 1, 1, 1}, // 4
+        { 1, 1, 2, 1}, // 5
+        { 1, 1, 3, 1}, // 6
+        { 1, 2, 3, 1}, // 7
+        { 1, 2, 4, 1}, // 8
+    };
+
+    int n = sockets.count();
+
+    struct assign_table *table = &role_assign_table[n];
+    QStringList roles;
+    int i;
+    for(i=0;i<table->lords;i++)
+        roles << "lord";
+    for(i=0;i<table->loyalists;i++)
+        roles << "loyalist";
+    for(i=0;i<table->rebels;i++)
+        roles << "rebel";
+    for(i=0;i<table->renegades;i++)
+        roles << "renegade";
+
+    for(i=0; i<n; i++){
+        int r1 = qrand() % n;
+        int r2 = qrand() % n;
+        roles.swap(r1, r2);
+    }
+
+    for(i=0; i<n; i++){
+        QTcpSocket *socket = sockets[i];
+        Player *player = players[socket];
+        player->setRole(roles[i]);
+
+        if(roles[i] == "lord")
+            broadcast(QString("#%1 role lord").arg(player->objectName()));
+        else
+            unicast(socket, ". role " + player->getRole());
+    }
+}
+
 
 

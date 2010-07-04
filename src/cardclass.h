@@ -9,16 +9,15 @@ class CardClass : public QObject
 {
     Q_OBJECT
 public:
-    enum Type {Basic, Equip, Trick, UserDefined};
     friend class Card;
 
-    explicit CardClass(const QString &name, enum Type type, int id, const QString &pixmap_path);
+    explicit CardClass(const QString &name, const QString &type, int id, const QString &pixmap_dir);
     QString getPixmapPath() const;
 
 private:
-    enum Type type;
+    QString type;
     int id;
-    QString pixmap_path;
+    QString pixmap_dir;
 };
 
 #endif // CARDCLASS_H

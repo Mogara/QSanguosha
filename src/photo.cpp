@@ -22,23 +22,18 @@ Photo::Photo()
 void Photo::setPlayer(const Player *player)
 {
     this->player = player;
-    if(player == NULL)
+    if(player == NULL){
         return;
-
-    const General *general = player->getGeneral();    
-    if(general == NULL){
-        QString general_name = player->property("avatar").toString();
-        if(general_name.isEmpty())
-            return;
-        general = Sanguosha->getGeneral(general_name);
     }
+
+    const General *general = player->getAvatarGeneral();
     avatar.load(general->getPixmapPath("small"));
     avatar = avatar.scaled(QSize(128,58));
     kingdom.load(general->getKingdomPath());
 }
 
-bool Photo::isOccupied() const{
-    return this->player != NULL;
+const Player *Photo::getPlayer() const{
+    return player;
 }
 
 void Photo::speak(const QString &content)

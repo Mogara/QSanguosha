@@ -34,6 +34,7 @@ private slots:
     void reportDisconnection();
     void reportMessage(QTcpSocket *socket, const QString &message);
     void getRequest();
+    void startGame();
 
 signals:
     void room_message(const QString &);

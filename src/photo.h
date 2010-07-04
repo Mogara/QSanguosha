@@ -12,7 +12,7 @@ class Photo : public Pixmap
 public:
     explicit Photo();
     void setPlayer(const Player *player);
-    bool isOccupied() const;
+    const Player *getPlayer() const;
     void speak(const QString &content);
 
 protected:

@@ -15,6 +15,7 @@
 #include <QGLWidget>
 #include <QTime>
 #include <QProcess>
+#include <QCheckBox>
 
 class FitView : public QGraphicsView
 {
@@ -77,6 +78,32 @@ void MainWindow::restoreFromConfig(){
     move(Config.value("WindowPosition").toPoint());
 }
 
+void MainWindow::createSkillButtons(const Player *player){
+    QStatusBar *status_bar = statusBar();
+    const General *general = player->getAvatarGeneral();
+
+    QObjectList skills = general->getSkills();
+    foreach(QObject *skill_obj, skills){
+        Skill *skill = qobject_cast<Skill*>(skill_obj);
+        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
+        if(skill->isCompulsory()){
+            button->setText(button->text() + tr("[Compulsory]"));
+            button->setDisabled(true);
+        }
+
+        if(skill->isLordSkill()){
+            button->setText(button->text() + tr("[Lord Skill]"));
+        }
+
+        status_bar->addPermanentWidget(button);
+        if(skill->isFrequent()){
+            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
+            checkbox->setChecked(true);
+            status_bar->addPermanentWidget(checkbox);
+        }
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *){
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
@@ -126,12 +153,12 @@ void MainWindow::on_actionStart_Server_triggered()
 void MainWindow::startConnection(){
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(error_message(QString)), SLOT(connectionError(QString)));
+    connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
     connect(client, SIGNAL(connected()), SLOT(enterRoom()));
 }
 
-void MainWindow::connectionError(const QString &error_msg){
-    QMessageBox::warning(this, tr("Connection failed"), error_msg);
+void MainWindow::networkError(const QString &error_msg){
+    QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
 void MainWindow::enterRoom(){
@@ -139,7 +166,8 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     Client *client = qobject_cast<Client*>(sender());
-    gotoScene(new RoomScene(client, 8, this));
+    createSkillButtons(client->getPlayer());
+    gotoScene(new RoomScene(client, 3, this));
 }
 
 void MainWindow::startGameInAnotherInstance(){

@@ -15,7 +15,7 @@ class Dashboard : public Pixmap
 public:
     Dashboard();
     void addCardItem(CardItem *card_item);
-    void setPlayer(Player *player);    
+    void setPlayer(const Player *player);
     Pixmap *getAvatar();
 
 protected:
@@ -23,7 +23,7 @@ protected:
 
 private:
     QList<CardItem*> card_items;
-    Player *player;
+    const Player *player;
     QPixmap magatamas[5];
     Pixmap *avatar, *kingdom;
     bool use_skill;

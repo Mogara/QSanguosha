@@ -9,7 +9,6 @@
 #include <MediaObject>
 #include <QMessageBox>
 #include <QStatusBar>
-#include <QCheckBox>
 
 RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     :client(client), bust(NULL)
@@ -32,19 +31,24 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     }
 
     // create dashboard
+    const Player *player = client->getPlayer();
     dashboard = new Dashboard;
-    Player *self = new Player(this);
-    self->setObjectName(Config.UserName);
-    self->setProperty("avatar", Config.UserAvatar);
-    client->setSelf(self);
-    dashboard->setPlayer(self);
-    createSkillButtons(main_window, self);
     addItem(dashboard);
+    dashboard->setPlayer(player);
+
+    // createSkillButtons(main_window, self);
+
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();
 
     startEnterAnimation();
+
+    // do signal-slot connections
+    connect(client, SIGNAL(player_added(Player*)), this, SLOT(addPlayer(Player*)));
+    connect(client, SIGNAL(player_removed(QString)), this, SLOT(removePlayer(QString)));
+    connect(client, SIGNAL(cards_drawed(QList<Card*>)), this, SLOT(drawCards(QList<Card*>)));
+
     client->signup();
 }
 
@@ -92,62 +96,38 @@ void RoomScene::startEnterAnimation(){
 }
 
 void RoomScene::createSkillButtons(QMainWindow *main_window, Player *player){
-    QStatusBar *status_bar = main_window->statusBar();
-    const General *general = player->getGeneral();
-    if(general == NULL)
-        general = Sanguosha->getGeneral(player->property("avatar").toString());
 
-    QObjectList skills = general->getSkills();
-    foreach(QObject *skill_obj, skills){
-        Skill *skill = qobject_cast<Skill*>(skill_obj);
-        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
-        if(skill->isCompulsory()){
-            button->setText(button->text() + tr("[Compulsory]"));
-            button->setDisabled(true);
-        }
-
-        if(skill->isLordSkill()){
-            button->setText(button->text() + tr("[Lord Skill]"));
-        }
-
-        status_bar->addPermanentWidget(button);
-        if(skill->isFrequent()){
-            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
-            checkbox->setChecked(true);
-            status_bar->addPermanentWidget(checkbox);
-        }
-    }
 }
 
-void RoomScene::addPlayer(const QString &player_info){    
-    QStringList words = player_info.split(":");
-    if(words.length() >=2){
-        Player *player = new Player(this);
-        QString name = words[0];
-        QString avatar = words[1];
-        player->setObjectName(name);
-        player->setProperty("avatar", avatar);
+void RoomScene::addPlayer(Player *player){
+    if(player->objectName() == Config.UserName){
+        QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(Config.UserName));
+        exit(1);
+    }
 
-        int i;
-        for(i=0; i<photos.length(); i++){
-            Photo *photo = photos[i];
-            if(!photo->isOccupied()){
-                photo->setPlayer(player);
-                photo_map[name] = photo;
+    int i;
+    for(i=0; i<photos.length(); i++){
+        Photo *photo = photos[i];
+        if(photo->getPlayer() == NULL){
+            photo->setPlayer(player);
+            name2photo[player->objectName()] = photo;
 
-                Phonon::MediaSource source("audio/add-player.wav");
-                Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, source);
-                effect->play();
-                return;
-            }
+            // play enter room effect
+            Phonon::MediaSource source("audio/add-player.wav");
+            Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, source);
+            effect->play();
+
+            return;
         }
     }
 }
 
 void RoomScene::removePlayer(const QString &player_name){
-    Photo *photo = photo_map[player_name];
-    if(photo)
+    Photo *photo = name2photo[player_name];
+    if(photo){
         photo->setPlayer(NULL);
+        name2photo.remove(player_name);
+    }
 }
 
 void RoomScene::updatePhotos(){
@@ -186,23 +166,10 @@ void RoomScene::showBust(const QString &name)
     connect(appear, SIGNAL(finished()), bust, SIGNAL(visibleChanged()));
 }
 
-void RoomScene::drawCards(const QString &cards_str)
-{
-    QStringList card_list = cards_str.split("+");
-    foreach(QString card_str, card_list){
-        int card_id = card_str.toInt();
-        Card *card = Sanguosha->getCard(card_id);
+void RoomScene::drawCards(const QList<Card *> &cards){
+    foreach(Card * card, cards){
         dashboard->addCardItem(new CardItem(card));
     }
-}
-
-void RoomScene::nameDuplication(const QString &name){
-    QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(name));
-    exit(1);
-}
-
-void RoomScene::focusWarn(const QString &){
-    QMessageBox::warning(NULL, tr("Warning"), tr("You are not focus"));
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){

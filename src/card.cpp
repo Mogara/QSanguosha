@@ -42,13 +42,8 @@ QString Card::getNumberString() const{
     }
 }
 
-QString Card::getTypeString() const{
-    switch(card_class->type){
-    case CardClass::Basic: return "basic";
-    case CardClass::Equip: return "equip";
-    case CardClass::Trick: return "trick";
-    default: return "user_defined";
-    }
+QString Card::getType() const{
+    return card_class->type;
 }
 
 Card::Suit Card::getSuit() const{
@@ -67,8 +62,15 @@ bool Card::CompareBySuitNumber(const Card *a, const Card *b){
 }
 
 bool Card::CompareByType(const Card *a, const Card *b){
-    int order1 = a->card_class->type * 10000 + a->card_class->id;
-    int order2 = b->card_class->type * 10000 + b->card_class->id;
+    static QMap<QString,int> typemap;
+    if(typemap.isEmpty()){
+        typemap["basic"] = 0;
+        typemap["equip"] = 1;
+        typemap["trick"] = 2;
+    }
+
+    int order1 = typemap[a->card_class->type] * 10000 + a->card_class->id;
+    int order2 = typemap[b->card_class->type] * 10000 + b->card_class->id;
     if(order1 != order2)
         return order1 < order2;
     else

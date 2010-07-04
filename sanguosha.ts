@@ -4,22 +4,22 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="75"/>
+        <location filename="src/client.cpp" line="69"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="76"/>
+        <location filename="src/client.cpp" line="70"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="78"/>
+        <location filename="src/client.cpp" line="72"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="81"/>
+        <location filename="src/client.cpp" line="75"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -89,20 +89,11 @@
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
-    <message>
-        <source>[Compulsory]</source>
-        <oldsource>Compulsory</oldsource>
-        <translation type="obsolete">[锁定]</translation>
-    </message>
-    <message>
-        <source>[Lord Skill]</source>
-        <translation type="obsolete">[主公技]</translation>
-    </message>
 </context>
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="138"/>
+        <location filename="src/engine.cpp" line="128"/>
         <source>%1
 
  Stack trace:
@@ -113,18 +104,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="143"/>
+        <location filename="src/engine.cpp" line="133"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="146"/>
+        <location filename="src/engine.cpp" line="136"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="154"/>
-        <location filename="src/engine.cpp" line="159"/>
+        <location filename="src/engine.cpp" line="144"/>
+        <location filename="src/engine.cpp" line="149"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
@@ -186,7 +177,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="101"/>
+        <location filename="src/mainwindow.cpp" line="128"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -256,24 +247,39 @@
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="42"/>
+        <location filename="src/mainwindow.cpp" line="43"/>
         <source>Open Source Sanguosha</source>
         <translation>开源三国杀</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="102"/>
+        <location filename="src/mainwindow.cpp" line="90"/>
+        <source>[Compulsory]</source>
+        <translation>[锁定]</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="95"/>
+        <source>[Lord Skill]</source>
+        <translation>[主公技]</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="100"/>
+        <source>Auto use</source>
+        <translation>自动使用</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="129"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="112"/>
+        <location filename="src/mainwindow.cpp" line="139"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="134"/>
-        <source>Connection failed</source>
-        <translation>连接失败</translation>
+        <location filename="src/mainwindow.cpp" line="161"/>
+        <source>Network error</source>
+        <translation>网络错误</translation>
     </message>
 </context>
 <context>
@@ -292,39 +298,14 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="105"/>
-        <source>[Compulsory]</source>
-        <translation>[锁定]</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="110"/>
-        <source>[Lord Skill]</source>
-        <translation>[主公技]</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="115"/>
-        <source>Auto use</source>
-        <translation>自动使用</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="200"/>
+        <location filename="src/roomscene.cpp" line="104"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="200"/>
+        <location filename="src/roomscene.cpp" line="104"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="205"/>
-        <source>Warning</source>
-        <translation>警告</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="205"/>
-        <source>You are not focus</source>
-        <translation>您不是焦点</translation>
     </message>
 </context>
 <context>

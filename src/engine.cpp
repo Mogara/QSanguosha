@@ -87,18 +87,8 @@ QObject *Engine::addCard(const QString &name, const QScriptValue &suit_value, co
         return NULL;
 }
 
-QObject *Engine::addCardClass(const QString &class_name, const QString &type_str){
+QObject *Engine::addCardClass(const QString &class_name, const QString &type){
     int id = card_classes->children().count();
-    CardClass::Type type;
-    if(type_str == "basic")
-        type = CardClass::Basic;
-    else if(type_str == "equip")
-        type = CardClass::Equip;
-    else if(type_str == "trick")
-        type = CardClass::Trick;
-    else
-        type = CardClass::UserDefined;
-
     CardClass *card_class = new CardClass(class_name, type, id, pixmap_dir);
     card_class->setParent(card_classes);
     return card_class;

@@ -31,11 +31,9 @@ void Dashboard::addCardItem(CardItem *card_item){
     adjustCards();
 }
 
-void Dashboard::setPlayer(Player *player){
+void Dashboard::setPlayer(const Player *player){
     this->player = player;
-    const General *general = player->getGeneral();
-    if(general == NULL)
-        general = Sanguosha->getGeneral(player->property("avatar").toString());
+    const General *general = player->getAvatarGeneral();
 
     QString filename = general->getPixmapPath("big");
     if(avatar)

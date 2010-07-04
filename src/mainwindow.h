@@ -27,6 +27,7 @@ private:
     ConnectionDialog *connection_dialog;
 
     void restoreFromConfig();
+    void createSkillButtons(const Player *player);
 
 private slots:
     void on_actionGeneral_Overview_triggered();
@@ -34,7 +35,7 @@ private slots:
     void on_actionExit_triggered();
 
     void startConnection();
-    void connectionError(const QString &error_msg);
+    void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
     void startGameInAnotherInstance();

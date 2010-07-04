@@ -11,7 +11,7 @@ class Card : public QObject
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
-    Q_PROPERTY(QString type READ getTypeString CONSTANT)
+    Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
 
 public:
@@ -27,7 +27,7 @@ public:
     bool isBlack() const;
     int getNumber() const;
     QString getNumberString() const;
-    QString getTypeString() const;
+    QString getType() const;
     enum Suit getSuit() const;
     QString getPixmapPath() const;
 
