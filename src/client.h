@@ -18,6 +18,7 @@ public:
     Q_INVOKABLE void removePlayer(const QString &player_name);
     Q_INVOKABLE void drawCards(const QString &cards_str);
     Q_INVOKABLE void getLords(const QString &lords_str);
+    Q_INVOKABLE void getGenerals(const QString &generals_str);
 
 public slots:
     void request(const QString &message);
@@ -37,6 +38,7 @@ signals:
     void player_removed(const QString &player_name);
     void cards_drawed(const QList<Card *> &cards);
     void lords_got(const QList<const General*> &lords);
+    void generals_got(const General *lord, const QList<const General *> &generals);
 };
 
 #endif // CLIENT_H

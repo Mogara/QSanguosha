@@ -38,6 +38,7 @@ public:
     QEvent::Type getEventType() const;
     Skill *getSkill(const QString &name);
     QString getLords(int lord_count = 5);
+    void getRandomGenerals(QList<const General *> &list, QString except, int count);
 
 private:
     QObject *generals;

@@ -24,6 +24,7 @@ private:
     QList<Player*> players;
     int player_count;
     Player *focus;
+    QList<int> draw_pile, discard_pile;
 
     Q_INVOKABLE void setCommand(Player *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(Player *player, const QStringList &args);

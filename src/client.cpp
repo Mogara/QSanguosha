@@ -122,6 +122,18 @@ void Client::getLords(const QString &lords_str){
     emit lords_got(lords);
 }
 
+void Client::getGenerals(const QString &generals_str){
+    QStringList generals_list = generals_str.split("+");
+    QList<const General *> generals;
+    foreach(QString general_name, generals_list){
+        const General *general = Sanguosha->getGeneral(general_name);
+        generals << general;
+    }
+
+    const General *lord = generals.takeFirst();
+    emit generals_got(lord, generals);
+}
+
 void Client::itemChosen(const QString &item_name){
     if(!item_name.isEmpty())
         request("choose " + item_name);

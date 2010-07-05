@@ -9,7 +9,7 @@ Player::Player(QObject *parent)
 }
 
 void Player::setHp(int hp){
-    if(hp > 0 && hp <= general->getMaxHp())
+    if(hp >= 0 && hp <= general->getMaxHp())
         this->hp = hp;
 }
 

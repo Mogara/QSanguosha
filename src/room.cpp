@@ -147,7 +147,7 @@ void Room::startGame(){
         int renegades;
     };
 
-    struct assign_table role_assign_table[] = {
+    static struct assign_table role_assign_table[] = {
         {},
         {},
 
@@ -174,6 +174,8 @@ void Room::startGame(){
     for(i=0;i<table->renegades;i++)
         roles << "renegade";
 
+    Q_ASSERT(roles.count() == n);
+
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
         int r2 = qrand() % n;
@@ -188,8 +190,6 @@ void Room::startGame(){
         else
             player->unicast(". role " + roles[i]);
     }
-
-    broadcast("! startGame .");
 }
 
 void Room::chooseCommand(Player *player, const QStringList &args){

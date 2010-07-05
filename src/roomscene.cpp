@@ -50,10 +50,14 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(player_removed(QString)), this, SLOT(removePlayer(QString)));
     connect(client, SIGNAL(cards_drawed(QList<Card*>)), this, SLOT(drawCards(QList<Card*>)));
     connect(client, SIGNAL(lords_got(QList<const General*>)), this, SLOT(chooseLord(QList<const General*>)));
+    connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
+            this, SLOT(chooseGeneral(const General*,QList<const General*>)));
+
 
     client->signup();
 
-    client->getLords("caocao+liubei+sunquan+guojia+zhangliao");
+    //client->getLords("caocao+liubei+sunquan+guojia+zhangliao");
+    client->getGenerals("caocao+guojia+simayi+zhangliao");
 }
 
 void RoomScene::startEnterAnimation(){
@@ -204,8 +208,6 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
-
-
 void RoomScene::chooseLord(const QList<const General *> &lords){
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose lord"));
@@ -232,4 +234,42 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
     dialog->setLayout(layout);    
     dialog->show();
 }
+
+void RoomScene::chooseGeneral(const General *lord, const QList<const General *> &generals){
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Choose general"));
+    dialog->setModal(true);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    QSignalMapper *mapper = new QSignalMapper(dialog);
+
+    {
+        QString icon_path = lord->getPixmapPath("bust");
+        QString lord_name = Sanguosha->translate(lord->objectName());
+        QString caption = tr("Lord is %1").arg(lord_name);
+        OptionButton *button = new OptionButton(icon_path, caption);
+
+        layout->addWidget(button);
+    }
+
+    foreach(const General *general, generals){
+        QString icon_path = general->getPixmapPath("card");
+        QString caption = Sanguosha->translate(general->objectName());
+        OptionButton *button = new OptionButton(icon_path, caption);
+        layout->addWidget(button);
+
+        mapper->setMapping(button, general->objectName());
+        connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+    }
+
+    mapper->setMapping(dialog, generals.front()->objectName());
+    connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
+
+    connect(mapper, SIGNAL(mapped(QString)), client, SLOT(itemChosen(QString)));
+
+    dialog->setLayout(layout);
+    dialog->show();
+}
+
 

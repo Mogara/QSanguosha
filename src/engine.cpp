@@ -209,3 +209,28 @@ QString Engine::getLords(int lord_count){
 
     return lord_list.join("+");
 }
+
+void Engine::getRandomGenerals(QList<const General *> &list, QString except, int count){
+    QList<const General *> all_generals = generals->findChildren<const General*>();
+    int n = all_generals.count();
+    Q_ASSERT(n >= count + 1);
+
+    // shuffle them
+    int i;
+    for(i=0; i<n; i++){
+        int r1 = qrand() % n;
+        int r2 = qrand() % n;
+        all_generals.swap(r1, r2);
+    }
+
+    list.clear();
+    for(i=0; i<count; i++){
+        const General *general = all_generals[i];
+        if(generals->objectName() == except){
+            count++;
+            continue;
+        }
+
+        list << general;
+    }
+}

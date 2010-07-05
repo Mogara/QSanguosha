@@ -22,6 +22,7 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
     void chooseLord(const QList<const General *> &lords);
+    void chooseGeneral(const General *lord, const QList<const General*> &generals);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

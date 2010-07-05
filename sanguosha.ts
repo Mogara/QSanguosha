@@ -316,14 +316,30 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="108"/>
+        <location filename="src/roomscene.cpp" line="112"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="108"/>
+        <location filename="src/roomscene.cpp" line="112"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="213"/>
+        <source>Choose lord</source>
+        <translation>选择主公</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="240"/>
+        <source>Choose general</source>
+        <translation>选择武将</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="248"/>
+        <source>Lord is %1</source>
+        <oldsource>Lord is &lt;red&gt;%1&lt;/red&gt;</oldsource>
+        <translation>主公是%1</translation>
     </message>
 </context>
 <context>
