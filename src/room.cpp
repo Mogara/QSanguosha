@@ -225,5 +225,9 @@ void Room::startGame(){
     broadcast("! startGame .");
 }
 
+void Room::chooseCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+
+}
+
 
 

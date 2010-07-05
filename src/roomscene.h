@@ -13,7 +13,7 @@ class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene(Client *client, int player_count, QMainWindow *main_window);
+    RoomScene(Client *client, int player_count);
     void updatePhotos();
 
 public slots:
@@ -21,6 +21,7 @@ public slots:
     void addPlayer(Player *player);
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
+    void chooseLord(const QList<const General *> &lords);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

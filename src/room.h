@@ -29,6 +29,7 @@ private:
 
     Q_INVOKABLE void setCommand(QTcpSocket *socket, Player *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(QTcpSocket *socket, Player *player, const QStringList &args);
+    Q_INVOKABLE void chooseCommand(QTcpSocket *socket, Player *player, const QStringList &args);
 
 private slots:
     void reportDisconnection();

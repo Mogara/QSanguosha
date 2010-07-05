@@ -99,9 +99,9 @@ void Client::removePlayer(const QString &player_name){
     }
 }
 
-void Client::drawCards(const QString &card_str){
+void Client::drawCards(const QString &cards_str){
     QList<Card*> cards;
-    QStringList card_list = card_str.split("+");
+    QStringList card_list = cards_str.split("+");
     foreach(QString card_str, card_list){
         int card_id = card_str.toInt();
         Card *card = Sanguosha->getCard(card_id);
@@ -109,4 +109,20 @@ void Client::drawCards(const QString &card_str){
     }
 
     emit cards_drawed(cards);
+}
+
+void Client::getLords(const QString &lords_str){
+    QStringList lord_list = lords_str.split("+");
+    QList<const General *> lords;
+    foreach(QString lord_name, lord_list){
+        const General *general = Sanguosha->getGeneral(lord_name);
+        lords << general;
+    }
+
+    emit lords_got(lords);
+}
+
+void Client::itemChosen(const QString &item_name){
+    if(!item_name.isEmpty())
+        request("choose " + item_name);
 }

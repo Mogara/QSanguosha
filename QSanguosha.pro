@@ -28,7 +28,8 @@ SOURCES += src/main.cpp \
     src/generaloverview.cpp \
     src/player.cpp \
     src/event.cpp \
-    src/skill.cpp
+    src/skill.cpp \
+    src/optionbutton.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -49,7 +50,8 @@ HEADERS += src/mainwindow.h \
     src/generaloverview.h \
     src/player.h \
     src/event.h \
-    src/skill.h
+    src/skill.h \
+    src/optionbutton.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui

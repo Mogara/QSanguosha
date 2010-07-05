@@ -40,7 +40,7 @@ QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max
     general->setParent(generals);
 
     if(general->isLord())
-        lords << general;
+        lord_names << general->objectName();
 
     return general;
 }
@@ -185,4 +185,27 @@ Card *Engine::getCard(int index){
 
 Skill *Engine::getSkill(const QString &name){
     return skills->findChild<Skill*>(name);
+}
+
+QString Engine::getLords(int lord_count){
+    QStringList lord_list;
+    int min = qMin(lord_count, lord_names.count()), i;
+    for(i=0; i<min; i++)
+        lord_list << lord_names[i];
+
+    const QObjectList &lords = generals->children();
+    for(i=0; i<lord_count-min; i++){
+        const General *general = NULL;
+
+        while(general == NULL){
+            int r = qrand() % lords.count();
+            const General *chosen = qobject_cast<const General *>(lords[r]);
+            if(!chosen->isLord())
+                general = chosen;
+        }
+
+        lord_list << general->objectName();
+    }
+
+    return lord_list.join("+");
 }

@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow), role_combobox(NULL)
 {
     ui->setupUi(this);
-    QApplication::setApplicationName(tr("Open Source Sanguosha"));
     Sanguosha = new Engine(this);
 
     Config.init();
@@ -178,7 +177,7 @@ void MainWindow::enterRoom(){
     statusBar()->addPermanentWidget(role_combobox);
     connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
 
-    gotoScene(new RoomScene(client, 2, this));
+    gotoScene(new RoomScene(client, 2));
 }
 
 void MainWindow::startGameInAnotherInstance(){

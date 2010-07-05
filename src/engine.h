@@ -8,6 +8,7 @@
 #include <QScriptEngine>
 #include <QMap>
 #include <QEvent>
+#include <QStringList>
 
 class Engine : public QScriptEngine
 {
@@ -36,6 +37,7 @@ public:
     QString getPixmapDir() const;
     QEvent::Type getEventType() const;
     Skill *getSkill(const QString &name);
+    QString getLords(int lord_count = 5);
 
 private:
     QObject *generals;
@@ -46,7 +48,7 @@ private:
     QList<Card*> cards;
     QString pixmap_dir;
     QEvent::Type event_type;
-    QList<const General*> lords;
+    QStringList lord_names;
 };
 
 extern Engine *Sanguosha;
