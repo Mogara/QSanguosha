@@ -293,16 +293,24 @@
     </message>
 </context>
 <context>
+    <name>Player</name>
+    <message>
+        <location filename="src/player.cpp" line="74"/>
+        <source>Anonymous</source>
+        <translation>匿名</translation>
+    </message>
+</context>
+<context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="86"/>
-        <source>disconnected</source>
-        <translation>断开</translation>
+        <location filename="src/room.cpp" line="72"/>
+        <source>Event: </source>
+        <translation>事件: </translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="103"/>
-        <source>anonymous</source>
-        <translation>匿名</translation>
+        <location filename="src/room.cpp" line="81"/>
+        <source>disconnected</source>
+        <translation>断开</translation>
     </message>
 </context>
 <context>

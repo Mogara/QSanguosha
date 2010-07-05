@@ -4,6 +4,7 @@
 #include "general.h"
 
 #include <QObject>
+#include <QTcpSocket>
 
 class Player : public QObject
 {
@@ -12,7 +13,7 @@ class Player : public QObject
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
-    // Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar)
+
 public:
     explicit Player(QObject *parent = 0);
 
@@ -34,6 +35,20 @@ private:
 signals:
     void general_changed(const General *new_general);
     void role_changed(const QString &new_role);
+
+    // just for server side
+    //--------------------------------------------------
+public:
+    void setSocket(QTcpSocket *socket);
+    void unicast(const QString &message);
+    QString reportHeader() const;
+private:
+    QTcpSocket *socket;
+private slots:
+    void getRequest();
+signals:
+    void disconnected();
+    void request_got(const QString &request);
 };
 
 #endif // PLAYER_H

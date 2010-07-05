@@ -208,6 +208,7 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 
 void RoomScene::chooseLord(const QList<const General *> &lords){
     QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Choose lord"));
     dialog->setModal(true);
     QHBoxLayout *layout = new QHBoxLayout;
     QSignalMapper *mapper = new QSignalMapper(dialog);

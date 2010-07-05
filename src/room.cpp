@@ -15,19 +15,19 @@ Room::Room(QObject *parent, int player_count)
 }
 
 void Room::addSocket(QTcpSocket *socket){
-    sockets << socket;
     Player *player = new Player(this);
-    players[socket] = player;
+    player->setSocket(socket);
+    players << player;
 
-    connect(socket, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));   
+    connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
+    connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
 
     QStringList cards;
     int i;
     for(i=0;i<5;i++){
         cards << QString::number(qrand()%104);
     }
-    unicast(socket, "! drawCards " + cards.join("+"));
+    player->unicast("! drawCards " + cards.join("+"));
 
     if(isFull())
         QTimer::singleShot(5000, this, SLOT(startGame()));    
@@ -35,18 +35,13 @@ void Room::addSocket(QTcpSocket *socket){
 
 bool Room::isFull() const
 {
-    return sockets.length() == player_count;
+    return players.length() == player_count;
 }
 
-void Room::unicast(QTcpSocket *socket, const QString &message){
-    socket->write(message.toAscii());
-    socket->write("\n");
-}
-
-void Room::broadcast(const QString &message, QTcpSocket *except){
-    foreach(QTcpSocket *socket, sockets){
-        if(socket != except)
-            unicast(socket, message);
+void Room::broadcast(const QString &message, Player *except){
+    foreach(Player *player, players){
+        if(player != except)
+            player->unicast(message);
     }
 }
 
@@ -74,79 +69,56 @@ bool Room::event(QEvent *event){
             dump_str.append(", ");
     }
     dump_str.append("}");
-    emit room_message(dump_str);
+    emit room_message(tr("Event: ") + dump_str);
 
     event->accept();
     return true;
 }
 
 void Room::reportDisconnection(){
-    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
-    if(socket){
-        reportMessage(socket, tr("disconnected"));
+    Player *player = qobject_cast<Player*>(sender());
+    if(player){
+        emit room_message(player->reportHeader() + tr("disconnected"));
 
-        Player *player = players[socket];
         if(!player->objectName().isEmpty()){
-            broadcast("! removePlayer " + player->objectName(), socket);
+            broadcast("! removePlayer " + player->objectName(), player);
         }
 
-        sockets.removeOne(socket);        
-        players.remove(socket);
+        player->setSocket(NULL);
+        players.removeOne(player);
         delete player;
     }
 }
 
-void Room::reportMessage(QTcpSocket *socket, const QString &message){
-    int index = sockets.indexOf(socket);
-    QString name = players[socket]->objectName();
-    if(name.isEmpty())
-        name = tr("anonymous");
-
-    emit room_message(QString("%1[%2:%3] %4")
-                      .arg(name)
-                      .arg(socket->peerAddress().toString())
-                      .arg(index+1)
-                      .arg(message));
-}
-
-void Room::getRequest(){
-    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
-    if(!socket)
+void Room::processRequest(const QString &request){
+    QStringList args = request.split(" ");
+    QString command = args.front();
+    Player *player = qobject_cast<Player*>(sender());
+    if(player == NULL)
         return;
 
-    while(socket->canReadLine()){
-        QString request = socket->readLine(1024);
-        request.chop(1); // remove the ending '\n' character
-        QStringList args = request.split(" ");
-        QString command = args.front();
-        Player *player = players[socket];
-        if(player == NULL)
-            return;
-
-        if(focus && focus != player){
-            unicast(socket, "! focusWarn .");
-            return;
-        }
-
-        command.append("Command");
-        QMetaObject::invokeMethod(this,
-                                  command.toAscii(),
-                                  Qt::DirectConnection,
-                                  Q_ARG(QTcpSocket *, socket),
-                                  Q_ARG(Player *, player),
-                                  Q_ARG(QStringList, args));
-
-        reportMessage(socket, request);
+    if(focus && focus != player){
+        player->unicast("! focusWarn .");
+        return;
     }
+
+    command.append("Command");
+    QMetaObject::invokeMethod(this,
+                              command.toAscii(),
+                              Qt::DirectConnection,
+                              Q_ARG(Player *, player),
+                              Q_ARG(QStringList, args));
+
+   emit room_message(player->reportHeader() + request);
 }
 
-void Room::setCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+void Room::setCommand(Player *player, const QStringList &args){
     QString field = args[1];
     QString value = args[2];
     player->setProperty(field.toAscii(), value);
 }
 
-void Room::signupCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+void Room::signupCommand(Player *player, const QStringList &args){
     QString name = args[1];
     QString avatar = args[2];
 
@@ -154,19 +126,16 @@ void Room::signupCommand(QTcpSocket *socket, Player *player, const QStringList &
     player->setProperty("avatar", avatar);
 
     // introduce the new joined player to existing players except himself
-    broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), socket);
+    broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), player);
 
     // introduce all existing player to the new joined
-    QMapIterator<QTcpSocket*,Player*> itor(players);
-    while(itor.hasNext()){
-        itor.next();
-        Player *to_introduce = itor.value();
-        if(to_introduce == player)
+    foreach(Player *p, players){
+        if(p == player)
             continue;
 
-        QString name = to_introduce->objectName();
-        QString avatar = to_introduce->property("avatar").toString();
-        unicast(socket, QString("! addPlayer %1:%2").arg(name).arg(avatar));
+        QString name = p->objectName();
+        QString avatar = p->property("avatar").toString();
+        player->unicast(QString("! addPlayer %1:%2").arg(name).arg(avatar));
     }
 }
 
@@ -191,7 +160,7 @@ void Room::startGame(){
         { 1, 2, 4, 1}, // 8
     };
 
-    int n = sockets.count();
+    int n = players.count();
 
     struct assign_table *table = &role_assign_table[n];
     QStringList roles;
@@ -212,20 +181,18 @@ void Room::startGame(){
     }
 
     for(i=0; i<n; i++){
-        QTcpSocket *socket = sockets[i];
-        Player *player = players[socket];
+        Player *player = players[i];
         player->setRole(roles[i]);
-
         if(roles[i] == "lord")
             broadcast(QString("#%1 role lord").arg(player->objectName()));
         else
-            unicast(socket, ". role " + player->getRole());
+            player->unicast(". role " + roles[i]);
     }
 
     broadcast("! startGame .");
 }
 
-void Room::chooseCommand(QTcpSocket *socket, Player *player, const QStringList &args){
+void Room::chooseCommand(Player *player, const QStringList &args){
 
 }
 

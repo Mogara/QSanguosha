@@ -1,8 +1,10 @@
 #include "player.h"
 #include "engine.h"
 
+#include <QHostAddress>
+
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), hp(-1)
+    :QObject(parent), general(NULL), hp(-1), socket(NULL)
 {
 }
 
@@ -49,4 +51,34 @@ const General *Player::getAvatarGeneral() const{
     if(general_name.isEmpty())
         return NULL;
     return Sanguosha->getGeneral(general_name);
+}
+
+void Player::setSocket(QTcpSocket *socket){
+    this->socket = socket;
+    if(socket){
+        connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+        connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));
+    }
+}
+
+void Player::unicast(const QString &message){
+    if(socket){
+        socket->write(message.toAscii());
+        socket->write("\n");
+    }
+}
+
+QString Player::reportHeader() const{
+    QString name = objectName();
+    if(name.isEmpty())
+        name = tr("Anonymous");
+    return QString("%1[%2] ").arg(name).arg(socket->peerAddress().toString());
+}
+
+void Player::getRequest(){
+    while(socket->canReadLine()){
+        QString request = socket->readLine(1024);
+        request.chop(1); // remove the ending '\n' character
+        emit request_got(request);
+    }
 }
