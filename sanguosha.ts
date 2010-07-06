@@ -334,7 +334,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="src/player.cpp" line="77"/>
+        <location filename="src/player.cpp" line="95"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>
@@ -342,12 +342,12 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="101"/>
+        <location filename="src/room.cpp" line="93"/>
         <source>Event: </source>
         <translation>事件: </translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="120"/>
+        <location filename="src/room.cpp" line="112"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
@@ -355,32 +355,37 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="202"/>
+        <location filename="src/roomscene.cpp" line="201"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="229"/>
+        <location filename="src/roomscene.cpp" line="228"/>
+        <source>Please wait for other players choosing their generals</source>
+        <translation>请等待其他玩家选择武将</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="231"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="242"/>
+        <location filename="src/roomscene.cpp" line="244"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="244"/>
+        <location filename="src/roomscene.cpp" line="246"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="246"/>
+        <location filename="src/roomscene.cpp" line="248"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="250"/>
+        <location filename="src/roomscene.cpp" line="252"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1

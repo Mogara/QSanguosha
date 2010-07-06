@@ -23,6 +23,9 @@ void Photo::setPlayer(const Player *player)
 {
     this->player = player;
 
+    if(player)
+        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+
     updateAvatar();
 }
 
@@ -55,6 +58,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawPixmap(1, 13, avatar);
         painter->drawPixmap(0, 10, avatar_frame);
         painter->drawPixmap(0,  0, kingdom);
+
+        painter->setPen(Qt::white);
+        painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
     }
 }
 

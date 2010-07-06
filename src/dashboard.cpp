@@ -33,8 +33,8 @@ Dashboard::Dashboard()
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
+    card_item->setPos(card_item->mapToItem(this, card_item->pos()));
     card_item->setParentItem(this);
-    card_item->setParent(this);
     card_items << card_item;
 
     adjustCards();

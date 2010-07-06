@@ -29,6 +29,7 @@ void CardItem::setHomePos(QPointF home_pos){
 
 void CardItem::goBack(){
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
+
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutBounce);
     goback->start();

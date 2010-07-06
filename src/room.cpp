@@ -11,7 +11,7 @@
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
-    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5)
+    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5), chosen_generals(0)
 {
     Sanguosha->getRandomCards(pile1);
 }
@@ -226,12 +226,9 @@ void Room::assignRoles(){
             lord_index = i;
             broadcast(QString("#%1 role lord").arg(player->objectName()));
 
-            QList<const General *> lord_list;
-            Sanguosha->getRandomLords(lord_list);
-            QStringList lords_str;
-            foreach(const General *lord, lord_list)
-                lords_str << lord->objectName();
-            player->unicast("! getLords " + lords_str.join("+"));
+            QStringList lord_list;
+            Sanguosha->getRandomLords(lord_list);            
+            player->unicast("! getLords " + lord_list.join("+"));
         }else
             player->unicast(". role " + roles[i]);
     }
@@ -247,22 +244,44 @@ void Room::chooseCommand(Player *player, const QStringList &args){
 
     if(player->getRole() == "lord"){        
         const int choice_count = 3;
-        QList<const General *> general_list;
-        Sanguosha->getRandomGenerals(general_list, general_name, (player_count-1) * choice_count);
+        QStringList general_list;
+        Sanguosha->getRandomGenerals(general_list, (player_count-1) * choice_count + 1);
+        general_list.removeOne(general_name);
 
         int i,j;
         for(i=1; i<player_count; i++){
             QStringList choices;
             for(j=0; j<3; j++)
-                choices << general_list[(i-1)*3 + j]->objectName();
+                choices << general_list[(i-1)*3 + j];
 
             players[i]->unicast(QString("! getGenerals %1+%2").arg(general_name).arg(choices.join("+")));
         }
     }
+
+    chosen_generals ++;
+    if(chosen_generals == player_count)
+        startGame();
 }
 
 void Room::startGame(){
+    // tell the players about the seat, and the first is always the lord
+    QStringList player_circle;
+    foreach(Player *player, players)
+        player_circle << player->objectName();
+    broadcast("$ circle " + player_circle.join("+"));
+
     // every player draw 4 cards and them start from lord
+    int i;
+    for(i=0; i<player_count; i++){
+        QList<int> cards;
+        drawCards(cards, 4);
+
+        QStringList cards_str;
+        foreach(int card, cards)
+            cards_str << QString::number(card);
+
+        players[i]->unicast("! drawCards " + cards_str.join("+"));
+    }
 }
 
 

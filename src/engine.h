@@ -37,8 +37,8 @@ public:
     QString getPixmapDir() const;
     QEvent::Type getEventType() const;
     Skill *getSkill(const QString &name);
-    void getRandomLords(QList<const General *> &lord_list, int lord_count = 5);
-    void getRandomGenerals(QList<const General *> &list, QString except, int count);
+    void getRandomLords(QStringList &lord_list, int lord_count = 5);
+    void getRandomGenerals(QStringList &general_list, int count);
     void getRandomCards(QList<int> &list);
 
 private:
@@ -50,7 +50,7 @@ private:
     QList<Card*> cards;
     QString pixmap_dir;
     QEvent::Type event_type;
-    QList<const General *> lords;
+    QStringList lord_names;
 };
 
 extern Engine *Sanguosha;

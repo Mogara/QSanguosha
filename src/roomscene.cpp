@@ -24,17 +24,20 @@ RoomScene::RoomScene(Client *client, int player_count)
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create skill label
-    prompt_label = addSimpleText(Config.UserName, Config.BigFont);
+    prompt_label = addSimpleText("", Config.BigFont);
     prompt_label->setPos(-400, -100);
+
+    // create pile
+    pile = new Pixmap(":/images/pile.png");
+    addItem(pile);
+    pile->setPos(Config.Rect.width()/2 - pile->boundingRect().width(), -pile->boundingRect().height());
 
     // create photos
     int i;
     for(i=0;i<player_count-1;i++){
         Photo *photo = new Photo;
         photos << photo;
-        addItem(photo);
-
-        connect(player, SIGNAL(general_changed()), photo, SLOT(updateAvatar()));
+        addItem(photo);        
     }
 
     // create dashboard
@@ -167,7 +170,9 @@ void RoomScene::showBust(const QString &name)
 
 void RoomScene::drawCards(const QList<Card *> &cards){
     foreach(Card * card, cards){
-        dashboard->addCardItem(new CardItem(card));
+        CardItem *item = new CardItem(card);
+        item->setPos(pile->pos());       
+        dashboard->addCardItem(item);
     }
 }
 
@@ -226,6 +231,9 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
 }
 
 void RoomScene::chooseGeneral(const General *lord, const QList<const General *> &generals){
+    if(photos.length()>1)
+        prompt_label->setText(tr("Please wait for other players choosing their generals"));
+
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose general"));
     dialog->setModal(true);

@@ -30,6 +30,7 @@ private:
     QList<int> pile1, pile2;
     QList<int> *draw_pile, *discard_pile;
     int left_seconds;
+    int chosen_generals;
 
     Q_INVOKABLE void setCommand(Player *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(Player *player, const QStringList &args);
