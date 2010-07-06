@@ -4,33 +4,62 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="64"/>
+        <location filename="src/client.cpp" line="66"/>
         <source>Reply format error!</source>
         <translation>回复格式错误!</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="72"/>
+        <location filename="src/client.cpp" line="74"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="73"/>
+        <location filename="src/client.cpp" line="75"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="75"/>
+        <location filename="src/client.cpp" line="77"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="78"/>
+        <location filename="src/client.cpp" line="80"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
         <translation>连接失败, 错误代码 = %1
 原因:
  %2</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="145"/>
+        <source>Game will start in %1 seconds</source>
+        <translation>游戏将在 %1 秒后开始</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="156"/>
+        <source>Your role is %1</source>
+        <oldsource>Your role is </oldsource>
+        <translation>您的角色是 %1</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="158"/>
+        <source>
+ wait for the lord player choosing general, please</source>
+        <oldsource>, wait for the lord player choosing general, please</oldsource>
+        <translation>
+请等待主公选择武将</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="149"/>
+        <source>Error</source>
+        <translation>错误</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="149"/>
+        <source>Name %1 duplication, you&apos;ve to be offline</source>
+        <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
 </context>
 <context>
@@ -76,21 +105,31 @@
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
+    <message>
+        <location filename="src/connectiondialog.cpp" line="53"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.cpp" line="53"/>
+        <source>User name can not contains whitespace!</source>
+        <translation>用户名不能含有空格!</translation>
+    </message>
 </context>
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="src/dashboard.cpp" line="17"/>
+        <location filename="src/dashboard.cpp" line="18"/>
         <source>No sort</source>
         <translation>不排序</translation>
     </message>
     <message>
-        <location filename="src/dashboard.cpp" line="18"/>
+        <location filename="src/dashboard.cpp" line="19"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="src/dashboard.cpp" line="19"/>
+        <location filename="src/dashboard.cpp" line="20"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
@@ -295,7 +334,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="src/player.cpp" line="74"/>
+        <location filename="src/player.cpp" line="77"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>
@@ -303,12 +342,12 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="72"/>
+        <location filename="src/room.cpp" line="101"/>
         <source>Event: </source>
         <translation>事件: </translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="81"/>
+        <location filename="src/room.cpp" line="120"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
@@ -316,36 +355,42 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="112"/>
-        <source>Error</source>
-        <translation>错误</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="112"/>
-        <source>Name %1 duplication, you&apos;ve to be offline</source>
-        <translation>注册名 %1 重复，您被迫下线</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="213"/>
+        <location filename="src/roomscene.cpp" line="202"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="240"/>
+        <location filename="src/roomscene.cpp" line="229"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="248"/>
-        <source>Lord is %1</source>
-        <oldsource>Lord is &lt;red&gt;%1&lt;/red&gt;</oldsource>
-        <translation>主公是%1</translation>
+        <location filename="src/roomscene.cpp" line="242"/>
+        <source>This is your boss, help him kill all rebels and renegades</source>
+        <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="244"/>
+        <source>Kill this guy and you will win</source>
+        <translation>干掉这个家伙就 OK 了</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="246"/>
+        <source>Kill all other guys, and beat him at final PK</source>
+        <translation>弄死其他所有人，最后在 PK 中打死他</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="250"/>
+        <source>Lord is %1
+Your role is %2</source>
+        <translation>主公是 %1
+您的角色是 %2</translation>
     </message>
 </context>
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="23"/>
+        <location filename="src/server.cpp" line="30"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
     </message>

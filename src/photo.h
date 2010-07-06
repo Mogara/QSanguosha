@@ -9,11 +9,15 @@
 
 class Photo : public Pixmap
 {
+    Q_OBJECT
 public:
     explicit Photo();
     void setPlayer(const Player *player);
     const Player *getPlayer() const;
     void speak(const QString &content);
+
+public slots:
+    void updateAvatar();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

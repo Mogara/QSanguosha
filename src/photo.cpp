@@ -22,14 +22,22 @@ Photo::Photo()
 void Photo::setPlayer(const Player *player)
 {
     this->player = player;
-    if(player == NULL){
-        return;
+
+    updateAvatar();
+}
+
+void Photo::updateAvatar(){
+    if(player){
+        const General *general = player->getAvatarGeneral();
+        avatar.load(general->getPixmapPath("small"));
+        avatar = avatar.scaled(QSize(128,58));
+        kingdom.load(general->getKingdomPath());
+    }else{
+        avatar.detach();
+        kingdom.detach();
     }
 
-    const General *general = player->getAvatarGeneral();
-    avatar.load(general->getPixmapPath("small"));
-    avatar = avatar.scaled(QSize(128,58));
-    kingdom.load(general->getKingdomPath());
+    update();
 }
 
 const Player *Photo::getPlayer() const{

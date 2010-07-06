@@ -15,7 +15,7 @@ signals:
     void server_message(const QString &);
 
 private:
-    Room *room;
+    QList<Room*> rooms;
 
 private slots:
     void processNewConnection();

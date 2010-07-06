@@ -7,7 +7,6 @@
 #include "client.h"
 
 #include <QGraphicsScene>
-#include <QMainWindow>
 
 class RoomScene : public QGraphicsScene
 {
@@ -23,6 +22,7 @@ public slots:
     void drawCards(const QList<Card *> &cards);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
+    void changePrompt(const QString &prompt_str);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -34,12 +34,13 @@ private:
     QMap<QString, Photo*> name2photo;
     Dashboard *dashboard;
     Pixmap *pile;
-    QGraphicsSimpleTextItem *skill_label;
+
+    QGraphicsSimpleTextItem *prompt_label;
+
     Pixmap *avatar;
     Pixmap *bust;
 
     void startEnterAnimation();
-    void createSkillButtons(QMainWindow *main_window, Player *player);
 };
 
 #endif // ROOMSCENE_H

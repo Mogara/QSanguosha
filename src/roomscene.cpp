@@ -20,11 +20,12 @@ RoomScene::RoomScene(Client *client, int player_count)
     Q_ASSERT(client != NULL);
 
     client->setParent(this);
+    const Player *player = client->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create skill label
-    skill_label = addSimpleText(Config.UserName, Config.BigFont);
-    skill_label->setPos(-400, -100);
+    prompt_label = addSimpleText(Config.UserName, Config.BigFont);
+    prompt_label->setPos(-400, -100);
 
     // create photos
     int i;
@@ -32,13 +33,15 @@ RoomScene::RoomScene(Client *client, int player_count)
         Photo *photo = new Photo;
         photos << photo;
         addItem(photo);
+
+        connect(player, SIGNAL(general_changed()), photo, SLOT(updateAvatar()));
     }
 
     // create dashboard
-    const Player *player = client->getPlayer();
     dashboard = new Dashboard;
     addItem(dashboard);
     dashboard->setPlayer(player);
+    connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();
@@ -52,12 +55,9 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(lords_got(QList<const General*>)), this, SLOT(chooseLord(QList<const General*>)));
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
             this, SLOT(chooseGeneral(const General*,QList<const General*>)));
-
+    connect(client, SIGNAL(prompt_changed(QString)), this, SLOT(changePrompt(QString)));
 
     client->signup();
-
-    //client->getLords("caocao+liubei+sunquan+guojia+zhangliao");
-    client->getGenerals("caocao+guojia+simayi+zhangliao");
 }
 
 void RoomScene::startEnterAnimation(){
@@ -103,16 +103,7 @@ void RoomScene::startEnterAnimation(){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void RoomScene::createSkillButtons(QMainWindow *main_window, Player *player){
-
-}
-
 void RoomScene::addPlayer(Player *player){
-    if(player->objectName() == Config.UserName){
-        QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(Config.UserName));
-        exit(1);
-    }
-
     int i;
     for(i=0; i<photos.length(); i++){
         Photo *photo = photos[i];
@@ -134,7 +125,6 @@ void RoomScene::removePlayer(const QString &player_name){
     Photo *photo = name2photo[player_name];
     if(photo){
         photo->setPlayer(NULL);
-        photo->update();
         name2photo.remove(player_name);
     }
 }
@@ -246,8 +236,21 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
     {
         QString icon_path = lord->getPixmapPath("bust");
         QString lord_name = Sanguosha->translate(lord->objectName());
-        QString caption = tr("Lord is %1").arg(lord_name);
+
+        QString role_str = client->getPlayer()->getRole();
+        QString role_tip;
+        if(role_str == "loyalist")
+            role_tip = tr("This is your boss, help him kill all rebels and renegades");
+        else if(role_str == "rebel")
+            role_tip = tr("Kill this guy and you will win");
+        else if(role_str == "renegade")
+            role_tip = tr("Kill all other guys, and beat him at final PK");
+
+        role_str = Sanguosha->translate(role_str);
+
+        QString caption = tr("Lord is %1\nYour role is %2").arg(lord_name).arg(role_str);
         OptionButton *button = new OptionButton(icon_path, caption);
+        button->setToolTip(role_tip);
 
         layout->addWidget(button);
     }
@@ -272,4 +275,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
     dialog->show();
 }
 
+void RoomScene::changePrompt(const QString &prompt_str){
+    prompt_label->setText(prompt_str);
+}
 

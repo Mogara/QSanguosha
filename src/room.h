@@ -14,17 +14,22 @@ public:
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
     void broadcast(const QString &message, Player *except = NULL);
+    int drawCard();
+    void drawCards(QList<int> &cards, int count);
 
     Q_INVOKABLE void pushEvent(const QScriptValue &event);
 
 protected:
     virtual bool event(QEvent *);
+    virtual void timerEvent(QTimerEvent *);
 
 private:
     QList<Player*> players;
     int player_count;
     Player *focus;
-    QList<int> draw_pile, discard_pile;
+    QList<int> pile1, pile2;
+    QList<int> *draw_pile, *discard_pile;
+    int left_seconds;
 
     Q_INVOKABLE void setCommand(Player *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(Player *player, const QStringList &args);
@@ -33,6 +38,7 @@ private:
 private slots:
     void reportDisconnection();
     void processRequest(const QString &request);
+    void assignRoles();
     void startGame();
 
 signals:

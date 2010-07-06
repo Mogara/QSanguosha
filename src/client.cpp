@@ -11,6 +11,8 @@ Client::Client(QObject *parent)
     self->setObjectName(Config.UserName);
     self->setProperty("avatar", Config.UserAvatar);
 
+    connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+
     connectToHost(Config.HostAddress, Config.Port);
 
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
@@ -137,4 +139,23 @@ void Client::getGenerals(const QString &generals_str){
 void Client::itemChosen(const QString &item_name){
     if(!item_name.isEmpty())
         request("choose " + item_name);
+}
+
+void Client::startInXs(const QString &left_seconds){
+    emit prompt_changed(tr("Game will start in %1 seconds").arg(left_seconds));
+}
+
+void Client::duplicationError(const QString &){
+    QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(Config.UserName));
+    disconnectFromHost();
+    exit(1);
+}
+
+void Client::notifyRoleChange(const QString &new_role){
+    if(!new_role.isEmpty()){
+        QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
+        if(new_role != "lord")
+            prompt_str += tr("\n wait for the lord player choosing general, please");
+        emit prompt_changed(prompt_str);
+    }
 }

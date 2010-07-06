@@ -40,7 +40,7 @@ QObject *Engine::addGeneral(const QString &name, const QString &kingdom, int max
     general->setParent(generals);
 
     if(general->isLord())
-        lord_names << general->objectName();
+        lords << general;
 
     return general;
 }
@@ -187,27 +187,24 @@ Skill *Engine::getSkill(const QString &name){
     return skills->findChild<Skill*>(name);
 }
 
-QString Engine::getLords(int lord_count){
-    QStringList lord_list;
-    int min = qMin(lord_count, lord_names.count()), i;
+void Engine::getRandomLords(QList<const General *> &lord_list, int lord_count){
+    int min = qMin(lord_count, lords.count()), i;
     for(i=0; i<min; i++)
-        lord_list << lord_names[i];
+        lord_list << lords[i];
 
-    const QObjectList &lords = generals->children();
+    const QObjectList &all_generals = generals->children();
     for(i=0; i<lord_count-min; i++){
         const General *general = NULL;
 
         while(general == NULL){
-            int r = qrand() % lords.count();
-            const General *chosen = qobject_cast<const General *>(lords[r]);
+            int r = qrand() % all_generals.count();
+            const General *chosen = qobject_cast<const General *>(all_generals[r]);
             if(!chosen->isLord())
                 general = chosen;
         }
 
-        lord_list << general->objectName();
-    }
-
-    return lord_list.join("+");
+        lord_list << general;
+    }    
 }
 
 void Engine::getRandomGenerals(QList<const General *> &list, QString except, int count){
@@ -232,5 +229,17 @@ void Engine::getRandomGenerals(QList<const General *> &list, QString except, int
         }
 
         list << general;
+    }
+}
+
+void Engine::getRandomCards(QList<int> &list){
+    int n = cards.count(), i;
+    for(i=0; i<n; i++)
+        list << i;
+
+    for(i=0; i<n; i++){
+        int r1 = qrand() % n;
+        int r2 = qrand() % n;
+        list.swap(r1, r2);
     }
 }

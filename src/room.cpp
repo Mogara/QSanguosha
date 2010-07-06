@@ -10,8 +10,10 @@
 #include <QTimer>
 
 Room::Room(QObject *parent, int player_count)
-    :QObject(parent), player_count(player_count), focus(NULL)
+    :QObject(parent), player_count(player_count), focus(NULL),
+    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5)
 {
+    Sanguosha->getRandomCards(pile1);
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -22,15 +24,10 @@ void Room::addSocket(QTcpSocket *socket){
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
 
-    QStringList cards;
-    int i;
-    for(i=0;i<5;i++){
-        cards << QString::number(qrand()%104);
+    if(isFull()){
+        broadcast("! startInXs 5");
+        startTimer(1000);
     }
-    player->unicast("! drawCards " + cards.join("+"));
-
-    if(isFull())
-        QTimer::singleShot(5000, this, SLOT(startGame()));    
 }
 
 bool Room::isFull() const
@@ -45,6 +42,28 @@ void Room::broadcast(const QString &message, Player *except){
     }
 }
 
+int Room::drawCard(){
+    if(draw_pile->isEmpty()){
+        Q_ASSERT(!discard_pile->isEmpty());
+        qSwap(draw_pile, discard_pile);
+        int n = draw_pile->count(), i;
+        for(i=0; i<n; i++){
+            int r1 = qrand() % n;
+            int r2 = qrand() % n;
+            draw_pile->swap(r1, r2);
+        }
+    }
+    return draw_pile->takeFirst();
+}
+
+void Room::drawCards(QList<int> &cards, int count){
+    cards.clear();
+
+    int i;
+    for(i=0; i<count; i++)
+        cards << drawCard();
+}
+
 void Room::pushEvent(const QScriptValue &event){
     if(event.isObject()){
         Event *e = new Event(event);
@@ -53,6 +72,8 @@ void Room::pushEvent(const QScriptValue &event){
 }
 
 bool Room::event(QEvent *event){
+    QObject::event(event);
+
     if(event->type() != Sanguosha->getEventType())
         return false;
 
@@ -73,6 +94,16 @@ bool Room::event(QEvent *event){
 
     event->accept();
     return true;
+}
+
+void Room::timerEvent(QTimerEvent *event){
+    if(left_seconds > 0){
+        left_seconds --;
+        broadcast("! startInXs " + QString::number(left_seconds));
+    }else{
+        killTimer(event->timerId());
+        assignRoles();
+    }
 }
 
 void Room::reportDisconnection(){
@@ -122,6 +153,11 @@ void Room::signupCommand(Player *player, const QStringList &args){
     QString name = args[1];
     QString avatar = args[2];
 
+    if(findChild<Player*>(name)){
+        player->unicast("! duplicationError .");
+        return;
+    }
+
     player->setObjectName(name);
     player->setProperty("avatar", avatar);
 
@@ -139,7 +175,7 @@ void Room::signupCommand(Player *player, const QStringList &args){
     }
 }
 
-void Room::startGame(){
+void Room::assignRoles(){
     struct assign_table{
         int lords;
         int loyalists;
@@ -182,18 +218,51 @@ void Room::startGame(){
         roles.swap(r1, r2);
     }
 
+    int lord_index = -1;
     for(i=0; i<n; i++){
         Player *player = players[i];
         player->setRole(roles[i]);
-        if(roles[i] == "lord")
+        if(roles[i] == "lord"){
+            lord_index = i;
             broadcast(QString("#%1 role lord").arg(player->objectName()));
-        else
+
+            QList<const General *> lord_list;
+            Sanguosha->getRandomLords(lord_list);
+            QStringList lords_str;
+            foreach(const General *lord, lord_list)
+                lords_str << lord->objectName();
+            player->unicast("! getLords " + lords_str.join("+"));
+        }else
             player->unicast(". role " + roles[i]);
     }
+
+    Q_ASSERT(lord_index != -1);
+    players.swap(0, lord_index);
 }
 
 void Room::chooseCommand(Player *player, const QStringList &args){
+    QString general_name = args[1];
+    player->setGeneral(general_name);    
+    broadcast(QString("#%1 general %2").arg(player->objectName()).arg(general_name));
 
+    if(player->getRole() == "lord"){        
+        const int choice_count = 3;
+        QList<const General *> general_list;
+        Sanguosha->getRandomGenerals(general_list, general_name, (player_count-1) * choice_count);
+
+        int i,j;
+        for(i=1; i<player_count; i++){
+            QStringList choices;
+            for(j=0; j<3; j++)
+                choices << general_list[(i-1)*3 + j]->objectName();
+
+            players[i]->unicast(QString("! getGenerals %1+%2").arg(general_name).arg(choices.join("+")));
+        }
+    }
+}
+
+void Room::startGame(){
+    // every player draw 4 cards and them start from lord
 }
 
 

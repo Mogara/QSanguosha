@@ -6,6 +6,8 @@
 static const int ShrinkWidth = 230;
 static const int ExpandWidth = 744;
 
+#include <QMessageBox>
+
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
@@ -45,7 +47,14 @@ ConnectionDialog::~ConnectionDialog()
 
 void ConnectionDialog::on_connectButton_clicked()
 {
-    Config.setValue("UserName", Config.UserName = ui->nameLineEdit->text());
+    QString username = ui->nameLineEdit->text();
+    username = username.trimmed();
+    if(username.contains(QChar(' '))){
+        QMessageBox::warning(this, tr("Warning"), tr("User name can not contains whitespace!"));
+        return;
+    }
+
+    Config.setValue("UserName", Config.UserName = username);
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());
     Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
 

@@ -18,6 +18,9 @@ public:
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
 
+public slots:
+    void updateAvatar();
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -25,7 +28,8 @@ private:
     QList<CardItem*> card_items;
     const Player *player;
     QPixmap magatamas[5];
-    Pixmap *avatar, *kingdom;
+    Pixmap *avatar;
+    QGraphicsPixmapItem *kingdom;
     bool use_skill;
     QComboBox *sort_combobox;
 

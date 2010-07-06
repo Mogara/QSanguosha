@@ -19,6 +19,8 @@ public:
     Q_INVOKABLE void drawCards(const QString &cards_str);
     Q_INVOKABLE void getLords(const QString &lords_str);
     Q_INVOKABLE void getGenerals(const QString &generals_str);
+    Q_INVOKABLE void startInXs(const QString &);
+    Q_INVOKABLE void duplicationError(const QString &);
 
 public slots:
     void request(const QString &message);
@@ -31,6 +33,7 @@ private:
 private slots:
     void processReply();
     void raiseError(QAbstractSocket::SocketError socket_error);
+    void notifyRoleChange(const QString &new_role);
 
 signals:
     void error_message(const QString &msg);
@@ -39,6 +42,7 @@ signals:
     void cards_drawed(const QList<Card *> &cards);
     void lords_got(const QList<const General*> &lords);
     void generals_got(const General *lord, const QList<const General *> &generals);
+    void prompt_changed(const QString &prompt_str);
 };
 
 #endif // CLIENT_H

@@ -1,12 +1,13 @@
 #include "dashboard.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), kingdom(NULL), use_skill(false)
+    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), use_skill(false)
 {
     int i;
     for(i=0; i<5; i++){
@@ -21,6 +22,14 @@ Dashboard::Dashboard()
     QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget(this);
     sort_widget->setWidget(sort_combobox);
     connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
+
+    avatar = new Pixmap("");
+    avatar->setPos(837, 35);
+    avatar->setFlag(ItemIsSelectable);
+    avatar->setParentItem(this);
+
+    kingdom = new QGraphicsPixmapItem(this);
+    kingdom->setPos(avatar->pos());
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -33,27 +42,15 @@ void Dashboard::addCardItem(CardItem *card_item){
 
 void Dashboard::setPlayer(const Player *player){
     this->player = player;
+    updateAvatar();
+}
+
+void Dashboard::updateAvatar(){
     const General *general = player->getAvatarGeneral();
+    avatar->changePixmap(general->getPixmapPath("big"));
+    kingdom->setPixmap(QPixmap(general->getKingdomPath()));
 
-    QString filename = general->getPixmapPath("big");
-    if(avatar)
-        avatar->changePixmap(filename);
-    else
-        avatar = new Pixmap(filename);
-
-    avatar->setPos(837, 35);
-    avatar->setFlag(ItemIsSelectable);
-    avatar->setParent(this);
-    avatar->setParentItem(this);
-
-    if(kingdom)
-        kingdom->changePixmap(general->getKingdomPath());
-    else{
-        kingdom = new Pixmap(general->getKingdomPath());
-        kingdom->setParent(this);
-        kingdom->setParentItem(this);
-        kingdom->setPos(avatar->pos());
-    }
+    update();
 }
 
 Pixmap *Dashboard::getAvatar(){
@@ -63,10 +60,18 @@ Pixmap *Dashboard::getAvatar(){
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
+    // draw player's name
+    painter->setPen(Qt::white);
+    painter->drawText(QRectF(847, 15, 121, 17), Config.UserName, QTextOption(Qt::AlignHCenter));
+
     // draw general's hp
     if(player){
         int hp = player->getHp();
-        QPixmap *magatama = &magatamas[hp-1];
+        QPixmap *magatama;
+        if(player->isWounded())
+            magatama = &magatamas[hp-1];
+        else
+            magatama = &magatamas[4]; // the green magatama which denote full blood state
         int i;
         for(i=0; i<hp; i++)
             painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
