@@ -31,6 +31,8 @@ public:
     enum Suit getSuit() const;
     QString getPixmapPath() const;
 
+    bool match(const QString &pattern) const;
+
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);

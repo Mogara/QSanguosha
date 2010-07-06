@@ -1,7 +1,8 @@
 #include "cardclass.h"
 
-CardClass::CardClass(const QString &name, const QString &type, int id, const QString &pixmap_dir)
-    :type(type), id(id), pixmap_dir(pixmap_dir)
+CardClass::CardClass(const QString &name, const QString &type, const QString &subtype,
+                     int id, const QString &pixmap_dir)
+    :type(type), subtype(subtype), id(id), pixmap_dir(pixmap_dir)
 {
     setObjectName(name);
 }

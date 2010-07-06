@@ -17,6 +17,10 @@ public:
     void addCardItem(CardItem *card_item);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
+    void selectCard(const QString &pattern);
+    CardItem *useSelected();
+    void unselectAll();
+    void sort(int order);
 
 public slots:
     void updateAvatar();
@@ -26,6 +30,7 @@ protected:
 
 private:
     QList<CardItem*> card_items;
+    CardItem *selected;
     const Player *player;
     QPixmap magatamas[5];
     Pixmap *avatar;

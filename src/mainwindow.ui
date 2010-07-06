@@ -40,6 +40,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionView_Discarded"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -106,6 +107,14 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionView_Discarded">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>View Discarded</string>
    </property>
   </action>
  </widget>

@@ -19,5 +19,6 @@
         <file>images/roles/loyalist.png</file>
         <file>images/roles/rebel.png</file>
         <file>images/roles/renegade.png</file>
+        <file>images/handcard.png</file>
     </qresource>
 </RCC>

@@ -18,6 +18,7 @@ public:
 
 public slots:
     void updateAvatar();
+    void changeHandCardNum(int num);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -28,6 +29,8 @@ private:
     QPixmap avatar;
     QPixmap avatar_frame;
     QPixmap kingdom;
+    QPixmap handcard;
+    int handcard_num;
 };
 
 #endif // PHOTOBACK_H

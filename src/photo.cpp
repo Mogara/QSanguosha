@@ -13,7 +13,9 @@
 Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
     player(NULL),
-    avatar_frame(":/images/avatar-frame.png")
+    avatar_frame(":/images/avatar-frame.png"),
+    handcard(":/images/handcard.png"),
+    handcard_num(0)
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
@@ -43,6 +45,10 @@ void Photo::updateAvatar(){
     update();
 }
 
+void Photo::changeHandCardNum(int num){
+    handcard_num = num;
+}
+
 const Player *Photo::getPlayer() const{
     return player;
 }
@@ -61,6 +67,11 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
         painter->setPen(Qt::white);
         painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
+
+        if(handcard_num != 0){
+            painter->drawPixmap(0, 72, handcard);
+            painter->drawText(8, 95, QString::number(handcard_num));
+        }
     }
 }
 

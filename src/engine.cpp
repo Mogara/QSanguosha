@@ -87,9 +87,9 @@ QObject *Engine::addCard(const QString &name, const QScriptValue &suit_value, co
         return NULL;
 }
 
-QObject *Engine::addCardClass(const QString &class_name, const QString &type){
+QObject *Engine::addCardClass(const QString &class_name, const QString &type, const QString &subtype){
     int id = card_classes->children().count();
-    CardClass *card_class = new CardClass(class_name, type, id, pixmap_dir);
+    CardClass *card_class = new CardClass(class_name, type, subtype, id, pixmap_dir);
     card_class->setParent(card_classes);
     return card_class;
 }

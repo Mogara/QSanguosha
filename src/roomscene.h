@@ -23,10 +23,12 @@ public slots:
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str);
+    void viewDiscarded();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
     Client *client;
@@ -39,6 +41,7 @@ private:
 
     Pixmap *avatar;
     Pixmap *bust;
+    QList<CardItem*> discarded;
 
     void startEnterAnimation();
 };

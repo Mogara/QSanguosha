@@ -236,57 +236,62 @@
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="46"/>
+        <location filename="src/mainwindow.ui" line="47"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="60"/>
+        <location filename="src/mainwindow.ui" line="61"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="65"/>
+        <location filename="src/mainwindow.ui" line="66"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="70"/>
+        <location filename="src/mainwindow.ui" line="71"/>
         <source>Start Server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="75"/>
+        <location filename="src/mainwindow.ui" line="76"/>
         <source>Start Game</source>
         <translation>开始游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="80"/>
+        <location filename="src/mainwindow.ui" line="81"/>
         <source>General Overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="95"/>
+        <location filename="src/mainwindow.ui" line="96"/>
         <source>Card Overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="103"/>
+        <location filename="src/mainwindow.ui" line="104"/>
         <source>Enable Hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="108"/>
+        <location filename="src/mainwindow.ui" line="109"/>
         <source>About Qt</source>
         <translation>关于 Qt</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="85"/>
+        <location filename="src/mainwindow.ui" line="117"/>
+        <source>View Discarded</source>
+        <translation>查看弃牌堆</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="86"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="90"/>
+        <location filename="src/mainwindow.ui" line="91"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
@@ -355,41 +360,51 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="201"/>
+        <location filename="src/roomscene.cpp" line="236"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="228"/>
+        <location filename="src/roomscene.cpp" line="263"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="231"/>
+        <location filename="src/roomscene.cpp" line="266"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="244"/>
+        <location filename="src/roomscene.cpp" line="279"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="246"/>
+        <location filename="src/roomscene.cpp" line="281"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="248"/>
+        <location filename="src/roomscene.cpp" line="283"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="252"/>
+        <location filename="src/roomscene.cpp" line="287"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="320"/>
+        <source>No discarded cards</source>
+        <translation>没有弃牌</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="320"/>
+        <source>There are no discarded cards yet</source>
+        <translation>目前弃牌堆是空的</translation>
     </message>
 </context>
 <context>

@@ -14,14 +14,14 @@ var jink = sgs.addCardClass("jink", "basic");
 var peach = sgs.addCardClass("peach", "basic");
 
 // weapon cards, added by attack range
-var crossbow = sgs.addCardClass("crossbow", "equip");
-var double_sword = sgs.addCardClass("double_sword", "equip");
-var qinggang_sword = sgs.addCardClass("qinggang_sword", "equip");
-var blade = sgs.addCardClass("blade", "equip");
-var spear = sgs.addCardClass("spear", "equip");
-var axe = sgs.addCardClass("axe", "equip");
-var halberd = sgs.addCardClass("halberd", "equip");
-var kylin_bow = sgs.addCardClass("kylin_bow", "equip");
+var crossbow = sgs.addCardClass("crossbow", "equip", "weapon");
+var double_sword = sgs.addCardClass("double_sword", "equip", "weapon");
+var qinggang_sword = sgs.addCardClass("qinggang_sword", "equip", "weapon");
+var blade = sgs.addCardClass("blade", "equip", "weapon");
+var spear = sgs.addCardClass("spear", "equip", "weapon");
+var axe = sgs.addCardClass("axe", "equip", "weapon");
+var halberd = sgs.addCardClass("halberd", "equip", "weapon");
+var kylin_bow = sgs.addCardClass("kylin_bow", "equip", "weapon");
 
 crossbow.range = 1;
 double_sword.range = qinggang_sword.range = 2;
@@ -30,24 +30,24 @@ halberd.range = 4;
 kylin_bow.range = 5;
 
 // shield card, only one
-var eight_diagram = sgs.addCardClass("eight_diagram", "equip");
+var eight_diagram = sgs.addCardClass("eight_diagram", "equip", "shield");
 
 // horses, +1 horses and -1 horses
-var jueying = sgs.addCardClass("jueying", "equip");
-var dilu = sgs.addCardClass("dilu", "equip");
-var zhuahuangfeidian = sgs.addCardClass("zhuahuangfeidian", "equip");
+var jueying = sgs.addCardClass("jueying", "equip", "horse");
+var dilu = sgs.addCardClass("dilu", "equip", "horse");
+var zhuahuangfeidian = sgs.addCardClass("zhuahuangfeidian", "equip", "horse");
 
-var chitu = sgs.addCardClass("chitu", "equip");
-var zixing = sgs.addCardClass("zixing", "equip");
-var dawan = sgs.addCardClass("dawan","equip");
+var chitu = sgs.addCardClass("chitu", "equip", "horse");
+var zixing = sgs.addCardClass("zixing", "equip", "horse");
+var dawan = sgs.addCardClass("dawan","equip", "horse");
 
 // trick cards, added by target number
 // target all
 var amazing_grace = sgs.addCardClass("amazing_grace", "trick");
 var god_salvation = sgs.addCardClass("god_salvation", "trick");
 // target all except source (AOE)
-var savage_assault = sgs.addCardClass("savage_assault", "trick");
-var archery_attack = sgs.addCardClass("archery_attack", "trick");
+var savage_assault = sgs.addCardClass("savage_assault", "trick", "aoe");
+var archery_attack = sgs.addCardClass("archery_attack", "trick", "aoe");
 // target two
 var collateral = sgs.addCardClass("collateral", "trick");
 // target one

@@ -13,6 +13,7 @@
 #include <QListWidget>
 #include <QHBoxLayout>
 #include <QSignalMapper>
+#include <QKeyEvent>
 
 RoomScene::RoomScene(Client *client, int player_count)
     :client(client), bust(NULL)
@@ -37,7 +38,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     for(i=0;i<player_count-1;i++){
         Photo *photo = new Photo;
         photos << photo;
-        addItem(photo);        
+        addItem(photo);
     }
 
     // create dashboard
@@ -171,7 +172,7 @@ void RoomScene::showBust(const QString &name)
 void RoomScene::drawCards(const QList<Card *> &cards){
     foreach(Card * card, cards){
         CardItem *item = new CardItem(card);
-        item->setPos(pile->pos());       
+        item->setPos(893, -265);
         dashboard->addCardItem(item);
     }
 }
@@ -200,6 +201,45 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 
     if(avatar->isUnderMouse()){
         avatar->setSelected(true);
+    }
+}
+
+void RoomScene::keyReleaseEvent(QKeyEvent *event){
+    switch(event->key()){
+    case Qt::Key_S: dashboard->selectCard("slash");  break;
+    case Qt::Key_J: dashboard->selectCard("jink"); break;
+    case Qt::Key_P: dashboard->selectCard("peach"); break;
+
+    case Qt::Key_E: dashboard->selectCard("equip"); break;
+    case Qt::Key_W: dashboard->selectCard("weapon"); break;
+    case Qt::Key_H: dashboard->selectCard("horse"); break;
+
+    case Qt::Key_T: dashboard->selectCard("trick"); break;
+    case Qt::Key_A: dashboard->selectCard("aoe"); break;
+
+    case Qt::Key_Space : break; // iterate target
+    case Qt::Key_Return : {
+            CardItem *to_discard = dashboard->useSelected();
+            if(to_discard){
+                to_discard->setZValue(0.1*discarded.length());
+                discarded << to_discard;
+            }
+
+            break;
+        }
+    case Qt::Key_Escape : dashboard->unselectAll(); break;
+
+    case Qt::Key_F1: dashboard->sort(0); break;
+    case Qt::Key_F2: dashboard->sort(1); break;
+    case Qt::Key_F3: dashboard->sort(2); break;
+
+
+#ifndef _NDEBUG
+    case Qt::Key_D: {
+            // do some debugging things
+            client->drawCards("100+101+102");
+        }
+#endif
     }
 }
 
@@ -285,5 +325,12 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
 
 void RoomScene::changePrompt(const QString &prompt_str){
     prompt_label->setText(prompt_str);
+}
+
+void RoomScene::viewDiscarded(){
+    if(discarded.isEmpty()){
+        QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
+        return;
+    }
 }
 

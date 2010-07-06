@@ -177,7 +177,11 @@ void MainWindow::enterRoom(){
     statusBar()->addPermanentWidget(role_combobox);
     connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
 
-    gotoScene(new RoomScene(client, 2));
+    RoomScene *room_scene = new RoomScene(client, 2);
+    ui->actionView_Discarded->setEnabled(true);
+    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscarded()));
+
+    gotoScene(room_scene);
 }
 
 void MainWindow::startGameInAnotherInstance(){

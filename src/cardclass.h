@@ -11,11 +11,11 @@ class CardClass : public QObject
 public:
     friend class Card;
 
-    explicit CardClass(const QString &name, const QString &type, int id, const QString &pixmap_dir);
+    explicit CardClass(const QString &name, const QString &type, const QString &subtype, int id, const QString &pixmap_dir);
     QString getPixmapPath() const;
 
 private:
-    QString type;
+    QString type, subtype;
     int id;
     QString pixmap_dir;
 };

@@ -7,7 +7,7 @@
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), player(NULL), avatar(NULL), use_skill(false)
+    :Pixmap(":/images/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false)
 {
     int i;
     for(i=0; i<5; i++){
@@ -33,7 +33,6 @@ Dashboard::Dashboard()
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
-    card_item->setPos(card_item->mapToItem(this, card_item->pos()));
     card_item->setParentItem(this);
     card_items << card_item;
 
@@ -55,6 +54,62 @@ void Dashboard::updateAvatar(){
 
 Pixmap *Dashboard::getAvatar(){
     return avatar;
+}
+
+void Dashboard::selectCard(const QString &pattern){
+    // find all cards that match the card type
+    QList<CardItem*> matches;
+
+    foreach(CardItem *card_item, card_items){
+        if(card_item->getCard()->match(pattern))
+            matches << card_item;
+    }
+
+    if(matches.isEmpty()){
+        unselectAll();
+        return;
+    }
+
+    int index = matches.indexOf(selected);
+    CardItem *to_select = matches[(index + 1) % matches.length()];
+
+    if(to_select != selected){
+        if(selected)
+            selected->unselect();
+        to_select->select();
+        selected = to_select;
+    }
+
+}
+
+CardItem *Dashboard::useSelected(){
+    CardItem *to_discard = selected;
+
+    if(selected){        
+        card_items.removeOne(selected);
+        selected = NULL;
+        adjustCards();
+
+
+        to_discard->setParentItem(NULL);
+        to_discard->setPos(mapToScene(to_discard->pos()));
+        to_discard->setHomePos(QPointF(-494, -155));
+        to_discard->goBack(true);
+        to_discard->setFlags(to_discard->flags() & (~ItemIsFocusable));
+    }
+
+    return to_discard;
+}
+
+void Dashboard::unselectAll(){
+    if(selected){
+        selected->unselect();
+        selected = NULL;
+    }
+}
+
+void Dashboard::sort(int order){
+    sort_combobox->setCurrentIndex(order);
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

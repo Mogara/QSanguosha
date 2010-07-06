@@ -16,8 +16,11 @@ public:
 
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
-    void goBack();
+    void goBack(bool animate = true);
     void viewAs(const QString &name);
+
+    void select();
+    void unselect();
 
     virtual QRectF boundingRect() const;
 
@@ -25,6 +28,7 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
