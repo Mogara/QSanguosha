@@ -17,7 +17,7 @@ public:
     void addCardItem(CardItem *card_item);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
-    void selectCard(const QString &pattern);
+    void selectCard(const QString &pattern = "");
     CardItem *useSelected();
     void unselectAll();
     void sort(int order);

@@ -63,6 +63,8 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(prompt_changed(QString)), this, SLOT(changePrompt(QString)));
 
     client->signup();
+
+    client->drawCards("1+2+3+4+5+6+7");
 }
 
 void RoomScene::startEnterAnimation(){
@@ -206,6 +208,9 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void RoomScene::keyReleaseEvent(QKeyEvent *event){
+    if(!Config.EnableHotKey)
+        return;
+
     switch(event->key()){
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
@@ -227,6 +232,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
     case Qt::Key_F: dashboard->selectCard("amazing_grace"); break;
 
+    case Qt::Key_Space :  dashboard->selectCard(); break; // iterate all cards
+
     case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
@@ -239,8 +246,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             //int order = event->key() - Qt::Key_0;
             break;
         }
+    case Qt::Key_G: break; // iterate generals
 
-    case Qt::Key_Space : break; // iterate target
     case Qt::Key_Return : {
             CardItem *to_discard = dashboard->useSelected();
             if(to_discard){

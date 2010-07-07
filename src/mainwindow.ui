@@ -116,6 +116,9 @@
    <property name="text">
     <string>View Discarded</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

@@ -32,6 +32,7 @@ private:
     void createSkillButtons(const Player *player);
 
 private slots:
+    void on_actionEnable_Hotkey_toggled(bool );
     void on_actionCard_Overview_triggered();
     void on_actionGeneral_Overview_triggered();
     void on_actionStart_Server_triggered();

@@ -34,7 +34,6 @@ void CardItem::goBack(bool animate){
     }
 
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
-    goback->setDuration(800);
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutBounce);
     goback->start();
@@ -56,7 +55,7 @@ void CardItem::viewAs(const QString &name){
 }
 
 void CardItem::select(){
-    setY(0);
+    setY(10);
 }
 
 void CardItem::unselect(){   

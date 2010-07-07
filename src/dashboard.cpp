@@ -60,13 +60,17 @@ void Dashboard::selectCard(const QString &pattern){
     // find all cards that match the card type
     QList<CardItem*> matches;
 
-    foreach(CardItem *card_item, card_items){
-        if(card_item->getCard()->match(pattern))
-            matches << card_item;
+    if(pattern.isEmpty())
+        matches = card_items;
+    else{
+        foreach(CardItem *card_item, card_items){
+            if(card_item->getCard()->match(pattern))
+                matches << card_item;
+        }
     }
 
     if(matches.isEmpty()){
-        unselectAll();
+        unselectAll();        
         return;
     }
 

@@ -26,8 +26,9 @@ public:
 
     bool FitInView;
     bool UseOpenGL;
+    bool EnableHotKey;
 
-    QBrush BackgroundBrush;    
+    QBrush BackgroundBrush;
 };
 
 extern Settings Config;

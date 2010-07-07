@@ -36,6 +36,7 @@ void Settings::init(){
 
     FitInView = value("FitInView", false).toBool();
     UseOpenGL = value("UseOpenGL", false).toBool();
+    EnableHotKey = value("EnableHotKey", true).toBool();
 
     QString bgbrush = value("BackgroundBrush", ":/images/background.png").toString();
     BackgroundBrush = QBrush(QPixmap(bgbrush));
