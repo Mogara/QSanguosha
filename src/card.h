@@ -9,7 +9,8 @@ class Card : public QObject
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
-    Q_PROPERTY(int number READ getNumber CONSTANT)
+    Q_PROPERTY(int id READ getID CONSTANT)
+    Q_PROPERTY(int number READ getNumber CONSTANT)    
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
@@ -25,9 +26,11 @@ public:
     QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
+    int getID() const;
     int getNumber() const;
     QString getNumberString() const;
     QString getType() const;
+    QString getSubtype() const;
     enum Suit getSuit() const;
     QString getPixmapPath() const;
 

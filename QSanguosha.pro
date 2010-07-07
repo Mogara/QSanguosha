@@ -29,7 +29,8 @@ SOURCES += src/main.cpp \
     src/player.cpp \
     src/event.cpp \
     src/skill.cpp \
-    src/optionbutton.cpp
+    src/optionbutton.cpp \
+    src/cardoverview.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -51,10 +52,12 @@ HEADERS += src/mainwindow.h \
     src/player.h \
     src/event.h \
     src/skill.h \
-    src/optionbutton.h
+    src/optionbutton.h \
+    src/cardoverview.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
-    src/generaloverview.ui
+    src/generaloverview.ui \
+    src/cardoverview.ui
 OTHER_FILES += scripts/generals.js \
     scripts/cards.js \
     scripts/init.js

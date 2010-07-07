@@ -5,6 +5,7 @@
 #include "server.h"
 #include "client.h"
 #include "generaloverview.h"
+#include "cardoverview.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -197,4 +198,11 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 void MainWindow::updateRoleCombobox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));    
     role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
+}
+
+void MainWindow::on_actionCard_Overview_triggered()
+{
+    CardOverview *overview = new CardOverview(this);
+    overview->loadFromAll();
+    overview->show();
 }

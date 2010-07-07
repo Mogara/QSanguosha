@@ -29,6 +29,10 @@ bool Card::isBlack() const{
     return suit == Spade || suit == Club;
 }
 
+int Card::getID() const{
+    return id;
+}
+
 int Card::getNumber() const{
     return number;
 }
@@ -44,6 +48,10 @@ QString Card::getNumberString() const{
 
 QString Card::getType() const{
     return card_class->type;
+}
+
+QString Card::getSubtype() const{
+    return card_class->subtype;
 }
 
 Card::Suit Card::getSuit() const{

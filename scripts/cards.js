@@ -1,7 +1,53 @@
 var table = {
+    "basic" : "基本牌",
+    "equip" : "装备牌",
+    "trick" : "锦囊牌",
+
+    "spade" : "黑桃",
+    "club" : "梅花",
+    "heart" : "红桃",
+    "diamond" : "方块",
+
+    "weapon" : "武器",
+    "armor" : "防具",
+    "horse" : "马",
+
+    "delayed_trick" : "延时锦囊",
+    "aoe" : "范围效果",
+
     "slash" : "杀",
     "jink" : "闪",
     "peach" : "桃",
+
+    "crossbow" : "诸葛连弩",
+    "double_sword" : "雌雄双股剑",
+    "qinggang_sword" : "青釭剑",
+    "blade" : "青龙偃月刀",
+    "spear" : "丈八蛇矛",
+    "axe" : "贯石斧",
+    "halberd" : "方天画戟",
+    "kylin_bow" : "麒麟弓",
+
+    "eight_diagram" : "八卦",
+    "jueying" : "绝影",
+    "dilu" : "的卢",
+    "zhuahuangfeidian" : "爪黄飞电",
+    "chitu" : "赤兔",
+    "dawan" : "大宛",
+    "zixing" : "紫骍",
+
+    "amazing_grace" : "五谷丰登",
+    "god_salvation" : "桃园结义",
+    "savage_assault" : "南蛮入侵",
+    "archery_attack" : "万箭齐发",
+    "collateral" : "借刀杀人",
+    "ex_nihilo" : "无中生有",
+    "duel" : "决斗",
+    "nullification" : "无懈可击",
+    "snatch" : "顺手牵羊",
+    "dismantlement" : "过河拆桥",
+    "lightning" : "闪电",
+    "indulgence" : "乐不思蜀",
 };
 
 sgs.addTranslationTable(table);
@@ -30,7 +76,7 @@ halberd.range = 4;
 kylin_bow.range = 5;
 
 // shield card, only one
-var eight_diagram = sgs.addCardClass("eight_diagram", "equip", "shield");
+var eight_diagram = sgs.addCardClass("eight_diagram", "equip", "armor");
 
 // horses, +1 horses and -1 horses
 var jueying = sgs.addCardClass("jueying", "equip", "horse");

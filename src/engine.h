@@ -32,6 +32,7 @@ public:
 
     const General *getGeneral(const QString &name);
     CardClass *getCardClass(const QString &name);
+    int getCardCount() const;
     Card *getCard(int index);
     void setPixmapDir(const QString &pixmap_dir);
     QString getPixmapDir() const;
@@ -40,6 +41,7 @@ public:
     void getRandomLords(QStringList &lord_list, int lord_count = 5);
     void getRandomGenerals(QStringList &general_list, int count);
     void getRandomCards(QList<int> &list);
+
 
 private:
     QObject *generals;

@@ -3,6 +3,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "optionbutton.h"
+#include "cardoverview.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -216,6 +217,28 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_T: dashboard->selectCard("trick"); break;
     case Qt::Key_A: dashboard->selectCard("aoe"); break;
+    case Qt::Key_N: dashboard->selectCard("nullification"); break;
+    case Qt::Key_C: dashboard->selectCard("dismantlement"); break;
+    case Qt::Key_Q: dashboard->selectCard("snatch"); break;
+    case Qt::Key_U: dashboard->selectCard("duel"); break;
+    case Qt::Key_L: dashboard->selectCard("lightning"); break;
+    case Qt::Key_I: dashboard->selectCard("indulgence"); break;
+    case Qt::Key_R: dashboard->selectCard("collateral"); break;
+    case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
+    case Qt::Key_F: dashboard->selectCard("amazing_grace"); break;
+
+    case Qt::Key_0:
+    case Qt::Key_1:
+    case Qt::Key_2:
+    case Qt::Key_3:
+    case Qt::Key_4:
+    case Qt::Key_5:
+    case Qt::Key_6:
+    case Qt::Key_7:
+        {
+            //int order = event->key() - Qt::Key_0;
+            break;
+        }
 
     case Qt::Key_Space : break; // iterate target
     case Qt::Key_Return : {
@@ -331,5 +354,9 @@ void RoomScene::viewDiscarded(){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
     }
+
+    CardOverview *overview = new CardOverview;
+    overview->loadFromList(discarded);
+    overview->show();
 }
 

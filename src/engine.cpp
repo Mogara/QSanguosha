@@ -183,6 +183,10 @@ Card *Engine::getCard(int index){
         return cards[index];
 }
 
+int Engine::getCardCount() const{
+    return cards.length();
+}
+
 Skill *Engine::getSkill(const QString &name){
     return skills->findChild<Skill*>(name);
 }
