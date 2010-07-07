@@ -74,7 +74,7 @@ void RoomScene::startEnterAnimation(){
     for(i=0;i<photos.length();i++){
         Photo *photo = photos[i];
         qreal x = i * photo_width + start_x;
-        qreal y =  Config.Rect.y() + 10;
+        qreal y =  Config.Rect.y();
         int duration = 1500.0 * qrand()/ RAND_MAX;
 
         QPropertyAnimation *translation = new QPropertyAnimation(photo, "pos");
@@ -237,7 +237,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 #ifndef _NDEBUG
     case Qt::Key_D: {
             // do some debugging things
-            client->drawCards("100+101+102");
         }
 #endif
     }

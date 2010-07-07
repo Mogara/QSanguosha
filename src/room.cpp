@@ -11,7 +11,7 @@
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
-    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5), chosen_generals(0)
+    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5), chosen_generals(0), game_started(false)
 {
     Sanguosha->getRandomCards(pile1);
 }
@@ -26,6 +26,7 @@ void Room::addSocket(QTcpSocket *socket){
 
     if(isFull()){
         broadcast("! startInXs 5");
+        game_started = true;
         startTimer(1000);
     }
 }
@@ -112,7 +113,13 @@ void Room::reportDisconnection(){
         emit room_message(player->reportHeader() + tr("disconnected"));
 
         if(!player->objectName().isEmpty()){
-            broadcast("! removePlayer " + player->objectName(), player);
+            if(game_started){
+                player->setState("offline");
+                broadcast(QString("#%1 state %2").arg(player->objectName()).arg("offline"));
+                player->setSocket(NULL);
+                return;
+            }else
+                broadcast("! removePlayer " + player->objectName(), player);
         }
 
         player->setSocket(NULL);
@@ -270,8 +277,24 @@ void Room::startGame(){
         player_circle << player->objectName();
     broadcast("$ circle " + player_circle.join("+"));
 
-    // every player draw 4 cards and them start from lord
+    // set hp full state
+    int lord_welfare = player_count > 4 ? 1 : 0;
+    players[0]->setMaxHP(players[0]->getGeneralMaxHP() + lord_welfare);
+
     int i;
+    for(i=1; i<player_count; i++)
+        players[i]->setMaxHP(players[i]->getGeneralMaxHP());
+
+    foreach(Player *player, players){
+        player->setHp(player->getMaxHP());
+
+        broadcast(QString("#%1 max_hp %2").arg(player->objectName()).arg(player->getMaxHP()));
+        broadcast(QString("#%1 hp %2").arg(player->objectName()).arg(player->getHp()));
+    }
+
+
+
+    // every player draw 4 cards and them start from lord
     for(i=0; i<player_count; i++){
         QList<int> cards;
         drawCards(cards, 4);

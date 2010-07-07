@@ -19,14 +19,23 @@ Photo::Photo()
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
+
+    int i;
+    for(i=0; i<5; i++){
+        magatamas[i].load(QString(":/images/magatamas/%1.png").arg(i+1));
+        magatamas[i] = magatamas[i].scaled(20,20);
+    }
 }
 
 void Photo::setPlayer(const Player *player)
 {
     this->player = player;
 
-    if(player)
+    if(player){
+        connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(handcard_num_changed(int)), this, SLOT(changeHandCardNum(int)));
+    }
 
     updateAvatar();
 }
@@ -49,6 +58,10 @@ void Photo::changeHandCardNum(int num){
     handcard_num = num;
 }
 
+void Photo::updateStateStr(const QString &new_state){
+    state_str = Sanguosha->translate(new_state);
+}
+
 const Player *Photo::getPlayer() const{
     return player;
 }
@@ -68,9 +81,26 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->setPen(Qt::white);
         painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
 
+        // draw magatamas, similar with dashboard, but magatama is smaller
+        int hp = player->getHp();
+        if(hp > 0){
+            QPixmap *magatama;
+            if(player->isWounded())
+                magatama = &magatamas[hp-1];
+            else
+                magatama = &magatamas[4]; // the green magatama which denote full blood state
+            int i;
+            for(i=0; i<hp; i++)
+                painter->drawPixmap(34 + i*(magatama->width()+2), 78, *magatama);
+        }
+
         if(handcard_num != 0){
             painter->drawPixmap(0, 72, handcard);
             painter->drawText(8, 95, QString::number(handcard_num));
+        }
+
+        if(!state_str.isEmpty()){
+            painter->drawText(100, 100, state_str);
         }
     }
 }

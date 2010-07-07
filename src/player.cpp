@@ -4,17 +4,25 @@
 #include <QHostAddress>
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), hp(-1), role("renegade"), socket(NULL)
+    :QObject(parent), general(NULL), hp(-1), max_hp(-1), state("online"), handcard_num(0), socket(NULL)
 {
 }
 
 void Player::setHp(int hp){
-    if(hp >= 0 && hp <= general->getMaxHp())
+    if(hp >= 0 && hp <= max_hp)
         this->hp = hp;
 }
 
 int Player::getHp() const{
     return hp;
+}
+
+int Player::getMaxHP() const{
+    return max_hp;
+}
+
+void Player::setMaxHP(int max_hp){
+    this->max_hp = max_hp;
 }
 
 bool Player::isWounded() const{
@@ -24,11 +32,19 @@ bool Player::isWounded() const{
         return hp < general->getMaxHp();
 }
 
+int Player::getGeneralMaxHP() const{
+    Q_ASSERT(general != NULL);
+    return general->getMaxHp();
+}
+
 void Player::setGeneral(const QString &general_name){
     const General *new_general = Sanguosha->getGeneral(general_name);
 
     if(this->general != new_general){
         this->general = new_general;
+        if(new_general)
+            setHp(getMaxHP());        
+
         emit general_changed();
     }
 }
@@ -49,6 +65,22 @@ void Player::setState(const QString &state){
         this->state = state;
         emit state_changed(state);
     }
+}
+
+int Player::getHandcardNum() const{
+    if(handcards.isEmpty())
+        return handcard_num;
+    else
+        return handcards.length();
+}
+
+void Player::drawCard(const Card *card){
+    handcards << card;
+}
+
+void Player::drawCard(int card_num){
+    handcard_num += card_num;
+    emit handcard_num_changed(handcard_num);
 }
 
 void Player::setRole(const QString &role){
@@ -94,6 +126,11 @@ QString Player::reportHeader() const{
     if(name.isEmpty())
         name = tr("Anonymous");
     return QString("%1[%2] ").arg(name).arg(socket->peerAddress().toString());
+}
+
+void Player::sendProperty(const char *property_name){
+    QString value = property(property_name).toString();
+    unicast(QString("#%1 %2 %3").arg(objectName()).arg(property_name).arg(value));
 }
 
 void Player::getRequest(){
