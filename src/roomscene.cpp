@@ -8,13 +8,15 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
-#include <MediaObject>
+
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QListWidget>
 #include <QHBoxLayout>
 #include <QSignalMapper>
 #include <QKeyEvent>
+
+static Phonon::MediaSource AddPlayerSource("audio/add-player.wav");
 
 RoomScene::RoomScene(Client *client, int player_count)
     :client(client), bust(NULL)
@@ -47,6 +49,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     addItem(dashboard);
     dashboard->setPlayer(player);
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
+    connect(dashboard, SIGNAL(card_discarded(CardItem*)), this, SLOT(discardCard(CardItem*)));
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();
@@ -64,7 +67,7 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     client->signup();
 
-    client->drawCards("1+2+3+4+5+6+7");
+    client->drawCards("1+2+2+3+4+5+6+7");
 }
 
 void RoomScene::startEnterAnimation(){
@@ -118,9 +121,7 @@ void RoomScene::addPlayer(Player *player){
             photo->setPlayer(player);
             name2photo[player->objectName()] = photo;
 
-            // play enter room effect
-            Phonon::MediaSource source("audio/add-player.wav");
-            Phonon::MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory, source);
+            effect->setCurrentSource(AddPlayerSource);
             effect->play();
 
             return;
@@ -180,6 +181,18 @@ void RoomScene::drawCards(const QList<Card *> &cards){
     }
 }
 
+void RoomScene::discardCard(CardItem *card){
+    card->setParentItem(NULL);
+    card->setOpacity(1.0);
+    card->setPos(dashboard->mapToScene(card->pos()));
+    card->setHomePos(QPointF(-494, -155));
+    card->goBack();
+    card->setFlags(card->flags() & (~QGraphicsItem::ItemIsFocusable));
+
+    card->setZValue(0.1*discarded.length());
+    discarded << card;
+}
+
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsScene::mousePressEvent(event);
     if(event->button() == Qt::RightButton){
@@ -211,7 +224,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     if(!Config.EnableHotKey)
         return;
 
-    switch(event->key()){
+    switch(event->key()){        
+    case Qt::Key_F1: dashboard->sort(0); break;
+    case Qt::Key_F2: dashboard->sort(1); break;
+    case Qt::Key_F3: dashboard->sort(2); break;
+
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
     case Qt::Key_P: dashboard->selectCard("peach"); break;
@@ -234,6 +251,10 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_Space :  dashboard->selectCard(); break; // iterate all cards
 
+    case Qt::Key_G: break; // iterate generals
+    case Qt::Key_Return : dashboard->useSelected(); break;
+    case Qt::Key_Escape : dashboard->unselectAll(); break;
+
     case Qt::Key_0:
     case Qt::Key_1:
     case Qt::Key_2:
@@ -246,23 +267,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             //int order = event->key() - Qt::Key_0;
             break;
         }
-    case Qt::Key_G: break; // iterate generals
-
-    case Qt::Key_Return : {
-            CardItem *to_discard = dashboard->useSelected();
-            if(to_discard){
-                to_discard->setZValue(0.1*discarded.length());
-                discarded << to_discard;
-            }
-
-            break;
-        }
-    case Qt::Key_Escape : dashboard->unselectAll(); break;
-
-    case Qt::Key_F1: dashboard->sort(0); break;
-    case Qt::Key_F2: dashboard->sort(1); break;
-    case Qt::Key_F3: dashboard->sort(2); break;
-
 
 #ifndef _NDEBUG
     case Qt::Key_D: {

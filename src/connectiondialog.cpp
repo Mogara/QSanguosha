@@ -19,6 +19,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
 
+    ui->connectButton->setFocus();
+
     const General *avatar_general = Sanguosha->getGeneral(Config.UserAvatar);
     if(avatar_general){
         QPixmap avatar(avatar_general->getPixmapPath("big"));

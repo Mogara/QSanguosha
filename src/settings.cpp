@@ -24,10 +24,12 @@ void Settings::init(){
         QString font_family = QFontDatabase::applicationFontFamilies(font_id).front();
         BigFont.setFamily(font_family);
         SmallFont.setFamily(font_family);
+        TinyFont.setFamily(font_family);
     }
 
     BigFont.setPixelSize(56);
     SmallFont.setPixelSize(32);
+    TinyFont.setPixelSize(18);
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     HostAddress = value("HostAddress", "127.0.0.1").toString();

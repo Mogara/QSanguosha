@@ -5,6 +5,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QFocusEvent>
+#include <QParallelAnimationGroup>
 
 static QRect CardRect(0, 0, 150*0.8, 210*0.8);
 static QFont CardNumberFont("Times", 20, QFont::Bold);
@@ -27,16 +28,23 @@ void CardItem::setHomePos(QPointF home_pos){
     this->home_pos = home_pos;
 }
 
-void CardItem::goBack(bool animate){
-    if(!animate){
-        setPos(home_pos);
-        return;
-    }
-
+void CardItem::goBack(bool kieru){
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutBounce);
-    goback->start();
+
+    if(kieru){
+        QParallelAnimationGroup *group = new QParallelAnimationGroup;
+
+        QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");
+        disappear->setEndValue(0.0);
+
+        group->addAnimation(goback);
+        group->addAnimation(disappear);
+
+        group->start(QParallelAnimationGroup::DeleteWhenStopped);
+    }else
+        goback->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
 void CardItem::viewAs(const QString &name){
@@ -52,6 +60,10 @@ void CardItem::viewAs(const QString &name){
         view_card_item->setPixmap(view_card_pixmap);
 
     view_card_item->setVisible(true);
+}
+
+const QPixmap &CardItem::getSuitPixmap() const{
+    return suit_pixmap;
 }
 
 void CardItem::select(){

@@ -7,6 +7,7 @@
 #include "client.h"
 
 #include <QGraphicsScene>
+#include <MediaObject>
 
 class RoomScene : public QGraphicsScene
 {
@@ -20,9 +21,10 @@ public slots:
     void addPlayer(Player *player);
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
+    void discardCard(CardItem *card);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
-    void changePrompt(const QString &prompt_str);
+    void changePrompt(const QString &prompt_str);    
     void viewDiscarded();
 
 protected:
@@ -36,12 +38,11 @@ private:
     QMap<QString, Photo*> name2photo;
     Dashboard *dashboard;
     Pixmap *pile;
-
     QGraphicsSimpleTextItem *prompt_label;
-
     Pixmap *avatar;
     Pixmap *bust;
     QList<CardItem*> discarded;
+    Phonon::MediaObject *effect;
 
     void startEnterAnimation();
 };

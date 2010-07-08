@@ -7,6 +7,8 @@
 
 #include <QPushButton>
 #include <QComboBox>
+#include <QStack>
+#include <MediaObject>
 
 class Dashboard : public Pixmap
 {
@@ -18,9 +20,10 @@ public:
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
     void selectCard(const QString &pattern = "");
-    CardItem *useSelected();
+    void useSelected();
     void unselectAll();
     void sort(int order);
+    void pushDelayedTrick(CardItem *card);
 
 public slots:
     void updateAvatar();
@@ -37,11 +40,19 @@ private:
     QGraphicsPixmapItem *kingdom;
     bool use_skill;
     QComboBox *sort_combobox;
+    CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QStack<CardItem *> judging_area;
+    Phonon::MediaObject *effect;
 
     void adjustCards();
+    void installEquip(CardItem *equip);
+    void drawEquip(QPainter *painter, CardItem *equip, int order);
 
 private slots:
-    void sortCards();
+    void sortCards();    
+
+signals:
+    void card_discarded(CardItem *card_item);
 };
 
 #endif // DASHBOARD_H

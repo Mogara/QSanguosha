@@ -42,7 +42,6 @@ public:
     void getRandomGenerals(QStringList &general_list, int count);
     void getRandomCards(QList<int> &list);
 
-
 private:
     QObject *generals;
     QObject *translation;

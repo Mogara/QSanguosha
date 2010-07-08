@@ -10,7 +10,8 @@ var table = {
 
     "weapon" : "武器",
     "armor" : "防具",
-    "horse" : "马",
+    "defensive_horse" : "防御马",
+    "offensive_horse" : "进攻马",
 
     "delayed_trick" : "延时锦囊",
     "aoe" : "范围效果",
@@ -79,13 +80,13 @@ kylin_bow.range = 5;
 var eight_diagram = sgs.addCardClass("eight_diagram", "equip", "armor");
 
 // horses, +1 horses and -1 horses
-var jueying = sgs.addCardClass("jueying", "equip", "horse");
-var dilu = sgs.addCardClass("dilu", "equip", "horse");
-var zhuahuangfeidian = sgs.addCardClass("zhuahuangfeidian", "equip", "horse");
+var jueying = sgs.addCardClass("jueying", "equip", "defensive_horse");
+var dilu = sgs.addCardClass("dilu", "equip", "defensive_horse");
+var zhuahuangfeidian = sgs.addCardClass("zhuahuangfeidian", "equip", "defensive_horse");
 
-var chitu = sgs.addCardClass("chitu", "equip", "horse");
-var zixing = sgs.addCardClass("zixing", "equip", "horse");
-var dawan = sgs.addCardClass("dawan","equip", "horse");
+var chitu = sgs.addCardClass("chitu", "equip", "offensive_horse");
+var zixing = sgs.addCardClass("zixing", "equip", "offensive_horse");
+var dawan = sgs.addCardClass("dawan","equip", "offensive_horse");
 
 // trick cards, added by target number
 // target all
@@ -103,8 +104,8 @@ var nullification = sgs.addCardClass("nullification", "trick");
 var snatch = sgs.addCardClass("snatch", "trick");
 var dismantlement = sgs.addCardClass("dismantlement", "trick");
 // two delayed trick cards
-var lightning = sgs.addCardClass("lightning", "trick");
-var indulgence = sgs.addCardClass("indulgence", "trick");
+var lightning = sgs.addCardClass("lightning", "trick", "delayed_trick");
+var indulgence = sgs.addCardClass("indulgence", "trick", "delayed_trick");
 
 var card_names = [
      // spade suit

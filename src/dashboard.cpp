@@ -6,8 +6,11 @@
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
 
+static Phonon::MediaSource InstallEquipSource("audio/install-equip.wav");
+
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false)
+    :Pixmap(":/images/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     int i;
     for(i=0; i<5; i++){
@@ -30,6 +33,8 @@ Dashboard::Dashboard()
 
     kingdom = new QGraphicsPixmapItem(this);
     kingdom->setPos(avatar->pos());
+
+    effect = Phonon::createPlayer(Phonon::MusicCategory);
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -64,7 +69,7 @@ void Dashboard::selectCard(const QString &pattern){
         matches = card_items;
     else{
         foreach(CardItem *card_item, card_items){
-            if(card_item->getCard()->match(pattern))
+            if(card_item->isEnabled() && card_item->getCard()->match(pattern))
                 matches << card_item;
         }
     }
@@ -86,23 +91,22 @@ void Dashboard::selectCard(const QString &pattern){
 
 }
 
-CardItem *Dashboard::useSelected(){
-    CardItem *to_discard = selected;
+void Dashboard::useSelected(){
+    if(selected == NULL)
+        return;
 
-    if(selected){        
-        card_items.removeOne(selected);
-        selected = NULL;
-        adjustCards();
+    CardItem *used = selected;
+    card_items.removeOne(selected);
+    selected = NULL;
+    adjustCards();
 
-
-        to_discard->setParentItem(NULL);
-        to_discard->setPos(mapToScene(to_discard->pos()));
-        to_discard->setHomePos(QPointF(-494, -155));
-        to_discard->goBack(true);
-        to_discard->setFlags(to_discard->flags() & (~ItemIsFocusable));
+    if(used->getCard()->getType() != "equip"){        
+        emit card_discarded(used);
+    }else{
+        used->setHomePos(QPointF(34, 37));
+        used->goBack(true);
+        installEquip(used);
     }
-
-    return to_discard;
 }
 
 void Dashboard::unselectAll(){
@@ -116,6 +120,10 @@ void Dashboard::sort(int order){
     sort_combobox->setCurrentIndex(order);
 }
 
+void Dashboard::pushDelayedTrick(CardItem *card){
+    judging_area.push(card);
+}
+
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
@@ -123,8 +131,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->setPen(Qt::white);
     painter->drawText(QRectF(847, 15, 121, 17), Config.UserName, QTextOption(Qt::AlignHCenter));
 
-    // draw general's hp
     if(player){
+        // draw player's hp
         int hp = player->getHp();
         QPixmap *magatama;
         if(player->isWounded())
@@ -134,7 +142,29 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         int i;
         for(i=0; i<hp; i++)
             painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
+
+        // draw player's equip area
+        painter->setFont(Config.TinyFont);
+
+        drawEquip(painter, weapon, 0);
+        drawEquip(painter, armor, 1);
+        drawEquip(painter, defensive_horse, 2);
+        drawEquip(painter, offensive_horse, 3);
+
+        // draw player's judging area
+        for(i=0; i<judging_area.count(); i++)
+            ;
     }
+}
+
+void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
+    if(!equip)
+        return;
+
+    painter->drawPixmap(QRect(11, 83 + order*32, 20, 20), equip->getSuitPixmap());
+    const Card *card = equip->getCard();
+    painter->drawText(32, 83+20 + order*32, Sanguosha->translate(card->getNumberString()));
+    painter->drawText(58, 83+20 + order*32, Sanguosha->translate(card->objectName()));
 }
 
 void Dashboard::adjustCards(){
@@ -155,6 +185,33 @@ void Dashboard::adjustCards(){
         card_items[i]->setHomePos(QPointF(180 + i*card_skip, 45));
         card_items[i]->goBack();
     }
+}
+
+void Dashboard::installEquip(CardItem *equip){
+    effect->setCurrentSource(InstallEquipSource);
+    effect->play();
+
+    const Card *card = equip->getCard();
+    QString subtype = card->getSubtype();
+    CardItem *uninstall = NULL;
+    if(subtype == "weapon"){
+        uninstall = weapon;
+        weapon = equip;
+    }else if(subtype == "armor"){
+        uninstall = armor;
+        armor = equip;
+    }else if(subtype == "defensive_horse"){
+        uninstall = defensive_horse;
+        defensive_horse = equip;
+    }else if(subtype == "offensive_horse"){
+        uninstall = offensive_horse;
+        offensive_horse = equip;
+    }
+
+    update();
+
+    if(uninstall)
+        emit card_discarded(uninstall);
 }
 
 static bool CompareBySuitNumber(const CardItem *a, const CardItem *b){

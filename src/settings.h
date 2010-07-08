@@ -18,6 +18,7 @@ public:
     const QRectF Rect;
     QFont BigFont;
     QFont SmallFont;
+    QFont TinyFont;
 
     QString UserName;
     QString HostAddress;

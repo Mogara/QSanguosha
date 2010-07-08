@@ -25,8 +25,7 @@ protected:
 private:
     QString label;
     qreal width, height;
-
-    static Phonon::MediaSource HoverSource, DownSource;
+    Phonon::MediaObject *effect;    
 
 signals:
     void clicked();
