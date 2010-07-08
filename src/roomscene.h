@@ -13,8 +13,7 @@ class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene(Client *client, int player_count);
-    void updatePhotos();
+    RoomScene(Client *client, int player_count);    
 
 public slots:
     void showBust(const QString &name);
@@ -24,7 +23,8 @@ public slots:
     void discardCard(CardItem *card);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
-    void changePrompt(const QString &prompt_str);    
+    void changePrompt(const QString &prompt_str);
+    void updatePhotos(const QList<const Player*> &seats);
     void viewDiscarded();
 
 protected:

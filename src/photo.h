@@ -6,6 +6,7 @@
 
 #include <QGraphicsObject>
 #include <QPixmap>
+#include <QComboBox>
 
 class Photo : public Pixmap
 {
@@ -18,8 +19,9 @@ public:
 
 public slots:
     void updateAvatar();
-    void changeHandCardNum(int num);
+    void updateHandcardNum(int num);
     void updateStateStr(const QString &new_state);
+    void updateRoleCombobox(const QString &new_role);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -34,6 +36,7 @@ private:
     int handcard_num;
     QPixmap magatamas[5];
     QString state_str;
+    QComboBox *role_combobox;
 };
 
 #endif // PHOTOBACK_H

@@ -23,7 +23,6 @@ public:
     void useSelected();
     void unselectAll();
     void sort(int order);
-    void pushDelayedTrick(CardItem *card);
 
 public slots:
     void updateAvatar();
@@ -46,6 +45,7 @@ private:
 
     void adjustCards();
     void installEquip(CardItem *equip);
+    void installDelayedTrick(CardItem *card);
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 
 private slots:

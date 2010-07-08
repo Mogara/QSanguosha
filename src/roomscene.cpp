@@ -29,7 +29,7 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     // create skill label
     prompt_label = addSimpleText("", Config.BigFont);
-    prompt_label->setPos(-400, -100);
+    prompt_label->setPos(-350, -100);
 
     // create pile
     pile = new Pixmap(":/images/pile.png");
@@ -64,10 +64,11 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
             this, SLOT(chooseGeneral(const General*,QList<const General*>)));
     connect(client, SIGNAL(prompt_changed(QString)), this, SLOT(changePrompt(QString)));
+    connect(client, SIGNAL(seats_arranged(QList<const Player*>)), this, SLOT(updatePhotos(QList<const Player*>)));
 
     client->signup();
 
-    client->drawCards("1+2+2+3+4+5+6+7");
+    effect = Phonon::createPlayer(Phonon::MusicCategory);
 }
 
 void RoomScene::startEnterAnimation(){
@@ -137,20 +138,39 @@ void RoomScene::removePlayer(const QString &player_name){
     }
 }
 
-void RoomScene::updatePhotos(){
+void RoomScene::updatePhotos(const QList<const Player*> &seats){
+    // rearrange the photos
+
+    //QMessageBox::information(NULL, "", QString("%1 %2").arg(seats.length()).arg(photos.length()));
+
+    Q_ASSERT(seats.length() == photos.length());
+
+    int i, j;
+    for(i=0; i<seats.length(); i++){
+        const Player *player = seats.at(i);
+        for(j=0; j<photos.length(); j++){
+            if(photos.at(j)->getPlayer() == player){
+                photos.swap(i, j);
+                break;
+            }
+        }
+    }
+
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
-    int i;
-    for(i=0; i<photos.size(); i++){
+    const qreal photo_width = photos.front()->boundingRect().width();
+    const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
+
+    for(i=0;i<photos.length();i++){
         Photo *photo = photos[i];
+        qreal x = i * photo_width + start_x;
+
         QPropertyAnimation *translation = new QPropertyAnimation(photo, "x");
-        translation->setEndValue(i * photo->boundingRect().width() + Config.Rect.x());
+        translation->setEndValue(x);
         translation->setEasingCurve(QEasingCurve::OutBounce);
 
         group->addAnimation(translation);
     }
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void RoomScene::showBust(const QString &name)
@@ -287,6 +307,7 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
         QString icon_path = lord->getPixmapPath("card");
         QString caption = Sanguosha->translate(lord->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
+        button->setIconSize(button->iconSize() * 0.8);
         layout->addWidget(button);
 
         mapper->setMapping(button, lord->objectName());
@@ -331,6 +352,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
 
         QString caption = tr("Lord is %1\nYour role is %2").arg(lord_name).arg(role_str);
         OptionButton *button = new OptionButton(icon_path, caption);
+        button->setIconSize(button->iconSize() * 0.8);
         button->setToolTip(role_tip);
 
         layout->addWidget(button);
@@ -340,6 +362,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
         QString icon_path = general->getPixmapPath("card");
         QString caption = Sanguosha->translate(general->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
+        button->setIconSize(button->iconSize() * 0.8);
         layout->addWidget(button);
 
         mapper->setMapping(button, general->objectName());

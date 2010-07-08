@@ -120,7 +120,7 @@ void Dashboard::sort(int order){
     sort_combobox->setCurrentIndex(order);
 }
 
-void Dashboard::pushDelayedTrick(CardItem *card){
+void Dashboard::installDelayedTrick(CardItem *card){
     judging_area.push(card);
 }
 

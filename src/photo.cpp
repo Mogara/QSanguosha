@@ -9,6 +9,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
 #include <QMessageBox>
+#include <QGraphicsProxyWidget>
 
 Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
@@ -25,16 +26,29 @@ Photo::Photo()
         magatamas[i].load(QString(":/images/magatamas/%1.png").arg(i+1));
         magatamas[i] = magatamas[i].scaled(20,20);
     }
+
+    role_combobox = new QComboBox;
+    role_combobox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    role_combobox->addItem(tr("unknown"));    
+
+    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
+    widget->setWidget(role_combobox);
+    widget->setPos(pixmap.width()/2, pixmap.height()-10);
 }
 
 void Photo::setPlayer(const Player *player)
 {
     this->player = player;
 
-    if(player){
+    if(player){        
+        role_combobox->addItem(QIcon(":/images/roles/loyalist.png"), tr("loyalist"));
+        role_combobox->addItem(QIcon(":/images/roles/rebel.png"), tr("rebel"));
+        role_combobox->addItem(QIcon(":/images/roles/renegade.png"), tr("renegade"));
+
+        connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(handcard_num_changed(int)), this, SLOT(changeHandCardNum(int)));
+        connect(player, SIGNAL(handcard_num_changed(int)), this, SLOT(updateHandcardNum(int)));
     }
 
     updateAvatar();
@@ -54,12 +68,20 @@ void Photo::updateAvatar(){
     update();
 }
 
-void Photo::changeHandCardNum(int num){
+void Photo::updateHandcardNum(int num){
     handcard_num = num;
 }
 
 void Photo::updateStateStr(const QString &new_state){
     state_str = Sanguosha->translate(new_state);
+}
+
+void Photo::updateRoleCombobox(const QString &new_role){
+    role_combobox->clear();
+    QIcon icon(QString(":/images/roles/%1.png").arg(new_role));
+    QString caption = Sanguosha->translate(new_role);
+    role_combobox->addItem(icon, caption);
+    role_combobox->setEnabled(false);
 }
 
 const Player *Photo::getPlayer() const{

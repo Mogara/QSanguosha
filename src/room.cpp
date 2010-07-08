@@ -275,11 +275,11 @@ void Room::startGame(){
     QStringList player_circle;
     foreach(Player *player, players)
         player_circle << player->objectName();
-    broadcast("$ circle " + player_circle.join("+"));
+    broadcast("! arrangeSeats " + player_circle.join("+"));
 
     // set hp full state
     int lord_welfare = player_count > 4 ? 1 : 0;
-    players[0]->setMaxHP(players[0]->getGeneralMaxHP() + lord_welfare);
+    players.front()->setMaxHP(players.front()->getGeneralMaxHP() + lord_welfare);
 
     int i;
     for(i=1; i<player_count; i++)
@@ -291,8 +291,6 @@ void Room::startGame(){
         broadcast(QString("#%1 max_hp %2").arg(player->objectName()).arg(player->getMaxHP()));
         broadcast(QString("#%1 hp %2").arg(player->objectName()).arg(player->getHp()));
     }
-
-
 
     // every player draw 4 cards and them start from lord
     for(i=0; i<player_count; i++){

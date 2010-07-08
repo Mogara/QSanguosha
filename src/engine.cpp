@@ -202,7 +202,7 @@ void Engine::getRandomLords(QStringList &lord_list, int lord_count){
 
         while(general == NULL){
             int r = qrand() % all_generals.count();
-            const General *chosen = qobject_cast<const General *>(all_generals[r]);
+            const General *chosen = qobject_cast<const General *>(all_generals.at(r));
             if(!chosen->isLord())
                 general = chosen;
         }
@@ -225,7 +225,7 @@ void Engine::getRandomGenerals(QStringList &general_list, int count){
     }
 
     for(i=0; i<count; i++)
-        general_list << all_generals[i]->objectName();
+        general_list << all_generals.at(i)->objectName();
 
     Q_ASSERT(general_list.count() == count);
 }

@@ -151,6 +151,26 @@ void Client::duplicationError(const QString &){
     exit(1);
 }
 
+void Client::arrangeSeats(const QString &seats_str){    
+    QStringList player_names = seats_str.split("+");
+    QList<const Player*> players, seats;
+
+    foreach(QString player_name, player_names){
+        Player *player = findChild<Player*>(player_name);
+
+        Q_ASSERT(player != NULL);
+        players << player;
+    }
+
+    int self_index = players.indexOf(self), i;
+    for(i=self_index+1; i<players.length(); i++)
+        seats.prepend(players.at(i));
+    for(i=0; i<self_index; i++)
+        seats.prepend(players.at(i));
+
+    emit seats_arranged(seats);
+}
+
 void Client::notifyRoleChange(const QString &new_role){
     if(!new_role.isEmpty()){
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));

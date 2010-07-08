@@ -176,4 +176,8 @@ for(i=0;i<card_names.length;i++){
     sgs.addCard(name, suit, number);
 }
 
+// my DIY card : Yitian sword
+var yitian_sword = sgs.addCardClass("yitian_sword", "equip", "weapon");
+sgs.addCard("yitian_sword", "spade", 6);
+sgs.addTranslationTable({"yitian_sword" : "ÒÐÌì½£"});
 

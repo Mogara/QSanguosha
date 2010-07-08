@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE void getGenerals(const QString &generals_str);
     Q_INVOKABLE void startInXs(const QString &);
     Q_INVOKABLE void duplicationError(const QString &);
+    Q_INVOKABLE void arrangeSeats(const QString &seats);
 
 public slots:
     void request(const QString &message);
@@ -43,6 +44,7 @@ signals:
     void lords_got(const QList<const General*> &lords);
     void generals_got(const General *lord, const QList<const General *> &generals);
     void prompt_changed(const QString &prompt_str);
+    void seats_arranged(const QList<const Player*> &seats);
 };
 
 #endif // CLIENT_H
