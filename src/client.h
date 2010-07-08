@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "player.h"
+#include "clientplayer.h"
 #include "card.h"
 
 #include <QTcpSocket>
@@ -12,7 +12,7 @@ class Client : public QTcpSocket
 public:
     explicit Client(QObject *parent = 0);
     void signup();
-    const Player *getPlayer() const;
+    const ClientPlayer *getPlayer() const;
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -29,7 +29,7 @@ public slots:
 
 private:
     QObject *room;
-    Player *self;
+    ClientPlayer *self;
 
 private slots:
     void processReply();

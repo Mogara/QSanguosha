@@ -1,7 +1,7 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-#include "player.h"
+#include "serverplayer.h"
 
 #include <QScriptValue>
 #include <QTcpSocket>
@@ -13,18 +13,13 @@ public:
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
-    void broadcast(const QString &message, Player *except = NULL);
-    int drawCard();
-    void drawCards(QList<int> &cards, int count);
-
-    Q_INVOKABLE void pushEvent(const QScriptValue &event);
 
 protected:
     virtual bool event(QEvent *);
     virtual void timerEvent(QTimerEvent *);
 
 private:
-    QList<Player*> players;
+    QList<ServerPlayer*> players;
     int player_count;
     Player *focus;
     QList<int> pile1, pile2;
@@ -33,9 +28,16 @@ private:
     int chosen_generals;    
     bool game_started;
 
-    Q_INVOKABLE void setCommand(Player *player, const QStringList &args);
-    Q_INVOKABLE void signupCommand(Player *player, const QStringList &args);
-    Q_INVOKABLE void chooseCommand(Player *player, const QStringList &args);
+    void broadcast(const QString &message, Player *except = NULL);
+    int drawCard();
+    void drawCards(QList<int> &cards, int count);
+
+    Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QStringList &args);
+
+    // for the room only
+    Q_INVOKABLE void pushEvent(const QScriptValue &event);
 
 private slots:
     void reportDisconnection();

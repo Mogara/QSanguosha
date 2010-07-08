@@ -19,7 +19,7 @@
 static Phonon::MediaSource AddPlayerSource("audio/add-player.wav");
 
 RoomScene::RoomScene(Client *client, int player_count)
-    :client(client), bust(NULL)
+    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     Q_ASSERT(client != NULL);
 
@@ -52,9 +52,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(dashboard, SIGNAL(card_discarded(CardItem*)), this, SLOT(discardCard(CardItem*)));
 
     // get dashboard's avatar
-    avatar = dashboard->getAvatar();
-
-    startEnterAnimation();
+    avatar = dashboard->getAvatar();    
 
     // do signal-slot connections
     connect(client, SIGNAL(player_added(Player*)), this, SLOT(addPlayer(Player*)));
@@ -68,7 +66,7 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     client->signup();
 
-    effect = Phonon::createPlayer(Phonon::MusicCategory);
+    startEnterAnimation();
 }
 
 void RoomScene::startEnterAnimation(){
@@ -140,9 +138,6 @@ void RoomScene::removePlayer(const QString &player_name){
 
 void RoomScene::updatePhotos(const QList<const Player*> &seats){
     // rearrange the photos
-
-    //QMessageBox::information(NULL, "", QString("%1 %2").arg(seats.length()).arg(photos.length()));
-
     Q_ASSERT(seats.length() == photos.length());
 
     int i, j;
@@ -205,11 +200,14 @@ void RoomScene::discardCard(CardItem *card){
     card->setParentItem(NULL);
     card->setOpacity(1.0);
     card->setPos(dashboard->mapToScene(card->pos()));
-    card->setHomePos(QPointF(-494, -155));
+    card->setHomePos(QPointF(-494 + discarded.length() * 2, -115));
+    QSizeF size = card->boundingRect().size();
+    card->setTransformOriginPoint(size.width()/2, size.height()/2);
+    card->setRotation(qrand() % 360);
     card->goBack();
     card->setFlags(card->flags() & (~QGraphicsItem::ItemIsFocusable));
 
-    card->setZValue(0.1*discarded.length());
+    card->setZValue(0.1*discarded.length());    
     discarded << card;
 }
 
@@ -291,6 +289,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 #ifndef _NDEBUG
     case Qt::Key_D: {
             // do some debugging things
+            client->drawCards("1+2+3+4+5+6");
         }
 #endif
     }

@@ -17,7 +17,7 @@ Room::Room(QObject *parent, int player_count)
 }
 
 void Room::addSocket(QTcpSocket *socket){
-    Player *player = new Player(this);
+    ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     players << player;
 
@@ -38,8 +38,10 @@ bool Room::isFull() const
 
 void Room::broadcast(const QString &message, Player *except){
     foreach(Player *player, players){
-        if(player != except)
-            player->unicast(message);
+        if(player != except){
+            ServerPlayer *server_player = qobject_cast<ServerPlayer*>(player);
+            server_player->unicast(message);
+        }
     }
 }
 
@@ -108,7 +110,7 @@ void Room::timerEvent(QTimerEvent *event){
 }
 
 void Room::reportDisconnection(){
-    Player *player = qobject_cast<Player*>(sender());
+    ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
     if(player){
         emit room_message(player->reportHeader() + tr("disconnected"));
 
@@ -131,7 +133,7 @@ void Room::reportDisconnection(){
 void Room::processRequest(const QString &request){
     QStringList args = request.split(" ");
     QString command = args.front();
-    Player *player = qobject_cast<Player*>(sender());
+    ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
     if(player == NULL)
         return;
 
@@ -144,23 +146,23 @@ void Room::processRequest(const QString &request){
     QMetaObject::invokeMethod(this,
                               command.toAscii(),
                               Qt::DirectConnection,
-                              Q_ARG(Player *, player),
+                              Q_ARG(ServerPlayer *, player),
                               Q_ARG(QStringList, args));
 
    emit room_message(player->reportHeader() + request);
 }
 
-void Room::setCommand(Player *player, const QStringList &args){
+void Room::setCommand(ServerPlayer *player, const QStringList &args){
     QString field = args[1];
     QString value = args[2];
     player->setProperty(field.toAscii(), value);
 }
 
-void Room::signupCommand(Player *player, const QStringList &args){
+void Room::signupCommand(ServerPlayer *player, const QStringList &args){
     QString name = args[1];
     QString avatar = args[2];
 
-    if(findChild<Player*>(name)){
+    if(findChild<ServerPlayer*>(name)){
         player->unicast("! duplicationError .");
         return;
     }
@@ -172,7 +174,7 @@ void Room::signupCommand(Player *player, const QStringList &args){
     broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), player);
 
     // introduce all existing player to the new joined
-    foreach(Player *p, players){
+    foreach(ServerPlayer *p, players){
         if(p == player)
             continue;
 
@@ -183,53 +185,47 @@ void Room::signupCommand(Player *player, const QStringList &args){
 }
 
 void Room::assignRoles(){
-    struct assign_table{
-        int lords;
-        int loyalists;
-        int rebels;
-        int renegades;
+    static const char *role_assign_table[] = {
+        "",
+        "",
+
+        "ZF", // 2
+        "ZFN", // 3
+        "ZCFN", // 4
+        "ZCFFN", // 5
+        "ZCFFFN", // 6
+        "ZCCFFFN", // 7
+        "ZCCFFFFN", // 8
     };
 
-    static struct assign_table role_assign_table[] = {
-        {},
-        {},
+    int n = players.count(), i;
 
-        { 1, 0, 1, 0}, // 2
-        { 1, 0, 1, 1}, // 3
-        { 1, 1, 1, 1}, // 4
-        { 1, 1, 2, 1}, // 5
-        { 1, 1, 3, 1}, // 6
-        { 1, 2, 3, 1}, // 7
-        { 1, 2, 4, 1}, // 8
-    };
-
-    int n = players.count();
-
-    struct assign_table *table = &role_assign_table[n];
-    QStringList roles;
-    int i;
-    for(i=0;i<table->lords;i++)
-        roles << "lord";
-    for(i=0;i<table->loyalists;i++)
-        roles << "loyalist";
-    for(i=0;i<table->rebels;i++)
-        roles << "rebel";
-    for(i=0;i<table->renegades;i++)
-        roles << "renegade";
-
-    Q_ASSERT(roles.count() == n);
+    char roles[100];
+    strcpy(roles, role_assign_table[n]);
 
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
         int r2 = qrand() % n;
-        roles.swap(r1, r2);
+
+        qSwap(roles[r1], roles[r2]);
     }
 
     int lord_index = -1;
     for(i=0; i<n; i++){
-        Player *player = players[i];
-        player->setRole(roles[i]);
-        if(roles[i] == "lord"){
+        ServerPlayer *player = players[i];
+
+        QString role;
+        switch(roles[i]){
+        case 'Z': role = "lord"; break;
+        case 'C': role = "loyalist"; break;
+        case 'F': role = "rebel"; break;
+        case 'N': role = "renegade"; break;
+        }
+
+        Q_ASSERT(!role.isEmpty());
+
+        player->setRole(role);
+        if(role == "lord"){
             lord_index = i;
             broadcast(QString("#%1 role lord").arg(player->objectName()));
 
@@ -237,14 +233,14 @@ void Room::assignRoles(){
             Sanguosha->getRandomLords(lord_list);            
             player->unicast("! getLords " + lord_list.join("+"));
         }else
-            player->unicast(". role " + roles[i]);
+            player->unicast(". role " + role);
     }
 
     Q_ASSERT(lord_index != -1);
     players.swap(0, lord_index);
 }
 
-void Room::chooseCommand(Player *player, const QStringList &args){
+void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     QString general_name = args[1];
     player->setGeneral(general_name);    
     broadcast(QString("#%1 general %2").arg(player->objectName()).arg(general_name));

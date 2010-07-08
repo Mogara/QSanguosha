@@ -30,7 +30,9 @@ SOURCES += src/main.cpp \
     src/event.cpp \
     src/skill.cpp \
     src/optionbutton.cpp \
-    src/cardoverview.cpp
+    src/cardoverview.cpp \
+    src/serverplayer.cpp \
+    src/clientplayer.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -53,7 +55,9 @@ HEADERS += src/mainwindow.h \
     src/event.h \
     src/skill.h \
     src/optionbutton.h \
-    src/cardoverview.h
+    src/cardoverview.h \
+    src/serverplayer.h \
+    src/clientplayer.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

@@ -7,7 +7,7 @@
 Client::Client(QObject *parent)
     :QTcpSocket(parent), room(new QObject(this))
 {
-    self = new Player(this);
+    self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
     self->setProperty("avatar", Config.UserAvatar);
 
@@ -19,7 +19,7 @@ Client::Client(QObject *parent)
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 
-const Player *Client::getPlayer() const{
+const ClientPlayer *Client::getPlayer() const{
     return self;
 }
 
@@ -83,7 +83,7 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
 void Client::addPlayer(const QString &player_info){
     QStringList words = player_info.split(":");
     if(words.length() >=2){
-        Player *player = new Player(this);
+        Player *player = new ClientPlayer(this);
         QString name = words[0];
         QString avatar = words[1];
         player->setObjectName(name);
