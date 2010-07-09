@@ -20,5 +20,6 @@
         <file>images/roles/rebel.png</file>
         <file>images/roles/renegade.png</file>
         <file>images/handcard.png</file>
+        <file>images/card-back.png</file>
     </qresource>
 </RCC>

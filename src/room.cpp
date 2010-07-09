@@ -294,10 +294,14 @@ void Room::startGame(){
         drawCards(cards, 4);
 
         QStringList cards_str;
-        foreach(int card, cards)
-            cards_str << QString::number(card);
+        foreach(int card_id, cards){
+            cards_str << QString::number(card_id);
+            Card *card = Sanguosha->getCard(card_id);
+            players[i]->drawCard(card);
+        }
 
         players[i]->unicast("! drawCards " + cards_str.join("+"));
+        broadcast(QString("! drawNCards %1:4").arg(players[i]->objectName()), players[i]);
     }
 }
 

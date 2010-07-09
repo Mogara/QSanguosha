@@ -8,7 +8,7 @@ class ServerPlayer : public Player
     Q_OBJECT
 
 public:
-    explicit ServerPlayer(QObject *parent = 0);
+    explicit ServerPlayer(QObject *parent);
     void setSocket(QTcpSocket *socket);
     void unicast(const QString &message);
     QString reportHeader() const;

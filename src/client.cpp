@@ -57,7 +57,7 @@ void Client::processReply(){
         }else if(object.startsWith(other_prefix)){
             // others
             object.remove(other_prefix);
-            Player *player = findChild<Player*>(object);
+            ClientPlayer *player = findChild<ClientPlayer*>(object);
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
             // invoke methods            
@@ -83,7 +83,7 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
 void Client::addPlayer(const QString &player_info){
     QStringList words = player_info.split(":");
     if(words.length() >=2){
-        Player *player = new ClientPlayer(this);
+        ClientPlayer *player = new ClientPlayer(this);
         QString name = words[0];
         QString avatar = words[1];
         player->setObjectName(name);
@@ -94,7 +94,7 @@ void Client::addPlayer(const QString &player_info){
 }
 
 void Client::removePlayer(const QString &player_name){
-    Player *player = findChild<Player*>(player_name);
+    ClientPlayer *player = findChild<ClientPlayer*>(player_name);
     if(player){
         player->setParent(NULL);
         emit player_removed(player_name);
@@ -107,10 +107,21 @@ void Client::drawCards(const QString &cards_str){
     foreach(QString card_str, card_list){
         int card_id = card_str.toInt();
         Card *card = Sanguosha->getCard(card_id);
-        cards << card;        
+        cards << card;
     }
 
     emit cards_drawed(cards);
+}
+
+void Client::drawNCards(const QString &draw_str){
+    int colon_index = draw_str.indexOf(QChar(':'));
+    ClientPlayer *player = findChild<ClientPlayer *>(draw_str.left(colon_index));
+    int n = draw_str.right(draw_str.length() - colon_index - 1).toInt();
+
+    if(player && n>0){
+        player->drawNCard(n);
+        emit n_card_drawed(player, n);
+    }
 }
 
 void Client::getLords(const QString &lords_str){
@@ -153,16 +164,19 @@ void Client::duplicationError(const QString &){
 
 void Client::arrangeSeats(const QString &seats_str){    
     QStringList player_names = seats_str.split("+");
-    QList<const Player*> players, seats;
+    QList<const ClientPlayer*> players, seats;
 
-    foreach(QString player_name, player_names){
-        Player *player = findChild<Player*>(player_name);
+    int i;
+    for(i=0; i<player_names.length(); i++){
+        ClientPlayer *player = findChild<ClientPlayer*>(player_names.at(i));
 
         Q_ASSERT(player != NULL);
-        players << player;
+
+        player->setSeat(i+1);
+        players << player;        
     }
 
-    int self_index = players.indexOf(self), i;
+    int self_index = players.indexOf(self);
     for(i=self_index+1; i<players.length(); i++)
         seats.prepend(players.at(i));
     for(i=0; i<self_index; i++)

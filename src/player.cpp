@@ -2,7 +2,8 @@
 #include "engine.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), hp(-1), max_hp(-1), state("online")
+    :QObject(parent), general(NULL), hp(-1), max_hp(-1), state("online"), seat(0),
+    src_correct(0), dest_correct(0)
 {
 }
 
@@ -28,6 +29,25 @@ bool Player::isWounded() const{
         return true;
     else
         return hp < general->getMaxHp();
+}
+
+int Player::getSeat() const{
+    return seat;
+}
+
+void Player::setSeat(int seat){
+    this->seat = seat;
+}
+
+void Player::setCorrect(int src_correct, int dest_correct){
+    this->src_correct = src_correct;
+    this->dest_correct = dest_correct;
+}
+
+int Player::distanceTo(const Player *other) const{
+    int right = qAbs(seat - other->seat);
+    int left = parent()->children().count() - right;
+    return qMin(left, right) + src_correct + other->dest_correct;
 }
 
 int Player::getGeneralMaxHP() const{

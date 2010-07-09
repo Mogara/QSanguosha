@@ -17,6 +17,7 @@ public:
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
     Q_INVOKABLE void drawCards(const QString &cards_str);
+    Q_INVOKABLE void drawNCards(const QString &draw_str);
     Q_INVOKABLE void getLords(const QString &lords_str);
     Q_INVOKABLE void getGenerals(const QString &generals_str);
     Q_INVOKABLE void startInXs(const QString &);
@@ -38,13 +39,14 @@ private slots:
 
 signals:
     void error_message(const QString &msg);
-    void player_added(Player *new_player);
+    void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);
     void cards_drawed(const QList<Card *> &cards);
     void lords_got(const QList<const General*> &lords);
     void generals_got(const General *lord, const QList<const General *> &generals);
     void prompt_changed(const QString &prompt_str);
-    void seats_arranged(const QList<const Player*> &seats);
+    void seats_arranged(const QList<const ClientPlayer*> &seats);
+    void n_card_drawed(ClientPlayer *player, int n);
 };
 
 #endif // CLIENT_H

@@ -7,6 +7,7 @@
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 
 #include <QMessageBox>
@@ -24,7 +25,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     Q_ASSERT(client != NULL);
 
     client->setParent(this);
-    const Player *player = client->getPlayer();
+    const ClientPlayer *player = client->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create skill label
@@ -34,7 +35,7 @@ RoomScene::RoomScene(Client *client, int player_count)
     // create pile
     pile = new Pixmap(":/images/pile.png");
     addItem(pile);
-    pile->setPos(Config.Rect.width()/2 - pile->boundingRect().width(), -pile->boundingRect().height());
+    pile->setPos(387, -162);
 
     // create photos
     int i;
@@ -55,14 +56,16 @@ RoomScene::RoomScene(Client *client, int player_count)
     avatar = dashboard->getAvatar();    
 
     // do signal-slot connections
-    connect(client, SIGNAL(player_added(Player*)), this, SLOT(addPlayer(Player*)));
-    connect(client, SIGNAL(player_removed(QString)), this, SLOT(removePlayer(QString)));
-    connect(client, SIGNAL(cards_drawed(QList<Card*>)), this, SLOT(drawCards(QList<Card*>)));
-    connect(client, SIGNAL(lords_got(QList<const General*>)), this, SLOT(chooseLord(QList<const General*>)));
+    connect(client, SIGNAL(player_added(ClientPlayer*)), this, SLOT(addPlayer(ClientPlayer*)));
+    connect(client, SIGNAL(player_removed(QString)), this, SLOT(removePlayer(QString)));    
+    connect(client, SIGNAL(cards_drawed(QList<Card*>)), this, SLOT(drawCards(QList<Card*>)));    
+    connect(client, SIGNAL(lords_got(QList<const General*>)), this, SLOT(chooseLord(QList<const General*>)));    
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
             this, SLOT(chooseGeneral(const General*,QList<const General*>)));
+
     connect(client, SIGNAL(prompt_changed(QString)), this, SLOT(changePrompt(QString)));
-    connect(client, SIGNAL(seats_arranged(QList<const Player*>)), this, SLOT(updatePhotos(QList<const Player*>)));
+    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), this, SLOT(updatePhotos(QList<const Player*>)));
+    connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), this, SLOT(drawNCards(ClientPlayer*,int)));
 
     client->signup();
 
@@ -112,12 +115,13 @@ void RoomScene::startEnterAnimation(){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void RoomScene::addPlayer(Player *player){
+void RoomScene::addPlayer(ClientPlayer *player){
     int i;
     for(i=0; i<photos.length(); i++){
         Photo *photo = photos[i];
         if(photo->getPlayer() == NULL){
             photo->setPlayer(player);
+
             name2photo[player->objectName()] = photo;
 
             effect->setCurrentSource(AddPlayerSource);
@@ -195,6 +199,42 @@ void RoomScene::drawCards(const QList<Card *> &cards){
         dashboard->addCardItem(item);
     }
 }
+
+void RoomScene::drawNCards(ClientPlayer *player, int n){
+    QSequentialAnimationGroup *group =  new QSequentialAnimationGroup;
+    QParallelAnimationGroup *moving = new QParallelAnimationGroup;
+    QParallelAnimationGroup *disappering = new QParallelAnimationGroup;
+
+    Photo *photo = name2photo[player->objectName()];
+    int i;
+    for(i=0; i<n; i++){
+        Pixmap *pixmap = new Pixmap(":/images/card-back.png");
+        addItem(pixmap);
+
+        QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
+        ugoku->setStartValue(QPointF(387, -162));
+        ugoku->setDuration(500);
+        ugoku->setEasingCurve(QEasingCurve::OutBounce);
+        ugoku->setEndValue(photo->pos() + QPointF(10 *i, 0));
+
+        QPropertyAnimation *kieru = new QPropertyAnimation(pixmap, "opacity");
+        kieru->setDuration(900);
+        kieru->setEndValue(0.0);
+
+        moving->addAnimation(ugoku);
+        disappering->addAnimation(kieru);
+
+        connect(kieru, SIGNAL(finished()), pixmap, SLOT(deleteLater()));
+    }
+
+    group->addAnimation(moving);
+    group->addAnimation(disappering);
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    photo->update();
+}
+
 
 void RoomScene::discardCard(CardItem *card_item){
     card_item->setParentItem(NULL);

@@ -18,9 +18,10 @@ class Player : public QObject
     Q_PROPERTY(QString general READ getGeneral WRITE setGeneral)
     Q_PROPERTY(QString state READ getState WRITE setState)
     Q_PROPERTY(int handcard_num READ getHandcardNum)
+    Q_PROPERTY(int seat READ getSeat WRITE setSeat)
 
 public:
-    explicit Player(QObject *parent = 0);
+    explicit Player(QObject *parent);
 
     // property setters/getters
     int getHp() const;
@@ -33,8 +34,12 @@ public:
     void setGeneral(const QString &general_name);
     QString getGeneral() const;
     void setState(const QString &state);
-    QString getState() const;    
+    QString getState() const;
+    int getSeat() const;
+    void setSeat(int seat);
 
+    void setCorrect(int src_correct, int dest_correct);
+    int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
 
@@ -45,6 +50,8 @@ private:
     int hp, max_hp;
     QString role;
     QString state;
+    int seat;
+    int src_correct, dest_correct;
 
 signals:
     void general_changed();

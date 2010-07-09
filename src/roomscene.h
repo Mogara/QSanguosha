@@ -18,9 +18,10 @@ public:
 
 public slots:
     void showBust(const QString &name);
-    void addPlayer(Player *player);
+    void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
+    void drawNCards(ClientPlayer *player, int n);
     void discardCard(CardItem *card_item);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);

@@ -8,18 +8,19 @@
 #include <QPixmap>
 #include <QComboBox>
 
+class ClientPlayer;
+
 class Photo : public Pixmap
 {
     Q_OBJECT
 public:
     explicit Photo();
-    void setPlayer(const Player *player);
-    const Player *getPlayer() const;
+    void setPlayer(const ClientPlayer *player);
+    const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
 
 public slots:
     void updateAvatar();
-    void updateHandcardNum(int num);
     void updateStateStr(const QString &new_state);
     void updateRoleCombobox(const QString &new_role);
 
@@ -28,12 +29,11 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 
 private:
-    const Player *player;
+    const ClientPlayer *player;
     QPixmap avatar;
     QPixmap avatar_frame;
     QPixmap kingdom;
     QPixmap handcard;
-    int handcard_num;
     QPixmap magatamas[5];
     QString state_str;
     QComboBox *role_combobox;

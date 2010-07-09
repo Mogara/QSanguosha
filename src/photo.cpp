@@ -1,4 +1,5 @@
 #include "photo.h"
+#include "clientplayer.h"
 #include "settings.h"
 #include "carditem.h"
 #include "engine.h"
@@ -15,8 +16,7 @@ Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
     player(NULL),
     avatar_frame(":/images/avatar-frame.png"),
-    handcard(":/images/handcard.png"),
-    handcard_num(0)
+    handcard(":/images/handcard.png")
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
@@ -36,7 +36,7 @@ Photo::Photo()
     widget->setPos(pixmap.width()/2, pixmap.height()-10);
 }
 
-void Photo::setPlayer(const Player *player)
+void Photo::setPlayer(const ClientPlayer *player)
 {
     this->player = player;
 
@@ -48,7 +48,6 @@ void Photo::setPlayer(const Player *player)
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(handcard_num_changed(int)), this, SLOT(updateHandcardNum(int)));
     }
 
     updateAvatar();
@@ -68,10 +67,6 @@ void Photo::updateAvatar(){
     update();
 }
 
-void Photo::updateHandcardNum(int num){
-    handcard_num = num;
-}
-
 void Photo::updateStateStr(const QString &new_state){
     state_str = Sanguosha->translate(new_state);
 }
@@ -84,7 +79,7 @@ void Photo::updateRoleCombobox(const QString &new_role){
     role_combobox->setEnabled(false);
 }
 
-const Player *Photo::getPlayer() const{
+const ClientPlayer *Photo::getPlayer() const{
     return player;
 }
 
@@ -115,10 +110,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
             for(i=0; i<hp; i++)
                 painter->drawPixmap(34 + i*(magatama->width()+2), 78, *magatama);
         }
-
-        if(handcard_num != 0){
+        int n = player->getHandcardNum();
+        if(n > 0){
             painter->drawPixmap(0, 72, handcard);
-            painter->drawText(8, 95, QString::number(handcard_num));
+            painter->drawText(8, 95, QString::number(n));
         }
 
         if(!state_str.isEmpty()){
