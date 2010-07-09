@@ -196,19 +196,25 @@ void RoomScene::drawCards(const QList<Card *> &cards){
     }
 }
 
-void RoomScene::discardCard(CardItem *card){
-    card->setParentItem(NULL);
-    card->setOpacity(1.0);
-    card->setPos(dashboard->mapToScene(card->pos()));
-    card->setHomePos(QPointF(-494 + discarded.length() * 2, -115));
-    QSizeF size = card->boundingRect().size();
-    card->setTransformOriginPoint(size.width()/2, size.height()/2);
-    card->setRotation(qrand() % 360);
-    card->goBack();
-    card->setFlags(card->flags() & (~QGraphicsItem::ItemIsFocusable));
+void RoomScene::discardCard(CardItem *card_item){
+    card_item->setParentItem(NULL);
+    card_item->setOpacity(1.0);
+    card_item->setPos(dashboard->mapToScene(card_item->pos()));
+    card_item->setHomePos(QPointF(-494 + discarded_queue.length() * 2, -115));
+    QSizeF size = card_item->boundingRect().size();
+    card_item->setTransformOriginPoint(size.width()/2, size.height()/2);
+    card_item->setRotation(qrand() % 360);
+    card_item->goBack();
+    card_item->setFlags(card_item->flags() & (~QGraphicsItem::ItemIsFocusable));
 
-    card->setZValue(0.1*discarded.length());    
-    discarded << card;
+    card_item->setZValue(0.1*discarded_list.length());
+    discarded_list << card_item->getCard();
+    discarded_queue.enqueue(card_item);
+
+    if(discarded_queue.length() > 10){
+        CardItem *first = discarded_queue.dequeue();
+        delete first;
+    }
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -383,13 +389,13 @@ void RoomScene::changePrompt(const QString &prompt_str){
 }
 
 void RoomScene::viewDiscarded(){
-    if(discarded.isEmpty()){
+    if(discarded_list.isEmpty()){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
     }
 
     CardOverview *overview = new CardOverview;
-    overview->loadFromList(discarded);
+    overview->loadFromList(discarded_list);
     overview->show();
 }
 

@@ -27,14 +27,11 @@ void CardOverview::loadFromAll(){
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
 }
 
-#include <QMessageBox>
-
-void CardOverview::loadFromList(const QList<CardItem *> &discarded){
-    int i, n = discarded.length();    
+void CardOverview::loadFromList(const QList<const Card*> &list){
+    int i, n = list.length();
     ui->tableWidget->setRowCount(n);
-    for(i=0; i<n; i++){
-        addCard(i, discarded[i]->getCard());
-    }
+    for(i=0; i<n; i++)
+        addCard(i, list.at(i));    
 
     if(n>0)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));

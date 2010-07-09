@@ -1,7 +1,7 @@
 #ifndef CARDOVERVIEW_H
 #define CARDOVERVIEW_H
 
-#include "carditem.h"
+#include "card.h"
 
 #include <QDialog>
 
@@ -14,7 +14,7 @@ class CardOverview : public QDialog {
 public:
     CardOverview(QWidget *parent = 0);
     void loadFromAll();
-    void loadFromList(const QList<CardItem *> &discarded);
+    void loadFromList(const QList<const Card*> &list);
 
     ~CardOverview();
 
