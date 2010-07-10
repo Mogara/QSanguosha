@@ -4,7 +4,6 @@
 #include "card.h"
 
 #include <QGraphicsObject>
-#include <QGraphicsColorizeEffect>
 #include <QSize>
 #include <QPropertyAnimation>
 
@@ -39,6 +38,10 @@ private:
     QPixmap suit_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *view_card_item;
+
+signals:
+    void show_discards();
+    void hide_discards();
 };
 
 #endif // CARDITEM_H

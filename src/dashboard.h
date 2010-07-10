@@ -23,6 +23,7 @@ public:
     void useSelected();
     void unselectAll();
     void sort(int order);
+    void disableAllCards();
 
 public slots:
     void updateAvatar();

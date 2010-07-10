@@ -172,6 +172,10 @@ const General *Engine::getGeneral(const QString &name){
     return generals->findChild<General*>(name);
 }
 
+int Engine::getGeneralCount() const{
+    return generals->children().count();
+}
+
 CardClass *Engine::getCardClass(const QString &name){
     return card_classes->findChild<CardClass*>(name);
 }

@@ -20,13 +20,15 @@ protected:
 
 private:
     QList<ServerPlayer*> players;
-    int player_count;
+    const int player_count;
     Player *focus;
     QList<int> pile1, pile2;
     QList<int> *draw_pile, *discard_pile;
     int left_seconds;
     int chosen_generals;    
     bool game_started;
+    QScriptValue this_room;
+    int signup_count;
 
     void broadcast(const QString &message, Player *except = NULL);
     int drawCard();
@@ -36,8 +38,7 @@ private:
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QStringList &args);
 
-    // for the room only
-    Q_INVOKABLE void pushEvent(const QScriptValue &event);
+    Q_INVOKABLE void pushEvent(const QString &name, QScriptValue &event);
 
 private slots:
     void reportDisconnection();

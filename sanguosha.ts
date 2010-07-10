@@ -71,18 +71,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="145"/>
+        <location filename="src/client.cpp" line="156"/>
         <source>Game will start in %1 seconds</source>
         <translation>游戏将在 %1 秒后开始</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="156"/>
+        <location filename="src/client.cpp" line="190"/>
         <source>Your role is %1</source>
         <oldsource>Your role is </oldsource>
         <translation>您的角色是 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="158"/>
+        <location filename="src/client.cpp" line="192"/>
         <source>
  wait for the lord player choosing general, please</source>
         <oldsource>, wait for the lord player choosing general, please</oldsource>
@@ -90,12 +90,12 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="149"/>
+        <location filename="src/client.cpp" line="160"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="149"/>
+        <location filename="src/client.cpp" line="160"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
@@ -402,48 +402,35 @@
 <context>
     <name>Photo</name>
     <message>
-        <location filename="src/photo.cpp" line="33"/>
+        <location filename="src/photo.cpp" line="32"/>
         <source>unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="34"/>
-        <source>lord</source>
-        <translation>主公</translation>
-    </message>
-    <message>
-        <location filename="src/photo.cpp" line="35"/>
+        <location filename="src/photo.cpp" line="44"/>
         <source>loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="36"/>
+        <location filename="src/photo.cpp" line="45"/>
         <source>rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="37"/>
+        <location filename="src/photo.cpp" line="46"/>
         <source>renegade</source>
         <translation>内奸</translation>
     </message>
 </context>
 <context>
-    <name>Player</name>
-    <message>
-        <location filename="src/player.cpp" line="127"/>
-        <source>Anonymous</source>
-        <translation>匿名</translation>
-    </message>
-</context>
-<context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="94"/>
+        <location filename="src/room.cpp" line="99"/>
         <source>Event: </source>
         <translation>事件: </translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="113"/>
+        <location filename="src/room.cpp" line="118"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
@@ -451,49 +438,49 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="281"/>
+        <location filename="src/roomscene.cpp" line="360"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="308"/>
+        <location filename="src/roomscene.cpp" line="388"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="311"/>
+        <location filename="src/roomscene.cpp" line="391"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="324"/>
+        <location filename="src/roomscene.cpp" line="404"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="326"/>
+        <location filename="src/roomscene.cpp" line="406"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="328"/>
+        <location filename="src/roomscene.cpp" line="408"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="332"/>
+        <location filename="src/roomscene.cpp" line="412"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="365"/>
+        <location filename="src/roomscene.cpp" line="447"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="365"/>
+        <location filename="src/roomscene.cpp" line="447"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
@@ -504,6 +491,14 @@ Your role is %2</source>
         <location filename="src/server.cpp" line="30"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
+    </message>
+</context>
+<context>
+    <name>ServerPlayer</name>
+    <message>
+        <location filename="src/serverplayer.cpp" line="38"/>
+        <source>Anonymous</source>
+        <translation>匿名</translation>
     </message>
 </context>
 <context>

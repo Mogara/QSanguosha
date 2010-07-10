@@ -65,13 +65,10 @@ void Dashboard::selectCard(const QString &pattern){
     // find all cards that match the card type
     QList<CardItem*> matches;
 
-    if(pattern.isEmpty())
-        matches = card_items;
-    else{
-        foreach(CardItem *card_item, card_items){
-            if(card_item->isEnabled() && card_item->getCard()->match(pattern))
-                matches << card_item;
-        }
+
+    foreach(CardItem *card_item, card_items){
+        if(card_item->isEnabled() && card_item->getCard()->match(pattern))
+            matches << card_item;
     }
 
     if(matches.isEmpty()){
@@ -231,4 +228,10 @@ void Dashboard::sortCards(){
     }
 
     adjustCards();
+}
+
+void Dashboard::disableAllCards(){
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(false);
+    }
 }

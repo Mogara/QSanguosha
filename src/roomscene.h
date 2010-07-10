@@ -27,7 +27,9 @@ public slots:
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str);
     void updatePhotos(const QList<const Player*> &seats);
-    void viewDiscarded();
+    void viewDiscards();
+    void hideDiscards();
+    void setActivity(bool active);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

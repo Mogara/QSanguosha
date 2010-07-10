@@ -2,7 +2,8 @@
 #include "engine.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), hp(-1), max_hp(-1), state("online"), seat(0),
+    :QObject(parent), general(NULL),
+    hp(-1), max_hp(-1), state("online"), seat(0),
     src_correct(0), dest_correct(0)
 {
 }
@@ -87,7 +88,7 @@ void Player::setState(const QString &state){
 
 void Player::setRole(const QString &role){
     if(this->role != role){
-        this->role = role;
+        this->role = role;        
         emit role_changed(role);
     }
 }
@@ -104,5 +105,13 @@ const General *Player::getAvatarGeneral() const{
     if(general_name.isEmpty())
         return NULL;
     return Sanguosha->getGeneral(general_name);
+}
+
+QString Player::getPhase() const{
+    return phase;
+}
+
+void Player::setPhase(const QString &phase){
+    this->phase = phase;
 }
 

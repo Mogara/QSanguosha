@@ -183,7 +183,7 @@ void MainWindow::enterRoom(){
 
     RoomScene *room_scene = new RoomScene(client, 2);
     ui->actionView_Discarded->setEnabled(true);
-    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscarded()));
+    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
 
     gotoScene(room_scene);
 }

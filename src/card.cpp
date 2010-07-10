@@ -63,7 +63,8 @@ QString Card::getPixmapPath() const{
 }
 
 bool Card::match(const QString &pattern) const{
-    return objectName() == pattern || card_class->type == pattern || card_class->subtype == pattern;
+    return pattern.isEmpty() || objectName() == pattern ||
+            card_class->type == pattern || card_class->subtype == pattern;
 }
 
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){

@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE void quit(const QString &reason = "");
 
     const General *getGeneral(const QString &name);
+    int getGeneralCount() const;
     CardClass *getCardClass(const QString &name);
     int getCardCount() const;
     Card *getCard(int index);

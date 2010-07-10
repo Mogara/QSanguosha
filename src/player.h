@@ -20,6 +20,9 @@ class Player : public QObject
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
 
+    // possible phase is start, judging, drawing, playing, discarding, finish
+    Q_PROPERTY(QString phase READ getPhase WRITE setPhase)
+
 public:
     explicit Player(QObject *parent);
 
@@ -37,6 +40,10 @@ public:
     QString getState() const;
     int getSeat() const;
     void setSeat(int seat);
+    bool isFocus() const;
+    void setFocus(bool focus);
+    QString getPhase() const;
+    void setPhase(const QString &phase);
 
     void setCorrect(int src_correct, int dest_correct);
     int distanceTo(const Player *other) const;
@@ -52,6 +59,7 @@ private:
     QString state;
     int seat;
     int src_correct, dest_correct;
+    QString phase;
 
 signals:
     void general_changed();

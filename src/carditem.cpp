@@ -80,13 +80,16 @@ QRectF CardItem::boundingRect() const{
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
-        setOpacity(0.7);
+        setOpacity(0.8);
 
         if(card->isRed())
             viewAs("slash");
         else
             viewAs("jink");
-    }
+    }else if(rotation() != 0.0)
+        emit show_discards();
+    else
+        emit hide_discards();
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
@@ -117,12 +120,10 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 QVariant CardItem::itemChange(GraphicsItemChange change, const QVariant &value){
     if(change == ItemEnabledChange){
-        if(value.toBool()){
-            setGraphicsEffect(NULL);
+        if(value.toBool()){            
+            setOpacity(1.0);
         }else{
-            QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
-            effect->setColor(QColor(20,20,20));
-            setGraphicsEffect(effect);
+            setOpacity(0.7);
         }
     }
 

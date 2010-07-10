@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void startInXs(const QString &);
     Q_INVOKABLE void duplicationError(const QString &);
     Q_INVOKABLE void arrangeSeats(const QString &seats);
+    Q_INVOKABLE void activate(const QString &player_name);
 
 public slots:
     void request(const QString &message);
@@ -31,6 +32,7 @@ public slots:
 private:
     QObject *room;
     ClientPlayer *self;
+    ClientPlayer *focus_player;
 
 private slots:
     void processReply();
@@ -47,6 +49,7 @@ signals:
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
+    void activity_set(bool active);
 };
 
 #endif // CLIENT_H

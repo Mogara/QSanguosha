@@ -11,7 +11,9 @@
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
-    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5), chosen_generals(0), game_started(false)
+    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5),
+    chosen_generals(0), game_started(false),
+    this_room(Sanguosha->newQObject(this)), signup_count(0)
 {
     Sanguosha->getRandomCards(pile1);
 }
@@ -23,17 +25,11 @@ void Room::addSocket(QTcpSocket *socket){
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
-
-    if(isFull()){
-        broadcast("! startInXs 5");
-        game_started = true;
-        startTimer(1000);
-    }
 }
 
 bool Room::isFull() const
 {
-    return players.length() == player_count;
+    return signup_count == player_count;
 }
 
 void Room::broadcast(const QString &message, Player *except){
@@ -67,8 +63,9 @@ void Room::drawCards(QList<int> &cards, int count){
         cards << drawCard();
 }
 
-void Room::pushEvent(const QScriptValue &event){
+void Room::pushEvent(const QString &name, QScriptValue &event){
     if(event.isObject()){
+        event.setProperty("name", name);
         Event *e = new Event(event);
         QCoreApplication::postEvent(this, e);
     }
@@ -81,7 +78,9 @@ bool Room::event(QEvent *event){
         return false;
 
     Event *e = static_cast<Event*>(event);
+    event->accept();
 
+#ifndef _NDEBUG
     // dump event
     QString dump_str= "{";
     QScriptValueIterator itor(e->getValue());
@@ -92,10 +91,10 @@ bool Room::event(QEvent *event){
         if(itor.hasNext())
             dump_str.append(", ");
     }
-    dump_str.append("}");
+    dump_str.append("}");    
     emit room_message(tr("Event: ") + dump_str);
+#endif
 
-    event->accept();
     return true;
 }
 
@@ -138,7 +137,7 @@ void Room::processRequest(const QString &request){
         return;
 
     if(focus && focus != player){
-        player->unicast("! focusWarn .");
+        player->unicast("! focusWarn " + player->objectName());
         return;
     }
 
@@ -181,6 +180,13 @@ void Room::signupCommand(ServerPlayer *player, const QStringList &args){
         QString name = p->objectName();
         QString avatar = p->property("avatar").toString();
         player->unicast(QString("! addPlayer %1:%2").arg(name).arg(avatar));
+    }
+
+    signup_count ++;
+    if(isFull()){
+        broadcast("! startInXs 5");
+        game_started = true;
+        startTimer(1000);
     }
 }
 
@@ -245,8 +251,10 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     player->setGeneral(general_name);    
     broadcast(QString("#%1 general %2").arg(player->objectName()).arg(general_name));
 
-    if(player->getRole() == "lord"){        
-        const int choice_count = 3;
+    if(player->getRole() == "lord"){
+        static const int max_choice = 5;
+        const int total = Sanguosha->getGeneralCount();
+        const int choice_count = qMin(max_choice, (total-1) / (player_count-1));
         QStringList general_list;
         Sanguosha->getRandomGenerals(general_list, (player_count-1) * choice_count + 1);
         general_list.removeOne(general_name);
@@ -254,8 +262,8 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
         int i,j;
         for(i=1; i<player_count; i++){
             QStringList choices;
-            for(j=0; j<3; j++)
-                choices << general_list[(i-1)*3 + j];
+            for(j=0; j<choice_count; j++)
+                choices << general_list[(i-1)*choice_count + j];
 
             players[i]->unicast(QString("! getGenerals %1+%2").arg(general_name).arg(choices.join("+")));
         }
@@ -288,7 +296,7 @@ void Room::startGame(){
         broadcast(QString("#%1 hp %2").arg(player->objectName()).arg(player->getHp()));
     }
 
-    // every player draw 4 cards and them start from lord
+    // every player draw 4 cards and them start from the lord
     for(i=0; i<player_count; i++){
         QList<int> cards;
         drawCards(cards, 4);
@@ -303,6 +311,8 @@ void Room::startGame(){
         players[i]->unicast("! drawCards " + cards_str.join("+"));
         broadcast(QString("! drawNCards %1:4").arg(players[i]->objectName()), players[i]);
     }
+
+    broadcast("! activate " + players.front()->objectName());
 }
 
 

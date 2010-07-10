@@ -30,12 +30,12 @@ RoomScene::RoomScene(Client *client, int player_count)
 
     // create skill label
     prompt_label = addSimpleText("", Config.BigFont);
-    prompt_label->setPos(-350, -100);
+    prompt_label->setPos(-300, -100);
 
     // create pile
     pile = new Pixmap(":/images/pile.png");
     addItem(pile);
-    pile->setPos(387, -162);
+    pile->setPos(387, -132);
 
     // create photos
     int i;
@@ -56,16 +56,17 @@ RoomScene::RoomScene(Client *client, int player_count)
     avatar = dashboard->getAvatar();    
 
     // do signal-slot connections
-    connect(client, SIGNAL(player_added(ClientPlayer*)), this, SLOT(addPlayer(ClientPlayer*)));
-    connect(client, SIGNAL(player_removed(QString)), this, SLOT(removePlayer(QString)));    
-    connect(client, SIGNAL(cards_drawed(QList<Card*>)), this, SLOT(drawCards(QList<Card*>)));    
-    connect(client, SIGNAL(lords_got(QList<const General*>)), this, SLOT(chooseLord(QList<const General*>)));    
+    connect(client, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
+    connect(client, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
+    connect(client, SIGNAL(cards_drawed(QList<Card*>)), SLOT(drawCards(QList<Card*>)));
+    connect(client, SIGNAL(lords_got(QList<const General*>)), SLOT(chooseLord(QList<const General*>)));
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
-            this, SLOT(chooseGeneral(const General*,QList<const General*>)));
-
-    connect(client, SIGNAL(prompt_changed(QString)), this, SLOT(changePrompt(QString)));
-    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), this, SLOT(updatePhotos(QList<const Player*>)));
-    connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), this, SLOT(drawNCards(ClientPlayer*,int)));
+            SLOT(chooseGeneral(const General*,QList<const General*>)));
+    connect(client, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
+    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const Player*>)));
+    connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
+    connect(client, SIGNAL(focus_set(QString)), SLOT(setFocusPlayer(QString)));
+    connect(client, SIGNAL(activity_set(bool)), SLOT(setActivity(bool)));
 
     client->signup();
 
@@ -195,7 +196,7 @@ void RoomScene::showBust(const QString &name)
 void RoomScene::drawCards(const QList<Card *> &cards){
     foreach(Card * card, cards){
         CardItem *item = new CardItem(card);
-        item->setPos(893, -265);
+        item->setPos(893, -235);
         dashboard->addCardItem(item);
     }
 }
@@ -240,21 +241,24 @@ void RoomScene::discardCard(CardItem *card_item){
     card_item->setParentItem(NULL);
     card_item->setOpacity(1.0);
     card_item->setPos(dashboard->mapToScene(card_item->pos()));
-    card_item->setHomePos(QPointF(-494 + discarded_queue.length() * 2, -115));
+    card_item->setHomePos(QPointF(-494, -115));
     QSizeF size = card_item->boundingRect().size();
     card_item->setTransformOriginPoint(size.width()/2, size.height()/2);
-    card_item->setRotation(qrand() % 360);
+    card_item->setRotation(qrand() % 359 + 1);
     card_item->goBack();
     card_item->setFlags(card_item->flags() & (~QGraphicsItem::ItemIsFocusable));
 
     card_item->setZValue(0.1*discarded_list.length());
-    discarded_list << card_item->getCard();
+    discarded_list.prepend(card_item->getCard());
     discarded_queue.enqueue(card_item);
 
-    if(discarded_queue.length() > 10){
+    if(discarded_queue.length() > 8){
         CardItem *first = discarded_queue.dequeue();
         delete first;
     }
+
+    connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
+    connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -293,6 +297,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_F2: dashboard->sort(1); break;
     case Qt::Key_F3: dashboard->sort(2); break;
 
+    case Qt::Key_F5:
+    case Qt::Key_F6:
+    case Qt::Key_F7:
+    case Qt::Key_F8: break;
+
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
     case Qt::Key_P: dashboard->selectCard("peach"); break;
@@ -317,7 +326,13 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_G: break; // iterate generals
     case Qt::Key_Return : dashboard->useSelected(); break;
-    case Qt::Key_Escape : dashboard->unselectAll(); break;
+    case Qt::Key_Escape : {
+            if(!discarded_queue.isEmpty() && discarded_queue.first()->rotation() == 0.0)
+                hideDiscards();
+            else
+                dashboard->unselectAll();
+            break;
+        }
 
     case Qt::Key_0:
     case Qt::Key_1:
@@ -428,14 +443,38 @@ void RoomScene::changePrompt(const QString &prompt_str){
     prompt_label->setText(prompt_str);
 }
 
-void RoomScene::viewDiscarded(){
+void RoomScene::viewDiscards(){
     if(discarded_list.isEmpty()){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
     }
 
-    CardOverview *overview = new CardOverview;
-    overview->loadFromList(discarded_list);
-    overview->show();
+    if(sender()->inherits("CardItem")){
+        int i;
+        for(i=0; i< discarded_queue.length(); i++){
+            CardItem *card_item = discarded_queue.at(i);
+            card_item->setRotation(0);
+            card_item->setHomePos(QPointF(card_item->x() + i*card_item->boundingRect().width(), card_item->y()));
+            card_item->goBack();
+        }
+    }else{
+        CardOverview *overview = new CardOverview;
+        overview->loadFromList(discarded_list);
+        overview->show();
+    }
 }
 
+void RoomScene::hideDiscards(){
+    foreach(CardItem *card_item, discarded_queue){
+        card_item->setRotation(qrand() % 359 + 1);
+        card_item->setHomePos(QPointF(-494, -115));
+        card_item->goBack();
+    }
+}
+
+void RoomScene::setActivity(bool active){
+    if(active)
+        ; // FIXME
+    else
+        dashboard->disableAllCards();
+}

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this))
+    :QTcpSocket(parent), room(new QObject(this)), focus_player(NULL)
 {
     self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
@@ -60,7 +60,7 @@ void Client::processReply(){
             ClientPlayer *player = findChild<ClientPlayer*>(object);
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
-            // invoke methods            
+            // invoke methods
             QMetaObject::invokeMethod(this, field, Qt::DirectConnection, Q_ARG(QString, value));
         }else
             QMessageBox::information(NULL, tr("Reply format error!"), reply);
@@ -192,4 +192,8 @@ void Client::notifyRoleChange(const QString &new_role){
             prompt_str += tr("\n wait for the lord player choosing general, please");
         emit prompt_changed(prompt_str);
     }
+}
+
+void Client::activate(const QString &player_name){
+    emit activity_set(self->objectName() == player_name);
 }

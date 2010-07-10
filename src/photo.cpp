@@ -48,6 +48,7 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+
     }
 
     updateAvatar();
@@ -118,6 +119,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
         if(!state_str.isEmpty()){
             painter->drawText(100, 100, state_str);
+        }
+
+        if(!player->getPhase().isEmpty()){
+            painter->drawRoundRect(boundingRect(), 10, 15);
         }
     }
 }
