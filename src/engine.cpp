@@ -127,7 +127,10 @@ QScriptValue Engine::doScript(const QString &filename){
     QScriptValue result;
     QFile file(filename);
     if(file.open(QIODevice::ReadOnly)){
-        result = evaluate(file.readAll(), filename);
+        QTextStream stream(&file);
+        stream.setCodec("GB18030");
+
+        result = evaluate(stream.readAll(), filename);
         if(hasUncaughtException()){
             error_msg =  tr("%1\n\n Stack trace:\n %2")
                          .arg(uncaughtException().toString())

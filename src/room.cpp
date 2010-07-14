@@ -313,6 +313,7 @@ void Room::startGame(){
     }
 
     broadcast("! activate " + players.front()->objectName());
+
 }
 
 

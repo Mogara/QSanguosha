@@ -2,12 +2,12 @@
 #define CARDITEM_H
 
 #include "card.h"
+#include "pixmap.h"
 
-#include <QGraphicsObject>
 #include <QSize>
 #include <QPropertyAnimation>
 
-class CardItem : public QGraphicsObject
+class CardItem : public Pixmap
 {
     Q_OBJECT
 public:
@@ -22,8 +22,6 @@ public:
     void select();
     void unselect();
 
-    virtual QRectF boundingRect() const;
-
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -34,7 +32,6 @@ protected:
 
 private:
     Card *card;
-    QPixmap pixmap;
     QPixmap suit_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *view_card_item;

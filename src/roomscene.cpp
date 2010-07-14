@@ -65,7 +65,6 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const Player*>)));
     connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
-    connect(client, SIGNAL(focus_set(QString)), SLOT(setFocusPlayer(QString)));
     connect(client, SIGNAL(activity_set(bool)), SLOT(setActivity(bool)));
 
     client->signup();
@@ -141,7 +140,7 @@ void RoomScene::removePlayer(const QString &player_name){
     }
 }
 
-void RoomScene::updatePhotos(const QList<const Player*> &seats){
+void RoomScene::updatePhotos(const QList<const ClientPlayer*> &seats){
     // rearrange the photos
     Q_ASSERT(seats.length() == photos.length());
 
@@ -320,9 +319,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_I: dashboard->selectCard("indulgence"); break;
     case Qt::Key_R: dashboard->selectCard("collateral"); break;
     case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
-    case Qt::Key_F: dashboard->selectCard("amazing_grace"); break;
 
     case Qt::Key_Space :  dashboard->selectCard(); break; // iterate all cards
+    case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: break; // iterate generals
     case Qt::Key_Return : dashboard->useSelected(); break;

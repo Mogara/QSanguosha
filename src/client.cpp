@@ -73,6 +73,8 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
     switch(socket_error){
     case ConnectionRefusedError: reason = tr("Connection was refused or timeout"); break;
     case RemoteHostClosedError: reason = tr("Remote host close this connection"); break;
+    case HostNotFoundError: reason = tr("Host not found"); break;
+    case SocketAccessError: reason = tr("Socket access error"); break;
         // FIXME
     default: reason = tr("Unknow error"); break;
     }

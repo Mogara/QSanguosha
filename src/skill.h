@@ -15,16 +15,17 @@ class Skill : public QObject
 
 public:
     explicit Skill(const QString &name, const QScriptValue &value, QObject *parent);
-    void doCallback(Room *room);
     bool isCompulsory() const;
     bool isLordSkill() const;
     bool isFrequent() const;
+    bool isToggleable() const;
 
 private:
     QScriptValue value;
     bool compulsory;
     bool lord_skill;
     bool frequent;
+    bool toggleable;
 
     void setBooleanFlag(QString &str, QChar symbol, bool *flag);
 };

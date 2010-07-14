@@ -18,12 +18,6 @@ Skill::Skill(const QString &name, const QScriptValue &value, QObject *parent)
     setObjectName(copy);
 }
 
-void Skill::doCallback(Room *room){
-    QScriptValue this_object = Sanguosha->newQObject(room);
-    QScriptValueList arguments;
-    value.call(this_object, arguments);
-}
-
 bool Skill::isCompulsory() const{
     return compulsory;
 }
@@ -34,6 +28,10 @@ bool Skill::isLordSkill() const{
 
 bool Skill::isFrequent() const{
     return frequent;
+}
+
+bool Skill::isToggleable() const{
+    return toggleable;
 }
 
 void Skill::setBooleanFlag(QString &str, QChar symbol, bool *flag){

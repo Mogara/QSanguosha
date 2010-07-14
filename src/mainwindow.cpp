@@ -104,6 +104,9 @@ void MainWindow::createSkillButtons(const Player *player){
             checkbox->setChecked(true);
             status_bar->addPermanentWidget(checkbox);
         }
+
+        if(skill->isToggleable())
+            button->setCheckable(true);
     }
 }
 
@@ -189,7 +192,7 @@ void MainWindow::enterRoom(){
 }
 
 void MainWindow::startGameInAnotherInstance(){
-    QProcess::startDetached(QApplication::applicationFilePath());
+    QProcess::startDetached(QApplication::applicationFilePath(), QStringList());
 }
 
 void MainWindow::on_actionGeneral_Overview_triggered()

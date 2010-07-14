@@ -7,7 +7,7 @@ Server::Server(QObject *parent)
     quint16 port = Config.Port;
 
     connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
-    listen(QHostAddress::LocalHost, port);
+    listen(QHostAddress::Any, port);
 }
 
 void Server::processNewConnection(){

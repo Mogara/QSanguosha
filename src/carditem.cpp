@@ -7,16 +7,13 @@
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
 
-static QRect CardRect(0, 0, 150*0.8, 210*0.8);
-static QFont CardNumberFont("Times", 20, QFont::Bold);
-
 CardItem::CardItem(Card *card)
-    :card(card), view_card_item(NULL)
+    :Pixmap(card->getPixmapPath()), card(card), view_card_item(NULL)
 {
     Q_ASSERT(card != NULL);
 
-    suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));
-    pixmap.load(card->getPixmapPath());
+    suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));    
+    pixmap = pixmap.scaled(150*0.8, 210*0.8);
     setFlags(ItemIsFocusable);
 }
 
@@ -74,18 +71,9 @@ void CardItem::unselect(){
     setY(45);
 }
 
-QRectF CardItem::boundingRect() const{
-    return CardRect;
-}
-
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
         setOpacity(0.8);
-
-        if(card->isRed())
-            viewAs("slash");
-        else
-            viewAs("jink");
     }else if(rotation() != 0.0)
         emit show_discards();
     else
@@ -108,11 +96,14 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    Pixmap::paint(painter, option, widget);
+
     static QRect suit_rect(8,8,18,18);
-    painter->drawPixmap(CardRect, pixmap);
+    static QFont card_number_font("Times", 20, QFont::Bold);
+
     painter->drawPixmap(suit_rect, suit_pixmap);
 
-    painter->setFont(CardNumberFont);
+    painter->setFont(card_number_font);
     if(card->isRed())
         painter->setPen(Qt::red);
     painter->drawText(8, 50, card->getNumberString());
@@ -127,6 +118,6 @@ QVariant CardItem::itemChange(GraphicsItemChange change, const QVariant &value){
         }
     }
 
-    return QGraphicsObject::itemChange(change, value);
+    return Pixmap::itemChange(change, value);
 }
 
