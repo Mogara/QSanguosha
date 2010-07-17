@@ -50,7 +50,12 @@ public:
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
 
+    const Card *replaceEquip(const Card *equip);
+    void removeEquip(const Card *equip);
+
     virtual int getHandcardNum() const = 0;
+    virtual void removeCard(const Card *card, const QString &location) = 0;
+    virtual void addCard(const Card *card, const QString &location) = 0;
 
 private:
     const General *general;
@@ -60,6 +65,7 @@ private:
     int seat;
     int src_correct, dest_correct;
     QString phase;
+    const Card *weapon, *armor, *defensive_horse, *offensive_horse;
 
 signals:
     void general_changed();

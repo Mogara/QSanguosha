@@ -37,6 +37,7 @@ private:
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);
 
     Q_INVOKABLE void pushEvent(const QString &name, QScriptValue &event);
 

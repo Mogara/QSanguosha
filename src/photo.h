@@ -3,6 +3,7 @@
 
 #include "pixmap.h"
 #include "player.h"
+#include "carditem.h"
 
 #include <QGraphicsObject>
 #include <QPixmap>
@@ -18,6 +19,9 @@ public:
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
+    CardItem *takeCardItem(int card_id, const QString &location);
+    void installEquip(CardItem *equip);
+    void addCardItem(CardItem *card_item);
 
 public slots:
     void updateAvatar();
@@ -37,6 +41,7 @@ private:
     QPixmap magatamas[5];
     QString state_str;
     QComboBox *role_combobox;
+    CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
 };
 
 #endif // PHOTOBACK_H

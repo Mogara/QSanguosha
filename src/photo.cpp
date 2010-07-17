@@ -16,7 +16,8 @@ Photo::Photo()
     :Pixmap(":/images/photo-back.png"),
     player(NULL),
     avatar_frame(":/images/avatar-frame.png"),
-    handcard(":/images/handcard.png")
+    handcard(":/images/handcard.png"),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
@@ -87,6 +88,56 @@ const ClientPlayer *Photo::getPlayer() const{
 void Photo::speak(const QString &content)
 {
 
+}
+
+CardItem *Photo::takeCardItem(int card_id, const QString &location) {
+    CardItem *card_item = NULL;
+
+    if(location == "hand"){
+        card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setPos(pos());
+        card_item->shift();
+    }else if(location == "equip"){
+        if(weapon && weapon->getCard()->getID() == card_id){
+            card_item = weapon;
+            weapon = NULL;
+        }else if(armor && armor->getCard()->getID() == card_id){            
+            card_item = armor;
+            armor = NULL;
+        }else if(defensive_horse && defensive_horse->getCard()->getID() == card_id){
+            card_item = defensive_horse;
+            defensive_horse = NULL;
+        }else if(offensive_horse && offensive_horse->getCard()->getID() == card_id){
+            card_item = offensive_horse;
+            offensive_horse = NULL;
+        }
+    }
+
+    return card_item;
+}
+
+void Photo::installEquip(CardItem *equip){
+    QString subtype = equip->getCard()->getSubtype();
+    if(subtype == "weapon")
+        weapon = equip;
+    else if(subtype == "armor")
+        armor = equip;
+    else if(subtype == "defensive_horse")
+        defensive_horse = equip;
+    else if(subtype == "offensive_horse")
+        offensive_horse = equip;
+
+    equip->setHomePos(pos());
+    equip->goBack(true);
+
+    update();
+}
+
+void Photo::addCardItem(CardItem *card_item){
+    card_item->setHomePos(pos());
+    card_item->goBack(true);
+
+    update();
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

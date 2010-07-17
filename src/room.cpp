@@ -125,6 +125,9 @@ void Room::reportDisconnection(){
 
         player->setSocket(NULL);
         players.removeOne(player);
+        if(!player->objectName().isEmpty())
+            signup_count--;
+
         delete player;
     }
 }
@@ -272,6 +275,25 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     chosen_generals ++;
     if(chosen_generals == player_count)
         startGame();
+}
+
+void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
+    int card_id = args.at(1).toInt();
+    const Card *card = Sanguosha->getCard(card_id);
+    if(!card)
+        return;
+
+    const QString name = player->objectName();
+    if(card->getType() == "equip"){
+        const Card *equip = card;
+        const Card *uninstalled = player->replaceEquip(equip);
+        if(uninstalled)
+            broadcast(QString("! moveCard %1:%2@equip->_").arg(uninstalled->getID()).arg(name));
+        broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(name));
+    }else{
+        // FIXME
+        broadcast(QString("! moveCard %1:%2@hand->_").arg(card->getID()).arg(name));
+    }
 }
 
 void Room::startGame(){

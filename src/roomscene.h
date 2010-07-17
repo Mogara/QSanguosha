@@ -22,7 +22,6 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
-    void discardCard(CardItem *card_item);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str);
@@ -30,6 +29,7 @@ public slots:
     void viewDiscards();
     void hideDiscards();
     void setActivity(bool active);
+    void moveCard(const QString &src, const QString &dest, int card_id);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -50,6 +50,7 @@ private:
     Phonon::MediaObject *effect;
 
     void startEnterAnimation();
+    CardItem *takeCardItem(const QString &src, int card_id);
 };
 
 #endif // ROOMSCENE_H

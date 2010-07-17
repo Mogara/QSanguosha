@@ -3,9 +3,10 @@
 #include <QPainter>
 #include <QGraphicsColorizeEffect>
 
-Pixmap::Pixmap(const QString &filename):pixmap(filename)
+Pixmap::Pixmap(const QString &filename, bool center_as_origin):pixmap(filename)
 {
-    setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
+    if(center_as_origin)
+        setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 
 QRectF Pixmap::boundingRect() const{

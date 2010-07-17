@@ -7,7 +7,7 @@
 class Pixmap : public QGraphicsObject
 {
 public:
-    Pixmap(const QString &filename);
+    Pixmap(const QString &filename, bool center_as_origin = true);
     virtual QRectF boundingRect() const;
     void changePixmap(const QString &name);
     void shift();

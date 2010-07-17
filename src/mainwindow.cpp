@@ -220,3 +220,9 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
         Config.setValue("EnableHotKey", checked);
     }
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, tr("About QSanguosha"),
+                       tr("This is the open source clone of the popular <b>Sanguosha</b> game, totally written in C++ Qt GUI framework"));
+}

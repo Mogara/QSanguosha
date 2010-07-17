@@ -4,7 +4,8 @@
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
     hp(-1), max_hp(-1), state("online"), seat(0),
-    src_correct(0), dest_correct(0)
+    src_correct(0), dest_correct(0),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
 }
 
@@ -115,3 +116,34 @@ void Player::setPhase(const QString &phase){
     this->phase = phase;
 }
 
+const Card *Player::replaceEquip(const Card *equip){
+    const Card *uninstall = NULL;
+    QString subtype = equip->getSubtype();
+    if(subtype == "weapon"){
+        uninstall = weapon;
+        weapon = equip;
+    }else if(subtype == "armor"){
+        uninstall = armor;
+        armor = equip;
+    }else if(subtype == "defensive_horse"){
+        uninstall = defensive_horse;
+        defensive_horse = equip;
+    }else if(subtype == "offensive_horse"){
+        uninstall = offensive_horse;
+        offensive_horse = equip;
+    }
+
+    return uninstall;
+}
+
+void Player::removeEquip(const Card *equip){
+    QString subtype = equip->getSubtype();
+    if(subtype == "weapon")
+        weapon = NULL;
+    else if(subtype == "armor")
+        armor = NULL;
+    else if(subtype == "defensive_horse")
+        defensive_horse = NULL;
+    else if(subtype == "offensive_horse")
+        offensive_horse = NULL;
+}

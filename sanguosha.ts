@@ -57,12 +57,22 @@
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
+        <location filename="src/client.cpp" line="76"/>
+        <source>Host not found</source>
+        <translation>未找到主机</translation>
+    </message>
+    <message>
         <location filename="src/client.cpp" line="77"/>
+        <source>Socket access error</source>
+        <translation>套接字方位错误</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="79"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="80"/>
+        <location filename="src/client.cpp" line="82"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -71,18 +81,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="156"/>
+        <location filename="src/client.cpp" line="164"/>
         <source>Game will start in %1 seconds</source>
         <translation>游戏将在 %1 秒后开始</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="190"/>
+        <location filename="src/client.cpp" line="198"/>
         <source>Your role is %1</source>
         <oldsource>Your role is </oldsource>
         <translation>您的角色是 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="192"/>
+        <location filename="src/client.cpp" line="200"/>
         <source>
  wait for the lord player choosing general, please</source>
         <oldsource>, wait for the lord player choosing general, please</oldsource>
@@ -90,12 +100,12 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="160"/>
+        <location filename="src/client.cpp" line="168"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="160"/>
+        <location filename="src/client.cpp" line="168"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
@@ -157,17 +167,17 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="src/dashboard.cpp" line="21"/>
+        <location filename="src/dashboard.cpp" line="19"/>
         <source>No sort</source>
         <translation>不排序</translation>
     </message>
     <message>
-        <location filename="src/dashboard.cpp" line="22"/>
+        <location filename="src/dashboard.cpp" line="20"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="src/dashboard.cpp" line="23"/>
+        <location filename="src/dashboard.cpp" line="21"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
@@ -175,7 +185,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="132"/>
+        <location filename="src/engine.cpp" line="135"/>
         <source>%1
 
  Stack trace:
@@ -186,18 +196,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="137"/>
+        <location filename="src/engine.cpp" line="140"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="140"/>
+        <location filename="src/engine.cpp" line="143"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="148"/>
-        <location filename="src/engine.cpp" line="153"/>
+        <location filename="src/engine.cpp" line="151"/>
+        <location filename="src/engine.cpp" line="156"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
@@ -259,7 +269,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="131"/>
+        <location filename="src/mainwindow.cpp" line="134"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -374,50 +384,60 @@
         <translation>自动使用</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="132"/>
+        <location filename="src/mainwindow.cpp" line="135"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="142"/>
+        <location filename="src/mainwindow.cpp" line="145"/>
         <source>Can not start server!</source>
         <translation>服务器启动失败!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="164"/>
+        <location filename="src/mainwindow.cpp" line="167"/>
         <source>Network error</source>
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="179"/>
+        <location filename="src/mainwindow.cpp" line="182"/>
         <source>Your role</source>
         <translation>您的角色</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="180"/>
+        <location filename="src/mainwindow.cpp" line="183"/>
         <source>Unknown</source>
         <translation>未知</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="226"/>
+        <source>About QSanguosha</source>
+        <translation>关于 QSanguosha</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="227"/>
+        <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game, totally written in C++ Qt GUI framework</source>
+        <translation>这是 &lt;b&gt;三国杀&lt;/b&gt; 的开源克隆，完全基于 C++ Qt GUI 框架</translation>
     </message>
 </context>
 <context>
     <name>Photo</name>
     <message>
-        <location filename="src/photo.cpp" line="32"/>
+        <location filename="src/photo.cpp" line="33"/>
         <source>unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="44"/>
+        <location filename="src/photo.cpp" line="45"/>
         <source>loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="45"/>
+        <location filename="src/photo.cpp" line="46"/>
         <source>rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/photo.cpp" line="46"/>
+        <location filename="src/photo.cpp" line="47"/>
         <source>renegade</source>
         <translation>内奸</translation>
     </message>
@@ -425,12 +445,12 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="99"/>
+        <location filename="src/room.cpp" line="95"/>
         <source>Event: </source>
         <translation>事件: </translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="118"/>
+        <location filename="src/room.cpp" line="114"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
@@ -438,49 +458,49 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="360"/>
+        <location filename="src/roomscene.cpp" line="345"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="388"/>
+        <location filename="src/roomscene.cpp" line="373"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="391"/>
+        <location filename="src/roomscene.cpp" line="376"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="404"/>
+        <location filename="src/roomscene.cpp" line="389"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="406"/>
+        <location filename="src/roomscene.cpp" line="391"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="408"/>
+        <location filename="src/roomscene.cpp" line="393"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="412"/>
+        <location filename="src/roomscene.cpp" line="397"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="447"/>
+        <location filename="src/roomscene.cpp" line="432"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="447"/>
+        <location filename="src/roomscene.cpp" line="432"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>

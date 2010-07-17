@@ -17,7 +17,7 @@
 #include <QSignalMapper>
 #include <QKeyEvent>
 
-static Phonon::MediaSource AddPlayerSource("audio/add-player.wav");
+static const QPointF DiscardedPos(-494, -115);
 
 RoomScene::RoomScene(Client *client, int player_count)
     :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory))
@@ -50,7 +50,6 @@ RoomScene::RoomScene(Client *client, int player_count)
     addItem(dashboard);
     dashboard->setPlayer(player);
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
-    connect(dashboard, SIGNAL(card_discarded(CardItem*)), this, SLOT(discardCard(CardItem*)));
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();    
@@ -63,9 +62,10 @@ RoomScene::RoomScene(Client *client, int player_count)
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
             SLOT(chooseGeneral(const General*,QList<const General*>)));
     connect(client, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
-    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const Player*>)));
+    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
     connect(client, SIGNAL(activity_set(bool)), SLOT(setActivity(bool)));
+    connect(client, SIGNAL(card_moved(QString,QString,int)), SLOT(moveCard(QString,QString,int)));
 
     client->signup();
 
@@ -124,7 +124,8 @@ void RoomScene::addPlayer(ClientPlayer *player){
 
             name2photo[player->objectName()] = photo;
 
-            effect->setCurrentSource(AddPlayerSource);
+            static Phonon::MediaSource add_player_source("audio/add-player.wav");
+            effect->setCurrentSource(add_player_source);
             effect->play();
 
             return;
@@ -235,31 +236,6 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     photo->update();
 }
 
-
-void RoomScene::discardCard(CardItem *card_item){
-    card_item->setParentItem(NULL);
-    card_item->setOpacity(1.0);
-    card_item->setPos(dashboard->mapToScene(card_item->pos()));
-    card_item->setHomePos(QPointF(-494, -115));
-    QSizeF size = card_item->boundingRect().size();
-    card_item->setTransformOriginPoint(size.width()/2, size.height()/2);
-    card_item->setRotation(qrand() % 359 + 1);
-    card_item->goBack();
-    card_item->setFlags(card_item->flags() & (~QGraphicsItem::ItemIsFocusable));
-
-    card_item->setZValue(0.1*discarded_list.length());
-    discarded_list.prepend(card_item->getCard());
-    discarded_queue.enqueue(card_item);
-
-    if(discarded_queue.length() > 8){
-        CardItem *first = discarded_queue.dequeue();
-        delete first;
-    }
-
-    connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
-    connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
-}
-
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsScene::mousePressEvent(event);
     if(event->button() == Qt::RightButton){
@@ -324,7 +300,16 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: break; // iterate generals
-    case Qt::Key_Return : dashboard->useSelected(); break;
+
+    case Qt::Key_Return : {
+            // dashboard->useSelected(); break;
+            CardItem *selected = dashboard->getSelected();
+            if(selected){
+                const Card *card = selected->getCard();
+                client->useCard(card);
+            }
+        }
+
     case Qt::Key_Escape : {
             if(!discarded_queue.isEmpty() && discarded_queue.first()->rotation() == 0.0)
                 hideDiscards();
@@ -466,7 +451,7 @@ void RoomScene::viewDiscards(){
 void RoomScene::hideDiscards(){
     foreach(CardItem *card_item, discarded_queue){
         card_item->setRotation(qrand() % 359 + 1);
-        card_item->setHomePos(QPointF(-494, -115));
+        card_item->setHomePos(DiscardedPos);
         card_item->goBack();
     }
 }
@@ -476,4 +461,80 @@ void RoomScene::setActivity(bool active){
         ; // FIXME
     else
         dashboard->disableAllCards();
+}
+
+CardItem *RoomScene::takeCardItem(const QString &src, int card_id){
+    QStringList words = src.split("@");
+    QString name = words.front();
+    QString location;
+    if(words.length() >= 2)
+        location = words.at(1);
+
+    CardItem *card_item = NULL;
+    if(name == "_"){
+        const Card *card = Sanguosha->getCard(card_id);
+        int card_index = discarded_list.indexOf(card);
+        if(card_index < discarded_queue.length())
+            card_item = discarded_queue.at(discarded_queue.length() - card_index - 1);
+        else{
+            card_item = new CardItem(card);            
+            card_item->setPos(DiscardedPos);
+        }
+
+        return card_item;
+    }
+
+    if(name == Config.UserName){
+        CardItem *card_item = dashboard->takeCardItem(card_id, location);
+        card_item->setOpacity(1.0);
+        card_item->setParentItem(NULL);
+        card_item->setPos(dashboard->mapToScene(card_item->pos()));
+        return card_item;
+    }else if(name2photo.contains(name))
+        return name2photo[name]->takeCardItem(card_id, location);
+    else
+        return NULL;
+}
+
+void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
+    CardItem *card_item = takeCardItem(src, card_id);
+    if(card_item->scene() == NULL)
+        addItem(card_item);
+
+    QStringList words = dest.split("@");
+    QString dest_name = words.front();
+    QString dest_location;
+    if(words.length() >= 2)
+        dest_location = words.at(1);
+
+    if(dest_name == "_"){
+        card_item->setHomePos(DiscardedPos);
+        card_item->setRotation(qrand() % 359 + 1);
+        card_item->goBack();
+
+        card_item->setFlags(card_item->flags() & (~QGraphicsItem::ItemIsFocusable));
+
+        card_item->setZValue(0.1*discarded_list.length());
+        discarded_list.prepend(card_item->getCard());
+        discarded_queue.enqueue(card_item);
+
+        if(discarded_queue.length() > 8){
+            CardItem *first = discarded_queue.dequeue();
+            delete first;
+        }
+
+        connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
+        connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
+    }else if(dest_name == Config.UserName){
+        if(dest_location == "equip")
+            dashboard->installEquip(card_item);
+        else if(dest_location == "hand")
+            dashboard->addCardItem(card_item);
+    }else{
+        Photo *photo = name2photo[dest_name];
+        if(dest_location == "equip")
+            photo->installEquip(card_item);
+        else if(dest_location == "hand")
+            photo->addCardItem(card_item);
+    }
 }

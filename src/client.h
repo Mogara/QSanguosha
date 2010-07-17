@@ -13,6 +13,7 @@ public:
     explicit Client(QObject *parent = 0);
     void signup();
     const ClientPlayer *getPlayer() const;
+    void request(const QString &message);
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -24,10 +25,11 @@ public:
     Q_INVOKABLE void duplicationError(const QString &);
     Q_INVOKABLE void arrangeSeats(const QString &seats);
     Q_INVOKABLE void activate(const QString &player_name);
+    Q_INVOKABLE void moveCard(const QString &move_str);
 
-public slots:
-    void request(const QString &message);
+public slots:    
     void itemChosen(const QString &item_name);
+    void useCard(const Card *card);
 
 private:
     QObject *room;
@@ -50,6 +52,7 @@ signals:
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
     void activity_set(bool active);
+    void card_moved(const QString &src, const QString &dest, int card_id);
 };
 
 #endif // CLIENT_H

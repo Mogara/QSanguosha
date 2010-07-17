@@ -154,6 +154,12 @@ void Client::itemChosen(const QString &item_name){
         request("choose " + item_name);
 }
 
+void Client::useCard(const Card *card){
+    if(card){
+        request("useCard " + QString::number(card->getID()));
+    }
+}
+
 void Client::startInXs(const QString &left_seconds){
     emit prompt_changed(tr("Game will start in %1 seconds").arg(left_seconds));
 }
@@ -198,4 +204,32 @@ void Client::notifyRoleChange(const QString &new_role){
 
 void Client::activate(const QString &player_name){
     emit activity_set(self->objectName() == player_name);
+}
+
+void Client::moveCard(const QString &move_str){
+    int colon_index = move_str.indexOf(QChar(':'));
+    int card_id = move_str.left(colon_index).toInt();
+    const Card *card = Sanguosha->getCard(card_id);
+    QString place_str = move_str.right(move_str.length() - colon_index - 1);
+    QStringList places = place_str.split("->");
+    QString src = places.at(0);
+    QString dest = places.at(1);
+
+    QStringList words = src.split("@");
+    QString src_name = words.at(0);
+    if(src_name != "_"){
+        QString location = words.at(1);
+        ClientPlayer *player = findChild<ClientPlayer*>(src_name);
+        player->removeCard(card, location);
+    }
+
+    words = dest.split("@");
+    QString dest_name = words.at(0);
+    if(dest_name != "_"){
+        QString dest_location = words.at(1);
+        ClientPlayer *player = findChild<ClientPlayer*>(dest_name);
+        player->addCard(card, dest_location);
+    }
+
+    emit card_moved(src, dest, card_id);
 }

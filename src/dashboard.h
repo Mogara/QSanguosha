@@ -17,13 +17,16 @@ class Dashboard : public Pixmap
 public:
     Dashboard();
     void addCardItem(CardItem *card_item);
+    CardItem *takeCardItem(int card_id, const QString &location);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
     void selectCard(const QString &pattern = "");
     void useSelected();
+    CardItem *getSelected() const;
     void unselectAll();
     void sort(int order);
     void disableAllCards();
+    void installEquip(CardItem *equip);
 
 public slots:
     void updateAvatar();
@@ -44,16 +47,12 @@ private:
     QStack<CardItem *> judging_area;
     Phonon::MediaObject *effect;
 
-    void adjustCards();
-    void installEquip(CardItem *equip);
+    void adjustCards();    
     void installDelayedTrick(CardItem *card);
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 
 private slots:
-    void sortCards();    
-
-signals:
-    void card_discarded(CardItem *card_item);
+    void sortCards();
 };
 
 #endif // DASHBOARD_H

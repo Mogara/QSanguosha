@@ -6,8 +6,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
 
-static Phonon::MediaSource InstallEquipSource("audio/install-equip.wav");
-
 Dashboard::Dashboard()
     :Pixmap(":/images/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
@@ -41,7 +39,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_items << card_item;
 
-    adjustCards();
+    sortCards();
 }
 
 void Dashboard::setPlayer(const Player *player){
@@ -88,22 +86,8 @@ void Dashboard::selectCard(const QString &pattern){
 
 }
 
-void Dashboard::useSelected(){
-    if(selected == NULL)
-        return;
-
-    CardItem *used = selected;
-    card_items.removeOne(selected);
-    selected = NULL;
-    adjustCards();
-
-    if(used->getCard()->getType() != "equip"){        
-        emit card_discarded(used);
-    }else{
-        used->setHomePos(QPointF(34, 37));
-        used->goBack(true);
-        installEquip(used);
-    }
+CardItem *Dashboard::getSelected() const{
+    return selected;
 }
 
 void Dashboard::unselectAll(){
@@ -179,13 +163,18 @@ void Dashboard::adjustCards(){
     int i;
     for(i=0; i<n; i++){
         card_items[i]->setZValue(0.1 * i);
-        card_items[i]->setHomePos(QPointF(180 + i*card_skip, 45));
+        QPointF home_pos(180 + i*card_skip, 45);
+        card_items[i]->setHomePos(home_pos);
         card_items[i]->goBack();
     }
 }
 
 void Dashboard::installEquip(CardItem *equip){
-    effect->setCurrentSource(InstallEquipSource);
+    equip->setHomePos(QPointF(34, 37));
+    equip->goBack(true);
+
+    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
+    effect->setCurrentSource(install_equip_source);
     effect->play();
 
     const Card *card = equip->getCard();
@@ -206,9 +195,53 @@ void Dashboard::installEquip(CardItem *equip){
     }
 
     update();
+}
 
-    if(uninstall)
-        emit card_discarded(uninstall);
+CardItem *Dashboard::takeCardItem(int card_id, const QString &location) {
+    CardItem *card_item = NULL;
+
+    if(location == "hand"){
+        int i;
+
+        for(i=0; i<card_items.length(); i++){
+            CardItem *item = card_items.at(i);
+            if(item->getCard()->getID() == card_id){
+                if(item == selected)
+                    selected = NULL;
+                card_items.removeAt(i);
+                adjustCards();
+
+                card_item = item;
+                break;
+            }
+        }
+    }else if(location == "equip"){
+        if(weapon && weapon->getCard()->getID() == card_id){
+            card_item = weapon;
+            weapon = NULL;
+        }
+
+        if(armor && armor->getCard()->getID() == card_id){
+            card_item = armor;
+            armor = NULL;
+        }
+
+        if(defensive_horse && defensive_horse->getCard()->getID() == card_id){
+            card_item = defensive_horse;
+            defensive_horse = NULL;
+        }
+
+        if(offensive_horse && offensive_horse->getCard()->getID() == card_id){
+            card_item = offensive_horse;
+            offensive_horse = NULL;
+        }
+    }
+
+    if(card_item)
+        return card_item;
+
+    qFatal("No such card %d in Dashboard", card_id);
+    return NULL;
 }
 
 static bool CompareBySuitNumber(const CardItem *a, const CardItem *b){
@@ -222,7 +255,7 @@ static bool CompareByType(const CardItem *a, const CardItem *b){
 void Dashboard::sortCards(){
     int sort_type = sort_combobox->currentIndex();
     switch(sort_type){
-    case 0: return;
+    case 0: break;
     case 1: qSort(card_items.begin(), card_items.end(), CompareBySuitNumber); break;
     case 2: qSort(card_items.begin(), card_items.end(), CompareByType); break;
     }

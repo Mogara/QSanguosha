@@ -51,3 +51,19 @@ void ServerPlayer::getRequest(){
         emit request_got(request);
     }
 }
+
+void ServerPlayer::removeCard(const Card *card, const QString &location){
+    if(location == "hand")
+        handcards.removeOne(card);
+    else if(location == "equip"){
+        removeEquip(card);
+    }
+}
+
+void ServerPlayer::addCard(const Card *card, const QString &location){
+    if(location == "hand")
+        handcards << card;
+    else if(location == "equip"){
+        replaceEquip(card);
+    }
+}

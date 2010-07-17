@@ -7,14 +7,15 @@
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
 
-CardItem::CardItem(Card *card)
-    :Pixmap(card->getPixmapPath()), card(card), view_card_item(NULL)
+CardItem::CardItem(const Card *card)
+    :Pixmap(card->getPixmapPath(), false), card(card), view_card_item(NULL)
 {
     Q_ASSERT(card != NULL);
 
     suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));    
     pixmap = pixmap.scaled(150*0.8, 210*0.8);
-    setFlags(ItemIsFocusable);
+    setFlags(ItemIsFocusable);    
+    setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 
 const Card *CardItem::getCard() const{
