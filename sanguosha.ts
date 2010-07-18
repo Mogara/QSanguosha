@@ -64,7 +64,7 @@
     <message>
         <location filename="src/client.cpp" line="77"/>
         <source>Socket access error</source>
-        <translation>套接字方位错误</translation>
+        <translation>套接字访问错误</translation>
     </message>
     <message>
         <location filename="src/client.cpp" line="79"/>
@@ -185,7 +185,7 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="135"/>
+        <location filename="src/engine.cpp" line="128"/>
         <source>%1
 
  Stack trace:
@@ -196,18 +196,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="140"/>
+        <location filename="src/engine.cpp" line="133"/>
         <source>Script file %1 can not be opened for execution!</source>
         <translation>找不到脚本文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="143"/>
+        <location filename="src/engine.cpp" line="136"/>
         <source>Script exception!</source>
         <translation>脚本异常!</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="151"/>
-        <location filename="src/engine.cpp" line="156"/>
+        <location filename="src/engine.cpp" line="144"/>
+        <location filename="src/engine.cpp" line="149"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>

@@ -25,7 +25,6 @@ public:
 
 public slots:
     void updateAvatar();
-    void updateStateStr(const QString &new_state);
     void updateRoleCombobox(const QString &new_role);
 
 protected:
@@ -39,7 +38,6 @@ private:
     QPixmap kingdom;
     QPixmap handcard;
     QPixmap magatamas[5];
-    QString state_str;
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
 

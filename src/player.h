@@ -20,7 +20,7 @@ class Player : public QObject
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
 
-    // possible phase is start, judging, drawing, playing, discarding, finish
+    // possible phase is start, judge, draw, play, discard, finish
     Q_PROPERTY(QString phase READ getPhase WRITE setPhase)
 
 public:

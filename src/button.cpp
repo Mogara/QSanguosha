@@ -4,7 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 static Phonon::MediaSource HoverSource("audio/button-hover.wav");
-static Phonon::MediaSource DownSource("audio/button-down.mp3");
+static Phonon::MediaSource DownSource("audio/button-down.wav");
 
 Button::Button(const QString &label)
     :label(label){

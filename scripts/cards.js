@@ -60,6 +60,10 @@ var slash = sgs.addCardClass("slash", "basic");
 var jink = sgs.addCardClass("jink", "basic");
 var peach = sgs.addCardClass("peach", "basic");
 
+slash.available_func = function(){
+    return true;
+};
+
 // weapon cards, added by attack range
 var crossbow = sgs.addCardClass("crossbow", "equip", "weapon");
 var double_sword = sgs.addCardClass("double_sword", "equip", "weapon");

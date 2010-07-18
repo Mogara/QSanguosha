@@ -22,7 +22,7 @@ Server::Server(QObject *parent)
                 items << QHostAddress(ipv4).toString();
         }
 
-        QString result = QInputDialog::getItem(NULL, tr("Select network address"), tr("Network address"), items);
+        QString result = QInputDialog::getItem(NULL, tr("Select network address"), tr("Network address"), items, 0, false);
         listen(QHostAddress(result), port);
     }
 }

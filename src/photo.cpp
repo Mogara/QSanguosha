@@ -60,17 +60,13 @@ void Photo::updateAvatar(){
         const General *general = player->getAvatarGeneral();
         avatar.load(general->getPixmapPath("small"));
         avatar = avatar.scaled(QSize(128,58));
-        kingdom.load(general->getKingdomPath());
+        kingdom = QPixmap(general->getKingdomPath());
     }else{
-        avatar.detach();
-        kingdom.detach();
+        avatar = QPixmap();
+        kingdom = QPixmap();
     }
 
     update();
-}
-
-void Photo::updateStateStr(const QString &new_state){
-    state_str = Sanguosha->translate(new_state);
 }
 
 void Photo::updateRoleCombobox(const QString &new_role){
@@ -168,18 +164,19 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
             painter->drawText(8, 95, QString::number(n));
         }
 
-        if(!state_str.isEmpty()){
-            painter->drawText(100, 100, state_str);
+        if(!player->getState().isEmpty()){
+            painter->drawText(100, 100, Sanguosha->translate(player->getState()));
         }
 
         if(!player->getPhase().isEmpty()){
-            painter->drawRoundRect(boundingRect(), 10, 15);
+            painter->drawRect(boundingRect());
+            painter->drawText(0, pixmap.height(), Sanguosha->translate(player->getPhase()));
         }
 
         drawEquip(painter, weapon, 0);
         drawEquip(painter, armor, 1);
         drawEquip(painter, defensive_horse, 2);
-        drawEquip(painter, offensive_horse, 3);
+        drawEquip(painter, offensive_horse, 3);            
     }
 }
 

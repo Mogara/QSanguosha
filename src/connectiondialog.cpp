@@ -65,8 +65,18 @@ void ConnectionDialog::on_connectButton_clicked()
 
 void ConnectionDialog::on_changeAvatarButton_clicked()
 {
-    ui->avatarList->show();
-    setFixedWidth(ExpandWidth);
+    if(ui->avatarList->isVisible()){
+        QListWidgetItem *selected = ui->avatarList->currentItem();
+        if(selected)
+            on_avatarList_itemDoubleClicked(selected);
+        else{
+            ui->avatarList->hide();
+            setFixedWidth(ShrinkWidth);
+        }
+    }else{
+        ui->avatarList->show();
+        setFixedWidth(ExpandWidth);
+    }
 }
 
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)

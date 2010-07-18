@@ -281,18 +281,21 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
     int card_id = args.at(1).toInt();
     const Card *card = Sanguosha->getCard(card_id);
     if(!card)
-        return;
+        return;    
 
     const QString name = player->objectName();
     if(card->getType() == "equip"){
         const Card *equip = card;
         const Card *uninstalled = player->replaceEquip(equip);
-        if(uninstalled)
+        if(uninstalled){
             broadcast(QString("! moveCard %1:%2@equip->_").arg(uninstalled->getID()).arg(name));
+            discard_pile->append(uninstalled->getID());
+        }
         broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(name));
-    }else{
-        // FIXME
+        player->removeCard(card, "hand");
+    }else{      
         broadcast(QString("! moveCard %1:%2@hand->_").arg(card->getID()).arg(name));
+        discard_pile->append(card->getID());
     }
 }
 
@@ -335,7 +338,7 @@ void Room::startGame(){
     }
 
     broadcast("! activate " + players.front()->objectName());
-
+    broadcast(QString("#%1 phase start").arg(players.front()->objectName()));
 }
 
 
