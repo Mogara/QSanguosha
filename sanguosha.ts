@@ -508,7 +508,17 @@ Your role is %2</source>
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="30"/>
+        <location filename="src/server.cpp" line="25"/>
+        <source>Select network address</source>
+        <translation>选择网络地址</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="25"/>
+        <source>Network address</source>
+        <translation>网络地址</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="47"/>
         <source>%1 connected, port = %2</source>
         <translation>%1 已连接, 端口 = %2</translation>
     </message>

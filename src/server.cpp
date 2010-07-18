@@ -1,13 +1,30 @@
 #include "server.h"
 #include "settings.h"
 
+#include <QInputDialog>
+#include <QNetworkInterface>
+
 Server::Server(QObject *parent)
     :QTcpServer(parent)
 {
     quint16 port = Config.Port;
 
     connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
-    listen(QHostAddress::Any, port);
+
+    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
+    if(addresses.length() == 1)
+        listen(addresses.front(), port);
+    else{
+        QStringList items;
+        foreach(QHostAddress address, addresses){
+            quint32 ipv4 = address.toIPv4Address();
+            if(ipv4)
+                items << QHostAddress(ipv4).toString();
+        }
+
+        QString result = QInputDialog::getItem(NULL, tr("Select network address"), tr("Network address"), items);
+        listen(QHostAddress(result), port);
+    }
 }
 
 void Server::processNewConnection(){

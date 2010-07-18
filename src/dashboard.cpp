@@ -173,10 +173,6 @@ void Dashboard::installEquip(CardItem *equip){
     equip->setHomePos(QPointF(34, 37));
     equip->goBack(true);
 
-    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
-    effect->setCurrentSource(install_equip_source);
-    effect->play();
-
     const Card *card = equip->getCard();
     QString subtype = card->getSubtype();
     CardItem *uninstall = NULL;

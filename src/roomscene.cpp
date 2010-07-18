@@ -507,6 +507,8 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
     if(words.length() >= 2)
         dest_location = words.at(1);
 
+    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
+
     if(dest_name == "_"){
         card_item->setHomePos(DiscardedPos);
         card_item->setRotation(qrand() % 359 + 1);
@@ -526,15 +528,21 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
         connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
         connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
     }else if(dest_name == Config.UserName){
-        if(dest_location == "equip")
+        if(dest_location == "equip"){
             dashboard->installEquip(card_item);
-        else if(dest_location == "hand")
+
+            effect->setCurrentSource(install_equip_source);
+            effect->play();
+        }else if(dest_location == "hand")
             dashboard->addCardItem(card_item);
     }else{
         Photo *photo = name2photo[dest_name];
-        if(dest_location == "equip")
+        if(dest_location == "equip"){
             photo->installEquip(card_item);
-        else if(dest_location == "hand")
+
+            effect->setCurrentSource(install_equip_source);
+            effect->play();
+        }else if(dest_location == "hand")
             photo->addCardItem(card_item);
     }
 }
