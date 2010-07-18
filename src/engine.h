@@ -6,7 +6,7 @@
 #include "skill.h"
 
 #include <QScriptEngine>
-#include <QMap>
+#include <QHash>
 #include <QEvent>
 #include <QStringList>
 
@@ -44,11 +44,11 @@ public:
     void getRandomCards(QList<int> &list);
 
 private:
-    QObject *generals;
-    QObject *translation;
+    QObject *generals;    
     QObject *card_classes;
     QObject *skills;
 
+    QHash<QString,QString> translations;
     QList<Card*> cards;
     QString pixmap_dir;
     QEvent::Type event_type;

@@ -142,9 +142,10 @@ void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
     if(!equip)
         return;
 
-    painter->drawPixmap(QRect(11, 83 + order*32, 20, 20), equip->getSuitPixmap());
+    QRect suit_rect(11, 83 + order*32, 20, 20);
+    painter->drawPixmap(suit_rect, equip->getSuitPixmap());
     const Card *card = equip->getCard();
-    painter->drawText(32, 83+20 + order*32, Sanguosha->translate(card->getNumberString()));
+    painter->drawText(32, 83+20 + order*32, card->getNumberString());
     painter->drawText(58, 83+20 + order*32, Sanguosha->translate(card->objectName()));
 }
 
@@ -170,7 +171,7 @@ void Dashboard::adjustCards(){
 }
 
 void Dashboard::installEquip(CardItem *equip){
-    equip->setHomePos(QPointF(34, 37));
+    equip->setHomePos(mapToScene(QPointF(34, 37)));
     equip->goBack(true);
 
     const Card *card = equip->getCard();

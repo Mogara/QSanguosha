@@ -175,6 +175,11 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         if(!player->getPhase().isEmpty()){
             painter->drawRoundRect(boundingRect(), 10, 15);
         }
+
+        drawEquip(painter, weapon, 0);
+        drawEquip(painter, armor, 1);
+        drawEquip(painter, defensive_horse, 2);
+        drawEquip(painter, offensive_horse, 3);
     }
 }
 
@@ -186,4 +191,19 @@ void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     }
 }
 
+void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
+    if(!equip)
+        return;
+
+    QRect suit_rect(2, 104 + order * 17, 13, 13);
+    painter->drawPixmap(suit_rect, equip->getSuitPixmap());
+
+    const Card *card = equip->getCard();
+    painter->setPen(Qt::black);
+    QFont bold_font;
+    bold_font.setBold(true);
+    painter->setFont(bold_font);
+    painter->drawText(20, 115 + order * 17, card->getNumberString());
+    painter->drawText(35, 115 + order * 17, Sanguosha->translate(card->objectName()));
+}
 

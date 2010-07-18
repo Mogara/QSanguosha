@@ -17,9 +17,6 @@ Engine::Engine(QObject *parent)
     generals = new QObject(this);
     generals->setObjectName("generals");
 
-    translation = new QObject(this);
-    translation->setObjectName("translation");
-
     card_classes = new QObject(this);
     card_classes->setObjectName("card_classes");
 
@@ -110,16 +107,12 @@ void Engine::addTranslationTable(const QScriptValue &table)
     QScriptValueIterator itor(table);
     while(itor.hasNext()){
         itor.next();
-        translation->setProperty(itor.name().toAscii(), itor.value().toString());
+        translations.insert(itor.name(), itor.value().toString());
     }
 }
 
 QString Engine::translate(const QString &to_translate){
-    QString translated = translation->property(to_translate.toAscii()).toString();
-    if(translated.isEmpty())
-        return to_translate;
-    else
-        return translated;
+    return translations.value(to_translate, to_translate);
 }
 
 QScriptValue Engine::doScript(const QString &filename){

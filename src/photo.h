@@ -42,6 +42,8 @@ private:
     QString state_str;
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+
+    void drawEquip(QPainter *painter, CardItem *equip, int order);
 };
 
 #endif // PHOTOBACK_H
