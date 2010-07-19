@@ -107,6 +107,9 @@ CardItem *Photo::takeCardItem(int card_id, const QString &location) {
             card_item = offensive_horse;
             offensive_horse = NULL;
         }
+
+        if(card_item)
+            card_item->setOpacity(1.0);
     }
 
     return card_item;

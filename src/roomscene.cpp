@@ -296,7 +296,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_R: dashboard->selectCard("collateral"); break;
     case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
 
-    case Qt::Key_Space :  dashboard->selectCard(); break; // iterate all cards
+    case Qt::Key_Left: dashboard->selectCard("", false); break;
+    case Qt::Key_Right:
+    case Qt::Key_Space:  dashboard->selectCard(); break; // iterate all cards
     case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: break; // iterate generals

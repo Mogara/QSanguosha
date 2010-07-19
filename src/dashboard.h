@@ -20,7 +20,7 @@ public:
     CardItem *takeCardItem(int card_id, const QString &location);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
-    void selectCard(const QString &pattern = "");
+    void selectCard(const QString &pattern = "", bool forward = true);
     void useSelected();
     CardItem *getSelected() const;
     void unselectAll();

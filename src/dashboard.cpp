@@ -59,10 +59,9 @@ Pixmap *Dashboard::getAvatar(){
     return avatar;
 }
 
-void Dashboard::selectCard(const QString &pattern){
+void Dashboard::selectCard(const QString &pattern, bool forward){
     // find all cards that match the card type
     QList<CardItem*> matches;
-
 
     foreach(CardItem *card_item, card_items){
         if(card_item->isEnabled() && card_item->getCard()->match(pattern))
@@ -75,7 +74,13 @@ void Dashboard::selectCard(const QString &pattern){
     }
 
     int index = matches.indexOf(selected);
-    CardItem *to_select = matches[(index + 1) % matches.length()];
+    int n = matches.length();
+    if(forward)
+        index = (index + 1) % n;
+    else
+        index = (index - 1 + n) % n;
+
+    CardItem *to_select = matches[index];
 
     if(to_select != selected){
         if(selected)
