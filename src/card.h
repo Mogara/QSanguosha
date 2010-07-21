@@ -1,7 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include "cardclass.h"
+#include <QObject>
 
 class Card : public QObject
 {
@@ -20,19 +20,24 @@ public:
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
 
     // constructor
-    Card(CardClass *card_class, enum Suit suit, int number, int id);
+    Card(enum Suit suit, int number);
 
     // property getters, as all properties of card is read only, no setter is defined
     QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
     int getID() const;
+    void setID(int id);
     int getNumber() const;
     QString getNumberString() const;
-    QString getType() const;
-    QString getSubtype() const;
     enum Suit getSuit() const;
     QString getPixmapPath() const;
+    QString getPackage() const;
+
+    virtual QString getSubtype() const;
+
+    virtual QString getType() const = 0;
+    virtual int getTypeId() const = 0;    
 
     bool match(const QString &pattern) const;
 
@@ -41,7 +46,6 @@ public:
     static bool CompareByType(const Card *a, const Card *b);
 
 private:
-    CardClass *card_class;
     enum Suit suit;
     int number;
     int id;

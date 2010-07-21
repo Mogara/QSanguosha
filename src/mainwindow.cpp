@@ -13,7 +13,6 @@
 #include <QGraphicsTextItem>
 #include <QVariant>
 #include <QMessageBox>
-#include <QGLWidget>
 #include <QTime>
 #include <QProcess>
 #include <QCheckBox>
@@ -23,9 +22,6 @@ class FitView : public QGraphicsView
 public:
     FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
-
-        if(Config.UseOpenGL)
-            setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
     }
 
 protected:
@@ -85,9 +81,8 @@ void MainWindow::createSkillButtons(const Player *player){
     QStatusBar *status_bar = statusBar();
     const General *general = player->getAvatarGeneral();
 
-    QObjectList skills = general->getSkills();
-    foreach(QObject *skill_obj, skills){
-        Skill *skill = qobject_cast<Skill*>(skill_obj);
+    const QList<const Skill*> &skills = general->getSkills();
+    foreach(const Skill* skill, skills){
         QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
         if(skill->isCompulsory()){
             button->setText(button->text() + tr("[Compulsory]"));

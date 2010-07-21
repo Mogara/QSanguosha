@@ -4,7 +4,6 @@
 #include "room.h"
 
 #include <QObject>
-#include <QScriptValue>
 
 class Skill : public QObject
 {
@@ -14,14 +13,17 @@ class Skill : public QObject
     Q_PROPERTY(bool frequent READ isFrequent CONSTANT)
 
 public:
-    explicit Skill(const QString &name, const QScriptValue &value, QObject *parent);
+    explicit Skill(const QString &name);
     bool isCompulsory() const;
     bool isLordSkill() const;
     bool isFrequent() const;
     bool isToggleable() const;
+    QString getDescription() const;
+
+protected:
+    // bool isAvailable() const = 0;
 
 private:
-    QScriptValue value;
     bool compulsory;
     bool lord_skill;
     bool frequent;

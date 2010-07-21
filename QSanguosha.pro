@@ -3,8 +3,6 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += phonon \
-    opengl \
-    script \
     network
 TEMPLATE = app
 SOURCES += src/main.cpp \
@@ -22,7 +20,6 @@ SOURCES += src/main.cpp \
     src/engine.cpp \
     src/connectiondialog.cpp \
     src/client.cpp \
-    src/cardclass.cpp \
     src/carditem.cpp \
     src/room.cpp \
     src/generaloverview.cpp \
@@ -32,7 +29,10 @@ SOURCES += src/main.cpp \
     src/optionbutton.cpp \
     src/cardoverview.cpp \
     src/serverplayer.cpp \
-    src/clientplayer.cpp
+    src/clientplayer.cpp \
+    src/standard-cards.cpp \
+    src/standard-generals.cpp \
+    src/standard.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -47,7 +47,6 @@ HEADERS += src/mainwindow.h \
     src/engine.h \
     src/connectiondialog.h \
     src/client.h \
-    src/cardclass.h \
     src/carditem.h \
     src/room.h \
     src/generaloverview.h \
@@ -57,14 +56,13 @@ HEADERS += src/mainwindow.h \
     src/optionbutton.h \
     src/cardoverview.h \
     src/serverplayer.h \
-    src/clientplayer.h
+    src/clientplayer.h \
+    src/standard.h \
+    src/package.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
     src/cardoverview.ui
-OTHER_FILES += scripts/generals.js \
-    scripts/cards.js \
-    scripts/init.js
 RESOURCES += resource/sanguosha.qrc
 RC_FILE += resource/icon.rc
 TRANSLATIONS += sanguosha.ts

@@ -37,7 +37,6 @@ void Settings::init(){
     UserAvatar = value("UserAvatar", "zhangliao").toString();
 
     FitInView = value("FitInView", false).toBool();
-    UseOpenGL = value("UseOpenGL", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
 
     QString bgbrush = value("BackgroundBrush", ":/images/background.png").toString();

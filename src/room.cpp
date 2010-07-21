@@ -6,14 +6,12 @@
 #include <QMessageBox>
 #include <QHostAddress>
 #include <QCoreApplication>
-#include <QScriptValueIterator>
 #include <QTimer>
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(5),
-    chosen_generals(0), game_started(false),
-    this_room(Sanguosha->newQObject(this)), signup_count(0)
+    chosen_generals(0), game_started(false), signup_count(0)
 {
     Sanguosha->getRandomCards(pile1);
 }
@@ -63,37 +61,14 @@ void Room::drawCards(QList<int> &cards, int count){
         cards << drawCard();
 }
 
-void Room::pushEvent(const QString &name, QScriptValue &event){
-    if(event.isObject()){
-        event.setProperty("name", name);
-        Event *e = new Event(event);
-        QCoreApplication::postEvent(this, e);
-    }
-}
-
 bool Room::event(QEvent *event){
     QObject::event(event);
 
     if(event->type() != Sanguosha->getEventType())
         return false;
 
-    Event *e = static_cast<Event*>(event);
+    //Event *e = static_cast<Event*>(event);
     event->accept();
-
-#ifndef _NDEBUG
-    // dump event
-    QString dump_str= "{";
-    QScriptValueIterator itor(e->getValue());
-    while(itor.hasNext()){
-        itor.next();
-        dump_str.append(QString("%1=%2").arg(itor.name()).arg(itor.value().toString()));
-
-        if(itor.hasNext())
-            dump_str.append(", ");
-    }
-    dump_str.append("}");    
-    emit room_message(tr("Event: ") + dump_str);
-#endif
 
     return true;
 }

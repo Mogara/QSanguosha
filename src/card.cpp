@@ -1,14 +1,11 @@
 #include "card.h"
 #include "settings.h"
 
-Card::Card(CardClass *card_class, enum Suit suit, int number, int id)
-    :card_class(card_class), suit(suit), number(number), id(id)
+Card::Card(enum Suit suit, int number)
+    :suit(suit), number(number), id(-1)
 {
-    Q_ASSERT(card_class != NULL);
     if(number < 1 || number > 13)
         number = 0;
-
-    setObjectName(card_class->objectName());
 }
 
 QString Card::getSuitString() const{
@@ -33,6 +30,10 @@ int Card::getID() const{
     return id;
 }
 
+void Card::setID(int id){
+    this->id = id;
+}
+
 int Card::getNumber() const{
     return number;
 }
@@ -46,25 +47,13 @@ QString Card::getNumberString() const{
     }
 }
 
-QString Card::getType() const{
-    return card_class->type;
-}
-
-QString Card::getSubtype() const{
-    return card_class->subtype;
-}
-
 Card::Suit Card::getSuit() const{
     return suit;
 }
 
-QString Card::getPixmapPath() const{
-    return card_class->getPixmapPath();
-}
-
 bool Card::match(const QString &pattern) const{
     return pattern.isEmpty() || objectName() == pattern ||
-            card_class->type == pattern || card_class->subtype == pattern;
+            getType() == pattern || getSubtype() == pattern;
 }
 
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){
@@ -75,19 +64,25 @@ bool Card::CompareBySuitNumber(const Card *a, const Card *b){
 }
 
 bool Card::CompareByType(const Card *a, const Card *b){
-    static QMap<QString,int> typemap;
-    if(typemap.isEmpty()){
-        typemap["basic"] = 0;
-        typemap["equip"] = 1;
-        typemap["trick"] = 2;
-    }
-
-    int order1 = typemap[a->card_class->type] * 10000 + a->card_class->id;
-    int order2 = typemap[b->card_class->type] * 10000 + b->card_class->id;
+    int order1 = a->getTypeId() * 10000 + a->id;
+    int order2 = b->getTypeId() * 10000 + b->id;
     if(order1 != order2)
         return order1 < order2;
     else
         return CompareBySuitNumber(a,b);
 }
 
+QString Card::getPixmapPath() const{
+    return QString("%1/cards/%2").arg(parent()->objectName()).arg(objectName());
+}
 
+QString Card::getPackage() const{
+    if(parent())
+        return parent()->objectName();
+    else
+        return "";
+}
+
+QString Card::getSubtype() const{
+    return "";
+}

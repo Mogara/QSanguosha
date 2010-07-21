@@ -5,19 +5,16 @@
 
 #include <QEvent>
 #include <QObject>
-#include <QScriptValue>
 
 class Event : public QEvent
 {
 public:
-    Event(const QScriptValue &value);
+    Event(Player *source, Player *target);
     Player *getSource() const;
     Player *getTarget() const;
-    QScriptValue getValue() const;
 
 private:
     Player *source, *target;
-    QScriptValue value;
 };
 
 #endif // EVENT_H

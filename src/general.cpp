@@ -1,9 +1,10 @@
 #include "general.h"
 #include "engine.h"
 #include "skill.h"
+#include "package.h"
 
-General::General(const QString &name, const QString &kingdom, int max_hp, bool male, const QString &pixmap_dir)
-    :kingdom(kingdom), max_hp(max_hp), male(male), pixmap_dir(pixmap_dir)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -37,25 +38,22 @@ bool General::isLord() const{
     return lord;
 }
 
-QObjectList General::getSkills() const{
-    return skills;
-}
-
-void General::setSkills(const QObjectList &skill_objs){
-    skills.clear();
-
-    foreach(QObject *skill_obj, skill_objs){
-        Skill *skill = qobject_cast<Skill*>(skill_obj);
-        if(skill)
-            skills << skill;
-    }
-}
-
 QString General::getPixmapPath(const QString &category) const{
-    return QString("%1/%2/%3.png").arg(pixmap_dir).arg(category).arg(objectName());
+    return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
 }
 
 QString General::getKingdomPath() const{
-    return QString("%1/kingdom/%2.png").arg(pixmap_dir).arg(kingdom);
+    return QString("%1/generals/kingdom/%2.png").arg(getPackage()).arg(kingdom);
 }
 
+void General::addSkill(const Skill *skill){
+    skills << skill;
+}
+
+const QList<const Skill*> &General::getSkills() const{
+    return skills;
+}
+
+QString General::getPackage() const{
+    return parent()->objectName();
+}

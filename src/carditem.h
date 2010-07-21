@@ -16,7 +16,7 @@ public:
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     void goBack(bool kieru = false);
-    void viewAs(const QString &name);
+//    void viewAs(const QString &name);
     const QPixmap &getSuitPixmap() const;
     void select();
     void unselect();

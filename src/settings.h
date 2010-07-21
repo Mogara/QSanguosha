@@ -5,7 +5,6 @@
 #include <QFont>
 #include <QRectF>
 #include <QPixmap>
-#include <QScriptEngine>
 #include <QBrush>
 
 class Settings : public QSettings
@@ -25,7 +24,6 @@ public:
     QString UserAvatar;
 
     bool FitInView;
-    bool UseOpenGL;
     bool EnableHotKey;
 
     QBrush BackgroundBrush;

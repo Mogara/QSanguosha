@@ -44,6 +44,7 @@ void CardOverview::addCard(int i, const Card *card){
     QString point = card->getNumberString();
     QString type = Sanguosha->translate(card->getType());
     QString subtype = Sanguosha->translate(card->getSubtype());
+    QString package = Sanguosha->translate(card->getPackage());
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
     name_item->setData(Qt::UserRole, card->getID());
@@ -53,6 +54,7 @@ void CardOverview::addCard(int i, const Card *card){
     ui->tableWidget->setItem(i, 2, new QTableWidgetItem(point));
     ui->tableWidget->setItem(i, 3, new QTableWidgetItem(type));
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
+    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));
 }
 
 CardOverview::~CardOverview()

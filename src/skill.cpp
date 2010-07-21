@@ -1,8 +1,7 @@
 #include "skill.h"
 #include "engine.h"
 
-Skill::Skill(const QString &name, const QScriptValue &value, QObject *parent)
-    :QObject(parent), value(value)
+Skill::Skill(const QString &name)
 {
     static QChar lord_symbol('$');
     static QChar frequent_symbol('+');
@@ -40,4 +39,8 @@ void Skill::setBooleanFlag(QString &str, QChar symbol, bool *flag){
         *flag = true;
     }else
         *flag = false;
+}
+
+QString Skill::getDescription() const{
+    return Sanguosha->translate(":" + objectName());
 }
