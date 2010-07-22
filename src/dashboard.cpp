@@ -270,3 +270,15 @@ void Dashboard::disableAllCards(){
         card_item->setEnabled(false);
     }
 }
+
+void Dashboard::enableCards(const QString &pattern){
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(card_item->getCard()->match(pattern));
+    }
+}
+
+void Dashboard::enableCards(const Client *client){
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(card_item->getCard()->isAvailable(client));
+    }
+}

@@ -65,6 +65,10 @@ StandardPackage::StandardPackage()
     :Package("standard")
 {
     t["standard"] = tr("standard");
+    t["lord"] = tr("lord");
+    t["loyalist"] = tr("loyalist");
+    t["rebel"] = tr("rebel");
+    t["renegade"] = tr("renegade");
 
     addCards();
     addGenerals();

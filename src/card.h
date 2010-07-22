@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class Client;
+
 class Card : public QObject
 {
     Q_OBJECT
@@ -34,6 +36,7 @@ public:
     QString getPixmapPath() const;
     QString getPackage() const;
 
+    virtual bool isAvailable(const Client *client) const;
     virtual QString getSubtype() const;
 
     virtual QString getType() const = 0;

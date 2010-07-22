@@ -1,6 +1,7 @@
 #include "standard.h"
 #include "general.h"
 #include "engine.h"
+#include "client.h"
 
 class Slash:public BasicCard{
 public:
@@ -22,12 +23,20 @@ public:
     virtual QString getSubtype() const{
         return "defense_card";
     }
+
+    virtual bool isAvailable(const Client *client) const{
+        return false;
+    }
 };
 
 class Peach:public BasicCard{
 public:
     Peach(enum Suit suit, int number):BasicCard(suit, number){
         setObjectName("peach");
+    }
+
+    virtual bool isAvailable(const Client *client) const{
+        return client->getPlayer()->isWounded();
     }
 
     virtual QString getSubtype() const{
@@ -139,6 +148,10 @@ public:
     Nullification(enum Suit suit, int number):SingleTargetTrick(suit, number){
         setObjectName("nullification");
     }
+
+    virtual bool isAvailable(const Client *) const{
+        return false;
+    }
 };
 
 class ArcheryAttack:public AOE{
@@ -193,7 +206,6 @@ public:
 void StandardPackage::addCards(){
     QList<Card*> cards;
 
-    // 30 slash
     cards << new Slash(Card::Spade, 7)
           << new Slash(Card::Spade, 8)
           << new Slash(Card::Spade, 8)
@@ -310,6 +322,8 @@ void StandardPackage::addCards(){
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)
           << new Lightning(Card::Spade, 1);
+
+
 
     foreach(Card *card, cards)
         card->setParent(this);

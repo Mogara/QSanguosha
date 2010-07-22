@@ -83,6 +83,10 @@ QString Card::getPackage() const{
         return "";
 }
 
+bool Card::isAvailable(const Client *) const{
+    return true;
+}
+
 QString Card::getSubtype() const{
     return "";
 }

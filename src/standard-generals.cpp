@@ -2,6 +2,14 @@
 #include "standard.h"
 #include "skill.h"
 
+class ViewAsSkill:public Skill{
+public:
+    ViewAsSkill(const QString &name):Skill(name){}
+
+protected:
+    virtual const Card *viewFilter(const Card *card) = 0;
+};
+
 class Jianxiong:public Skill{
 public:
     Jianxiong():Skill("jianxiong+"){
@@ -71,16 +79,30 @@ public:
     }
 };
 
-class Qingguo:public Skill{
+class Qingguo:public ViewAsSkill{
 public:
-    Qingguo():Skill("qingguo"){
+    Qingguo():ViewAsSkill("qingguo"){
 
+    }
+protected:
+    virtual const Card *viewFilter(const Card *card){
+        if(card->isBlack())
+            return NULL; // FIXME
+        else
+            return card;
     }
 };
 
 class Rende:public Skill{
 public:
     Rende():Skill("rende"){
+
+    }
+};
+
+class Jijiang:public Skill{
+public:
+    Jijiang():Skill("jijiang$"){
 
     }
 };
@@ -120,6 +142,55 @@ public:
     }
 };
 
+class Guanxing:public Skill{
+public:
+    Guanxing():Skill("guanxing+"){
+
+    }
+};
+
+class Kongcheng:public Skill{
+public:
+    Kongcheng():Skill("kongcheng!"){
+
+    }
+};
+
+class Jizhi:public Skill{
+public:
+    Jizhi():Skill("jizhi+"){
+
+    }
+};
+
+class Qicai:public Skill{
+public:
+    Qicai():Skill("qicai!"){
+
+    }
+};
+
+class Zhiheng:public Skill{
+public:
+    Zhiheng():Skill("zhiheng"){
+
+    }
+};
+
+class Jiuyuan:public Skill{
+public:
+    Jiuyuan():Skill("jiuyuan$"){
+
+    }
+};
+
+class Yingzi:public Skill{
+public:
+    Yingzi():Skill("yingzi+"){
+
+    }
+};
+
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
@@ -151,6 +222,7 @@ void StandardPackage::addGenerals(){
     General *liubei, *guanyu, *zhangfei, *zhaoyun, *machao, *zhugeliang, *huangyueying;
     liubei = new General(this, "liubei$", "shu");
     liubei->addSkill(new Rende);
+    liubei->addSkill(new Jijiang);
 
     guanyu = new General(this, "guanyu", "shu");
     guanyu->addSkill(new Wusheng);
@@ -166,11 +238,21 @@ void StandardPackage::addGenerals(){
     machao->addSkill(new Mashu);
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
+    zhugeliang->addSkill(new Guanxing);
+    zhugeliang->addSkill(new Kongcheng);
+
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
+    huangyueying->addSkill(new Jizhi);
+    huangyueying->addSkill(new Qicai);
 
     General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
+    sunquan->addSkill(new Zhiheng);
+    sunquan->addSkill(new Jiuyuan);
+
     zhouyu = new General(this, "zhouyu", "wu", 3);
+    zhouyu->addSkill(new Yingzi);
+
     lumeng = new General(this, "lumeng", "wu");
     luxun = new General(this, "luxun", "wu", 3);
     ganning = new General(this, "ganning", "wu");
@@ -242,6 +324,10 @@ void StandardPackage::addGenerals(){
     t["jizhi"] = tr("jizhi");
     t["qicai"] = tr("qicai");
 
+    t["zhiheng"] = tr("zhiheng");
+    t["jiuyuan"] = tr("jiuyuan");
+    t["yingzi"] = tr("yingzi");
+
     t[":jianxiong"] = tr(":jianxiong");
     t[":hujia"] = tr(":hujia");
     t[":tuxi"] = tr(":tuxi");
@@ -265,4 +351,7 @@ void StandardPackage::addGenerals(){
     t[":kongcheng"] = tr(":kongcheng");
     t[":jizhi"] = tr(":jizhi");
     t[":qicai"] = tr(":qicai");
+
+    t[":zhiheng"] = tr(":zhiheng");
+    t[":jiuyuan"] = tr(":jiuyuan");
 }

@@ -460,7 +460,7 @@ void RoomScene::hideDiscards(){
 
 void RoomScene::setActivity(bool active){
     if(active)
-        ; // FIXME
+        dashboard->enableCards(client);
     else
         dashboard->disableAllCards();
 }

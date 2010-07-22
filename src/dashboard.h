@@ -26,6 +26,8 @@ public:
     void unselectAll();
     void sort(int order);
     void disableAllCards();
+    void enableCards(const QString &pattern);
+    void enableCards(const Client *client);
     void installEquip(CardItem *equip);
 
 public slots:
