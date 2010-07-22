@@ -26,6 +26,9 @@ public:
     Q_INVOKABLE void arrangeSeats(const QString &seats);
     Q_INVOKABLE void activate(const QString &player_name);
     Q_INVOKABLE void moveCard(const QString &move_str);
+    Q_INVOKABLE void requestCard(const QString &request_str);
+
+    QVariantMap tag;
 
 public slots:    
     void itemChosen(const QString &item_name);
@@ -53,6 +56,7 @@ signals:
     void n_card_drawed(ClientPlayer *player, int n);
     void activity_set(bool active);
     void card_moved(const QString &src, const QString &dest, int card_id);
+    void card_requested(const QString pattern);
 };
 
 #endif // CLIENT_H

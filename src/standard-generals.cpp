@@ -86,16 +86,18 @@ public:
     }
 protected:
     virtual const Card *viewFilter(const Card *card){
-        if(card->isBlack())
-            return NULL; // FIXME
-        else
+        if(card->isBlack()){
+            Card *new_card = new Card(card->getSuit(), card->getNumber());
+            new_card->setObjectName("jink");
+            return new_card;
+        }else
             return card;
     }
 };
 
 class Rende:public Skill{
 public:
-    Rende():Skill("rende"){
+    Rende():Skill("rende="){
 
     }
 };
@@ -172,7 +174,7 @@ public:
 
 class Zhiheng:public Skill{
 public:
-    Zhiheng():Skill("zhiheng"){
+    Zhiheng():Skill("zhiheng="){
 
     }
 };

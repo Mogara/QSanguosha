@@ -1,9 +1,12 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include "event.h"
+
 #include <QObject>
 
 class Client;
+class Room;
 
 class Card : public QObject
 {
@@ -16,6 +19,8 @@ class Card : public QObject
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
+
+    Q_ENUMS(Suit)
 
 public:
     // enumeration type
@@ -35,18 +40,24 @@ public:
     enum Suit getSuit() const;
     QString getPixmapPath() const;
     QString getPackage() const;
+    QString toString() const;
+    bool isVirtualCard() const;
 
     virtual bool isAvailable(const Client *client) const;
     virtual QString getSubtype() const;
 
-    virtual QString getType() const = 0;
-    virtual int getTypeId() const = 0;    
+    virtual QString getType() const;
+    virtual int getTypeId() const;
+
+    virtual Event *generate(Room *room);
 
     bool match(const QString &pattern) const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
+
+    static const Card *Parse(const QString &str);
 
 private:
     enum Suit suit;

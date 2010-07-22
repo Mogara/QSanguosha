@@ -9,12 +9,13 @@
 #include <QGraphicsScene>
 #include <MediaObject>
 #include <QQueue>
+#include <QMainWindow>
 
 class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene(Client *client, int player_count);    
+    RoomScene(Client *client, int player_count, QMainWindow *main_window);
 
 public slots:
     void showBust(const QString &name);
@@ -48,9 +49,15 @@ private:
     QList<const Card*> discarded_list;
     QQueue<CardItem*> discarded_queue;
     Phonon::MediaObject *effect;
+    QMainWindow *main_window;
+    QComboBox *role_combobox;
 
     void startEnterAnimation();
     CardItem *takeCardItem(const QString &src, int card_id);
+
+private slots:
+    void updateSkillButtons();
+    void updateRoleComboBox(const QString &new_role);
 };
 
 #endif // ROOMSCENE_H

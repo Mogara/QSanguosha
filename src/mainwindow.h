@@ -26,10 +26,8 @@ private:
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
-    QComboBox *role_combobox;
 
     void restoreFromConfig();
-    void createSkillButtons(const Player *player);
 
 private slots:
     void on_actionAbout_triggered();
@@ -44,7 +42,6 @@ private slots:
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
     void startGameInAnotherInstance();
-    void updateRoleCombobox(const QString &new_role);
 };
 
 #endif // MAINWINDOW_H

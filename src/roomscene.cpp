@@ -16,11 +16,12 @@
 #include <QHBoxLayout>
 #include <QSignalMapper>
 #include <QKeyEvent>
+#include <QCheckBox>
 
 static const QPointF DiscardedPos(-494, -115);
 
-RoomScene::RoomScene(Client *client, int player_count)
-    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory))
+RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
+    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory)), main_window(main_window)
 {
     Q_ASSERT(client != NULL);
 
@@ -50,6 +51,14 @@ RoomScene::RoomScene(Client *client, int player_count)
     addItem(dashboard);
     dashboard->setPlayer(player);
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
+    connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
+    connect(client, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
+
+    // add role combobox
+    role_combobox = new QComboBox;
+    role_combobox->addItem(tr("Your role"));
+    role_combobox->addItem(tr("Unknown"));
+    connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();    
@@ -548,3 +557,45 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
             photo->addCardItem(card_item);
     }
 }
+
+void RoomScene::updateSkillButtons(){
+    const Player *player = qobject_cast<const Player *>(sender());
+    QString general_name = player->getGeneral();
+    if(general_name.isEmpty())
+        return;
+    const General *general = Sanguosha->getGeneral(general_name);
+
+    main_window->setStatusBar(NULL);
+    QStatusBar *status_bar = main_window->statusBar();    
+
+    const QList<const Skill*> &skills = general->getSkills();
+    foreach(const Skill* skill, skills){
+        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
+        if(skill->isCompulsory()){
+            button->setText(button->text() + tr("[Compulsory]"));
+            button->setDisabled(true);
+        }
+
+        if(skill->isLordSkill()){
+            button->setText(button->text() + tr("[Lord Skill]"));
+        }
+
+        status_bar->addPermanentWidget(button);
+        if(skill->isFrequent()){
+            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
+            checkbox->setChecked(true);
+            status_bar->addPermanentWidget(checkbox);
+        }
+
+        if(skill->isToggleable())
+            button->setCheckable(true);
+    }
+
+    status_bar->addPermanentWidget(role_combobox);
+}
+
+void RoomScene::updateRoleComboBox(const QString &new_role){
+    role_combobox->setItemText(1, Sanguosha->translate(new_role));
+    role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
+}
+

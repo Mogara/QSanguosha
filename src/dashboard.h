@@ -25,13 +25,13 @@ public:
     CardItem *getSelected() const;
     void unselectAll();
     void sort(int order);
-    void disableAllCards();
-    void enableCards(const QString &pattern);
+    void disableAllCards();    
     void enableCards(const Client *client);
     void installEquip(CardItem *equip);
 
 public slots:
     void updateAvatar();
+    void enableCards(const QString &pattern);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

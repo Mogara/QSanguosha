@@ -9,6 +9,10 @@ public:
         setObjectName("slash");
     }
 
+    virtual bool isAvailable(const Client *client) const{
+        return client->tag.value("slash_count").toInt() < 1;
+    }
+
     virtual QString getSubtype() const{
         return "attack_card";
     }

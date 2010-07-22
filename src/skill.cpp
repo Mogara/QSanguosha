@@ -6,13 +6,16 @@ Skill::Skill(const QString &name)
     static QChar lord_symbol('$');
     static QChar frequent_symbol('+');
     static QChar compulsory_symbol('!');
+    static QChar toggleable_symbol('=');
 
     QString copy = name;
 
     setBooleanFlag(copy, lord_symbol, &lord_skill);
     setBooleanFlag(copy, compulsory_symbol, &compulsory);
-    if(!compulsory)
+    if(!compulsory){
         setBooleanFlag(copy, frequent_symbol, &frequent);
+        setBooleanFlag(copy, toggleable_symbol, &toggleable);
+    }
 
     setObjectName(copy);
 }

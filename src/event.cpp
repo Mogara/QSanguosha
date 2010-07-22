@@ -1,9 +1,13 @@
 #include "event.h"
 #include "engine.h"
 
-Event::Event(Player *source, Player *target)
-    :QEvent(Sanguosha->getEventType()), source(source), target(target)
+Event::Event(const QString &name, Player *source, Player *target)
+    :QEvent(Sanguosha->getEventType()), name(name), source(source), target(target), room(NULL)
 {
+}
+
+QString Event::getName() const{
+    return name;
 }
 
 Player *Event::getSource() const{
@@ -14,3 +18,6 @@ Player *Event::getTarget() const{
     return target;
 }
 
+Event *Event::Parse(Room *room, const QString &str){
+    return NULL;
+}

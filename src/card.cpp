@@ -90,3 +90,59 @@ bool Card::isAvailable(const Client *) const{
 QString Card::getSubtype() const{
     return "";
 }
+
+Event *Card::generate(Room *room){
+    return NULL;
+}
+
+QString Card::toString() const{
+    return QString("%1[%2 %3]").arg(objectName()).arg(getSuitString()).arg(getNumberString());
+}
+
+bool Card::isVirtualCard() const{
+    return id >= 0;
+}
+
+const Card *Card::Parse(const QString &str){
+    static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]");
+    pattern.indexIn(str);
+    QStringList texts = pattern.capturedTexts();
+    QString name = texts.at(1);
+    QString suit_string = texts.at(2);
+    QString number_string = texts.at(3);
+    Suit suit = NoSuit;
+    int number = 0;
+
+    if(suit_string == "spade")
+        suit = Spade;
+    else if(suit_string == "club")
+        suit = Club;
+    else if(suit_string == "heart")
+        suit = Heart;
+    else if(suit_string == "diamond")
+        suit = Diamond;    
+
+    if(number_string == "A")
+        number = 1;
+    else if(number_string == "J")
+        number = 11;
+    else if(number_string == "Q")
+        number = 12;
+    else if(number_string == "K")
+        number = 13;
+    else
+        number = number_string.toInt();
+
+    Card *card = new Card(suit, number);
+    card->setObjectName(name);
+
+    return card;
+}
+
+QString Card::getType() const{
+    return "virtual";
+}
+
+int Card::getTypeId() const{
+    return -1;
+}

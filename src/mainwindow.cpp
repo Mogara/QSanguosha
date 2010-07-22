@@ -34,7 +34,7 @@ protected:
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    :QMainWindow(parent), ui(new Ui::MainWindow), role_combobox(NULL)
+    :QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -75,34 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::restoreFromConfig(){
     resize(Config.value("WindowSize").toSize());
     move(Config.value("WindowPosition").toPoint());
-}
-
-void MainWindow::createSkillButtons(const Player *player){
-    QStatusBar *status_bar = statusBar();
-    const General *general = player->getAvatarGeneral();
-
-    const QList<const Skill*> &skills = general->getSkills();
-    foreach(const Skill* skill, skills){
-        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
-        if(skill->isCompulsory()){
-            button->setText(button->text() + tr("[Compulsory]"));
-            button->setDisabled(true);
-        }
-
-        if(skill->isLordSkill()){
-            button->setText(button->text() + tr("[Lord Skill]"));
-        }
-
-        status_bar->addPermanentWidget(button);
-        if(skill->isFrequent()){
-            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
-            checkbox->setChecked(true);
-            status_bar->addPermanentWidget(checkbox);
-        }
-
-        if(skill->isToggleable())
-            button->setCheckable(true);
-    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *){
@@ -167,19 +139,8 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     Client *client = qobject_cast<Client*>(sender());
-    const Player *player = client->getPlayer();
 
-    // add skill buttons
-    createSkillButtons(player);
-
-    // add role combobox
-    role_combobox = new QComboBox;
-    role_combobox->addItem(tr("Your role"));
-    role_combobox->addItem(tr("Unknown"));
-    statusBar()->addPermanentWidget(role_combobox);
-    connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
-
-    RoomScene *room_scene = new RoomScene(client, 2);
+    RoomScene *room_scene = new RoomScene(client, 2, this);
     ui->actionView_Discarded->setEnabled(true);
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
 
@@ -194,11 +155,6 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 {
     GeneralOverview *overview = new GeneralOverview(this);
     overview->show();
-}
-
-void MainWindow::updateRoleCombobox(const QString &new_role){
-    role_combobox->setItemText(1, Sanguosha->translate(new_role));    
-    role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
 }
 
 void MainWindow::on_actionCard_Overview_triggered()

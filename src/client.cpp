@@ -233,3 +233,7 @@ void Client::moveCard(const QString &move_str){
 
     emit card_moved(src, dest, card_id);
 }
+
+void Client::requestCard(const QString &request_str){
+    emit card_requested(request_str);
+}

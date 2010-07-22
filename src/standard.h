@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "event.h"
 
 class StandardPackage:public Package{
     Q_OBJECT
