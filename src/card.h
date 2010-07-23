@@ -27,7 +27,7 @@ public:
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
 
     // constructor
-    Card(enum Suit suit, int number);
+    Card(Suit suit, int number);
 
     // property getters, as all properties of card is read only, no setter is defined
     QString getSuitString() const;
@@ -37,17 +37,18 @@ public:
     void setID(int id);
     int getNumber() const;
     QString getNumberString() const;
-    enum Suit getSuit() const;
+    Suit getSuit() const;
     QString getPixmapPath() const;
     QString getPackage() const;
     QString toString() const;
     bool isVirtualCard() const;
 
     virtual bool isAvailable(const Client *client) const;
-    virtual QString getSubtype() const;
+    virtual QString getSubtype() const = 0;
+    virtual Card *clone(Suit suit, int number) const = 0;
 
-    virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual QString getType() const = 0;
+    virtual int getTypeId() const = 0;
 
     virtual Event *generate(Room *room);
 
@@ -60,7 +61,7 @@ public:
     static const Card *Parse(const QString &str);
 
 private:
-    enum Suit suit;
+    Suit suit;
     int number;
     int id;
 };

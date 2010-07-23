@@ -61,6 +61,10 @@ QString Horse::getSubtype() const{
         return "offensive_horse";
 }
 
+Card *Horse::clone(Suit suit, int number) const{
+    return NULL; // FIXME
+}
+
 StandardPackage::StandardPackage()
     :Package("standard")
 {

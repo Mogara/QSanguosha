@@ -121,16 +121,16 @@ const Card *Player::replaceEquip(const Card *equip){
     QString subtype = equip->getSubtype();
     if(subtype == "weapon"){
         uninstall = weapon;
-        weapon = equip;
+        weapon = qobject_cast<const Weapon*>(equip);
     }else if(subtype == "armor"){
         uninstall = armor;
-        armor = equip;
+        armor = qobject_cast<const Armor*>(equip);
     }else if(subtype == "defensive_horse"){
         uninstall = defensive_horse;
-        defensive_horse = equip;
+        defensive_horse = qobject_cast<const Horse*>(equip);
     }else if(subtype == "offensive_horse"){
         uninstall = offensive_horse;
-        offensive_horse = equip;
+        offensive_horse = qobject_cast<const Horse*>(equip);
     }
 
     return uninstall;
@@ -146,4 +146,24 @@ void Player::removeEquip(const Card *equip){
         defensive_horse = NULL;
     else if(subtype == "offensive_horse")
         offensive_horse = NULL;
+}
+
+const Weapon *Player::getWeapon() const{
+    return weapon;
+}
+
+const Armor *Player::getArmor() const{
+    return armor;
+}
+
+const Horse *Player::getDefensiveHorse() const{
+    return defensive_horse;
+}
+
+const Horse *Player::getOffensiveHorse() const{
+    return offensive_horse;
+}
+
+void Player::attachSkill(const Skill *skill){
+    skills << skill;
 }

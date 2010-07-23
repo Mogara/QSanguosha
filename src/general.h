@@ -25,8 +25,7 @@ public:
     bool isFemale() const;
     bool isLord() const;
 
-    void addSkill(const Skill* skill);
-    const QList<const Skill*> &getSkills() const;
+    void addSkill(Skill* skill);
 
     QString getPixmapPath(const QString &category) const;
     QString getKingdomPath() const;
@@ -37,7 +36,6 @@ private:
     int max_hp;
     bool male;
     bool lord;
-    QList<const Skill*> skills;
 };
 
 #endif // GENERAL_H

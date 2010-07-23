@@ -37,7 +37,7 @@ void Engine::addPackage(Package *package){
 }
 
 
-QString Engine::translate(const QString &to_translate){
+QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
 
@@ -45,7 +45,7 @@ QEvent::Type Engine::getEventType() const{
     return event_type;
 }
 
-const General *Engine::getGeneral(const QString &name){
+const General *Engine::getGeneral(const QString &name) const{
     return generals.value(name, NULL);
 }
 
@@ -53,18 +53,26 @@ int Engine::getGeneralCount() const{
     return generals.size();
 }
 
-Card *Engine::getCard(int index){
+Card *Engine::getCard(int index) const{
     if(index < 0 || index >= cards.length())
         return NULL;
     else
         return cards[index];
 }
 
+Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
+    Card *card = findChild<Card *>(name);
+    if(card)
+        return card->clone(suit, number);
+    else
+        return NULL;
+}
+
 int Engine::getCardCount() const{
     return cards.length();
 }
 
-void Engine::getRandomLords(QStringList &lord_list, int lord_count){
+void Engine::getRandomLords(QStringList &lord_list, int lord_count) const{
     int min = qMin(lord_count, lord_names.count()), i;
     for(i=0; i<min; i++)
         lord_list << lord_names[i];
@@ -84,7 +92,7 @@ void Engine::getRandomLords(QStringList &lord_list, int lord_count){
     }    
 }
 
-void Engine::getRandomGenerals(QStringList &general_list, int count){
+void Engine::getRandomGenerals(QStringList &general_list, int count) const{
     QList<const General *> all_generals = generals.values();
     int n = all_generals.count();
     Q_ASSERT(n >= count);
@@ -103,7 +111,7 @@ void Engine::getRandomGenerals(QStringList &general_list, int count){
     Q_ASSERT(general_list.count() == count);
 }
 
-void Engine::getRandomCards(QList<int> &list){
+void Engine::getRandomCards(QList<int> &list) const{
     int n = cards.count(), i;
     for(i=0; i<n; i++)
         list << i;

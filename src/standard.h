@@ -15,53 +15,69 @@ public:
 };
 
 class BasicCard:public Card{
+    Q_OBJECT
+
 public:
-    BasicCard(enum Suit suit, int number):Card(suit, number){}
+    BasicCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
     virtual int getTypeId() const;
 };
 
 class TrickCard:public Card{
+    Q_OBJECT
+
 public:
-    TrickCard(enum Suit suit, int number):Card(suit, number){}
+    TrickCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
     virtual int getTypeId() const;
 };
 
 class EquipCard:public Card{
+    Q_OBJECT
+
 public:
-    EquipCard(enum Suit suit, int number):Card(suit, number){}
+    EquipCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
     virtual int getTypeId() const;
 };
 
 class GlobalEffect:public TrickCard{
+    Q_OBJECT
+
 public:
-    GlobalEffect(enum Suit suit, int number):TrickCard(suit, number){}
+    GlobalEffect(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
 };
 
 class AOE:public TrickCard{
+    Q_OBJECT
+
 public:
-    AOE(enum Suit suit, int number):TrickCard(suit, number){}
+    AOE(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
 };
 
 class SingleTargetTrick: public TrickCard{
+    Q_OBJECT
+
 public:
-    SingleTargetTrick(enum Suit suit, int number):TrickCard(suit, number){}
+    SingleTargetTrick(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
 };
 
 class DelayedTrick:public TrickCard{
+    Q_OBJECT
+
 public:
-    DelayedTrick(enum Suit suit, int number):TrickCard(suit, number){ }
+    DelayedTrick(Suit suit, int number):TrickCard(suit, number){ }
     virtual QString getSubtype() const;
 };
 
 class Weapon:public EquipCard{
+    Q_OBJECT
+
 public:
-    Weapon(enum Suit suit, int number, int range)
+    Weapon(Suit suit, int number, int range)
         :EquipCard(suit, number), range(range){}
     virtual QString getSubtype() const;
 
@@ -70,15 +86,20 @@ protected:
 };
 
 class Armor:public EquipCard{
+    Q_OBJECT
+
 public:
-    Armor(enum Suit suit, int number):EquipCard(suit, number){}
+    Armor(Suit suit, int number):EquipCard(suit, number){}
     virtual QString getSubtype() const;
 };
 
 class Horse:public EquipCard{
+    Q_OBJECT
+
 public:
-    Horse(const QString &name, enum Suit suit, int number, int correct);
+    Horse(const QString &name, Suit suit, int number, int correct);
     virtual QString getSubtype() const;
+    virtual Card *clone(Suit suit, int number) const;
 
 private:
     int correct;

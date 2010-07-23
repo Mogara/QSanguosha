@@ -74,7 +74,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
-    QList<const Skill *> skills = general->getSkills();
+    QList<const Skill *> skills = general->findChildren<const Skill *>();
     ui->skillTextEdit->clear();
     foreach(const Skill *skill, skills){
         QString skill_name = QString("<b>%1</b>").arg(Sanguosha->translate(skill->objectName()));

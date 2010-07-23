@@ -47,3 +47,8 @@ void Skill::setBooleanFlag(QString &str, QChar symbol, bool *flag){
 QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
+
+void Skill::attachPlayer(Player *player){
+    if(parent()->objectName() == player->getGeneral())
+        player->attachSkill(this);
+}

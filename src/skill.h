@@ -20,6 +20,8 @@ public:
     bool isToggleable() const;
     QString getDescription() const;
 
+    virtual void attachPlayer(Player *player);
+
 protected:
     // bool isAvailable() const = 0;
 

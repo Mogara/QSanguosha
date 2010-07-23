@@ -16,20 +16,21 @@ class Engine: public QObject
 public:
     explicit Engine(QObject *parent);
 
-    QString translate(const QString &to_translate);
+    QString translate(const QString &to_translate) const;
     void addPackage(Package *package);
 
-    const General *getGeneral(const QString &name);
+    const General *getGeneral(const QString &name) const;
     int getGeneralCount() const;
 
     int getCardCount() const;
-    Card *getCard(int index);
+    Card *getCard(int index) const;
+    Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     QEvent::Type getEventType() const;
 
 
-    void getRandomLords(QStringList &lord_list, int lord_count = 5);
-    void getRandomGenerals(QStringList &general_list, int count);
-    void getRandomCards(QList<int> &list);
+    void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
+    void getRandomGenerals(QStringList &general_list, int count) const;
+    void getRandomCards(QList<int> &list) const;
 
 private:
     QHash<QString, QString> translations;

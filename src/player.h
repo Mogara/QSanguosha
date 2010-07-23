@@ -3,6 +3,7 @@
 
 #include "general.h"
 #include "card.h"
+#include "standard.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -57,6 +58,13 @@ public:
     virtual void removeCard(const Card *card, const QString &location) = 0;
     virtual void addCard(const Card *card, const QString &location) = 0;
 
+    const Weapon *getWeapon() const;
+    const Armor *getArmor() const;
+    const Horse *getDefensiveHorse() const;
+    const Horse *getOffensiveHorse() const;
+
+    void attachSkill(const Skill *skill);
+
 private:
     const General *general;
     int hp, max_hp;
@@ -65,7 +73,10 @@ private:
     int seat;
     int src_correct, dest_correct;
     QString phase;
-    const Card *weapon, *armor, *defensive_horse, *offensive_horse;
+    const Weapon *weapon;
+    const Armor *armor;
+    const Horse *defensive_horse, *offensive_horse;
+    QList<const Skill *> skills;
 
 signals:
     void general_changed();

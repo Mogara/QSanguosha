@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "skill.h"
 #include "package.h"
+#include "client.h"
 
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
     :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male)
@@ -46,12 +47,8 @@ QString General::getKingdomPath() const{
     return QString("%1/generals/kingdom/%2.png").arg(getPackage()).arg(kingdom);
 }
 
-void General::addSkill(const Skill *skill){
-    skills << skill;
-}
-
-const QList<const Skill*> &General::getSkills() const{
-    return skills;
+void General::addSkill(Skill *skill){
+    skill->setParent(this);
 }
 
 QString General::getPackage() const{

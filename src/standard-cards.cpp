@@ -5,7 +5,7 @@
 
 class Slash:public BasicCard{
 public:
-    Slash(enum Suit suit, int number):BasicCard(suit, number){
+    Slash(Suit suit, int number):BasicCard(suit, number){
         setObjectName("slash");
     }
 
@@ -16,11 +16,15 @@ public:
     virtual QString getSubtype() const{
         return "attack_card";
     }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Slash(suit, number);
+    }
 };
 
 class Jink:public BasicCard{
 public:
-    Jink(enum Suit suit, int number):BasicCard(suit, number){
+    Jink(Suit suit, int number):BasicCard(suit, number){
         setObjectName("jink");
     }
 
@@ -31,11 +35,15 @@ public:
     virtual bool isAvailable(const Client *client) const{
         return false;
     }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Jink(suit, number);
+    }
 };
 
 class Peach:public BasicCard{
 public:
-    Peach(enum Suit suit, int number):BasicCard(suit, number){
+    Peach(Suit suit, int number):BasicCard(suit, number){
         setObjectName("peach");
     }
 
@@ -46,164 +54,266 @@ public:
     virtual QString getSubtype() const{
         return "recover_card";
     }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Peach(suit, number);
+    }
 };
 
 class Crossbow:public Weapon{
 public:
-    Crossbow(enum Suit suit):Weapon(suit, 1, 1){
+    Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
         setObjectName("crossbow");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Crossbow(suit, number);
     }
 };
 
 class DoubleSword:public Weapon{
 public:
-    DoubleSword():Weapon(Spade, 2, 2){
+    DoubleSword(Suit suit = Spade, int number = 2):Weapon(suit, number, 2){
         setObjectName("double_sword");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new DoubleSword(suit, number);
     }
 };
 
 class QinggangSword:public Weapon{
 public:
-    QinggangSword():Weapon(Spade, 6, 2){
+    QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("qinggang_sword");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new QinggangSword(suit, number);
     }
 };
 
 class YitianSword:public Weapon{
 public:
-    YitianSword():Weapon(Spade, 6, 2){
+    YitianSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("yitian_sword");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new YitianSword(suit, number);
     }
 };
 
 class Blade:public Weapon{
 public:
-    Blade():Weapon(Spade, 5, 3){
+    Blade(Suit suit = Spade, int number = 5):Weapon(suit, number, 3){
         setObjectName("blade");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Blade(suit, number);
     }
 };
 
 class Spear:public Weapon{
 public:
-    Spear():Weapon(Spade, 12, 3){
+    Spear(Suit suit = Spade, int number = 12):Weapon(suit, number, 3){
         setObjectName("spear");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Spear(suit, number);
     }
 };
 
 class Axe:public Weapon{
 public:
-    Axe():Weapon(Diamond, 5, 3){
+    Axe(Suit suit = Diamond, int number = 5):Weapon(suit, number, 3){
         setObjectName("axe");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Axe(suit, number);
     }
 };
 
 class Halberd:public Weapon{
 public:
-    Halberd():Weapon(Diamond, 12, 4){
+    Halberd(Suit suit = Diamond, int number = 12):Weapon(suit, number, 4){
         setObjectName("halberd");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Halberd(suit, number);
     }
 };
 
 class KylinBow:public Weapon{
 public:
-    KylinBow():Weapon(Heart, 5, 5){
+    KylinBow(Suit suit = Heart, int number = 5):Weapon(suit, number, 5){
         setObjectName("kylin_bow");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new KylinBow(suit, number);
     }
 };
 
 class EightDiagram:public Armor{
 public:
-    EightDiagram(enum Suit suit):Armor(suit, 2){
+    EightDiagram(Suit suit, int number = 2):Armor(suit, number){
         setObjectName("eight_diagram");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new EightDiagram(suit, number);
     }
 };
 
 class AmazingGrace:public GlobalEffect{
 public:
-    AmazingGrace(int number):GlobalEffect(Heart, number){
+    AmazingGrace(Suit suit, int number):GlobalEffect(suit, number){
         setObjectName("amazing_grace");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new AmazingGrace(suit, number);
     }
 };
 
 class GodSalvation:public GlobalEffect{
 public:
-    GodSalvation():GlobalEffect(Heart, 1){
+    GodSalvation(Suit suit = Heart, int number = 1):GlobalEffect(suit, number){
         setObjectName("god_salvation");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new GodSalvation(suit, number);
     }
 };
 
 class SavageAssault:public AOE{
 public:
-    SavageAssault(enum Suit suit, int number)
+    SavageAssault(Suit suit, int number)
         :AOE(suit, number) {
         setObjectName("savage_assault");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new SavageAssault(suit, number);
     }
 };
 
 class Collateral:public SingleTargetTrick{
 public:
-    Collateral(enum Suit suit, int number):SingleTargetTrick(suit, number){
+    Collateral(Suit suit, int number):SingleTargetTrick(suit, number){
         setObjectName("collateral");
+    }
+
+    virtual bool isAvailable(const Client *client) const{
+        QList<ClientPlayer*> players = client->findChildren<ClientPlayer*>();
+        foreach(ClientPlayer *player, players){
+            if(player->getWeapon() != NULL && player != client->getPlayer())
+                return true;
+        }
+
+        return false;
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Collateral(suit, number);
     }
 };
 
 class Nullification:public SingleTargetTrick{
 public:
-    Nullification(enum Suit suit, int number):SingleTargetTrick(suit, number){
+    Nullification(Suit suit, int number):SingleTargetTrick(suit, number){
         setObjectName("nullification");
     }
 
     virtual bool isAvailable(const Client *) const{
         return false;
     }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Nullification(suit, number);
+    }
 };
 
 class ArcheryAttack:public AOE{
 public:
-    ArcheryAttack():AOE(Heart, 1){
+    ArcheryAttack(Suit suit = Heart, int number = 1):AOE(suit, number){
         setObjectName("archery_attack");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new ArcheryAttack(suit, number);
     }
 };
 
 class Duel:public SingleTargetTrick{
 public:
-    Duel(enum Suit suit, int number):SingleTargetTrick(suit, number) {
+    Duel(Suit suit, int number):SingleTargetTrick(suit, number) {
         setObjectName("duel");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Duel(suit, number);
     }
 };
 
 class ExNihilo: public SingleTargetTrick{
 public:
-    ExNihilo(int number):SingleTargetTrick(Heart, number){
+    ExNihilo(Suit suit, int number):SingleTargetTrick(suit, number){
         setObjectName("ex_nihilo");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new ExNihilo(suit, number);
     }
 };
 
 class Snatch:public SingleTargetTrick{
 public:
-    Snatch(enum Suit suit, int number):SingleTargetTrick(suit, number) {
+    Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
         setObjectName("snatch");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Snatch(suit, number);
     }
 };
 
 class Dismantlement:public SingleTargetTrick{
 public:
-    Dismantlement(enum Suit suit, int number):SingleTargetTrick(suit, number) {
+    Dismantlement(Suit suit, int number):SingleTargetTrick(suit, number) {
         setObjectName("dismantlement");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Dismantlement(suit, number);
     }
 };
 
 class Indulgence:public DelayedTrick{
 public:
-    Indulgence(enum Suit suit, int number):DelayedTrick(suit, number){
+    Indulgence(Suit suit, int number):DelayedTrick(suit, number){
         setObjectName("indulgence");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Indulgence(suit, number);
     }
 };
 
 class Lightning:public DelayedTrick{
 public:
-    Lightning(enum Suit suit, int number):DelayedTrick(suit, number){
+    Lightning(Suit suit, int number):DelayedTrick(suit, number){
         setObjectName("lightning");
+    }
+
+    virtual Card *clone(Suit suit, int number) const{
+        return new Lightning(suit, number);
     }
 };
 
@@ -292,8 +402,8 @@ void StandardPackage::addCards(){
           << new Horse("dawan", Card::Spade, 13, -1)
           << new Horse("zixing", Card::Diamond, 13, -1)
 
-          << new AmazingGrace(3)
-          << new AmazingGrace(4)
+          << new AmazingGrace(Card::Heart, 3)
+          << new AmazingGrace(Card::Heart, 4)
           << new GodSalvation
           << new SavageAssault(Card::Spade, 7)
           << new SavageAssault(Card::Spade, 13)
@@ -302,10 +412,10 @@ void StandardPackage::addCards(){
           << new Duel(Card::Spade, 1)
           << new Duel(Card::Club, 1)
           << new Duel(Card::Diamond, 1)
-          << new ExNihilo(7)
-          << new ExNihilo(8)
-          << new ExNihilo(9)
-          << new ExNihilo(11)
+          << new ExNihilo(Card::Heart, 7)
+          << new ExNihilo(Card::Heart, 8)
+          << new ExNihilo(Card::Heart, 9)
+          << new ExNihilo(Card::Heart, 11)
           << new Snatch(Card::Spade, 3)
           << new Snatch(Card::Spade, 4)
           << new Snatch(Card::Spade, 11)

@@ -1,7 +1,8 @@
 #include "card.h"
 #include "settings.h"
+#include "engine.h"
 
-Card::Card(enum Suit suit, int number)
+Card::Card(Suit suit, int number)
     :suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
@@ -133,16 +134,5 @@ const Card *Card::Parse(const QString &str){
     else
         number = number_string.toInt();
 
-    Card *card = new Card(suit, number);
-    card->setObjectName(name);
-
-    return card;
-}
-
-QString Card::getType() const{
-    return "virtual";
-}
-
-int Card::getTypeId() const{
-    return -1;
+    return Sanguosha->cloneCard(name, suit, number);
 }

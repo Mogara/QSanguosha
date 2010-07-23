@@ -568,7 +568,7 @@ void RoomScene::updateSkillButtons(){
     main_window->setStatusBar(NULL);
     QStatusBar *status_bar = main_window->statusBar();    
 
-    const QList<const Skill*> &skills = general->getSkills();
+    const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
         QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
         if(skill->isCompulsory()){

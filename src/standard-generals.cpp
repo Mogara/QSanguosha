@@ -1,6 +1,7 @@
 #include "general.h"
 #include "standard.h"
 #include "skill.h"
+#include "engine.h"
 
 class ViewAsSkill:public Skill{
 public:
@@ -86,11 +87,9 @@ public:
     }
 protected:
     virtual const Card *viewFilter(const Card *card){
-        if(card->isBlack()){
-            Card *new_card = new Card(card->getSuit(), card->getNumber());
-            new_card->setObjectName("jink");
-            return new_card;
-        }else
+        if(card->isBlack())
+            return Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
+        else
             return card;
     }
 };
