@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "card.h"
 #include "standard.h"
+#include "client.h"
 
 #include <QFile>
 #include <QStringList>
@@ -9,8 +10,28 @@
 
 Engine *Sanguosha = NULL;
 
+class BasicRule : public Skill{
+public:
+    BasicRule():Skill("basic_rule"){
+
+    }
+
+    virtual void trigger(Client *client) const{
+        const ClientPlayer *player = client->getPlayer();
+        const QString phase = player->getPhase();
+        if(phase == "start" || phase == "finish"){
+            client->tag.insert("slash_count", 0);
+        }
+
+        const QList<const Card *> cards = player->getCards();
+        foreach(const Card *card, cards){
+            client->availability[card] = card->isAvailable(client);
+        }
+    }
+};
+
 Engine::Engine(QObject *parent)
-    :QObject(parent)
+    :QObject(parent), basic_rule(new BasicRule)
 {
     addPackage(new StandardPackage);
 
@@ -121,4 +142,8 @@ void Engine::getRandomCards(QList<int> &list) const{
         int r2 = qrand() % n;
         list.swap(r1, r2);
     }
+}
+
+void Engine::attachBasicRule(Player *player){
+    player->attachSkill(basic_rule);
 }

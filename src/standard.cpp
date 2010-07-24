@@ -28,8 +28,16 @@ QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }
 
+bool GlobalEffect::targetFixed(const Client *client) const{
+    return true;
+}
+
 QString AOE::getSubtype() const{
     return "aoe";
+}
+
+bool AOE::targetFixed(const Client *client) const{
+    return true;
 }
 
 QString SingleTargetTrick::getSubtype() const{
@@ -68,11 +76,22 @@ Card *Horse::clone(Suit suit, int number) const{
 StandardPackage::StandardPackage()
     :Package("standard")
 {
+    // package name
     t["standard"] = tr("standard");
+
+    // role names
     t["lord"] = tr("lord");
     t["loyalist"] = tr("loyalist");
     t["rebel"] = tr("rebel");
     t["renegade"] = tr("renegade");
+
+    // phase names
+    t["start"] = tr("start");
+    t["judge"] = tr("judge");
+    t["draw"] = tr("draw");
+    t["play"] = tr("play");
+    t["discard"] = tr("discard");
+    t["finish"] = tr("finish");
 
     addCards();
     addGenerals();

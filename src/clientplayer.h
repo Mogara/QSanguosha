@@ -10,10 +10,11 @@ class ClientPlayer : public Player
 public:
     explicit ClientPlayer(QObject *parent);
     void drawNCard(int card_num);
+    QList<const Card *> getCards() const;
 
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, const QString &location);
-    virtual void addCard(const Card *card, const QString &location);
+    virtual void addCard(const Card *card, const QString &location);   
 
 private:
     int handcard_num;

@@ -312,7 +312,7 @@ void Room::startGame(){
         broadcast(QString("! drawNCards %1:4").arg(players[i]->objectName()), players[i]);
     }
 
-    broadcast("! activate " + players.front()->objectName());
+    broadcast("! startGame " + players.front()->objectName());
     broadcast(QString("#%1 phase start").arg(players.front()->objectName()));
 }
 

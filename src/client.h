@@ -14,6 +14,8 @@ public:
     void signup();
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
+    void triggerSkill();
+    void useCard(const Card *card, const QList<ClientPlayer *> &targets);
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -27,12 +29,13 @@ public:
     Q_INVOKABLE void activate(const QString &player_name);
     Q_INVOKABLE void moveCard(const QString &move_str);
     Q_INVOKABLE void requestCard(const QString &request_str);
+    Q_INVOKABLE void startGame(const QString &first_player);
 
     QVariantMap tag;
+    QMap<const Card *, bool> availability;
 
 public slots:    
     void itemChosen(const QString &item_name);
-    void useCard(const Card *card);
 
 private:
     QObject *room;

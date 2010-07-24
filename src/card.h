@@ -7,6 +7,7 @@
 
 class Client;
 class Room;
+class ClientPlayer;
 
 class Card : public QObject
 {
@@ -43,16 +44,23 @@ public:
     QString toString() const;
     bool isVirtualCard() const;
 
+    bool match(const QString &pattern) const;
+
     virtual bool isAvailable(const Client *client) const;
+    virtual Event *generate(Room *room);
+
     virtual QString getSubtype() const = 0;
     virtual Card *clone(Suit suit, int number) const = 0;
-
     virtual QString getType() const = 0;
     virtual int getTypeId() const = 0;
 
-    virtual Event *generate(Room *room);
+    // card target selection
+    virtual bool targetFixed(const Client *client) const;
+    virtual void targetRange(const Client *client, int *min, int *max, bool *include_self) const;
+    virtual bool targetFilter(const QList<ClientPlayer *> &targets) const;
 
-    bool match(const QString &pattern) const;
+    // virtual void use(Room *room, Player *user, Player *target) const;
+    // virtual void use(Room *room, Player *user, const QList<ClientPlayer *> &targets) const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);

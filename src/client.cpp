@@ -110,6 +110,7 @@ void Client::drawCards(const QString &cards_str){
         int card_id = card_str.toInt();
         Card *card = Sanguosha->getCard(card_id);
         cards << card;
+        self->addCard(card, "hand");
     }
 
     emit cards_drawed(cards);
@@ -154,7 +155,8 @@ void Client::itemChosen(const QString &item_name){
         request("choose " + item_name);
 }
 
-void Client::useCard(const Card *card){
+void Client::useCard(const Card *card, const QList<ClientPlayer *> &targets){    
+    // FIXME: add targets
     if(card){
         request("useCard " + QString::number(card->getID()));
     }
@@ -235,5 +237,31 @@ void Client::moveCard(const QString &move_str){
 }
 
 void Client::requestCard(const QString &request_str){
+    // FIXME
     emit card_requested(request_str);
+}
+
+void Client::startGame(const QString &first_player){
+    // attach basic rule
+    Sanguosha->attachBasicRule(self);
+
+    // attach all skills
+    QList<ClientPlayer *> players = findChildren<ClientPlayer*>();
+    foreach(ClientPlayer *player, players){
+        const General *general = Sanguosha->getGeneral(player->getGeneral());
+        const QList<const Skill *> skills = general->findChildren<const Skill *>();
+        foreach(const Skill *skill, skills){
+            skill->attachPlayer(self);
+        }
+    }
+
+    activate(first_player);
+}
+
+void Client::triggerSkill(){
+    QList<const Skill *> skills = self->getSkills();
+    foreach(const Skill *skill, skills){
+        skill->trigger(this);
+    }
+
 }

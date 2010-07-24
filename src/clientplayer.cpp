@@ -1,4 +1,6 @@
 #include "clientplayer.h"
+#include "skill.h"
+#include "client.h"
 
 ClientPlayer::ClientPlayer(QObject *parent)
     :Player(parent), handcard_num(0)
@@ -28,4 +30,8 @@ void ClientPlayer::removeCard(const Card *card, const QString &location){
         known_cards.removeOne(card);        
     }else if(location == "equip")
         removeEquip(card);
+}
+
+QList<const Card *> ClientPlayer::getCards() const{
+    return known_cards;
 }

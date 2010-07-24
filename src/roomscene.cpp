@@ -21,17 +21,14 @@
 static const QPointF DiscardedPos(-494, -115);
 
 RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
-    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory)), main_window(main_window)
+    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory)), main_window(main_window),
+    max_targets(1), min_targets(1), target_fixed(false)
 {
     Q_ASSERT(client != NULL);
 
     client->setParent(this);
     const ClientPlayer *player = client->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
-
-    // create skill label
-    prompt_label = addSimpleText("", Config.BigFont);
-    prompt_label->setPos(-300, -100);
 
     // create pile
     pile = new Pixmap(":/images/pile.png");
@@ -286,6 +283,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_F7:
     case Qt::Key_F8: break;
 
+    case Qt::Key_F9:
+    case Qt::Key_F10:
+    case Qt::Key_F11:
+    case Qt::Key_F12: clickSkillButton(event->key() - Qt::Key_F9); break;
+
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
     case Qt::Key_P: dashboard->selectCard("peach"); break;
@@ -313,12 +315,18 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_G: break; // iterate generals
 
     case Qt::Key_Return : {
-            // dashboard->useSelected(); break;
             CardItem *selected = dashboard->getSelected();
             if(selected){
-                const Card *card = selected->getCard();
-                client->useCard(card);
-            }
+                int extra_targets = min_targets - selected_targets.length();
+                if(extra_targets <= 0){
+                    const Card *card = selected->getCard();
+                    client->useCard(card, selected_targets);                    
+                }else
+                    changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+            }else
+                changePrompt(tr("You didn't choose any card to use yet!"));
+
+            break;
         }
 
     case Qt::Key_Escape : {
@@ -381,7 +389,7 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
 
 void RoomScene::chooseGeneral(const General *lord, const QList<const General *> &generals){
     if(photos.length()>1)
-        prompt_label->setText(tr("Please wait for other players choosing their generals"));
+        changePrompt(tr("Please wait for other players choosing their generals"));
 
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose general"));
@@ -435,7 +443,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
 }
 
 void RoomScene::changePrompt(const QString &prompt_str){
-    prompt_label->setText(prompt_str);
+    main_window->statusBar()->showMessage(prompt_str, 5000);
 }
 
 void RoomScene::viewDiscards(){
@@ -468,6 +476,7 @@ void RoomScene::hideDiscards(){
 }
 
 void RoomScene::setActivity(bool active){
+    client->triggerSkill();
     if(active)
         dashboard->enableCards(client);
     else
@@ -566,6 +575,7 @@ void RoomScene::updateSkillButtons(){
     const General *general = Sanguosha->getGeneral(general_name);
 
     main_window->setStatusBar(NULL);
+    skill_buttons.clear();
     QStatusBar *status_bar = main_window->statusBar();    
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
@@ -581,6 +591,8 @@ void RoomScene::updateSkillButtons(){
         }
 
         status_bar->addPermanentWidget(button);
+        skill_buttons << button;
+
         if(skill->isFrequent()){
             QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
             checkbox->setChecked(true);
@@ -599,3 +611,7 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
 }
 
+void RoomScene::clickSkillButton(int order){
+    if(order >= 0 && order < skill_buttons.length())
+        skill_buttons.at(order)->click();
+}

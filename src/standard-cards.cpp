@@ -20,6 +20,10 @@ public:
     virtual Card *clone(Suit suit, int number) const{
         return new Slash(suit, number);
     }
+
+    virtual void use(Room *room, Player *user, Player *target) const{
+
+    }
 };
 
 class Jink:public BasicCard{

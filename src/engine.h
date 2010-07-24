@@ -27,6 +27,7 @@ public:
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     QEvent::Type getEventType() const;
 
+    void attachBasicRule(Player *player);
 
     void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
     void getRandomGenerals(QStringList &general_list, int count) const;
@@ -38,6 +39,7 @@ private:
     QList<Card*> cards;
     QEvent::Type event_type;
     QStringList lord_names;
+    Skill *basic_rule;
 };
 
 extern Engine *Sanguosha;

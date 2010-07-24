@@ -167,3 +167,7 @@ const Horse *Player::getOffensiveHorse() const{
 void Player::attachSkill(const Skill *skill){
     skills << skill;
 }
+
+QList<const Skill *> Player::getSkills() const{
+    return skills;
+}

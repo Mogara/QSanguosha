@@ -31,6 +31,8 @@ void Settings::init(){
     SmallFont.setPixelSize(32);
     TinyFont.setPixelSize(18);
 
+    ListenAddress = value("ListenAddress", "127.0.0.1").toString();
+
     UserName = value("UserName", getenv("USERNAME")).toString();
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     Port = value("Port", 9527u).toUInt();

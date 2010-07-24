@@ -1,4 +1,5 @@
 #include "serverplayer.h"
+#include "skill.h"
 
 #include <QHostAddress>
 

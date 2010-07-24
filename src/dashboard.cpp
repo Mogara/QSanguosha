@@ -1,6 +1,7 @@
 #include "dashboard.h"
 #include "engine.h"
 #include "settings.h"
+#include "client.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -279,6 +280,6 @@ void Dashboard::enableCards(const QString &pattern){
 
 void Dashboard::enableCards(const Client *client){
     foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(card_item->getCard()->isAvailable(client));
+        card_item->setEnabled(client->availability[card_item->getCard()]);
     }
 }

@@ -47,6 +47,7 @@ class GlobalEffect:public TrickCard{
 public:
     GlobalEffect(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
+    virtual bool targetFixed(const Client *client) const;
 };
 
 class AOE:public TrickCard{
@@ -55,6 +56,7 @@ class AOE:public TrickCard{
 public:
     AOE(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
+    virtual bool targetFixed(const Client *client) const;
 };
 
 class SingleTargetTrick: public TrickCard{

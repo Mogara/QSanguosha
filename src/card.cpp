@@ -88,10 +88,6 @@ bool Card::isAvailable(const Client *) const{
     return true;
 }
 
-QString Card::getSubtype() const{
-    return "";
-}
-
 Event *Card::generate(Room *room){
     return NULL;
 }
@@ -136,3 +132,17 @@ const Card *Card::Parse(const QString &str){
 
     return Sanguosha->cloneCard(name, suit, number);
 }
+
+bool Card::targetFixed(const Client *client) const{
+    return false;
+}
+
+void Card::targetRange(const Client *, int *min, int *max, bool *include_self) const{
+    *min = *max = 1;
+    *include_self = false;
+}
+
+bool Card::targetFilter(const QList<ClientPlayer *> &targets) const{
+    return true;
+}
+

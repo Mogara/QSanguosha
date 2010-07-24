@@ -20,10 +20,9 @@ public:
     bool isToggleable() const;
     QString getDescription() const;
 
-    virtual void attachPlayer(Player *player);
-
-protected:
-    // bool isAvailable() const = 0;
+    virtual void attachPlayer(Player *player) const;
+    virtual void trigger(Client *client) const ;
+    virtual void trigger(Room *room) const;
 
 private:
     bool compulsory;

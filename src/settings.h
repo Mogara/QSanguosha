@@ -18,9 +18,13 @@ public:
     QFont SmallFont;
     QFont TinyFont;
 
-    QString UserName;
+    // server side
+    QString ListenAddress;
+
+    // client side
     QString HostAddress;
     ushort Port;
+    QString UserName;
     QString UserAvatar;
 
     bool FitInView;

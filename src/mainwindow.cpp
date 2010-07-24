@@ -108,10 +108,8 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionStart_Server_triggered()
 {
     Server *server = new Server(this);
-    if(!server->isListening()){
-        QMessageBox::warning(this, "Warning", tr("Can not start server!"));
-        return;
-    }
+    if(!server->isListening())
+        return;    
 
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));

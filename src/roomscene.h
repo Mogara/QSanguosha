@@ -43,7 +43,6 @@ private:
     QMap<QString, Photo*> name2photo;
     Dashboard *dashboard;
     Pixmap *pile;
-    QGraphicsSimpleTextItem *prompt_label;
     Pixmap *avatar;
     Pixmap *bust;
     QList<const Card*> discarded_list;
@@ -52,8 +51,15 @@ private:
     QMainWindow *main_window;
     QComboBox *role_combobox;
 
+    QList<QPushButton *> skill_buttons;
+
+    int max_targets, min_targets;
+    bool target_fixed;
+    QList<ClientPlayer *> selected_targets;
+
     void startEnterAnimation();
     CardItem *takeCardItem(const QString &src, int card_id);
+    void clickSkillButton(int order);
 
 private slots:
     void updateSkillButtons();

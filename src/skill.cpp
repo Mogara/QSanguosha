@@ -48,7 +48,15 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
-void Skill::attachPlayer(Player *player){
+void Skill::attachPlayer(Player *player) const{
     if(parent()->objectName() == player->getGeneral())
         player->attachSkill(this);
+}
+
+void Skill::trigger(Client *client) const{
+
+}
+
+void Skill::trigger(Room *room) const{
+
 }

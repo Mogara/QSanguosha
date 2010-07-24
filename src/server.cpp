@@ -3,6 +3,7 @@
 
 #include <QInputDialog>
 #include <QNetworkInterface>
+#include <QMessageBox>
 
 Server::Server(QObject *parent)
     :QTcpServer(parent)
@@ -22,8 +23,19 @@ Server::Server(QObject *parent)
                 items << QHostAddress(ipv4).toString();
         }
 
-        QString result = QInputDialog::getItem(NULL, tr("Select network address"), tr("Network address"), items, 0, false);
-        listen(QHostAddress(result), port);
+        bool ok;
+        int current = items.indexOf(Config.ListenAddress);
+        if(current == -1)
+            current = 0;
+
+        QString result = QInputDialog::getItem(NULL, tr("Select network address"), tr("Network address"), items, current, false, &ok);
+        if(ok){
+            Config.ListenAddress = result;
+            Config.setValue("ListenAddress", result);
+            listen(QHostAddress(result), port);
+            if(!isListening())
+                QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(result));
+        }
     }
 }
 
