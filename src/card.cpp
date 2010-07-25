@@ -97,16 +97,17 @@ QString Card::toString() const{
 }
 
 bool Card::isVirtualCard() const{
-    return id >= 0;
+    return id < 0;
 }
 
 const Card *Card::Parse(const QString &str){
-    static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]");
+    static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]=(.*)");
     pattern.indexIn(str);
     QStringList texts = pattern.capturedTexts();
     QString name = texts.at(1);
     QString suit_string = texts.at(2);
     QString number_string = texts.at(3);
+    QStringList subcard_ids = texts.at(4).split("+");
     Suit suit = NoSuit;
     int number = 0;
 
@@ -130,7 +131,11 @@ const Card *Card::Parse(const QString &str){
     else
         number = number_string.toInt();
 
-    return Sanguosha->cloneCard(name, suit, number);
+    Card *card = Sanguosha->cloneCard(name, suit, number);
+    foreach(QString subcard_id, subcard_ids)
+        card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
+
+    return card;
 }
 
 bool Card::targetFixed(const Client *client) const{
@@ -171,4 +176,13 @@ void Card::addSubcard(const Card *card){
         qWarning(qPrintable(tr("Subcard must not be virtual card!")));
     else
         subcards << card;
+}
+
+QString Card::subcardString() const{
+    QStringList str;
+
+    foreach(const Card *card, subcards)
+        str << QString::number(card->getID());
+
+    return str.join("+");
 }

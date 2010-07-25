@@ -253,10 +253,17 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
 }
 
 void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
-    int card_id = args.at(1).toInt();
-    const Card *card = Sanguosha->getCard(card_id);
+    QString card_str = args.at(1);
+    const Card *card = NULL;
+    if(card_str.contains(QChar('=')))
+        card = Card::Parse(card_str);
+    else
+        card = Sanguosha->getCard(card_str.toInt());
+
     if(!card)
-        return;    
+        return;
+
+    QStringList target_names = args.at(2).split("+");
 
     const QString name = player->objectName();
     if(card->getType() == "equip"){

@@ -47,6 +47,7 @@ public:
 
     bool match(const QString &pattern) const;
     void addSubcard(const Card *card);
+    QString subcardString() const;
 
     virtual bool isAvailable(const Client *client) const;
     virtual Event *generate(Room *room);

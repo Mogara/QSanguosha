@@ -156,13 +156,25 @@ void Client::itemChosen(const QString &item_name){
 }
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
-    // FIXME: add targets
     if(card){
-        if(card->isVirtualCard()){
-            request(QString("useCard %1").arg(card->toString()));
-        }else{
-            request(QString("useCard %1").arg(card->getID()));
-        }
+        QStringList target_names;
+        foreach(const ClientPlayer *target, targets)
+            target_names << target->objectName();
+
+        QString target_str = target_names.join("+");
+        if(card->isVirtualCard())
+            request(QString("useCard %1=%2 %3").arg(card->toString()).arg(card->subcardString()).arg(target_str));
+        else
+            request(QString("useCard %1 %2").arg(card->getID()).arg(target_str));
+    }
+}
+
+void Client::useCard(const Card *card){
+    if(card){
+        if(card->isVirtualCard())
+            request(QString("useCard %1 .").arg(card->toString()));
+        else
+            request(QString("useCard %1 .").arg(card->getID()));
     }
 }
 

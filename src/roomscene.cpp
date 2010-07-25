@@ -383,6 +383,12 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7:
         {
+            if(max_targets == 1){
+                avatar->setSelected(false);
+                foreach(Photo *photo, photos)
+                    photo->setSelected(false);
+            }
+
             int order = event->key() - Qt::Key_0;
             if(order == 0)
                 avatar->setSelected(! avatar->isSelected());
