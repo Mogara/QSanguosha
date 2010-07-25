@@ -39,7 +39,7 @@ void CardOverview::loadFromList(const QList<const Card*> &list){
 
 void CardOverview::addCard(int i, const Card *card){
     QString name = Sanguosha->translate(card->objectName());
-    QIcon suit_icon = QIcon(QString(":/images/suit/%1.png").arg(card->getSuitString()));
+    QIcon suit_icon = QIcon(QString(":/suit/%1.png").arg(card->getSuitString()));
     QString suit_str = Sanguosha->translate(card->getSuitString());
     QString point = card->getNumberString();
     QString type = Sanguosha->translate(card->getType());

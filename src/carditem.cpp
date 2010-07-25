@@ -12,7 +12,7 @@ CardItem::CardItem(const Card *card)
 {
     Q_ASSERT(card != NULL);
 
-    suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));    
+    suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
     pixmap = pixmap.scaled(150*0.8, 210*0.8);
     setFlags(ItemIsFocusable);
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);

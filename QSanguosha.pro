@@ -63,6 +63,6 @@ FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
     src/cardoverview.ui
-RESOURCES += resource/sanguosha.qrc
+RESOURCES += resource/images/sanguosha.qrc
 RC_FILE += resource/icon.rc
 TRANSLATIONS += sanguosha.ts

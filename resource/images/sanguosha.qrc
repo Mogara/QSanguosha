@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logo.png</file>
+        <file>photo-back.png</file>
+        <file>avatar-frame.png</file>
+        <file>pile.png</file>
+        <file>suit/club.png</file>
+        <file>suit/diamond.png</file>
+        <file>suit/heart.png</file>
+        <file>suit/spade.png</file>
+        <file>magatamas/1.png</file>
+        <file>magatamas/2.png</file>
+        <file>magatamas/3.png</file>
+        <file>magatamas/4.png</file>
+        <file>magatamas/5.png</file>
+        <file>dashboard.png</file>
+        <file>background.png</file>
+        <file>roles/lord.png</file>
+        <file>roles/loyalist.png</file>
+        <file>roles/rebel.png</file>
+        <file>roles/renegade.png</file>
+        <file>handcard.png</file>
+        <file>card-back.png</file>
+        <file>number/1.png</file>
+        <file>number/2.png</file>
+        <file>number/3.png</file>
+        <file>number/4.png</file>
+        <file>number/5.png</file>
+        <file>number/6.png</file>
+        <file>number/7.png</file>
+    </qresource>
+</RCC>

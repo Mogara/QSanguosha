@@ -12,18 +12,18 @@
 #include <QMessageBox>
 #include <QGraphicsProxyWidget>
 
-Photo::Photo()
-    :Pixmap(":/images/photo-back.png"),
+Photo::Photo(int order)
+    :Pixmap(":/photo-back.png"),
     player(NULL),
-    avatar_frame(":/images/avatar-frame.png"),
-    handcard(":/images/handcard.png"),
+    avatar_frame(":/avatar-frame.png"),
+    handcard(":/handcard.png"),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     setAcceptHoverEvents(true);
 
     int i;
     for(i=0; i<5; i++){
-        magatamas[i].load(QString(":/images/magatamas/%1.png").arg(i+1));
+        magatamas[i].load(QString(":/magatamas/%1.png").arg(i+1));
         magatamas[i] = magatamas[i].scaled(20,20);
     }
 
@@ -34,6 +34,9 @@ Photo::Photo()
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
     widget->setWidget(role_combobox);
     widget->setPos(pixmap.width()/2, pixmap.height()-10);
+
+    order_item = new QGraphicsPixmapItem(QPixmap(QString(":/number/%1.png").arg(order+1)),this);
+    order_item->setVisible(false);
 }
 
 void Photo::setPlayer(const ClientPlayer *player)
@@ -41,9 +44,9 @@ void Photo::setPlayer(const ClientPlayer *player)
     this->player = player;
 
     if(player){        
-        role_combobox->addItem(QIcon(":/images/roles/loyalist.png"), tr("loyalist"));
-        role_combobox->addItem(QIcon(":/images/roles/rebel.png"), tr("rebel"));
-        role_combobox->addItem(QIcon(":/images/roles/renegade.png"), tr("renegade"));
+        role_combobox->addItem(QIcon(":/roles/loyalist.png"), tr("loyalist"));
+        role_combobox->addItem(QIcon(":/roles/rebel.png"), tr("rebel"));
+        role_combobox->addItem(QIcon(":/roles/renegade.png"), tr("renegade"));
 
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
@@ -70,7 +73,7 @@ void Photo::updateAvatar(){
 
 void Photo::updateRoleCombobox(const QString &new_role){
     role_combobox->clear();
-    QIcon icon(QString(":/images/roles/%1.png").arg(new_role));
+    QIcon icon(QString(":/roles/%1.png").arg(new_role));
     QString caption = Sanguosha->translate(new_role);
     role_combobox->addItem(icon, caption);
     role_combobox->setEnabled(false);
@@ -206,3 +209,9 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     painter->drawText(35, 115 + order * 17, Sanguosha->translate(card->objectName()));
 }
 
+QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
+    if(change == ItemFlagsHaveChanged)
+        order_item->setVisible(flags() & ItemIsSelectable);
+
+    return Pixmap::itemChange(change, value);
+}

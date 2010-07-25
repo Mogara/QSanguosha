@@ -13,7 +13,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     QList<General*> generals = Sanguosha->findChildren<General*>();
     ui->tableWidget->setRowCount(generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
-    QIcon lord_icon(":/images/roles/lord.png");
+    QIcon lord_icon(":/roles/lord.png");
 
     int i;
     for(i=0; i<generals.length(); i++){

@@ -8,7 +8,7 @@ StartScene::StartScene()
     setBackgroundBrush(Config.BackgroundBrush);
 
     // game logo
-    logo = new Pixmap(":/images/logo.png");
+    logo = new Pixmap(":/logo.png");
     logo->shift();
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);

@@ -15,7 +15,7 @@ class Photo : public Pixmap
 {
     Q_OBJECT
 public:
-    explicit Photo();
+    explicit Photo(int order);
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
@@ -30,6 +30,7 @@ public slots:
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
     const ClientPlayer *player;
@@ -37,9 +38,10 @@ private:
     QPixmap avatar_frame;
     QPixmap kingdom;
     QPixmap handcard;
-    QPixmap magatamas[5];
+    QPixmap magatamas[5];   
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QGraphicsPixmapItem *order_item;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

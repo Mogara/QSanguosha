@@ -33,14 +33,14 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create pile
-    pile = new Pixmap(":/images/pile.png");
+    pile = new Pixmap(":/pile.png");
     addItem(pile);
     pile->setPos(387, -132);
 
     // create photos
     int i;
     for(i=0;i<player_count-1;i++){
-        Photo *photo = new Photo;
+        Photo *photo = new Photo(i);
         photos << photo;
         addItem(photo);
     }
@@ -218,7 +218,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     Photo *photo = name2photo[player->objectName()];
     int i;
     for(i=0; i<n; i++){
-        Pixmap *pixmap = new Pixmap(":/images/card-back.png");
+        Pixmap *pixmap = new Pixmap(":/card-back.png");
         addItem(pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
@@ -354,7 +354,14 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7:
         {
-            //int order = event->key() - Qt::Key_0;
+            int order = event->key() - Qt::Key_0;
+            if(order == 0)
+                avatar->setSelected(! avatar->isSelected());
+            else if(order > 0 && order <= photos.length()){
+                Photo *photo = photos.at(order-1);
+                photo->setSelected(! photo->isSelected());
+            }
+
             break;
         }
 
@@ -616,7 +623,7 @@ void RoomScene::updateSkillButtons(){
 
 void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));
-    role_combobox->setItemIcon(1, QIcon(QString(":/images/roles/%1.png").arg(new_role)));
+    role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
 }
 
 void RoomScene::clickSkillButton(int order){

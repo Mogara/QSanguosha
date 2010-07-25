@@ -8,12 +8,12 @@
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/images/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
+    :Pixmap(":/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     int i;
     for(i=0; i<5; i++){
-        magatamas[i].load(QString(":/images/magatamas/%1.png").arg(i+1));
+        magatamas[i].load(QString(":/magatamas/%1.png").arg(i+1));
     }
 
     sort_combobox = new QComboBox;

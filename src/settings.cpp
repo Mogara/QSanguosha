@@ -41,6 +41,6 @@ void Settings::init(){
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
 
-    QString bgbrush = value("BackgroundBrush", ":/images/background.png").toString();
+    QString bgbrush = value("BackgroundBrush", ":/background.png").toString();
     BackgroundBrush = QBrush(QPixmap(bgbrush));
 }
