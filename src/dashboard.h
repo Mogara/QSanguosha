@@ -25,7 +25,7 @@ public:
     CardItem *getSelected() const;
     void unselectAll();
     void sort(int order);
-    void disableAllCards();    
+    void disableAllCards();
     void enableCards(const Client *client);
     void installEquip(CardItem *equip);
 
@@ -55,6 +55,9 @@ private:
 
 private slots:
     void sortCards();
+
+signals:
+    void card_selected(const Card *card);
 };
 
 #endif // DASHBOARD_H

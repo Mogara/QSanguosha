@@ -9,8 +9,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setStyle("plastique");
-
     QString dir_name = QDir::current().dirName();
     if(dir_name == "release" || dir_name == "debug")
         QDir::setCurrent("..");

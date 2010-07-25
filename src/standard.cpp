@@ -24,6 +24,10 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
+bool EquipCard::targetFixed(const Client *client) const{
+    return true;
+}
+
 QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }

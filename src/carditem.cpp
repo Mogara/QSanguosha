@@ -14,7 +14,7 @@ CardItem::CardItem(const Card *card)
 
     suit_pixmap.load(QString(":/images/suit/%1.png").arg(card->getSuitString()));    
     pixmap = pixmap.scaled(150*0.8, 210*0.8);
-    setFlags(ItemIsFocusable);    
+    setFlags(ItemIsFocusable);
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 
@@ -108,16 +108,3 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->setPen(Qt::red);
     painter->drawText(8, 50, card->getNumberString());
 }
-
-QVariant CardItem::itemChange(GraphicsItemChange change, const QVariant &value){
-    if(change == ItemEnabledChange){
-        if(value.toBool()){            
-            setOpacity(1.0);
-        }else{
-            setOpacity(0.7);
-        }
-    }
-
-    return Pixmap::itemChange(change, value);
-}
-

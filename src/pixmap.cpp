@@ -33,6 +33,12 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
             setGraphicsEffect(effect);
         }else
             setGraphicsEffect(NULL);
+    }else if(change == ItemEnabledChange){
+        if(value.toBool()){
+            setOpacity(1.0);
+        }else{
+            setOpacity(0.7);
+        }
     }
 
     return QGraphicsObject::itemChange(change, value);

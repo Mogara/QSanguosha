@@ -155,10 +155,14 @@ void Client::itemChosen(const QString &item_name){
         request("choose " + item_name);
 }
 
-void Client::useCard(const Card *card, const QList<ClientPlayer *> &targets){    
+void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     // FIXME: add targets
     if(card){
-        request("useCard " + QString::number(card->getID()));
+        if(card->isVirtualCard()){
+            request(QString("useCard %1").arg(card->toString()));
+        }else{
+            request(QString("useCard %1").arg(card->getID()));
+        }
     }
 }
 

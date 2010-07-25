@@ -142,7 +142,26 @@ void Card::targetRange(const Client *, int *min, int *max, bool *include_self) c
     *include_self = false;
 }
 
-bool Card::targetFilter(const QList<ClientPlayer *> &targets) const{
+bool Card::targetFilter(const QList<const ClientPlayer *> &targets) const{
     return true;
 }
 
+void Card::use(Client *client, ClientPlayer *user, ClientPlayer *target) const{
+
+}
+
+void Card::use(Client *client, ClientPlayer *user, const QList<ClientPlayer *> &targets) const{
+    foreach(ClientPlayer *target, targets){
+        use(client, user, target);
+    }
+}
+
+void Card::use(Room *room, ServerPlayer *user, ServerPlayer *target) const{
+
+}
+
+void Card::use(Room *room, ServerPlayer *user, const QList<ServerPlayer *> &targets) const{
+    foreach(ServerPlayer *target, targets){
+        use(room, user, target);
+    }
+}

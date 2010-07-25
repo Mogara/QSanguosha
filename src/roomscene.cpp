@@ -26,6 +26,8 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
 {
     Q_ASSERT(client != NULL);
 
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
+
     client->setParent(this);
     const ClientPlayer *player = client->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
@@ -50,6 +52,7 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
     connect(client, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
+    connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
 
     // add role combobox
     role_combobox = new QComboBox;
@@ -274,9 +277,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
         return;
 
     switch(event->key()){        
-    case Qt::Key_F1: dashboard->sort(0); break;
-    case Qt::Key_F2: dashboard->sort(1); break;
-    case Qt::Key_F3: dashboard->sort(2); break;
+    case Qt::Key_F1:
+    case Qt::Key_F2:
+    case Qt::Key_F3: dashboard->sort(event->key() - Qt::Key_F1); break;
 
     case Qt::Key_F5:
     case Qt::Key_F6:
@@ -317,12 +320,17 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Return : {
             CardItem *selected = dashboard->getSelected();
             if(selected){
-                int extra_targets = min_targets - selected_targets.length();
-                if(extra_targets <= 0){
-                    const Card *card = selected->getCard();
-                    client->useCard(card, selected_targets);                    
-                }else
-                    changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+                const Card *card = selected->getCard();
+                if(card->targetFixed(client))
+                    client->useCard(card);
+                else{
+                    int extra_targets = min_targets - selected_targets.length();
+                    if(extra_targets <= 0){
+
+                        client->useCard(card, selected_targets);
+                    }else
+                        changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+                }
             }else
                 changePrompt(tr("You didn't choose any card to use yet!"));
 
@@ -534,7 +542,7 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
         card_item->setRotation(qrand() % 359 + 1);
         card_item->goBack();
 
-        card_item->setFlags(card_item->flags() & (~QGraphicsItem::ItemIsFocusable));
+        card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
         card_item->setZValue(0.1*discarded_list.length());
         discarded_list.prepend(card_item->getCard());
@@ -614,4 +622,63 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
 void RoomScene::clickSkillButton(int order){
     if(order >= 0 && order < skill_buttons.length())
         skill_buttons.at(order)->click();
+}
+
+void RoomScene::enableTargets(const Card *card){
+    min_targets = max_targets = 1;    
+    selected_targets.clear();
+    available_targets.clear();    
+
+    if(card == NULL){
+        avatar->setEnabled(false);
+        foreach(Photo *photo, photos)
+            photo->setEnabled(false);
+        return;
+    }
+
+    if(card->targetFixed(client)){
+        avatar->setEnabled(true);
+        avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        foreach(Photo *photo, photos){
+            photo->setEnabled(true);
+            photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
+        return;
+    }
+
+    bool include_self;
+    card->targetRange(client, &min_targets, &max_targets, &include_self);
+    avatar->setEnabled(include_self);
+
+    foreach(Photo *photo, photos){
+        if(card->targetFilter(selected_targets)){
+            available_targets << photo->getPlayer();
+            photo->setEnabled(true);
+            photo->setFlag(QGraphicsItem::ItemIsSelectable);
+        }else{
+            photo->setEnabled(false);
+            photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
+    }
+
+    if(!available_targets.isEmpty()){
+        const ClientPlayer *first_player = available_targets.first();
+        Photo *photo = name2photo[first_player->objectName()];
+        if(photo)
+            photo->setSelected(true);
+    }
+}
+
+void RoomScene::updateSelectedTargets(){
+    selected_targets.clear();
+
+    QList<QGraphicsItem *> selection = selectedItems();
+    foreach(QGraphicsItem *item, selection){
+        QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
+        Photo *photo = qobject_cast<Photo *>(item_obj);
+        if(photo)
+            selected_targets.append(photo->getPlayer());
+        else if(item_obj == avatar)
+            selected_targets.append(client->getPlayer());
+    }
 }

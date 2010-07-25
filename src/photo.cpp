@@ -20,7 +20,6 @@ Photo::Photo()
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     setAcceptHoverEvents(true);
-    setFlags(ItemIsSelectable);
 
     int i;
     for(i=0; i<5; i++){

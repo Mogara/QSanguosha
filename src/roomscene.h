@@ -19,6 +19,7 @@ public:
 
 public slots:
     void showBust(const QString &name);
+
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
     void drawCards(const QList<Card *> &cards);
@@ -26,11 +27,13 @@ public slots:
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str);
+    void setActivity(bool active);
+    void moveCard(const QString &src, const QString &dest, int card_id);
+
     void updatePhotos(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
     void hideDiscards();
-    void setActivity(bool active);
-    void moveCard(const QString &src, const QString &dest, int card_id);
+    void enableTargets(const Card *card);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -54,8 +57,8 @@ private:
     QList<QPushButton *> skill_buttons;
 
     int max_targets, min_targets;
-    bool target_fixed;
-    QList<ClientPlayer *> selected_targets;
+    bool target_fixed;    
+    QList<const ClientPlayer *> selected_targets, available_targets;
 
     void startEnterAnimation();
     CardItem *takeCardItem(const QString &src, int card_id);
@@ -64,6 +67,7 @@ private:
 private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
+    void updateSelectedTargets();
 };
 
 #endif // ROOMSCENE_H

@@ -19,7 +19,7 @@ public:
     virtual void trigger(Client *client) const{
         const ClientPlayer *player = client->getPlayer();
         const QString phase = player->getPhase();
-        if(phase == "start" || phase == "finish"){
+        if(phase == "start"){
             client->tag.insert("slash_count", 0);
         }
 

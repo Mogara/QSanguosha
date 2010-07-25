@@ -2,6 +2,7 @@
 #include "standard.h"
 #include "skill.h"
 #include "engine.h"
+#include "client.h"
 
 class ViewAsSkill:public Skill{
 public:
@@ -118,7 +119,10 @@ public:
 class Paoxiao:public Skill{
 public:
     Paoxiao():Skill("paoxiao+"){
+    }
 
+    virtual void trigger(Client *client) const{
+        client->tag["unlimited_slash"] = true;
     }
 };
 

@@ -26,8 +26,7 @@ Dashboard::Dashboard()
     connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
 
     avatar = new Pixmap("");
-    avatar->setPos(837, 35);
-    avatar->setFlag(ItemIsSelectable);
+    avatar->setPos(837, 35);    
     avatar->setParentItem(this);
 
     kingdom = new QGraphicsPixmapItem(this);
@@ -61,6 +60,9 @@ Pixmap *Dashboard::getAvatar(){
 }
 
 void Dashboard::selectCard(const QString &pattern, bool forward){
+    if(selected)
+        selected->select(); // adjust the position
+
     // find all cards that match the card type
     QList<CardItem*> matches;
 
@@ -88,8 +90,9 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
             selected->unselect();
         to_select->select();
         selected = to_select;
-    }
 
+        emit card_selected(selected->getCard());
+    }
 }
 
 CardItem *Dashboard::getSelected() const{
@@ -100,6 +103,8 @@ void Dashboard::unselectAll(){
     if(selected){
         selected->unselect();
         selected = NULL;
+
+        emit card_selected(NULL);
     }
 }
 

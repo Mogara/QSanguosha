@@ -10,7 +10,13 @@ public:
     }
 
     virtual bool isAvailable(const Client *client) const{
-        return client->tag.value("slash_count").toInt() < 1;
+        bool unlimited_slash = client->tag.value("unlimited_slash", false).toBool();
+        if(unlimited_slash)
+            return true;
+        else{
+            int limited_slash_count = client->tag.value("limited_slash_count", 1).toInt();
+            return client->tag.value("slash_count").toInt() < limited_slash_count;
+        }
     }
 
     virtual QString getSubtype() const{
@@ -21,8 +27,12 @@ public:
         return new Slash(suit, number);
     }
 
-    virtual void use(Room *room, Player *user, Player *target) const{
+    virtual void use(Client *client, ClientPlayer *user, const QList<ClientPlayer *> &targets) const{
+        BasicCard::use(client, user, targets);
 
+        // increase slash count
+        int slash_count = client->tag.value("slash_count", 0).toInt();
+        client->tag.insert("slash_count", slash_count + 1);
     }
 };
 
@@ -274,6 +284,10 @@ public:
 
     virtual Card *clone(Suit suit, int number) const{
         return new ExNihilo(suit, number);
+    }
+
+    virtual bool targetFixed(const Client *client) const{
+        return true;
     }
 };
 

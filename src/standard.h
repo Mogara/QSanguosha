@@ -39,6 +39,7 @@ public:
     EquipCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
     virtual int getTypeId() const;
+    virtual bool targetFixed(const Client *client) const;
 };
 
 class GlobalEffect:public TrickCard{

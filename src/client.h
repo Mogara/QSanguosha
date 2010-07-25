@@ -15,7 +15,7 @@ public:
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
     void triggerSkill();
-    void useCard(const Card *card, const QList<ClientPlayer *> &targets);
+    void useCard(const Card *card, const QList<const ClientPlayer *> &targets = QList<const ClientPlayer *>());
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
