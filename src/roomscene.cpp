@@ -84,7 +84,7 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
 void RoomScene::startEnterAnimation(){
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
-    const qreal photo_width = photos.front()->boundingRect().width();
+    const qreal photo_width = photos.first()->boundingRect().width();
     const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
 
     int i;
@@ -167,7 +167,7 @@ void RoomScene::updatePhotos(const QList<const ClientPlayer*> &seats){
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
-    const qreal photo_width = photos.front()->boundingRect().width();
+    const qreal photo_width = photos.first()->boundingRect().width();
     const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
 
     for(i=0;i<photos.length();i++){
@@ -315,7 +315,34 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Space:  dashboard->selectCard(); break; // iterate all cards
     case Qt::Key_F:  break; // fix the selected
 
-    case Qt::Key_G: break; // iterate generals
+    case Qt::Key_G: {
+            if(max_targets == 1){
+                Photo *selected_photo = NULL;
+                foreach(Photo *photo, photos){
+                    if(photo->isSelected())
+                        selected_photo = photo;
+                    else if(photo->flags() & QGraphicsItem::ItemIsSelectable){
+                        if(selected_photo){
+                            selected_photo->setSelected(false);
+                            photo->setSelected(true);
+                            break;
+                        }
+                    }
+                }
+
+                // select first selectable
+                if(selected_photo == NULL || selected_photo->isSelected()){
+                    foreach(Photo *photo, photos){
+                        if(photo->flags() & QGraphicsItem::ItemIsSelectable){
+                            photo->setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            break; // iterate generals when
+        }
 
     case Qt::Key_Return : {
             CardItem *selected = dashboard->getSelected();
@@ -325,11 +352,13 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
                     client->useCard(card);
                 else{
                     int extra_targets = min_targets - selected_targets.length();
-                    if(extra_targets <= 0){
-
-                        client->useCard(card, selected_targets);
-                    }else
+                    int over_targets = selected_targets.length() > max_targets;
+                    if(extra_targets > 0)
                         changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+                    else if(over_targets > 0)
+                        changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
+                    else
+                        client->useCard(card, selected_targets);
                 }
             }else
                 changePrompt(tr("You didn't choose any card to use yet!"));
@@ -393,7 +422,7 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
         connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     }
 
-    mapper->setMapping(dialog, lords.front()->objectName());
+    mapper->setMapping(dialog, lords.first()->objectName());
     connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
 
     connect(mapper, SIGNAL(mapped(QString)), client, SLOT(itemChosen(QString)));
@@ -448,7 +477,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
         connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     }
 
-    mapper->setMapping(dialog, generals.front()->objectName());
+    mapper->setMapping(dialog, generals.first()->objectName());
     connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
 
     connect(mapper, SIGNAL(mapped(QString)), client, SLOT(itemChosen(QString)));
@@ -500,7 +529,7 @@ void RoomScene::setActivity(bool active){
 
 CardItem *RoomScene::takeCardItem(const QString &src, int card_id){
     QStringList words = src.split("@");
-    QString name = words.front();
+    QString name = words.first();
     QString location;
     if(words.length() >= 2)
         location = words.at(1);
@@ -537,7 +566,7 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
         addItem(card_item);
 
     QStringList words = dest.split("@");
-    QString dest_name = words.front();
+    QString dest_name = words.first();
     QString dest_location;
     if(words.length() >= 2)
         dest_location = words.at(1);
@@ -638,8 +667,10 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card == NULL){
         avatar->setEnabled(false);
-        foreach(Photo *photo, photos)
+        foreach(Photo *photo, photos){
             photo->setEnabled(false);
+            photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
         return;
     }
 

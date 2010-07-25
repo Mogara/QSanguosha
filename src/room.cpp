@@ -109,7 +109,7 @@ void Room::reportDisconnection(){
 
 void Room::processRequest(const QString &request){
     QStringList args = request.split(" ");
-    QString command = args.front();
+    QString command = args.first();
     ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
     if(player == NULL)
         return;
@@ -283,7 +283,7 @@ void Room::startGame(){
 
     // set hp full state
     int lord_welfare = player_count > 4 ? 1 : 0;
-    players.front()->setMaxHP(players.front()->getGeneralMaxHP() + lord_welfare);
+    players.first()->setMaxHP(players.first()->getGeneralMaxHP() + lord_welfare);
 
     int i;
     for(i=1; i<player_count; i++)
@@ -312,8 +312,8 @@ void Room::startGame(){
         broadcast(QString("! drawNCards %1:4").arg(players[i]->objectName()), players[i]);
     }
 
-    broadcast("! startGame " + players.front()->objectName());
-    broadcast(QString("#%1 phase start").arg(players.front()->objectName()));
+    broadcast("! startGame " + players.first()->objectName());
+    broadcast(QString("#%1 phase start").arg(players.first()->objectName()));
 }
 
 

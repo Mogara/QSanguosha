@@ -88,9 +88,11 @@ public:
     }
 protected:
     virtual const Card *viewFilter(const Card *card){
-        if(card->isBlack())
-            return Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
-        else
+        if(card->isBlack()){
+            Card *vcard = Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
+            vcard->addSubcard(card);
+            return vcard;
+        }else
             return card;
     }
 };
@@ -332,6 +334,22 @@ void StandardPackage::addGenerals(){
     t["zhiheng"] = tr("zhiheng");
     t["jiuyuan"] = tr("jiuyuan");
     t["yingzi"] = tr("yingzi");
+    t["fanjian"] = tr("fanjian");
+    t["keji"] = tr("keji");
+    t["qianxun"] = tr("qianxun");
+    t["lianying"] = tr("lianying");
+    t["qixi"] = tr("qixi");
+    t["kurou"] = tr("kurou");
+    t["guose"] = tr("guose");
+    t["liuli"] = tr("liuli");
+    t["jieyin"] = tr("jieyin");
+    t["xiaoji"] = tr("xiaoji");
+
+    t["wushuang"] = tr("wushuang");
+    t["qingnang"] = tr("qingnang");
+    t["jijiu"] = tr("jijiu");
+    t["lijian"] = tr("lijian");
+    t["biyue"] = tr("biyue");
 
     t[":jianxiong"] = tr(":jianxiong");
     t[":hujia"] = tr(":hujia");
@@ -359,4 +377,22 @@ void StandardPackage::addGenerals(){
 
     t[":zhiheng"] = tr(":zhiheng");
     t[":jiuyuan"] = tr(":jiuyuan");
+    t[":yingzi"] = tr(":yingzi");
+    t[":fanjian"] = tr(":fanjian");
+    t[":keji"] = tr(":keji");
+    t[":qianxun"] = tr(":qianxun");
+    t[":lianying"] = tr(":lianying");
+    t[":qixi"] = tr(":qixi");
+    t[":kurou"] = tr(":kurou");
+    t[":guose"] = tr(":guose");
+    t[":liuli"] = tr(":liuli");
+    t[":jieyin"] = tr(":jieyin");
+    t[":xiaoji"] = tr(":xiaoji");
+
+    t[":wushuang"] = tr(":wushuang");
+    t[":qingnang"] = tr(":qingnang");
+    t[":jijiu"] = tr(":jijiu");
+    t[":lijian"] = tr(":lijian");
+    t[":biyue"] = tr(":biyue");
+
 }

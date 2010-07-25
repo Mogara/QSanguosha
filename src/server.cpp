@@ -14,7 +14,7 @@ Server::Server(QObject *parent)
 
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
     if(addresses.length() == 1)
-        listen(addresses.front(), port);
+        listen(addresses.first(), port);
     else{
         QStringList items;
         foreach(QHostAddress address, addresses){

@@ -165,3 +165,10 @@ void Card::use(Room *room, ServerPlayer *user, const QList<ServerPlayer *> &targ
         use(room, user, target);
     }
 }
+
+void Card::addSubcard(const Card *card){
+    if(card->isVirtualCard())
+        qWarning(qPrintable(tr("Subcard must not be virtual card!")));
+    else
+        subcards << card;
+}

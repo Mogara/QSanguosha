@@ -21,7 +21,7 @@ void Settings::init(){
     QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
     int font_id = QFontDatabase::addApplicationFont(font_path);
     if(font_id!=-1){
-        QString font_family = QFontDatabase::applicationFontFamilies(font_id).front();
+        QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
         BigFont.setFamily(font_family);
         SmallFont.setFamily(font_family);
         TinyFont.setFamily(font_family);

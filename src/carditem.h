@@ -36,6 +36,7 @@ private:
 signals:
     void show_discards();
     void hide_discards();
+    void card_selected(const Card *card);
 };
 
 #endif // CARDITEM_H

@@ -46,6 +46,7 @@ public:
     bool isVirtualCard() const;
 
     bool match(const QString &pattern) const;
+    void addSubcard(const Card *card);
 
     virtual bool isAvailable(const Client *client) const;
     virtual Event *generate(Room *room);
@@ -76,6 +77,7 @@ private:
     Suit suit;
     int number;
     int id;
+    QList<const Card *> subcards;
 };
 
 #endif // CARD_H

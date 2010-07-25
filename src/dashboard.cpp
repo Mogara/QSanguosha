@@ -39,6 +39,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_items << card_item;
 
+    connect(card_item, SIGNAL(card_selected(const Card*)), this, SIGNAL(card_selected(const Card*)));
     sortCards();
 }
 
@@ -165,7 +166,7 @@ void Dashboard::adjustCards(){
     if(n == 0)
         return;
 
-    int card_width = card_items.front()->boundingRect().width();
+    int card_width = card_items.first()->boundingRect().width();
     int card_skip;
     if(n > 5)
         card_skip = (530 - n * card_width)/n + card_width;
