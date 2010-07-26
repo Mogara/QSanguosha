@@ -123,8 +123,9 @@ public:
     Paoxiao():Skill("paoxiao+"){
     }
 
-    virtual void trigger(Client *client) const{
-        client->tag["unlimited_slash"] = true;
+    virtual void trigger(Client *client, TriggerReason reason, const QString &data) const{
+        if(reason == GameStart)
+            client->tag["unlimited_slash"] = true;
     }
 };
 

@@ -3,6 +3,7 @@
 #include "engine.h"
 
 #include <QMessageBox>
+#include <QMetaEnum>
 
 Client::Client(QObject *parent)
     :QTcpSocket(parent), room(new QObject(this)), focus_player(NULL)
@@ -220,8 +221,20 @@ void Client::notifyRoleChange(const QString &new_role){
     }
 }
 
-void Client::activate(const QString &player_name){
-    emit activity_set(self->objectName() == player_name);
+void Client::activate(const QString &activate_str){
+    QStringList words = activate_str.split(":");
+    QString name = words.first();
+    if(name == self->objectName()){
+        QString reason_str = words.at(1);
+        static int enum_index = Skill::staticMetaObject.indexOfEnumerator("TriggerReason");
+        static QMetaEnum meta_enum = Skill::staticMetaObject.enumerator(enum_index);
+        Skill::TriggerReason reason = static_cast<Skill::TriggerReason>(meta_enum.keyToValue(reason_str.toAscii()));
+        QString data = words.at(2);
+
+        triggerSkill(reason, data);
+        emit activity_set(true);
+    }else
+        emit activity_set(false);
 }
 
 void Client::moveCard(const QString &move_str){
@@ -252,14 +265,9 @@ void Client::moveCard(const QString &move_str){
     emit card_moved(src, dest, card_id);
 }
 
-void Client::requestCard(const QString &request_str){
-    // FIXME
-    emit card_requested(request_str);
-}
-
 void Client::startGame(const QString &first_player){
     // attach basic rule
-    Sanguosha->attachBasicRule(self);
+    self->attachSkill(Sanguosha->getBasicRule());
 
     // attach all skills
     QList<ClientPlayer *> players = findChildren<ClientPlayer*>();
@@ -271,13 +279,28 @@ void Client::startGame(const QString &first_player){
         }
     }
 
-    activate(first_player);
+    triggerSkill(Skill::GameStart);
+    if(first_player == self->objectName()){
+        triggerSkill(Skill::PhaseChange);
+        emit activity_set(true);
+    }else
+        emit activity_set(false);
 }
 
-void Client::triggerSkill(){
+void Client::triggerSkill(Skill::TriggerReason reason, const QString &data){
     QList<const Skill *> skills = self->getSkills();
     foreach(const Skill *skill, skills){
-        skill->trigger(this);
+        skill->trigger(this, reason, data);
     }
 
+    if(self->getPhase() != Player::NotActive && tag.value("auto_endphase", true).toBool())
+        endPhase();
+}
+
+void Client::endPhase(){    
+    request("endPhase");
+}
+
+void Client::askForCards(int n){
+    request(QString("drawCards %1").arg(n));
 }

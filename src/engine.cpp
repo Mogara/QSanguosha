@@ -16,16 +16,65 @@ public:
 
     }
 
-    virtual void trigger(Client *client) const{
+    void onPhaseChange(Client *client, Player::Phase phase) const{
         const ClientPlayer *player = client->getPlayer();
-        const QString phase = player->getPhase();
-        if(phase == "start"){
-            client->tag.insert("slash_count", 0);
+
+        switch(phase){
+        case Player::Start:{                
+                client->tag.insert("slash_count", 0);
+                client->availability.clear();
+
+                break;
+            }
+
+        case Player::Judge:{
+                if(client->tag.value("skip_judge", false).toBool())
+                    client->tag.insert("skip_judge", true);
+                else{
+                    // request for judge
+                }
+                break;
         }
 
-        const QList<const Card *> cards = player->getCards();
-        foreach(const Card *card, cards){
-            client->availability[card] = card->isAvailable(client);
+        case Player::Draw:{
+                if(client->tag.value("skip_draw", false).toBool())
+                    client->tag.insert("skip_play", true);
+                else{
+                    client->askForCards(2);
+                }
+                break;
+            }
+
+        case Player::Play:{
+                if(client->tag.value("skip_play", false).toBool())
+                    client->tag.insert("skip_play", true);
+                else{
+                    client->tag.insert("auto_endphase", false);
+                }
+
+                break;
+            }
+
+        case Player::Discard:{
+                break;
+            }
+
+        case Player::Finish:{
+                // Diao chan's Biyue skill
+            }
+
+        default:
+            ;
+        }
+    }
+
+    virtual void trigger(Client *client, TriggerReason reason, const QString &data) const{
+        const ClientPlayer *player = client->getPlayer();
+
+        switch(reason){
+        case GameStart: break;
+        case PhaseChange: onPhaseChange(client, player->getPhase()); break;
+        default:  ;
         }
     }
 };
@@ -144,6 +193,6 @@ void Engine::getRandomCards(QList<int> &list) const{
     }
 }
 
-void Engine::attachBasicRule(Player *player){
-    player->attachSkill(basic_rule);
+const Skill *Engine::getBasicRule() const{
+    return basic_rule;
 }

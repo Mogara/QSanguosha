@@ -4,8 +4,9 @@
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
     hp(-1), max_hp(-1), state("online"), seat(0),
-    src_correct(0), dest_correct(0),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
+    src_correct(0), dest_correct(0), phase(NotActive),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+    face_up(true)
 {
 }
 
@@ -108,12 +109,33 @@ const General *Player::getAvatarGeneral() const{
     return Sanguosha->getGeneral(general_name);
 }
 
-QString Player::getPhase() const{
-    return phase;
+QString Player::getPhaseString() const{
+    switch(phase){
+    case Start: return "start";
+    case Judge: return "judge";
+    case Draw: return "draw";
+    case Play: return "play";
+    case Discard: return "discard";
+    case Finish: return "finish";
+    case NotActive:
+    default:
+        return "not_active";
+    }
 }
 
-void Player::setPhase(const QString &phase){
-    this->phase = phase;
+void Player::setPhaseString(const QString &phase_str){
+    static QMap<QString, Phase> phase_map;
+    if(phase_map.isEmpty()){
+        phase_map.insert("start",Start);
+        phase_map.insert("judge", Judge);
+        phase_map.insert("draw", Draw);
+        phase_map.insert("play", Play);
+        phase_map.insert("discard", Discard);
+        phase_map.insert("finish", Finish);
+        phase_map.insert("not_active", NotActive);
+    }
+
+    phase = phase_map.value(phase_str, NotActive);
 }
 
 const Card *Player::replaceEquip(const Card *equip){
@@ -164,10 +186,29 @@ const Horse *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
-void Player::attachSkill(const Skill *skill){
-    skills << skill;
+void Player::attachSkill(const Skill *skill, bool prepend){
+    if(prepend)
+        skills.prepend(skill);
+    else
+        skills.append(skill);
 }
 
 QList<const Skill *> Player::getSkills() const{
     return skills;
+}
+
+Player::Phase Player::getPhase() const{
+    return phase;
+}
+
+void Player::setPhase(Phase phase){
+    this->phase = phase;
+}
+
+bool Player::faceUp() const{
+    return face_up;
+}
+
+void Player::turnOver(){
+    face_up = !face_up;
 }

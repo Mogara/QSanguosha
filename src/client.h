@@ -3,6 +3,7 @@
 
 #include "clientplayer.h"
 #include "card.h"
+#include "skill.h"
 
 #include <QTcpSocket>
 
@@ -14,9 +15,11 @@ public:
     void signup();
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
-    void triggerSkill();
+    void triggerSkill(Skill::TriggerReason reason, const QString &data = QString());
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
+    void endPhase();
+    void askForCards(int n);
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -27,9 +30,8 @@ public:
     Q_INVOKABLE void startInXs(const QString &);
     Q_INVOKABLE void duplicationError(const QString &);
     Q_INVOKABLE void arrangeSeats(const QString &seats);
-    Q_INVOKABLE void activate(const QString &player_name);
     Q_INVOKABLE void moveCard(const QString &move_str);
-    Q_INVOKABLE void requestCard(const QString &request_str);
+    Q_INVOKABLE void activate(const QString &activate_str);
     Q_INVOKABLE void startGame(const QString &first_player);
 
     QVariantMap tag;

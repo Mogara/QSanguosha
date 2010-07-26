@@ -53,14 +53,6 @@ int Room::drawCard(){
     return draw_pile->takeFirst();
 }
 
-void Room::drawCards(QList<int> &cards, int count){
-    cards.clear();
-
-    int i;
-    for(i=0; i<count; i++)
-        cards << drawCard();
-}
-
 bool Room::event(QEvent *event){
     QObject::event(event);
 
@@ -284,8 +276,10 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
 void Room::startGame(){
     // tell the players about the seat, and the first is always the lord
     QStringList player_circle;
-    foreach(Player *player, players)
+    foreach(ServerPlayer *player, players){
+        alive_players << player;
         player_circle << player->objectName();
+    }
     broadcast("! arrangeSeats " + player_circle.join("+"));
 
     // set hp full state
@@ -305,23 +299,61 @@ void Room::startGame(){
 
     // every player draw 4 cards and them start from the lord
     for(i=0; i<player_count; i++){
-        QList<int> cards;
-        drawCards(cards, 4);
-
-        QStringList cards_str;
-        foreach(int card_id, cards){
-            cards_str << QString::number(card_id);
-            Card *card = Sanguosha->getCard(card_id);
-            players[i]->drawCard(card);
-        }
-
-        players[i]->unicast("! drawCards " + cards_str.join("+"));
-        broadcast(QString("! drawNCards %1:4").arg(players[i]->objectName()), players[i]);
+        drawCards(players.at(i), 4);
     }
 
-    broadcast("! startGame " + players.first()->objectName());
-    broadcast(QString("#%1 phase start").arg(players.first()->objectName()));
+    ServerPlayer *the_lord = players.first();
+    the_lord->setPhase(Player::Start);
+    broadcast(QString("#%1 phase start").arg(the_lord->objectName()));
+    broadcast("! startGame " + the_lord->objectName());
+    active_records.push(the_lord);
 }
 
+void Room::endPhaseCommand(ServerPlayer *player, const QStringList &){
+    if(player->getPhase() == Player::NotActive){
+        qFatal(qPrintable(tr("Player that is not active should not use endPhase command!")));
+        return;
+    }
 
+    int phase_num = static_cast<int>(player->getPhase());
+    Player::Phase next_phase = static_cast<Player::Phase>(phase_num + 1);
 
+    if(next_phase == Player::NotActive){
+        int index = alive_players.indexOf(player);
+        int next_index = (index + 1) % alive_players.length();
+        ServerPlayer *next = alive_players.at(next_index);
+
+        player->setPhase(Player::NotActive);
+        next->setPhase(Player::Start);
+
+        broadcast(QString("#%1 phase not_active").arg(player->objectName()));
+        broadcast(QString("#%1 phase start").arg(next->objectName()));
+
+        broadcast(QString("! activate %1:PhaseChange:").arg(next->objectName()));
+    }else{
+        player->setPhase(next_phase);
+
+        broadcast(QString("#%1 phase %2").arg(player->objectName()).arg(player->getPhaseString()));
+        broadcast(QString("! activate %1:PhaseChange:").arg(player->objectName()));
+    }
+}
+
+void Room::drawCards(ServerPlayer *player, int n){
+    QStringList cards_str;
+
+    int i;
+    for(i=0; i<n; i++){
+        int card_id = drawCard();
+        const Card *card = Sanguosha->getCard(card_id);
+        player->drawCard(card);
+        cards_str << QString::number(drawCard());
+    }
+
+    player->unicast("! drawCards " + cards_str.join("+"));
+    broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
+}
+
+void Room::drawCardsCommand(ServerPlayer *player, const QStringList &args){
+    int n = args.at(1).toInt();
+    drawCards(player, n);
+}

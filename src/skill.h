@@ -12,7 +12,11 @@ class Skill : public QObject
     Q_PROPERTY(bool lord_skill READ isLordSkill CONSTANT)
     Q_PROPERTY(bool frequent READ isFrequent CONSTANT)
 
+    Q_ENUMS(TriggerReason)
+
 public:
+    enum TriggerReason {GameStart, PhaseChange, RequestForCard, UseCard};
+
     explicit Skill(const QString &name);
     bool isCompulsory() const;
     bool isLordSkill() const;
@@ -21,7 +25,7 @@ public:
     QString getDescription() const;
 
     virtual void attachPlayer(Player *player) const;
-    virtual void trigger(Client *client) const ;
+    virtual void trigger(Client *client, TriggerReason reason, const QString &data = QString()) const ;
     virtual void trigger(Room *room) const;
 
 private:

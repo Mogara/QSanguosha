@@ -2,6 +2,8 @@
 #include "settings.h"
 #include "engine.h"
 
+QMap<const Card *, bool> *Card::AvailabilityMap = NULL;
+
 Card::Card(Suit suit, int number)
     :suit(suit), number(number), id(-1)
 {
@@ -71,6 +73,18 @@ bool Card::CompareByType(const Card *a, const Card *b){
         return order1 < order2;
     else
         return CompareBySuitNumber(a,b);
+}
+
+bool Card::CompareByAvailability(const Card *a, const Card *b){
+    if(AvailabilityMap){
+        bool x = AvailabilityMap->value(a);
+        bool y = AvailabilityMap->value(b);
+        if(x != y){
+            return x;
+        }
+    }
+
+    return CompareBySuitNumber(a,b);
 }
 
 QString Card::getPixmapPath() const{

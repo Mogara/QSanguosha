@@ -173,9 +173,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
             painter->drawText(100, 100, Sanguosha->translate(player->getState()));
         }
 
-        if(!player->getPhase().isEmpty()){
+        if(player->getPhase() != Player::NotActive){
             painter->drawRect(boundingRect());
-            painter->drawText(0, pixmap.height(), Sanguosha->translate(player->getPhase()));
+            painter->drawText(0, pixmap.height(), Sanguosha->translate(player->getPhaseString()));
         }
 
         drawEquip(painter, weapon, 0);

@@ -20,11 +20,14 @@ class Player : public QObject
     Q_PROPERTY(QString state READ getState WRITE setState)
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
+    Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
+    Q_PROPERTY(bool face_up READ faceUp)
 
-    // possible phase is start, judge, draw, play, discard, finish
-    Q_PROPERTY(QString phase READ getPhase WRITE setPhase)
+    Q_ENUMS(Phase)
 
 public:
+    enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
+
     explicit Player(QObject *parent);
 
     // property setters/getters
@@ -42,9 +45,13 @@ public:
     int getSeat() const;
     void setSeat(int seat);
     bool isFocus() const;
-    void setFocus(bool focus);
-    QString getPhase() const;
-    void setPhase(const QString &phase);
+    void setFocus(bool focus);    
+    QString getPhaseString() const;
+    void setPhaseString(const QString &phase_str);
+    Phase getPhase() const;
+    void setPhase(Phase phase);
+    bool faceUp() const;
+    void turnOver();
 
     void setCorrect(int src_correct, int dest_correct);
     int distanceTo(const Player *other) const;
@@ -63,7 +70,7 @@ public:
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
 
-    void attachSkill(const Skill *skill);
+    void attachSkill(const Skill *skill, bool prepend = false);
     QList<const Skill *> getSkills() const;
 
 private:
@@ -73,11 +80,12 @@ private:
     QString state;
     int seat;
     int src_correct, dest_correct;
-    QString phase;
+    Phase phase;
     const Weapon *weapon;
     const Armor *armor;
     const Horse *defensive_horse, *offensive_horse;
     QList<const Skill *> skills;
+    bool face_up;
 
 signals:
     void general_changed();

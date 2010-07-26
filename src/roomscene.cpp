@@ -26,6 +26,8 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
 {
     Q_ASSERT(client != NULL);
 
+    Card::AvailabilityMap = &client->availability;
+
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
     client->setParent(this);
@@ -279,7 +281,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     switch(event->key()){        
     case Qt::Key_F1:
     case Qt::Key_F2:
-    case Qt::Key_F3: dashboard->sort(event->key() - Qt::Key_F1); break;
+    case Qt::Key_F3:
+    case Qt::Key_F4: dashboard->sort(event->key() - Qt::Key_F1); break;
 
     case Qt::Key_F5:
     case Qt::Key_F6:
@@ -301,9 +304,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_T: dashboard->selectCard("trick"); break;
     case Qt::Key_A: dashboard->selectCard("aoe"); break;
-    case Qt::Key_N: dashboard->selectCard("nullification"); break;
-    case Qt::Key_C: dashboard->selectCard("dismantlement"); break;
+    case Qt::Key_N: dashboard->selectCard("nullification"); break;    
     case Qt::Key_Q: dashboard->selectCard("snatch"); break;
+    case Qt::Key_C: dashboard->selectCard("dismantlement"); break;
     case Qt::Key_U: dashboard->selectCard("duel"); break;
     case Qt::Key_L: dashboard->selectCard("lightning"); break;
     case Qt::Key_I: dashboard->selectCard("indulgence"); break;
@@ -400,7 +403,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             break;
         }
 
-#ifndef _NDEBUG
+#ifndef QT_NO_DEBUG
     case Qt::Key_D: {
             // do some debugging things
             client->drawCards("1+2+3+4+5+6");
@@ -526,10 +529,15 @@ void RoomScene::hideDiscards(){
 }
 
 void RoomScene::setActivity(bool active){
-    client->triggerSkill();
-    if(active)
+    if(active){
+        const ClientPlayer *player = client->getPlayer();
+        const QList<const Card *> cards = player->getCards();
+        foreach(const Card *card, cards){
+            if(!client->availability.contains(card))
+                client->availability[card] = card->isAvailable(client);
+        }
         dashboard->enableCards(client);
-    else
+    }else
         dashboard->disableAllCards();
 }
 

@@ -20,6 +20,7 @@ Dashboard::Dashboard()
     sort_combobox->addItem(tr("No sort"));
     sort_combobox->addItem(tr("Sort by suit"));
     sort_combobox->addItem(tr("Sort by type"));
+    sort_combobox->addItem(tr("Sort by availability"));
     sort_combobox->move(0, 32);
     QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget(this);
     sort_widget->setWidget(sort_combobox);
@@ -261,12 +262,17 @@ static bool CompareByType(const CardItem *a, const CardItem *b){
     return Card::CompareByType(a->getCard(), b->getCard());
 }
 
+static bool CompareByAvailability(const CardItem *a, const CardItem *b){
+    return Card::CompareByAvailability(a->getCard(), b->getCard());
+}
+
 void Dashboard::sortCards(){
     int sort_type = sort_combobox->currentIndex();
     switch(sort_type){
     case 0: break;
     case 1: qSort(card_items.begin(), card_items.end(), CompareBySuitNumber); break;
     case 2: qSort(card_items.begin(), card_items.end(), CompareByType); break;
+    case 3: qSort(card_items.begin(), card_items.end(), CompareByAvailability); break;
     }
 
     adjustCards();

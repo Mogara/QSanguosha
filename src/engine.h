@@ -26,8 +26,7 @@ public:
     Card *getCard(int index) const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     QEvent::Type getEventType() const;
-
-    void attachBasicRule(Player *player);
+    const Skill *getBasicRule() const;
 
     void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
     void getRandomGenerals(QStringList &general_list, int count) const;
