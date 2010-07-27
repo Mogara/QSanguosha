@@ -37,6 +37,7 @@ signals:
     void show_discards();
     void hide_discards();
     void card_selected(const Card *card);
+    void pending(CardItem *item, bool add_to_pendings);
 };
 
 #endif // CARDITEM_H

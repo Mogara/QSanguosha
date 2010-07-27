@@ -15,7 +15,14 @@ class Skill : public QObject
     Q_ENUMS(TriggerReason)
 
 public:
-    enum TriggerReason {GameStart, PhaseChange, RequestForCard, UseCard};
+    enum TriggerReason {
+        GameStart,
+        PhaseChange,
+        RequestForCard,
+        UseCard,
+        MoveCard,
+        HpDamage
+    };
 
     explicit Skill(const QString &name);
     bool isCompulsory() const;
@@ -25,7 +32,7 @@ public:
     QString getDescription() const;
 
     virtual void attachPlayer(Player *player) const;
-    virtual void trigger(Client *client, TriggerReason reason, const QString &data = QString()) const ;
+    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const ;
     virtual void trigger(Room *room) const;
 
 private:

@@ -8,7 +8,7 @@
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/dashboard.png"), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
+    :Pixmap(":/dashboard.png"), enable_pending(false), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
 {
     int i;
@@ -41,6 +41,8 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_items << card_item;
 
     connect(card_item, SIGNAL(card_selected(const Card*)), this, SIGNAL(card_selected(const Card*)));
+    connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(addCardToPendings(CardItem*,bool)));
+
     sortCards();
 }
 
@@ -163,11 +165,18 @@ void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
 }
 
 void Dashboard::adjustCards(){
-    int n = card_items.size();
-    if(n == 0)
+    adjustCards(card_items, 45);
+
+    if(enable_pending)
+        adjustCards(pendings, -200);
+}
+
+void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
+    if(list.isEmpty())
         return;
 
-    int card_width = card_items.first()->boundingRect().width();
+    int n = list.size();
+    int card_width = list.first()->boundingRect().width();
     int card_skip;
     if(n > 5)
         card_skip = (530 - n * card_width)/n + card_width;
@@ -176,10 +185,10 @@ void Dashboard::adjustCards(){
 
     int i;
     for(i=0; i<n; i++){
-        card_items[i]->setZValue(0.1 * i);
-        QPointF home_pos(180 + i*card_skip, 45);
-        card_items[i]->setHomePos(home_pos);
-        card_items[i]->goBack();
+        list[i]->setZValue(0.1 * i);
+        QPointF home_pos(180 + i*card_skip, y);
+        list[i]->setHomePos(home_pos);
+        list[i]->goBack();
     }
 }
 
@@ -293,5 +302,23 @@ void Dashboard::enableCards(const QString &pattern){
 void Dashboard::enableCards(const Client *client){
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(client->availability[card_item->getCard()]);
+    }
+}
+
+void Dashboard::addCardToPendings(CardItem *card_item, bool add_to_pendings){
+    if(!enable_pending){
+        selected = card_item;
+        emit card_to_use();
+        return;
+    }
+
+    if(add_to_pendings && !pendings.contains(card_item)){
+        pendings.append(card_item);
+        card_items.removeOne(card_item);
+        adjustCards();
+    }else if(!add_to_pendings && !card_items.contains(card_item)){
+        card_items.append(card_item);
+        pendings.removeOne(card_item);
+        sortCards();
     }
 }

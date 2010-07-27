@@ -34,6 +34,7 @@ public slots:
     void viewDiscards();
     void hideDiscards();
     void enableTargets(const Card *card);
+    void useSelectedCard();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -53,6 +54,7 @@ private:
     Phonon::MediaObject *effect;
     QMainWindow *main_window;
     QComboBox *role_combobox;
+    QPushButton *ok_button, *cancel_button, *discard_button;
 
     QList<QPushButton *> skill_buttons;
 

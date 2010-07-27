@@ -205,6 +205,16 @@ void Player::setPhase(Phase phase){
     this->phase = phase;
 }
 
+Player::Phase Player::getNextPhase() const{
+    if(phase == NotActive)
+        return NotActive;
+    else{
+        int phase_num = static_cast<int>(phase);
+        return static_cast<Phase>(phase_num + 1);
+    }
+
+}
+
 bool Player::faceUp() const{
     return face_up;
 }

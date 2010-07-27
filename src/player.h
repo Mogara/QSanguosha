@@ -50,6 +50,7 @@ public:
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
+    Phase getNextPhase() const;
     bool faceUp() const;
     void turnOver();
 

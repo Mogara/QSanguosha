@@ -9,7 +9,6 @@
 #include <QParallelAnimationGroup>
 #include <QSequentialAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
-
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QListWidget>
@@ -17,6 +16,8 @@
 #include <QSignalMapper>
 #include <QKeyEvent>
 #include <QCheckBox>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsLinearLayout>
 
 static const QPointF DiscardedPos(-494, -115);
 
@@ -55,12 +56,32 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
     connect(client, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
     connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
+    connect(dashboard, SIGNAL(card_to_use()), this, SLOT(useSelectedCard()));
 
     // add role combobox
     role_combobox = new QComboBox;
     role_combobox->addItem(tr("Your role"));
     role_combobox->addItem(tr("Unknown"));
     connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
+
+    QGraphicsLinearLayout *button_layout = new QGraphicsLinearLayout(Qt::Horizontal);
+
+    // add buttons
+    ok_button = new QPushButton(tr("OK"));
+    cancel_button = new QPushButton(tr("Cancel"));
+    discard_button = new QPushButton(tr("Discard cards"));
+
+    ok_button->setEnabled(false);
+    cancel_button->setEnabled(false);
+    discard_button->setEnabled(false);
+
+    button_layout->addItem(addWidget(ok_button));
+    button_layout->addItem(addWidget(cancel_button));
+    button_layout->addItem(addWidget(discard_button));
+
+    QGraphicsWidget *form = new QGraphicsWidget(dashboard);
+    form->setLayout(button_layout);
+    form->setPos(dashboard->boundingRect().width() - button_layout->preferredWidth(), -25);
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();    
@@ -347,27 +368,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             break; // iterate generals when
         }
 
-    case Qt::Key_Return : {
-            CardItem *selected = dashboard->getSelected();
-            if(selected){
-                const Card *card = selected->getCard();
-                if(card->targetFixed(client))
-                    client->useCard(card);
-                else{
-                    int extra_targets = min_targets - selected_targets.length();
-                    int over_targets = selected_targets.length() > max_targets;
-                    if(extra_targets > 0)
-                        changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
-                    else if(over_targets > 0)
-                        changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
-                    else
-                        client->useCard(card, selected_targets);
-                }
-            }else
-                changePrompt(tr("You didn't choose any card to use yet!"));
-
-            break;
-        }
+    case Qt::Key_Return : useSelectedCard(); break;
 
     case Qt::Key_Escape : {
             if(!discarded_queue.isEmpty() && discarded_queue.first()->rotation() == 0.0)
@@ -537,6 +538,9 @@ void RoomScene::setActivity(bool active){
                 client->availability[card] = card->isAvailable(client);
         }
         dashboard->enableCards(client);
+        ok_button->setEnabled(true);
+        cancel_button->setEnabled(true);
+        discard_button->setEnabled(true);
     }else
         dashboard->disableAllCards();
 }
@@ -653,6 +657,7 @@ void RoomScene::updateSkillButtons(){
 
         if(skill->isFrequent()){
             QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
+            button->setDisabled(true);
             checkbox->setChecked(true);
             status_bar->addPermanentWidget(checkbox);
         }
@@ -667,6 +672,13 @@ void RoomScene::updateSkillButtons(){
 void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
+
+    if(new_role != "lord"){
+        foreach(QPushButton *button, skill_buttons){
+            if(button->text().contains(tr("[Lord Skill]")))
+                button->setDisabled(true);
+        }
+    }
 }
 
 void RoomScene::clickSkillButton(int order){
@@ -733,4 +745,24 @@ void RoomScene::updateSelectedTargets(){
         else if(item_obj == avatar)
             selected_targets.append(client->getPlayer());
     }
+}
+
+void RoomScene::useSelectedCard(){
+    CardItem *selected = dashboard->getSelected();
+    if(selected){
+        const Card *card = selected->getCard();
+        if(card->targetFixed(client))
+            client->useCard(card);
+        else{
+            int extra_targets = min_targets - selected_targets.length();
+            int over_targets = selected_targets.length() > max_targets;
+            if(extra_targets > 0)
+                changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+            else if(over_targets > 0)
+                changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
+            else
+                client->useCard(card, selected_targets);
+        }
+    }else
+        changePrompt(tr("You didn't choose any card to use yet!"));
 }

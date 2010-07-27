@@ -315,13 +315,13 @@ void Room::endPhaseCommand(ServerPlayer *player, const QStringList &){
         return;
     }
 
-    int phase_num = static_cast<int>(player->getPhase());
-    Player::Phase next_phase = static_cast<Player::Phase>(phase_num + 1);
+    Player::Phase next_phase = player->getNextPhase();    
 
     if(next_phase == Player::NotActive){
         int index = alive_players.indexOf(player);
         int next_index = (index + 1) % alive_players.length();
         ServerPlayer *next = alive_players.at(next_index);
+        // FIXME: if face is down, turn over it
 
         player->setPhase(Player::NotActive);
         next->setPhase(Player::Start);

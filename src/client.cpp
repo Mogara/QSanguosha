@@ -287,7 +287,7 @@ void Client::startGame(const QString &first_player){
         emit activity_set(false);
 }
 
-void Client::triggerSkill(Skill::TriggerReason reason, const QString &data){
+void Client::triggerSkill(Skill::TriggerReason reason, const QVariant &data){
     QList<const Skill *> skills = self->getSkills();
     foreach(const Skill *skill, skills){
         skill->trigger(this, reason, data);
@@ -303,4 +303,33 @@ void Client::endPhase(){
 
 void Client::askForCards(int n){
     request(QString("drawCards %1").arg(n));
+}
+
+void Client::hpDamage(const QString &damage_str){
+    // damage string example: 4:caocao<-liubei
+    QRegExp pattern("(\\d+):(\\w+)<-(\\w+)");
+    pattern.indexIn(damage_str);
+    QStringList words = pattern.capturedTexts();
+
+    int damage = words.first().toInt();
+    QString target = words.at(1);
+    QString source = words.at(2);
+
+    if(target == self->objectName()){
+        triggerSkill(Skill::HpDamage, words);
+    }
+
+    emit hp_changed(target, damage);
+}
+
+void Client::hpFlow(const QString &flow_str){
+    // FIXME
+}
+
+void Client::hpRecover(const QString &recover_str){
+    // FIXME
+}
+
+void Client::ackForHpChange(int delta){
+    request(QString("ackForHpChange %1").arg(delta));
 }

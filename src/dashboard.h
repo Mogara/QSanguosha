@@ -37,7 +37,8 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
-    QList<CardItem*> card_items;
+    QList<CardItem*> card_items, pendings;
+    bool enable_pending;
     CardItem *selected;
     const Player *player;
     QPixmap magatamas[5];
@@ -49,15 +50,18 @@ private:
     QStack<CardItem *> judging_area;
     Phonon::MediaObject *effect;
 
-    void adjustCards();    
+    void adjustCards();
+    void adjustCards(const QList<CardItem *> &list, int y);
     void installDelayedTrick(CardItem *card);
-    void drawEquip(QPainter *painter, CardItem *equip, int order);
+    void drawEquip(QPainter *painter, CardItem *equip, int order);    
 
 private slots:
     void sortCards();
+    void addCardToPendings(CardItem *card_item, bool add_to_pendings);
 
 signals:
     void card_selected(const Card *card);
+    void card_to_use();
 };
 
 #endif // DASHBOARD_H

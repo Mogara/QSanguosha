@@ -53,7 +53,7 @@ void Skill::attachPlayer(Player *player) const{
         player->attachSkill(this);
 }
 
-void Skill::trigger(Client *client, TriggerReason reason, const QString &data) const{
+void Skill::trigger(Client *client, TriggerReason reason, const QVariant &data) const{
 
 }
 

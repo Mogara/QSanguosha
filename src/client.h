@@ -15,11 +15,12 @@ public:
     void signup();
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
-    void triggerSkill(Skill::TriggerReason reason, const QString &data = QString());
+    void triggerSkill(Skill::TriggerReason reason, const QVariant &data = QVariant());
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
     void endPhase();
     void askForCards(int n);
+    void ackForHpChange(int delta);
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -33,6 +34,9 @@ public:
     Q_INVOKABLE void moveCard(const QString &move_str);
     Q_INVOKABLE void activate(const QString &activate_str);
     Q_INVOKABLE void startGame(const QString &first_player);
+    Q_INVOKABLE void hpDamage(const QString &damage_str);
+    Q_INVOKABLE void hpFlow(const QString &flow_str);
+    Q_INVOKABLE void hpRecover(const QString &recover_str);
 
     QVariantMap tag;
     QMap<const Card *, bool> availability;
@@ -63,6 +67,7 @@ signals:
     void activity_set(bool active);
     void card_moved(const QString &src, const QString &dest, int card_id);
     void card_requested(const QString pattern);
+    void hp_changed(const QString &target, int delta);
 };
 
 #endif // CLIENT_H

@@ -17,10 +17,10 @@ public:
     }
 
     void onPhaseChange(Client *client, Player::Phase phase) const{
-        const ClientPlayer *player = client->getPlayer();
+        // const ClientPlayer *player = client->getPlayer();
 
         switch(phase){
-        case Player::Start:{                
+        case Player::Start:{
                 client->tag.insert("slash_count", 0);
                 client->availability.clear();
 
@@ -68,12 +68,13 @@ public:
         }
     }
 
-    virtual void trigger(Client *client, TriggerReason reason, const QString &data) const{
+    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
         const ClientPlayer *player = client->getPlayer();
 
         switch(reason){
         case GameStart: break;
         case PhaseChange: onPhaseChange(client, player->getPhase()); break;
+        case HpDamage:
         default:  ;
         }
     }

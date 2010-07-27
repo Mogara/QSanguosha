@@ -82,6 +82,8 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+    emit pending(this, y() < -30);
+
     setOpacity(1.0);
     if(view_card_item){
         view_card_item->setVisible(false);
