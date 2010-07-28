@@ -4,6 +4,7 @@
 #include "room.h"
 
 #include <QObject>
+#include <MediaSource>
 
 class Skill : public QObject
 {
@@ -21,7 +22,8 @@ public:
         RequestForCard,
         UseCard,
         MoveCard,
-        HpDamage
+        HpDamage,
+        Judge
     };
 
     explicit Skill(const QString &name);
@@ -30,6 +32,9 @@ public:
     bool isFrequent() const;
     bool isToggleable() const;
     QString getDescription() const;
+
+    void initMediaSource();
+    void playEffect() const;
 
     virtual void attachPlayer(Player *player) const;
     virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const ;
@@ -40,6 +45,7 @@ private:
     bool lord_skill;
     bool frequent;
     bool toggleable;
+    QList<Phonon::MediaSource> sources;
 
     void setBooleanFlag(QString &str, QChar symbol, bool *flag);
 };

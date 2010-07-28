@@ -8,6 +8,7 @@
 #include <QHash>
 #include <QEvent>
 #include <QStringList>
+#include <MediaObject>
 
 class Engine: public QObject
 {
@@ -32,6 +33,8 @@ public:
     void getRandomGenerals(QStringList &general_list, int count) const;
     void getRandomCards(QList<int> &list) const;
 
+    void playEffect(const Phonon::MediaSource &source);
+
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
@@ -39,6 +42,7 @@ private:
     QEvent::Type event_type;
     QStringList lord_names;
     Skill *basic_rule;
+    Phonon::MediaObject *effect;
 };
 
 extern Engine *Sanguosha;

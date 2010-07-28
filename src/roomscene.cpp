@@ -22,7 +22,7 @@
 static const QPointF DiscardedPos(-494, -115);
 
 RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
-    :client(client), bust(NULL),  effect(Phonon::createPlayer(Phonon::MusicCategory)), main_window(main_window),
+    :client(client), bust(NULL), main_window(main_window),
     max_targets(1), min_targets(1), target_fixed(false)
 {
     Q_ASSERT(client != NULL);
@@ -157,8 +157,7 @@ void RoomScene::addPlayer(ClientPlayer *player){
             name2photo[player->objectName()] = photo;
 
             static Phonon::MediaSource add_player_source("audio/add-player.wav");
-            effect->setCurrentSource(add_player_source);
-            effect->play();
+            Sanguosha->playEffect(add_player_source);
 
             return;
         }
@@ -497,7 +496,10 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
 }
 
 void RoomScene::changePrompt(const QString &prompt_str){
-    main_window->statusBar()->showMessage(prompt_str, 5000);
+    if(prompt_str.isNull())
+        main_window->statusBar()->clearMessage();
+    else
+        main_window->statusBar()->showMessage(prompt_str);
 }
 
 void RoomScene::viewDiscards(){
@@ -613,8 +615,7 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
         if(dest_location == "equip"){
             dashboard->installEquip(card_item);
 
-            effect->setCurrentSource(install_equip_source);
-            effect->play();
+            Sanguosha->playEffect(install_equip_source);
         }else if(dest_location == "hand")
             dashboard->addCardItem(card_item);
     }else{
@@ -622,8 +623,7 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
         if(dest_location == "equip"){
             photo->installEquip(card_item);
 
-            effect->setCurrentSource(install_equip_source);
-            effect->play();
+            Sanguosha->playEffect(install_equip_source);
         }else if(dest_location == "hand")
             photo->addCardItem(card_item);
     }
@@ -697,8 +697,11 @@ void RoomScene::enableTargets(const Card *card){
             photo->setEnabled(false);
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
+        changePrompt();
         return;
     }
+
+    changePrompt(tr("You choosed card [%1]").arg(Sanguosha->translate(card->objectName())));
 
     if(card->targetFixed(client)){
         avatar->setEnabled(true);
@@ -725,7 +728,7 @@ void RoomScene::enableTargets(const Card *card){
         }
     }
 
-    if(!available_targets.isEmpty()){
+    if(Config.EnableAutoTarget && !available_targets.isEmpty()){
         const ClientPlayer *first_player = available_targets.first();
         Photo *photo = name2photo[first_player->objectName()];
         if(photo)
@@ -745,6 +748,24 @@ void RoomScene::updateSelectedTargets(){
         else if(item_obj == avatar)
             selected_targets.append(client->getPlayer());
     }
+
+    if(selected_targets.isEmpty()){
+        changePrompt();
+        return;
+    }
+
+    QStringList general_names;
+    foreach(const ClientPlayer *target, selected_targets){
+        general_names << Sanguosha->translate(target->getGeneral());
+    }
+
+    QString targets = general_names.join(",");
+    const CardItem *card_item = dashboard->getSelected();
+    if(card_item){
+        QString card_name = Sanguosha->translate(card_item->getCard()->objectName());
+        changePrompt(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
+    }else
+        changePrompt(tr("You choose %1 as target").arg(targets));
 }
 
 void RoomScene::useSelectedCard(){
@@ -763,6 +784,8 @@ void RoomScene::useSelectedCard(){
             else
                 client->useCard(card, selected_targets);
         }
+
+        enableTargets(NULL);
     }else
         changePrompt(tr("You didn't choose any card to use yet!"));
 }

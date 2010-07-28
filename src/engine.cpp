@@ -24,43 +24,66 @@ public:
                 client->tag.insert("slash_count", 0);
                 client->availability.clear();
 
+                if(client->tag.value("auto_end_start", true).toBool()){
+                    client->endPhase();
+                    client->tag["auto_end_start"] = true;
+                }
+
                 break;
             }
 
         case Player::Judge:{
-                if(client->tag.value("skip_judge", false).toBool())
-                    client->tag.insert("skip_judge", true);
-                else{
+                if(client->tag.value("skip_judge", false).toBool()){
+                    client->endPhase();
+                    client->tag["skip_judge"] = false;
+                }else{
                     // request for judge
+
+                    client->endPhase();
                 }
                 break;
         }
 
         case Player::Draw:{
-                if(client->tag.value("skip_draw", false).toBool())
-                    client->tag.insert("skip_play", true);
-                else{
+                if(client->tag.value("skip_draw", false).toBool()){
+                    client->endPhase();
+                    client->tag["skip_draw"] = false;
+                }else{
                     client->askForCards(2);
+                    client->endPhase();
                 }
                 break;
             }
 
         case Player::Play:{
-                if(client->tag.value("skip_play", false).toBool())
-                    client->tag.insert("skip_play", true);
-                else{
-                    client->tag.insert("auto_endphase", false);
+                if(client->tag.value("skip_play", false).toBool()){
+                    client->endPhase();
+                    client->tag["skip_play"] = false;
+                }else{
+
                 }
 
                 break;
             }
 
         case Player::Discard:{
+                // FIXME: if no cards need to discard, skip this phase
+
+                if(client->tag.value("skip_discard", false).toBool()){
+                    client->endPhase();
+                    client->tag["skip_discard"] = false;
+                }else{
+                    // ask for discard cards;
+                }
+
                 break;
             }
 
         case Player::Finish:{
-                // Diao chan's Biyue skill
+                if(client->tag.value("auto_end_finish", true).toBool()){
+                    client->endPhase();
+                    client->tag["auto_end_finish"] = true;
+                }
             }
 
         default:
@@ -81,7 +104,8 @@ public:
 };
 
 Engine::Engine(QObject *parent)
-    :QObject(parent), basic_rule(new BasicRule)
+    :QObject(parent), basic_rule(new BasicRule),
+    effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     addPackage(new StandardPackage);
 
@@ -196,4 +220,9 @@ void Engine::getRandomCards(QList<int> &list) const{
 
 const Skill *Engine::getBasicRule() const{
     return basic_rule;
+}
+
+void Engine::playEffect(const Phonon::MediaSource &source){
+    effect->setCurrentSource(source);
+    effect->play();
 }

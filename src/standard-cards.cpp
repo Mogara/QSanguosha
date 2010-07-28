@@ -333,6 +333,10 @@ public:
     virtual Card *clone(Suit suit, int number) const{
         return new Lightning(suit, number);
     }
+
+    virtual bool targetFixed(const Client *client) const{
+        return true;
+    }
 };
 
 void StandardPackage::addCards(){

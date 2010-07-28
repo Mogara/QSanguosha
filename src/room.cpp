@@ -357,3 +357,11 @@ void Room::drawCardsCommand(ServerPlayer *player, const QStringList &args){
     int n = args.at(1).toInt();
     drawCards(player, n);
 }
+
+void Room::judgeCommand(ServerPlayer *player, const QStringList &args){
+    QString target = args.at(1);
+    int card_id = drawCard();
+    discard_pile->append(card_id);
+
+    broadcast(QString("! judge %1:%2").arg(target).arg(card_id));
+}

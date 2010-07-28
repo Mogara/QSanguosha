@@ -3,7 +3,7 @@
 
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
-    hp(-1), max_hp(-1), state("online"), seat(0),
+    hp(-1), max_hp(-1), max_cards(-1), state("online"), seat(0),
     src_correct(0), dest_correct(0), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true)
@@ -221,4 +221,12 @@ bool Player::faceUp() const{
 
 void Player::turnOver(){
     face_up = !face_up;
+}
+
+int Player::getMaxCards() const{
+    return max_cards;
+}
+
+void Player::setMaxCards(int max_cards){
+    this->max_cards = max_cards;
 }

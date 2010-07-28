@@ -1,6 +1,8 @@
 #include "skill.h"
 #include "engine.h"
 
+#include <QFile>
+
 Skill::Skill(const QString &name)
 {
     static QChar lord_symbol('$');
@@ -59,4 +61,35 @@ void Skill::trigger(Client *client, TriggerReason reason, const QVariant &data) 
 
 void Skill::trigger(Room *room) const{
 
+}
+
+void Skill::initMediaSource(){
+    sources.clear();
+
+    if(parent()){
+        const General *general = qobject_cast<const General *>(parent());
+        QString package_name = general->parent()->objectName();
+
+        QString effect_file = QString("%1/generals/effect/%2.wav").arg(package_name).arg(objectName());
+        if(QFile::exists(effect_file))
+            sources << Phonon::MediaSource(effect_file);
+        else{
+            int i=1;
+            forever{
+                QString effect_file = QString("%1/generals/effect/%2%3.wav").arg(package_name).arg(objectName()).arg(i);
+                if(QFile::exists(effect_file))
+                    sources << Phonon::MediaSource(effect_file);
+                else
+                    break;
+                i++;
+            }
+        }
+    }
+}
+
+void Skill::playEffect() const{
+    if(!sources.isEmpty()){
+        int r = qrand() % sources.length();
+        Sanguosha->playEffect(sources.at(r));
+    }
 }

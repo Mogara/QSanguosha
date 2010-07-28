@@ -29,6 +29,7 @@ public:
 
     bool FitInView;
     bool EnableHotKey;
+    bool EnableAutoTarget;
 
     QBrush BackgroundBrush;
 };

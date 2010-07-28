@@ -7,12 +7,14 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QStack>
 
 class Player : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
+    Q_PROPERTY(int max_cards READ getMaxCards WRITE setMaxCards)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
@@ -35,6 +37,8 @@ public:
     void setHp(int hp);
     int getMaxHP() const;
     void setMaxHP(int max_hp);
+    int getMaxCards() const;
+    void setMaxCards(int max_cards);
     bool isWounded() const;   
     void setRole(const QString &role);
     QString getRole() const;
@@ -76,7 +80,7 @@ public:
 
 private:
     const General *general;
-    int hp, max_hp;
+    int hp, max_hp, max_cards;
     QString role;
     QString state;
     int seat;
@@ -87,6 +91,7 @@ private:
     const Horse *defensive_horse, *offensive_horse;
     QList<const Skill *> skills;
     bool face_up;
+    QStack<const Card *> judging_area;
 
 signals:
     void general_changed();

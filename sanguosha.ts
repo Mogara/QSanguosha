@@ -411,106 +411,122 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="62"/>
+        <location filename="src/roomscene.cpp" line="63"/>
         <source>Your role</source>
         <translation>您的角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="63"/>
+        <location filename="src/roomscene.cpp" line="64"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="69"/>
+        <location filename="src/roomscene.cpp" line="70"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="70"/>
+        <location filename="src/roomscene.cpp" line="71"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="71"/>
+        <location filename="src/roomscene.cpp" line="72"/>
         <source>Discard cards</source>
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="376"/>
+        <location filename="src/roomscene.cpp" line="703"/>
+        <source>You choosed card [%1]</source>
+        <oldsource>You choosed card %1</oldsource>
+        <translation>您选择了卡牌 【%1】</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="765"/>
+        <source>You choose %1 as [%2]&apos;s target</source>
+        <translation>您选择了 %1 作为 【%2】 的目标</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="767"/>
+        <source>You choose %1 as target</source>
+        <translation>你选择了 %1 作为目标</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="780"/>
         <source>You should select extra %1 target(s)</source>
         <translation>您还需要额外选择 %1 个目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="378"/>
+        <location filename="src/roomscene.cpp" line="782"/>
         <source>You selected extra %1 targets, please unselect them</source>
         <translation>您多选了 %1 个目标，请取消多选的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="383"/>
+        <location filename="src/roomscene.cpp" line="787"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="433"/>
+        <location filename="src/roomscene.cpp" line="417"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="461"/>
+        <location filename="src/roomscene.cpp" line="445"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="464"/>
+        <location filename="src/roomscene.cpp" line="448"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="477"/>
+        <location filename="src/roomscene.cpp" line="461"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="479"/>
+        <location filename="src/roomscene.cpp" line="463"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="481"/>
+        <location filename="src/roomscene.cpp" line="465"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="485"/>
+        <location filename="src/roomscene.cpp" line="469"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="520"/>
+        <location filename="src/roomscene.cpp" line="507"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="520"/>
+        <location filename="src/roomscene.cpp" line="507"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="659"/>
+        <location filename="src/roomscene.cpp" line="647"/>
         <source>[Compulsory]</source>
         <translation>[锁定]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="664"/>
-        <location filename="src/roomscene.cpp" line="690"/>
+        <location filename="src/roomscene.cpp" line="652"/>
+        <location filename="src/roomscene.cpp" line="678"/>
         <source>[Lord Skill]</source>
         <translation>[主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="671"/>
+        <location filename="src/roomscene.cpp" line="659"/>
         <source>Auto use</source>
         <translation>自动使用</translation>
     </message>

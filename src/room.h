@@ -40,8 +40,7 @@ private:
     Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void endPhaseCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void drawCardsCommand(ServerPlayer *player, const QStringList &args);
-
-    // Q_INVOKABLE void pushEvent(const QString &name, QScriptValue &event);
+    Q_INVOKABLE void judgeCommand(ServerPlayer *player, const QStringList &args);
 
 private slots:
     void reportDisconnection();

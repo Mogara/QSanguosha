@@ -7,7 +7,7 @@
 #include "client.h"
 
 #include <QGraphicsScene>
-#include <MediaObject>
+
 #include <QQueue>
 #include <QMainWindow>
 
@@ -26,7 +26,7 @@ public slots:
     void drawNCards(ClientPlayer *player, int n);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
-    void changePrompt(const QString &prompt_str);
+    void changePrompt(const QString &prompt_str = QString());
     void setActivity(bool active);
     void moveCard(const QString &src, const QString &dest, int card_id);
 
@@ -51,7 +51,6 @@ private:
     Pixmap *bust;
     QList<const Card*> discarded_list;
     QQueue<CardItem*> discarded_queue;
-    Phonon::MediaObject *effect;
     QMainWindow *main_window;
     QComboBox *role_combobox;
     QPushButton *ok_button, *cancel_button, *discard_button;

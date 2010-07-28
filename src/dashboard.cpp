@@ -40,7 +40,8 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_items << card_item;
 
-    connect(card_item, SIGNAL(card_selected(const Card*)), this, SIGNAL(card_selected(const Card*)));
+    //connect(card_item, SIGNAL(card_selected(const Card*)), this, SIGNAL(card_selected(const Card*)));
+    connect(card_item, SIGNAL(card_selected(CardItem*)), this, SLOT(setSelectedItem(CardItem*)));
     connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(addCardToPendings(CardItem*,bool)));
 
     sortCards();
@@ -104,12 +105,7 @@ CardItem *Dashboard::getSelected() const{
 }
 
 void Dashboard::unselectAll(){
-    if(selected){
-        selected->unselect();
-        selected = NULL;
-
-        emit card_selected(NULL);
-    }
+    setSelectedItem(NULL);
 }
 
 void Dashboard::sort(int order){
@@ -306,7 +302,7 @@ void Dashboard::enableCards(const Client *client){
 }
 
 void Dashboard::addCardToPendings(CardItem *card_item, bool add_to_pendings){
-    if(!enable_pending){
+    if(!enable_pending && add_to_pendings){
         selected = card_item;
         emit card_to_use();
         return;
@@ -320,5 +316,18 @@ void Dashboard::addCardToPendings(CardItem *card_item, bool add_to_pendings){
         card_items.append(card_item);
         pendings.removeOne(card_item);
         sortCards();
+    }
+}
+
+void Dashboard::setSelectedItem(CardItem *card_item){
+    if(selected != card_item){
+        if(selected)
+            selected->unselect();
+        selected = card_item;
+
+        if(card_item)
+            emit card_selected(card_item->getCard());
+        else
+            emit card_selected(NULL);
     }
 }

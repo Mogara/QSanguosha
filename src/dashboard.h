@@ -32,6 +32,7 @@ public:
 public slots:
     void updateAvatar();
     void enableCards(const QString &pattern);
+    void setSelectedItem(CardItem *card_item);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

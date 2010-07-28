@@ -20,6 +20,7 @@ public:
     void useCard(const Card *card);
     void endPhase();
     void askForCards(int n);
+    void askForJudge(const QString &player_name = QString());
     void ackForHpChange(int delta);
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
@@ -37,6 +38,7 @@ public:
     Q_INVOKABLE void hpDamage(const QString &damage_str);
     Q_INVOKABLE void hpFlow(const QString &flow_str);
     Q_INVOKABLE void hpRecover(const QString &recover_str);
+    Q_INVOKABLE void judge(const QString &judge_str);
 
     QVariantMap tag;
     QMap<const Card *, bool> availability;

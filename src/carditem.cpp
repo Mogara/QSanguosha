@@ -74,7 +74,7 @@ void CardItem::unselect(){
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
         setOpacity(0.8);
-        emit card_selected(card);
+        emit card_selected(this);
     }else if(rotation() != 0.0)
         emit show_discards();
     else
@@ -82,7 +82,8 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    emit pending(this, y() < -30);
+    if(parentItem())
+        emit pending(this, y() < -80);
 
     setOpacity(1.0);
     if(view_card_item){

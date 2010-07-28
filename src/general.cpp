@@ -47,8 +47,9 @@ QString General::getKingdomPath() const{
     return QString("%1/generals/kingdom/%2.png").arg(getPackage()).arg(kingdom);
 }
 
-void General::addSkill(Skill *skill){
+void General::addSkill(Skill *skill){    
     skill->setParent(this);
+    skill->initMediaSource();
 }
 
 QString General::getPackage() const{

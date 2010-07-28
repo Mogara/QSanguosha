@@ -292,9 +292,6 @@ void Client::triggerSkill(Skill::TriggerReason reason, const QVariant &data){
     foreach(const Skill *skill, skills){
         skill->trigger(this, reason, data);
     }
-
-    if(self->getPhase() != Player::NotActive && tag.value("auto_endphase", true).toBool())
-        endPhase();
 }
 
 void Client::endPhase(){    
@@ -332,4 +329,19 @@ void Client::hpRecover(const QString &recover_str){
 
 void Client::ackForHpChange(int delta){
     request(QString("ackForHpChange %1").arg(delta));
+}
+
+void Client::askForJudge(const QString &player_name){
+    if(player_name.isNull())
+        request("judge " + self->objectName());
+    else
+        request("judge " + player_name);
+}
+
+void Client::judge(const QString &judge_str){
+    QStringList words = judge_str.split(":");
+    // QString target = words.at(0);
+    // int card_id = words.at(1).toInt();
+
+    triggerSkill(Skill::Judge, words);
 }

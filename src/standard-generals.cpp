@@ -197,6 +197,13 @@ public:
     Yingzi():Skill("yingzi+"){
 
     }
+
+    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
+        if(reason == PhaseChange && client->getPlayer()->getPhase() == Player::Draw){
+            client->askForCards(1);
+            playEffect();
+        }
+    }
 };
 
 void StandardPackage::addGenerals(){
@@ -257,6 +264,8 @@ void StandardPackage::addGenerals(){
     sunquan = new General(this, "sunquan$", "wu");
     sunquan->addSkill(new Zhiheng);
     sunquan->addSkill(new Jiuyuan);
+
+    sunquan->addSkill(new Yingzi);
 
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
