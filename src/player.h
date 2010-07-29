@@ -76,6 +76,7 @@ public:
     const Horse *getOffensiveHorse() const;
 
     void attachSkill(const Skill *skill, bool prepend = false);
+    void detachSkill(const Skill *skill);
     QList<const Skill *> getSkills() const;
 
 private:

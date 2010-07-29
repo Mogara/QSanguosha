@@ -6,7 +6,7 @@
 #include <QMetaEnum>
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this)), focus_player(NULL)
+    :QTcpSocket(parent), room(new QObject(this)), activity(false)
 {
     self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
@@ -105,11 +105,11 @@ void Client::removePlayer(const QString &player_name){
 }
 
 void Client::drawCards(const QString &cards_str){
-    QList<Card*> cards;
+    QList<const Card*> cards;
     QStringList card_list = cards_str.split("+");
     foreach(QString card_str, card_list){
         int card_id = card_str.toInt();
-        Card *card = Sanguosha->getCard(card_id);
+        const Card *card = Sanguosha->getCard(card_id);
         cards << card;
         self->addCard(card, "hand");
     }
@@ -232,9 +232,9 @@ void Client::activate(const QString &activate_str){
         QString data = words.at(2);
 
         triggerSkill(reason, data);
-        emit activity_set(true);
+        setActivity(true);
     }else
-        emit activity_set(false);
+        setActivity(false);
 }
 
 void Client::moveCard(const QString &move_str){
@@ -282,9 +282,8 @@ void Client::startGame(const QString &first_player){
     triggerSkill(Skill::GameStart);
     if(first_player == self->objectName()){
         triggerSkill(Skill::PhaseChange);
-        emit activity_set(true);
     }else
-        emit activity_set(false);
+        setActivity(false);
 }
 
 void Client::triggerSkill(Skill::TriggerReason reason, const QVariant &data){
@@ -344,4 +343,11 @@ void Client::judge(const QString &judge_str){
     // int card_id = words.at(1).toInt();
 
     triggerSkill(Skill::Judge, words);
+}
+
+void Client::setActivity(bool activity){
+    if(this->activity != activity){
+        this->activity = activity;
+        emit activity_changed(activity);
+    }
 }

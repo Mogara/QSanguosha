@@ -27,8 +27,6 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
 {
     Q_ASSERT(client != NULL);
 
-    Card::AvailabilityMap = &client->availability;
-
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
     client->setParent(this);
@@ -89,14 +87,14 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     // do signal-slot connections
     connect(client, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
     connect(client, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(client, SIGNAL(cards_drawed(QList<Card*>)), SLOT(drawCards(QList<Card*>)));
+    connect(client, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
     connect(client, SIGNAL(lords_got(QList<const General*>)), SLOT(chooseLord(QList<const General*>)));
     connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
             SLOT(chooseGeneral(const General*,QList<const General*>)));
     connect(client, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
-    connect(client, SIGNAL(activity_set(bool)), SLOT(setActivity(bool)));
+    connect(client, SIGNAL(activity_changed(bool)), SLOT(setActivity(bool)));
     connect(client, SIGNAL(card_moved(QString,QString,int)), SLOT(moveCard(QString,QString,int)));
 
     client->signup();
@@ -224,12 +222,14 @@ void RoomScene::showBust(const QString &name)
     connect(appear, SIGNAL(finished()), bust, SIGNAL(visibleChanged()));
 }
 
-void RoomScene::drawCards(const QList<Card *> &cards){
-    foreach(Card * card, cards){
+void RoomScene::drawCards(const QList<const Card *> &cards){
+    foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
         item->setPos(893, -235);
         dashboard->addCardItem(item);
     }
+
+    dashboard->enableCards(client);
 }
 
 void RoomScene::drawNCards(ClientPlayer *player, int n){
@@ -531,20 +531,20 @@ void RoomScene::hideDiscards(){
     }
 }
 
-void RoomScene::setActivity(bool active){
-    if(active){
-        const ClientPlayer *player = client->getPlayer();
-        const QList<const Card *> cards = player->getCards();
-        foreach(const Card *card, cards){
-            if(!client->availability.contains(card))
-                client->availability[card] = card->isAvailable(client);
-        }
+void RoomScene::setActivity(bool activity){
+    if(activity){
         dashboard->enableCards(client);
+
         ok_button->setEnabled(true);
         cancel_button->setEnabled(true);
         discard_button->setEnabled(true);
-    }else
+    }else{
         dashboard->disableAllCards();
+
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+    }
 }
 
 CardItem *RoomScene::takeCardItem(const QString &src, int card_id){

@@ -230,3 +230,7 @@ int Player::getMaxCards() const{
 void Player::setMaxCards(int max_cards){
     this->max_cards = max_cards;
 }
+
+void Player::detachSkill(const Skill *skill){
+    skills.removeOne(skill);
+}

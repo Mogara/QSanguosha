@@ -24,7 +24,7 @@ public:
     int getGeneralCount() const;
 
     int getCardCount() const;
-    Card *getCard(int index) const;
+    const Card *getCard(int index) const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     QEvent::Type getEventType() const;
     const Skill *getBasicRule() const;

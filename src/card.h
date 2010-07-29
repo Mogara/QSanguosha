@@ -72,12 +72,8 @@ public:
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
-    static bool CompareByAvailability(const Card *a, const Card *b);
 
     static const Card *Parse(const QString &str);
-
-    static QMap<const Card *, bool> *AvailabilityMap;
-
 private:
     Suit suit;
     int number;

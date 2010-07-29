@@ -19,7 +19,7 @@ void CardOverview::loadFromAll(){
     int i, n = Sanguosha->getCardCount();
     ui->tableWidget->setRowCount(n);
     for(i=0; i<n ;i++){
-        Card *card = Sanguosha->getCard(i);
+        const Card *card = Sanguosha->getCard(i);
         addCard(i, card);
     }
 

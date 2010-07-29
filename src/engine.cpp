@@ -60,7 +60,7 @@ public:
                     client->endPhase();
                     client->tag["skip_play"] = false;
                 }else{
-
+                    client->setActivity(true);
                 }
 
                 break;
@@ -148,7 +148,7 @@ int Engine::getGeneralCount() const{
     return generals.size();
 }
 
-Card *Engine::getCard(int index) const{
+const Card *Engine::getCard(int index) const{
     if(index < 0 || index >= cards.length())
         return NULL;
     else

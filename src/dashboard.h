@@ -31,7 +31,6 @@ public:
 
 public slots:
     void updateAvatar();
-    void enableCards(const QString &pattern);
     void setSelectedItem(CardItem *card_item);
 
 protected:
@@ -54,7 +53,7 @@ private:
     void adjustCards();
     void adjustCards(const QList<CardItem *> &list, int y);
     void installDelayedTrick(CardItem *card);
-    void drawEquip(QPainter *painter, CardItem *equip, int order);    
+    void drawEquip(QPainter *painter, CardItem *equip, int order);
 
 private slots:
     void sortCards();

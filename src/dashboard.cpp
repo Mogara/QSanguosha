@@ -40,7 +40,6 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_items << card_item;
 
-    //connect(card_item, SIGNAL(card_selected(const Card*)), this, SIGNAL(card_selected(const Card*)));
     connect(card_item, SIGNAL(card_selected(CardItem*)), this, SLOT(setSelectedItem(CardItem*)));
     connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(addCardToPendings(CardItem*,bool)));
 
@@ -268,7 +267,12 @@ static bool CompareByType(const CardItem *a, const CardItem *b){
 }
 
 static bool CompareByAvailability(const CardItem *a, const CardItem *b){
-    return Card::CompareByAvailability(a->getCard(), b->getCard());
+    bool x = a->isEnabled();
+    bool y = b->isEnabled();
+    if(x != y)
+        return x;
+    else
+        return CompareBySuitNumber(a, b);
 }
 
 void Dashboard::sortCards(){
@@ -286,18 +290,6 @@ void Dashboard::sortCards(){
 void Dashboard::disableAllCards(){
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(false);
-    }
-}
-
-void Dashboard::enableCards(const QString &pattern){
-    foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(card_item->getCard()->match(pattern));
-    }
-}
-
-void Dashboard::enableCards(const Client *client){
-    foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(client->availability[card_item->getCard()]);
     }
 }
 
@@ -329,5 +321,18 @@ void Dashboard::setSelectedItem(CardItem *card_item){
             emit card_selected(card_item->getCard());
         else
             emit card_selected(NULL);
+    }
+}
+
+void Dashboard::enableCards(const Client *client){
+    if(client->pattern.isNull()){
+        foreach(CardItem *card_item, card_items){
+            const Card *card = card_item->getCard();
+            card_item->setEnabled(client->availability.value(card, card->isAvailable(client)));
+        }
+
+    }else{
+        foreach(CardItem *card_item, card_items)
+            card_item->setEnabled(card_item->getCard()->match(client->pattern));
     }
 }

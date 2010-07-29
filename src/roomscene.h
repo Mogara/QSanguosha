@@ -22,7 +22,7 @@ public slots:
 
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
-    void drawCards(const QList<Card *> &cards);
+    void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
