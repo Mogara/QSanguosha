@@ -1,8 +1,6 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include "event.h"
-
 #include <QObject>
 #include <QMap>
 
@@ -47,15 +45,12 @@ public:
     bool isVirtualCard() const;
 
     bool match(const QString &pattern) const;
-    void addSubcard(const Card *card);
-    QString subcardString() const;
+
 
     virtual bool isAvailable(const Client *client) const;
-    virtual Event *generate(Room *room);
 
-    virtual QString getSubtype() const = 0;
-    virtual Card *clone(Suit suit, int number) const = 0;
     virtual QString getType() const = 0;
+    virtual QString getSubtype() const = 0;
     virtual int getTypeId() const = 0;
 
     // card target selection
@@ -66,19 +61,34 @@ public:
     virtual void use(Room *room, ServerPlayer *user, ServerPlayer *target) const; // FIXME: pure virtual
     virtual void use(Room *room, ServerPlayer *user, const QList<ServerPlayer *> &targets) const;
 
-    virtual void use(Client *client, ClientPlayer *user, ClientPlayer *target) const; // FIXME: pure virtual
-    virtual void use(Client *client, ClientPlayer *user, const QList<ClientPlayer *> &targets) const;
+    virtual void use(Client *client, const ClientPlayer *target) const; // FIXME: pure virtual
+    virtual void use(Client *client, const QList<const ClientPlayer *> &targets) const;
+
+    void addSubcard(const Card *card);
+    void addSubcards(const QList<const Card *> &cards);
+    QString subcardString() const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
 
     static const Card *Parse(const QString &str);
+
 private:
     Suit suit;
     int number;
     int id;
     QList<const Card *> subcards;
+};
+
+class SkillCard: public Card{
+    Q_OBJECT
+
+public:
+    SkillCard();
+    virtual QString getSubtype() const;    
+    virtual QString getType() const;
+    virtual int getTypeId() const;
 };
 
 #endif // CARD_H

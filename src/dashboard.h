@@ -4,6 +4,7 @@
 #include "pixmap.h"
 #include "carditem.h"
 #include "player.h"
+#include "skill.h"
 
 #include <QPushButton>
 #include <QComboBox>
@@ -29,6 +30,9 @@ public:
     void enableCards(const Client *client);
     void installEquip(CardItem *equip);
 
+    void startPending(const ViewAsSkill *skill);
+    const ViewAsSkill *cancelPending();
+
 public slots:
     void updateAvatar();
     void setSelectedItem(CardItem *card_item);
@@ -37,8 +41,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
-    QList<CardItem*> card_items, pendings;
-    bool enable_pending;
+    QList<CardItem*> card_items;
     CardItem *selected;
     const Player *player;
     QPixmap magatamas[5];
@@ -50,6 +53,10 @@ private:
     QStack<CardItem *> judging_area;
     Phonon::MediaObject *effect;
 
+    // for pendings
+    QList<CardItem *> pendings;
+    const ViewAsSkill *view_as_skill;
+
     void adjustCards();
     void adjustCards(const QList<CardItem *> &list, int y);
     void installDelayedTrick(CardItem *card);
@@ -57,7 +64,7 @@ private:
 
 private slots:
     void sortCards();
-    void addCardToPendings(CardItem *card_item, bool add_to_pendings);
+    void doPending(CardItem *card_item, bool add_to_pendings);
 
 signals:
     void card_selected(const Card *card);

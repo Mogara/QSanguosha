@@ -118,6 +118,19 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QPushButton" name="playEffecButton">
+   <property name="geometry">
+    <rect>
+     <x>524</x>
+     <y>500</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play effect</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>

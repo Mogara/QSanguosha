@@ -6,7 +6,7 @@
 #include <QMetaEnum>
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this)), activity(false)
+    :QTcpSocket(parent), card(NULL), room(new QObject(this)), activity(false)
 {
     self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
@@ -167,6 +167,11 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
             request(QString("useCard %1=%2 %3").arg(card->toString()).arg(card->subcardString()).arg(target_str));
         else
             request(QString("useCard %1 %2").arg(card->getID()).arg(target_str));
+
+        this->card = card;
+        this->targets = targets;
+        triggerSkill(Skill::UseCard);
+        setActivity(false);
     }
 }
 

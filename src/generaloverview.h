@@ -20,6 +20,7 @@ private:
 private slots:
 
 private slots:
+    void on_playEffecButton_clicked();
     void on_tableWidget_itemSelectionChanged();
 };
 

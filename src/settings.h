@@ -20,6 +20,7 @@ public:
 
     // server side
     QString ListenAddress;
+    int CountDownSeconds;
 
     // client side
     QString HostAddress;

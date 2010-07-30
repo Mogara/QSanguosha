@@ -24,7 +24,6 @@ SOURCES += src/main.cpp \
     src/room.cpp \
     src/generaloverview.cpp \
     src/player.cpp \
-    src/event.cpp \
     src/skill.cpp \
     src/optionbutton.cpp \
     src/cardoverview.cpp \
@@ -32,7 +31,8 @@ SOURCES += src/main.cpp \
     src/clientplayer.cpp \
     src/standard-cards.cpp \
     src/standard-generals.cpp \
-    src/standard.cpp
+    src/standard.cpp \
+    src/standard-skillcards.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -51,7 +51,6 @@ HEADERS += src/mainwindow.h \
     src/room.h \
     src/generaloverview.h \
     src/player.h \
-    src/event.h \
     src/skill.h \
     src/optionbutton.h \
     src/cardoverview.h \

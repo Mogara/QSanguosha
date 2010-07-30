@@ -98,6 +98,7 @@ public:
         case GameStart: break;
         case PhaseChange: onPhaseChange(client, player->getPhase()); break;
         case HpDamage:
+        case UseCard: client->card->use(client, client->targets); break;
         default:  ;
         }
     }
@@ -119,6 +120,7 @@ void Engine::addPackage(Package *package){
     foreach(Card *card, all_cards){
         card->setID(cards.length());
         cards << card;
+        metaobjects.insert(card->objectName(), card->metaObject());
     }
 
     QList<General *> all_generals = package->findChildren<General *>();
@@ -131,6 +133,9 @@ void Engine::addPackage(Package *package){
     translations.unite(package->getTranslation());
 }
 
+void Engine::addMetaObject(const QString &name, const QMetaObject *metaobject){
+    metaobjects.insert(name, metaobject);
+}
 
 QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
@@ -156,10 +161,21 @@ const Card *Engine::getCard(int index) const{
 }
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
-    Card *card = findChild<Card *>(name);
-    if(card)
-        return card->clone(suit, number);
-    else
+    const QMetaObject *meta = metaobjects.value(name, NULL);
+    if(meta){
+        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+        return qobject_cast<Card *>(card_obj);
+    }else
+        return NULL;
+}
+
+SkillCard *Engine::cloneSkillCard(const QString &name){
+    const QMetaObject *meta = metaobjects.value(name, NULL);
+    if(meta){
+        QObject *card_obj = meta->newInstance();
+        SkillCard *card = qobject_cast<SkillCard *>(card_obj);
+        return card;
+    }else
         return NULL;
 }
 

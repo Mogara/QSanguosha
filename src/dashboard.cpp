@@ -8,8 +8,8 @@
 #include <QGraphicsProxyWidget>
 
 Dashboard::Dashboard()
-    :Pixmap(":/dashboard.png"), enable_pending(false), selected(NULL), player(NULL), avatar(NULL), use_skill(false),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
+    :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL), use_skill(false),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), view_as_skill(NULL)
 {
     int i;
     for(i=0; i<5; i++){
@@ -41,7 +41,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_items << card_item;
 
     connect(card_item, SIGNAL(card_selected(CardItem*)), this, SLOT(setSelectedItem(CardItem*)));
-    connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(addCardToPendings(CardItem*,bool)));
+    connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(doPending(CardItem*,bool)));
 
     sortCards();
 }
@@ -162,7 +162,7 @@ void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
 void Dashboard::adjustCards(){
     adjustCards(card_items, 45);
 
-    if(enable_pending)
+    if(view_as_skill)
         adjustCards(pendings, -200);
 }
 
@@ -293,10 +293,12 @@ void Dashboard::disableAllCards(){
     }
 }
 
-void Dashboard::addCardToPendings(CardItem *card_item, bool add_to_pendings){
-    if(!enable_pending && add_to_pendings){
-        selected = card_item;
-        emit card_to_use();
+void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
+    if(!view_as_skill){
+        if(add_to_pendings){
+            selected = card_item;
+            emit card_to_use();
+        }
         return;
     }
 
@@ -312,7 +314,7 @@ void Dashboard::addCardToPendings(CardItem *card_item, bool add_to_pendings){
 }
 
 void Dashboard::setSelectedItem(CardItem *card_item){
-    if(selected != card_item){
+    if(!view_as_skill && selected != card_item){
         if(selected)
             selected->unselect();
         selected = card_item;
@@ -335,4 +337,18 @@ void Dashboard::enableCards(const Client *client){
         foreach(CardItem *card_item, card_items)
             card_item->setEnabled(card_item->getCard()->match(client->pattern));
     }
+}
+
+void Dashboard::startPending(const ViewAsSkill *skill){
+    view_as_skill = skill;
+}
+
+const ViewAsSkill *Dashboard::cancelPending(){
+    const ViewAsSkill *backup = view_as_skill;
+
+    card_items.append(pendings);
+    pendings.clear();
+    adjustCards();
+
+    return backup;
 }

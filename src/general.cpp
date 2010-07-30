@@ -55,3 +55,12 @@ void General::addSkill(Skill *skill){
 QString General::getPackage() const{
     return parent()->objectName();
 }
+
+void General::playEffect() const
+{
+    QList<const Skill *> skills = findChildren<const Skill *>();
+    if(!skills.isEmpty()){
+        int r = qrand() % skills.length();
+        skills.at(r)->playEffect();
+    }
+}

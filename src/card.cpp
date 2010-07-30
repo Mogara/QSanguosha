@@ -88,10 +88,6 @@ bool Card::isAvailable(const Client *) const{
     return true;
 }
 
-Event *Card::generate(Room *room){
-    return NULL;
-}
-
 QString Card::toString() const{
     return QString("%1[%2 %3]").arg(objectName()).arg(getSuitString()).arg(getNumberString());
 }
@@ -101,41 +97,57 @@ bool Card::isVirtualCard() const{
 }
 
 const Card *Card::Parse(const QString &str){
-    static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]=(.*)");
-    pattern.indexIn(str);
-    QStringList texts = pattern.capturedTexts();
-    QString name = texts.at(1);
-    QString suit_string = texts.at(2);
-    QString number_string = texts.at(3);
-    QStringList subcard_ids = texts.at(4).split("+");
-    Suit suit = NoSuit;
-    int number = 0;
+    if(str.startsWith(QChar('@'))){
+        // skill card
+        static QRegExp pattern("@(\\w+)=(.+)");
+        pattern.indexIn(str);
+        QStringList texts = pattern.capturedTexts();
+        QString card_name = texts.at(1);
+        QStringList subcard_ids = texts.at(2).split("+");
+        SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
-    if(suit_string == "spade")
-        suit = Spade;
-    else if(suit_string == "club")
-        suit = Club;
-    else if(suit_string == "heart")
-        suit = Heart;
-    else if(suit_string == "diamond")
-        suit = Diamond;    
+        foreach(QString subcard_id, subcard_ids)
+            card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
 
-    if(number_string == "A")
-        number = 1;
-    else if(number_string == "J")
-        number = 11;
-    else if(number_string == "Q")
-        number = 12;
-    else if(number_string == "K")
-        number = 13;
-    else
-        number = number_string.toInt();
+        return card;        
+    }else if(str.contains(QChar('='))){
+        static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]=(.+)");
+        pattern.indexIn(str);
+        QStringList texts = pattern.capturedTexts();
+        QString name = texts.at(1);
+        QString suit_string = texts.at(2);
+        QString number_string = texts.at(3);
+        QStringList subcard_ids = texts.at(4).split("+");
+        Suit suit = NoSuit;
+        int number = 0;
 
-    Card *card = Sanguosha->cloneCard(name, suit, number);
-    foreach(QString subcard_id, subcard_ids)
-        card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
+        if(suit_string == "spade")
+            suit = Spade;
+        else if(suit_string == "club")
+            suit = Club;
+        else if(suit_string == "heart")
+            suit = Heart;
+        else if(suit_string == "diamond")
+            suit = Diamond;
 
-    return card;
+        if(number_string == "A")
+            number = 1;
+        else if(number_string == "J")
+            number = 11;
+        else if(number_string == "Q")
+            number = 12;
+        else if(number_string == "K")
+            number = 13;
+        else
+            number = number_string.toInt();
+
+        Card *card = Sanguosha->cloneCard(name, suit, number);
+        foreach(QString subcard_id, subcard_ids)
+            card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
+
+        return card;
+    }else
+        return Sanguosha->getCard(str.toInt());
 }
 
 bool Card::targetFixed(const Client *client) const{
@@ -151,13 +163,13 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets) const{
     return true;
 }
 
-void Card::use(Client *client, ClientPlayer *user, ClientPlayer *target) const{
+void Card::use(Client *client, const ClientPlayer *target) const{
 
 }
 
-void Card::use(Client *client, ClientPlayer *user, const QList<ClientPlayer *> &targets) const{
-    foreach(ClientPlayer *target, targets){
-        use(client, user, target);
+void Card::use(Client *client, const QList<const ClientPlayer *> &targets) const{
+    foreach(const ClientPlayer *target, targets){
+        use(client, target);
     }
 }
 
@@ -178,6 +190,10 @@ void Card::addSubcard(const Card *card){
         subcards << card;
 }
 
+void Card::addSubcards(const QList<const Card *> &cards){
+    subcards << cards;
+}
+
 QString Card::subcardString() const{
     QStringList str;
 
@@ -185,4 +201,23 @@ QString Card::subcardString() const{
         str << QString::number(card->getID());
 
     return str.join("+");
+}
+
+// ---------   Skill card     ------------------
+
+SkillCard::SkillCard()
+    :Card(NoSuit, 0)
+{
+}
+
+QString SkillCard::getType() const{
+    return "skill_card";
+}
+
+QString SkillCard::getSubtype() const{
+    return "skill_card";
+}
+
+int SkillCard::getTypeId() const{
+    return 0;
 }

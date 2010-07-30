@@ -93,3 +93,17 @@ void Skill::playEffect() const{
         Sanguosha->playEffect(sources.at(r));
     }
 }
+
+ViewAsSkill::ViewAsSkill(const QString &name, int min, int max, bool include_equip, bool disable_after_use)
+    :Skill(name), min(min), max(max), include_equip(include_equip), disable_after_use(disable_after_use)
+{
+
+}
+
+void ViewAsSkill::attachPlayer(Player *player) const{
+    // FIXME
+}
+
+bool ViewAsSkill::isDisableAfterUse() const{
+    return disable_after_use;
+}

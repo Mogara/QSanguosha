@@ -1,6 +1,6 @@
 #include "room.h"
 #include "engine.h"
-#include "event.h"
+#include "settings.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -10,7 +10,7 @@
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
-    draw_pile(&pile1), discard_pile(&pile2), left_seconds(5),
+    draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), signup_count(0)
 {
     Sanguosha->getRandomCards(pile1);
@@ -154,7 +154,7 @@ void Room::signupCommand(ServerPlayer *player, const QStringList &args){
 
     signup_count ++;
     if(isFull()){
-        broadcast("! startInXs 5");
+        broadcast(QString("! startInXs %1").arg(left_seconds));
         game_started = true;
         startTimer(1000);
     }
@@ -246,14 +246,12 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
 
 void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
     QString card_str = args.at(1);
-    const Card *card = NULL;
-    if(card_str.contains(QChar('=')))
-        card = Card::Parse(card_str);
-    else
-        card = Sanguosha->getCard(card_str.toInt());
+    const Card *card = Card::Parse(card_str);
 
-    if(!card)
+    if(!card){
+        emit room_message(tr("Card can not parse:\n %1").arg(card_str));
         return;
+    }
 
     QStringList target_names = args.at(2).split("+");
 
@@ -271,6 +269,9 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
         broadcast(QString("! moveCard %1:%2@hand->_").arg(card->getID()).arg(name));
         discard_pile->append(card->getID());
     }
+
+//    if(card->isVirtualCard())
+//        delete card;
 }
 
 void Room::startGame(){

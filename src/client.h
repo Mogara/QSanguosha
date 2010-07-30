@@ -44,6 +44,8 @@ public:
     QString pattern;
     QVariantMap tag;
     QMap<const Card *, bool> availability;
+    const Card *card;
+    QList<const ClientPlayer *> targets;
 
 public slots:    
     void itemChosen(const QString &item_name);

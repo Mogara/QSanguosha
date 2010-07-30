@@ -83,3 +83,12 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         ui->skillTextEdit->append(QString("<b>%1</b>: %2").arg(skill_name).arg(desc));
     }
 }
+
+void GeneralOverview::on_playEffecButton_clicked()
+{
+    int row = ui->tableWidget->currentRow();
+    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
+    const General *general = Sanguosha->getGeneral(general_name);
+
+    general->playEffect();
+}

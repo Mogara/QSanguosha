@@ -50,4 +50,22 @@ private:
     void setBooleanFlag(QString &str, QChar symbol, bool *flag);
 };
 
+class ViewAsSkill:public Skill{
+    Q_OBJECT
+
+public:
+    ViewAsSkill(const QString &name, int min = 1, int max = 1, bool include_equip = false, bool disable_after_use = false);
+    virtual void attachPlayer(Player *player) const;
+    bool isDisableAfterUse() const;
+
+protected:
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
+    virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
+
+private:
+    int min, max;
+    bool include_equip;
+    bool disable_after_use;
+};
+
 #endif // SKILL_H

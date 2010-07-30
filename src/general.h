@@ -30,6 +30,7 @@ public:
     QString getPixmapPath(const QString &category) const;
     QString getKingdomPath() const;
     QString getPackage() const;
+    void playEffect() const;
 
 private:
     QString kingdom;

@@ -9,6 +9,7 @@
 #include <QEvent>
 #include <QStringList>
 #include <MediaObject>
+#include <QMetaObject>
 
 class Engine: public QObject
 {
@@ -19,13 +20,15 @@ public:
 
     QString translate(const QString &to_translate) const;
     void addPackage(Package *package);
+    void addMetaObject(const QString &name, const QMetaObject *metaobject);
+    Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
+    SkillCard *cloneSkillCard(const QString &name);
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount() const;
 
     int getCardCount() const;
-    const Card *getCard(int index) const;
-    Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
+    const Card *getCard(int index) const;    
     QEvent::Type getEventType() const;
     const Skill *getBasicRule() const;
 
@@ -38,6 +41,8 @@ public:
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
+    QHash<QString, const QMetaObject *> metaobjects;
+
     QList<Card*> cards;
     QEvent::Type event_type;
     QStringList lord_names;

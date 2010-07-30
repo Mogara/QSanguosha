@@ -73,6 +73,9 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     cancel_button->setEnabled(false);
     discard_button->setEnabled(false);
 
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(callViewAsSkill()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(cancelViewAsSkill()));
+
     button_layout->addItem(addWidget(ok_button));
     button_layout->addItem(addWidget(cancel_button));
     button_layout->addItem(addWidget(discard_button));
@@ -535,8 +538,6 @@ void RoomScene::setActivity(bool activity){
     if(activity){
         dashboard->enableCards(client);
 
-        ok_button->setEnabled(true);
-        cancel_button->setEnabled(true);
         discard_button->setEnabled(true);
     }else{
         dashboard->disableAllCards();
@@ -545,6 +546,8 @@ void RoomScene::setActivity(bool activity){
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
     }
+
+    dashboard->update();
 }
 
 CardItem *RoomScene::takeCardItem(const QString &src, int card_id){
@@ -638,7 +641,8 @@ void RoomScene::updateSkillButtons(){
 
     main_window->setStatusBar(NULL);
     skill_buttons.clear();
-    QStatusBar *status_bar = main_window->statusBar();    
+    button2skill.clear();
+    QStatusBar *status_bar = main_window->statusBar();
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
@@ -662,8 +666,10 @@ void RoomScene::updateSkillButtons(){
             status_bar->addPermanentWidget(checkbox);
         }
 
-        if(skill->isToggleable())
-            button->setCheckable(true);
+        if(skill->isToggleable() && skill->inherits("ViewAsSkill")){
+            button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
+            connect(button, SIGNAL(clicked()), this, SLOT(startViewAsSkill()));
+        }
     }
 
     status_bar->addPermanentWidget(role_combobox);
@@ -788,4 +794,35 @@ void RoomScene::useSelectedCard(){
         enableTargets(NULL);
     }else
         changePrompt(tr("You didn't choose any card to use yet!"));
+}
+
+void RoomScene::startViewAsSkill(){
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    const ViewAsSkill *skill = button2skill.value(button, NULL);
+
+    Q_ASSERT(skill != NULL);
+
+    dashboard->startPending(skill);
+
+    if(skill->isDisableAfterUse())
+        button->setEnabled(false);
+
+    ok_button->setEnabled(true);
+    cancel_button->setEnabled(true);
+}
+
+void RoomScene::callViewAsSkill(){
+
+}
+
+void RoomScene::cancelViewAsSkill(){
+    const ViewAsSkill *skill = dashboard->cancelPending();
+    QPushButton *button = button2skill.key(skill, NULL);
+
+    Q_ASSERT(button != NULL);
+
+    button->setEnabled(true);
+
+    ok_button->setEnabled(false);
+    cancel_button->setEnabled(false);
 }

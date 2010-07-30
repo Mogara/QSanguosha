@@ -3,7 +3,6 @@
 
 #include "package.h"
 #include "card.h"
-#include "event.h"
 
 class StandardPackage:public Package{
     Q_OBJECT
@@ -102,10 +101,18 @@ class Horse:public EquipCard{
 public:
     Horse(const QString &name, Suit suit, int number, int correct);
     virtual QString getSubtype() const;
-    virtual Card *clone(Suit suit, int number) const;
 
 private:
     int correct;
+};
+
+// Skill cards
+
+class ZhihengCard:public SkillCard{
+    Q_OBJECT
+
+public:
+    virtual bool targetFixed(const Client *client) const;
 };
 
 #endif // STANDARD_H

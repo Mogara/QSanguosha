@@ -56,6 +56,7 @@ private:
     QPushButton *ok_button, *cancel_button, *discard_button;
 
     QList<QPushButton *> skill_buttons;
+    QMap<QPushButton *, const ViewAsSkill *> button2skill;
 
     int max_targets, min_targets;
     bool target_fixed;    
@@ -69,6 +70,9 @@ private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
+    void startViewAsSkill();
+    void callViewAsSkill();    
+    void cancelViewAsSkill();
 };
 
 #endif // ROOMSCENE_H

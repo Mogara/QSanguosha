@@ -4,14 +4,6 @@
 #include "engine.h"
 #include "client.h"
 
-class ViewAsSkill:public Skill{
-public:
-    ViewAsSkill(const QString &name):Skill(name){}
-
-protected:
-    virtual const Card *viewFilter(const Card *card) = 0;
-};
-
 class Jianxiong:public Skill{
 public:
     Jianxiong():Skill("jianxiong+"){
@@ -83,17 +75,17 @@ public:
 
 class Qingguo:public ViewAsSkill{
 public:
-    Qingguo():ViewAsSkill("qingguo"){
+    Qingguo():ViewAsSkill("qingguo", 1, 1, false){
 
     }
 protected:
-    virtual const Card *viewFilter(const Card *card){
-        if(card->isBlack()){
-            Card *vcard = Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
-            vcard->addSubcard(card);
-            return vcard;
-        }else
-            return card;
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
+        return to_select->isBlack();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        const Card *first = cards.first();
+        return Sanguosha->cloneCard("jink", first->getSuit(), first->getNumber());
     }
 };
 
@@ -111,10 +103,21 @@ public:
     }
 };
 
-class Wusheng:public Skill{
+class Wusheng:public ViewAsSkill{
 public:
-    Wusheng():Skill("wusheng"){
+    Wusheng()
+        :ViewAsSkill("wusheng", 1, 1, true)
+    {
 
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
+        return to_select->isRed();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        const Card *first = cards.first();
+        return Sanguosha->cloneCard("slash", first->getSuit(), first->getNumber());
     }
 };
 
@@ -169,6 +172,14 @@ public:
     Jizhi():Skill("jizhi+"){
 
     }
+
+    void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
+        if(reason == Skill::UseCard &&
+           (client->card->getType() == "trick" &&  client->card->getSubtype() != "delayed_trick")){
+            client->askForCards(1);
+            playEffect();
+        }
+    }
 };
 
 class Qicai:public Skill{
@@ -178,10 +189,20 @@ public:
     }
 };
 
-class Zhiheng:public Skill{
-public:
-    Zhiheng():Skill("zhiheng="){
 
+class Zhiheng:public ViewAsSkill{
+public:
+    Zhiheng():ViewAsSkill("zhiheng=", 1, 1000, true, true){
+
+    }
+
+protected:
+    virtual bool viewFilter(const QList<const Card *> &, const Card *) const{
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{        
+        return NULL;
     }
 };
 
@@ -203,6 +224,13 @@ public:
             client->askForCards(1);
             playEffect();
         }
+    }
+};
+
+class Fanjian:public Skill{
+public:
+    Fanjian():Skill("fanjian"){
+
     }
 };
 
@@ -269,6 +297,7 @@ void StandardPackage::addGenerals(){
 
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
+    zhouyu->addSkill(new Fanjian);
 
     lumeng = new General(this, "lumeng", "wu");
     luxun = new General(this, "luxun", "wu", 3);
