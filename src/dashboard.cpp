@@ -32,8 +32,6 @@ Dashboard::Dashboard()
 
     kingdom = new QGraphicsPixmapItem(this);
     kingdom->setPos(avatar->pos());
-
-    effect = Phonon::createPlayer(Phonon::MusicCategory);
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -311,6 +309,10 @@ void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
         pendings.removeOne(card_item);
         sortCards();
     }
+
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
+    }
 }
 
 void Dashboard::setSelectedItem(CardItem *card_item){
@@ -326,29 +328,29 @@ void Dashboard::setSelectedItem(CardItem *card_item){
     }
 }
 
-void Dashboard::enableCards(const Client *client){
-    if(client->pattern.isNull()){
-        foreach(CardItem *card_item, card_items){
-            const Card *card = card_item->getCard();
-            card_item->setEnabled(client->availability.value(card, card->isAvailable(client)));
-        }
-
-    }else{
-        foreach(CardItem *card_item, card_items)
-            card_item->setEnabled(card_item->getCard()->match(client->pattern));
-    }
+void Dashboard::enableCards(){
+    foreach(CardItem *card_item, card_items)
+        card_item->setEnabled(card_item->getCard()->isAvailable());
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){
     view_as_skill = skill;
+
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(skill->viewFilter(pendings, card_item));
+    }
 }
 
-const ViewAsSkill *Dashboard::cancelPending(){
-    const ViewAsSkill *backup = view_as_skill;
-
+void Dashboard::stopPending(){
     card_items.append(pendings);
     pendings.clear();
     adjustCards();
+}
 
-    return backup;
+const ViewAsSkill *Dashboard::currentSkill() const{
+    return view_as_skill;
+}
+
+const Card *Dashboard::pendingCard() const{
+    return view_as_skill->viewAs(pendings);
 }

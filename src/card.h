@@ -45,24 +45,20 @@ public:
     bool isVirtualCard() const;
 
     bool match(const QString &pattern) const;
-
-
-    virtual bool isAvailable(const Client *client) const;
+    bool isAvailable() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual int getTypeId() const = 0;
 
     // card target selection
-    virtual bool targetFixed(const Client *client) const;
-    virtual void targetRange(const Client *client, int *min, int *max, bool *include_self) const;
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets) const;
+    virtual bool targetFixed() const;
+    virtual void targetRange(int *min, int *max, bool *include_self) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets) const;    
 
-    virtual void use(Room *room, ServerPlayer *user, ServerPlayer *target) const; // FIXME: pure virtual
-    virtual void use(Room *room, ServerPlayer *user, const QList<ServerPlayer *> &targets) const;
-
-    virtual void use(Client *client, const ClientPlayer *target) const; // FIXME: pure virtual
-    virtual void use(Client *client, const QList<const ClientPlayer *> &targets) const;
+    // FIXME: should be pure virtual
+    virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
 
     void addSubcard(const Card *card);
     void addSubcards(const QList<const Card *> &cards);
@@ -74,11 +70,16 @@ public:
 
     static const Card *Parse(const QString &str);
 
+protected:
+    virtual bool isAvailableAtPlay() const;
+
+    QList<const Card *> subcards;
+
 private:
     Suit suit;
     int number;
     int id;
-    QList<const Card *> subcards;
+
 };
 
 class SkillCard: public Card{

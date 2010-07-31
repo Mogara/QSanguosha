@@ -8,7 +8,6 @@ Skill::Skill(const QString &name)
     static QChar lord_symbol('$');
     static QChar frequent_symbol('+');
     static QChar compulsory_symbol('!');
-    static QChar toggleable_symbol('=');
 
     QString copy = name;
 
@@ -16,7 +15,6 @@ Skill::Skill(const QString &name)
     setBooleanFlag(copy, compulsory_symbol, &compulsory);
     if(!compulsory){
         setBooleanFlag(copy, frequent_symbol, &frequent);
-        setBooleanFlag(copy, toggleable_symbol, &toggleable);
     }
 
     setObjectName(copy);
@@ -32,10 +30,6 @@ bool Skill::isLordSkill() const{
 
 bool Skill::isFrequent() const{
     return frequent;
-}
-
-bool Skill::isToggleable() const{
-    return toggleable;
 }
 
 void Skill::setBooleanFlag(QString &str, QChar symbol, bool *flag){
@@ -55,7 +49,7 @@ void Skill::attachPlayer(Player *player) const{
         player->attachSkill(this);
 }
 
-void Skill::trigger(Client *client, TriggerReason reason, const QVariant &data) const{
+void Skill::trigger(TriggerReason reason, const QVariant &data) const{
 
 }
 
@@ -94,8 +88,8 @@ void Skill::playEffect() const{
     }
 }
 
-ViewAsSkill::ViewAsSkill(const QString &name, int min, int max, bool include_equip, bool disable_after_use)
-    :Skill(name), min(min), max(max), include_equip(include_equip), disable_after_use(disable_after_use)
+ViewAsSkill::ViewAsSkill(const QString &name, bool disable_after_use)
+    :Skill(name), disable_after_use(disable_after_use)
 {
 
 }

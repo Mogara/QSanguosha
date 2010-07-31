@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "card.h"
 #include "skill.h"
+#include "cardpattern.h"
 
 #include <QTcpSocket>
 
@@ -43,7 +44,7 @@ public:
 
     QString pattern;
     QVariantMap tag;
-    QMap<const Card *, bool> availability;
+    QList<CardPattern *> enable_patterns, disable_patterns;
     const Card *card;
     QList<const ClientPlayer *> targets;
 
@@ -75,5 +76,7 @@ signals:
     void card_requested(const QString pattern);
     void hp_changed(const QString &target, int delta);
 };
+
+extern Client *ClientInstance;
 
 #endif // CLIENT_H

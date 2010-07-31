@@ -16,13 +16,13 @@ public:
 
     }
 
-    void onPhaseChange(Client *client, Player::Phase phase) const{
+    void onPhaseChange(Player::Phase phase) const{
         // const ClientPlayer *player = client->getPlayer();
+        Client *client = ClientInstance;
 
         switch(phase){
         case Player::Start:{
                 client->tag.insert("slash_count", 0);
-                client->availability.clear();
 
                 if(client->tag.value("auto_end_start", true).toBool()){
                     client->endPhase();
@@ -91,14 +91,14 @@ public:
         }
     }
 
-    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
-        const ClientPlayer *player = client->getPlayer();
+    virtual void trigger(TriggerReason reason, const QVariant &data) const{
+        const ClientPlayer *player = ClientInstance->getPlayer();
 
         switch(reason){
         case GameStart: break;
-        case PhaseChange: onPhaseChange(client, player->getPhase()); break;
-        case HpDamage:
-        case UseCard: client->card->use(client, client->targets); break;
+        case PhaseChange: onPhaseChange(player->getPhase()); break;
+        case HpDamage: break;
+        case UseCard: ClientInstance->card->use(ClientInstance->targets); break;
         default:  ;
         }
     }

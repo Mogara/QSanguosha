@@ -16,10 +16,11 @@ public:
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     void goBack(bool kieru = false);
-//    void viewAs(const QString &name);
     const QPixmap &getSuitPixmap() const;
     void select();
     void unselect();
+    bool isEquipped() const;
+    void setEquipped(bool equipped);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -31,7 +32,7 @@ private:
     const Card *card;
     QPixmap suit_pixmap;
     QPointF home_pos;
-    QGraphicsPixmapItem *view_card_item;
+    bool equipped;
 
 signals:
     void show_discards();

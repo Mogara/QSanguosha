@@ -113,6 +113,7 @@ class ZhihengCard:public SkillCard{
 
 public:
     virtual bool targetFixed(const Client *client) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 #endif // STANDARD_H

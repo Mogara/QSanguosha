@@ -6,6 +6,8 @@
 #include <QObject>
 #include <MediaSource>
 
+class CardItem;
+
 class Skill : public QObject
 {
     Q_OBJECT
@@ -30,21 +32,19 @@ public:
     bool isCompulsory() const;
     bool isLordSkill() const;
     bool isFrequent() const;
-    bool isToggleable() const;
     QString getDescription() const;
 
     void initMediaSource();
     void playEffect() const;
 
     virtual void attachPlayer(Player *player) const;
-    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const ;
+    virtual void trigger(TriggerReason reason, const QVariant &data) const ;
     virtual void trigger(Room *room) const;
 
 private:
     bool compulsory;
     bool lord_skill;
     bool frequent;
-    bool toggleable;
     QList<Phonon::MediaSource> sources;
 
     void setBooleanFlag(QString &str, QChar symbol, bool *flag);
@@ -54,17 +54,14 @@ class ViewAsSkill:public Skill{
     Q_OBJECT
 
 public:
-    ViewAsSkill(const QString &name, int min = 1, int max = 1, bool include_equip = false, bool disable_after_use = false);
+    ViewAsSkill(const QString &name, bool disable_after_use);
     virtual void attachPlayer(Player *player) const;
     bool isDisableAfterUse() const;
 
-protected:
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const = 0;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
 
 private:
-    int min, max;
-    bool include_equip;
     bool disable_after_use;
 };
 

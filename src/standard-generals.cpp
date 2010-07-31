@@ -3,6 +3,7 @@
 #include "skill.h"
 #include "engine.h"
 #include "client.h"
+#include "carditem.h"
 
 class Jianxiong:public Skill{
 public:
@@ -75,24 +76,36 @@ public:
 
 class Qingguo:public ViewAsSkill{
 public:
-    Qingguo():ViewAsSkill("qingguo", 1, 1, false){
+    Qingguo():ViewAsSkill("qingguo", false){
 
     }
-protected:
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
-        return to_select->isBlack();
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getCard()->isBlack() && (!to_select->isEquipped());
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        const Card *first = cards.first();
-        return Sanguosha->cloneCard("jink", first->getSuit(), first->getNumber());
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+        else{
+            const Card *card = cards.first()->getCard();
+            return Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
+        }
     }
 };
 
-class Rende:public Skill{
+class Rende:public ViewAsSkill{
 public:
-    Rende():Skill("rende="){
+    Rende():ViewAsSkill("rende", false){
+    }
 
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        // FIXME
+        return NULL;
     }
 };
 
@@ -106,18 +119,21 @@ public:
 class Wusheng:public ViewAsSkill{
 public:
     Wusheng()
-        :ViewAsSkill("wusheng", 1, 1, true)
+        :ViewAsSkill("wusheng", true)
     {
-
     }
 
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
-        return to_select->isRed();
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getCard()->isRed();
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        const Card *first = cards.first();
-        return Sanguosha->cloneCard("slash", first->getSuit(), first->getNumber());
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return false;
+        else{
+            const Card *card = cards.first()->getCard();
+            return Sanguosha->cloneCard("slash", card->getSuit(), card->getNumber());
+        }
     }
 };
 
@@ -126,9 +142,9 @@ public:
     Paoxiao():Skill("paoxiao+"){
     }
 
-    virtual void trigger(Client *client, TriggerReason reason, const QString &data) const{
+    virtual void trigger(TriggerReason reason, const QString &data) const{
         if(reason == GameStart)
-            client->tag["unlimited_slash"] = true;
+            ClientInstance->tag["unlimited_slash"] = true;
     }
 };
 
@@ -173,12 +189,8 @@ public:
 
     }
 
-    void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
-        if(reason == Skill::UseCard &&
-           (client->card->getType() == "trick" &&  client->card->getSubtype() != "delayed_trick")){
-            client->askForCards(1);
-            playEffect();
-        }
+    void trigger(TriggerReason reason, const QVariant &data) const{
+
     }
 };
 
@@ -192,16 +204,15 @@ public:
 
 class Zhiheng:public ViewAsSkill{
 public:
-    Zhiheng():ViewAsSkill("zhiheng=", 1, 1000, true, true){
+    Zhiheng():ViewAsSkill("zhiheng", true){
 
     }
 
-protected:
-    virtual bool viewFilter(const QList<const Card *> &, const Card *) const{
+    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *) const{
         return true;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{        
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         return NULL;
     }
 };
@@ -219,9 +230,9 @@ public:
 
     }
 
-    virtual void trigger(Client *client, TriggerReason reason, const QVariant &data) const{
-        if(reason == PhaseChange && client->getPlayer()->getPhase() == Player::Draw){
-            client->askForCards(1);
+    virtual void trigger(TriggerReason reason, const QVariant &data) const{
+        if(reason == PhaseChange && ClientInstance->getPlayer()->getPhase() == Player::Draw){
+            ClientInstance->askForCards(1);
             playEffect();
         }
     }
@@ -234,12 +245,45 @@ public:
     }
 };
 
+#ifndef QT_NO_DEBUG
+
+class Luanji:public ViewAsSkill{
+public:
+    Luanji():ViewAsSkill("luanji", false){
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.isEmpty())
+            return !to_select->isEquipped();
+        else if(selected.length() == 1){
+            const Card *card = selected.first()->getCard();
+            return !to_select->isEquipped() && to_select->getCard()->getSuit() == card->getSuit();
+        }else
+            return false;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() == 2)
+            return Sanguosha->cloneCard("archery_attack", Card::NoSuit, 0);
+        else
+            return NULL;
+    }
+};
+
+#endif
+
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
     caocao = new General(this, "caocao$", "wei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
+
+#ifndef QT_NO_DEBUG
+    caocao->addSkill(new Wusheng);
+    caocao->addSkill(new Yingzi);
+    caocao->addSkill(new Luanji);
+#endif
 
     zhangliao = new General(this, "zhangliao", "wei");
     zhangliao->addSkill(new Tuxi);
@@ -292,8 +336,6 @@ void StandardPackage::addGenerals(){
     sunquan = new General(this, "sunquan$", "wu");
     sunquan->addSkill(new Zhiheng);
     sunquan->addSkill(new Jiuyuan);
-
-    sunquan->addSkill(new Yingzi);
 
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);

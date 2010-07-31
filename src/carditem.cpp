@@ -8,7 +8,7 @@
 #include <QParallelAnimationGroup>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), view_card_item(NULL)
+    :Pixmap(card->getPixmapPath(), false), card(card), equipped(false)
 {
     Q_ASSERT(card != NULL);
 
@@ -45,20 +45,6 @@ void CardItem::goBack(bool kieru){
         goback->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
-//void CardItem::viewAs(const QString &name){
-//    QPixmap view_card_pixmap(card_class->getPixmapPath());
-//
-//    if(view_card_item == NULL){
-//        view_card_item = scene()->addPixmap(view_card_pixmap);
-//        view_card_item->setScale(0.2);
-//        view_card_item->setParentItem(this);
-//        view_card_item->setPos(50, 80);
-//    }else
-//        view_card_item->setPixmap(view_card_pixmap);
-//
-//    view_card_item->setVisible(true);
-//}
-
 const QPixmap &CardItem::getSuitPixmap() const{
     return suit_pixmap;
 }
@@ -69,6 +55,14 @@ void CardItem::select(){
 
 void CardItem::unselect(){   
     setY(45);
+}
+
+bool CardItem::isEquipped() const{
+    return equipped;
+}
+
+void CardItem::setEquipped(bool equipped){
+    this->equipped = equipped;
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -86,10 +80,6 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
         emit pending(this, y() < -80);
 
     setOpacity(1.0);
-    if(view_card_item){
-        view_card_item->setVisible(false);
-    }
-
     goBack();
 }
 

@@ -21,16 +21,14 @@
 
 static const QPointF DiscardedPos(-494, -115);
 
-RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
-    :client(client), bust(NULL), main_window(main_window),
+RoomScene::RoomScene(int player_count, QMainWindow *main_window)
+    :bust(NULL), main_window(main_window),
     max_targets(1), min_targets(1), target_fixed(false)
 {
-    Q_ASSERT(client != NULL);
-
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
-    client->setParent(this);
-    const ClientPlayer *player = client->getPlayer();
+    ClientInstance->setParent(this);
+    const ClientPlayer *player = ClientInstance->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create pile
@@ -52,7 +50,7 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     dashboard->setPlayer(player);
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
-    connect(client, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
+    connect(ClientInstance, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
     connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
     connect(dashboard, SIGNAL(card_to_use()), this, SLOT(useSelectedCard()));
 
@@ -88,19 +86,19 @@ RoomScene::RoomScene(Client *client, int player_count, QMainWindow *main_window)
     avatar = dashboard->getAvatar();    
 
     // do signal-slot connections
-    connect(client, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
-    connect(client, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(client, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
-    connect(client, SIGNAL(lords_got(QList<const General*>)), SLOT(chooseLord(QList<const General*>)));
-    connect(client, SIGNAL(generals_got(const General*,QList<const General*>)),
+    connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
+    connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
+    connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
+    connect(ClientInstance, SIGNAL(lords_got(QList<const General*>)), SLOT(chooseLord(QList<const General*>)));
+    connect(ClientInstance, SIGNAL(generals_got(const General*,QList<const General*>)),
             SLOT(chooseGeneral(const General*,QList<const General*>)));
-    connect(client, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
-    connect(client, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
-    connect(client, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
-    connect(client, SIGNAL(activity_changed(bool)), SLOT(setActivity(bool)));
-    connect(client, SIGNAL(card_moved(QString,QString,int)), SLOT(moveCard(QString,QString,int)));
+    connect(ClientInstance, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
+    connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
+    connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
+    connect(ClientInstance, SIGNAL(activity_changed(bool)), SLOT(setActivity(bool)));
+    connect(ClientInstance, SIGNAL(card_moved(QString,QString,int)), SLOT(moveCard(QString,QString,int)));
 
-    client->signup();
+    ClientInstance->signup();
 
     startEnterAnimation();
 }
@@ -232,7 +230,7 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
         dashboard->addCardItem(item);
     }
 
-    dashboard->enableCards(client);
+    dashboard->enableCards();
 }
 
 void RoomScene::drawNCards(ClientPlayer *player, int n){
@@ -409,7 +407,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 #ifndef QT_NO_DEBUG
     case Qt::Key_D: {
             // do some debugging things
-            client->drawCards("1+2+3+4+5+6");
+            ClientInstance->drawCards("1+2+3+4+5+6");
         }
 #endif
     }
@@ -437,7 +435,7 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
     mapper->setMapping(dialog, lords.first()->objectName());
     connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
 
-    connect(mapper, SIGNAL(mapped(QString)), client, SLOT(itemChosen(QString)));
+    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
 
     dialog->setLayout(layout);    
     dialog->show();
@@ -458,7 +456,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
         QString icon_path = lord->getPixmapPath("bust");
         QString lord_name = Sanguosha->translate(lord->objectName());
 
-        QString role_str = client->getPlayer()->getRole();
+        QString role_str = ClientInstance->getPlayer()->getRole();
         QString role_tip;
         if(role_str == "loyalist")
             role_tip = tr("This is your boss, help him kill all rebels and renegades");
@@ -492,7 +490,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
     mapper->setMapping(dialog, generals.first()->objectName());
     connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
 
-    connect(mapper, SIGNAL(mapped(QString)), client, SLOT(itemChosen(QString)));
+    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
 
     dialog->setLayout(layout);
     dialog->show();
@@ -536,7 +534,7 @@ void RoomScene::hideDiscards(){
 
 void RoomScene::setActivity(bool activity){
     if(activity){
-        dashboard->enableCards(client);
+        dashboard->enableCards();
 
         discard_button->setEnabled(true);
     }else{
@@ -666,7 +664,7 @@ void RoomScene::updateSkillButtons(){
             status_bar->addPermanentWidget(checkbox);
         }
 
-        if(skill->isToggleable() && skill->inherits("ViewAsSkill")){
+        if(skill->inherits("ViewAsSkill")){
             button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
             connect(button, SIGNAL(clicked()), this, SLOT(startViewAsSkill()));
         }
@@ -709,7 +707,7 @@ void RoomScene::enableTargets(const Card *card){
 
     changePrompt(tr("You choosed card [%1]").arg(Sanguosha->translate(card->objectName())));
 
-    if(card->targetFixed(client)){
+    if(card->targetFixed()){
         avatar->setEnabled(true);
         avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
         foreach(Photo *photo, photos){
@@ -720,7 +718,7 @@ void RoomScene::enableTargets(const Card *card){
     }
 
     bool include_self;
-    card->targetRange(client, &min_targets, &max_targets, &include_self);
+    card->targetRange(&min_targets, &max_targets, &include_self);
     avatar->setEnabled(include_self);
 
     foreach(Photo *photo, photos){
@@ -752,7 +750,7 @@ void RoomScene::updateSelectedTargets(){
         if(photo)
             selected_targets.append(photo->getPlayer());
         else if(item_obj == avatar)
-            selected_targets.append(client->getPlayer());
+            selected_targets.append(ClientInstance->getPlayer());
     }
 
     if(selected_targets.isEmpty()){
@@ -778,22 +776,26 @@ void RoomScene::useSelectedCard(){
     CardItem *selected = dashboard->getSelected();
     if(selected){
         const Card *card = selected->getCard();
-        if(card->targetFixed(client))
-            client->useCard(card);
-        else{
-            int extra_targets = min_targets - selected_targets.length();
-            int over_targets = selected_targets.length() > max_targets;
-            if(extra_targets > 0)
-                changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
-            else if(over_targets > 0)
-                changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
-            else
-                client->useCard(card, selected_targets);
-        }
-
-        enableTargets(NULL);
+        useCard(card);
     }else
         changePrompt(tr("You didn't choose any card to use yet!"));
+}
+
+void RoomScene::useCard(const Card *card){
+    if(card->targetFixed())
+        ClientInstance->useCard(card);
+    else{
+        int extra_targets = min_targets - selected_targets.length();
+        int over_targets = selected_targets.length() > max_targets;
+        if(extra_targets > 0)
+            changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
+        else if(over_targets > 0)
+            changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
+        else
+            ClientInstance->useCard(card, selected_targets);
+    }
+
+    enableTargets(NULL);
 }
 
 void RoomScene::startViewAsSkill(){
@@ -804,25 +806,46 @@ void RoomScene::startViewAsSkill(){
 
     dashboard->startPending(skill);
 
-    if(skill->isDisableAfterUse())
-        button->setEnabled(false);
-
+    button->setEnabled(false);
     ok_button->setEnabled(true);
     cancel_button->setEnabled(true);
 }
 
 void RoomScene::callViewAsSkill(){
+    const Card *card = dashboard->pendingCard();
 
+    if(!card){
+        changePrompt(tr("Not enough cards to call skill"));
+        return;
+    }
+
+    if(card->isAvailable()){
+        // use card
+        dashboard->stopPending();
+        useCard(card);        
+
+        const ViewAsSkill *skill = dashboard->currentSkill();
+        skill->playEffect();
+        if(!skill->isDisableAfterUse()){
+            QPushButton *button = button2skill.key(skill, NULL);
+            button->setEnabled(false);
+        }
+    }else{
+        changePrompt(tr("Card [%1] can not be used right now").arg(Sanguosha->translate(card->objectName())));
+    }
 }
 
 void RoomScene::cancelViewAsSkill(){
-    const ViewAsSkill *skill = dashboard->cancelPending();
+    const ViewAsSkill *skill = dashboard->currentSkill();
+    dashboard->stopPending();
     QPushButton *button = button2skill.key(skill, NULL);
 
-    Q_ASSERT(button != NULL);
+    if(button){
+        button->setEnabled(true);
 
-    button->setEnabled(true);
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
 
-    ok_button->setEnabled(false);
-    cancel_button->setEnabled(false);
+        dashboard->enableCards();
+    }
 }

@@ -9,7 +9,6 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QStack>
-#include <MediaObject>
 
 class Dashboard : public Pixmap
 {
@@ -27,11 +26,14 @@ public:
     void unselectAll();
     void sort(int order);
     void disableAllCards();
-    void enableCards(const Client *client);
+    void enableCards();
     void installEquip(CardItem *equip);
 
+    // pending operations
     void startPending(const ViewAsSkill *skill);
-    const ViewAsSkill *cancelPending();
+    void stopPending();
+    const ViewAsSkill *currentSkill() const;    
+    const Card *pendingCard() const;
 
 public slots:
     void updateAvatar();
@@ -51,7 +53,6 @@ private:
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;
-    Phonon::MediaObject *effect;
 
     // for pendings
     QList<CardItem *> pendings;

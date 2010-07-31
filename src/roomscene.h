@@ -15,7 +15,7 @@ class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    RoomScene(Client *client, int player_count, QMainWindow *main_window);
+    RoomScene(int player_count, QMainWindow *main_window);
 
 public slots:
     void showBust(const QString &name);
@@ -42,7 +42,6 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
-    Client *client;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Dashboard *dashboard;
@@ -65,6 +64,7 @@ private:
     void startEnterAnimation();
     CardItem *takeCardItem(const QString &src, int card_id);
     void clickSkillButton(int order);
+    void useCard(const Card *card);
 
 private slots:
     void updateSkillButtons();

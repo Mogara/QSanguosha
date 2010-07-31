@@ -5,9 +5,13 @@
 #include <QMessageBox>
 #include <QMetaEnum>
 
+Client *ClientInstance = NULL;
+
 Client::Client(QObject *parent)
     :QTcpSocket(parent), card(NULL), room(new QObject(this)), activity(false)
 {
+    ClientInstance = this;
+
     self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
     self->setProperty("avatar", Config.UserAvatar);
@@ -294,7 +298,7 @@ void Client::startGame(const QString &first_player){
 void Client::triggerSkill(Skill::TriggerReason reason, const QVariant &data){
     QList<const Skill *> skills = self->getSkills();
     foreach(const Skill *skill, skills){
-        skill->trigger(this, reason, data);
+        skill->trigger(reason, data);
     }
 }
 

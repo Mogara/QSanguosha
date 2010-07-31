@@ -136,9 +136,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    Client *client = qobject_cast<Client*>(sender());
-
-    RoomScene *room_scene = new RoomScene(client, 2, this);
+    RoomScene *room_scene = new RoomScene(2, this);
     ui->actionView_Discarded->setEnabled(true);
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
 

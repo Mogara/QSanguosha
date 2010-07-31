@@ -1,6 +1,7 @@
 #include "card.h"
 #include "settings.h"
 #include "engine.h"
+#include "client.h"
 
 Card::Card(Suit suit, int number)
     :suit(suit), number(number), id(-1)
@@ -84,10 +85,6 @@ QString Card::getPackage() const{
         return "";
 }
 
-bool Card::isAvailable(const Client *) const{
-    return true;
-}
-
 QString Card::toString() const{
     return QString("%1[%2 %3]").arg(objectName()).arg(getSuitString()).arg(getNumberString());
 }
@@ -150,37 +147,28 @@ const Card *Card::Parse(const QString &str){
         return Sanguosha->getCard(str.toInt());
 }
 
-bool Card::targetFixed(const Client *client) const{
+bool Card::targetFixed() const{
     return false;
 }
 
-void Card::targetRange(const Client *, int *min, int *max, bool *include_self) const{
+void Card::targetRange(int *min, int *max, bool *include_self) const{
     *min = *max = 1;
     *include_self = false;
 }
 
-bool Card::targetFilter(const QList<const ClientPlayer *> &targets) const{
+bool Card::targetFilter(const QList<const ClientPlayer *> &) const{
     return true;
 }
 
-void Card::use(Client *client, const ClientPlayer *target) const{
+void Card::use(const QList<const ClientPlayer *> &targets) const{
+}
+
+void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
 
 }
 
-void Card::use(Client *client, const QList<const ClientPlayer *> &targets) const{
-    foreach(const ClientPlayer *target, targets){
-        use(client, target);
-    }
-}
-
-void Card::use(Room *room, ServerPlayer *user, ServerPlayer *target) const{
-
-}
-
-void Card::use(Room *room, ServerPlayer *user, const QList<ServerPlayer *> &targets) const{
-    foreach(ServerPlayer *target, targets){
-        use(room, user, target);
-    }
+bool Card::isAvailableAtPlay() const{
+    return true;
 }
 
 void Card::addSubcard(const Card *card){
@@ -201,6 +189,20 @@ QString Card::subcardString() const{
         str << QString::number(card->getID());
 
     return str.join("+");
+}
+
+bool Card::isAvailable() const{
+    foreach(CardPattern *pattern, ClientInstance->disable_patterns){
+        if(pattern->match(this))
+            return false;
+    }
+
+    foreach(CardPattern *pattern, ClientInstance->enable_patterns){
+        if(pattern->match(this))
+            return true;        
+    }
+
+    return isAvailableAtPlay();
 }
 
 // ---------   Skill card     ------------------

@@ -13,6 +13,7 @@ public:
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
+    void drawCards(ServerPlayer *player, int n);
 
 protected:
     virtual bool event(QEvent *);
@@ -31,8 +32,7 @@ private:
     QStack<ServerPlayer *> active_records;
 
     void broadcast(const QString &message, Player *except = NULL);
-    int drawCard();
-    void drawCards(ServerPlayer *player, int n);
+    int drawCard();    
 
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);

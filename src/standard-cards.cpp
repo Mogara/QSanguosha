@@ -9,13 +9,13 @@ public:
         setObjectName("slash");
     }
 
-    virtual bool isAvailable(const Client *client) const{
-        bool unlimited_slash = client->tag.value("unlimited_slash", false).toBool();
+    virtual bool isAvailableAtPlay() const{
+        bool unlimited_slash = ClientInstance->tag.value("unlimited_slash", false).toBool();
         if(unlimited_slash)
             return true;
         else{
-            int limited_slash_count = client->tag.value("limited_slash_count", 1).toInt();
-            return client->tag.value("slash_count").toInt() < limited_slash_count;
+            int limited_slash_count = ClientInstance->tag.value("limited_slash_count", 1).toInt();
+            return ClientInstance->tag.value("slash_count").toInt() < limited_slash_count;
         }
     }
 
@@ -23,12 +23,12 @@ public:
         return "attack_card";
     }
 
-    virtual void use(Client *client, const QList<const ClientPlayer *> &targets) const{
-        BasicCard::use(client, targets);
+    virtual void use(const QList<const ClientPlayer *> &targets) const{
+        BasicCard::use(targets);
 
         // increase slash count
-        int slash_count = client->tag.value("slash_count", 0).toInt();
-        client->tag.insert("slash_count", slash_count + 1);        
+        int slash_count = ClientInstance->tag.value("slash_count", 0).toInt();
+        ClientInstance->tag.insert("slash_count", slash_count + 1);
     }
 };
 
@@ -42,7 +42,7 @@ public:
         return "defense_card";
     }
 
-    virtual bool isAvailable(const Client *client) const{
+    virtual bool isAvailableAtPlay() const{
         return false;
     }
 };
@@ -53,12 +53,27 @@ public:
         setObjectName("peach");
     }
 
-    virtual bool isAvailable(const Client *client) const{
-        return client->getPlayer()->isWounded();
+    virtual bool isAvailableAtPlay() const{
+        return ClientInstance->getPlayer()->isWounded();
     }
 
     virtual QString getSubtype() const{
         return "recover_card";
+    }
+};
+
+class Shit:public BasicCard{
+public:
+    Shit(Suit suit, int number):BasicCard(suit, number){
+        setObjectName("shit");
+    }
+
+    virtual bool isAvailableAtPlay() const{
+        return false;
+    }
+
+    virtual QString getSubtype() const{
+        return "disgusting_card";
     }
 };
 
@@ -177,7 +192,7 @@ public:
         setObjectName("nullification");
     }
 
-    virtual bool isAvailable(const Client *) const{
+    virtual bool isAvailableAtPlay() const{
         return false;
     }
 };
@@ -303,6 +318,10 @@ void StandardPackage::addCards(){
 
           << new Peach(Card::Diamond, 12)
 
+          << new Shit(Card::Club, 1)
+          << new Shit(Card::Heart, 1)
+          << new Shit(Card::Diamond, 1)
+
           << new Crossbow(Card::Club)
           << new Crossbow(Card::Diamond)
           << new DoubleSword
@@ -375,6 +394,7 @@ void StandardPackage::addCards(){
     t["attack_card"] = tr("attack_card");
     t["defense_card"] = tr("defense_card");
     t["recover_card"] = tr("recover_card");
+    t["disgusting_card"] = tr("disgusting_card");
     t["global_effect"] = tr("global_effect");
     t["aoe"] = tr("aoe");
     t["single_target_trick"] = tr("single_target_trick");
@@ -387,6 +407,7 @@ void StandardPackage::addCards(){
     t["slash"] = tr("slash");
     t["jink"] = tr("jink");
     t["peach"] = tr("peach");
+    t["shit"] = tr("shit");
 
     t["crossbow"] = tr("crossbow");
     t["double_sword"] = tr("double_sword");

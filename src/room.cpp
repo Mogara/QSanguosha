@@ -253,8 +253,6 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
         return;
     }
 
-    QStringList target_names = args.at(2).split("+");
-
     const QString name = player->objectName();
     if(card->getType() == "equip"){
         const Card *equip = card;
@@ -269,6 +267,14 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
         broadcast(QString("! moveCard %1:%2@hand->_").arg(card->getID()).arg(name));
         discard_pile->append(card->getID());
     }
+
+    QStringList target_names = args.at(2).split("+");
+    QList<ServerPlayer *> targets;
+    foreach(QString target_name, target_names){
+        targets << findChild<ServerPlayer *>(target_name);
+    }
+
+    card->use(this, player, targets);
 
 //    if(card->isVirtualCard())
 //        delete card;
