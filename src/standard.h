@@ -38,7 +38,7 @@ public:
     EquipCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
     virtual int getTypeId() const;
-    virtual bool targetFixed(const Client *client) const;
+    virtual bool targetFixed() const;
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };
@@ -49,7 +49,7 @@ class GlobalEffect:public TrickCard{
 public:
     GlobalEffect(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
-    virtual bool targetFixed(const Client *client) const;
+    virtual bool targetFixed() const;
 };
 
 class AOE:public TrickCard{
@@ -58,7 +58,7 @@ class AOE:public TrickCard{
 public:
     AOE(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
-    virtual bool targetFixed(const Client *client) const;
+    virtual bool targetFixed() const;
 };
 
 class SingleTargetTrick: public TrickCard{
@@ -114,7 +114,7 @@ class ZhihengCard:public SkillCard{
     Q_OBJECT
 
 public:
-    virtual bool targetFixed(const Client *client) const;
+    virtual bool targetFixed() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

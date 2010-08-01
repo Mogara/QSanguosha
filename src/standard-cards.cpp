@@ -217,7 +217,7 @@ public:
         setObjectName("ex_nihilo");
     }
 
-    virtual bool targetFixed(const Client *client) const{
+    virtual bool targetFixed() const{
         return true;
     }
 };
@@ -249,7 +249,7 @@ public:
         setObjectName("lightning");
     }
 
-    virtual bool targetFixed(const Client *client) const{
+    virtual bool targetFixed() const{
         return true;
     }
 };

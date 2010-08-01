@@ -16,7 +16,7 @@ public:
     void drawCards(ServerPlayer *player, int n);
     void broadcast(const QString &message, Player *except = NULL);
     void appendToDiscard(int card_id);
-    void throwCard(const Card *card);
+    void throwCard(ServerPlayer *player, const Card *card);
 
 protected:
     virtual bool event(QEvent *);

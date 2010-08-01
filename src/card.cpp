@@ -174,8 +174,8 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &) const{
 void Card::use(const QList<const ClientPlayer *> &targets) const{
 }
 
-void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(source, this);
 }
 
 bool Card::isAvailableAtPlay() const{

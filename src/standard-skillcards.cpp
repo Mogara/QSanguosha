@@ -1,7 +1,7 @@
 #include "standard.h"
 #include "room.h"
 
-bool ZhihengCard::targetFixed(const Client *) const{
+bool ZhihengCard::targetFixed() const{
     return true;
 }
 

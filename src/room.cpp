@@ -361,13 +361,13 @@ void Room::appendToDiscard(int card_id){
     discard_pile->append(card_id);
 }
 
-void Room::throwCard(const Card *card){
+void Room::throwCard(ServerPlayer *player, const Card *card){
     if(card->isVirtualCard()){
         QList<const Card *> cards = card->getSubcards();
         foreach(const Card *card, cards)
-            throwCard(card);
+            throwCard(player, card);
     }else{
-        broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card->getID()).arg(card->objectName()));
+        broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card->getID()).arg(player->objectName()));
         appendToDiscard(card->getID());
     }
 }

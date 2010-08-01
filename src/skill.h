@@ -25,7 +25,8 @@ public:
         UseCard,
         MoveCard,
         HpDamage,
-        Judge
+        Judge,
+        Nop
     };
 
     explicit Skill(const QString &name);

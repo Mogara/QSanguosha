@@ -26,7 +26,7 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
-bool EquipCard::targetFixed(const Client *client) const{
+bool EquipCard::targetFixed() const{
     return true;
 }
 
@@ -36,16 +36,19 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(uninstalled){
         room->broadcast(QString("! moveCard %1:%2@equip->_@_").arg(uninstalled->getID()).arg(source->objectName()));
         room->appendToDiscard(uninstalled->getID());
+        Player::MoveCard(source, Player::Equip, NULL, Player::DiscardedPile, uninstalled->getID());
     }
     room->broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(source->objectName()));
-    source->removeCard(this, Player::Hand);
+    Player::MoveCard(source, Player::Hand, source, Player::Equip, getID());
+
+    room->broadcast(QString("! activate %1:Nop:").arg(source->objectName()));
 }
 
 QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }
 
-bool GlobalEffect::targetFixed(const Client *client) const{
+bool GlobalEffect::targetFixed() const{
     return true;
 }
 
@@ -53,7 +56,7 @@ QString AOE::getSubtype() const{
     return "aoe";
 }
 
-bool AOE::targetFixed(const Client *client) const{
+bool AOE::targetFixed() const{
     return true;
 }
 
