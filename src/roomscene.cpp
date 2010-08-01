@@ -20,6 +20,7 @@
 #include <QGraphicsLinearLayout>
 
 static const QPointF DiscardedPos(-494, -115);
+static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     :bust(NULL), main_window(main_window),
@@ -96,7 +97,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
     connect(ClientInstance, SIGNAL(activity_changed(bool)), SLOT(setActivity(bool)));
-    connect(ClientInstance, SIGNAL(card_moved(QString,QString,int)), SLOT(moveCard(QString,QString,int)));
+    connect(ClientInstance, SIGNAL(card_moved(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)),
+            this, SLOT(moveCard(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)));
 
     ClientInstance->signup();
 
@@ -227,10 +229,15 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
         item->setPos(893, -235);
+        if(ClientInstance->isActive()){
+            if(ClientInstance->pattern)
+                item->setEnabled(ClientInstance->pattern->match(card));
+            else
+                item->setEnabled(card->isAvailable());
+        }else
+            item->setEnabled(false);
         dashboard->addCardItem(item);
     }
-
-    dashboard->enableCards();
 }
 
 void RoomScene::drawNCards(ClientPlayer *player, int n){
@@ -413,6 +420,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     }
 }
 
+
+
 void RoomScene::chooseLord(const QList<const General *> &lords){
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose lord"));
@@ -424,7 +433,7 @@ void RoomScene::chooseLord(const QList<const General *> &lords){
         QString icon_path = lord->getPixmapPath("card");
         QString caption = Sanguosha->translate(lord->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
-        button->setIconSize(button->iconSize() * 0.8);
+        button->setIconSize(GeneralSize);
         layout->addWidget(button);
 
         mapper->setMapping(button, lord->objectName());
@@ -469,7 +478,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
 
         QString caption = tr("Lord is %1\nYour role is %2").arg(lord_name).arg(role_str);
         OptionButton *button = new OptionButton(icon_path, caption);
-        button->setIconSize(button->iconSize() * 0.8);
+        button->setIconSize(GeneralSize);
         button->setToolTip(role_tip);
 
         layout->addWidget(button);
@@ -479,7 +488,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
         QString icon_path = general->getPixmapPath("card");
         QString caption = Sanguosha->translate(general->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
-        button->setIconSize(button->iconSize() * 0.8);
+        button->setIconSize(GeneralSize);
         layout->addWidget(button);
 
         mapper->setMapping(button, general->objectName());
@@ -548,53 +557,44 @@ void RoomScene::setActivity(bool activity){
     dashboard->update();
 }
 
-CardItem *RoomScene::takeCardItem(const QString &src, int card_id){
-    QStringList words = src.split("@");
-    QString name = words.first();
-    QString location;
-    if(words.length() >= 2)
-        location = words.at(1);
-
-    CardItem *card_item = NULL;
-    if(name == "_"){
+CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
+    if(src){
+        if(src->objectName() == Config.UserName){
+            CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
+            card_item->setOpacity(1.0);
+            card_item->setParentItem(NULL);
+            card_item->setPos(dashboard->mapToScene(card_item->pos()));
+            return card_item;
+        }else{
+            Photo *photo = name2photo.value(src->objectName(), NULL);
+            if(photo)
+                return photo->takeCardItem(card_id, src_place);
+            else
+                return NULL;
+        }
+    }else{
         const Card *card = Sanguosha->getCard(card_id);
         int card_index = discarded_list.indexOf(card);
+        CardItem *card_item;
         if(card_index < discarded_queue.length())
             card_item = discarded_queue.at(discarded_queue.length() - card_index - 1);
         else{
-            card_item = new CardItem(card);            
+            card_item = new CardItem(card);
             card_item->setPos(DiscardedPos);
         }
 
         return card_item;
     }
-
-    if(name == Config.UserName){
-        CardItem *card_item = dashboard->takeCardItem(card_id, location);
-        card_item->setOpacity(1.0);
-        card_item->setParentItem(NULL);
-        card_item->setPos(dashboard->mapToScene(card_item->pos()));
-        return card_item;
-    }else if(name2photo.contains(name))
-        return name2photo[name]->takeCardItem(card_id, location);
-    else
-        return NULL;
 }
 
-void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
-    CardItem *card_item = takeCardItem(src, card_id);
+void RoomScene::moveCard(ClientPlayer *src, Player::Place src_place, ClientPlayer *dest, Player::Place dest_place, int card_id){
+    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
+
+    CardItem *card_item = takeCardItem(src, src_place, card_id);
     if(card_item->scene() == NULL)
         addItem(card_item);
 
-    QStringList words = dest.split("@");
-    QString dest_name = words.first();
-    QString dest_location;
-    if(words.length() >= 2)
-        dest_location = words.at(1);
-
-    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
-
-    if(dest_name == "_"){
+    if(dest == NULL){
         card_item->setHomePos(DiscardedPos);
         card_item->setRotation(qrand() % 359 + 1);
         card_item->goBack();
@@ -612,21 +612,21 @@ void RoomScene::moveCard(const QString &src, const QString &dest, int card_id){
 
         connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
         connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
-    }else if(dest_name == Config.UserName){
-        if(dest_location == "equip"){
+    }else if(dest->objectName() == Config.UserName){
+        if(dest_place == Player::Equip){
             dashboard->installEquip(card_item);
-
             Sanguosha->playEffect(install_equip_source);
-        }else if(dest_location == "hand")
+        }else if(dest_place == Player::Hand)
             dashboard->addCardItem(card_item);
     }else{
-        Photo *photo = name2photo[dest_name];
-        if(dest_location == "equip"){
-            photo->installEquip(card_item);
-
-            Sanguosha->playEffect(install_equip_source);
-        }else if(dest_location == "hand")
-            photo->addCardItem(card_item);
+        Photo *photo = name2photo.value(dest->objectName());
+        if(photo){
+            if(dest_place == Player::Equip){
+                photo->installEquip(card_item);
+                Sanguosha->playEffect(install_equip_source);
+            }else if(dest_place == Player::Hand)
+                photo->addCardItem(card_item);
+        }
     }
 }
 

@@ -29,7 +29,9 @@ void ServerPlayer::unicast(const QString &message){
         socket->write(message.toAscii());
         socket->write("\n");
 
-        qDebug("%s: %s", objectName().toAscii().data(), message.toAscii().data());
+#ifndef QT_NO_DEBUG
+        qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
+#endif
     }
 }
 
@@ -53,18 +55,22 @@ void ServerPlayer::getRequest(){
     }
 }
 
-void ServerPlayer::removeCard(const Card *card, const QString &location){
-    if(location == "hand")
-        handcards.removeOne(card);
-    else if(location == "equip"){
-        removeEquip(card);
+void ServerPlayer::removeCard(const Card *card, Place place){
+    switch(place){
+    case Hand: handcards.removeOne(card); break;
+    case Equip: removeEquip(card); break;
+    default:
+        // FIXME
+        ;
     }
 }
 
-void ServerPlayer::addCard(const Card *card, const QString &location){
-    if(location == "hand")
-        handcards << card;
-    else if(location == "equip"){
-        replaceEquip(card);
+void ServerPlayer::addCard(const Card *card, Place place){
+    switch(place){
+    case Hand: handcards << card; break;
+    case Equip: replaceEquip(card);break;
+    default:
+        // FIXME
+        ;
     }
 }

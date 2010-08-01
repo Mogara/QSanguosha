@@ -88,14 +88,14 @@ void Photo::speak(const QString &content)
 
 }
 
-CardItem *Photo::takeCardItem(int card_id, const QString &location) {
+CardItem *Photo::takeCardItem(int card_id, Player::Place place){
     CardItem *card_item = NULL;
 
-    if(location == "hand"){
+    if(place == Player::Hand){
         card_item = new CardItem(Sanguosha->getCard(card_id));
         card_item->setPos(pos());
         card_item->shift();
-    }else if(location == "equip"){
+    }else if(place == Player::Equip){
         if(weapon && weapon->getCard()->getID() == card_id){
             card_item = weapon;
             weapon = NULL;

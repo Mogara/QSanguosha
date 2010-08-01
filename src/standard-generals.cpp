@@ -263,9 +263,11 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() == 2)
-            return Sanguosha->cloneCard("archery_attack", Card::NoSuit, 0);
-        else
+        if(cards.length() == 2){
+            const Card *first = cards.first()->getCard();
+            Card::Suit suit = first->isRed() ? Card::Heart : Card::Spade;
+            return Sanguosha->cloneCard("archery_attack", suit, 0);
+        }else
             return NULL;
     }
 };

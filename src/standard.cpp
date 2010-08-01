@@ -1,4 +1,6 @@
 #include "standard.h"
+#include "serverplayer.h"
+#include "room.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -26,6 +28,17 @@ int EquipCard::getTypeId() const{
 
 bool EquipCard::targetFixed(const Client *client) const{
     return true;
+}
+
+void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    const Card *equip = this;
+    const Card *uninstalled = source->replaceEquip(equip);
+    if(uninstalled){
+        room->broadcast(QString("! moveCard %1:%2@equip->_@_").arg(uninstalled->getID()).arg(source->objectName()));
+        room->appendToDiscard(uninstalled->getID());
+    }
+    room->broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(source->objectName()));
+    source->removeCard(this, Player::Hand);
 }
 
 QString GlobalEffect::getSubtype() const{

@@ -26,9 +26,11 @@ class Player : public QObject
     Q_PROPERTY(bool face_up READ faceUp)
 
     Q_ENUMS(Phase)
+    Q_ENUMS(Place)
 
 public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
+    enum Place {Hand, Equip, DelayedTrick, Special, DiscardedPile};
 
     explicit Player(QObject *parent);
 
@@ -67,8 +69,8 @@ public:
     void removeEquip(const Card *equip);
 
     virtual int getHandcardNum() const = 0;
-    virtual void removeCard(const Card *card, const QString &location) = 0;
-    virtual void addCard(const Card *card, const QString &location) = 0;
+    virtual void removeCard(const Card *card, Place place) = 0;
+    virtual void addCard(const Card *card, Place place) = 0;
 
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
@@ -78,6 +80,8 @@ public:
     void attachSkill(const Skill *skill, bool prepend = false);
     void detachSkill(const Skill *skill);
     QList<const Skill *> getSkills() const;
+
+    static void MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id);
 
 private:
     const General *general;

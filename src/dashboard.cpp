@@ -209,10 +209,10 @@ void Dashboard::installEquip(CardItem *equip){
     update();
 }
 
-CardItem *Dashboard::takeCardItem(int card_id, const QString &location) {
+CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
     CardItem *card_item = NULL;
 
-    if(location == "hand"){
+    if(place == Player::Hand){
         int i;
 
         for(i=0; i<card_items.length(); i++){
@@ -227,7 +227,7 @@ CardItem *Dashboard::takeCardItem(int card_id, const QString &location) {
                 break;
             }
         }
-    }else if(location == "equip"){
+    }else if(place == Player::Equip){
         if(weapon && weapon->getCard()->getID() == card_id){
             card_item = weapon;
             weapon = NULL;
@@ -342,6 +342,8 @@ void Dashboard::startPending(const ViewAsSkill *skill){
 }
 
 void Dashboard::stopPending(){
+    view_as_skill = NULL;
+
     card_items.append(pendings);
     pendings.clear();
     adjustCards();
@@ -353,4 +355,8 @@ const ViewAsSkill *Dashboard::currentSkill() const{
 
 const Card *Dashboard::pendingCard() const{
     return view_as_skill->viewAs(pendings);
+}
+
+void Dashboard::enableCards(const QString &pattern){
+    // enable card with pattern
 }

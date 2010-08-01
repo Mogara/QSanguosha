@@ -86,7 +86,18 @@ QString Card::getPackage() const{
 }
 
 QString Card::toString() const{
-    return QString("%1[%2 %3]").arg(objectName()).arg(getSuitString()).arg(getNumberString());
+    if(!isVirtualCard())
+        return QString::number(id);
+    else
+        return QString("%1[%2 %3]=%4").arg(objectName()).arg(getSuitString()).arg(getNumberString().arg(subcardString()));
+}
+
+QString Card::subcardString() const{
+    QStringList str;
+    foreach(const Card *card, subcards)
+        str << QString::number(card->getID());
+
+    return str.join("+");
 }
 
 bool Card::isVirtualCard() const{
@@ -164,7 +175,7 @@ void Card::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-
+    room->throwCard(this);
 }
 
 bool Card::isAvailableAtPlay() const{
@@ -182,13 +193,8 @@ void Card::addSubcards(const QList<const Card *> &cards){
     subcards << cards;
 }
 
-QString Card::subcardString() const{
-    QStringList str;
-
-    foreach(const Card *card, subcards)
-        str << QString::number(card->getID());
-
-    return str.join("+");
+QList<const Card *> Card::getSubcards() const{
+    return subcards;
 }
 
 bool Card::isAvailable() const{
@@ -222,4 +228,8 @@ QString SkillCard::getSubtype() const{
 
 int SkillCard::getTypeId() const{
     return 0;
+}
+
+QString SkillCard::toString() const{
+    return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
 }

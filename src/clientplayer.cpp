@@ -15,21 +15,32 @@ int ClientPlayer::getHandcardNum() const{
     return handcard_num;
 }
 
-void ClientPlayer::addCard(const Card *card, const QString &location){
-    if(location == "equip")
-        replaceEquip(card);
-    else if(location == "hand"){
-        known_cards << card;
-        handcard_num ++;
+void ClientPlayer::addCard(const Card *card, Place place){
+    switch(place){
+    case Hand: {
+            known_cards << card;
+            handcard_num++;
+            break;
+        }
+    case Equip: replaceEquip(card); break;
+    default:
+        // FIXME
+        ;
     }
 }
 
-void ClientPlayer::removeCard(const Card *card, const QString &location){
-    if(location == "hand"){
-        handcard_num --;
-        known_cards.removeOne(card);        
-    }else if(location == "equip")
-        removeEquip(card);
+void ClientPlayer::removeCard(const Card *card, Place place){
+    switch(place){
+    case Hand: {
+            handcard_num--;
+            known_cards.removeOne(card);
+            break;
+        }
+    case Equip: removeEquip(card); break;
+    default:
+        // FIXME
+        ;
+    }
 }
 
 QList<const Card *> ClientPlayer::getCards() const{

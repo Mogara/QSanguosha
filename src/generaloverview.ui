@@ -85,11 +85,20 @@
      <height>290</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>290</height>
+    </size>
+   </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
     <pixmap>../generals/card/caocao.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="skillLabel">

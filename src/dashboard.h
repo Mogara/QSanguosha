@@ -17,7 +17,7 @@ class Dashboard : public Pixmap
 public:
     Dashboard();
     void addCardItem(CardItem *card_item);
-    CardItem *takeCardItem(int card_id, const QString &location);
+    CardItem *takeCardItem(int card_id, Player::Place place);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
     void selectCard(const QString &pattern = "", bool forward = true);
@@ -38,6 +38,7 @@ public:
 public slots:
     void updateAvatar();
     void setSelectedItem(CardItem *card_item);
+    void enableCards(const QString &pattern);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

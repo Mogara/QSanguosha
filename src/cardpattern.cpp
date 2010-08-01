@@ -6,11 +6,26 @@ CardPattern::CardPattern(const QString &pattern_str)
 {
 }
 
-DirectCardPattern::DirectCardPattern(const QString &pattern_str)
+// --------------------------
+
+NamePattern::NamePattern(const QString &pattern_str)
     :CardPattern(pattern_str)
 {
 }
 
-bool DirectCardPattern::match(const Card *card) const{
-    return card->match(pattern_str);
+bool NamePattern::match(const Card *card) const{
+    return card->objectName() == pattern_str;
+}
+
+
+// --------------------------
+
+TypePattern::TypePattern(const QString &pattern_str)
+    :CardPattern(pattern_str)
+{
+
+}
+
+bool TypePattern::match(const Card *card) const{
+    return card->getType() == pattern_str;
 }

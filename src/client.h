@@ -11,6 +11,8 @@
 class Client : public QTcpSocket
 {
     Q_OBJECT
+    Q_PROPERTY(bool active READ isActive WRITE setActivity)
+
 public:
     explicit Client(QObject *parent = 0);
     void signup();
@@ -24,6 +26,7 @@ public:
     void askForJudge(const QString &player_name = QString());
     void ackForHpChange(int delta);
     void setActivity(bool activity);
+    bool isActive() const;
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -42,7 +45,7 @@ public:
     Q_INVOKABLE void hpRecover(const QString &recover_str);
     Q_INVOKABLE void judge(const QString &judge_str);
 
-    QString pattern;
+    CardPattern *pattern;
     QVariantMap tag;
     QList<CardPattern *> enable_patterns, disable_patterns;
     const Card *card;
@@ -72,9 +75,11 @@ signals:
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
     void activity_changed(bool activity);
-    void card_moved(const QString &src, const QString &dest, int card_id);
     void card_requested(const QString pattern);
     void hp_changed(const QString &target, int delta);
+    void card_moved(ClientPlayer *src, Player::Place src_place,
+                    ClientPlayer *dest, Player::Place dest_place,
+                    int card_id);
 };
 
 extern Client *ClientInstance;

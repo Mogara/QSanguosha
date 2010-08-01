@@ -16,8 +16,8 @@ public:
     void drawCard(const Card *card);
 
     virtual int getHandcardNum() const;
-    virtual void removeCard(const Card *card, const QString &location);
-    virtual void addCard(const Card *card, const QString &location);
+    virtual void removeCard(const Card *card, Place place);
+    virtual void addCard(const Card *card, Place place);
 
 private:
     QTcpSocket *socket;

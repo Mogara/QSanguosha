@@ -234,3 +234,11 @@ void Player::setMaxCards(int max_cards){
 void Player::detachSkill(const Skill *skill){
     skills.removeOne(skill);
 }
+
+void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id){
+    const Card *card = Sanguosha->getCard(card_id);
+    if(src)
+        src->removeCard(card, src_place);
+    if(dest)
+        dest->addCard(card, dest_place);
+}

@@ -16,11 +16,19 @@ protected:
     QString pattern_str;
 };
 
-class DirectCardPattern: public CardPattern{
+class NamePattern: public CardPattern{
     Q_OBJECT
 
 public:
-    DirectCardPattern(const QString &pattern_str);
+    NamePattern(const QString &pattern_str);
+    virtual bool match(const Card *card) const;
+};
+
+class TypePattern: public CardPattern{
+    Q_OBJECT
+
+public:
+    TypePattern(const QString &pattern_str);
     virtual bool match(const Card *card) const;
 };
 

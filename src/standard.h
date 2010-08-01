@@ -39,6 +39,8 @@ public:
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual bool targetFixed(const Client *client) const;
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };
 
 class GlobalEffect:public TrickCard{

@@ -28,7 +28,9 @@ public slots:
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str = QString());
     void setActivity(bool active);
-    void moveCard(const QString &src, const QString &dest, int card_id);
+    void moveCard(ClientPlayer *src, Player::Place src_place,
+                  ClientPlayer *dest, Player::Place dest_place,
+                  int card_id);
 
     void updatePhotos(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
@@ -62,7 +64,8 @@ private:
     QList<const ClientPlayer *> selected_targets, available_targets;
 
     void startEnterAnimation();
-    CardItem *takeCardItem(const QString &src, int card_id);
+    // CardItem *takeCardItem(const QString &src, int card_id);
+    CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void clickSkillButton(int order);
     void useCard(const Card *card);
 

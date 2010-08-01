@@ -253,31 +253,15 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
         return;
     }
 
-    const QString name = player->objectName();
-    if(card->getType() == "equip"){
-        const Card *equip = card;
-        const Card *uninstalled = player->replaceEquip(equip);
-        if(uninstalled){
-            broadcast(QString("! moveCard %1:%2@equip->_").arg(uninstalled->getID()).arg(name));
-            discard_pile->append(uninstalled->getID());
-        }
-        broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(name));
-        player->removeCard(card, "hand");
-    }else{      
-        broadcast(QString("! moveCard %1:%2@hand->_").arg(card->getID()).arg(name));
-        discard_pile->append(card->getID());
-    }
-
     QStringList target_names = args.at(2).split("+");
     QList<ServerPlayer *> targets;
-    foreach(QString target_name, target_names){
+    foreach(QString target_name, target_names)
         targets << findChild<ServerPlayer *>(target_name);
-    }
 
     card->use(this, player, targets);
 
-//    if(card->isVirtualCard())
-//        delete card;
+    if(card->isVirtualCard())
+        delete card;
 }
 
 void Room::startGame(){
@@ -371,4 +355,19 @@ void Room::judgeCommand(ServerPlayer *player, const QStringList &args){
     discard_pile->append(card_id);
 
     broadcast(QString("! judge %1:%2").arg(target).arg(card_id));
+}
+
+void Room::appendToDiscard(int card_id){
+    discard_pile->append(card_id);
+}
+
+void Room::throwCard(const Card *card){
+    if(card->isVirtualCard()){
+        QList<const Card *> cards = card->getSubcards();
+        foreach(const Card *card, cards)
+            throwCard(card);
+    }else{
+        broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card->getID()).arg(card->objectName()));
+        appendToDiscard(card->getID());
+    }
 }

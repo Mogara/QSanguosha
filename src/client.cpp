@@ -8,18 +8,17 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), card(NULL), room(new QObject(this)), activity(false)
+    :QTcpSocket(parent), pattern(NULL), card(NULL), room(new QObject(this)), activity(false)
 {
     ClientInstance = this;
 
     self = new ClientPlayer(this);
     self->setObjectName(Config.UserName);
-    self->setProperty("avatar", Config.UserAvatar);
-
-    connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+    self->setProperty("avatar", Config.UserAvatar);    
 
     connectToHost(Config.HostAddress, Config.Port);
 
+    connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
@@ -115,16 +114,18 @@ void Client::drawCards(const QString &cards_str){
         int card_id = card_str.toInt();
         const Card *card = Sanguosha->getCard(card_id);
         cards << card;
-        self->addCard(card, "hand");
+        self->addCard(card, Player::Hand);
     }
 
     emit cards_drawed(cards);
 }
 
-void Client::drawNCards(const QString &draw_str){
-    int colon_index = draw_str.indexOf(QChar(':'));
-    ClientPlayer *player = findChild<ClientPlayer *>(draw_str.left(colon_index));
-    int n = draw_str.right(draw_str.length() - colon_index - 1).toInt();
+void Client::drawNCards(const QString &draw_str){    
+    QRegExp pattern("(\\w+):(\\d+)");
+    pattern.indexIn(draw_str);
+    QStringList texts = pattern.capturedTexts();
+    ClientPlayer *player = findChild<ClientPlayer*>(texts.at(1));
+    int n = texts.at(2).toInt();
 
     if(player && n>0){
         player->drawNCard(n);
@@ -162,29 +163,26 @@ void Client::itemChosen(const QString &item_name){
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(card){
-        QStringList target_names;
-        foreach(const ClientPlayer *target, targets)
-            target_names << target->objectName();
-
-        QString target_str = target_names.join("+");
-        if(card->isVirtualCard())
-            request(QString("useCard %1=%2 %3").arg(card->toString()).arg(card->subcardString()).arg(target_str));
-        else
-            request(QString("useCard %1 %2").arg(card->getID()).arg(target_str));
-
         this->card = card;
         this->targets = targets;
         triggerSkill(Skill::UseCard);
         setActivity(false);
+
+        QStringList target_names;
+        foreach(const ClientPlayer *target, targets)
+            target_names << target->objectName();
+        request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
     }
 }
 
 void Client::useCard(const Card *card){
-    if(card){
-        if(card->isVirtualCard())
-            request(QString("useCard %1 .").arg(card->toString()));
-        else
-            request(QString("useCard %1 .").arg(card->getID()));
+    if(card){        
+        this->card = card;
+        this->targets.clear();
+        triggerSkill(Skill::UseCard);
+        setActivity(false);
+
+        request(QString("useCard %1 .").arg(card->toString()));
     }
 }
 
@@ -247,31 +245,38 @@ void Client::activate(const QString &activate_str){
 }
 
 void Client::moveCard(const QString &move_str){
-    int colon_index = move_str.indexOf(QChar(':'));
-    int card_id = move_str.left(colon_index).toInt();
-    const Card *card = Sanguosha->getCard(card_id);
-    QString place_str = move_str.right(move_str.length() - colon_index - 1);
-    QStringList places = place_str.split("->");
-    QString src = places.at(0);
-    QString dest = places.at(1);
-
-    QStringList words = src.split("@");
-    QString src_name = words.at(0);
-    if(src_name != "_"){
-        QString location = words.at(1);
-        ClientPlayer *player = findChild<ClientPlayer*>(src_name);
-        player->removeCard(card, location);
+    static QMap<QString, Player::Place> place_map;
+    if(place_map.isEmpty()){
+        place_map["hand"] = Player::Hand;
+        place_map["equip"] = Player::Equip;
+        place_map["delayed_trick"] = Player::DelayedTrick;
+        place_map["special"] = Player::Special;
+        place_map["_"] = Player::DiscardedPile;
     }
 
-    words = dest.split("@");
-    QString dest_name = words.at(0);
-    if(dest_name != "_"){
-        QString dest_location = words.at(1);
-        ClientPlayer *player = findChild<ClientPlayer*>(dest_name);
-        player->addCard(card, dest_location);
+    // example: 12:tenshi@equip->moligaloo@hand
+    QRegExp pattern("(\\d+):(\\w+)@(\\w+)->(\\w+)@(\\w+)");
+    if(pattern.indexIn(move_str) == -1){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
+        return;
     }
 
-    emit card_moved(src, dest, card_id);
+    QStringList words = pattern.capturedTexts();
+
+    int card_id = words.at(1).toInt();
+
+    ClientPlayer *src = NULL;
+    if(words.at(2) != "_")
+        src = findChild<ClientPlayer *>(words.at(2));
+    Player::Place src_place = place_map.value(words.at(3), Player::DiscardedPile);
+
+    ClientPlayer *dest = NULL;
+    if(words.at(4) != "_")
+        dest = findChild<ClientPlayer *>(words.at(4));
+    Player::Place dest_place = place_map.value(words.at(5), Player::DiscardedPile);
+
+    Player::MoveCard(src, src_place, dest, dest_place, card_id);
+    emit card_moved(src, src_place, dest, dest_place, card_id);
 }
 
 void Client::startGame(const QString &first_player){
@@ -359,4 +364,8 @@ void Client::setActivity(bool activity){
         this->activity = activity;
         emit activity_changed(activity);
     }
+}
+
+bool Client::isActive() const{
+    return activity;
 }

@@ -19,7 +19,7 @@ public:
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
-    CardItem *takeCardItem(int card_id, const QString &location);
+    CardItem *takeCardItem(int card_id, Player::Place place);
     void installEquip(CardItem *equip);
     void addCardItem(CardItem *card_item);
 

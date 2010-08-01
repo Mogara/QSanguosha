@@ -14,6 +14,9 @@ public:
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
     void drawCards(ServerPlayer *player, int n);
+    void broadcast(const QString &message, Player *except = NULL);
+    void appendToDiscard(int card_id);
+    void throwCard(const Card *card);
 
 protected:
     virtual bool event(QEvent *);
@@ -31,7 +34,6 @@ private:
     int signup_count;
     QStack<ServerPlayer *> active_records;
 
-    void broadcast(const QString &message, Player *except = NULL);
     int drawCard();    
 
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);

@@ -41,7 +41,7 @@ public:
     Suit getSuit() const;
     QString getPixmapPath() const;
     QString getPackage() const;
-    QString toString() const;
+
     bool isVirtualCard() const;
 
     bool match(const QString &pattern) const;
@@ -50,6 +50,7 @@ public:
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual int getTypeId() const = 0;
+    virtual QString toString() const;
 
     // card target selection
     virtual bool targetFixed() const;
@@ -62,7 +63,7 @@ public:
 
     void addSubcard(const Card *card);
     void addSubcards(const QList<const Card *> &cards);
-    QString subcardString() const;
+    QList<const Card *> getSubcards() const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
@@ -72,6 +73,7 @@ public:
 
 protected:
     virtual bool isAvailableAtPlay() const;
+    QString subcardString() const;
 
     QList<const Card *> subcards;
 
@@ -79,7 +81,6 @@ private:
     Suit suit;
     int number;
     int id;
-
 };
 
 class SkillCard: public Card{
@@ -90,6 +91,7 @@ public:
     virtual QString getSubtype() const;    
     virtual QString getType() const;
     virtual int getTypeId() const;
+    virtual QString toString() const;
 };
 
 #endif // CARD_H
