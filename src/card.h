@@ -61,9 +61,9 @@ public:
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
 
-    void addSubcard(const Card *card);
-    void addSubcards(const QList<const Card *> &cards);
-    QList<const Card *> getSubcards() const;
+    void addSubcard(int card_id);
+    void addSubcards(const QList<int> &card_ids);
+    QList<int> getSubcards() const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
@@ -75,7 +75,7 @@ protected:
     virtual bool isAvailableAtPlay() const;
     QString subcardString() const;
 
-    QList<const Card *> subcards;
+    QList<int> subcards;
 
 private:
     Suit suit;

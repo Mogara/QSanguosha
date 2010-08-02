@@ -1,5 +1,8 @@
 #include "player.h"
 #include "engine.h"
+#include "room.h"
+#include "client.h"
+#include "standard.h"
 
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
@@ -239,6 +242,30 @@ void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_pla
     const Card *card = Sanguosha->getCard(card_id);
     if(src)
         src->removeCard(card, src_place);
+    else{
+        Q_ASSERT(dest != NULL);
+
+        // server side
+        if(dest->parent()->inherits("Room")){
+            Room *room = qobject_cast<Room *>(dest->parent());
+            QList<int> *pile = room->getDiscardPile();
+            pile->removeOne(card_id);
+        }else{
+            ClientInstance->discarded_list.removeOne(card);
+        }
+    }
+
     if(dest)
         dest->addCard(card, dest_place);
+    else{
+        Q_ASSERT(src != NULL);
+
+        if(src->parent()->inherits("Room")){
+            Room *room = qobject_cast<Room *>(src->parent());
+            QList<int> *pile = room->getDiscardPile();
+            pile->prepend(card_id);
+        }else{
+            ClientInstance->discarded_list.prepend(card);
+        }
+    }
 }

@@ -53,18 +53,6 @@ int Room::drawCard(){
     return draw_pile->takeFirst();
 }
 
-bool Room::event(QEvent *event){
-    QObject::event(event);
-
-    if(event->type() != Sanguosha->getEventType())
-        return false;
-
-    //Event *e = static_cast<Event*>(event);
-    event->accept();
-
-    return true;
-}
-
 void Room::timerEvent(QTimerEvent *event){
     if(left_seconds > 0){
         left_seconds --;
@@ -357,17 +345,20 @@ void Room::judgeCommand(ServerPlayer *player, const QStringList &args){
     broadcast(QString("! judge %1:%2").arg(target).arg(card_id));
 }
 
-void Room::appendToDiscard(int card_id){
-    discard_pile->append(card_id);
-}
-
 void Room::throwCard(ServerPlayer *player, const Card *card){
     if(card->isVirtualCard()){
-        QList<const Card *> cards = card->getSubcards();
-        foreach(const Card *card, cards)
-            throwCard(player, card);
-    }else{
-        broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card->getID()).arg(player->objectName()));
-        appendToDiscard(card->getID());
-    }
+        QList<int> subcards = card->getSubcards();
+        foreach(int subcard, subcards)
+            throwCard(player, subcard);
+    }else
+        throwCard(player, card->getID());
+}
+
+void Room::throwCard(ServerPlayer *player, int card_id){
+    broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card_id).arg(player->objectName()));
+    Player::MoveCard(player, Player::Hand, NULL, Player::DiscardedPile, card_id);
+}
+
+QList<int> *Room::getDiscardPile() const{
+    return discard_pile;
 }

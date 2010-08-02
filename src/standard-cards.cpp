@@ -3,79 +3,67 @@
 #include "engine.h"
 #include "client.h"
 
-class Slash:public BasicCard{
-public:
-    Slash(Suit suit, int number):BasicCard(suit, number){
-        setObjectName("slash");
-    }
+Slash::Slash(Suit suit, int number):BasicCard(suit, number){
+    setObjectName("slash");
+}
 
-    virtual bool isAvailableAtPlay() const{
-        bool unlimited_slash = ClientInstance->tag.value("unlimited_slash", false).toBool();
-        if(unlimited_slash)
-            return true;
-        else{
-            int limited_slash_count = ClientInstance->tag.value("limited_slash_count", 1).toInt();
-            return ClientInstance->tag.value("slash_count").toInt() < limited_slash_count;
-        }
+bool Slash::isAvailableAtPlay() const{
+    bool unlimited_slash = ClientInstance->tag.value("unlimited_slash", false).toBool();
+    if(unlimited_slash)
+        return true;
+    else{
+        int limited_slash_count = ClientInstance->tag.value("limited_slash_count", 1).toInt();
+        return ClientInstance->tag.value("slash_count").toInt() < limited_slash_count;
     }
+}
 
-    virtual QString getSubtype() const{
-        return "attack_card";
-    }
+QString Slash::getSubtype() const{
+    return "attack_card";
+}
 
-    virtual void use(const QList<const ClientPlayer *> &targets) const{
-        BasicCard::use(targets);
+void Slash::use(const QList<const ClientPlayer *> &targets) const{
+    BasicCard::use(targets);
 
-        // increase slash count
-        int slash_count = ClientInstance->tag.value("slash_count", 0).toInt();
-        ClientInstance->tag.insert("slash_count", slash_count + 1);
-    }
-};
+    // increase slash count
+    int slash_count = ClientInstance->tag.value("slash_count", 0).toInt();
+    ClientInstance->tag.insert("slash_count", slash_count + 1);
+}
 
-class Jink:public BasicCard{
-public:
-    Jink(Suit suit, int number):BasicCard(suit, number){
-        setObjectName("jink");
-    }
+Jink::Jink(Suit suit, int number):BasicCard(suit, number){
+    setObjectName("jink");
+}
 
-    virtual QString getSubtype() const{
-        return "defense_card";
-    }
+QString Jink::getSubtype() const{
+    return "defense_card";
+}
 
-    virtual bool isAvailableAtPlay() const{
-        return false;
-    }
-};
+bool Jink::isAvailableAtPlay() const{
+    return false;
+}
 
-class Peach:public BasicCard{
-public:
-    Peach(Suit suit, int number):BasicCard(suit, number){
-        setObjectName("peach");
-    }
+Peach::Peach(Suit suit, int number):BasicCard(suit, number){
+    setObjectName("peach");
+}
 
-    virtual bool isAvailableAtPlay() const{
-        return ClientInstance->getPlayer()->isWounded();
-    }
+QString Peach::getSubtype() const{
+    return "recover_card";
+}
 
-    virtual QString getSubtype() const{
-        return "recover_card";
-    }
-};
+bool Peach::isAvailableAtPlay() const{
+    return ClientInstance->getPlayer()->isWounded();
+}
 
-class Shit:public BasicCard{
-public:
-    Shit(Suit suit, int number):BasicCard(suit, number){
-        setObjectName("shit");
-    }
+Shit::Shit(Suit suit, int number):BasicCard(suit, number){
+    setObjectName("shit");
+}
 
-    virtual bool isAvailableAtPlay() const{
-        return false;
-    }
+QString Shit::getSubtype() const{
+    return "disgusting_card";
+}
 
-    virtual QString getSubtype() const{
-        return "disgusting_card";
-    }
-};
+bool Shit::isAvailableAtPlay() const{
+    return false;
+}
 
 class Crossbow:public Weapon{
 public:

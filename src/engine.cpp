@@ -109,8 +109,6 @@ Engine::Engine(QObject *parent)
     effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     addPackage(new StandardPackage);
-
-    event_type = static_cast<QEvent::Type>(QEvent::registerEventType());
 }
 
 void Engine::addPackage(Package *package){
@@ -139,10 +137,6 @@ void Engine::addMetaObject(const QString &name, const QMetaObject *metaobject){
 
 QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
-}
-
-QEvent::Type Engine::getEventType() const{
-    return event_type;
 }
 
 const General *Engine::getGeneral(const QString &name) const{

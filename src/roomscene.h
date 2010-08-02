@@ -50,7 +50,6 @@ private:
     Pixmap *pile;
     Pixmap *avatar;
     Pixmap *bust;
-    QList<const Card*> discarded_list;
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;

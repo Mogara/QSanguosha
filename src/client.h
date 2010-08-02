@@ -50,6 +50,7 @@ public:
     QList<CardPattern *> enable_patterns, disable_patterns;
     const Card *card;
     QList<const ClientPlayer *> targets;
+    QList<const Card*> discarded_list;
 
 public slots:    
     void itemChosen(const QString &item_name);

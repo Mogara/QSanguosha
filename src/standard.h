@@ -108,6 +108,45 @@ private:
     int correct;
 };
 
+// cards of standard package
+
+class Slash: public BasicCard{
+    Q_OBJECT
+public:
+    Q_INVOKABLE Slash(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
+protected:
+    virtual bool isAvailableAtPlay() const;
+};
+
+class Jink: public BasicCard{
+    Q_OBJECT
+public:
+    Q_INVOKABLE Jink(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+protected:
+    virtual bool isAvailableAtPlay() const;
+};
+
+class Peach: public BasicCard{
+    Q_OBJECT
+public:
+    Q_INVOKABLE Peach(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+protected:
+    virtual bool isAvailableAtPlay() const;
+};
+
+class Shit:public BasicCard{
+    Q_OBJECT
+public:
+    Q_INVOKABLE Shit(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+protected:
+    virtual bool isAvailableAtPlay() const;
+};
+
 // Skill cards
 
 class ZhihengCard:public SkillCard{

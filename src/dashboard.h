@@ -22,7 +22,7 @@ public:
     Pixmap *getAvatar();
     void selectCard(const QString &pattern = "", bool forward = true);
     void useSelected();
-    CardItem *getSelected() const;
+    const Card *getSelected() const;
     void unselectAll();
     void sort(int order);
     void disableAllCards();
@@ -57,6 +57,7 @@ private:
 
     // for pendings
     QList<CardItem *> pendings;
+    const Card *pending_card;
     const ViewAsSkill *view_as_skill;
 
     void adjustCards();

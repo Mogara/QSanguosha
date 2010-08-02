@@ -35,7 +35,6 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     const Card *uninstalled = source->replaceEquip(equip);
     if(uninstalled){
         room->broadcast(QString("! moveCard %1:%2@equip->_@_").arg(uninstalled->getID()).arg(source->objectName()));
-        room->appendToDiscard(uninstalled->getID());
         Player::MoveCard(source, Player::Equip, NULL, Player::DiscardedPile, uninstalled->getID());
     }
     room->broadcast(QString("! moveCard %1:%2@hand->%2@equip").arg(equip->getID()).arg(source->objectName()));

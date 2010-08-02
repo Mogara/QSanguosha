@@ -3,11 +3,14 @@
 
 #include "general.h"
 #include "card.h"
-#include "standard.h"
 
 #include <QObject>
 #include <QTcpSocket>
 #include <QStack>
+
+class Weapon;
+class Armor;
+class Horse;
 
 class Player : public QObject
 {

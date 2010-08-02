@@ -89,13 +89,13 @@ QString Card::toString() const{
     if(!isVirtualCard())
         return QString::number(id);
     else
-        return QString("%1[%2 %3]=%4").arg(objectName()).arg(getSuitString()).arg(getNumberString().arg(subcardString()));
+        return QString("%1[%2:%3]=%4").arg(objectName()).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
 QString Card::subcardString() const{
     QStringList str;
-    foreach(const Card *card, subcards)
-        str << QString::number(card->getID());
+    foreach(int subcard, subcards)
+        str << QString::number(subcard);
 
     return str.join("+");
 }
@@ -115,29 +115,30 @@ const Card *Card::Parse(const QString &str){
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
         foreach(QString subcard_id, subcard_ids)
-            card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
+            card->addSubcard(subcard_id.toInt());
 
         return card;        
     }else if(str.contains(QChar('='))){
-        static QRegExp pattern("(\\w+)\\[(\\w+) (\\w+)\\]=(.+)");
+        static QRegExp pattern("(\\w+)\\[(\\w+):(\\w+)\\]=(.+)");
         pattern.indexIn(str);
         QStringList texts = pattern.capturedTexts();
         QString name = texts.at(1);
         QString suit_string = texts.at(2);
         QString number_string = texts.at(3);
         QStringList subcard_ids = texts.at(4).split("+");
-        Suit suit = NoSuit;
+
+        static QMap<QString, Card::Suit> suit_map;
+        if(suit_map.isEmpty()){
+            suit_map.insert("spade", Card::Spade);
+            suit_map.insert("club", Card::Club);
+            suit_map.insert("heart", Card::Heart);
+            suit_map.insert("diamond", Card::Diamond);
+            suit_map.insert("no_suit", Card::NoSuit);
+        }
+
+        Suit suit = suit_map.value(suit_string, Card::NoSuit);
+
         int number = 0;
-
-        if(suit_string == "spade")
-            suit = Spade;
-        else if(suit_string == "club")
-            suit = Club;
-        else if(suit_string == "heart")
-            suit = Heart;
-        else if(suit_string == "diamond")
-            suit = Diamond;
-
         if(number_string == "A")
             number = 1;
         else if(number_string == "J")
@@ -151,7 +152,7 @@ const Card *Card::Parse(const QString &str){
 
         Card *card = Sanguosha->cloneCard(name, suit, number);
         foreach(QString subcard_id, subcard_ids)
-            card->addSubcard(Sanguosha->getCard(subcard_id.toInt()));
+            card->addSubcard(subcard_id.toInt());
 
         return card;
     }else
@@ -182,18 +183,18 @@ bool Card::isAvailableAtPlay() const{
     return true;
 }
 
-void Card::addSubcard(const Card *card){
-    if(card->isVirtualCard())
+void Card::addSubcard(int card_id){
+    if(card_id < 0)
         qWarning(qPrintable(tr("Subcard must not be virtual card!")));
     else
-        subcards << card;
+        subcards << card_id;
 }
 
-void Card::addSubcards(const QList<const Card *> &cards){
-    subcards << cards;
+void Card::addSubcards(const QList<int> &card_ids){
+    subcards << card_ids;
 }
 
-QList<const Card *> Card::getSubcards() const{
+QList<int> Card::getSubcards() const{
     return subcards;
 }
 

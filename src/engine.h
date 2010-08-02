@@ -6,7 +6,6 @@
 #include "package.h"
 
 #include <QHash>
-#include <QEvent>
 #include <QStringList>
 #include <MediaObject>
 #include <QMetaObject>
@@ -28,8 +27,7 @@ public:
     int getGeneralCount() const;
 
     int getCardCount() const;
-    const Card *getCard(int index) const;    
-    QEvent::Type getEventType() const;
+    const Card *getCard(int index) const;
     const Skill *getBasicRule() const;
 
     void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
@@ -44,7 +42,6 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
 
     QList<Card*> cards;
-    QEvent::Type event_type;
     QStringList lord_names;
     Skill *basic_rule;
     Phonon::MediaObject *effect;

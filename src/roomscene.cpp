@@ -513,7 +513,7 @@ void RoomScene::changePrompt(const QString &prompt_str){
 }
 
 void RoomScene::viewDiscards(){
-    if(discarded_list.isEmpty()){
+    if(ClientInstance->discarded_list.isEmpty()){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
     }
@@ -528,7 +528,7 @@ void RoomScene::viewDiscards(){
         }
     }else{
         CardOverview *overview = new CardOverview;
-        overview->loadFromList(discarded_list);
+        overview->loadFromList(ClientInstance->discarded_list);
         overview->show();
     }
 }
@@ -573,13 +573,16 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
                 return NULL;
         }
     }else{
-        const Card *card = Sanguosha->getCard(card_id);
-        int card_index = discarded_list.indexOf(card);
-        CardItem *card_item;
-        if(card_index < discarded_queue.length())
-            card_item = discarded_queue.at(discarded_queue.length() - card_index - 1);
-        else{
-            card_item = new CardItem(card);
+        CardItem *card_item = NULL;
+        int i;
+        for(i=0; i<discarded_queue.length(); i++){
+            if(discarded_queue.at(i)->getCard()->getID() == card_id){
+                card_item = discarded_queue.takeAt(i);
+            }
+        }
+
+        if(card_item == NULL){
+            card_item = new CardItem(Sanguosha->getCard(card_id));
             card_item->setPos(DiscardedPos);
         }
 
@@ -601,8 +604,7 @@ void RoomScene::moveCard(ClientPlayer *src, Player::Place src_place, ClientPlaye
 
         card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
-        card_item->setZValue(0.1*discarded_list.length());
-        discarded_list.prepend(card_item->getCard());
+        card_item->setZValue(0.1*ClientInstance->discarded_list.length());
         discarded_queue.enqueue(card_item);
 
         if(discarded_queue.length() > 8){
@@ -743,14 +745,13 @@ void RoomScene::enableTargets(const Card *card){
 void RoomScene::updateSelectedTargets(){
     selected_targets.clear();
 
-    QList<QGraphicsItem *> selection = selectedItems();
-    foreach(QGraphicsItem *item, selection){
-        QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
-        Photo *photo = qobject_cast<Photo *>(item_obj);
-        if(photo)
-            selected_targets.append(photo->getPlayer());
-        else if(item_obj == avatar)
-            selected_targets.append(ClientInstance->getPlayer());
+    QStringList general_names;
+    foreach(Photo *photo, photos){
+        if(photo->isSelected()){
+            const ClientPlayer *target = photo->getPlayer();
+            selected_targets << target;
+            general_names << Sanguosha->translate(target->getGeneral());
+        }
     }
 
     if(selected_targets.isEmpty()){
@@ -758,26 +759,20 @@ void RoomScene::updateSelectedTargets(){
         return;
     }
 
-    QStringList general_names;
-    foreach(const ClientPlayer *target, selected_targets){
-        general_names << Sanguosha->translate(target->getGeneral());
-    }
-
     QString targets = general_names.join(",");
-    const CardItem *card_item = dashboard->getSelected();
-    if(card_item){
-        QString card_name = Sanguosha->translate(card_item->getCard()->objectName());
+    const Card *card = dashboard->getSelected();
+    if(card){
+        QString card_name = Sanguosha->translate(card->objectName());
         changePrompt(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
     }else
         changePrompt(tr("You choose %1 as target").arg(targets));
 }
 
 void RoomScene::useSelectedCard(){
-    CardItem *selected = dashboard->getSelected();
-    if(selected){
-        const Card *card = selected->getCard();
+    const Card *card = dashboard->getSelected();
+    if(card)
         useCard(card);
-    }else
+    else
         changePrompt(tr("You didn't choose any card to use yet!"));
 }
 
@@ -814,22 +809,22 @@ void RoomScene::startViewAsSkill(){
 void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
-    if(!card){
+    if(card == NULL){
         changePrompt(tr("Not enough cards to call skill"));
         return;
     }
 
     if(card->isAvailable()){
-        // use card
-        dashboard->stopPending();
-        useCard(card);        
-
         const ViewAsSkill *skill = dashboard->currentSkill();
         skill->playEffect();
         if(!skill->isDisableAfterUse()){
             QPushButton *button = button2skill.key(skill, NULL);
             button->setEnabled(false);
         }
+
+        // use card
+        dashboard->stopPending();
+        useCard(card);
     }else{
         changePrompt(tr("Card [%1] can not be used right now").arg(Sanguosha->translate(card->objectName())));
     }

@@ -129,10 +129,12 @@ public:
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() != 1)
-            return false;
+            return NULL;
         else{
             const Card *card = cards.first()->getCard();
-            return Sanguosha->cloneCard("slash", card->getSuit(), card->getNumber());
+            Card *slash = new Slash(card->getSuit(), card->getNumber());
+            slash->addSubcard(card->getID());
+            return slash;
         }
     }
 };

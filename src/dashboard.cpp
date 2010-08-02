@@ -97,8 +97,11 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     }
 }
 
-CardItem *Dashboard::getSelected() const{
-    return selected;
+const Card *Dashboard::getSelected() const{
+    if(selected)
+        return selected->getCard();
+    else
+        return NULL;
 }
 
 void Dashboard::unselectAll(){
@@ -304,6 +307,9 @@ void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
         pendings.append(card_item);
         card_items.removeOne(card_item);
         adjustCards();
+        pending_card = view_as_skill->viewAs(pendings);
+
+        emit card_selected(pending_card);
     }else if(!add_to_pendings && !card_items.contains(card_item)){
         card_items.append(card_item);
         pendings.removeOne(card_item);
@@ -343,6 +349,7 @@ void Dashboard::startPending(const ViewAsSkill *skill){
 
 void Dashboard::stopPending(){
     view_as_skill = NULL;
+    pending_card = NULL;
 
     card_items.append(pendings);
     pendings.clear();
@@ -354,7 +361,7 @@ const ViewAsSkill *Dashboard::currentSkill() const{
 }
 
 const Card *Dashboard::pendingCard() const{
-    return view_as_skill->viewAs(pendings);
+    return pending_card;
 }
 
 void Dashboard::enableCards(const QString &pattern){
