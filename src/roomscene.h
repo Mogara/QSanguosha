@@ -55,15 +55,12 @@ private:
     QComboBox *role_combobox;
     QPushButton *ok_button, *cancel_button, *discard_button;
 
-    QList<QPushButton *> skill_buttons;
-    QMap<QPushButton *, const ViewAsSkill *> button2skill;
+    QList<QAbstractButton *> skill_buttons;
+    QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
 
-    int max_targets, min_targets;
-    bool target_fixed;    
-    QList<const ClientPlayer *> selected_targets, available_targets;
+    QList<const ClientPlayer *> selected_targets;
 
     void startEnterAnimation();
-    // CardItem *takeCardItem(const QString &src, int card_id);
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void clickSkillButton(int order);
     void useCard(const Card *card);

@@ -20,6 +20,7 @@ class Card : public QObject
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
+    Q_PROPERTY(bool target_fixed READ targetFixed)
 
     Q_ENUMS(Suit)
 
@@ -28,7 +29,7 @@ public:
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
 
     // constructor
-    Card(Suit suit, int number);
+    Card(Suit suit, int number, bool target_fixed = false);
 
     // property getters, as all properties of card is read only, no setter is defined
     QString getSuitString() const;
@@ -40,6 +41,7 @@ public:
     QString getNumberString() const;
     Suit getSuit() const;
     QString getPixmapPath() const;
+    QString getIconPath() const;
     QString getPackage() const;
 
     bool isVirtualCard() const;
@@ -53,9 +55,9 @@ public:
     virtual QString toString() const;
 
     // card target selection
-    virtual bool targetFixed() const;
-    virtual void targetRange(int *min, int *max, bool *include_self) const;
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets) const;    
+    bool targetFixed() const;
+    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -76,11 +78,12 @@ protected:
     QString subcardString() const;
 
     QList<int> subcards;
+    bool target_fixed;
 
 private:
     Suit suit;
     int number;
-    int id;
+    int id;    
 };
 
 class SkillCard: public Card{

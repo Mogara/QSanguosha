@@ -236,7 +236,7 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
     QString card_str = args.at(1);
     const Card *card = Card::Parse(card_str);
 
-    if(!card){
+    if(card == NULL){
         emit room_message(tr("Card can not parse:\n %1").arg(card_str));
         return;
     }
@@ -355,10 +355,31 @@ void Room::throwCard(ServerPlayer *player, const Card *card){
 }
 
 void Room::throwCard(ServerPlayer *player, int card_id){
-    broadcast(QString("! moveCard %1:%2@hand->_@_").arg(card_id).arg(player->objectName()));
-    Player::MoveCard(player, Player::Hand, NULL, Player::DiscardedPile, card_id);
+    moveCard(player, Player::Hand, NULL, Player::DiscardedPile, card_id);
 }
 
 QList<int> *Room::getDiscardPile() const{
     return discard_pile;
+}
+
+void Room::moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id){
+    static QMap<Player::Place, QString> place2str;
+    if(place2str.isEmpty()){
+        place2str.insert(Player::Hand, "hand");
+        place2str.insert(Player::Equip, "equip");
+        place2str.insert(Player::DelayedTrick, "delayed_trick");
+        place2str.insert(Player::Special, "special");
+        place2str.insert(Player::DiscardedPile, "_");
+    }
+
+    QString src_str = src ? src->objectName() : "_";
+    QString dest_str = dest ? dest->objectName() : "_";
+
+    broadcast(QString("! moveCard %1:%2@%3->%4@%5")
+              .arg(card_id)
+              .arg(src_str).arg(place2str.value(src_place, "_"))
+              .arg(dest_str).arg(place2str.value(dest_place, "_"))
+              );
+
+    Player::MoveCard(src, src_place, dest, dest_place, card_id);
 }

@@ -6,38 +6,20 @@
 Skill::Skill(const QString &name)
 {
     static QChar lord_symbol('$');
-    static QChar frequent_symbol('+');
-    static QChar compulsory_symbol('!');
 
-    QString copy = name;
-
-    setBooleanFlag(copy, lord_symbol, &lord_skill);
-    setBooleanFlag(copy, compulsory_symbol, &compulsory);
-    if(!compulsory){
-        setBooleanFlag(copy, frequent_symbol, &frequent);
+    if(name.endsWith(lord_symbol)){
+        QString copy = name;
+        copy.remove(lord_symbol);
+        setObjectName(copy);
+        lord_skill = true;
+    }else{
+        setObjectName(name);
+        lord_skill = false;
     }
-
-    setObjectName(copy);
-}
-
-bool Skill::isCompulsory() const{
-    return compulsory;
 }
 
 bool Skill::isLordSkill() const{
     return lord_skill;
-}
-
-bool Skill::isFrequent() const{
-    return frequent;
-}
-
-void Skill::setBooleanFlag(QString &str, QChar symbol, bool *flag){
-    if(str.contains(symbol)){
-        str.remove(symbol);
-        *flag = true;
-    }else
-        *flag = false;
 }
 
 QString Skill::getDescription() const{
@@ -100,4 +82,28 @@ void ViewAsSkill::attachPlayer(Player *player) const{
 
 bool ViewAsSkill::isDisableAfterUse() const{
     return disable_after_use;
+}
+
+FilterSkill::FilterSkill(const QString &name)
+    :ViewAsSkill(name, false)
+{
+}
+
+PassiveSkill::PassiveSkill(const QString &name)
+    :Skill(name)
+{
+
+}
+
+
+FrequentPassiveSkill::FrequentPassiveSkill(const QString &name)
+    :PassiveSkill(name)
+{
+
+}
+
+EnvironSkill::EnvironSkill(const QString &name)
+    :Skill(name)
+{
+
 }

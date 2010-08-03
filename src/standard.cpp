@@ -26,10 +26,6 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
-bool EquipCard::targetFixed() const{
-    return true;
-}
-
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     const Card *equip = this;
     const Card *uninstalled = source->replaceEquip(equip);
@@ -47,16 +43,8 @@ QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }
 
-bool GlobalEffect::targetFixed() const{
-    return true;
-}
-
 QString AOE::getSubtype() const{
     return "aoe";
-}
-
-bool AOE::targetFixed() const{
-    return true;
 }
 
 QString SingleTargetTrick::getSubtype() const{

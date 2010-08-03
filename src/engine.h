@@ -19,7 +19,6 @@ public:
 
     QString translate(const QString &to_translate) const;
     void addPackage(Package *package);
-    void addMetaObject(const QString &name, const QMetaObject *metaobject);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name);
 

@@ -128,11 +128,11 @@ void Engine::addPackage(Package *package){
         generals.insert(general->objectName(), general);
     }
 
-    translations.unite(package->getTranslation());
-}
+    QList<const QMetaObject *> metas = package->getMetaObjects();
+    foreach(const QMetaObject *meta, metas)
+        metaobjects.insert(meta->className(), meta);
 
-void Engine::addMetaObject(const QString &name, const QMetaObject *metaobject){
-    metaobjects.insert(name, metaobject);
+    translations.unite(package->getTranslation());
 }
 
 QString Engine::translate(const QString &to_translate) const{

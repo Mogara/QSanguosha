@@ -5,9 +5,9 @@
 #include "client.h"
 #include "carditem.h"
 
-class Jianxiong:public Skill{
+class Jianxiong:public FrequentPassiveSkill{
 public:
-    Jianxiong():Skill("jianxiong+"){
+    Jianxiong():FrequentPassiveSkill("jianxiong"){
     }
 };
 
@@ -25,16 +25,16 @@ public:
     }
 };
 
-class Tiandu:public Skill{
+class Tiandu:public FrequentPassiveSkill{
 public:
-    Tiandu():Skill("tiandu+"){
+    Tiandu():FrequentPassiveSkill("tiandu"){
 
     }
 };
 
-class Yiji:public Skill{
+class Yiji:public FrequentPassiveSkill{
 public:
-    Yiji():Skill("yiji+"){
+    Yiji():FrequentPassiveSkill("yiji"){
 
     }
 };
@@ -67,9 +67,9 @@ public:
     }
 };
 
-class Luoshen:public Skill{
+class Luoshen:public FrequentPassiveSkill{
 public:
-    Luoshen():Skill("luoshen+"){
+    Luoshen():FrequentPassiveSkill("luoshen"){
 
     }
 };
@@ -104,8 +104,13 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        // FIXME
-        return NULL;
+        if(cards.isEmpty())
+            return NULL;
+
+        Card *rende_card = new RendeCard;
+        foreach(CardItem *card_item, cards)
+            rende_card->addSubcard(card_item->getCard()->getID());
+        return rende_card;
     }
 };
 
@@ -139,9 +144,9 @@ public:
     }
 };
 
-class Paoxiao:public Skill{
+class Paoxiao:public EnvironSkill{
 public:
-    Paoxiao():Skill("paoxiao+"){
+    Paoxiao():EnvironSkill("paoxiao"){
     }
 
     virtual void trigger(TriggerReason reason, const QString &data) const{
@@ -164,30 +169,30 @@ public:
     }
 };
 
-class Mashu:public Skill{
+class Mashu:public EnvironSkill{
 public:
-    Mashu():Skill("mashu!"){
+    Mashu():EnvironSkill("mashu"){
 
     }
 };
 
-class Guanxing:public Skill{
+class Guanxing:public PassiveSkill{
 public:
-    Guanxing():Skill("guanxing+"){
+    Guanxing():PassiveSkill("guanxing"){
 
     }
 };
 
 class Kongcheng:public Skill{
 public:
-    Kongcheng():Skill("kongcheng!"){
+    Kongcheng():Skill("kongcheng"){
 
     }
 };
 
 class Jizhi:public Skill{
 public:
-    Jizhi():Skill("jizhi+"){
+    Jizhi():Skill("jizhi"){
 
     }
 
@@ -198,7 +203,7 @@ public:
 
 class Qicai:public Skill{
 public:
-    Qicai():Skill("qicai!"){
+    Qicai():Skill("qicai"){
 
     }
 };
@@ -215,7 +220,14 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        return NULL;
+        if(cards.isEmpty())
+            return NULL;
+
+        Card *zhiheng_card = new ZhihengCard;
+        foreach(CardItem *card_item, cards)
+            zhiheng_card->addSubcard(card_item->getCard()->getID());
+
+        return zhiheng_card;
     }
 };
 
@@ -226,9 +238,9 @@ public:
     }
 };
 
-class Yingzi:public Skill{
+class Yingzi:public FrequentPassiveSkill{
 public:
-    Yingzi():Skill("yingzi+"){
+    Yingzi():FrequentPassiveSkill("yingzi"){
 
     }
 
@@ -287,6 +299,8 @@ void StandardPackage::addGenerals(){
     caocao->addSkill(new Wusheng);
     caocao->addSkill(new Yingzi);
     caocao->addSkill(new Luanji);
+    caocao->addSkill(new Rende);
+    caocao->addSkill(new Zhiheng);
 #endif
 
     zhangliao = new General(this, "zhangliao", "wei");
@@ -356,6 +370,10 @@ void StandardPackage::addGenerals(){
     lubu = new General(this, "lubu", "qun");
     huatuo = new General(this, "huatuo", "qun", 3);
     diaochan = new General(this, "diaochan", "qun", 3, false);
+
+    // for skill cards    
+    metaobjects << &ZhihengCard::staticMetaObject
+            << &RendeCard::staticMetaObject;
 
     // for translation
     t["wei"] = tr("wei");
@@ -480,4 +498,5 @@ void StandardPackage::addGenerals(){
     t[":lijian"] = tr(":lijian");
     t[":biyue"] = tr(":biyue");
 
+    t["luanji"] = tr("luanji");
 }

@@ -18,6 +18,7 @@ public:
     void throwCard(ServerPlayer *player, const Card *card);
     void throwCard(ServerPlayer *player, int card_id);
     QList<int> *getDiscardPile() const;
+    void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

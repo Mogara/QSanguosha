@@ -35,10 +35,9 @@ class EquipCard:public Card{
     Q_OBJECT
 
 public:
-    EquipCard(Suit suit, int number):Card(suit, number){}
+    EquipCard(Suit suit, int number):Card(suit, number, true){}
     virtual QString getType() const;
     virtual int getTypeId() const;
-    virtual bool targetFixed() const;
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };
@@ -47,18 +46,16 @@ class GlobalEffect:public TrickCard{
     Q_OBJECT
 
 public:
-    GlobalEffect(Suit suit, int number):TrickCard(suit, number){}
+    GlobalEffect(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
     virtual QString getSubtype() const;
-    virtual bool targetFixed() const;
 };
 
 class AOE:public TrickCard{
     Q_OBJECT
 
 public:
-    AOE(Suit suit, int number):TrickCard(suit, number){}
+    AOE(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
     virtual QString getSubtype() const;
-    virtual bool targetFixed() const;
 };
 
 class SingleTargetTrick: public TrickCard{
@@ -147,13 +144,23 @@ protected:
     virtual bool isAvailableAtPlay() const;
 };
 
+
+
 // Skill cards
 
 class ZhihengCard:public SkillCard{
     Q_OBJECT
 
 public:
-    virtual bool targetFixed() const;
+    Q_INVOKABLE ZhihengCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class RendeCard:public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE RendeCard();
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

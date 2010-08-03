@@ -8,11 +8,12 @@
 #include <QParallelAnimationGroup>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), equipped(false)
+    :Pixmap(card->getPixmapPath(), false), card(card), markable(true), marked(false)
 {
     Q_ASSERT(card != NULL);
 
     suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
+    icon_pixmap.load(card->getIconPath());
     pixmap = pixmap.scaled(150*0.8, 210*0.8);
     setFlags(ItemIsFocusable);
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
@@ -49,6 +50,10 @@ const QPixmap &CardItem::getSuitPixmap() const{
     return suit_pixmap;
 }
 
+const QPixmap &CardItem::getIconPixmap() const{
+    return icon_pixmap;
+}
+
 void CardItem::select(){
     setY(10);
 }
@@ -58,11 +63,7 @@ void CardItem::unselect(){
 }
 
 bool CardItem::isEquipped() const{
-    return equipped;
-}
-
-void CardItem::setEquipped(bool equipped){
-    this->equipped = equipped;
+    return opacity() == 0.0;
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -101,4 +102,23 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(card->isRed())
         painter->setPen(Qt::red);
     painter->drawText(8, 50, card->getNumberString());
+}
+
+bool CardItem::isMarked() const{
+    return marked;
+}
+
+bool CardItem::isMarkable() const{
+    return markable;
+}
+
+void CardItem::mark(bool marked){
+    if(markable)
+        this->marked = marked;
+}
+
+void CardItem::setMarkable(bool markable){
+    this->markable = markable;
+
+    setEnabled(markable);
 }

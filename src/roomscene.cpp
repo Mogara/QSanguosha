@@ -23,8 +23,7 @@ static const QPointF DiscardedPos(-494, -115);
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
-    :bust(NULL), main_window(main_window),
-    max_targets(1), min_targets(1), target_fixed(false)
+    :bust(NULL), main_window(main_window)
 {
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
@@ -347,30 +346,30 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: {
-            if(max_targets == 1){
-                Photo *selected_photo = NULL;
-                foreach(Photo *photo, photos){
-                    if(photo->isSelected())
-                        selected_photo = photo;
-                    else if(photo->flags() & QGraphicsItem::ItemIsSelectable){
-                        if(selected_photo){
-                            selected_photo->setSelected(false);
-                            photo->setSelected(true);
-                            break;
-                        }
-                    }
-                }
-
-                // select first selectable
-                if(selected_photo == NULL || selected_photo->isSelected()){
-                    foreach(Photo *photo, photos){
-                        if(photo->flags() & QGraphicsItem::ItemIsSelectable){
-                            photo->setSelected(true);
-                            break;
-                        }
-                    }
-                }
-            }
+//            if(max_targets == 1){
+//                Photo *selected_photo = NULL;
+//                foreach(Photo *photo, photos){
+//                    if(photo->isSelected())
+//                        selected_photo = photo;
+//                    else if(photo->flags() & QGraphicsItem::ItemIsSelectable){
+//                        if(selected_photo){
+//                            selected_photo->setSelected(false);
+//                            photo->setSelected(true);
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                // select first selectable
+//                if(selected_photo == NULL || selected_photo->isSelected()){
+//                    foreach(Photo *photo, photos){
+//                        if(photo->flags() & QGraphicsItem::ItemIsSelectable){
+//                            photo->setSelected(true);
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
 
             break; // iterate generals when
         }
@@ -394,12 +393,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7:
         {
-            if(max_targets == 1){
-                avatar->setSelected(false);
-                foreach(Photo *photo, photos)
-                    photo->setSelected(false);
-            }
-
             int order = event->key() - Qt::Key_0;
             if(order == 0)
                 avatar->setSelected(! avatar->isSelected());
@@ -615,11 +608,27 @@ void RoomScene::moveCard(ClientPlayer *src, Player::Place src_place, ClientPlaye
         connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
         connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
     }else if(dest->objectName() == Config.UserName){
-        if(dest_place == Player::Equip){
-            dashboard->installEquip(card_item);
-            Sanguosha->playEffect(install_equip_source);
-        }else if(dest_place == Player::Hand)
-            dashboard->addCardItem(card_item);
+        switch(dest_place){
+        case Player::Equip:{
+                dashboard->installEquip(card_item);
+                Sanguosha->playEffect(install_equip_source);
+                break;
+            }
+
+        case Player::Hand:{
+                dashboard->addCardItem(card_item);
+                break;
+            }
+
+        case Player::DelayedTrick:{
+                dashboard->installDelayedTrick(card_item);
+                break;
+            }
+
+        default:
+            ;
+            // FIXME
+        }
     }else{
         Photo *photo = name2photo.value(dest->objectName());
         if(photo){
@@ -646,25 +655,24 @@ void RoomScene::updateSkillButtons(){
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
-        QPushButton *button = new QPushButton(Sanguosha->translate(skill->objectName()));
-        if(skill->isCompulsory()){
-            button->setText(button->text() + tr("[Compulsory]"));
-            button->setDisabled(true);
+        QAbstractButton *button = NULL;
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        if(skill->inherits("FrequentPassiveSkill")){
+            button = new QCheckBox(skill_name);
+            button->setCheckable(true);
+            button->setChecked(true);
+        }else if(skill->inherits("ViewAsSkill") && !skill->inherits("FilterSkill"))
+            button = new QPushButton(skill_name);
+        else{
+            button = new QPushButton(skill_name);
+            button->setEnabled(false);
         }
 
-        if(skill->isLordSkill()){
-            button->setText(button->text() + tr("[Lord Skill]"));
-        }
+        if(skill->isLordSkill())
+            button->setText(button->text() + tr("[Lord Skill]"));        
 
         status_bar->addPermanentWidget(button);
         skill_buttons << button;
-
-        if(skill->isFrequent()){
-            QCheckBox *checkbox = new QCheckBox(tr("Auto use"));
-            button->setDisabled(true);
-            checkbox->setChecked(true);
-            status_bar->addPermanentWidget(checkbox);
-        }
 
         if(skill->inherits("ViewAsSkill")){
             button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
@@ -680,7 +688,7 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
 
     if(new_role != "lord"){
-        foreach(QPushButton *button, skill_buttons){
+        foreach(QAbstractButton *button, skill_buttons){
             if(button->text().contains(tr("[Lord Skill]")))
                 button->setDisabled(true);
         }
@@ -693,12 +701,11 @@ void RoomScene::clickSkillButton(int order){
 }
 
 void RoomScene::enableTargets(const Card *card){
-    min_targets = max_targets = 1;    
     selected_targets.clear();
-    available_targets.clear();    
 
     if(card == NULL){
         avatar->setEnabled(false);
+        avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
         foreach(Photo *photo, photos){
             photo->setEnabled(false);
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
@@ -719,26 +726,20 @@ void RoomScene::enableTargets(const Card *card){
         return;
     }
 
-    bool include_self;
-    card->targetRange(&min_targets, &max_targets, &include_self);
-    avatar->setEnabled(include_self);
+    avatar->setEnabled(card->targetFilter(selected_targets, ClientInstance->getPlayer()));
 
     foreach(Photo *photo, photos){
-        if(card->targetFilter(selected_targets)){
-            available_targets << photo->getPlayer();
+        if(card->targetFilter(selected_targets, photo->getPlayer())){
             photo->setEnabled(true);
-            photo->setFlag(QGraphicsItem::ItemIsSelectable);
+            photo->setFlag(QGraphicsItem::ItemIsSelectable, true);
         }else{
             photo->setEnabled(false);
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
     }
 
-    if(Config.EnableAutoTarget && !available_targets.isEmpty()){
-        const ClientPlayer *first_player = available_targets.first();
-        Photo *photo = name2photo[first_player->objectName()];
-        if(photo)
-            photo->setSelected(true);
+    if(Config.EnableAutoTarget){
+        // FIXME: select first available target
     }
 }
 
@@ -777,18 +778,10 @@ void RoomScene::useSelectedCard(){
 }
 
 void RoomScene::useCard(const Card *card){
-    if(card->targetFixed())
-        ClientInstance->useCard(card);
-    else{
-        int extra_targets = min_targets - selected_targets.length();
-        int over_targets = selected_targets.length() > max_targets;
-        if(extra_targets > 0)
-            changePrompt(tr("You should select extra %1 target(s)").arg(extra_targets));
-        else if(over_targets > 0)
-            changePrompt(tr("You selected extra %1 targets, please unselect them").arg(over_targets));
-        else
-            ClientInstance->useCard(card, selected_targets);
-    }
+    if(card->targetFixed() || card->targetsFeasible(selected_targets))
+        ClientInstance->useCard(card, selected_targets);
+    else
+        changePrompt(tr("Not enough targets"));
 
     enableTargets(NULL);
 }
@@ -818,7 +811,7 @@ void RoomScene::callViewAsSkill(){
         const ViewAsSkill *skill = dashboard->currentSkill();
         skill->playEffect();
         if(!skill->isDisableAfterUse()){
-            QPushButton *button = button2skill.key(skill, NULL);
+            QAbstractButton *button = button2skill.key(skill, NULL);
             button->setEnabled(false);
         }
 
@@ -833,7 +826,7 @@ void RoomScene::callViewAsSkill(){
 void RoomScene::cancelViewAsSkill(){
     const ViewAsSkill *skill = dashboard->currentSkill();
     dashboard->stopPending();
-    QPushButton *button = button2skill.key(skill, NULL);
+    QAbstractButton *button = button2skill.key(skill, NULL);
 
     if(button){
         button->setEnabled(true);

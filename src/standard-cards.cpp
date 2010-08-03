@@ -42,6 +42,7 @@ bool Jink::isAvailableAtPlay() const{
 }
 
 Peach::Peach(Suit suit, int number):BasicCard(suit, number){
+    target_fixed = true;
     setObjectName("peach");
 }
 

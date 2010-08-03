@@ -11,12 +11,9 @@ class CardItem;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool compulsory READ isCompulsory CONSTANT)
     Q_PROPERTY(bool lord_skill READ isLordSkill CONSTANT)
-    Q_PROPERTY(bool frequent READ isFrequent CONSTANT)
 
     Q_ENUMS(TriggerReason)
-
 public:
     enum TriggerReason {
         GameStart,
@@ -30,9 +27,7 @@ public:
     };
 
     explicit Skill(const QString &name);
-    bool isCompulsory() const;
     bool isLordSkill() const;
-    bool isFrequent() const;
     QString getDescription() const;
 
     void initMediaSource();
@@ -43,12 +38,8 @@ public:
     virtual void trigger(Room *room) const;
 
 private:
-    bool compulsory;
     bool lord_skill;
-    bool frequent;
     QList<Phonon::MediaSource> sources;
-
-    void setBooleanFlag(QString &str, QChar symbol, bool *flag);
 };
 
 class ViewAsSkill:public Skill{
@@ -64,6 +55,30 @@ public:
 
 private:
     bool disable_after_use;
+};
+
+class FilterSkill: public ViewAsSkill{
+    Q_OBJECT
+public:
+    FilterSkill(const QString &name);
+};
+
+class PassiveSkill:public Skill{
+    Q_OBJECT
+public:
+    PassiveSkill(const QString &name);
+};
+
+class FrequentPassiveSkill: public PassiveSkill{
+    Q_OBJECT
+public:
+    FrequentPassiveSkill(const QString &name);
+};
+
+class EnvironSkill: public Skill{
+    Q_OBJECT
+public:
+    EnvironSkill(const QString &name);
 };
 
 #endif // SKILL_H

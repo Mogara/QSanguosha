@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
+#include <QGraphicsSceneMouseEvent>
 
 Dashboard::Dashboard()
     :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL), use_skill(false),
@@ -112,8 +113,13 @@ void Dashboard::sort(int order){
     sort_combobox->setCurrentIndex(order);
 }
 
-void Dashboard::installDelayedTrick(CardItem *card){
-    judging_area.push(card);
+void Dashboard::installDelayedTrick(CardItem *trick){
+    judging_area.push(trick);
+
+    trick->setHomePos(mapToScene(QPointF(34, 37)));
+    trick->goBack(true);
+
+    update();
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
@@ -144,8 +150,34 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         drawEquip(painter, offensive_horse, 3);
 
         // draw player's judging area
-        for(i=0; i<judging_area.count(); i++)
-            ;
+        for(i=0; i<judging_area.count(); i++){
+            CardItem *trick = judging_area.at(i);
+            drawDelayedTrick(painter, trick, i);
+        }
+    }
+}
+
+void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    static QSizeF equip_size(157, 30);
+    static QRectF weapon_rect(QPointF(11, 78), equip_size);
+    static QRectF armor_rect(QPointF(11, 112), equip_size);
+    static QRectF defensive_horse_rect(QPointF(11, 143), equip_size);
+    static QRectF offensive_horse_rect(QPointF(11, 177), equip_size);
+
+    QPointF pos(event->pos());
+    CardItem *to_select = NULL;
+    if(weapon_rect.contains(pos))
+        to_select = weapon;
+    else if(armor_rect.contains(pos))
+        to_select = armor;
+    else if(defensive_horse_rect.contains(pos))
+        to_select = defensive_horse;
+    else if(offensive_horse_rect.contains(pos))
+        to_select = offensive_horse;
+
+    if(to_select){
+        to_select->mark(!to_select->isMarked());
+        update();
     }
 }
 
@@ -158,6 +190,15 @@ void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
     const Card *card = equip->getCard();
     painter->drawText(32, 83+20 + order*32, card->getNumberString());
     painter->drawText(58, 83+20 + order*32, Sanguosha->translate(card->objectName()));
+
+    painter->setPen(Qt::white);
+    if(equip->isMarked()){
+        painter->drawRect(11, 78 + order * 34, 157, 30);
+    }
+}
+
+void Dashboard::drawDelayedTrick(QPainter *painter, CardItem *trick, int order){
+    painter->drawPixmap(178 + order * 52, 5, trick->getIconPixmap());
 }
 
 void Dashboard::adjustCards(){
@@ -318,6 +359,17 @@ void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
 
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
+    }
+
+    updateEnablity(weapon);
+    updateEnablity(armor);
+    updateEnablity(defensive_horse);
+    updateEnablity(offensive_horse);
+}
+
+void Dashboard::updateEnablity(CardItem *card_item){
+    if(card_item){
+        card_item->setMarkable(view_as_skill->viewFilter(pendings, card_item));
     }
 }
 

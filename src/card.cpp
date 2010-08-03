@@ -3,8 +3,8 @@
 #include "engine.h"
 #include "client.h"
 
-Card::Card(Suit suit, int number)
-    :suit(suit), number(number), id(-1)
+Card::Card(Suit suit, int number, bool target_fixed)
+    :target_fixed(target_fixed), suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
         number = 0;
@@ -75,7 +75,11 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 QString Card::getPixmapPath() const{
-    return QString("%1/cards/%2").arg(parent()->objectName()).arg(objectName());
+    return QString("%1/cards/%2.png").arg(parent()->objectName()).arg(objectName());
+}
+
+QString Card::getIconPath() const{
+    return QString("%1/cards/%2-icon.png").arg(parent()->objectName()).arg(objectName());
 }
 
 QString Card::getPackage() const{
@@ -113,6 +117,9 @@ const Card *Card::Parse(const QString &str){
         QString card_name = texts.at(1);
         QStringList subcard_ids = texts.at(2).split("+");
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
+
+        if(card == NULL)
+            return NULL;
 
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
@@ -160,16 +167,18 @@ const Card *Card::Parse(const QString &str){
 }
 
 bool Card::targetFixed() const{
-    return false;
+    return target_fixed;
 }
 
-void Card::targetRange(int *min, int *max, bool *include_self) const{
-    *min = *max = 1;
-    *include_self = false;
+bool Card::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    if(target_fixed)
+        return true;
+    else
+        return !targets.isEmpty();
 }
 
-bool Card::targetFilter(const QList<const ClientPlayer *> &) const{
-    return true;
+bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
+    return targets.isEmpty() && to_select != ClientInstance->getPlayer();
 }
 
 void Card::use(const QList<const ClientPlayer *> &targets) const{

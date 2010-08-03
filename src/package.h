@@ -16,8 +16,13 @@ public:
         return t;
     }
 
+    QList<const QMetaObject *> getMetaObjects() const{
+        return metaobjects;
+    }
+
 protected:
     QHash<QString,QString> t;
+    QList<const QMetaObject *> metaobjects;
 };
 
 #endif // PACKAGE_H

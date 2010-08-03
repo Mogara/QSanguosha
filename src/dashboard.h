@@ -28,6 +28,7 @@ public:
     void disableAllCards();
     void enableCards();
     void installEquip(CardItem *equip);
+    void installDelayedTrick(CardItem *card);
 
     // pending operations
     void startPending(const ViewAsSkill *skill);
@@ -42,6 +43,7 @@ public slots:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QList<CardItem*> card_items;
@@ -61,13 +63,14 @@ private:
     const ViewAsSkill *view_as_skill;
 
     void adjustCards();
-    void adjustCards(const QList<CardItem *> &list, int y);
-    void installDelayedTrick(CardItem *card);
+    void adjustCards(const QList<CardItem *> &list, int y);    
     void drawEquip(QPainter *painter, CardItem *equip, int order);
+    void drawDelayedTrick(QPainter *painter, CardItem *trick, int order);
 
 private slots:
     void sortCards();
     void doPending(CardItem *card_item, bool add_to_pendings);
+    void updateEnablity(CardItem *card_item);
 
 signals:
     void card_selected(const Card *card);

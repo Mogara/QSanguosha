@@ -17,10 +17,15 @@ public:
     void setHomePos(QPointF home_pos);
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
+    const QPixmap &getIconPixmap() const;
     void select();
     void unselect();
     bool isEquipped() const;
-    void setEquipped(bool equipped);
+
+    bool isMarked() const;
+    bool isMarkable() const;
+    void mark(bool marked = true);
+    void setMarkable(bool markable);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -30,9 +35,10 @@ protected:
 
 private:
     const Card *card;
-    QPixmap suit_pixmap;
+    QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
-    bool equipped;
+
+    bool markable, marked;
 
 signals:
     void show_discards();
