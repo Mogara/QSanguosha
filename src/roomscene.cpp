@@ -413,8 +413,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     }
 }
 
-
-
 void RoomScene::chooseLord(const QList<const General *> &lords){
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose lord"));
@@ -538,13 +536,16 @@ void RoomScene::setActivity(bool activity){
     if(activity){
         dashboard->enableCards();
 
-        discard_button->setEnabled(true);
+        discard_button->setEnabled(ClientInstance->pattern == NULL);
     }else{
         dashboard->disableAllCards();
 
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
+
+        foreach(QAbstractButton *button, skill_buttons)
+            button->setEnabled(false);
     }
 
     dashboard->update();
@@ -664,12 +665,15 @@ void RoomScene::updateSkillButtons(){
         }else if(skill->inherits("ViewAsSkill") && !skill->inherits("FilterSkill"))
             button = new QPushButton(skill_name);
         else{
-            button = new QPushButton(skill_name);
-            button->setEnabled(false);
+            QPushButton *push_button = new QPushButton(skill_name);
+            push_button->setFlat(true);
+            button = push_button;
         }
 
         if(skill->isLordSkill())
-            button->setText(button->text() + tr("[Lord Skill]"));        
+            button->setText(button->text() + tr("[Lord Skill]"));
+
+        button->setToolTip(skill->getDescription());
 
         status_bar->addPermanentWidget(button);
         skill_buttons << button;

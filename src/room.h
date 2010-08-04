@@ -2,9 +2,12 @@
 #define ROOM_H
 
 #include "serverplayer.h"
+#include "skill.h"
+#include "cardpattern.h"
 
 #include <QTcpSocket>
 #include <QStack>
+
 
 class Room : public QObject
 {
@@ -19,6 +22,14 @@ public:
     void throwCard(ServerPlayer *player, int card_id);
     QList<int> *getDiscardPile() const;
     void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
+    void activate(ServerPlayer *player, Skill::TriggerReason reason = Skill::Nop, const QString &data = "");
+    void requestForCard(ServerPlayer *source, ServerPlayer *target, const CardPattern *pattern);
+    void startRequest();
+
+    struct ActiveRecord{
+        ServerPlayer *source, *target;
+        const CardPattern *pattern;
+    };
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -33,7 +44,7 @@ private:
     int chosen_generals;    
     bool game_started;
     int signup_count;
-    QStack<ServerPlayer *> active_records;
+    QStack<ActiveRecord> active_records;
 
     int drawCard();    
 

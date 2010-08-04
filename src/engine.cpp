@@ -173,6 +173,15 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         return NULL;
 }
 
+CardPattern *Engine::cloneCardPattern(const QString &name, const QString &pattern_str){
+    const QMetaObject *meta = metaobjects.value(name, NULL);
+    if(meta){
+        QObject *pattern_obj = meta->newInstance(Q_ARG(QString, pattern_str));
+        return qobject_cast<CardPattern *>(pattern_obj);
+    }else
+        return NULL;
+}
+
 int Engine::getCardCount() const{
     return cards.length();
 }
@@ -236,3 +245,4 @@ void Engine::playEffect(const Phonon::MediaSource &source){
     effect->setCurrentSource(source);
     effect->play();
 }
+

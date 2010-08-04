@@ -6,6 +6,10 @@ CardPattern::CardPattern(const QString &pattern_str)
 {
 }
 
+QString CardPattern::toString() const{
+    return QString("%1-%2").arg(metaObject()->className()).arg(pattern_str);
+}
+
 // --------------------------
 
 NamePattern::NamePattern(const QString &pattern_str)

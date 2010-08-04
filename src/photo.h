@@ -21,6 +21,7 @@ public:
     void speak(const QString &content);
     CardItem *takeCardItem(int card_id, Player::Place place);
     void installEquip(CardItem *equip);
+    void installDelayedTrick(CardItem *trick);
     void addCardItem(CardItem *card_item);
 
 public slots:
@@ -41,6 +42,7 @@ private:
     QPixmap magatamas[5];   
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QStack<CardItem *> judging_area;
     QGraphicsPixmapItem *order_item;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);

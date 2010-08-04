@@ -5,8 +5,9 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QHostAddress>
-#include <QCoreApplication>
 #include <QTimer>
+#include <QMetaEnum>
+#include <QTimerEvent>
 
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
@@ -285,7 +286,6 @@ void Room::startGame(){
     the_lord->setPhase(Player::Start);
     broadcast(QString("#%1 phase start").arg(the_lord->objectName()));
     broadcast("! startGame " + the_lord->objectName());
-    active_records.push(the_lord);
 }
 
 void Room::endPhaseCommand(ServerPlayer *player, const QStringList &){
@@ -382,4 +382,34 @@ void Room::moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *de
               );
 
     Player::MoveCard(src, src_place, dest, dest_place, card_id);
+}
+
+void Room::activate(ServerPlayer *player, Skill::TriggerReason reason, const QString &data){
+    static int enum_index = Skill::staticMetaObject.indexOfEnumerator("TriggerReason");
+    static QMetaEnum meta_enum = Skill::staticMetaObject.enumerator(enum_index);
+    QString reason_str = meta_enum.valueToKey(reason);
+
+    broadcast(QString("! activate %1:%2:%3").arg(player->objectName()).arg(reason_str).arg(data));
+}
+
+void Room::requestForCard(ServerPlayer *source, ServerPlayer *target, const CardPattern *pattern){
+    ActiveRecord record;
+
+    record.source = source;
+    record.target = target;
+    record.pattern = pattern;
+
+    active_records.push(record);
+}
+
+void Room::startRequest(){
+    if(!active_records.isEmpty()){
+        ActiveRecord record = active_records.pop();
+
+        ServerPlayer *player = record.target;
+        Skill::TriggerReason reason = Skill::RequestForCard;
+        QString pattern = record.pattern->toString();
+
+        activate(player, reason, pattern);
+    }
 }

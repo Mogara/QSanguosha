@@ -10,8 +10,9 @@ class CardPattern: public QObject{
 
 public:
     CardPattern(const QString &pattern_str);
-    virtual bool match(const Card *card) const = 0;
+    QString toString() const;
 
+    virtual bool match(const Card *card) const = 0;
 protected:
     QString pattern_str;
 };

@@ -1,9 +1,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "card.h"
 #include "general.h"
 #include "skill.h"
 #include "package.h"
+#include "cardpattern.h"
 
 #include <QHash>
 #include <QStringList>
@@ -21,6 +23,7 @@ public:
     void addPackage(Package *package);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name);
+    CardPattern *cloneCardPattern(const QString &name, const QString &pattern_str);
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount() const;

@@ -2,6 +2,7 @@
 #include "general.h"
 #include "engine.h"
 #include "client.h"
+#include "room.h"
 
 Slash::Slash(Suit suit, int number):BasicCard(suit, number){
     setObjectName("slash");
@@ -27,6 +28,16 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
     // increase slash count
     int slash_count = ClientInstance->tag.value("slash_count", 0).toInt();
     ClientInstance->tag.insert("slash_count", slash_count + 1);
+}
+
+void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    NamePattern *pattern = new NamePattern("jink");
+    QListIterator<ServerPlayer *> itor(targets);
+    itor.toBack();
+    while(itor.hasPrevious()){
+        ServerPlayer *target = itor.previous();
+        room->requestForCard(source, target, pattern);
+    }
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){

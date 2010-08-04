@@ -134,6 +134,15 @@ void Photo::installEquip(CardItem *equip){
     update();
 }
 
+void Photo::installDelayedTrick(CardItem *trick){
+    judging_area.push(trick);
+
+    trick->setHomePos(pos());
+    trick->goBack(true);
+
+    update();
+}
+
 void Photo::addCardItem(CardItem *card_item){
     card_item->setHomePos(pos());
     card_item->goBack(true);
@@ -181,7 +190,14 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         drawEquip(painter, weapon, 0);
         drawEquip(painter, armor, 1);
         drawEquip(painter, defensive_horse, 2);
-        drawEquip(painter, offensive_horse, 3);            
+        drawEquip(painter, offensive_horse, 3);
+
+        int i;
+        for(i=0; i<judging_area.count(); i++){
+            QRect rect(i * 25, 171, 20, 20);
+            CardItem *trick = judging_area.at(i);
+            painter->drawPixmap(rect, trick->getIconPixmap());
+        }
     }
 }
 

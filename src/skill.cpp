@@ -1,5 +1,6 @@
 #include "skill.h"
 #include "engine.h"
+#include "player.h"
 
 #include <QFile>
 

@@ -45,9 +45,11 @@ public:
     QString getPackage() const;
 
     bool isVirtualCard() const;
-
     bool match(const QString &pattern) const;
     bool isAvailable() const;
+    void addSubcard(int card_id);
+    void addSubcards(const QList<int> &card_ids);
+    QList<int> getSubcards() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
@@ -63,9 +65,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
 
-    void addSubcard(int card_id);
-    void addSubcards(const QList<int> &card_ids);
-    QList<int> getSubcards() const;
+    virtual void onYes(const Card *yes_card);
+    virtual void onNo();
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);

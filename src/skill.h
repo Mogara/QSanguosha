@@ -1,12 +1,13 @@
 #ifndef SKILL_H
 #define SKILL_H
 
-#include "room.h"
+class Room;
+class Player;
+class CardItem;
+class Card;
 
 #include <QObject>
 #include <MediaSource>
-
-class CardItem;
 
 class Skill : public QObject
 {

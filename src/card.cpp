@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "engine.h"
 #include "client.h"
+#include "room.h"
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), suit(suit), number(number), id(-1)
@@ -219,6 +220,14 @@ bool Card::isAvailable() const{
     }
 
     return isAvailableAtPlay();
+}
+
+void Card::onYes(const Card *yes_card){
+
+}
+
+void Card::onNo(){
+
 }
 
 // ---------   Skill card     ------------------
