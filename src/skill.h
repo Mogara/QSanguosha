@@ -58,6 +58,17 @@ private:
     bool disable_after_use;
 };
 
+class ZeroCardViewAsSkill: public ViewAsSkill{
+    Q_OBJECT
+
+public:
+    ZeroCardViewAsSkill(const QString &name, bool disable_after_use);
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual const Card *viewAs() const = 0;
+};
+
 class FilterSkill: public ViewAsSkill{
     Q_OBJECT
 public:

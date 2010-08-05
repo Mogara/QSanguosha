@@ -42,6 +42,7 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
     QList<Photo*> photos;
@@ -54,6 +55,7 @@ private:
     QMainWindow *main_window;
     QComboBox *role_combobox;
     QPushButton *ok_button, *cancel_button, *discard_button;
+    QMenu *known_cards_menu;
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
@@ -64,6 +66,10 @@ private:
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void clickSkillButton(int order);
     void useCard(const Card *card);
+
+    void selectTarget(int order, bool multiple);
+    void selectNextTarget(bool multiple);
+    void unselectAllTargets(const QGraphicsItem *except = NULL);
 
 private slots:
     void updateSkillButtons();

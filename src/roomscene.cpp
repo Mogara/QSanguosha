@@ -18,6 +18,7 @@
 #include <QCheckBox>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsLinearLayout>
+#include <QMenu>
 
 static const QPointF DiscardedPos(-494, -115);
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
@@ -81,6 +82,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     QGraphicsWidget *form = new QGraphicsWidget(dashboard);
     form->setLayout(button_layout);
     form->setPos(dashboard->boundingRect().width() - button_layout->preferredWidth(), -25);
+
+    known_cards_menu = new QMenu(main_window);
 
     // get dashboard's avatar
     avatar = dashboard->getAvatar();    
@@ -305,6 +308,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     if(!Config.EnableHotKey)
         return;
 
+    bool control_is_down = event->modifiers() & Qt::ControlModifier;
+
     switch(event->key()){        
     case Qt::Key_F1:
     case Qt::Key_F2:
@@ -345,34 +350,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Space:  dashboard->selectCard(); break; // iterate all cards
     case Qt::Key_F:  break; // fix the selected
 
-    case Qt::Key_G: {
-//            if(max_targets == 1){
-//                Photo *selected_photo = NULL;
-//                foreach(Photo *photo, photos){
-//                    if(photo->isSelected())
-//                        selected_photo = photo;
-//                    else if(photo->flags() & QGraphicsItem::ItemIsSelectable){
-//                        if(selected_photo){
-//                            selected_photo->setSelected(false);
-//                            photo->setSelected(true);
-//                            break;
-//                        }
-//                    }
-//                }
-//
-//                // select first selectable
-//                if(selected_photo == NULL || selected_photo->isSelected()){
-//                    foreach(Photo *photo, photos){
-//                        if(photo->flags() & QGraphicsItem::ItemIsSelectable){
-//                            photo->setSelected(true);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-
-            break; // iterate generals when
-        }
+    case Qt::Key_G: selectNextTarget(control_is_down); break; // iterate generals
 
     case Qt::Key_Return : useSelectedCard(); break;
 
@@ -391,18 +369,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_4:
     case Qt::Key_5:
     case Qt::Key_6:
-    case Qt::Key_7:
-        {
-            int order = event->key() - Qt::Key_0;
-            if(order == 0)
-                avatar->setSelected(! avatar->isSelected());
-            else if(order > 0 && order <= photos.length()){
-                Photo *photo = photos.at(order-1);
-                photo->setSelected(! photo->isSelected());
-            }
-
-            break;
-        }
+    case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
 
 #ifndef QT_NO_DEBUG
     case Qt::Key_D: {
@@ -410,6 +377,33 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
             ClientInstance->drawCards("1+2+3+4+5+6");
         }
 #endif
+    }
+}
+
+void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
+    QGraphicsItem *item = itemAt(event->scenePos());
+    if(item){
+        QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
+        Photo *photo = qobject_cast<Photo *>(item_obj);
+        const ClientPlayer *player = NULL;
+        if(photo && (player = photo->getPlayer())){
+            QList<const Card *> cards = player->getCards();
+            QMenu *menu = known_cards_menu;
+            menu->clear();
+            menu->setTitle(player->objectName());
+
+            if(cards.isEmpty()){
+                menu->addAction(tr("There is no known cards"));
+            }else{
+                foreach(const Card *card, cards){
+                    QIcon suit_icon(QString(":/suit/%1.png").arg(card->getSuitString()));
+                    QString card_name = Sanguosha->translate(card->objectName());
+                    menu->addAction(suit_icon, QString("%1 %2").arg(card->getNumberString()).arg(card_name));
+                }
+            }
+
+            menu->popup(event->screenPos());
+        }
     }
 }
 
@@ -839,5 +833,63 @@ void RoomScene::cancelViewAsSkill(){
         cancel_button->setEnabled(false);
 
         dashboard->enableCards();
+    }
+}
+
+void RoomScene::selectTarget(int order, bool multiple){
+    QGraphicsItem *to_select = NULL;
+
+    if(order == 0)
+        to_select = avatar;
+    else if(order > 0 && order <= photos.length())
+        to_select = photos.at(order - 1);
+
+    if(!multiple)
+        unselectAllTargets(to_select);
+
+    if(to_select)
+        to_select->setSelected(! to_select->isSelected());
+}
+
+void RoomScene::selectNextTarget(bool multiple){
+    if(!multiple)
+        unselectAllTargets();
+
+    QList<QGraphicsItem *> targets;
+    foreach(Photo *photo, photos){
+        if(photo->flags() & QGraphicsItem::ItemIsSelectable)
+            targets << photo;
+    }
+
+    if(avatar->flags() & QGraphicsItem::ItemIsSelectable)
+        targets << avatar;
+
+    int i, j;
+    for(i=0; i<targets.length(); i++){
+        if(targets.at(i)->isSelected()){
+            for(j=i+1; j<targets.length(); j++){
+                if(!targets.at(j)->isSelected()){
+                    targets.at(j)->setSelected(true);
+                    return;
+                }
+            }
+        }
+    }
+
+    foreach(QGraphicsItem *target, targets){
+        if(!target->isSelected()){
+            target->setSelected(true);
+            break;
+        }
+    }
+}
+
+void RoomScene::unselectAllTargets(const QGraphicsItem *except){
+    if(avatar != except)
+        avatar->setSelected(false);
+
+    foreach(Photo *photo, photos){
+        if(photo != except)
+            photo->setSelected(false);
     }
 }

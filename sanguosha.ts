@@ -4,7 +4,7 @@
 <context>
     <name>Card</name>
     <message>
-        <location filename="src/card.cpp" line="193"/>
+        <location filename="src/card.cpp" line="198"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -413,12 +413,12 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="69"/>
+        <location filename="src/room.cpp" line="70"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="240"/>
+        <location filename="src/room.cpp" line="241"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -435,118 +435,123 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="59"/>
+        <location filename="src/roomscene.cpp" line="60"/>
         <source>Your role</source>
         <translation>您的角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="60"/>
+        <location filename="src/roomscene.cpp" line="61"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="66"/>
+        <location filename="src/roomscene.cpp" line="67"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="67"/>
+        <location filename="src/roomscene.cpp" line="68"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="68"/>
+        <location filename="src/roomscene.cpp" line="69"/>
         <source>Discard cards</source>
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="701"/>
+        <location filename="src/roomscene.cpp" line="751"/>
         <source>You choosed card [%1]</source>
         <oldsource>You choosed card %1</oldsource>
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="751"/>
+        <location filename="src/roomscene.cpp" line="801"/>
         <source>You choose %1 as [%2]&apos;s target</source>
         <translation>您选择了 %1 作为 【%2】 的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="753"/>
+        <location filename="src/roomscene.cpp" line="803"/>
         <source>You choose %1 as target</source>
         <translation>你选择了 %1 作为目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="761"/>
+        <location filename="src/roomscene.cpp" line="811"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="420"/>
+        <location filename="src/roomscene.cpp" line="448"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="448"/>
+        <location filename="src/roomscene.cpp" line="432"/>
+        <source>There is no known cards</source>
+        <translation>暂时没有已知的卡牌</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="476"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="451"/>
+        <location filename="src/roomscene.cpp" line="479"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="464"/>
+        <location filename="src/roomscene.cpp" line="492"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="466"/>
+        <location filename="src/roomscene.cpp" line="494"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="468"/>
+        <location filename="src/roomscene.cpp" line="496"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="472"/>
+        <location filename="src/roomscene.cpp" line="500"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="510"/>
+        <location filename="src/roomscene.cpp" line="538"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="510"/>
+        <location filename="src/roomscene.cpp" line="538"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="656"/>
-        <location filename="src/roomscene.cpp" line="676"/>
+        <location filename="src/roomscene.cpp" line="704"/>
+        <location filename="src/roomscene.cpp" line="726"/>
         <source>[Lord Skill]</source>
         <translation>[主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="768"/>
+        <location filename="src/roomscene.cpp" line="818"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="790"/>
+        <location filename="src/roomscene.cpp" line="840"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="806"/>
+        <location filename="src/roomscene.cpp" line="856"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>
@@ -590,258 +595,258 @@ Your role is %2</source>
 <context>
     <name>StandardPackage</name>
     <message>
-        <location filename="src/standard-cards.cpp" line="375"/>
+        <location filename="src/standard-cards.cpp" line="386"/>
         <source>spade</source>
         <translation>黑桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="376"/>
+        <location filename="src/standard-cards.cpp" line="387"/>
         <source>club</source>
         <translation>梅花</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="377"/>
+        <location filename="src/standard-cards.cpp" line="388"/>
         <source>heart</source>
         <translation>红桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="378"/>
+        <location filename="src/standard-cards.cpp" line="389"/>
         <source>diamond</source>
         <translation>方块</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="380"/>
+        <location filename="src/standard-cards.cpp" line="391"/>
         <source>basic</source>
         <translation>基本牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="381"/>
+        <location filename="src/standard-cards.cpp" line="392"/>
         <source>trick</source>
         <translation>锦囊牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="382"/>
+        <location filename="src/standard-cards.cpp" line="393"/>
         <source>equip</source>
         <translation>装备牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="383"/>
+        <location filename="src/standard-cards.cpp" line="394"/>
         <source>attack_card</source>
         <translation>进攻牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="384"/>
+        <location filename="src/standard-cards.cpp" line="395"/>
         <source>defense_card</source>
         <translation>防御牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="385"/>
+        <location filename="src/standard-cards.cpp" line="396"/>
         <source>recover_card</source>
         <translation>恢复牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="386"/>
+        <location filename="src/standard-cards.cpp" line="397"/>
         <source>disgusting_card</source>
         <translation>恶心牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="387"/>
+        <location filename="src/standard-cards.cpp" line="398"/>
         <source>global_effect</source>
         <translation>全局效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="388"/>
+        <location filename="src/standard-cards.cpp" line="399"/>
         <source>aoe</source>
         <translation>范围效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="389"/>
+        <location filename="src/standard-cards.cpp" line="400"/>
         <source>single_target_trick</source>
         <translation>单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="390"/>
+        <location filename="src/standard-cards.cpp" line="401"/>
         <source>delayed_trick</source>
         <translation>延时锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="391"/>
+        <location filename="src/standard-cards.cpp" line="402"/>
         <source>weapon</source>
         <translation>武器</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="392"/>
+        <location filename="src/standard-cards.cpp" line="403"/>
         <source>armor</source>
         <translation>防具</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="393"/>
+        <location filename="src/standard-cards.cpp" line="404"/>
         <source>defensive_horse</source>
         <translation>防御马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="394"/>
+        <location filename="src/standard-cards.cpp" line="405"/>
         <source>offensive_horse</source>
         <translation>进攻马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="396"/>
+        <location filename="src/standard-cards.cpp" line="407"/>
         <source>slash</source>
         <translation>杀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="397"/>
+        <location filename="src/standard-cards.cpp" line="408"/>
         <source>jink</source>
         <translation>闪</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="398"/>
+        <location filename="src/standard-cards.cpp" line="409"/>
         <source>peach</source>
         <translation>桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="399"/>
+        <location filename="src/standard-cards.cpp" line="410"/>
         <source>shit</source>
         <translation>屎</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="401"/>
+        <location filename="src/standard-cards.cpp" line="412"/>
         <source>crossbow</source>
         <translation>诸葛连弩</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="402"/>
+        <location filename="src/standard-cards.cpp" line="413"/>
         <source>double_sword</source>
         <translation>雌雄双股剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="403"/>
+        <location filename="src/standard-cards.cpp" line="414"/>
         <source>qinggang_sword</source>
         <translation>青釭剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="404"/>
+        <location filename="src/standard-cards.cpp" line="415"/>
         <source>yitian_sword</source>
         <translation>倚天剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="405"/>
+        <location filename="src/standard-cards.cpp" line="416"/>
         <source>blade</source>
         <translation>青龙偃月刀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="406"/>
+        <location filename="src/standard-cards.cpp" line="417"/>
         <source>spear</source>
         <translation>丈八蛇矛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="407"/>
+        <location filename="src/standard-cards.cpp" line="418"/>
         <source>axe</source>
         <translation>贯石斧</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="408"/>
+        <location filename="src/standard-cards.cpp" line="419"/>
         <source>halberd</source>
         <translation>方天画戟</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="409"/>
+        <location filename="src/standard-cards.cpp" line="420"/>
         <source>kylin_bow</source>
         <translation>麒麟弓</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="411"/>
+        <location filename="src/standard-cards.cpp" line="422"/>
         <source>eight_diagram</source>
         <translation>八卦阵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="413"/>
+        <location filename="src/standard-cards.cpp" line="424"/>
         <source>jueying</source>
         <translation>绝影</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="414"/>
+        <location filename="src/standard-cards.cpp" line="425"/>
         <source>dilu</source>
         <translation>的卢</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="415"/>
+        <location filename="src/standard-cards.cpp" line="426"/>
         <source>zhuahuangfeidian</source>
         <translation>爪黄飞电</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="416"/>
+        <location filename="src/standard-cards.cpp" line="427"/>
         <source>chitu</source>
         <translation>赤兔</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="417"/>
+        <location filename="src/standard-cards.cpp" line="428"/>
         <source>dawan</source>
         <translation>大宛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="418"/>
+        <location filename="src/standard-cards.cpp" line="429"/>
         <source>zixing</source>
         <translation>紫骍</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="420"/>
+        <location filename="src/standard-cards.cpp" line="431"/>
         <source>amazing_grace</source>
         <translation>五谷丰登</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="421"/>
+        <location filename="src/standard-cards.cpp" line="432"/>
         <source>god_salvation</source>
         <translation>桃园结义</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="422"/>
+        <location filename="src/standard-cards.cpp" line="433"/>
         <source>savage_assault</source>
         <translation>南蛮入侵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="423"/>
+        <location filename="src/standard-cards.cpp" line="434"/>
         <source>archery_attack</source>
         <translation>万箭齐发</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="424"/>
-        <location filename="src/standard-cards.cpp" line="429"/>
+        <location filename="src/standard-cards.cpp" line="435"/>
+        <location filename="src/standard-cards.cpp" line="440"/>
         <source>collateral</source>
         <translation>借刀杀人</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="425"/>
+        <location filename="src/standard-cards.cpp" line="436"/>
         <source>duel</source>
         <translation>决斗</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="426"/>
+        <location filename="src/standard-cards.cpp" line="437"/>
         <source>ex_nihilo</source>
         <translation>无中生有</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="427"/>
+        <location filename="src/standard-cards.cpp" line="438"/>
         <source>snatch</source>
         <translation>顺手牵羊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="428"/>
+        <location filename="src/standard-cards.cpp" line="439"/>
         <source>dismantlement</source>
         <translation>过河拆桥</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="430"/>
+        <location filename="src/standard-cards.cpp" line="441"/>
         <source>nullification</source>
         <translation>无懈可击</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="431"/>
+        <location filename="src/standard-cards.cpp" line="442"/>
         <source>indulgence</source>
         <translation>乐不思蜀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="432"/>
+        <location filename="src/standard-cards.cpp" line="443"/>
         <source>lightning</source>
         <translation>闪电</translation>
     </message>

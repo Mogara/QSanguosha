@@ -85,6 +85,23 @@ bool ViewAsSkill::isDisableAfterUse() const{
     return disable_after_use;
 }
 
+ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name, bool disable_after_use)
+    :ViewAsSkill(name, disable_after_use)
+{
+
+}
+
+const Card *ZeroCardViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
+    if(cards.isEmpty())
+        return viewAs();
+    else
+        return NULL;
+}
+
+bool ZeroCardViewAsSkill::viewFilter(const QList<CardItem *> &, const CardItem *) const{
+    return false;
+}
+
 FilterSkill::FilterSkill(const QString &name)
     :ViewAsSkill(name, false)
 {
