@@ -10,103 +10,8 @@
 
 Engine *Sanguosha = NULL;
 
-class BasicRule : public Skill{
-public:
-    BasicRule():Skill("basic_rule"){
-
-    }
-
-    void onPhaseChange(Player::Phase phase) const{
-        // const ClientPlayer *player = client->getPlayer();
-        Client *client = ClientInstance;
-
-        switch(phase){
-        case Player::Start:{
-                client->tag.insert("slash_count", 0);
-
-                if(client->tag.value("auto_end_start", true).toBool()){
-                    client->endPhase();
-                    client->tag["auto_end_start"] = true;
-                }
-
-                break;
-            }
-
-        case Player::Judge:{
-                if(client->tag.value("skip_judge", false).toBool()){
-                    client->endPhase();
-                    client->tag["skip_judge"] = false;
-                }else{
-                    // request for judge
-
-                    client->endPhase();
-                }
-                break;
-        }
-
-        case Player::Draw:{
-                if(client->tag.value("skip_draw", false).toBool()){
-                    client->endPhase();
-                    client->tag["skip_draw"] = false;
-                }else{
-                    client->askForCards(2);
-                    client->endPhase();
-                }
-                break;
-            }
-
-        case Player::Play:{
-                if(client->tag.value("skip_play", false).toBool()){
-                    client->endPhase();
-                    client->tag["skip_play"] = false;
-                }else{
-                    client->setActivity(true);
-                }
-
-                break;
-            }
-
-        case Player::Discard:{
-                // FIXME: if no cards need to discard, skip this phase
-
-                if(client->tag.value("skip_discard", false).toBool()){
-                    client->endPhase();
-                    client->tag["skip_discard"] = false;
-                }else{
-                    // ask for discard cards;
-                }
-
-                break;
-            }
-
-        case Player::Finish:{
-                if(client->tag.value("auto_end_finish", true).toBool()){
-                    client->endPhase();
-                    client->tag["auto_end_finish"] = true;
-                }
-            }
-
-        default:
-            ;
-        }
-    }
-
-    virtual void trigger(TriggerReason reason, const QVariant &data) const{
-        const ClientPlayer *player = ClientInstance->getPlayer();
-
-        switch(reason){
-        case GameStart: break;
-        case PhaseChange: onPhaseChange(player->getPhase()); break;
-        case HpDamage: break;
-        case UseCard: ClientInstance->card->use(ClientInstance->targets); break;
-        default:  ;
-        }
-    }
-};
-
 Engine::Engine(QObject *parent)
-    :QObject(parent), basic_rule(new BasicRule),
-    effect(Phonon::createPlayer(Phonon::MusicCategory))
+    :QObject(parent), effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     addPackage(new StandardPackage);
 }
@@ -235,10 +140,6 @@ void Engine::getRandomCards(QList<int> &list) const{
         int r2 = qrand() % n;
         list.swap(r1, r2);
     }
-}
-
-const Skill *Engine::getBasicRule() const{
-    return basic_rule;
 }
 
 void Engine::playEffect(const Phonon::MediaSource &source){

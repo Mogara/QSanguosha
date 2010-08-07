@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <QMetaEnum>
+#include <QStateMachine>
 
 Client *ClientInstance = NULL;
 
@@ -21,6 +22,21 @@ Client::Client(QObject *parent)
     connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+
+    // state machine
+    QStateMachine *machine = new QStateMachine(this);
+
+    QState *not_active = new QState;
+    QState *responsing = new QState;
+    QState *playing = new QState;
+    QState *discarding = new QState;
+
+    machine->addState(not_active);
+    machine->addState(responsing);
+    machine->addState(playing);
+    machine->addState(discarding);
+
+    machine->setInitialState(not_active);
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -165,7 +181,6 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
     if(card){
         this->card = card;
         this->targets = targets;
-        triggerSkill(Skill::UseCard);
         setActivity(false);
 
         QStringList target_names;
@@ -179,7 +194,6 @@ void Client::useCard(const Card *card){
     if(card){        
         this->card = card;
         this->targets.clear();
-        triggerSkill(Skill::UseCard);
         setActivity(false);
 
         request(QString("useCard %1 .").arg(card->toString()));
@@ -228,20 +242,9 @@ void Client::notifyRoleChange(const QString &new_role){
     }
 }
 
-void Client::activate(const QString &activate_str){
-    QStringList words = activate_str.split(":");
-    QString name = words.first();
-    if(name == self->objectName()){
-        QString reason_str = words.at(1);
-        static int enum_index = Skill::staticMetaObject.indexOfEnumerator("TriggerReason");
-        static QMetaEnum meta_enum = Skill::staticMetaObject.enumerator(enum_index);
-        Skill::TriggerReason reason = static_cast<Skill::TriggerReason>(meta_enum.keyToValue(reason_str.toAscii()));
-        QString data = words.at(2);
-
-        triggerSkill(reason, data);
-        setActivity(true);
-    }else
-        setActivity(false);
+void Client::activate(const QString &focus_player){
+    // FIXME
+    setActivity(focus_player == Config.UserName);
 }
 
 void Client::moveCard(const QString &move_str){
@@ -280,31 +283,17 @@ void Client::moveCard(const QString &move_str){
 }
 
 void Client::startGame(const QString &first_player){
-    // attach basic rule
-    self->attachSkill(Sanguosha->getBasicRule());
-
     // attach all skills
     QList<ClientPlayer *> players = findChildren<ClientPlayer*>();
     foreach(ClientPlayer *player, players){
         const General *general = Sanguosha->getGeneral(player->getGeneral());
-        const QList<const Skill *> skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, skills){
+        const QList<const ViewAsSkill *> skills = general->findChildren<const ViewAsSkill *>();
+        foreach(const ViewAsSkill *skill, skills){
             skill->attachPlayer(self);
         }
     }
 
-    triggerSkill(Skill::GameStart);
-    if(first_player == self->objectName()){
-        triggerSkill(Skill::PhaseChange);
-    }else
-        setActivity(false);
-}
-
-void Client::triggerSkill(Skill::TriggerReason reason, const QVariant &data){
-    QList<const Skill *> skills = self->getSkills();
-    foreach(const Skill *skill, skills){
-        skill->trigger(reason, data);
-    }
+    // FIXME
 }
 
 void Client::endPhase(){    
@@ -321,15 +310,7 @@ void Client::hpDamage(const QString &damage_str){
     pattern.indexIn(damage_str);
     QStringList words = pattern.capturedTexts();
 
-    int damage = words.first().toInt();
-    QString target = words.at(1);
-    QString source = words.at(2);
 
-    if(target == self->objectName()){
-        triggerSkill(Skill::HpDamage, words);
-    }
-
-    emit hp_changed(target, damage);
 }
 
 void Client::hpFlow(const QString &flow_str){
@@ -356,7 +337,7 @@ void Client::judge(const QString &judge_str){
     // QString target = words.at(0);
     // int card_id = words.at(1).toInt();
 
-    triggerSkill(Skill::Judge, words);
+
 }
 
 void Client::setActivity(bool activity){

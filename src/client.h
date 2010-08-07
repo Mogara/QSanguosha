@@ -18,7 +18,6 @@ public:
     void signup();
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
-    void triggerSkill(Skill::TriggerReason reason, const QVariant &data = QVariant());
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
     void endPhase();
@@ -38,7 +37,7 @@ public:
     Q_INVOKABLE void duplicationError(const QString &);
     Q_INVOKABLE void arrangeSeats(const QString &seats);
     Q_INVOKABLE void moveCard(const QString &move_str);
-    Q_INVOKABLE void activate(const QString &activate_str);
+    Q_INVOKABLE void activate(const QString &focus_player);
     Q_INVOKABLE void startGame(const QString &first_player);
     Q_INVOKABLE void hpDamage(const QString &damage_str);
     Q_INVOKABLE void hpFlow(const QString &flow_str);

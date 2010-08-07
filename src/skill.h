@@ -1,10 +1,11 @@
 #ifndef SKILL_H
 #define SKILL_H
 
-class Room;
 class Player;
 class CardItem;
 class Card;
+class ServerPlayer;
+struct ActiveRecord;
 
 #include <QObject>
 #include <MediaSource>
@@ -33,10 +34,6 @@ public:
 
     void initMediaSource();
     void playEffect() const;
-
-    virtual void attachPlayer(Player *player) const;
-    virtual void trigger(TriggerReason reason, const QVariant &data) const ;
-    virtual void trigger(Room *room) const;
 
 private:
     bool lord_skill;
@@ -79,6 +76,17 @@ class PassiveSkill:public Skill{
     Q_OBJECT
 public:
     PassiveSkill(const QString &name);
+
+    // virtual handlers
+    virtual ActiveRecord *onGameStart(ServerPlayer *target) const;
+    virtual ActiveRecord *onPhaseChange(ServerPlayer *target) const;
+//    virtual void onRequestForCard();
+//    virtual void onUseCard();
+//    virtual void onMoveCard();
+//    virtual void onPredamage(ServerPlayer *source, int damage, const Card *card);
+//    virtual void onDamage(ServerPlayer *source, int damage, const Card *card);
+//    virtual void onJudge();
+//    virtual void onJudgeOnEffect();
 };
 
 class FrequentPassiveSkill: public PassiveSkill{

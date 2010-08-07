@@ -33,4 +33,12 @@ public:
     virtual bool match(const Card *card) const;
 };
 
+class ClassPattern: public CardPattern{
+    Q_OBJECT
+
+public:
+    ClassPattern(const QString &pattern_str);
+    virtual bool match(const Card *card) const;
+};
+
 #endif // CARDPATTERN_H

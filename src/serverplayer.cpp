@@ -35,6 +35,10 @@ void ServerPlayer::unicast(const QString &message){
     }
 }
 
+void ServerPlayer::invoke(const char *method, const QString &arg){
+    unicast(QString("! %1 %2").arg(method).arg(arg));
+}
+
 QString ServerPlayer::reportHeader() const{
     QString name = objectName();
     if(name.isEmpty())

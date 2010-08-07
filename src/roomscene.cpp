@@ -736,9 +736,8 @@ void RoomScene::enableTargets(const Card *card){
         }
     }
 
-    if(Config.EnableAutoTarget){
-        // FIXME: select first available target
-    }
+    if(Config.EnableAutoTarget)
+        selectNextTarget(false);
 }
 
 void RoomScene::updateSelectedTargets(){

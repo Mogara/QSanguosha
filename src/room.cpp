@@ -12,7 +12,7 @@
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), focus(NULL),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false), signup_count(0)
+    chosen_generals(0), game_started(false), signup_count(0), sorter(this)
 {
     Sanguosha->getRandomCards(pile1);
 }
@@ -31,11 +31,10 @@ bool Room::isFull() const
     return signup_count == player_count;
 }
 
-void Room::broadcast(const QString &message, Player *except){
-    foreach(Player *player, players){
+void Room::broadcast(const QString &message, ServerPlayer *except){
+    foreach(ServerPlayer *player, players){
         if(player != except){
-            ServerPlayer *server_player = qobject_cast<ServerPlayer*>(player);
-            server_player->unicast(message);
+            player->unicast(message);
         }
     }
 }
@@ -96,7 +95,7 @@ void Room::processRequest(const QString &request){
         return;
 
     if(focus && focus != player){
-        player->unicast("! focusWarn " + player->objectName());
+        player->invoke("focusWarn", player->objectName());
         return;
     }
 
@@ -121,7 +120,7 @@ void Room::signupCommand(ServerPlayer *player, const QStringList &args){
     QString avatar = args[2];
 
     if(findChild<ServerPlayer*>(name)){
-        player->unicast("! duplicationError .");
+        player->invoke("duplicationError");
         return;
     }
 
@@ -138,7 +137,8 @@ void Room::signupCommand(ServerPlayer *player, const QStringList &args){
 
         QString name = p->objectName();
         QString avatar = p->property("avatar").toString();
-        player->unicast(QString("! addPlayer %1:%2").arg(name).arg(avatar));
+
+        player->invoke("addPlayer", QString("%1:%2").arg(name).arg(avatar));
     }
 
     signup_count ++;
@@ -196,19 +196,24 @@ void Room::assignRoles(){
 
             QStringList lord_list;
             Sanguosha->getRandomLords(lord_list);            
-            player->unicast("! getLords " + lord_list.join("+"));
+            // player->unicast("! getLords " + lord_list.join("+"));
+            player->invoke("getLords", lord_list.join("+"));
         }else
-            player->unicast(". role " + role);
+            player->sendProperty("role");
+            //player->unicast(". role " + role);
     }
 
     Q_ASSERT(lord_index != -1);
     players.swap(0, lord_index);
+
+    for(i=0; i<players.length(); i++)
+        players.at(i)->setSeat(i+1);
 }
 
 void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     QString general_name = args[1];
-    player->setGeneral(general_name);    
-    broadcast(QString("#%1 general %2").arg(player->objectName()).arg(general_name));
+    player->setGeneral(general_name);
+    broadcastProperty(player, "general");
 
     if(player->getRole() == "lord"){
         static const int max_choice = 5;
@@ -224,7 +229,7 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
             for(j=0; j<choice_count; j++)
                 choices << general_list[(i-1)*choice_count + j];
 
-            players[i]->unicast(QString("! getGenerals %1+%2").arg(general_name).arg(choices.join("+")));
+            players[i]->invoke("getGenerals", QString("%1+%2").arg(general_name).arg(choices.join("+")));
         }
     }
 
@@ -242,11 +247,14 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
         return;
     }
 
-    QStringList target_names = args.at(2).split("+");
     QList<ServerPlayer *> targets;
-    foreach(QString target_name, target_names)
-        targets << findChild<ServerPlayer *>(target_name);
+    if(args.at(2) != "."){
+        QStringList target_names = args.at(2).split("+");
 
+        foreach(QString target_name, target_names)
+            targets << findChild<ServerPlayer *>(target_name);
+
+    }
     card->use(this, player, targets);
 
     if(card->isVirtualCard())
@@ -270,11 +278,11 @@ void Room::startGame(){
     for(i=1; i<player_count; i++)
         players[i]->setMaxHP(players[i]->getGeneralMaxHP());
 
-    foreach(Player *player, players){
+    foreach(ServerPlayer *player, players){
         player->setHp(player->getMaxHP());
 
-        broadcast(QString("#%1 max_hp %2").arg(player->objectName()).arg(player->getMaxHP()));
-        broadcast(QString("#%1 hp %2").arg(player->objectName()).arg(player->getHp()));
+        broadcastProperty(player, "max_hp");
+        broadcastProperty(player, "hp");
     }
 
     // every player draw 4 cards and them start from the lord
@@ -284,8 +292,35 @@ void Room::startGame(){
 
     ServerPlayer *the_lord = players.first();
     the_lord->setPhase(Player::Start);
-    broadcast(QString("#%1 phase start").arg(the_lord->objectName()));
+
+    broadcastProperty(the_lord, "phase", "start");
+
+    foreach(ServerPlayer *player, players){
+        QString general_name = player->getGeneral();
+        const General *general = Sanguosha->getGeneral(general_name);
+
+        skills << general->findChildren<const PassiveSkill *>();
+    }
+
+    QList<ActiveRecord*> records;
+    foreach(const PassiveSkill *skill, skills){
+        foreach(ServerPlayer *player, players){
+            ActiveRecord *record = skill->onGameStart(player);
+            if(record)
+                records << record;
+        }
+    }
+    sorter.sort(records);
+
     broadcast("! startGame " + the_lord->objectName());
+}
+
+void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
+    if(value.isNull()){
+        QString real_value = player->property(property_name).toString();
+        broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(real_value));
+    }else
+        broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
 void Room::endPhaseCommand(ServerPlayer *player, const QStringList &){
@@ -328,7 +363,7 @@ void Room::drawCards(ServerPlayer *player, int n){
         cards_str << QString::number(drawCard());
     }
 
-    player->unicast("! drawCards " + cards_str.join("+"));
+    player->invoke("drawCards", cards_str.join("+"));
     broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
 }
 
@@ -393,23 +428,51 @@ void Room::activate(ServerPlayer *player, Skill::TriggerReason reason, const QSt
 }
 
 void Room::requestForCard(ServerPlayer *source, ServerPlayer *target, const CardPattern *pattern){
-    ActiveRecord record;
+    ActiveRecord *record = new ActiveRecord;
 
-    record.source = source;
-    record.target = target;
-    record.pattern = pattern;
+    record->source = source;
+    record->target = target;
+    record->pattern = pattern;
 
     active_records.push(record);
 }
 
 void Room::startRequest(){
     if(!active_records.isEmpty()){
-        ActiveRecord record = active_records.pop();
-
-        ServerPlayer *player = record.target;
-        Skill::TriggerReason reason = Skill::RequestForCard;
-        QString pattern = record.pattern->toString();
-
-        activate(player, reason, pattern);
+        // FIXME
     }
+}
+
+void Room::yesCommand(ServerPlayer *player, const QStringList &args){
+
+}
+
+void Room::noCommand(ServerPlayer *player, const QStringList &args){
+
+}
+
+void Room::nullifyCommand(ServerPlayer *player, const QStringList &args){
+
+}
+
+ActiveRecordSorter::ActiveRecordSorter(Room *room)
+    :room(room), source(NULL), target(NULL)
+{
+
+}
+
+void ActiveRecordSorter::setSource(const ServerPlayer *source){
+    this->source = source;
+}
+
+void ActiveRecordSorter::setTarget(const ServerPlayer *target){
+    this->target = target;
+}
+
+void ActiveRecordSorter::sort(QList<ActiveRecord *> &records) const{
+    qSort(records.begin(), records.end(), *this);
+}
+
+bool ActiveRecordSorter::operator ()(const ActiveRecord *a, const ActiveRecord *b) const{
+    return true;
 }

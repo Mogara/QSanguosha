@@ -8,6 +8,28 @@
 #include <QTcpSocket>
 #include <QStack>
 
+class Room;
+
+struct ActiveRecord{
+    ServerPlayer *source;
+    ServerPlayer *target;
+    const CardPattern *pattern;
+    const Card *card;
+};
+
+class ActiveRecordSorter{
+public:
+    ActiveRecordSorter(Room *room);
+    void setSource(const ServerPlayer *source);
+    void setTarget(const ServerPlayer *target);
+
+    void sort(QList<ActiveRecord*> &records) const;
+    bool operator()(const ActiveRecord *a, const ActiveRecord *b) const;
+
+private:
+    Room *room;
+    const ServerPlayer *source, *target;
+};
 
 class Room : public QObject
 {
@@ -17,7 +39,7 @@ public:
     void addSocket(QTcpSocket *socket);
     bool isFull() const;
     void drawCards(ServerPlayer *player, int n);
-    void broadcast(const QString &message, Player *except = NULL);
+    void broadcast(const QString &message, ServerPlayer *except = NULL);
     void throwCard(ServerPlayer *player, const Card *card);
     void throwCard(ServerPlayer *player, int card_id);
     QList<int> *getDiscardPile() const;
@@ -25,11 +47,6 @@ public:
     void activate(ServerPlayer *player, Skill::TriggerReason reason = Skill::Nop, const QString &data = "");
     void requestForCard(ServerPlayer *source, ServerPlayer *target, const CardPattern *pattern);
     void startRequest();
-
-    struct ActiveRecord{
-        ServerPlayer *source, *target;
-        const CardPattern *pattern;
-    };
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -41,12 +58,15 @@ private:
     QList<int> pile1, pile2;
     QList<int> *draw_pile, *discard_pile;
     int left_seconds;
-    int chosen_generals;    
+    int chosen_generals;
     bool game_started;
     int signup_count;
-    QStack<ActiveRecord> active_records;
+    QStack<ActiveRecord*> active_records;
+    QList<const PassiveSkill *> skills;
+    ActiveRecordSorter sorter;
 
-    int drawCard();    
+    int drawCard();
+    void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
 
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
@@ -55,6 +75,9 @@ private:
     Q_INVOKABLE void endPhaseCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void drawCardsCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void judgeCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void yesCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void noCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void nullifyCommand(ServerPlayer *player, const QStringList &args);
 
 private slots:
     void reportDisconnection();
@@ -65,5 +88,8 @@ private slots:
 signals:
     void room_message(const QString &);
 };
+
+
+
 
 #endif // ROOM_H

@@ -30,7 +30,6 @@ public:
 
     int getCardCount() const;
     const Card *getCard(int index) const;
-    const Skill *getBasicRule() const;
 
     void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
     void getRandomGenerals(QStringList &general_list, int count) const;
@@ -45,7 +44,6 @@ private:
 
     QList<Card*> cards;
     QStringList lord_names;
-    Skill *basic_rule;
     Phonon::MediaObject *effect;
 };
 

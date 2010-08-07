@@ -33,3 +33,15 @@ TypePattern::TypePattern(const QString &pattern_str)
 bool TypePattern::match(const Card *card) const{
     return card->getType() == pattern_str;
 }
+
+
+// --------------------------
+
+ClassPattern::ClassPattern(const QString &pattern_str)
+    :CardPattern(pattern_str)
+{
+}
+
+bool ClassPattern::match(const Card *card) const{
+    return card->metaObject()->className() == pattern_str;
+}

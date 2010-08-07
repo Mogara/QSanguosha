@@ -27,19 +27,6 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
-void Skill::attachPlayer(Player *player) const{
-    if(parent()->objectName() == player->getGeneral())
-        player->attachSkill(this);
-}
-
-void Skill::trigger(TriggerReason reason, const QVariant &data) const{
-
-}
-
-void Skill::trigger(Room *room) const{
-
-}
-
 void Skill::initMediaSource(){
     sources.clear();
 
@@ -78,7 +65,8 @@ ViewAsSkill::ViewAsSkill(const QString &name, bool disable_after_use)
 }
 
 void ViewAsSkill::attachPlayer(Player *player) const{
-    // FIXME
+    if(parent()->objectName() == player->getGeneral())
+        player->attachSkill(this);
 }
 
 bool ViewAsSkill::isDisableAfterUse() const{
@@ -113,6 +101,13 @@ PassiveSkill::PassiveSkill(const QString &name)
 
 }
 
+ActiveRecord *PassiveSkill::onGameStart(ServerPlayer *target) const{
+    return NULL;
+}
+
+ActiveRecord *PassiveSkill::onPhaseChange(ServerPlayer *target) const{
+    return NULL;
+}
 
 FrequentPassiveSkill::FrequentPassiveSkill(const QString &name)
     :PassiveSkill(name)

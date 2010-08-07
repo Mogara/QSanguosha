@@ -9,10 +9,11 @@ class ServerPlayer : public Player
 
 public:
     explicit ServerPlayer(QObject *parent);
-    void setSocket(QTcpSocket *socket);
-    void unicast(const QString &message);
+    void setSocket(QTcpSocket *socket);    
+    void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void sendProperty(const char *property_name);    
+    void sendProperty(const char *property_name);
+    void unicast(const QString &message);
     void drawCard(const Card *card);
 
     virtual int getHandcardNum() const;
@@ -21,7 +22,7 @@ public:
 
 private:
     QTcpSocket *socket;
-    QList<const Card*> handcards;
+    QList<const Card*> handcards;    
 
 private slots:
     void getRequest();
