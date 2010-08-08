@@ -27,7 +27,6 @@ public slots:
     void chooseLord(const QList<const General *> &lords);
     void chooseGeneral(const General *lord, const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str = QString());
-    void setActivity(bool active);
     void moveCard(ClientPlayer *src, Player::Place src_place,
                   ClientPlayer *dest, Player::Place dest_place,
                   int card_id);
@@ -37,6 +36,7 @@ public slots:
     void hideDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
+    void updateStatus(Client::Status status);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

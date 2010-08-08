@@ -11,21 +11,29 @@
 class Client : public QTcpSocket
 {
     Q_OBJECT
-    Q_PROPERTY(bool active READ isActive WRITE setActivity)
+    Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
+
+    Q_ENUMS(Status)
 
 public:
+    enum Status{
+        NotActive,
+        Responsing,
+        Playing,
+        Discarding
+    };
+
     explicit Client(QObject *parent = 0);
     void signup();
     const ClientPlayer *getPlayer() const;
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
-    void endPhase();
     void askForCards(int n);
     void askForJudge(const QString &player_name = QString());
     void ackForHpChange(int delta);
-    void setActivity(bool activity);
-    bool isActive() const;
+    void setStatus(Status status);
+    Status getStatus() const;
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -47,8 +55,6 @@ public:
     CardPattern *pattern;
     QVariantMap tag;
     QList<CardPattern *> enable_patterns, disable_patterns;
-    const Card *card;
-    QList<const ClientPlayer *> targets;
     QList<const Card*> discarded_list;
 
 public slots:    
@@ -57,7 +63,7 @@ public slots:
 private:
     QObject *room;
     ClientPlayer *self;
-    bool activity;
+    Status status;
 
 private slots:
     void processReply();
@@ -74,12 +80,12 @@ signals:
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
-    void activity_changed(bool activity);
     void card_requested(const QString pattern);
     void hp_changed(const QString &target, int delta);
     void card_moved(ClientPlayer *src, Player::Place src_place,
                     ClientPlayer *dest, Player::Place dest_place,
                     int card_id);
+    void status_changed(Client::Status new_status);
 };
 
 extern Client *ClientInstance;

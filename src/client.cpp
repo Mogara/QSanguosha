@@ -4,12 +4,11 @@
 
 #include <QMessageBox>
 #include <QMetaEnum>
-#include <QStateMachine>
 
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), pattern(NULL), card(NULL), room(new QObject(this)), activity(false)
+    :QTcpSocket(parent), pattern(NULL), room(new QObject(this)), status(NotActive)
 {
     ClientInstance = this;
 
@@ -22,21 +21,6 @@ Client::Client(QObject *parent)
     connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
-
-    // state machine
-    QStateMachine *machine = new QStateMachine(this);
-
-    QState *not_active = new QState;
-    QState *responsing = new QState;
-    QState *playing = new QState;
-    QState *discarding = new QState;
-
-    machine->addState(not_active);
-    machine->addState(responsing);
-    machine->addState(playing);
-    machine->addState(discarding);
-
-    machine->setInitialState(not_active);
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -179,24 +163,19 @@ void Client::itemChosen(const QString &item_name){
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(card){
-        this->card = card;
-        this->targets = targets;
-        setActivity(false);
-
         QStringList target_names;
         foreach(const ClientPlayer *target, targets)
             target_names << target->objectName();
         request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
+
+        card->use(targets);
     }
 }
 
 void Client::useCard(const Card *card){
-    if(card){        
-        this->card = card;
-        this->targets.clear();
-        setActivity(false);
-
+    if(card){
         request(QString("useCard %1 .").arg(card->toString()));
+        card->use(QList<const ClientPlayer *>());
     }
 }
 
@@ -244,7 +223,6 @@ void Client::notifyRoleChange(const QString &new_role){
 
 void Client::activate(const QString &focus_player){
     // FIXME
-    setActivity(focus_player == Config.UserName);
 }
 
 void Client::moveCard(const QString &move_str){
@@ -293,11 +271,10 @@ void Client::startGame(const QString &first_player){
         }
     }
 
-    // FIXME
-}
-
-void Client::endPhase(){    
-    request("endPhase");
+    if(first_player == Config.UserName)
+        setStatus(Playing);
+    else
+        emit status_changed(NotActive);
 }
 
 void Client::askForCards(int n){
@@ -340,13 +317,13 @@ void Client::judge(const QString &judge_str){
 
 }
 
-void Client::setActivity(bool activity){
-    if(this->activity != activity){
-        this->activity = activity;
-        emit activity_changed(activity);
+void Client::setStatus(Status status){
+    if(this->status != status){
+        this->status = status;
+        emit status_changed(status);
     }
 }
 
-bool Client::isActive() const{
-    return activity;
+Client::Status Client::getStatus() const{
+    return status;
 }

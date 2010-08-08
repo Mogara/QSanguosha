@@ -98,13 +98,13 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
-    connect(ClientInstance, SIGNAL(activity_changed(bool)), SLOT(setActivity(bool)));
     connect(ClientInstance, SIGNAL(card_moved(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)),
             this, SLOT(moveCard(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)));
+    connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
 
     ClientInstance->signup();
 
-    startEnterAnimation();
+    startEnterAnimation();    
 }
 
 void RoomScene::startEnterAnimation(){
@@ -231,13 +231,13 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
         item->setPos(893, -235);
-        if(ClientInstance->isActive()){
-            if(ClientInstance->pattern)
-                item->setEnabled(ClientInstance->pattern->match(card));
-            else
-                item->setEnabled(card->isAvailable());
-        }else
-            item->setEnabled(false);
+        switch(ClientInstance->getStatus()){
+        case Client::NotActive: item->setEnabled(false); break;
+        case Client::Playing: item->setEnabled(card->isAvailable()); break;
+        case Client::Responsing: item->setEnabled(ClientInstance->pattern->match(card)); break;
+        case Client::Discarding: item->setEnabled(true); break;
+        }
+
         dashboard->addCardItem(item);
     }
 }
@@ -277,13 +277,6 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     photo->update();
 }
 
-void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    QGraphicsScene::mousePressEvent(event);
-    if(event->button() == Qt::RightButton){
-        // use skill
-    }
-}
-
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsScene::mouseMoveEvent(event);
 
@@ -301,6 +294,15 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 
     if(avatar->isUnderMouse()){
         avatar->setSelected(true);
+    }
+}
+
+void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    QGraphicsScene::mousePressEvent(event);
+
+    if(event->button() == Qt::RightButton && !button2skill.isEmpty()){
+        QAbstractButton *button = button2skill.begin().key();
+        button->click();
     }
 }
 
@@ -526,25 +528,6 @@ void RoomScene::hideDiscards(){
     }
 }
 
-void RoomScene::setActivity(bool activity){
-    if(activity){
-        dashboard->enableCards();
-
-        discard_button->setEnabled(ClientInstance->pattern == NULL);
-    }else{
-        dashboard->disableAllCards();
-
-        ok_button->setEnabled(false);
-        cancel_button->setEnabled(false);
-        discard_button->setEnabled(false);
-
-        foreach(QAbstractButton *button, skill_buttons)
-            button->setEnabled(false);
-    }
-
-    dashboard->update();
-}
-
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
     if(src){
         if(src->objectName() == Config.UserName){
@@ -656,13 +639,8 @@ void RoomScene::updateSkillButtons(){
             button = new QCheckBox(skill_name);
             button->setCheckable(true);
             button->setChecked(true);
-        }else if(skill->inherits("ViewAsSkill") && !skill->inherits("FilterSkill"))
+        }else
             button = new QPushButton(skill_name);
-        else{
-            QPushButton *push_button = new QPushButton(skill_name);
-            push_button->setFlat(true);
-            button = push_button;
-        }
 
         if(skill->isLordSkill())
             button->setText(button->text() + tr("[Lord Skill]"));
@@ -890,5 +868,25 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
     foreach(Photo *photo, photos){
         if(photo != except)
             photo->setSelected(false);
+    }
+}
+
+void RoomScene::updateStatus(Client::Status status){
+    switch(status){
+    case Client::NotActive:{
+            dashboard->disableAllCards();
+            foreach(QAbstractButton *button, skill_buttons)
+                button->setEnabled(false);
+            break;
+        }
+    case Client::Playing:{
+            dashboard->enableCards();
+            foreach(QAbstractButton *button, skill_buttons)
+                button->setEnabled(true);
+            break;
+        }
+    default:
+        // FIXME
+        ;
     }
 }
