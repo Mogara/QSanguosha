@@ -242,7 +242,8 @@ public:
 
             ActiveRecord *ask = new ActiveRecord;
             ask->method = "askForSkillInvoke";
-            ask->args << Q_ARG(ServerPlayer *, target) << Q_ARG(QString, objectName()) << Q_ARG(QString, "yes+no");
+            ask->target = target;
+            ask->data = "yingzi:yes+no";
 
             room->pushActiveRecord(ask);
         }
@@ -501,6 +502,10 @@ void StandardPackage::addGenerals(){
     t[":jijiu"] = tr(":jijiu");
     t[":lijian"] = tr(":lijian");
     t[":biyue"] = tr(":biyue");
+
+    // passive skill description
+    t["yingzi:yes"] = tr("yingzi:yes");
+    t["yingzi:no"] = t["nothing"];
 
     t["luanji"] = tr("luanji");
 }

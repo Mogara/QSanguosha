@@ -43,8 +43,8 @@ int Room::alivePlayerCount() const{
     return alive_players.count();
 }
 
-void Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options){
-    player->invoke("askForSkillInvoke", QString("%1:%2").arg(skill_name).arg(options));
+void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
+    player->invoke("askForSkillInvoke", data.toString());
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -331,7 +331,8 @@ void Room::startGame(){
             passive_skills.insert(skill->objectName(), skill);
         }        
     }
-    passive_skills.insert(QString(), new GameRule);
+    GameRule *game_rule = new GameRule;
+    passive_skills.insert(game_rule->objectName(), game_rule);
 
     broadcast("! startGame .");
 
@@ -339,7 +340,7 @@ void Room::startGame(){
     the_lord->setPhase(Player::Start);
     broadcastProperty(the_lord, "phase", "start");
     current = the_lord;
-    // changePhase(the_lord);
+    changePhase(the_lord);    
 }
 
 QList<const PassiveSkill *> Room::getInvokableSkills(ServerPlayer *target) const{
@@ -364,7 +365,8 @@ void Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
         broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
-void Room::drawCards(ServerPlayer *player, int n){
+void Room::drawCards(ServerPlayer *player, const QVariant &data){
+    int n = data.toInt();
     QStringList cards_str;
 
     int i;
@@ -468,21 +470,24 @@ void Room::invokeStackTop(){
     }else{
         ActiveRecord *top = stack.pop();
 
-        int i, start = top->args.length();
-        for(i=start; i<5; i++){
-            top->args << QGenericArgument();
-        }
+        bool invoked;
 
-        bool invoked = QMetaObject::invokeMethod(this, top->method,
-                                                 top->args.at(0),
-                                                 top->args.at(1),
-                                                 top->args.at(2),
-                                                 top->args.at(3),
-                                                 top->args.at(4)
-                                                 );        
-        if(!invoked){
-            emit room_message(tr("Unknown method :%1 ").arg(top->method));
-        }
+        if(top->data.isValid())
+            invoked = QMetaObject::invokeMethod(this,
+                                                top->method,
+                                                Qt::DirectConnection,
+                                                Q_ARG(ServerPlayer *, top->target),
+                                                Q_ARG(QVariant, top->data)
+                                                );
+        else
+            invoked = QMetaObject::invokeMethod(this,
+                                                top->method,
+                                                Qt::DirectConnection,
+                                                Q_ARG(ServerPlayer *, top->target)
+                                                );
+
+        if(!invoked)
+            emit room_message(tr("Unknown method :%1 ").arg(top->method));        
 
         delete top;
     }
@@ -491,11 +496,8 @@ void Room::invokeStackTop(){
 void Room::changePhase(ServerPlayer *target){
     QList<const PassiveSkill *> skills = getInvokableSkills(target);
 
-    foreach(const PassiveSkill *skill, skills){
+    foreach(const PassiveSkill *skill, skills)
         skill->onPhaseChange(target);
-    }
-
-    emit room_message(tr("Skill count : %1, Stack depth : %2").arg(skills.length()).arg(stack.count()));
 
     invokeStackTop();
 }

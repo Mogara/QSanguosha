@@ -348,7 +348,7 @@ void Client::requestForCard(const QString &request_str){
 }
 
 void Client::askForSkillInvoke(const QString &ask_str){
-    QRegExp pattern("(\\w+):(\\w+)");
+    QRegExp pattern("(\\w+):(.+)");
     pattern.indexIn(ask_str);
     QStringList words = pattern.capturedTexts();
     QString skill_name = words.at(1);
@@ -362,17 +362,20 @@ void Client::askForSkillInvoke(const QString &ask_str){
         QString name = Sanguosha->translate(skill_name);
         box->setText(tr("Do you want to invoke skill [%1] ?").arg(name));
 
+        QMap<QAbstractButton *, QString> button2option;
         QStringList options = words.at(2).split("+");
         foreach(QString option, options){
             QCommandLinkButton *button = new QCommandLinkButton(box);
-            button->setText(option);
+            button2option.insert(button, option);
+            button->setText(Sanguosha->translate(option));
+            button->setDescription(Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(option)));
 
             box->addButton(button, QMessageBox::AcceptRole);
         }
 
         box->exec();
 
-        QString result = box->clickedButton()->text();
+        QString result = button2option.value(box->clickedButton());
         request(QString("invokeSkill %1 %2").arg(skill_name).arg(result));
     }
 }

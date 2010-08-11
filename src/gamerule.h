@@ -10,10 +10,10 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority(ServerPlayer *target) const;
-    virtual void onPhaseChange(ServerPlayer *target);
+    virtual void onPhaseChange(ServerPlayer *target) const;
 
 private:
-    void nextPhase(Room *room, ServerPlayer *target);
+    void nextPhase(Room *room, ServerPlayer *target) const;
 };
 
 #endif // GAMERULE_H

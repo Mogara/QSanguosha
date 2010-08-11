@@ -15,10 +15,14 @@ int GameRule::getPriority(ServerPlayer *) const{
     return 0;
 }
 
-void GameRule::onPhaseChange(ServerPlayer *target){
+void GameRule::onPhaseChange(ServerPlayer *target) const{
     Room *room = qobject_cast<Room *>(target->parent());
     switch(target->getPhase()){
-    case Player::Start: nextPhase(room, target); break;
+    case Player::Start: {
+            nextPhase(room, target);
+
+            break;
+        }
     case Player::Judge:{
             // FIXME
             nextPhase(room, target);
@@ -30,7 +34,8 @@ void GameRule::onPhaseChange(ServerPlayer *target){
 
             ActiveRecord *draw = new ActiveRecord;
             draw->method = "drawCards";
-            draw->args << Q_ARG(ServerPlayer *, target) << Q_ARG(int, 2);
+            draw->target = target;
+            draw->data = 2;
             room->pushActiveRecord(draw);
             break;
         }
@@ -42,7 +47,7 @@ void GameRule::onPhaseChange(ServerPlayer *target){
 
             ActiveRecord *discard = new ActiveRecord;
             discard->method = "discardCards";
-            discard->args << Q_ARG(ServerPlayer *, target);
+            discard->target = target;
             room->pushActiveRecord(discard);
 
             break;
@@ -58,9 +63,10 @@ void GameRule::onPhaseChange(ServerPlayer *target){
     }
 }
 
-void GameRule::nextPhase(Room *room, ServerPlayer *target){
+void GameRule::nextPhase(Room *room, ServerPlayer *target) const{
     ActiveRecord *next = new ActiveRecord;
     next->method = "nextPhase";
-    next->args << Q_ARG(ServerPlayer *, target);
+    next->target = target;
+
     room->pushActiveRecord(next);
 }

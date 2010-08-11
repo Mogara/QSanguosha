@@ -18,7 +18,8 @@ struct PassiveSkillSorter{
 
 struct ActiveRecord{
     const char *method;
-    QList<QGenericArgument> args;
+    ServerPlayer *target;
+    QVariant data;
 };
 
 class Room : public QObject
@@ -43,8 +44,8 @@ public:
 
     Q_INVOKABLE void activate(const ServerPlayer *target);
     Q_INVOKABLE void nextPhase(ServerPlayer *player);
-    Q_INVOKABLE void drawCards(ServerPlayer *player, int n);
-    Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options);
+    Q_INVOKABLE void drawCards(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

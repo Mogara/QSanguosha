@@ -90,6 +90,11 @@ StandardPackage::StandardPackage()
     t["discard"] = tr("discard");
     t["finish"] = tr("finish");
 
+    // normal phrases
+    t["yes"] = tr("yes");
+    t["no"] = tr("no");
+    t["nothing"] = tr("nothing");
+
     addCards();
     addGenerals();
 }
