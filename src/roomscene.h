@@ -70,14 +70,16 @@ private:
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
     void unselectAllTargets(const QGraphicsItem *except = NULL);
+    void callViewAsSkill();
+    void cancelViewAsSkill();
 
 private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
     void startViewAsSkill();
-    void callViewAsSkill();    
-    void cancelViewAsSkill();
+    void doOkButton();
+    void doCancelButton();
 };
 
 #endif // ROOMSCENE_H

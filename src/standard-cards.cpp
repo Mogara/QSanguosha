@@ -31,13 +31,7 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    NamePattern *pattern = new NamePattern("jink");
-    QListIterator<ServerPlayer *> itor(targets);
-    itor.toBack();
-    while(itor.hasPrevious()){
-        ServerPlayer *target = itor.previous();
-        room->requestForCard(source, target, pattern);
-    }
+
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){

@@ -72,8 +72,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     cancel_button->setEnabled(false);
     discard_button->setEnabled(false);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(callViewAsSkill()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(cancelViewAsSkill()));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
 
     button_layout->addItem(addWidget(ok_button));
     button_layout->addItem(addWidget(cancel_button));
@@ -639,6 +639,7 @@ void RoomScene::updateSkillButtons(){
             button = new QCheckBox(skill_name);
             button->setCheckable(true);
             button->setChecked(true);
+            connect(button, SIGNAL(clicked()), ClientInstance, SLOT(updateFrequentFlags()));
         }else
             button = new QPushButton(skill_name);
 
@@ -890,3 +891,14 @@ void RoomScene::updateStatus(Client::Status status){
         ;
     }
 }
+
+void RoomScene::doOkButton(){
+    if(ClientInstance->getStatus() == Client::Playing){
+        // FIXME
+    }
+}
+
+void RoomScene::doCancelButton(){
+    // FIXME
+}
+

@@ -3,7 +3,8 @@
 #include "engine.h"
 
 #include <QMessageBox>
-#include <QMetaEnum>
+#include <QCheckBox>
+#include <QCommandLinkButton>
 
 Client *ClientInstance = NULL;
 
@@ -65,7 +66,10 @@ void Client::processReply(){
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
             // invoke methods
-            QMetaObject::invokeMethod(this, field, Qt::DirectConnection, Q_ARG(QString, value));
+            bool invoked = QMetaObject::invokeMethod(this, field, Qt::DirectConnection, Q_ARG(QString, value));
+            if(!invoked){
+                QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(words[1]));
+            }
         }else
             QMessageBox::information(NULL, tr("Reply format error!"), reply);
     }
@@ -169,6 +173,8 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
         request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
 
         card->use(targets);
+
+        setStatus(NotActive);
     }
 }
 
@@ -176,6 +182,8 @@ void Client::useCard(const Card *card){
     if(card){
         request(QString("useCard %1 .").arg(card->toString()));
         card->use(QList<const ClientPlayer *>());
+
+        setStatus(NotActive);
     }
 }
 
@@ -222,7 +230,10 @@ void Client::notifyRoleChange(const QString &new_role){
 }
 
 void Client::activate(const QString &focus_player){
-    // FIXME
+    if(focus_player == Config.UserName)
+        setStatus(Playing);
+    else
+        setStatus(NotActive);
 }
 
 void Client::moveCard(const QString &move_str){
@@ -260,7 +271,7 @@ void Client::moveCard(const QString &move_str){
     emit card_moved(src, src_place, dest, dest_place, card_id);
 }
 
-void Client::startGame(const QString &first_player){
+void Client::startGame(const QString &){
     // attach all skills
     QList<ClientPlayer *> players = findChildren<ClientPlayer*>();
     foreach(ClientPlayer *player, players){
@@ -271,14 +282,7 @@ void Client::startGame(const QString &first_player){
         }
     }
 
-    if(first_player == Config.UserName)
-        setStatus(Playing);
-    else
-        emit status_changed(NotActive);
-}
-
-void Client::askForCards(int n){
-    request(QString("drawCards %1").arg(n));
+    emit status_changed(NotActive);
 }
 
 void Client::hpDamage(const QString &damage_str){
@@ -326,4 +330,49 @@ void Client::setStatus(Status status){
 
 Client::Status Client::getStatus() const{
     return status;
+}
+
+void Client::updateFrequentFlags(){
+    QCheckBox *box = qobject_cast<QCheckBox *>(sender());
+    if(box){
+        QString flag = box->objectName();
+        if(box->isChecked())
+            frequent_flags.insert(flag);
+        else
+            frequent_flags.remove(flag);
+    }
+}
+
+void Client::requestForCard(const QString &request_str){
+
+}
+
+void Client::askForSkillInvoke(const QString &ask_str){
+    QRegExp pattern("(\\w+):(\\w+)");
+    pattern.indexIn(ask_str);
+    QStringList words = pattern.capturedTexts();
+    QString skill_name = words.at(1);
+
+    bool auto_invoke = frequent_flags.contains(skill_name);
+    if(auto_invoke)
+        request(QString("invokeSkill %1 yes").arg(skill_name));
+    else{
+        QMessageBox *box = new QMessageBox;
+        box->setIcon(QMessageBox::Question);
+        QString name = Sanguosha->translate(skill_name);
+        box->setText(tr("Do you want to invoke skill [%1] ?").arg(name));
+
+        QStringList options = words.at(2).split("+");
+        foreach(QString option, options){
+            QCommandLinkButton *button = new QCommandLinkButton(box);
+            button->setText(option);
+
+            box->addButton(button, QMessageBox::AcceptRole);
+        }
+
+        box->exec();
+
+        QString result = box->clickedButton()->text();
+        request(QString("invokeSkill %1 %2").arg(skill_name).arg(result));
+    }
 }

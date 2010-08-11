@@ -48,7 +48,7 @@ QString ServerPlayer::reportHeader() const{
 
 void ServerPlayer::sendProperty(const char *property_name){
     QString value = property(property_name).toString();
-    unicast(QString("#%1 %2 %3").arg(objectName()).arg(property_name).arg(value));
+    unicast(QString(". %1 %2").arg(property_name).arg(value));
 }
 
 void ServerPlayer::getRequest(){

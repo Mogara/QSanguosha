@@ -215,7 +215,6 @@ Player::Phase Player::getNextPhase() const{
         int phase_num = static_cast<int>(phase);
         return static_cast<Phase>(phase_num + 1);
     }
-
 }
 
 bool Player::faceUp() const{

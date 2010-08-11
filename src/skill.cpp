@@ -1,6 +1,7 @@
 #include "skill.h"
 #include "engine.h"
 #include "player.h"
+#include "room.h"
 
 #include <QFile>
 
@@ -25,6 +26,10 @@ bool Skill::isLordSkill() const{
 
 QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
+}
+
+Room *Skill::getRoom(ServerPlayer *target) const{
+    return qobject_cast<Room *>(target->parent());
 }
 
 void Skill::initMediaSource(){
@@ -96,17 +101,57 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 PassiveSkill::PassiveSkill(const QString &name)
-    :Skill(name)
+    :Skill(name), view_as_skill(NULL)
 {
 
 }
 
-ActiveRecord *PassiveSkill::onGameStart(ServerPlayer *target) const{
-    return NULL;
+int PassiveSkill::getPriority(ServerPlayer *target) const{
+    Room *room = getRoom(target);
+    int current_seat = room->getCurrent()->getSeat();
+    int target_seat = target->getSeat();
+
+    int offset = target_seat - current_seat;
+    if(offset < 0)
+        offset += room->alivePlayerCount();
+
+    return offset + 1;
 }
 
-ActiveRecord *PassiveSkill::onPhaseChange(ServerPlayer *target) const{
-    return NULL;
+bool PassiveSkill::triggerable(const ServerPlayer *target) const{
+    return target->getGeneral() == parent()->objectName();
+}
+
+void PassiveSkill::onOption(ServerPlayer *target, const QString &option) const{
+
+}
+
+void PassiveSkill::onDamage(ServerPlayer *target, ServerPlayer *source, int damage, const Card *card) const{
+
+}
+
+void PassiveSkill::onJudge(ServerPlayer *target) const{
+
+}
+
+void PassiveSkill::onJudgeOnEffect(ServerPlayer *target) const{
+
+}
+
+void PassiveSkill::onPhaseChange(ServerPlayer *target) const{
+
+}
+
+void PassiveSkill::onTargetSet(ServerPlayer *target, const Card *card) const{
+
+}
+
+void PassiveSkill::onCardUsed(ServerPlayer *target, const Card *card) const{
+
+}
+
+void PassiveSkill::onCardLost(ServerPlayer *target, const Card *card) const{
+
 }
 
 FrequentPassiveSkill::FrequentPassiveSkill(const QString &name)

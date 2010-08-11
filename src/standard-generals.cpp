@@ -4,6 +4,8 @@
 #include "engine.h"
 #include "client.h"
 #include "carditem.h"
+#include "serverplayer.h"
+#include "room.h"
 
 class Jianxiong:public FrequentPassiveSkill{
 public:
@@ -148,11 +150,6 @@ class Paoxiao:public EnvironSkill{
 public:
     Paoxiao():EnvironSkill("paoxiao"){
     }
-
-    virtual void trigger(TriggerReason reason, const QString &data) const{
-        if(reason == GameStart)
-            ClientInstance->tag["unlimited_slash"] = true;
-    }
 };
 
 class Longdan:public Skill{
@@ -193,10 +190,6 @@ public:
 class Jizhi:public Skill{
 public:
     Jizhi():Skill("jizhi"){
-
-    }
-
-    void trigger(TriggerReason reason, const QVariant &data) const{
 
     }
 };
@@ -241,13 +234,24 @@ public:
 class Yingzi:public FrequentPassiveSkill{
 public:
     Yingzi():FrequentPassiveSkill("yingzi"){
-
     }
 
-    virtual void trigger(TriggerReason reason, const QVariant &data) const{
-        if(reason == PhaseChange && ClientInstance->getPlayer()->getPhase() == Player::Draw){
-            ClientInstance->askForCards(1);
-            playEffect();
+    virtual void onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Draw){
+            Room *room = getRoom(target);
+
+            ActiveRecord *ask = new ActiveRecord;
+            ask->method = "askForSkillInvoke";
+            ask->args << Q_ARG(ServerPlayer *, target) << Q_ARG(QString, objectName()) << Q_ARG(QString, "yes+no");
+
+            room->pushActiveRecord(ask);
+        }
+    }
+
+    virtual void onOption(ServerPlayer *target, const QString &option) const{
+        Room *room = getRoom(target);
+        if(option == "yes"){
+            room->drawCards(target, 1);
         }
     }
 };

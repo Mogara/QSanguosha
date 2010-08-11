@@ -33,7 +33,8 @@ SOURCES += src/main.cpp \
     src/standard-generals.cpp \
     src/standard.cpp \
     src/standard-skillcards.cpp \
-    src/cardpattern.cpp
+    src/cardpattern.cpp \
+    src/gamerule.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -59,7 +60,8 @@ HEADERS += src/mainwindow.h \
     src/clientplayer.h \
     src/standard.h \
     src/package.h \
-    src/cardpattern.h
+    src/cardpattern.h \
+    src/gamerule.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

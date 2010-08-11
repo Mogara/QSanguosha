@@ -5,7 +5,8 @@ class Player;
 class CardItem;
 class Card;
 class ServerPlayer;
-struct ActiveRecord;
+
+#include "room.h"
 
 #include <QObject>
 #include <MediaSource>
@@ -13,24 +14,12 @@ struct ActiveRecord;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool lord_skill READ isLordSkill CONSTANT)
 
-    Q_ENUMS(TriggerReason)
 public:
-    enum TriggerReason {
-        GameStart,
-        PhaseChange,
-        RequestForCard,
-        UseCard,
-        MoveCard,
-        HpDamage,
-        Judge,
-        Nop
-    };
-
     explicit Skill(const QString &name);
     bool isLordSkill() const;
     QString getDescription() const;
+    Room *getRoom(ServerPlayer *target) const;
 
     void initMediaSource();
     void playEffect() const;
@@ -74,19 +63,24 @@ public:
 
 class PassiveSkill:public Skill{
     Q_OBJECT
+
 public:
     PassiveSkill(const QString &name);
 
-    // virtual handlers
-    virtual ActiveRecord *onGameStart(ServerPlayer *target) const;
-    virtual ActiveRecord *onPhaseChange(ServerPlayer *target) const;
-//    virtual void onRequestForCard();
-//    virtual void onUseCard();
-//    virtual void onMoveCard();
-//    virtual void onPredamage(ServerPlayer *source, int damage, const Card *card);
-//    virtual void onDamage(ServerPlayer *source, int damage, const Card *card);
-//    virtual void onJudge();
-//    virtual void onJudgeOnEffect();
+    virtual int getPriority(ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual void onOption(ServerPlayer *target, const QString &option) const;
+
+    virtual void onDamage(ServerPlayer *target, ServerPlayer *source, int damage, const Card *card) const;
+    virtual void onJudge(ServerPlayer *target) const;
+    virtual void onJudgeOnEffect(ServerPlayer *target) const;
+    virtual void onPhaseChange(ServerPlayer *target) const;
+    virtual void onTargetSet(ServerPlayer *target, const Card *card) const;
+    virtual void onCardUsed(ServerPlayer *target, const Card *card) const;
+    virtual void onCardLost(ServerPlayer *target, const Card *card) const;
+
+private:
+    ViewAsSkill *view_as_skill;
 };
 
 class FrequentPassiveSkill: public PassiveSkill{

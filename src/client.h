@@ -29,7 +29,6 @@ public:
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
-    void askForCards(int n);
     void askForJudge(const QString &player_name = QString());
     void ackForHpChange(int delta);
     void setStatus(Status status);
@@ -46,11 +45,13 @@ public:
     Q_INVOKABLE void arrangeSeats(const QString &seats);
     Q_INVOKABLE void moveCard(const QString &move_str);
     Q_INVOKABLE void activate(const QString &focus_player);
-    Q_INVOKABLE void startGame(const QString &first_player);
+    Q_INVOKABLE void startGame(const QString &);
     Q_INVOKABLE void hpDamage(const QString &damage_str);
     Q_INVOKABLE void hpFlow(const QString &flow_str);
     Q_INVOKABLE void hpRecover(const QString &recover_str);
     Q_INVOKABLE void judge(const QString &judge_str);
+    Q_INVOKABLE void requestForCard(const QString &request_str);
+    Q_INVOKABLE void askForSkillInvoke(const QString &ask_str);
 
     CardPattern *pattern;
     QVariantMap tag;
@@ -59,11 +60,13 @@ public:
 
 public slots:    
     void itemChosen(const QString &item_name);
+    void updateFrequentFlags();
 
 private:
     QObject *room;
     ClientPlayer *self;
     Status status;
+    QSet<QString> frequent_flags;
 
 private slots:
     void processReply();
