@@ -13,8 +13,11 @@ int main(int argc, char *argv[])
     if(dir_name == "release" || dir_name == "debug")
         QDir::setCurrent("..");
 
-    QTranslator translator;
+    QTranslator qt_translator, translator;
+    qt_translator.load("qt_zh_CN.qm");
     translator.load("sanguosha.qm");
+
+    a.installTranslator(&qt_translator);
     a.installTranslator(&translator);
 
     MainWindow w;
