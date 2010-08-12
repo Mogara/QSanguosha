@@ -636,10 +636,14 @@ void RoomScene::updateSkillButtons(){
         QAbstractButton *button = NULL;
         QString skill_name = Sanguosha->translate(skill->objectName());
         if(skill->inherits("FrequentPassiveSkill")){
-            button = new QCheckBox(skill_name);
-            button->setCheckable(true);
-            button->setChecked(true);
-            connect(button, SIGNAL(clicked()), ClientInstance, SLOT(updateFrequentFlags()));
+            QCheckBox *checkbox = new QCheckBox(skill_name);
+
+            checkbox->setObjectName(skill->objectName());
+            checkbox->setChecked(false);
+            connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
+            checkbox->setChecked(true);
+
+            button = checkbox;
         }else
             button = new QPushButton(skill_name);
 

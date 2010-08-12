@@ -332,15 +332,12 @@ Client::Status Client::getStatus() const{
     return status;
 }
 
-void Client::updateFrequentFlags(){
-    QCheckBox *box = qobject_cast<QCheckBox *>(sender());
-    if(box){
-        QString flag = box->objectName();
-        if(box->isChecked())
-            frequent_flags.insert(flag);
-        else
-            frequent_flags.remove(flag);
-    }
+void Client::updateFrequentFlags(int state){    
+    QString flag = sender()->objectName();
+    if(state == Qt::Checked)
+        frequent_flags.insert(flag);
+    else
+        frequent_flags.remove(flag);
 }
 
 void Client::requestForCard(const QString &request_str){

@@ -61,7 +61,7 @@ public:
 
 public slots:    
     void itemChosen(const QString &item_name);
-    void updateFrequentFlags();
+    void updateFrequentFlags(int state);
 
 private:
     QObject *room;
