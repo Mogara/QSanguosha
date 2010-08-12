@@ -379,3 +379,13 @@ void Client::askForSkillInvoke(const QString &ask_str){
         request(QString("invokeSkill %1 %2").arg(skill_name).arg(result));
     }
 }
+
+void Client::playSkillEffect(const QString &play_str){
+    QRegExp pattern("(\\w+):([-\\w]+)");
+    pattern.indexIn(play_str);
+    QStringList words = pattern.capturedTexts();
+    QString skill_name = words.at(1);
+    int index = words.at(2).toInt();
+
+    Sanguosha->playSkillEffect(skill_name, index);
+}

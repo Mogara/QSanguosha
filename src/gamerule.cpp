@@ -40,6 +40,12 @@ void GameRule::onPhaseChange(ServerPlayer *target) const{
             break;
         }
     case Player::Play:{
+            ActiveRecord *activate = new ActiveRecord;
+            activate->method = "activate";
+            activate->target = target;
+
+            room->pushActiveRecord(activate);
+
             break;
         }
     case Player::Discard:{

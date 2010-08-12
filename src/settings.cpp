@@ -33,6 +33,7 @@ void Settings::init(){
 
     ListenAddress = value("ListenAddress", "127.0.0.1").toString();
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
+    LordCount = value("LordCount", 5).toInt();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     HostAddress = value("HostAddress", "127.0.0.1").toString();

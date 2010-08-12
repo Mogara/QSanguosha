@@ -23,16 +23,25 @@ void PassiveSkillSorter::sort(QList<const PassiveSkill *> &skills){
     qSort(skills.begin(), skills.end(), *this);
 }
 
+DamageData::DamageData()
+    :source(NULL), card(NULL), damage(0), nature(Normal)
+{
+}
+
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), current(NULL),
+    pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false), signup_count(0)
+    chosen_generals(0), game_started(false), waiting_for_user(NULL), signup_count(0)
 {
-    Sanguosha->getRandomCards(pile1);
 }
 
 void Room::pushActiveRecord(ActiveRecord *record){
     stack.push(record);
+
+#ifndef QT_NO_DEBUG
+    qDebug("push (%s %s %s)", record->method, qPrintable(record->target->objectName()), qPrintable(record->data.toString()));
+#endif
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -45,6 +54,8 @@ int Room::alivePlayerCount() const{
 
 void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
     player->invoke("askForSkillInvoke", data.toString());
+
+    waiting_for_user = __func__;
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -139,6 +150,9 @@ void Room::processRequest(const QString &request){
         emit room_message(player->reportHeader() + request);
     else
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
+
+    if(game_started && !waiting_for_user)
+        invokeStackTop();
 }
 
 void Room::setCommand(ServerPlayer *player, const QStringList &args){
@@ -175,8 +189,7 @@ void Room::signupCommand(ServerPlayer *player, const QStringList &args){
 
     signup_count ++;
     if(isFull()){
-        broadcast(QString("! startInXs %1").arg(left_seconds));
-        game_started = true;
+        broadcast(QString("! startInXs %1").arg(left_seconds));        
         startTimer(1000);
     }
 }
@@ -226,13 +239,10 @@ void Room::assignRoles(){
             lord_index = i;
             broadcast(QString("#%1 role lord").arg(player->objectName()));
 
-            QStringList lord_list;
-            Sanguosha->getRandomLords(lord_list);            
-            // player->unicast("! getLords " + lord_list.join("+"));
+            QStringList lord_list = Sanguosha->getRandomLords(Config.LordCount);
             player->invoke("getLords", lord_list.join("+"));
         }else
             player->sendProperty("role");
-            //player->unicast(". role " + role);
     }
 
     Q_ASSERT(lord_index != -1);
@@ -244,15 +254,15 @@ void Room::assignRoles(){
 
 void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     QString general_name = args[1];
-    player->setGeneral(general_name);
-    broadcastProperty(player, "general");
+    player->setGeneral(general_name);    
 
     if(player->getRole() == "lord"){
+        broadcastProperty(player, "general");
+
         static const int max_choice = 5;
         const int total = Sanguosha->getGeneralCount();
         const int choice_count = qMin(max_choice, (total-1) / (player_count-1));
-        QStringList general_list;
-        Sanguosha->getRandomGenerals(general_list, (player_count-1) * choice_count + 1);
+        QStringList general_list = Sanguosha->getRandomGenerals((player_count-1) * choice_count + 1);
         general_list.removeOne(general_name);
 
         int i,j;
@@ -266,8 +276,9 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     }
 
     chosen_generals ++;
-    if(chosen_generals == player_count)
+    if(chosen_generals == player_count){
         startGame();
+    }
 }
 
 void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
@@ -294,6 +305,11 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
 }
 
 void Room::startGame(){
+    // broadcast all generals except the lord
+    int i;
+    for(i=1; i<players.count(); i++)
+        broadcastProperty(players.at(i), "general");
+
     // tell the players about the seat, and the first is always the lord
     QStringList player_circle;
     foreach(ServerPlayer *player, players){
@@ -306,7 +322,6 @@ void Room::startGame(){
     int lord_welfare = player_count > 4 ? 1 : 0;
     players.first()->setMaxHP(players.first()->getGeneralMaxHP() + lord_welfare);
 
-    int i;
     for(i=1; i<player_count; i++)
         players[i]->setMaxHP(players[i]->getGeneralMaxHP());
 
@@ -335,6 +350,7 @@ void Room::startGame(){
     passive_skills.insert(game_rule->objectName(), game_rule);
 
     broadcast("! startGame .");
+    game_started = true;
 
     ServerPlayer *the_lord = players.first();
     the_lord->setPhase(Player::Start);
@@ -437,6 +453,8 @@ void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
     }else{
         emit room_message(tr("No such skill named %1").arg(skill_name));
     }
+
+    waiting_for_user = NULL;
 }
 
 void Room::nextPhase(ServerPlayer *player){
@@ -464,11 +482,19 @@ void Room::nextPhase(ServerPlayer *player){
     }
 }
 
+void Room::playSkillEffect(const QString &skill_name, int index){
+    broadcastInvoke("playSkillEffect", QString("%1:%2").arg(skill_name).arg(index));
+}
+
 void Room::invokeStackTop(){
     if(stack.isEmpty()){
         activate(current);
     }else{
         ActiveRecord *top = stack.pop();
+
+#ifndef QT_NO_DEBUG
+        qDebug("pop (%s %s %s)", top->method, qPrintable(top->target->objectName()), qPrintable(top->data.toString()));
+#endif
 
         bool invoked;
 
@@ -500,6 +526,14 @@ void Room::changePhase(ServerPlayer *target){
         skill->onPhaseChange(target);
 
     invokeStackTop();
+}
+
+void Room::predamage(ServerPlayer *target, const DamageData &data){
+    // FIXME
+}
+
+void Room::damage(ServerPlayer *target, const DamageData &data){
+    // FIXME
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg){

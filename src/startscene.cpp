@@ -80,5 +80,3 @@ void StartScene::switchToServer(Server *server){
 
     update();
 }
-
-

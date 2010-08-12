@@ -31,6 +31,10 @@ void Engine::addPackage(Package *package){
         if(general->isLord())
             lord_names << general->objectName();
         generals.insert(general->objectName(), general);
+
+        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
+        foreach(const Skill *skill, all_skills)
+            skills.insert(skill->objectName(), skill);
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
@@ -91,7 +95,8 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
-void Engine::getRandomLords(QStringList &lord_list, int lord_count) const{
+QStringList Engine::getRandomLords(int lord_count) const{
+    QStringList lord_list;
     int min = qMin(lord_count, lord_names.count()), i;
     for(i=0; i<min; i++)
         lord_list << lord_names[i];
@@ -109,9 +114,12 @@ void Engine::getRandomLords(QStringList &lord_list, int lord_count) const{
 
         lord_list << general->objectName();
     }    
+
+    return lord_list;
 }
 
-void Engine::getRandomGenerals(QStringList &general_list, int count) const{
+QStringList Engine::getRandomGenerals(int count) const{
+    QStringList general_list;
     QList<const General *> all_generals = generals.values();
     int n = all_generals.count();
     Q_ASSERT(n >= count);
@@ -128,9 +136,12 @@ void Engine::getRandomGenerals(QStringList &general_list, int count) const{
         general_list << all_generals.at(i)->objectName();
 
     Q_ASSERT(general_list.count() == count);
+
+    return general_list;
 }
 
-void Engine::getRandomCards(QList<int> &list) const{
+QList<int> Engine::getRandomCards() const{
+    QList<int> list;
     int n = cards.count(), i;
     for(i=0; i<n; i++)
         list << i;
@@ -140,6 +151,8 @@ void Engine::getRandomCards(QList<int> &list) const{
         int r2 = qrand() % n;
         list.swap(r1, r2);
     }
+
+    return list;
 }
 
 void Engine::playEffect(const Phonon::MediaSource &source){
@@ -147,3 +160,8 @@ void Engine::playEffect(const Phonon::MediaSource &source){
     effect->play();
 }
 
+void Engine::playSkillEffect(const QString &skill_name, int index){
+    const Skill *skill = skills.value(skill_name, NULL);
+    if(skill)
+        skill->playEffect(index);
+}

@@ -22,7 +22,7 @@ public:
     Room *getRoom(ServerPlayer *target) const;
 
     void initMediaSource();
-    void playEffect() const;
+    void playEffect(int index = -1) const;
 
 private:
     bool lord_skill;

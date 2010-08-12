@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE void judge(const QString &judge_str);
     Q_INVOKABLE void requestForCard(const QString &request_str);
     Q_INVOKABLE void askForSkillInvoke(const QString &ask_str);
+    Q_INVOKABLE void playSkillEffect(const QString &play_str);
 
     CardPattern *pattern;
     QVariantMap tag;

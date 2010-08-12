@@ -31,16 +31,18 @@ public:
     int getCardCount() const;
     const Card *getCard(int index) const;
 
-    void getRandomLords(QStringList &lord_list, int lord_count = 5) const;
-    void getRandomGenerals(QStringList &general_list, int count) const;
-    void getRandomCards(QList<int> &list) const;
+    QStringList getRandomLords(int lord_count) const;
+    QStringList getRandomGenerals(int count) const;
+    QList<int> getRandomCards() const;
 
     void playEffect(const Phonon::MediaSource &source);
+    void playSkillEffect(const QString &skill_name, int index);
 
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
+    QHash<QString, const Skill *> skills;
 
     QList<Card*> cards;
     QStringList lord_names;

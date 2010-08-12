@@ -56,10 +56,14 @@ void Skill::initMediaSource(){
     }
 }
 
-void Skill::playEffect() const{
+void Skill::playEffect(int index) const{
     if(!sources.isEmpty()){
-        int r = qrand() % sources.length();
-        Sanguosha->playEffect(sources.at(r));
+        if(index == -1)
+            index = qrand() % sources.length();
+        else
+            index--;
+
+        Sanguosha->playEffect(sources.at(index));
     }
 }
 

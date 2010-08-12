@@ -22,6 +22,18 @@ struct ActiveRecord{
     QVariant data;
 };
 
+struct DamageData{
+    enum Nature { Normal, Fire, Thunder };
+    DamageData();
+
+    ServerPlayer *source;
+    const Card *card;
+    int damage;
+    Nature nature;
+};
+
+Q_DECLARE_METATYPE(DamageData);
+
 class Room : public QObject
 {
     Q_OBJECT
@@ -35,7 +47,7 @@ public:
     void throwCard(ServerPlayer *player, int card_id);
     QList<int> *getDiscardPile() const;
     void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
-
+    void playSkillEffect(const QString &skill_name, int index = -1);
     QList<const PassiveSkill *> getInvokableSkills(ServerPlayer *target) const;
 
     void pushActiveRecord(ActiveRecord *record);
@@ -59,6 +71,7 @@ private:
     int left_seconds;
     int chosen_generals;
     bool game_started;
+    const char *waiting_for_user;
     int signup_count;
     QMap<QString, const PassiveSkill *> passive_skills;
     QStack<ActiveRecord *> stack;
@@ -70,6 +83,8 @@ private:
 
     // method that may invoke skills
     void changePhase(ServerPlayer *target);
+    void predamage(ServerPlayer *target, const DamageData &data);
+    void damage(ServerPlayer *target, const DamageData &data);
 
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);

@@ -253,6 +253,7 @@ public:
         Room *room = getRoom(target);
         if(option == "yes"){
             room->drawCards(target, 1);
+            room->playSkillEffect(objectName());
         }
     }
 };
