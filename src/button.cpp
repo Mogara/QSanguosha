@@ -14,6 +14,7 @@ Button::Button(const QString &label)
     height = metrics.height();
 
     setFlags(QGraphicsItem::ItemIsFocusable);
+
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
 

@@ -2,7 +2,7 @@
 #include "card.h"
 
 CardPattern::CardPattern(const QString &pattern_str)
-    :pattern_str(pattern_str)
+    :min(1), max(1), compulsory(false), response(false), pattern_str(pattern_str)
 {
 }
 

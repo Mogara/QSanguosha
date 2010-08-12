@@ -51,8 +51,10 @@ void ConnectionDialog::on_connectButton_clicked()
 {
     QString username = ui->nameLineEdit->text();
     username = username.trimmed();
-    if(username.contains(QChar(' '))){
-        QMessageBox::warning(this, tr("Warning"), tr("User name can not contains whitespace!"));
+
+    QRegExp pattern("[^-+@: =!#%*]+");
+    if(!pattern.exactMatch(username)){
+        QMessageBox::warning(this, tr("Warning"), tr("User name can not contains special characters!"));
         return;
     }
 

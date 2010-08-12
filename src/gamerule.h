@@ -9,7 +9,7 @@ public:
     GameRule();
 
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority(ServerPlayer *target, ServerPlayer *source) const;
     virtual void onPhaseChange(ServerPlayer *target) const;
 
 private:

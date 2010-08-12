@@ -14,6 +14,10 @@ Engine::Engine(QObject *parent)
     :QObject(parent), effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     addPackage(new StandardPackage);
+
+    metaobjects.insert("NamePattern", &NamePattern::staticMetaObject);
+    metaobjects.insert("TypePattern", &TypePattern::staticMetaObject);
+    metaobjects.insert("ClassPattern", &ClassPattern::staticMetaObject);
 }
 
 void Engine::addPackage(Package *package){
@@ -82,13 +86,38 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         return NULL;
 }
 
-CardPattern *Engine::cloneCardPattern(const QString &name, const QString &pattern_str){
+CardPattern *Engine::cloneCardPattern(const QString &pattern_text){
+    QRegExp rx("(\\w+):(\\w+):(\\d+)-(\\d+):([cr]*)");
+    if(!rx.exactMatch(pattern_text))
+        return NULL;
+
+    QStringList words = rx.capturedTexts();
+    QString name = words.at(1);
+    QString pattern_str = words.at(2);
+    int min = words.at(3).toInt();
+    int max = words.at(4).toInt();
+    QString flags = words.at(5);
+
     const QMetaObject *meta = metaobjects.value(name, NULL);
     if(meta){
         QObject *pattern_obj = meta->newInstance(Q_ARG(QString, pattern_str));
-        return qobject_cast<CardPattern *>(pattern_obj);
-    }else
-        return NULL;
+        CardPattern *pattern = qobject_cast<CardPattern *>(pattern_obj);
+        if(pattern){
+            pattern->min = min;
+            pattern->max = max;
+
+            static QChar compulsory_symbol('c');
+            static QChar response_symbol('r');
+            if(flags.contains(compulsory_symbol))
+                pattern->compulsory = true;
+            if(flags.contains(response_symbol))
+                pattern->response = true;
+
+            return pattern;
+        }
+    }
+
+    return NULL;
 }
 
 int Engine::getCardCount() const{

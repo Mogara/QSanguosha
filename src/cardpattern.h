@@ -13,6 +13,11 @@ public:
     QString toString() const;
 
     virtual bool match(const Card *card) const = 0;
+
+    int min, max;
+    bool compulsory;
+    bool response;
+
 protected:
     QString pattern_str;
 };

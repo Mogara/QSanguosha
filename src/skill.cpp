@@ -110,12 +110,12 @@ PassiveSkill::PassiveSkill(const QString &name)
 
 }
 
-int PassiveSkill::getPriority(ServerPlayer *target) const{
+int PassiveSkill::getPriority(ServerPlayer *target, ServerPlayer *source) const{
     Room *room = getRoom(target);
-    int current_seat = room->getCurrent()->getSeat();
+    int source_seat = source ? source->getSeat() : room->getCurrent()->getSeat();
     int target_seat = target->getSeat();
 
-    int offset = target_seat - current_seat;
+    int offset = target_seat - source_seat;
     if(offset < 0)
         offset += room->alivePlayerCount();
 

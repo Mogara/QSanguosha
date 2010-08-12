@@ -344,7 +344,11 @@ void Client::updateFrequentFlags(){
 }
 
 void Client::requestForCard(const QString &request_str){
+    pattern = Sanguosha->cloneCardPattern(request_str);
 
+    if(pattern == NULL){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Can not parse card pattern string : %1").arg(request_str));
+    }
 }
 
 void Client::askForSkillInvoke(const QString &ask_str){

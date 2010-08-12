@@ -13,8 +13,8 @@
 static PassiveSkillSorter Sorter;
 
 bool PassiveSkillSorter::operator ()(const PassiveSkill *a, const PassiveSkill *b){
-    int x = a->getPriority(target);
-    int y = b->getPriority(target);
+    int x = a->getPriority(target, source);
+    int y = b->getPriority(target, source);
 
     return x < y;
 }
@@ -56,6 +56,10 @@ void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
     player->invoke("askForSkillInvoke", data.toString());
 
     waiting_for_user = __func__;
+
+#ifndef QT_NO_DEBUG
+    qDebug("waiting_for_user=%s", waiting_for_user);
+#endif
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -211,7 +215,7 @@ void Room::assignRoles(){
     int n = players.count(), i;
 
     char roles[100];
-    strcpy(roles, role_assign_table[n]);
+    qstrcpy(roles, role_assign_table[n]);
 
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
@@ -237,7 +241,7 @@ void Room::assignRoles(){
         player->setRole(role);
         if(role == "lord"){
             lord_index = i;
-            broadcast(QString("#%1 role lord").arg(player->objectName()));
+            broadcastProperty(player, "role", "lord");
 
             QStringList lord_list = Sanguosha->getRandomLords(Config.LordCount);
             player->invoke("getLords", lord_list.join("+"));
@@ -359,7 +363,7 @@ void Room::startGame(){
     changePhase(the_lord);    
 }
 
-QList<const PassiveSkill *> Room::getInvokableSkills(ServerPlayer *target) const{
+QList<const PassiveSkill *> Room::getInvokableSkills(ServerPlayer *target, ServerPlayer *source) const{
     QList<const PassiveSkill *> skills;
 
     foreach(const PassiveSkill *skill, passive_skills){
@@ -368,6 +372,7 @@ QList<const PassiveSkill *> Room::getInvokableSkills(ServerPlayer *target) const
     }
 
     Sorter.target = target;
+    Sorter.source = source;
     Sorter.sort(skills);
 
     return skills;
@@ -455,6 +460,10 @@ void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
     }
 
     waiting_for_user = NULL;
+
+#ifndef QT_NO_DEBUG
+    qDebug("waiting_for_user=NULL");
+#endif
 }
 
 void Room::nextPhase(ServerPlayer *player){
@@ -489,7 +498,10 @@ void Room::playSkillEffect(const QString &skill_name, int index){
 void Room::invokeStackTop(){
     if(stack.isEmpty()){
         activate(current);
-    }else{
+        return;
+    }
+
+    while(!stack.isEmpty()){
         ActiveRecord *top = stack.pop();
 
 #ifndef QT_NO_DEBUG
@@ -513,7 +525,10 @@ void Room::invokeStackTop(){
                                                 );
 
         if(!invoked)
-            emit room_message(tr("Unknown method :%1 ").arg(top->method));        
+            emit room_message(tr("Unknown method :%1 ").arg(top->method));
+
+        if(waiting_for_user)
+            return;
 
         delete top;
     }
@@ -529,6 +544,8 @@ void Room::changePhase(ServerPlayer *target){
 }
 
 void Room::predamage(ServerPlayer *target, const DamageData &data){
+    QList<const PassiveSkill *> skills = getInvokableSkills(target, data.source);
+
     // FIXME
 }
 
@@ -540,6 +557,6 @@ void Room::broadcastInvoke(const char *method, const QString &arg){
     broadcast(QString("! %1 %2").arg(method).arg(arg));
 }
 
-void Room::activate(const ServerPlayer *target){
+void Room::activate(ServerPlayer *target){
     broadcastInvoke("activate", target->objectName());
 }

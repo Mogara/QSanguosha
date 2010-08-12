@@ -11,6 +11,7 @@ class PassiveSkill;
 
 struct PassiveSkillSorter{
     ServerPlayer *target;
+    ServerPlayer *source;
 
     bool operator()(const PassiveSkill *a, const PassiveSkill *b);
     void sort(QList<const PassiveSkill *> &skills);
@@ -48,13 +49,13 @@ public:
     QList<int> *getDiscardPile() const;
     void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
     void playSkillEffect(const QString &skill_name, int index = -1);
-    QList<const PassiveSkill *> getInvokableSkills(ServerPlayer *target) const;
+    QList<const PassiveSkill *> getInvokableSkills(ServerPlayer *target, ServerPlayer *source = NULL) const;
 
     void pushActiveRecord(ActiveRecord *record);
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
 
-    Q_INVOKABLE void activate(const ServerPlayer *target);
+    Q_INVOKABLE void activate(ServerPlayer *target);
     Q_INVOKABLE void nextPhase(ServerPlayer *player);
     Q_INVOKABLE void drawCards(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);

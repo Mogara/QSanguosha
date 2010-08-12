@@ -67,7 +67,7 @@ class PassiveSkill:public Skill{
 public:
     PassiveSkill(const QString &name);
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority(ServerPlayer *target, ServerPlayer *source) const;
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onOption(ServerPlayer *target, const QString &option) const;
 
