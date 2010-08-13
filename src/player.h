@@ -28,6 +28,10 @@ class Player : public QObject
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
     Q_PROPERTY(bool face_up READ faceUp)
 
+    // distance related properties
+    Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
+    Q_PROPERTY(QString correct READ getCorrect WRITE setCorrect)
+
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
 
@@ -60,10 +64,15 @@ public:
     Phase getPhase() const;
     void setPhase(Phase phase);
     Phase getNextPhase() const;
+
+    void setAttackRange(int attack_range);
+    int getAttackRange() const;
+    QString getCorrect() const;
+    void setCorrect(const QString &correct_str);
+
     bool faceUp() const;
     void turnOver();
 
-    void setCorrect(int src_correct, int dest_correct);
     int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
@@ -92,7 +101,16 @@ private:
     QString role;
     QString state;
     int seat;
-    int src_correct, dest_correct;
+
+    struct CorrectStruct{
+        int equip_src;
+        int equip_dest;
+        int skill_src;
+        int skill_dest;
+    };
+    struct CorrectStruct correct;
+    int attack_range;
+
     Phase phase;
     const Weapon *weapon;
     const Armor *armor;

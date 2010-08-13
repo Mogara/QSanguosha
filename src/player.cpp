@@ -7,10 +7,14 @@
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
     hp(-1), max_hp(-1), max_cards(-1), state("online"), seat(0),
-    src_correct(0), dest_correct(0), phase(NotActive),
+    attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true)
 {
+    correct.equip_dest = 0;
+    correct.equip_src = 0;
+    correct.skill_src = 0;
+    correct.skill_dest = 0;
 }
 
 void Player::setHp(int hp){
@@ -45,15 +49,55 @@ void Player::setSeat(int seat){
     this->seat = seat;
 }
 
-void Player::setCorrect(int src_correct, int dest_correct){
-    this->src_correct = src_correct;
-    this->dest_correct = dest_correct;
+void Player::setAttackRange(int attack_range){
+    this->attack_range = attack_range;
 }
 
+int Player::getAttackRange() const{
+    return attack_range;
+}
+
+QString Player::getCorrect() const{
+    return QString("%1:%2:%3:%4")
+            .arg(correct.equip_src)
+            .arg(correct.equip_dest)
+            .arg(correct.skill_src)
+            .arg(correct.skill_dest);
+}
+
+void Player::setCorrect(const QString &correct_str){
+    QRegExp pattern("(\\w+):(-?\\d+)");
+    pattern.indexIn(correct_str);
+    QStringList texts = pattern.capturedTexts();
+    QString field = texts.at(1);
+    int value = texts.at(2).toInt();
+
+    if(field == "equip_src")
+        correct.equip_src = value;
+    else if(field == "equip_dest")
+        correct.equip_dest = value;
+    else if(field == "skill_src")
+        correct.skill_src = value;
+    else if(field == "skill_dest")
+        correct.skill_dest = value;
+}
+
+
 int Player::distanceTo(const Player *other) const{
+    if(this == other)
+        return 0;
+
     int right = qAbs(seat - other->seat);
     int left = parent()->children().count() - right;
-    return qMin(left, right) + src_correct + other->dest_correct;
+    int distance = qMin(left, right);
+
+    distance += correct.equip_src;
+    distance += correct.skill_src;
+
+    distance += other->correct.equip_dest;
+    distance += other->correct.skill_dest;
+
+    return distance;
 }
 
 int Player::getGeneralMaxHP() const{
