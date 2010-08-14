@@ -27,9 +27,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
         ui->avatarPixmap->setPixmap(avatar);
     }
 
-    QObject *generals_obj = Sanguosha->findChild<QObject*>("generals");
-    QList<General*> generals = generals_obj->findChildren<General*>();
-    foreach(General *general, generals){
+    QList<const General*> generals = Sanguosha->findChildren<const General*>();
+    foreach(const General *general, generals){
         QIcon icon(general->getPixmapPath("big"));
         QString text = Sanguosha->translate(general->objectName());
         QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);

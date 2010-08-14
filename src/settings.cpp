@@ -42,6 +42,7 @@ void Settings::init(){
 
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
+    NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableAutoTarget = value("EnableAutoTarget", false).toBool();
 
     QString bgbrush = value("BackgroundBrush", ":/background.png").toString();

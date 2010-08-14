@@ -31,6 +31,7 @@ public:
 
     bool FitInView;
     bool EnableHotKey;
+    bool NeverNullifyMyTrick;
     bool EnableAutoTarget;
 
     QBrush BackgroundBrush;

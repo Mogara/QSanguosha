@@ -28,24 +28,24 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
         package = Sanguosha->translate(general->getPackage());
 
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
-        name_item->setTextAlignment(Qt::AlignHCenter);
+        name_item->setTextAlignment(Qt::AlignCenter);
         name_item->setData(Qt::UserRole, general->objectName());
         if(general->isLord()){
             name_item->setIcon(lord_icon);
-            name_item->setTextAlignment(Qt::AlignLeft);
+            name_item->setTextAlignment(Qt::AlignCenter);
         }
 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
-        kingdom_item->setTextAlignment(Qt::AlignHCenter);
+        kingdom_item->setTextAlignment(Qt::AlignCenter);
 
         QTableWidgetItem *gender_item = new QTableWidgetItem(gender);
-        gender_item->setTextAlignment(Qt::AlignHCenter);
+        gender_item->setTextAlignment(Qt::AlignCenter);
 
         QTableWidgetItem *max_hp_item = new QTableWidgetItem(max_hp);
-        max_hp_item->setTextAlignment(Qt::AlignHCenter);
+        max_hp_item->setTextAlignment(Qt::AlignCenter);
 
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
-        package_item->setTextAlignment(Qt::AlignHCenter);
+        package_item->setTextAlignment(Qt::AlignCenter);
 
         ui->tableWidget->setItem(i, 0, name_item);
         ui->tableWidget->setItem(i, 1, kingdom_item);
@@ -80,7 +80,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         QString skill_name = QString("<b>%1</b>").arg(Sanguosha->translate(skill->objectName()));
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
-        ui->skillTextEdit->append(QString("<b>%1</b>: %2").arg(skill_name).arg(desc));
+        ui->skillTextEdit->append(QString("<b>%1</b>: %2 <br/>").arg(skill_name).arg(desc));
     }
 }
 

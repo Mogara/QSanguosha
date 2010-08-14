@@ -46,3 +46,14 @@ void ClientPlayer::removeCard(const Card *card, Place place){
 QList<const Card *> ClientPlayer::getCards() const{
     return known_cards;
 }
+
+QList<int> ClientPlayer::nullifications() const{
+    QList<int> card_ids;
+
+    foreach(const Card *card, known_cards){
+        if(card->objectName() == "nullification")
+            card_ids << card->getID();
+    }
+
+    return card_ids;
+}

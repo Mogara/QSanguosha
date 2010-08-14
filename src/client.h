@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void requestForCard(const QString &request_str);
     Q_INVOKABLE void askForSkillInvoke(const QString &ask_str);
     Q_INVOKABLE void playSkillEffect(const QString &play_str);
+    Q_INVOKABLE void askForNullification(const QString &ask_str);
 
     CardPattern *pattern;
     QVariantMap tag;
@@ -62,6 +63,7 @@ public:
 public slots:    
     void itemChosen(const QString &item_name);
     void updateFrequentFlags(int state);
+    void replyNullification(int card_id = -1);
 
 private:
     QObject *room;

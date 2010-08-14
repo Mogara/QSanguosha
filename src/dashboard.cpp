@@ -22,10 +22,16 @@ Dashboard::Dashboard()
     sort_combobox->addItem(tr("Sort by suit"));
     sort_combobox->addItem(tr("Sort by type"));
     sort_combobox->addItem(tr("Sort by availability"));
-    sort_combobox->move(0, 32);
-    QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget(this);
+    QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget;
     sort_widget->setWidget(sort_combobox);
     connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
+
+    button_layout  = new QGraphicsLinearLayout(Qt::Horizontal);
+    button_layout->addItem(sort_widget);
+
+    QGraphicsWidget *form = new QGraphicsWidget(this);
+    form->setLayout(button_layout);
+    form->setPos(0, 20);
 
     avatar = new Pixmap("");
     avatar->setPos(837, 35);    
@@ -418,4 +424,10 @@ const Card *Dashboard::pendingCard() const{
 
 void Dashboard::enableCards(const QString &pattern){
     // enable card with pattern
+}
+
+void Dashboard::addDynamicButton(QPushButton *button){
+    QGraphicsScene *the_scene = scene();
+    if(the_scene)
+        button_layout->addItem(the_scene->addWidget(button));
 }

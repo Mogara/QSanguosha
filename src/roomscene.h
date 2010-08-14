@@ -72,6 +72,7 @@ private:
     void unselectAllTargets(const QGraphicsItem *except = NULL);
     void callViewAsSkill();
     void cancelViewAsSkill();
+    void setSkillButtonEnablity(bool enablity);
 
 private slots:
     void updateSkillButtons();

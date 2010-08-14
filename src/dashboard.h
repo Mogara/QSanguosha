@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QStack>
+#include <QGraphicsLinearLayout>
 
 class Dashboard : public Pixmap
 {
@@ -28,7 +29,7 @@ public:
     void disableAllCards();
     void enableCards();
     void installEquip(CardItem *equip);
-    void installDelayedTrick(CardItem *card);
+    void installDelayedTrick(CardItem *card);    
 
     // pending operations
     void startPending(const ViewAsSkill *skill);
@@ -56,6 +57,7 @@ private:
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;
+    QGraphicsLinearLayout *button_layout;
 
     // for pendings
     QList<CardItem *> pendings;
@@ -66,6 +68,7 @@ private:
     void adjustCards(const QList<CardItem *> &list, int y);    
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawDelayedTrick(QPainter *painter, CardItem *trick, int order);
+    void addDynamicButton(QPushButton *button);
 
 private slots:
     void sortCards();

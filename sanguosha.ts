@@ -50,37 +50,37 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="74"/>
+        <location filename="src/client.cpp" line="76"/>
         <source>Reply format error!</source>
         <translation>回复格式错误!</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="82"/>
+        <location filename="src/client.cpp" line="84"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="83"/>
+        <location filename="src/client.cpp" line="85"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="84"/>
+        <location filename="src/client.cpp" line="86"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="85"/>
+        <location filename="src/client.cpp" line="87"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="87"/>
+        <location filename="src/client.cpp" line="89"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="90"/>
+        <location filename="src/client.cpp" line="92"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -89,18 +89,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="191"/>
+        <location filename="src/client.cpp" line="193"/>
         <source>Game will start in %1 seconds</source>
         <translation>游戏将在 %1 秒后开始</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="225"/>
+        <location filename="src/client.cpp" line="227"/>
         <source>Your role is %1</source>
         <oldsource>Your role is </oldsource>
         <translation>您的角色是 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="227"/>
+        <location filename="src/client.cpp" line="229"/>
         <source>
  wait for the lord player choosing general, please</source>
         <oldsource>, wait for the lord player choosing general, please</oldsource>
@@ -108,39 +108,39 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="350"/>
+        <location filename="src/client.cpp" line="349"/>
         <source>Can not parse card pattern string : %1</source>
         <translation>不能解析卡牌模式字符串 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="367"/>
+        <location filename="src/client.cpp" line="366"/>
         <source>Do you want to invoke skill [%1] ?</source>
         <translation>你是否想使用【%1】技能 ?</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="71"/>
-        <location filename="src/client.cpp" line="252"/>
-        <location filename="src/client.cpp" line="350"/>
+        <location filename="src/client.cpp" line="73"/>
+        <location filename="src/client.cpp" line="254"/>
+        <location filename="src/client.cpp" line="349"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="71"/>
+        <location filename="src/client.cpp" line="73"/>
         <source>No such invokable method named %1</source>
         <translation>没有名为 %1 的可动态调用方法</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="252"/>
+        <location filename="src/client.cpp" line="254"/>
         <source>Card moving response string is not well formatted</source>
         <translation>卡牌移动回复字符串并没有格式好</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="195"/>
+        <location filename="src/client.cpp" line="197"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="195"/>
+        <location filename="src/client.cpp" line="197"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
@@ -189,12 +189,12 @@
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="57"/>
+        <location filename="src/connectiondialog.cpp" line="56"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="57"/>
+        <location filename="src/connectiondialog.cpp" line="56"/>
         <source>User name can not contains special characters!</source>
         <translation>用户名不能包含特殊字符!</translation>
     </message>
@@ -299,87 +299,92 @@
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="47"/>
+        <location filename="src/mainwindow.ui" line="48"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="61"/>
+        <location filename="src/mainwindow.ui" line="62"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="66"/>
+        <location filename="src/mainwindow.ui" line="67"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="71"/>
+        <location filename="src/mainwindow.ui" line="72"/>
         <source>Start Server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="74"/>
+        <location filename="src/mainwindow.ui" line="75"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="79"/>
+        <location filename="src/mainwindow.ui" line="80"/>
         <source>Start Game</source>
         <translation>开始游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="82"/>
+        <location filename="src/mainwindow.ui" line="83"/>
         <source>Ctrl+G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="87"/>
+        <location filename="src/mainwindow.ui" line="88"/>
         <source>General Overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="90"/>
+        <location filename="src/mainwindow.ui" line="91"/>
         <source>Ctrl+E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="105"/>
+        <location filename="src/mainwindow.ui" line="106"/>
         <source>Card Overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="108"/>
+        <location filename="src/mainwindow.ui" line="109"/>
         <source>Ctrl+C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="116"/>
+        <location filename="src/mainwindow.ui" line="117"/>
         <source>Enable Hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="121"/>
+        <location filename="src/mainwindow.ui" line="122"/>
         <source>About Qt</source>
         <translation>关于 Qt</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="129"/>
+        <location filename="src/mainwindow.ui" line="130"/>
         <source>View Discarded</source>
         <translation>查看弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="132"/>
+        <location filename="src/mainwindow.ui" line="133"/>
         <source>Ctrl+D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="95"/>
+        <location filename="src/mainwindow.ui" line="141"/>
+        <source>Never Nullify My Trick</source>
+        <translation>从不无懈可击自己的锦囊</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="96"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="100"/>
+        <location filename="src/mainwindow.ui" line="101"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
@@ -402,6 +407,48 @@
         <location filename="src/mainwindow.cpp" line="174"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game, totally written in C++ Qt GUI framework</source>
         <translation>这是 &lt;b&gt;三国杀&lt;/b&gt; 的开源克隆，完全基于 C++ Qt GUI 框架</translation>
+    </message>
+</context>
+<context>
+    <name>NullificationDialog</name>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="20"/>
+        <source>Do you want to use [nullification] ?</source>
+        <translation>你想要使用 【无懈可击】吗 ?</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="38"/>
+        <source>User
+%1[%2]</source>
+        <translation>使用者
+%1[%2]</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="46"/>
+        <source>Target
+%1[%2]</source>
+        <translation>目标
+%1[%2]</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="61"/>
+        <source>[%1]</source>
+        <translation>【%1】</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="63"/>
+        <source>Suit: %1, Number: %2</source>
+        <translation>花色: %1, 点数: %2</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="72"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="src/nullificationdialog.cpp" line="73"/>
+        <source>The trick card won&apos;t be nullified</source>
+        <translation>该锦囊牌将不被抵消其效果</translation>
     </message>
 </context>
 <context>
@@ -482,23 +529,23 @@
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="694"/>
+        <location filename="src/roomscene.cpp" line="698"/>
         <source>You choosed card [%1]</source>
         <oldsource>You choosed card %1</oldsource>
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="743"/>
+        <location filename="src/roomscene.cpp" line="747"/>
         <source>You choose %1 as [%2]&apos;s target</source>
         <translation>您选择了 %1 作为 【%2】 的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="745"/>
+        <location filename="src/roomscene.cpp" line="749"/>
         <source>You choose %1 as target</source>
         <translation>你选择了 %1 作为目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="753"/>
+        <location filename="src/roomscene.cpp" line="757"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
@@ -556,24 +603,24 @@ Your role is %2</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="647"/>
-        <location filename="src/roomscene.cpp" line="669"/>
+        <location filename="src/roomscene.cpp" line="651"/>
+        <location filename="src/roomscene.cpp" line="673"/>
         <source>[Lord Skill]</source>
         <translation>[主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="760"/>
+        <location filename="src/roomscene.cpp" line="764"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="782"/>
+        <location filename="src/roomscene.cpp" line="786"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="798"/>
+        <location filename="src/roomscene.cpp" line="802"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>

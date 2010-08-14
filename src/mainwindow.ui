@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -40,6 +40,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionNever_Nullify_My_Trick"/>
     <addaction name="actionView_Discarded"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -130,6 +131,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionNever_Nullify_My_Trick">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Never Nullify My Trick</string>
    </property>
   </action>
  </widget>

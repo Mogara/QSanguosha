@@ -30,6 +30,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionNever_Nullify_My_Trick_toggled(bool );
     void on_actionAbout_triggered();
     void on_actionEnable_Hotkey_toggled(bool );
     void on_actionCard_Overview_triggered();

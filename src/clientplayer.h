@@ -16,6 +16,8 @@ public:
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
 
+    QList<int> nullifications() const;
+
 private:
     int handcard_num;
     QList<const Card *> known_cards;

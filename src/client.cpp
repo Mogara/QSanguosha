@@ -1,10 +1,12 @@
 #include "client.h"
 #include "settings.h"
 #include "engine.h"
+#include "nullificationdialog.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QCommandLinkButton>
+#include <QTimer>
 
 Client *ClientInstance = NULL;
 
@@ -389,4 +391,31 @@ void Client::playSkillEffect(const QString &play_str){
     int index = words.at(2).toInt();
 
     Sanguosha->playSkillEffect(skill_name, index);
+}
+
+void Client::replyNullification(int card_id){
+    request(QString("replyNullification %1").arg(card_id));
+}
+
+void Client::askForNullification(const QString &ask_str){
+    QList<int> card_ids = self->nullifications();
+    if(card_ids.isEmpty()){
+        int msec = qrand() % 1000 + 1000;
+        QTimer::singleShot(msec, this, SLOT(replyNullification()));
+        return;
+    }
+
+    QRegExp pattern("(\\w+):(.+)->(.+)");
+    pattern.indexIn(ask_str);
+    QStringList texts = pattern.capturedTexts();
+    QString trick_name = texts.at(1);
+    ClientPlayer *source = ClientInstance->findChild<ClientPlayer *>(texts.at(2));
+    ClientPlayer *target = ClientInstance->findChild<ClientPlayer *>(texts.at(3));
+
+    if(source == self && Config.NeverNullifyMyTrick)
+        replyNullification(-1);
+    else{
+        NullificationDialog *dialog = new NullificationDialog(trick_name, source, target, card_ids);
+        dialog->exec();
+    }
 }

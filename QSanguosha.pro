@@ -34,7 +34,8 @@ SOURCES += src/main.cpp \
     src/standard.cpp \
     src/standard-skillcards.cpp \
     src/cardpattern.cpp \
-    src/gamerule.cpp
+    src/gamerule.cpp \
+    src/nullificationdialog.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -61,7 +62,8 @@ HEADERS += src/mainwindow.h \
     src/standard.h \
     src/package.h \
     src/cardpattern.h \
-    src/gamerule.h
+    src/gamerule.h \
+    src/nullificationdialog.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

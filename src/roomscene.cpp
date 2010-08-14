@@ -880,29 +880,43 @@ void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
             dashboard->disableAllCards();
-            foreach(QAbstractButton *button, skill_buttons)
-                button->setEnabled(false);
+            setSkillButtonEnablity(false);
             break;
         }
+    case Client::Responsing:
     case Client::Playing:{
             dashboard->enableCards();
-            foreach(QAbstractButton *button, skill_buttons)
-                button->setEnabled(true);
+            setSkillButtonEnablity(true);
             break;
         }
-    default:
-        // FIXME
-        ;
+    case Client::Discarding:{
+            // FIXME
+            setSkillButtonEnablity(false);
+            break;
+        }
     }
 }
 
+void RoomScene::setSkillButtonEnablity(bool enablity){
+    foreach(QAbstractButton *button, skill_buttons)
+        button->setEnabled(enablity);
+}
+
 void RoomScene::doOkButton(){
-    if(ClientInstance->getStatus() == Client::Playing){
-        // FIXME
+    switch(ClientInstance->getStatus()){
+    case Client::Playing:{
+
+        }
+    case Client::NotActive: break;
+    case Client::Discarding:{
+
+        }
+    case Client::Responsing:{
+
+        }
     }
 }
 
 void RoomScene::doCancelButton(){
     // FIXME
 }
-

@@ -50,8 +50,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
-
     StartScene *start_scene = new StartScene;
     QList<QAction*> actions;
     actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
@@ -75,6 +73,9 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::restoreFromConfig(){
     resize(Config.value("WindowSize").toSize());
     move(Config.value("WindowPosition").toPoint());
+
+    ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
+    ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);
 }
 
 void MainWindow::closeEvent(QCloseEvent *){
@@ -172,4 +173,12 @@ void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, tr("About QSanguosha"),
                        tr("This is the open source clone of the popular <b>Sanguosha</b> game, totally written in C++ Qt GUI framework"));
+}
+
+void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)
+{
+    if(Config.NeverNullifyMyTrick != checked){
+        Config.NeverNullifyMyTrick = checked;
+        Config.setValue("NeverNullifyMyTrick", checked);
+    }
 }
