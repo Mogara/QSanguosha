@@ -36,7 +36,8 @@ SOURCES += src/main.cpp \
     src/cardpattern.cpp \
     src/gamerule.cpp \
     src/nullificationdialog.cpp \
-    src/playercarddialog.cpp
+    src/playercarddialog.cpp \
+    src/magatamawidget.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -65,7 +66,8 @@ HEADERS += src/mainwindow.h \
     src/cardpattern.h \
     src/gamerule.h \
     src/nullificationdialog.h \
-    src/playercarddialog.h
+    src/playercarddialog.h \
+    src/magatamawidget.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

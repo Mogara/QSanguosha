@@ -1,32 +1,57 @@
 #include "playercarddialog.h"
 #include "standard.h"
 #include "engine.h"
+#include "magatamawidget.h"
 
 #include <QCommandLinkButton>
 #include <QVBoxLayout>
 #include <QGroupBox>
+#include <QLabel>
+#include <QHBoxLayout>
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags)
     :player(player), mapper(new QSignalMapper(this))
 {
-    QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout;
 
     static QChar handcard_flag('h');
     static QChar equip_flag('e');
     static QChar judging_flag('j');
 
+    layout->addWidget(createAvatar());
+
     if(flags.contains(handcard_flag))
-        layout->addWidget(createHandcardButton());
+        vlayout->addWidget(createHandcardButton());
 
     if(flags.contains(equip_flag))
-        layout->addWidget(createEquipArea());
+        vlayout->addWidget(createEquipArea());
 
     if(flags.contains(judging_flag))
-        layout->addWidget(createJudgingArea());
+        vlayout->addWidget(createJudgingArea());
 
     connect(mapper, SIGNAL(mapped(int)), this, SIGNAL(card_id_chosen(int)));
 
+    layout->addLayout(vlayout);
+
     setLayout(layout);
+}
+
+QWidget *PlayerCardDialog::createAvatar(){
+    const General *general = player->getAvatarGeneral();    
+    QString general_name = Sanguosha->translate(general->objectName());
+    QGroupBox *box = new QGroupBox(QString("%1 [%2]").arg(player->objectName()).arg(general_name));
+
+    QLabel *avatar = new QLabel(box);
+    avatar->setPixmap(QPixmap(general->getPixmapPath("big")));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(avatar);
+    layout->addWidget(new MagatamaWidget(player->getHp(), Qt::Horizontal));
+
+    box->setLayout(layout);
+
+    return box;
 }
 
 QWidget *PlayerCardDialog::createHandcardButton(){

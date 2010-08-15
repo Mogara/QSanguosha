@@ -50,37 +50,37 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="76"/>
+        <location filename="src/client.cpp" line="77"/>
         <source>Reply format error!</source>
         <translation>回复格式错误!</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="84"/>
+        <location filename="src/client.cpp" line="85"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="85"/>
+        <location filename="src/client.cpp" line="86"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="86"/>
+        <location filename="src/client.cpp" line="87"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="87"/>
+        <location filename="src/client.cpp" line="88"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="89"/>
+        <location filename="src/client.cpp" line="90"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="92"/>
+        <location filename="src/client.cpp" line="93"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -89,18 +89,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="198"/>
+        <location filename="src/client.cpp" line="201"/>
         <source>Game will start in %1 seconds</source>
         <translation>游戏将在 %1 秒后开始</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="232"/>
+        <location filename="src/client.cpp" line="235"/>
         <source>Your role is %1</source>
         <oldsource>Your role is </oldsource>
         <translation>您的角色是 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="234"/>
+        <location filename="src/client.cpp" line="237"/>
         <source>
  wait for the lord player choosing general, please</source>
         <oldsource>, wait for the lord player choosing general, please</oldsource>
@@ -108,44 +108,44 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="356"/>
+        <location filename="src/client.cpp" line="359"/>
         <source>Can not parse card pattern string : %1</source>
         <translation>不能解析卡牌模式字符串 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="373"/>
+        <location filename="src/client.cpp" line="376"/>
         <source>Ask for skill invoke</source>
         <translation>技能询问</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="374"/>
+        <location filename="src/client.cpp" line="377"/>
         <source>Do you want to invoke skill [%1] ?</source>
         <translation>你是否想使用【%1】技能 ?</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="73"/>
-        <location filename="src/client.cpp" line="259"/>
-        <location filename="src/client.cpp" line="356"/>
+        <location filename="src/client.cpp" line="74"/>
+        <location filename="src/client.cpp" line="262"/>
+        <location filename="src/client.cpp" line="359"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="73"/>
+        <location filename="src/client.cpp" line="74"/>
         <source>No such invokable method named %1</source>
         <translation>没有名为 %1 的可动态调用方法</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="259"/>
+        <location filename="src/client.cpp" line="262"/>
         <source>Card moving response string is not well formatted</source>
         <translation>卡牌移动回复字符串并没有格式好</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="202"/>
+        <location filename="src/client.cpp" line="205"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="202"/>
+        <location filename="src/client.cpp" line="205"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
@@ -482,56 +482,55 @@
 <context>
     <name>PlayerCardDialog</name>
     <message>
-        <location filename="src/playercarddialog.cpp" line="24"/>
+        <location filename="src/playercarddialog.cpp" line="45"/>
         <source>Handcard</source>
         <translation>手牌</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="27"/>
+        <location filename="src/playercarddialog.cpp" line="48"/>
         <source>This guy has no any hand cards</source>
         <translation>这个家伙空城了</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="30"/>
+        <location filename="src/playercarddialog.cpp" line="51"/>
         <source>This guy has %1 hand card(s)</source>
         <translation>这家伙有 %1 张牌</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="39"/>
+        <location filename="src/playercarddialog.cpp" line="61"/>
         <source>Equip area</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="79"/>
+        <location filename="src/playercarddialog.cpp" line="105"/>
         <source>No equip</source>
         <translation>没有装备</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="89"/>
+        <location filename="src/playercarddialog.cpp" line="115"/>
         <source>Judging Area</source>
         <translation>判定区</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="103"/>
+        <location filename="src/playercarddialog.cpp" line="129"/>
         <source>No judging cards</source>
         <translation>没有判定牌</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="114"/>
         <source>OK</source>
         <oldsource>Ok</oldsource>
-        <translation>确定</translation>
+        <translation type="obsolete">确定</translation>
     </message>
 </context>
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="123"/>
+        <location filename="src/room.cpp" line="129"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="302"/>
+        <location filename="src/room.cpp" line="308"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -540,12 +539,12 @@
 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="462"/>
+        <location filename="src/room.cpp" line="468"/>
         <source>No such skill named %1</source>
         <translation>没有名为 %1 的技能</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="548"/>
+        <location filename="src/room.cpp" line="558"/>
         <source>Unknown method :%1 </source>
         <translation>未知方法 :%1</translation>
     </message>
@@ -578,98 +577,98 @@
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="718"/>
+        <location filename="src/roomscene.cpp" line="720"/>
         <source>You choosed card [%1]</source>
         <oldsource>You choosed card %1</oldsource>
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="767"/>
+        <location filename="src/roomscene.cpp" line="769"/>
         <source>You choose %1 as [%2]&apos;s target</source>
         <translation>您选择了 %1 作为 【%2】 的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="769"/>
+        <location filename="src/roomscene.cpp" line="771"/>
         <source>You choose %1 as target</source>
         <translation>你选择了 %1 作为目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="777"/>
+        <location filename="src/roomscene.cpp" line="779"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="420"/>
+        <location filename="src/roomscene.cpp" line="422"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="404"/>
+        <location filename="src/roomscene.cpp" line="410"/>
         <source>There is no known cards</source>
         <translation>暂时没有已知的卡牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="448"/>
+        <location filename="src/roomscene.cpp" line="450"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="451"/>
+        <location filename="src/roomscene.cpp" line="453"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="464"/>
+        <location filename="src/roomscene.cpp" line="466"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="466"/>
+        <location filename="src/roomscene.cpp" line="468"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="468"/>
+        <location filename="src/roomscene.cpp" line="470"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="472"/>
+        <location filename="src/roomscene.cpp" line="474"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="510"/>
+        <location filename="src/roomscene.cpp" line="512"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="510"/>
+        <location filename="src/roomscene.cpp" line="512"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="671"/>
-        <location filename="src/roomscene.cpp" line="693"/>
+        <location filename="src/roomscene.cpp" line="673"/>
+        <location filename="src/roomscene.cpp" line="695"/>
         <source>[Lord Skill]</source>
         <translation>[主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="784"/>
+        <location filename="src/roomscene.cpp" line="786"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="806"/>
+        <location filename="src/roomscene.cpp" line="808"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="822"/>
+        <location filename="src/roomscene.cpp" line="824"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>
@@ -1025,16 +1024,26 @@ Your role is %2</source>
     </message>
     <message>
         <location filename="src/standard.cpp" line="94"/>
+        <source>online</source>
+        <translation>在线</translation>
+    </message>
+    <message>
+        <location filename="src/standard.cpp" line="95"/>
+        <source>offline</source>
+        <translation>离线</translation>
+    </message>
+    <message>
+        <location filename="src/standard.cpp" line="98"/>
         <source>yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="95"/>
+        <location filename="src/standard.cpp" line="99"/>
         <source>no</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="96"/>
+        <location filename="src/standard.cpp" line="100"/>
         <source>nothing</source>
         <translation>无事</translation>
     </message>

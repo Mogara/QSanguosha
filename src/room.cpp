@@ -71,6 +71,12 @@ void Room::askForNullification(ServerPlayer *, const QVariant &data){
     nullificators_count = alive_players.length();
 }
 
+void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
+    player->invoke("askForCardChosen", data.toString());
+
+    waiting_for_user = __func__;
+}
+
 void Room::addSocket(QTcpSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
@@ -465,7 +471,7 @@ void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
     waiting_for_user = NULL;
 }
 
-void Room::replyNullification(ServerPlayer *player, const QStringList &args){
+void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &args){
     int card_id = args.at(1).toInt();
 
     if(card_id == -1)
@@ -484,6 +490,10 @@ void Room::replyNullification(ServerPlayer *player, const QStringList &args){
             // FIXME
         }
     }
+}
+
+void Room::chooseCardCommand(ServerPlayer *player, const QStringList &args){
+    // FIXME
 }
 
 void Room::nextPhase(ServerPlayer *player){

@@ -393,7 +393,6 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     if(!photo)
         return;
 
-
     const ClientPlayer *player = photo->getPlayer();
     if(player){
         QList<const Card *> cards = player->getCards();

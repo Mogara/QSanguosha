@@ -13,6 +13,7 @@ public:
     explicit PlayerCardDialog(const ClientPlayer *player, const QString &flags = "hej");
 
 private:
+    QWidget *createAvatar();
     QWidget *createHandcardButton();
     QWidget *createEquipArea();
     QWidget *createJudgingArea();

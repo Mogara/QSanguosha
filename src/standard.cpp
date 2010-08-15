@@ -90,6 +90,10 @@ StandardPackage::StandardPackage()
     t["discard"] = tr("discard");
     t["finish"] = tr("finish");
 
+    // states
+    t["online"] = tr("online");
+    t["offline"] = tr("offline");
+
     // normal phrases
     t["yes"] = tr("yes");
     t["no"] = tr("no");

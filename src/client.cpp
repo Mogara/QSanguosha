@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "engine.h"
 #include "nullificationdialog.h"
+#include "playercarddialog.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
@@ -173,25 +174,27 @@ void Client::itemChosen(const QString &item_name){
 }
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
-    if(card){
-        QStringList target_names;
-        foreach(const ClientPlayer *target, targets)
-            target_names << target->objectName();
-        request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
+    if(!card)
+        return;
 
-        card->use(targets);
+    QStringList target_names;
+    foreach(const ClientPlayer *target, targets)
+        target_names << target->objectName();
+    request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
 
-        setStatus(NotActive);
-    }
+    card->use(targets);
+
+    setStatus(NotActive);
 }
 
 void Client::useCard(const Card *card){
-    if(card){
-        request(QString("useCard %1 .").arg(card->toString()));
-        card->use(QList<const ClientPlayer *>());
+    if(!card)
+        return;
 
-        setStatus(NotActive);
-    }
+    request(QString("useCard %1 .").arg(card->toString()));
+    card->use(QList<const ClientPlayer *>());
+
+    setStatus(NotActive);
 }
 
 void Client::startInXs(const QString &left_seconds){
@@ -425,6 +428,31 @@ void Client::askForNullification(const QString &ask_str){
         NullificationDialog *dialog = new NullificationDialog(trick_name, source, target, card_ids);
         dialog->exec();
     }
+}
+
+void Client::askForCardChosen(const QString &ask_str){
+    QRegExp pattern("(.+):([hej]+:(\\w+))");
+    pattern.indexIn(ask_str);
+    QStringList texts = pattern.capturedTexts();
+    QString player_name = texts.at(1);
+    ClientPlayer *player = findChild<ClientPlayer *>(player_name);
+    QString flags = texts.at(2);
+    QString trick_name = texts.at(3);
+
+    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags);
+    dialog->setWindowTitle(Sanguosha->translate(trick_name));
+
+    connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
+
+    dialog->exec();
+}
+
+void Client::chooseCard(int card_id){
+    QDialog *dialog = qobject_cast<QDialog *>(sender());
+    if(dialog)
+        dialog->accept();
+
+    request(QString("chooseCard %1").arg(card_id));
 }
 
 int Client::alivePlayerCount() const{

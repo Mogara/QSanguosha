@@ -90,6 +90,7 @@ public:
     Q_INVOKABLE void drawCards(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForNullification(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void askForCardChosen(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -130,7 +131,8 @@ private:
     Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void judgeCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void invokeSkillCommand(ServerPlayer *player, const QStringList &args);
-    Q_INVOKABLE void replyNullification(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void replyNullificationCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void chooseCardCommand(ServerPlayer *player, const QStringList &args);
 
 private slots:
     void reportDisconnection();
