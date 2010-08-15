@@ -49,8 +49,7 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
     foreach(int card_id, card_ids){
         QCommandLinkButton *button = new QCommandLinkButton;
         const Card *card = Sanguosha->getCard(card_id);
-        QIcon suit_icon(QString(":/suit/%1.png").arg(card->getSuitString()));
-        button->setIcon(suit_icon);
+        button->setIcon(card->getSuitIcon());
         button->setText(tr("[%1]").arg(Sanguosha->translate(card->objectName())));
         QString suit_name = Sanguosha->translate(card->getSuitString());
         button->setDescription(tr("Suit: %1, Number: %2").arg(suit_name).arg(card->getNumberString()));

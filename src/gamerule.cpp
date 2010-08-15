@@ -44,7 +44,6 @@ bool GameRule::trigger(Room::TriggerEvent event, ServerPlayer *player, const QVa
 
                 room->enqueueRecord(activate);
 
-                nextPhase(room, player);
                 break;
             }
         case Player::Discard:{

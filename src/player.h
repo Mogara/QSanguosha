@@ -98,6 +98,8 @@ public:
     void detachSkill(const Skill *skill);
     QList<const Skill *> getSkills() const;
 
+    QStack<const Card *> getJudgingArea() const;
+
     static void MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id);
 
 private:

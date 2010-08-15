@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QIcon>
 
 class Room;
 class ServerPlayer;
@@ -43,6 +44,8 @@ public:
     QString getPixmapPath() const;
     QString getIconPath() const;
     QString getPackage() const;
+    QIcon getSuitIcon() const;
+    QString getFullName() const;
 
     bool isVirtualCard() const;
     bool match(const QString &pattern) const;

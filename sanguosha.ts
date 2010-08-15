@@ -4,7 +4,7 @@
 <context>
     <name>Card</name>
     <message>
-        <location filename="src/card.cpp" line="198"/>
+        <location filename="src/card.cpp" line="207"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -108,24 +108,24 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="354"/>
+        <location filename="src/client.cpp" line="356"/>
         <source>Can not parse card pattern string : %1</source>
         <translation>不能解析卡牌模式字符串 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="371"/>
+        <location filename="src/client.cpp" line="373"/>
         <source>Ask for skill invoke</source>
         <translation>技能询问</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="372"/>
+        <location filename="src/client.cpp" line="374"/>
         <source>Do you want to invoke skill [%1] ?</source>
         <translation>你是否想使用【%1】技能 ?</translation>
     </message>
     <message>
         <location filename="src/client.cpp" line="73"/>
         <location filename="src/client.cpp" line="259"/>
-        <location filename="src/client.cpp" line="354"/>
+        <location filename="src/client.cpp" line="356"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -436,22 +436,22 @@
 %1[%2]</translation>
     </message>
     <message>
-        <location filename="src/nullificationdialog.cpp" line="54"/>
+        <location filename="src/nullificationdialog.cpp" line="53"/>
         <source>[%1]</source>
         <translation>【%1】</translation>
     </message>
     <message>
-        <location filename="src/nullificationdialog.cpp" line="56"/>
+        <location filename="src/nullificationdialog.cpp" line="55"/>
         <source>Suit: %1, Number: %2</source>
         <translation>花色: %1, 点数: %2</translation>
     </message>
     <message>
-        <location filename="src/nullificationdialog.cpp" line="65"/>
+        <location filename="src/nullificationdialog.cpp" line="64"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/nullificationdialog.cpp" line="66"/>
+        <location filename="src/nullificationdialog.cpp" line="65"/>
         <source>The trick card won&apos;t be nullified</source>
         <translation>该锦囊牌将不被抵消其效果</translation>
     </message>
@@ -477,6 +477,50 @@
         <location filename="src/photo.cpp" line="49"/>
         <source>renegade</source>
         <translation>内奸</translation>
+    </message>
+</context>
+<context>
+    <name>PlayerCardDialog</name>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="24"/>
+        <source>Handcard</source>
+        <translation>手牌</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="27"/>
+        <source>This guy has no any hand cards</source>
+        <translation>这个家伙空城了</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="30"/>
+        <source>This guy has %1 hand card(s)</source>
+        <translation>这家伙有 %1 张牌</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="39"/>
+        <source>Equip area</source>
+        <translation>装备区</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="79"/>
+        <source>No equip</source>
+        <translation>没有装备</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="89"/>
+        <source>Judging Area</source>
+        <translation>判定区</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="103"/>
+        <source>No judging cards</source>
+        <translation>没有判定牌</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="114"/>
+        <source>OK</source>
+        <oldsource>Ok</oldsource>
+        <translation>确定</translation>
     </message>
 </context>
 <context>
@@ -534,98 +578,98 @@
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="712"/>
+        <location filename="src/roomscene.cpp" line="718"/>
         <source>You choosed card [%1]</source>
         <oldsource>You choosed card %1</oldsource>
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="761"/>
+        <location filename="src/roomscene.cpp" line="767"/>
         <source>You choose %1 as [%2]&apos;s target</source>
         <translation>您选择了 %1 作为 【%2】 的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="763"/>
+        <location filename="src/roomscene.cpp" line="769"/>
         <source>You choose %1 as target</source>
         <translation>你选择了 %1 作为目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="771"/>
+        <location filename="src/roomscene.cpp" line="777"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="414"/>
+        <location filename="src/roomscene.cpp" line="420"/>
         <source>Choose lord</source>
         <translation>选择主公</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="398"/>
+        <location filename="src/roomscene.cpp" line="404"/>
         <source>There is no known cards</source>
         <translation>暂时没有已知的卡牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="442"/>
+        <location filename="src/roomscene.cpp" line="448"/>
         <source>Please wait for other players choosing their generals</source>
         <translation>请等待其他玩家选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="445"/>
+        <location filename="src/roomscene.cpp" line="451"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="458"/>
+        <location filename="src/roomscene.cpp" line="464"/>
         <source>This is your boss, help him kill all rebels and renegades</source>
         <translation>这位是你们的老大，帮他干掉所有的反贼和内奸就赢了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="460"/>
+        <location filename="src/roomscene.cpp" line="466"/>
         <source>Kill this guy and you will win</source>
         <translation>干掉这个家伙就 OK 了</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="462"/>
+        <location filename="src/roomscene.cpp" line="468"/>
         <source>Kill all other guys, and beat him at final PK</source>
         <translation>弄死其他所有人，最后在 PK 中打死他</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="466"/>
+        <location filename="src/roomscene.cpp" line="472"/>
         <source>Lord is %1
 Your role is %2</source>
         <translation>主公是 %1
 您的角色是 %2</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="504"/>
+        <location filename="src/roomscene.cpp" line="510"/>
         <source>No discarded cards</source>
         <translation>没有弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="504"/>
+        <location filename="src/roomscene.cpp" line="510"/>
         <source>There are no discarded cards yet</source>
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="665"/>
-        <location filename="src/roomscene.cpp" line="687"/>
+        <location filename="src/roomscene.cpp" line="671"/>
+        <location filename="src/roomscene.cpp" line="693"/>
         <source>[Lord Skill]</source>
         <translation>[主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="778"/>
+        <location filename="src/roomscene.cpp" line="784"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="800"/>
+        <location filename="src/roomscene.cpp" line="806"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="816"/>
+        <location filename="src/roomscene.cpp" line="822"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>

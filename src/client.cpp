@@ -289,12 +289,14 @@ void Client::startGame(const QString &){
         }
     }
 
+    alive_count = players.count();
+
     emit status_changed(NotActive);
 }
 
 void Client::hpDamage(const QString &damage_str){
     // damage string example: 4:caocao<-liubei
-    QRegExp pattern("(\\d+):(\\w+)<-(\\w+)");
+    QRegExp pattern("(\\d+):(.+)<-(.+)");
     pattern.indexIn(damage_str);
     QStringList words = pattern.capturedTexts();
 

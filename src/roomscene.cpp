@@ -384,28 +384,31 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsItem *item = itemAt(event->scenePos());
-    if(item){
-        QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
-        Photo *photo = qobject_cast<Photo *>(item_obj);
-        const ClientPlayer *player = NULL;
-        if(photo && (player = photo->getPlayer())){
-            QList<const Card *> cards = player->getCards();
-            QMenu *menu = known_cards_menu;
-            menu->clear();
-            menu->setTitle(player->objectName());
+    if(!item)
+        return;
 
-            if(cards.isEmpty()){
-                menu->addAction(tr("There is no known cards"));
-            }else{
-                foreach(const Card *card, cards){
-                    QIcon suit_icon(QString(":/suit/%1.png").arg(card->getSuitString()));
-                    QString card_name = Sanguosha->translate(card->objectName());
-                    menu->addAction(suit_icon, QString("%1 %2").arg(card->getNumberString()).arg(card_name));
-                }
-            }
+    QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
+    Photo *photo = qobject_cast<Photo *>(item_obj);
 
-            menu->popup(event->screenPos());
+    if(!photo)
+        return;
+
+
+    const ClientPlayer *player = photo->getPlayer();
+    if(player){
+        QList<const Card *> cards = player->getCards();
+        QMenu *menu = known_cards_menu;
+        menu->clear();
+        menu->setTitle(player->objectName());
+
+        if(cards.isEmpty()){
+            menu->addAction(tr("There is no known cards"));
+        }else{
+            foreach(const Card *card, cards)
+                menu->addAction(card->getSuitIcon(), card->getFullName());
         }
+
+        menu->popup(event->screenPos());
     }
 }
 

@@ -254,6 +254,10 @@ QList<const Skill *> Player::getSkills() const{
     return skills;
 }
 
+QStack<const Card *> Player::getJudgingArea() const{
+    return judging_area;
+}
+
 Player::Phase Player::getPhase() const{
     return phase;
 }

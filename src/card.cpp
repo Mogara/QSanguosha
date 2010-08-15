@@ -90,6 +90,15 @@ QString Card::getPackage() const{
         return "";
 }
 
+QIcon Card::getSuitIcon() const{
+    return QIcon(QString(":/suit/%1.png").arg(getSuitString()));
+}
+
+QString Card::getFullName() const{
+    QString name = Sanguosha->translate(objectName());
+    return QString("%1 %2").arg(getNumberString()).arg(name);
+}
+
 QString Card::toString() const{
     if(!isVirtualCard())
         return QString::number(id);
