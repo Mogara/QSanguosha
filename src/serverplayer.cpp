@@ -12,6 +12,12 @@ void ServerPlayer::drawCard(const Card *card){
     handcards << card;
 }
 
+int ServerPlayer::aliveCount() const{
+    Room *room = qobject_cast<Room *>(parent());
+
+    return room->alivePlayerCount();
+}
+
 int ServerPlayer::getHandcardNum() const{
     return handcards.length();
 }

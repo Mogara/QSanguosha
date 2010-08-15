@@ -84,7 +84,8 @@ void NullificationDialog::timerEvent(QTimerEvent *event){
     int new_value = progress_bar->value() + 4;
     if(new_value >= progress_bar->maximum()){
         killTimer(event->timerId());
-        reject();
+        if(isVisible())
+            reject();
     }else
         progress_bar->setValue(new_value);
 }

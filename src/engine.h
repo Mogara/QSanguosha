@@ -27,6 +27,7 @@ public:
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount() const;
+    const Skill *getSkill(const QString &skill_name) const;
 
     int getCardCount() const;
     const Card *getCard(int index) const;

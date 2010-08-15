@@ -13,18 +13,18 @@
 static PassiveSkillSorter Sorter;
 
 bool PassiveSkillSorter::operator ()(const PassiveSkill *a, const PassiveSkill *b){
-    int x = a->getPriority(target, source);
-    int y = b->getPriority(target, source);
+    int x = a->getPriority(target);
+    int y = b->getPriority(target);
 
-    return x < y;
+    return x > y;
 }
 
 void PassiveSkillSorter::sort(QList<const PassiveSkill *> &skills){
     qSort(skills.begin(), skills.end(), *this);
 }
 
-DamageData::DamageData()
-    :source(NULL), card(NULL), damage(0), nature(Normal)
+DamageStruct::DamageStruct()
+    :damager(NULL), damagee(NULL), card(NULL), damage(0), nature(Normal)
 {
 }
 
@@ -32,16 +32,13 @@ Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), current(NULL),
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false), waiting_for_user(NULL), signup_count(0)
+    chosen_generals(0), game_started(false),
+    waiting_for_user(NULL), nullificators_count(0), signup_count(0)
 {
 }
 
-void Room::pushActiveRecord(ActiveRecord *record){
-    stack.push(record);
-
-#ifndef QT_NO_DEBUG
-    qDebug("push (%s %s %s)", record->method, qPrintable(record->target->objectName()), qPrintable(record->data.toString()));
-#endif
+void Room::enqueueRecord(ActiveRecord *record){
+    queue.enqueue(record);
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -56,10 +53,22 @@ void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
     player->invoke("askForSkillInvoke", data.toString());
 
     waiting_for_user = __func__;
+}
 
-#ifndef QT_NO_DEBUG
-    qDebug("waiting_for_user=%s", waiting_for_user);
-#endif
+void Room::askForNullification(ServerPlayer *, const QVariant &data){
+    broadcastInvoke("askForNullification", data.toString());
+
+    waiting_for_user = __func__;
+
+    int index = alive_players.indexOf(current), i;
+    for(i=index; i<alive_players.count(); i++)
+        nullificators << alive_players.at(i);
+    for(i=0; i<index; i++)
+        nullificators << alive_players.at(i);
+
+    Q_ASSERT(nullificators.length() == alive_players.length());
+
+    nullificators_count = alive_players.length();
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -353,6 +362,15 @@ void Room::startGame(){
     GameRule *game_rule = new GameRule;
     passive_skills.insert(game_rule->objectName(), game_rule);
 
+    // construct trigger_table
+    foreach(const PassiveSkill *skill, passive_skills){
+        QList<TriggerEvent> events;
+        skill->getTriggerEvents(events);
+        foreach(TriggerEvent event, events){
+            trigger_table[event] << skill;
+        }
+    }
+
     broadcast("! startGame .");
     game_started = true;
 
@@ -360,22 +378,7 @@ void Room::startGame(){
     the_lord->setPhase(Player::Start);
     broadcastProperty(the_lord, "phase", "start");
     current = the_lord;
-    changePhase(the_lord);    
-}
-
-QList<const PassiveSkill *> Room::getInvokableSkills(ServerPlayer *target, ServerPlayer *source) const{
-    QList<const PassiveSkill *> skills;
-
-    foreach(const PassiveSkill *skill, passive_skills){
-        if(skill->triggerable(target))
-            skills << skill;
-    }
-
-    Sorter.target = target;
-    Sorter.source = source;
-    Sorter.sort(skills);
-
-    return skills;
+    changePhase(the_lord);
 }
 
 void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
@@ -460,10 +463,27 @@ void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
     }
 
     waiting_for_user = NULL;
+}
 
-#ifndef QT_NO_DEBUG
-    qDebug("waiting_for_user=NULL");
-#endif
+void Room::replyNullification(ServerPlayer *player, const QStringList &args){
+    int card_id = args.at(1).toInt();
+
+    if(card_id == -1)
+        nullificators.removeOne(player);
+    nullificators_count --;
+
+    if(nullificators_count == 0){
+        waiting_for_user = NULL;
+
+        if(nullificators.isEmpty()){
+            // execute the trick
+        }else{
+            ServerPlayer *nullificator = nullificators.first();
+            throwCard(nullificator, card_id);
+
+            // FIXME
+        }
+    }
 }
 
 void Room::nextPhase(ServerPlayer *player){
@@ -534,22 +554,42 @@ void Room::invokeStackTop(){
     }
 }
 
-void Room::changePhase(ServerPlayer *target){
-    QList<const PassiveSkill *> skills = getInvokableSkills(target);
+void Room::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
+    QList<const PassiveSkill *> skills, triggers = trigger_table[event];
 
-    foreach(const PassiveSkill *skill, skills)
-        skill->onPhaseChange(target);
+    foreach(const PassiveSkill *skill, triggers){
+        if(skill->triggerable(target))
+            skills << skill;
+    }
+
+    Sorter.target = target;
+    Sorter.sort(skills);
+
+    queue.clear();
+    foreach(const PassiveSkill *skill, skills){
+        if(skill->trigger(event, target, data))
+            break;
+    }
+
+    QListIterator<ActiveRecord *> itor(queue);
+    itor.toBack();
+    while(itor.hasPrevious()){
+        stack.push(itor.previous());
+    }
+    queue.clear();
 
     invokeStackTop();
 }
 
-void Room::predamage(ServerPlayer *target, const DamageData &data){
-    QList<const PassiveSkill *> skills = getInvokableSkills(target, data.source);
+void Room::changePhase(ServerPlayer *target){
+    invokePassiveSkills(PhaseChange, target);
+}
 
+void Room::predamage(ServerPlayer *target, const DamageStruct &data){
     // FIXME
 }
 
-void Room::damage(ServerPlayer *target, const DamageData &data){
+void Room::damage(ServerPlayer *target, const DamageStruct &data){
     // FIXME
 }
 

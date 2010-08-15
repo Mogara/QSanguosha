@@ -194,3 +194,7 @@ void Engine::playSkillEffect(const QString &skill_name, int index){
     if(skill)
         skill->playEffect(index);
 }
+
+const Skill *Engine::getSkill(const QString &skill_name) const{
+    return skills.value(skill_name, NULL);
+}

@@ -27,6 +27,7 @@ class Player : public QObject
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
     Q_PROPERTY(bool face_up READ faceUp)
+    Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
 
     // distance related properties
     Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
@@ -70,9 +71,13 @@ public:
     QString getCorrect() const;
     void setCorrect(const QString &correct_str);
 
+    bool isAlive() const;
+    void setAlive(bool alive);
+
     bool faceUp() const;
     void turnOver();
 
+    virtual int aliveCount() const = 0;
     int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
@@ -101,6 +106,7 @@ private:
     QString role;
     QString state;
     int seat;
+    bool alive;
 
     struct CorrectStruct{
         int equip_src;

@@ -11,7 +11,7 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), pattern(NULL), room(new QObject(this)), status(NotActive)
+    :QTcpSocket(parent), pattern(NULL), room(new QObject(this)), status(NotActive), alive_count(1)
 {
     ClientInstance = this;
 
@@ -101,6 +101,8 @@ void Client::addPlayer(const QString &player_info){
         player->setObjectName(name);
         player->setProperty("avatar", avatar);
 
+        alive_count ++;
+
         emit player_added(player);
     }
 }
@@ -109,6 +111,9 @@ void Client::removePlayer(const QString &player_name){
     ClientPlayer *player = findChild<ClientPlayer*>(player_name);
     if(player){
         player->setParent(NULL);
+
+        alive_count--;
+
         emit player_removed(player_name);
     }
 }
@@ -363,13 +368,13 @@ void Client::askForSkillInvoke(const QString &ask_str){
         QMessageBox *box = new QMessageBox;
         box->setIcon(QMessageBox::Question);
         QString name = Sanguosha->translate(skill_name);
+        box->setWindowTitle(tr("Ask for skill invoke"));
         box->setText(tr("Do you want to invoke skill [%1] ?").arg(name));
 
-        QMap<QAbstractButton *, QString> button2option;
         QStringList options = words.at(2).split("+");
         foreach(QString option, options){
             QCommandLinkButton *button = new QCommandLinkButton(box);
-            button2option.insert(button, option);
+            button->setObjectName(option);
             button->setText(Sanguosha->translate(option));
             button->setDescription(Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(option)));
 
@@ -378,7 +383,7 @@ void Client::askForSkillInvoke(const QString &ask_str){
 
         box->exec();
 
-        QString result = button2option.value(box->clickedButton());
+        QString result = box->clickedButton()->objectName();
         request(QString("invokeSkill %1 %2").arg(skill_name).arg(result));
     }
 }
@@ -412,10 +417,14 @@ void Client::askForNullification(const QString &ask_str){
     ClientPlayer *source = ClientInstance->findChild<ClientPlayer *>(texts.at(2));
     ClientPlayer *target = ClientInstance->findChild<ClientPlayer *>(texts.at(3));
 
-    if(source == self && Config.NeverNullifyMyTrick)
+    if(Config.NeverNullifyMyTrick && source == target && source == self)
         replyNullification(-1);
     else{
         NullificationDialog *dialog = new NullificationDialog(trick_name, source, target, card_ids);
         dialog->exec();
     }
+}
+
+int Client::alivePlayerCount() const{
+    return alive_count;
 }

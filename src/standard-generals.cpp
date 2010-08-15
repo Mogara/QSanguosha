@@ -7,9 +7,14 @@
 #include "serverplayer.h"
 #include "room.h"
 
-class Jianxiong:public FrequentPassiveSkill{
+class Jianxiong:public MasochismSkill{
 public:
-    Jianxiong():FrequentPassiveSkill("jianxiong"){
+    Jianxiong():MasochismSkill("jianxiong"){
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        // FIXME
+        // obtain the card that cause damage
     }
 };
 
@@ -27,17 +32,32 @@ public:
     }
 };
 
-class Tiandu:public FrequentPassiveSkill{
+class Tiandu:public PassiveSkill{
 public:
-    Tiandu():FrequentPassiveSkill("tiandu"){
+    Tiandu():PassiveSkill("tiandu"){
+        frequency = Frequent;
+    }
 
+    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const{
+        events << Room::JudgeOnEffect;
+    }
+
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+        // FIXME
+        // obtain the judge card
+
+        return false;
     }
 };
 
-class Yiji:public FrequentPassiveSkill{
+class Yiji:public MasochismSkill{
 public:
-    Yiji():FrequentPassiveSkill("yiji"){
+    Yiji():MasochismSkill("yiji"){
 
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        // FIXME
     }
 };
 
@@ -69,10 +89,15 @@ public:
     }
 };
 
-class Luoshen:public FrequentPassiveSkill{
+class Luoshen:public PhaseChangeSkill{
 public:
-    Luoshen():FrequentPassiveSkill("luoshen"){
+    Luoshen():PhaseChangeSkill("luoshen"){
+        frequency = Frequent;
+    }
 
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        // FIXME
+        return false;
     }
 };
 
@@ -173,10 +198,15 @@ public:
     }
 };
 
-class Guanxing:public PassiveSkill{
+class Guanxing:public PhaseChangeSkill{
 public:
-    Guanxing():PassiveSkill("guanxing"){
+    Guanxing():PhaseChangeSkill("guanxing"){
 
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        // FIXME
+        return false;
     }
 };
 
@@ -231,12 +261,13 @@ public:
     }
 };
 
-class Yingzi:public FrequentPassiveSkill{
+class Yingzi:public PhaseChangeSkill{
 public:
-    Yingzi():FrequentPassiveSkill("yingzi"){
+    Yingzi():PhaseChangeSkill("yingzi"){
+        frequency = Frequent;
     }
 
-    virtual void onPhaseChange(ServerPlayer *target) const{
+    virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Draw){
             Room *room = getRoom(target);
 
@@ -245,8 +276,10 @@ public:
             ask->target = target;
             ask->data = "yingzi:yes+no";
 
-            room->pushActiveRecord(ask);
+            room->enqueueRecord(ask);
         }
+
+        return false;
     }
 
     virtual void onOption(ServerPlayer *target, const QString &option) const{

@@ -104,64 +104,59 @@ FilterSkill::FilterSkill(const QString &name)
 {
 }
 
-PassiveSkill::PassiveSkill(const QString &name)
-    :Skill(name), view_as_skill(NULL)
+PassiveSkill::PassiveSkill(const QString &name, Frequency frequency)
+    :Skill(name), frequency(frequency)
 {
 
 }
 
-int PassiveSkill::getPriority(ServerPlayer *target, ServerPlayer *source) const{
-    Room *room = getRoom(target);
-    int source_seat = source ? source->getSeat() : room->getCurrent()->getSeat();
-    int target_seat = target->getSeat();
+int PassiveSkill::getPriority(ServerPlayer *target) const{
+    // FIXME
 
-    int offset = target_seat - source_seat;
-    if(offset < 0)
-        offset += room->alivePlayerCount();
-
-    return offset + 1;
+    return 0;
 }
 
 bool PassiveSkill::triggerable(const ServerPlayer *target) const{
-    return target->getGeneral() == parent()->objectName();
+    return target->isAlive() && target->getGeneral() == parent()->objectName();
+}
+
+PassiveSkill::Frequency PassiveSkill::getFrequency() const{
+    return frequency;
 }
 
 void PassiveSkill::onOption(ServerPlayer *target, const QString &option) const{
 
 }
 
-void PassiveSkill::onDamage(ServerPlayer *target, ServerPlayer *source, int damage, const Card *card) const{
-
-}
-
-void PassiveSkill::onJudge(ServerPlayer *target) const{
-
-}
-
-void PassiveSkill::onJudgeOnEffect(ServerPlayer *target) const{
-
-}
-
-void PassiveSkill::onPhaseChange(ServerPlayer *target) const{
-
-}
-
-void PassiveSkill::onTargetSet(ServerPlayer *target, const Card *card) const{
-
-}
-
-void PassiveSkill::onCardUsed(ServerPlayer *target, const Card *card) const{
-
-}
-
-void PassiveSkill::onCardLost(ServerPlayer *target, const Card *card) const{
-
-}
-
-FrequentPassiveSkill::FrequentPassiveSkill(const QString &name)
+MasochismSkill::MasochismSkill(const QString &name)
     :PassiveSkill(name)
 {
 
+}
+
+void MasochismSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
+    events << Room::Damaged;
+}
+
+bool MasochismSkill::trigger(Room::TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+    DamageStruct damage = data.value<DamageStruct>();
+
+    onDamaged(player, damage);
+
+    return false;
+}
+
+PhaseChangeSkill::PhaseChangeSkill(const QString &name)
+    :PassiveSkill(name)
+{
+}
+
+void PhaseChangeSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
+    events << Room::PhaseChange;
+}
+
+bool PhaseChangeSkill::trigger(Room::TriggerEvent, ServerPlayer *player, const QVariant &) const{
+    return onPhaseChange(player);
 }
 
 EnvironSkill::EnvironSkill(const QString &name)

@@ -11,6 +11,10 @@ void ClientPlayer::drawNCard(int card_num){
     handcard_num += card_num;
 }
 
+int ClientPlayer::aliveCount() const{
+    return ClientInstance->alivePlayerCount();
+}
+
 int ClientPlayer::getHandcardNum() const{
     return handcard_num;
 }

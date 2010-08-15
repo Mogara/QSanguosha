@@ -8,38 +8,68 @@ class PassiveSkill;
 
 #include <QTcpSocket>
 #include <QStack>
+#include <QQueue>
 
 struct PassiveSkillSorter{
     ServerPlayer *target;
-    ServerPlayer *source;
 
     bool operator()(const PassiveSkill *a, const PassiveSkill *b);
     void sort(QList<const PassiveSkill *> &skills);
 };
 
 struct ActiveRecord{
-    const char *method;
+    const char *method;    
     ServerPlayer *target;
     QVariant data;
+    QList<const PassiveSkill *> used;
 };
 
-struct DamageData{
+struct DamageStruct{
     enum Nature { Normal, Fire, Thunder };
-    DamageData();
+    DamageStruct();
 
-    ServerPlayer *source;
+    ServerPlayer *damager;
+    ServerPlayer *damagee;
     const Card *card;
     int damage;
     Nature nature;
 };
 
-Q_DECLARE_METATYPE(DamageData);
+Q_DECLARE_METATYPE(DamageStruct);
+
+struct CardUseStruct{
+    const Card *card;
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+};
+
+Q_DECLARE_METATYPE(CardUseStruct);
 
 class Room : public QObject
 {
     Q_OBJECT
 
+    Q_ENUMS(TriggerEvent)
+
 public:
+    enum TriggerEvent{
+        GameStart,
+
+        Predamage,
+        Predamaged,
+        Damage,
+        Damaged,
+
+        Judge,
+        JudgeOnEffect,
+        PhaseChange,
+        CardUsed,
+        CardLost,
+        CardGot,
+        Jinked,
+    };
+
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
     bool isFull() const;    
@@ -49,9 +79,9 @@ public:
     QList<int> *getDiscardPile() const;
     void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
     void playSkillEffect(const QString &skill_name, int index = -1);
-    QList<const PassiveSkill *> getInvokableSkills(ServerPlayer *target, ServerPlayer *source = NULL) const;
 
-    void pushActiveRecord(ActiveRecord *record);
+    void enqueueRecord(ActiveRecord *record);
+
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
 
@@ -59,6 +89,7 @@ public:
     Q_INVOKABLE void nextPhase(ServerPlayer *player);
     Q_INVOKABLE void drawCards(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void askForNullification(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -73,19 +104,25 @@ private:
     int chosen_generals;
     bool game_started;
     const char *waiting_for_user;
+    int nullificators_count;
+    QList<ServerPlayer *> nullificators;
     int signup_count;
+
     QMap<QString, const PassiveSkill *> passive_skills;
     QStack<ActiveRecord *> stack;
+    QQueue<ActiveRecord *> queue;
+    QMap<TriggerEvent, QList<const PassiveSkill *> > trigger_table;
 
     int drawCard();
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
     void invokeStackTop();
+    void invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
 
     // method that may invoke skills
     void changePhase(ServerPlayer *target);
-    void predamage(ServerPlayer *target, const DamageData &data);
-    void damage(ServerPlayer *target, const DamageData &data);
+    void predamage(ServerPlayer *target, const DamageStruct &data);
+    void damage(ServerPlayer *target, const DamageStruct &data);
 
     Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
@@ -93,6 +130,7 @@ private:
     Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void judgeCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void invokeSkillCommand(ServerPlayer *player, const QStringList &args);
+    Q_INVOKABLE void replyNullification(ServerPlayer *player, const QStringList &args);
 
 private slots:
     void reportDisconnection();

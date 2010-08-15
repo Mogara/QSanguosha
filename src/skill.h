@@ -65,28 +65,45 @@ class PassiveSkill:public Skill{
     Q_OBJECT
 
 public:
-    PassiveSkill(const QString &name);
+    enum Frequency{
+        Frequent,
+        NotFrequent,
+        Compulsory
+    };
 
-    virtual int getPriority(ServerPlayer *target, ServerPlayer *source) const;
+    PassiveSkill(const QString &name, Frequency frequency = NotFrequent);
+
+    virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;
+
     virtual void onOption(ServerPlayer *target, const QString &option) const;
+    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const = 0;
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;
 
-    virtual void onDamage(ServerPlayer *target, ServerPlayer *source, int damage, const Card *card) const;
-    virtual void onJudge(ServerPlayer *target) const;
-    virtual void onJudgeOnEffect(ServerPlayer *target) const;
-    virtual void onPhaseChange(ServerPlayer *target) const;
-    virtual void onTargetSet(ServerPlayer *target, const Card *card) const;
-    virtual void onCardUsed(ServerPlayer *target, const Card *card) const;
-    virtual void onCardLost(ServerPlayer *target, const Card *card) const;
+    Frequency getFrequency() const;
 
-private:
-    ViewAsSkill *view_as_skill;
+protected:
+    enum Frequency frequency;
 };
 
-class FrequentPassiveSkill: public PassiveSkill{
-    Q_OBJECT
+class MasochismSkill: public PassiveSkill{
 public:
-    FrequentPassiveSkill(const QString &name);
+    MasochismSkill(const QString &name);
+
+    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
+};
+
+class PhaseChangeSkill: public PassiveSkill{
+public:
+    PhaseChangeSkill(const QString &name);
+
+    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+
+    virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
 class EnvironSkill: public Skill{

@@ -6,7 +6,7 @@
 
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
-    hp(-1), max_hp(-1), max_cards(-1), state("online"), seat(0),
+    hp(-1), max_hp(-1), max_cards(-1), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true)
@@ -49,6 +49,16 @@ void Player::setSeat(int seat){
     this->seat = seat;
 }
 
+bool Player::isAlive() const{
+    return alive;
+}
+
+void Player::setAlive(bool alive){
+    if(this->alive && alive == false){
+        this->alive = alive;
+    }
+}
+
 void Player::setAttackRange(int attack_range){
     this->attack_range = attack_range;
 }
@@ -88,7 +98,7 @@ int Player::distanceTo(const Player *other) const{
         return 0;
 
     int right = qAbs(seat - other->seat);
-    int left = parent()->children().count() - right;
+    int left = aliveCount() - right;
     int distance = qMin(left, right);
 
     distance += correct.equip_src;
@@ -97,7 +107,7 @@ int Player::distanceTo(const Player *other) const{
     distance += other->correct.equip_dest;
     distance += other->correct.skill_dest;
 
-    return distance;
+    return qMin(distance, 1);
 }
 
 int Player::getGeneralMaxHP() const{

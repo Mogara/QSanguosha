@@ -33,6 +33,7 @@ public:
     void ackForHpChange(int delta);
     void setStatus(Status status);
     Status getStatus() const;
+    int alivePlayerCount() const;
 
     Q_INVOKABLE void addPlayer(const QString &player_info);
     Q_INVOKABLE void removePlayer(const QString &player_name);
@@ -70,6 +71,7 @@ private:
     ClientPlayer *self;
     Status status;
     QSet<QString> frequent_flags;
+    int alive_count;
 
 private slots:
     void processReply();

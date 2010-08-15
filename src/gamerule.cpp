@@ -11,62 +11,58 @@ bool GameRule::triggerable(const ServerPlayer *) const{
     return true;
 }
 
-int GameRule::getPriority(ServerPlayer *, ServerPlayer *) const{
+int GameRule::getPriority(ServerPlayer *) const{
     return 0;
 }
 
-void GameRule::onPhaseChange(ServerPlayer *target) const{
-    Room *room = qobject_cast<Room *>(target->parent());
-    switch(target->getPhase()){
-    case Player::Start: {
-            nextPhase(room, target);
+void GameRule::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
+    events << Room::PhaseChange;
+}
 
-            break;
+bool GameRule::trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    Room *room = getRoom(player);
+
+    if(event == Room::PhaseChange){
+        switch(player->getPhase()){
+        case Player::Start: nextPhase(room, player); break;
+        case Player::Judge: nextPhase(room, player); break;
+        case Player::Draw:{
+                ActiveRecord *draw = new ActiveRecord;
+                draw->method = "drawCards";
+                draw->target = player;
+                draw->data = 2;
+
+                room->enqueueRecord(draw);
+
+                nextPhase(room, player);
+                break;
+            }
+        case Player::Play:{
+                ActiveRecord *activate = new ActiveRecord;
+                activate->method = "activate";
+                activate->target = player;
+
+                room->enqueueRecord(activate);
+
+                nextPhase(room, player);
+                break;
+            }
+        case Player::Discard:{
+                ActiveRecord *discard = new ActiveRecord;
+                discard->method = "discardCards";
+                discard->target = player;
+
+                room->enqueueRecord(discard);
+
+                nextPhase(room,player);
+                break;
+            }
+        default:
+            ;
         }
-    case Player::Judge:{
-            // FIXME
-            nextPhase(room, target);
-
-            break;
-        }
-    case Player::Draw:{
-            nextPhase(room, target);
-
-            ActiveRecord *draw = new ActiveRecord;
-            draw->method = "drawCards";
-            draw->target = target;
-            draw->data = 2;
-            room->pushActiveRecord(draw);
-            break;
-        }
-    case Player::Play:{
-            ActiveRecord *activate = new ActiveRecord;
-            activate->method = "activate";
-            activate->target = target;
-
-            room->pushActiveRecord(activate);
-
-            break;
-        }
-    case Player::Discard:{
-            nextPhase(room, target);
-
-            ActiveRecord *discard = new ActiveRecord;
-            discard->method = "discardCards";
-            discard->target = target;
-            room->pushActiveRecord(discard);
-
-            break;
-        }
-    case Player::Finish:{
-            nextPhase(room, target);
-
-            break;
-        }
-
-    case Player::NotActive:
-        break;
     }
+
+    return false;
 }
 
 void GameRule::nextPhase(Room *room, ServerPlayer *target) const{
@@ -74,5 +70,5 @@ void GameRule::nextPhase(Room *room, ServerPlayer *target) const{
     next->method = "nextPhase";
     next->target = target;
 
-    room->pushActiveRecord(next);
+    room->enqueueRecord(next);
 }
