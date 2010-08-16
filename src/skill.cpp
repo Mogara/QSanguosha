@@ -160,7 +160,11 @@ bool PhaseChangeSkill::trigger(Room::TriggerEvent, ServerPlayer *player, const Q
 }
 
 EnvironSkill::EnvironSkill(const QString &name)
-    :Skill(name)
+    :PassiveSkill(name)
 {
-
 }
+
+void EnvironSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
+    events << Room::GameStart;
+}
+

@@ -34,6 +34,9 @@ class Player : public QObject
     Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
     Q_PROPERTY(QString correct READ getCorrect WRITE setCorrect)
 
+    Q_PROPERTY(bool kongcheng READ isKongcheng)
+    Q_PROPERTY(bool nude READ isNude)
+
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
 
@@ -77,7 +80,7 @@ public:
 
     QString getFlags() const;
     void setFlags(const QString &flag);
-    bool hasFlag(const QString &flag);
+    bool hasFlag(const QString &flag) const;
 
     bool faceUp() const;
     void turnOver();
@@ -104,6 +107,8 @@ public:
     QList<const Skill *> getSkills() const;
 
     QStack<const Card *> getJudgingArea() const;
+    bool isKongcheng() const;
+    bool isNude() const;
 
     static void MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id);
 

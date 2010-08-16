@@ -84,10 +84,6 @@ QString Shit::getSubtype() const{
     return "disgusting_card";
 }
 
-bool Shit::isAvailableAtPlay() const{
-    return false;
-}
-
 class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
@@ -233,12 +229,23 @@ public:
     }
 };
 
-class Snatch:public SingleTargetTrick{
-public:
-    Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
-        setObjectName("snatch");
-    }
-};
+Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
+    setObjectName("snatch");
+}
+
+
+bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->hasFlag("qianxun"))
+        return false;
+
+    if(to_select->hasFlag("weimu") && isBlack())
+        return false;
+
+    return true;
+}
 
 class Dismantlement:public SingleTargetTrick{
 public:

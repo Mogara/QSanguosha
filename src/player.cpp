@@ -77,7 +77,7 @@ void Player::setFlags(const QString &flag){
         flags.insert(flag);
 }
 
-bool Player::hasFlag(const QString &flag){
+bool Player::hasFlag(const QString &flag) const{
     return flags.contains(flag);
 }
 
@@ -347,4 +347,13 @@ void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_pla
             ClientInstance->discarded_list.prepend(card);
         }
     }
+}
+
+bool Player::isKongcheng() const{
+    return getHandcardNum() == 0;
+}
+
+bool Player::isNude() const{
+    return getHandcardNum() == 0 && getWeapon() == NULL && getArmor() == NULL
+            && getDefensiveHorse() == NULL && getOffensiveHorse() == NULL;
 }

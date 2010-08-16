@@ -341,39 +341,6 @@ void Dashboard::disableAllCards(){
     }
 }
 
-void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
-    if(!view_as_skill){
-        if(add_to_pendings){
-            selected = card_item;
-            emit card_to_use();
-        }
-        return;
-    }
-
-    if(add_to_pendings && !pendings.contains(card_item)){
-        pendings.append(card_item);
-        card_items.removeOne(card_item);
-        adjustCards();        
-
-        emit card_selected(pending_card);
-    }else if(!add_to_pendings && !card_items.contains(card_item)){
-        card_items.append(card_item);
-        pendings.removeOne(card_item);
-        sortCards();        
-    }
-
-    pending_card = view_as_skill->viewAs(pendings);
-
-    foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
-    }
-
-    updateEnablity(weapon);
-    updateEnablity(armor);
-    updateEnablity(defensive_horse);
-    updateEnablity(offensive_horse);
-}
-
 void Dashboard::updateEnablity(CardItem *card_item){
     if(card_item){
         card_item->setMarkable(view_as_skill->viewFilter(pendings, card_item));
@@ -399,6 +366,11 @@ void Dashboard::enableCards(){
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){
+    if(view_as_skill){
+        stopPending();
+        view_as_skill = NULL;
+    }
+
     view_as_skill = skill;
 
     foreach(CardItem *card_item, card_items){
@@ -415,6 +387,39 @@ void Dashboard::stopPending(){
     card_items.append(pendings);
     pendings.clear();
     adjustCards();
+}
+
+void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
+    if(!view_as_skill){
+        if(add_to_pendings){
+            selected = card_item;
+            emit card_to_use();
+        }
+        return;
+    }
+
+    if(add_to_pendings && !pendings.contains(card_item)){
+        pendings.append(card_item);
+        card_items.removeOne(card_item);
+        adjustCards();
+
+        emit card_selected(pending_card);
+    }else if(!add_to_pendings && !card_items.contains(card_item)){
+        card_items.append(card_item);
+        pendings.removeOne(card_item);
+        sortCards();
+    }
+
+    pending_card = view_as_skill->viewAs(pendings);
+
+    foreach(CardItem *card_item, card_items){
+        card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
+    }
+
+    updateEnablity(weapon);
+    updateEnablity(armor);
+    updateEnablity(defensive_horse);
+    updateEnablity(offensive_horse);
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{

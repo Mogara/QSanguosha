@@ -83,6 +83,21 @@ void Room::requestForCard(ServerPlayer *player, const QVariant &data){
     waiting_for_user = __func__;
 }
 
+void Room::setPlayerFlag(ServerPlayer *player, const QVariant &flag){
+    QString flag_str = flag.toString();
+    player->setFlags(flag_str);
+    broadcast(QString("#%1 flags %1").arg(flag_str));
+}
+
+void Room::setPlayerProperty(ServerPlayer *player, const QVariant &data){
+    QVariantList list = data.toList();
+    const char *property_name = list.at(0).toByteArray().data();
+    QVariant value = list.at(1);
+    player->setProperty(property_name, value);
+
+    broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value.toString()));
+}
+
 void Room::addSocket(QTcpSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
@@ -323,10 +338,8 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
             targets << findChild<ServerPlayer *>(target_name);
 
     }
-    card->use(this, player, targets);
 
-    if(card->isVirtualCard())
-        delete card;
+    card->use(this, player, targets);
 }
 
 void Room::startGame(){

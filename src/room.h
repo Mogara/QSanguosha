@@ -93,6 +93,9 @@ public:
     Q_INVOKABLE void askForCardChosen(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void requestForCard(ServerPlayer *player, const QVariant &data);
 
+    Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
+    Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
+
 protected:
     virtual void timerEvent(QTimerEvent *);
 

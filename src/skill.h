@@ -106,10 +106,12 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
-class EnvironSkill: public Skill{
+class EnvironSkill: public PassiveSkill{
     Q_OBJECT
+
 public:
     EnvironSkill(const QString &name);
+    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
 };
 
 #endif // SKILL_H

@@ -143,8 +143,15 @@ class Shit:public BasicCard{
 public:
     Q_INVOKABLE Shit(Card::Suit suit, int number);
     virtual QString getSubtype() const;
-protected:
-    virtual bool isAvailableAtPlay() const;
+};
+
+class Snatch:public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Snatch(Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 };
 
 

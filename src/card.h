@@ -45,7 +45,8 @@ public:
     QString getIconPath() const;
     QString getPackage() const;
     QIcon getSuitIcon() const;
-    QString getFullName() const;
+    QString getFullName(bool include_suit = false) const;
+    QString getName() const;
 
     bool isVirtualCard() const;
     bool match(const QString &pattern) const;

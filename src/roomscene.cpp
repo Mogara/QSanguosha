@@ -692,6 +692,11 @@ void RoomScene::clickSkillButton(int order){
 void RoomScene::enableTargets(const Card *card){
     selected_targets.clear();
 
+    // unset avatar and all photo
+    avatar->setSelected(false);
+    foreach(Photo *photo, photos)
+        photo->setSelected(false);
+
     if(card == NULL){
         avatar->setEnabled(false);
         avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
@@ -703,7 +708,7 @@ void RoomScene::enableTargets(const Card *card){
         return;
     }
 
-    changePrompt(tr("You choosed card [%1]").arg(Sanguosha->translate(card->objectName())));
+    changePrompt(tr("You choosed card [%1]").arg(card->getName()));
 
     if(card->targetFixed()){
         avatar->setEnabled(true);
@@ -751,7 +756,7 @@ void RoomScene::updateSelectedTargets(){
     QString targets = general_names.join(",");
     const Card *card = dashboard->getSelected();
     if(card){
-        QString card_name = Sanguosha->translate(card->objectName());
+        QString card_name = card->getName();
         changePrompt(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
     }else
         changePrompt(tr("You choose %1 as target").arg(targets));
@@ -778,13 +783,13 @@ void RoomScene::startViewAsSkill(){
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     const ViewAsSkill *skill = button2skill.value(button, NULL);
 
-    Q_ASSERT(skill != NULL);
+    if(skill){
+        dashboard->startPending(skill);
 
-    dashboard->startPending(skill);
-
-    button->setEnabled(false);
-    ok_button->setEnabled(true);
-    cancel_button->setEnabled(true);
+        button->setEnabled(false);
+        ok_button->setEnabled(true);
+        cancel_button->setEnabled(true);
+    }
 }
 
 void RoomScene::callViewAsSkill(){
@@ -920,7 +925,10 @@ void RoomScene::setSkillButtonEnablity(bool enablity){
 void RoomScene::doOkButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
-
+            const ViewAsSkill *skill = dashboard->currentSkill();
+            if(skill)
+                callViewAsSkill();
+            break;
         }
     case Client::NotActive: break;
     case Client::Discarding:{
@@ -934,4 +942,16 @@ void RoomScene::doOkButton(){
 
 void RoomScene::doCancelButton(){
     // FIXME
+
+    switch(ClientInstance->getStatus()){
+    case Client::Playing:{
+            const ViewAsSkill *skill = dashboard->currentSkill();
+            if(skill)
+                cancelViewAsSkill();
+            break;
+        }
+
+    default:
+        ;
+    }
 }

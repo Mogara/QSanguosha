@@ -94,10 +94,19 @@ QIcon Card::getSuitIcon() const{
     return QIcon(QString(":/suit/%1.png").arg(getSuitString()));
 }
 
-QString Card::getFullName() const{
-    QString name = Sanguosha->translate(objectName());
-    return QString("%1 %2").arg(getNumberString()).arg(name);
+QString Card::getFullName(bool include_suit) const{
+    QString name = getName();
+    if(include_suit){
+        QString suit_name = Sanguosha->translate(getSuitString());
+        return QString("%1%2 %3").arg(suit_name).arg(getNumberString()).arg(name);
+    }else
+        return QString("%1 %2").arg(getNumberString()).arg(name);
 }
+
+QString Card::getName() const{
+    return Sanguosha->translate(objectName());
+}
+
 
 QString Card::toString() const{
     if(!isVirtualCard())

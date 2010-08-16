@@ -175,6 +175,19 @@ class Paoxiao:public EnvironSkill{
 public:
     Paoxiao():EnvironSkill("paoxiao"){
     }
+
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+        Room *room = getRoom(player);
+
+        ActiveRecord *record = new ActiveRecord;
+        record->method = "setPlayerFlag";
+        record->target = player;
+        record->data = "paoxiao";
+
+        room->enqueueRecord(record);
+
+        return false;
+    }
 };
 
 class Longdan:public Skill{
@@ -195,6 +208,23 @@ class Mashu:public EnvironSkill{
 public:
     Mashu():EnvironSkill("mashu"){
 
+    }
+
+    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+        Room *room = getRoom(player);
+
+        ActiveRecord *record = new ActiveRecord;
+        record->method = "setPlayerProperty";
+        record->target = player;
+
+        QVariantList list;
+        list << "correct" << "skill_src:-1";
+
+        record->data = list;
+
+        room->enqueueRecord(record);
+
+        return false;
     }
 };
 
