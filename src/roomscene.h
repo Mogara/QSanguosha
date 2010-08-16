@@ -39,7 +39,6 @@ public slots:
     void updateStatus(Client::Status status);
 
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

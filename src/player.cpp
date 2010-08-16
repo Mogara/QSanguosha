@@ -59,6 +59,28 @@ void Player::setAlive(bool alive){
     }
 }
 
+QString Player::getFlags() const{
+    QStringList flags_list;
+    foreach(QString flag, flags)
+        flags_list << flag;
+
+    return flags_list.join("+");
+}
+
+void Player::setFlags(const QString &flag){
+    static QChar unset_symbol('-');
+    if(flag.startsWith(unset_symbol)){
+        QString copy = flag;
+        copy.remove(unset_symbol);
+        flags.remove(copy);
+    }else
+        flags.insert(flag);
+}
+
+bool Player::hasFlag(const QString &flag){
+    return flags.contains(flag);
+}
+
 void Player::setAttackRange(int attack_range){
     this->attack_range = attack_range;
 }

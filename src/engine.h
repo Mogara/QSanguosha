@@ -23,7 +23,7 @@ public:
     void addPackage(Package *package);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name);
-    CardPattern *cloneCardPattern(const QString &pattern_text);
+    CardPattern *cloneCardPattern(const QStringList &captured_texts);
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount() const;

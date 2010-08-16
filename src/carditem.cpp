@@ -56,10 +56,14 @@ const QPixmap &CardItem::getIconPixmap() const{
 
 void CardItem::select(){
     setY(10);
+
+    home_pos.ry() = 10;
 }
 
 void CardItem::unselect(){   
     setY(45);
+
+    home_pos.ry() = 45;
 }
 
 bool CardItem::isEquipped() const{
@@ -69,6 +73,7 @@ bool CardItem::isEquipped() const{
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
         setOpacity(0.8);
+        select();
         emit card_selected(this);
     }else if(rotation() != 0.0)
         emit show_discards();
@@ -101,6 +106,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setFont(card_number_font);
     if(card->isRed())
         painter->setPen(Qt::red);
+    else
+        painter->setPen(Qt::black);
     painter->drawText(8, 50, card->getNumberString());
 }
 

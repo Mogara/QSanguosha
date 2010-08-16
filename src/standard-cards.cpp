@@ -31,7 +31,24 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    BasicCard::use(room, source, targets);
 
+    foreach(ServerPlayer *target, targets){
+        room->requestForCard(target, "NamePattern:jink:1-1:r");
+    }
+}
+
+bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{   
+    return !targets.isEmpty();
+}
+
+bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    int slash_targets = ClientInstance->tag.value("slash_targets", 1).toInt();
+    if(targets.length() >= slash_targets)
+        return false;
+
+    const ClientPlayer *self = ClientInstance->getPlayer();
+    return self->distanceTo(to_select) <= self->getAttackRange();
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){

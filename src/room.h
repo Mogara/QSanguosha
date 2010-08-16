@@ -91,6 +91,7 @@ public:
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForNullification(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForCardChosen(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void requestForCard(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

@@ -353,15 +353,16 @@ void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
     if(add_to_pendings && !pendings.contains(card_item)){
         pendings.append(card_item);
         card_items.removeOne(card_item);
-        adjustCards();
-        pending_card = view_as_skill->viewAs(pendings);
+        adjustCards();        
 
         emit card_selected(pending_card);
     }else if(!add_to_pendings && !card_items.contains(card_item)){
         card_items.append(card_item);
         pendings.removeOne(card_item);
-        sortCards();
+        sortCards();        
     }
+
+    pending_card = view_as_skill->viewAs(pendings);
 
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
@@ -403,6 +404,8 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(skill->viewFilter(pendings, card_item));
     }
+
+    pending_card = skill->viewAs(pendings);
 }
 
 void Dashboard::stopPending(){

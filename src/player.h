@@ -28,6 +28,7 @@ class Player : public QObject
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
     Q_PROPERTY(bool face_up READ faceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
+    Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
 
     // distance related properties
     Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
@@ -74,6 +75,10 @@ public:
     bool isAlive() const;
     void setAlive(bool alive);
 
+    QString getFlags() const;
+    void setFlags(const QString &flag);
+    bool hasFlag(const QString &flag);
+
     bool faceUp() const;
     void turnOver();
 
@@ -109,6 +114,7 @@ private:
     QString state;
     int seat;
     bool alive;
+    QSet<QString> flags;
 
     struct CorrectStruct{
         int equip_src;

@@ -297,15 +297,6 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
-void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    QGraphicsScene::mousePressEvent(event);
-
-    if(event->button() == Qt::RightButton && !button2skill.isEmpty()){
-        QAbstractButton *button = button2skill.begin().key();
-        button->click();
-    }
-}
-
 void RoomScene::keyReleaseEvent(QKeyEvent *event){
     if(!Config.EnableHotKey)
         return;
@@ -574,6 +565,7 @@ void RoomScene::moveCard(ClientPlayer *src, Player::Place src_place, ClientPlaye
         card_item->setHomePos(DiscardedPos);
         card_item->setRotation(qrand() % 359 + 1);
         card_item->goBack();
+        card_item->setEnabled(true);
 
         card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
@@ -897,17 +889,24 @@ void RoomScene::updateStatus(Client::Status status){
     case Client::NotActive:{
             dashboard->disableAllCards();
             setSkillButtonEnablity(false);
+
+            ok_button->setText("NotActive");
+
             break;
         }
-    case Client::Responsing:
+    case Client::Responsing: ok_button->setText("Responsing");break;
     case Client::Playing:{
             dashboard->enableCards();
             setSkillButtonEnablity(true);
+
+            ok_button->setText("Playing");
             break;
         }
     case Client::Discarding:{
             // FIXME
             setSkillButtonEnablity(false);
+
+            ok_button->setText("Discarding");
             break;
         }
     }

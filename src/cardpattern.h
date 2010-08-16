@@ -26,7 +26,7 @@ class NamePattern: public CardPattern{
     Q_OBJECT
 
 public:
-    NamePattern(const QString &pattern_str);
+    Q_INVOKABLE NamePattern(const QString &pattern_str);
     virtual bool match(const Card *card) const;
 };
 
@@ -34,7 +34,7 @@ class TypePattern: public CardPattern{
     Q_OBJECT
 
 public:
-    TypePattern(const QString &pattern_str);
+    Q_INVOKABLE TypePattern(const QString &pattern_str);
     virtual bool match(const Card *card) const;
 };
 
@@ -42,7 +42,7 @@ class ClassPattern: public CardPattern{
     Q_OBJECT
 
 public:
-    ClassPattern(const QString &pattern_str);
+    Q_INVOKABLE ClassPattern(const QString &pattern_str);
     virtual bool match(const Card *card) const;
 };
 

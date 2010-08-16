@@ -353,11 +353,19 @@ void Client::updateFrequentFlags(int state){
 }
 
 void Client::requestForCard(const QString &request_str){
-    pattern = Sanguosha->cloneCardPattern(request_str);
-
-    if(pattern == NULL){
-        QMessageBox::warning(NULL, tr("Warning"), tr("Can not parse card pattern string : %1").arg(request_str));
+    QRegExp rx("(\\w+):(\\w+):(\\d+)-(\\d+):([cr]*)");
+    if(!rx.exactMatch(request_str)){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Request string (%1) is not well formatted").arg(request_str));
+        return;
     }
+
+    QStringList captured_texts = rx.capturedTexts();
+    pattern = Sanguosha->cloneCardPattern(captured_texts);
+    if(pattern == NULL){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Can not create card pattern from string : %1").arg(request_str));
+    }
+
+    setStatus(Responsing);
 }
 
 void Client::askForSkillInvoke(const QString &ask_str){

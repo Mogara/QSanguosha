@@ -114,6 +114,8 @@ public:
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
+    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 protected:
     virtual bool isAvailableAtPlay() const;
 };

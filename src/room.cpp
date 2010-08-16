@@ -77,6 +77,12 @@ void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
     waiting_for_user = __func__;
 }
 
+void Room::requestForCard(ServerPlayer *player, const QVariant &data){
+    player->invoke("requestForCard", data.toString());
+
+    waiting_for_user = __func__;
+}
+
 void Room::addSocket(QTcpSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);

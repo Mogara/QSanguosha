@@ -86,17 +86,12 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         return NULL;
 }
 
-CardPattern *Engine::cloneCardPattern(const QString &pattern_text){
-    QRegExp rx("(\\w+):(\\w+):(\\d+)-(\\d+):([cr]*)");
-    if(!rx.exactMatch(pattern_text))
-        return NULL;
-
-    QStringList words = rx.capturedTexts();
-    QString name = words.at(1);
-    QString pattern_str = words.at(2);
-    int min = words.at(3).toInt();
-    int max = words.at(4).toInt();
-    QString flags = words.at(5);
+CardPattern *Engine::cloneCardPattern(const QStringList &captured_texts){
+    QString name = captured_texts.at(1);
+    QString pattern_str = captured_texts.at(2);
+    int min = captured_texts.at(3).toInt();
+    int max = captured_texts.at(4).toInt();
+    QString flags = captured_texts.at(5);
 
     const QMetaObject *meta = metaobjects.value(name, NULL);
     if(meta){
