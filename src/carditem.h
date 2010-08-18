@@ -18,8 +18,11 @@ public:
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
+
     void select();
     void unselect();
+    bool isPending() const;
+
     bool isEquipped() const;
 
     bool isMarked() const;
@@ -43,8 +46,8 @@ private:
 signals:
     void show_discards();
     void hide_discards();
-    void card_selected(CardItem *card_item);
-    void pending(CardItem *item, bool add_to_pendings);
+    void clicked();
+    void thrown();
 };
 
 #endif // CARDITEM_H

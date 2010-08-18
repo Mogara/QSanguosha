@@ -5,6 +5,7 @@
 #include "dashboard.h"
 #include "card.h"
 #include "client.h"
+#include "discardskill.h"
 
 #include <QGraphicsScene>
 
@@ -58,6 +59,7 @@ private:
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
+    DiscardSkill *discard_skill;
 
     QList<const ClientPlayer *> selected_targets;
 
@@ -69,6 +71,8 @@ private:
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
     void unselectAllTargets(const QGraphicsItem *except = NULL);
+
+    void startViewAsSkill(const ViewAsSkill *skill);
     void callViewAsSkill();
     void cancelViewAsSkill();
     void setSkillButtonEnablity(bool enablity);
@@ -77,9 +81,10 @@ private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
-    void startViewAsSkill();
+    void doSkillButton();
     void doOkButton();
     void doCancelButton();
+    void doDiscardButton();
 };
 
 #endif // ROOMSCENE_H

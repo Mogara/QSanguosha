@@ -49,9 +49,7 @@ void Photo::setPlayer(const ClientPlayer *player)
         role_combobox->addItem(QIcon(":/roles/renegade.png"), tr("renegade"));
 
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
-        connect(player, SIGNAL(state_changed(QString)), this, SLOT(updateStateStr(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
-
     }
 
     updateAvatar();

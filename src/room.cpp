@@ -98,6 +98,16 @@ void Room::setPlayerProperty(ServerPlayer *player, const QVariant &data){
     broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value.toString()));
 }
 
+void Room::useCard(ServerPlayer *player, const QVariant &data){
+    CardUseStruct card_use = data.value<CardUseStruct>();
+
+
+}
+
+void Room::useCardMT(ServerPlayer *player, const QVariant &data){
+    CardUseStructMT card_use = data.value<CardUseStructMT>();
+}
+
 void Room::addSocket(QTcpSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);

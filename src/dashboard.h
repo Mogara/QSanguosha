@@ -26,8 +26,11 @@ public:
     const Card *getSelected() const;
     void unselectAll();
     void sort(int order);
+
     void disableAllCards();
     void enableCards();
+    void enableCards(const CardPattern *pattern);
+
     void installEquip(CardItem *equip);
     void installDelayedTrick(CardItem *card);    
 
@@ -38,9 +41,7 @@ public:
     const Card *pendingCard() const;
 
 public slots:
-    void updateAvatar();
-    void setSelectedItem(CardItem *card_item);
-    void enableCards(const QString &pattern);
+    void updateAvatar();    
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -69,10 +70,11 @@ private:
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawDelayedTrick(QPainter *painter, CardItem *trick, int order);
     void addDynamicButton(QPushButton *button);
+    void setSelectedItem(CardItem *card_item);
 
 private slots:
     void sortCards();
-    void doPending(CardItem *card_item, bool add_to_pendings);
+    void onCardItemClicked();
     void updateEnablity(CardItem *card_item);
 
 signals:

@@ -28,8 +28,12 @@ void CardItem::setHomePos(QPointF home_pos){
 }
 
 void CardItem::goBack(bool kieru){
+    if(home_pos == pos())
+        return;
+
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);
+
     goback->setEasingCurve(QEasingCurve::OutBounce);
 
     if(kieru){
@@ -55,15 +59,17 @@ const QPixmap &CardItem::getIconPixmap() const{
 }
 
 void CardItem::select(){
+    home_pos.setY(10);
     setY(10);
-
-    home_pos.ry() = 10;
 }
 
-void CardItem::unselect(){   
+void CardItem::unselect(){
+    home_pos.setY(45);
     setY(45);
+}
 
-    home_pos.ry() = 45;
+bool CardItem::isPending() const{
+    return home_pos.y() == 10;
 }
 
 bool CardItem::isEquipped() const{
@@ -72,9 +78,7 @@ bool CardItem::isEquipped() const{
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
-        setOpacity(0.8);
-        select();
-        emit card_selected(this);
+        emit clicked();
     }else if(rotation() != 0.0)
         emit show_discards();
     else
@@ -82,16 +86,16 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(parentItem())
-        emit pending(this, y() < -80);
+    if(parentItem() && y() < -80)
+        emit thrown();
 
-    setOpacity(1.0);
     goBack();
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
-        setPos(this->mapToParent(event->pos()) - event->buttonDownPos(Qt::LeftButton));
+        QPointF down_pos = event->buttonDownPos(Qt::LeftButton);
+        setPos(this->mapToParent(event->pos()) - down_pos);
     }
 }
 

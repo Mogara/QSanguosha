@@ -21,7 +21,6 @@ struct ActiveRecord{
     const char *method;    
     ServerPlayer *target;
     QVariant data;
-    QList<const PassiveSkill *> used;
 };
 
 struct DamageStruct{
@@ -45,6 +44,16 @@ struct CardUseStruct{
 };
 
 Q_DECLARE_METATYPE(CardUseStruct);
+
+// MT is short for "multiple targets"
+struct CardUseStructMT{
+    const Card *card;
+
+    ServerPlayer *from;
+    const QList<ServerPlayer *> to;
+};
+
+Q_DECLARE_METATYPE(CardUseStructMT);
 
 class Room : public QObject
 {
@@ -92,9 +101,10 @@ public:
     Q_INVOKABLE void askForNullification(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForCardChosen(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void requestForCard(ServerPlayer *player, const QVariant &data);
-
     Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
     Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void useCardMT(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

@@ -45,8 +45,8 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_items << card_item;
 
-    connect(card_item, SIGNAL(card_selected(CardItem*)), this, SLOT(setSelectedItem(CardItem*)));
-    connect(card_item, SIGNAL(pending(CardItem*,bool)), this, SLOT(doPending(CardItem*,bool)));
+    connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
+    connect(card_item, SIGNAL(thrown()), this, SIGNAL(card_to_use()));
 
     sortCards();
 }
@@ -112,7 +112,13 @@ const Card *Dashboard::getSelected() const{
 }
 
 void Dashboard::unselectAll(){
-    setSelectedItem(NULL);
+    selected = NULL;
+
+    foreach(CardItem *card_item, card_items){
+        // if(card_item->isPending())
+        card_item->unselect();
+        card_item->goBack();
+    }
 }
 
 void Dashboard::sort(int order){
@@ -299,8 +305,10 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         }
     }
 
-    if(card_item)
+    if(card_item){
+        card_item->disconnect(this);
         return card_item;
+    }
 
     qFatal("No such card %d in Dashboard", card_id);
     return NULL;
@@ -347,22 +355,14 @@ void Dashboard::updateEnablity(CardItem *card_item){
     }
 }
 
-void Dashboard::setSelectedItem(CardItem *card_item){
-    if(!view_as_skill && selected != card_item){
-        if(selected)
-            selected->unselect();
-        selected = card_item;
-
-        if(card_item)
-            emit card_selected(card_item->getCard());
-        else
-            emit card_selected(NULL);
-    }
-}
-
-void Dashboard::enableCards(){
+void Dashboard::enableCards(){    
     foreach(CardItem *card_item, card_items)
         card_item->setEnabled(card_item->getCard()->isAvailable());
+}
+
+void Dashboard::enableCards(const CardPattern *pattern){
+    foreach(CardItem *card_item, card_items)
+        card_item->setEnabled(pattern->match(card_item->getCard()));
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){
@@ -389,37 +389,41 @@ void Dashboard::stopPending(){
     adjustCards();
 }
 
-void Dashboard::doPending(CardItem *card_item, bool add_to_pendings){
-    if(!view_as_skill){
-        if(add_to_pendings){
-            selected = card_item;
-            emit card_to_use();
-        }
+void Dashboard::onCardItemClicked(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if(!card_item)
         return;
+
+    if(view_as_skill){
+        if(card_item->isPending())
+            card_item->unselect();
+        else
+            card_item->select();
+
+        foreach(CardItem *c, card_items){
+            if(!c->isPending())
+                c->setEnabled(view_as_skill->viewFilter(pendings, c));
+        }
+
+        updateEnablity(weapon);
+        updateEnablity(armor);
+        updateEnablity(defensive_horse);
+        updateEnablity(offensive_horse);
+
+        pending_card = view_as_skill->viewAs(pendings);
+
+    }else{
+        if(card_item->isPending()){
+            unselectAll();
+        }else{
+            unselectAll();
+            card_item->select();
+            card_item->goBack();
+            selected = card_item;
+
+            emit card_selected(selected->getCard());
+        }
     }
-
-    if(add_to_pendings && !pendings.contains(card_item)){
-        pendings.append(card_item);
-        card_items.removeOne(card_item);
-        adjustCards();
-
-        emit card_selected(pending_card);
-    }else if(!add_to_pendings && !card_items.contains(card_item)){
-        card_items.append(card_item);
-        pendings.removeOne(card_item);
-        sortCards();
-    }
-
-    pending_card = view_as_skill->viewAs(pendings);
-
-    foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(view_as_skill->viewFilter(pendings, card_item));
-    }
-
-    updateEnablity(weapon);
-    updateEnablity(armor);
-    updateEnablity(defensive_horse);
-    updateEnablity(offensive_horse);
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{
@@ -428,10 +432,6 @@ const ViewAsSkill *Dashboard::currentSkill() const{
 
 const Card *Dashboard::pendingCard() const{
     return pending_card;
-}
-
-void Dashboard::enableCards(const QString &pattern){
-    // enable card with pattern
 }
 
 void Dashboard::addDynamicButton(QPushButton *button){

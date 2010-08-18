@@ -74,6 +74,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
+    connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
 
     button_layout->addItem(addWidget(ok_button));
     button_layout->addItem(addWidget(cancel_button));
@@ -82,6 +83,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     QGraphicsWidget *form = new QGraphicsWidget(dashboard);
     form->setLayout(button_layout);
     form->setPos(dashboard->boundingRect().width() - button_layout->preferredWidth(), -25);
+
+    discard_skill = new DiscardSkill;
+    discard_skill->setNum(2);
 
     known_cards_menu = new QMenu(main_window);
 
@@ -665,7 +669,7 @@ void RoomScene::updateSkillButtons(){
 
         if(skill->inherits("ViewAsSkill")){
             button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
-            connect(button, SIGNAL(clicked()), this, SLOT(startViewAsSkill()));
+            connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
         }
     }
 
@@ -779,13 +783,11 @@ void RoomScene::useCard(const Card *card){
     enableTargets(NULL);
 }
 
-void RoomScene::startViewAsSkill(){
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-    const ViewAsSkill *skill = button2skill.value(button, NULL);
+void RoomScene::startViewAsSkill(const ViewAsSkill *skill){
+    dashboard->startPending(skill);
 
-    if(skill){
-        dashboard->startPending(skill);
-
+    QAbstractButton *button = button2skill.key(skill);
+    if(button){
         button->setEnabled(false);
         ok_button->setEnabled(true);
         cancel_button->setEnabled(true);
@@ -802,17 +804,13 @@ void RoomScene::callViewAsSkill(){
 
     if(card->isAvailable()){
         const ViewAsSkill *skill = dashboard->currentSkill();
-        skill->playEffect();
-        if(!skill->isDisableAfterUse()){
-            QAbstractButton *button = button2skill.key(skill, NULL);
-            button->setEnabled(false);
-        }
+        skill->playEffect(); // FIXME: tell the server to play effect on other clients
 
         // use card
         dashboard->stopPending();
         useCard(card);
     }else{
-        changePrompt(tr("Card [%1] can not be used right now").arg(Sanguosha->translate(card->objectName())));
+        changePrompt(tr("Card [%1] can not be used right now").arg(card->getName()));
     }
 }
 
@@ -892,26 +890,47 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
-            dashboard->disableAllCards();
-            setSkillButtonEnablity(false);
-
             ok_button->setText("NotActive");
+
+            dashboard->disableAllCards();
+            setSkillButtonEnablity(false);            
+
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
 
             break;
         }
-    case Client::Responsing: ok_button->setText("Responsing");break;
+    case Client::Responsing: {
+            ok_button->setText("Responsing");
+
+            dashboard->enableCards(ClientInstance->pattern);
+
+            ok_button->setEnabled(true);
+            cancel_button->setDisabled(ClientInstance->pattern->compulsory);
+            discard_button->setEnabled(false);            
+            break;
+        }
+
     case Client::Playing:{
+            ok_button->setText("Playing");
+
             dashboard->enableCards();
             setSkillButtonEnablity(true);
 
-            ok_button->setText("Playing");
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(true);
             break;
         }
     case Client::Discarding:{
-            // FIXME
+            ok_button->setText("Discarding");
+
             setSkillButtonEnablity(false);
 
-            ok_button->setText("Discarding");
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
             break;
         }
     }
@@ -922,6 +941,14 @@ void RoomScene::setSkillButtonEnablity(bool enablity){
         button->setEnabled(enablity);
 }
 
+void RoomScene::doSkillButton(){
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    const ViewAsSkill *skill = button2skill.value(button, NULL);
+
+    if(skill)
+        startViewAsSkill(skill);
+}
+
 void RoomScene::doOkButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
@@ -930,13 +957,11 @@ void RoomScene::doOkButton(){
                 callViewAsSkill();
             break;
         }
-    case Client::NotActive: break;
-    case Client::Discarding:{
-
-        }
     case Client::Responsing:{
 
         }
+    case Client::NotActive: break;
+    case Client::Discarding: break;
     }
 }
 
@@ -954,4 +979,8 @@ void RoomScene::doCancelButton(){
     default:
         ;
     }
+}
+
+void RoomScene::doDiscardButton(){
+    // FIXME
 }

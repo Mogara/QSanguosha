@@ -37,7 +37,8 @@ SOURCES += src/main.cpp \
     src/gamerule.cpp \
     src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
-    src/magatamawidget.cpp
+    src/magatamawidget.cpp \
+    src/discardskill.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -67,7 +68,8 @@ HEADERS += src/mainwindow.h \
     src/gamerule.h \
     src/nullificationdialog.h \
     src/playercarddialog.h \
-    src/magatamawidget.h
+    src/magatamawidget.h \
+    src/discardskill.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
