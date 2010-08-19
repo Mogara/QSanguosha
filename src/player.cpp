@@ -188,6 +188,13 @@ const General *Player::getAvatarGeneral() const{
     return Sanguosha->getGeneral(general_name);
 }
 
+bool Player::hasSkill(const QString &skill_name) const{
+    if(general)
+        return general->hasSkill(skill_name);
+    else
+        return false;
+}
+
 QString Player::getPhaseString() const{
     switch(phase){
     case Start: return "start";

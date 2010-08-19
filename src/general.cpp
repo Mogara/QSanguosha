@@ -50,6 +50,11 @@ QString General::getKingdomPath() const{
 void General::addSkill(Skill *skill){    
     skill->setParent(this);
     skill->initMediaSource();
+    skill_set.insert(skill->objectName());
+}
+
+bool General::hasSkill(const QString &skill_name) const{
+    return skill_set.contains(skill_name);
 }
 
 QString General::getPackage() const{

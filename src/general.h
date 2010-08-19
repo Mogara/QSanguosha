@@ -5,6 +5,7 @@ class Skill;
 class Package;
 
 #include <QObject>
+#include <QSet>
 
 class General : public QObject
 {
@@ -26,6 +27,7 @@ public:
     bool isLord() const;
 
     void addSkill(Skill* skill);
+    bool hasSkill(const QString &skill_name) const;
 
     QString getPixmapPath(const QString &category) const;
     QString getKingdomPath() const;
@@ -37,6 +39,7 @@ private:
     int max_hp;
     bool male;
     bool lord;
+    QSet<QString> skill_set;
 };
 
 #endif // GENERAL_H

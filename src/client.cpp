@@ -376,7 +376,7 @@ void Client::askForSkillInvoke(const QString &ask_str){
 
     bool auto_invoke = frequent_flags.contains(skill_name);
     if(auto_invoke)
-        request(QString("invokeSkill %1 yes").arg(skill_name));
+        request("invokeSkill yes");
     else{
         QMessageBox *box = new QMessageBox;
         box->setIcon(QMessageBox::Question);
@@ -397,7 +397,7 @@ void Client::askForSkillInvoke(const QString &ask_str){
         box->exec();
 
         QString result = box->clickedButton()->objectName();
-        request(QString("invokeSkill %1 %2").arg(skill_name).arg(result));
+        request("invokeSkill " + result);
     }
 }
 

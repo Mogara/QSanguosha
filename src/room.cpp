@@ -33,7 +33,7 @@ Room::Room(QObject *parent, int player_count)
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false),
-    waiting_for_user(NULL), nullificators_count(0), signup_count(0)
+    waiting_func(NULL), nullificators_count(0), signup_count(0)
 {
 }
 
@@ -52,13 +52,13 @@ int Room::alivePlayerCount() const{
 void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
     player->invoke("askForSkillInvoke", data.toString());
 
-    waiting_for_user = __func__;
+    waiting_func = __func__;
 }
 
 void Room::askForNullification(ServerPlayer *, const QVariant &data){
     broadcastInvoke("askForNullification", data.toString());
 
-    waiting_for_user = __func__;
+    waiting_func = __func__;
 
     int index = alive_players.indexOf(current), i;
     for(i=index; i<alive_players.count(); i++)
@@ -74,13 +74,13 @@ void Room::askForNullification(ServerPlayer *, const QVariant &data){
 void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
     player->invoke("askForCardChosen", data.toString());
 
-    waiting_for_user = __func__;
+    waiting_func = __func__;
 }
 
 void Room::requestForCard(ServerPlayer *player, const QVariant &data){
     player->invoke("requestForCard", data.toString());
 
-    waiting_for_user = __func__;
+    waiting_func = __func__;
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QVariant &flag){
@@ -102,10 +102,6 @@ void Room::useCard(ServerPlayer *player, const QVariant &data){
     CardUseStruct card_use = data.value<CardUseStruct>();
 
 
-}
-
-void Room::useCardMT(ServerPlayer *player, const QVariant &data){
-    CardUseStructMT card_use = data.value<CardUseStructMT>();
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -201,7 +197,7 @@ void Room::processRequest(const QString &request){
     else
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
 
-    if(game_started && !waiting_for_user)
+    if(game_started && !waiting_func)
         invokeStackTop();
 }
 
@@ -349,7 +345,12 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
 
     }
 
-    card->use(this, player, targets);
+    CardUseStructMT data;
+    data.card = card;
+    data.from = player;
+    data.to = targets;
+
+    invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
 
 void Room::startGame(){
@@ -488,16 +489,19 @@ void Room::moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *de
 }
 
 void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
-    QString skill_name = args.at(1);
+    // FIXME: checking waiting_func and stack top
+
+    ActiveRecord *record = stack.pop();
+    QString skill_name = record->data.toString();
     const PassiveSkill *skill = passive_skills.value(skill_name, NULL);
     if(skill){
-        QString option = args.at(2);
-        skill->onOption(player, option);
+        QString option = args.at(1);
+        skill->onOption(record->target, option);
     }else{
         emit room_message(tr("No such skill named %1").arg(skill_name));
     }
 
-    waiting_for_user = NULL;
+    waiting_func = NULL;
 }
 
 void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &args){
@@ -508,7 +512,7 @@ void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &ar
     nullificators_count --;
 
     if(nullificators_count == 0){
-        waiting_for_user = NULL;
+        waiting_func = NULL;
 
         if(nullificators.isEmpty()){
             // execute the trick
@@ -586,7 +590,7 @@ void Room::invokeStackTop(){
         if(!invoked)
             emit room_message(tr("Unknown method :%1 ").arg(top->method));
 
-        if(waiting_for_user)
+        if(waiting_func)
             return;
 
         delete top;

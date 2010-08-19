@@ -182,7 +182,8 @@ public:
         setObjectName("collateral");
     }
 
-    virtual bool isAvailable(const Client *client) const{
+    virtual bool isAvailableAtPlay() const{
+        Client *client = ClientInstance;
         QList<ClientPlayer*> players = client->findChildren<ClientPlayer*>();
         foreach(ClientPlayer *player, players){
             if(player->getWeapon() != NULL && player != client->getPlayer())
@@ -222,10 +223,7 @@ class ExNihilo: public SingleTargetTrick{
 public:
     ExNihilo(Suit suit, int number):SingleTargetTrick(suit, number){
         setObjectName("ex_nihilo");
-    }
-
-    virtual bool targetFixed() const{
-        return true;
+        target_fixed = true;
     }
 };
 

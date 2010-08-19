@@ -117,7 +117,7 @@ int PassiveSkill::getPriority(ServerPlayer *target) const{
 }
 
 bool PassiveSkill::triggerable(const ServerPlayer *target) const{
-    return target->isAlive() && target->getGeneral() == parent()->objectName();
+    return target->isAlive() && target->hasSkill(objectName());
 }
 
 PassiveSkill::Frequency PassiveSkill::getFrequency() const{
@@ -126,6 +126,17 @@ PassiveSkill::Frequency PassiveSkill::getFrequency() const{
 
 void PassiveSkill::onOption(ServerPlayer *target, const QString &option) const{
 
+}
+
+void PassiveSkill::enqueueInvoke(ServerPlayer *target) const{
+    Room *room = getRoom(target);
+
+    ActiveRecord *record = new ActiveRecord;
+    record->method = "@InvokeSkill";
+    record->data = objectName();
+    record->target = target;
+
+    room->enqueueRecord(record);
 }
 
 MasochismSkill::MasochismSkill(const QString &name)

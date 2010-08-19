@@ -89,6 +89,7 @@ public:
     int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
+    bool hasSkill(const QString &skill_name) const;
 
     const Card *replaceEquip(const Card *equip);
     void removeEquip(const Card *equip);

@@ -84,6 +84,8 @@ public:
 
 protected:
     enum Frequency frequency;
+
+    void enqueueInvoke(ServerPlayer *target) const;
 };
 
 class MasochismSkill: public PassiveSkill{

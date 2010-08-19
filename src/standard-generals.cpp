@@ -307,6 +307,8 @@ public:
             ask->data = "yingzi:yes+no";
 
             room->enqueueRecord(ask);
+
+            enqueueInvoke(target);
         }
 
         return false;

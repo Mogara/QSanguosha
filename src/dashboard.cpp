@@ -46,7 +46,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_items << card_item;
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
-    connect(card_item, SIGNAL(thrown()), this, SIGNAL(card_to_use()));
+    connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
 
     sortCards();
 }
@@ -115,7 +115,6 @@ void Dashboard::unselectAll(){
     selected = NULL;
 
     foreach(CardItem *card_item, card_items){
-        // if(card_item->isPending())
         card_item->unselect();
         card_item->goBack();
     }
@@ -423,6 +422,14 @@ void Dashboard::onCardItemClicked(){
 
             emit card_selected(selected->getCard());
         }
+    }
+}
+
+void Dashboard::onCardItemThrown(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if(card_item){
+        selected = card_item;
+        emit card_to_use();
     }
 }
 

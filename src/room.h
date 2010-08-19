@@ -50,7 +50,7 @@ struct CardUseStructMT{
     const Card *card;
 
     ServerPlayer *from;
-    const QList<ServerPlayer *> to;
+    QList<ServerPlayer *> to;
 };
 
 Q_DECLARE_METATYPE(CardUseStructMT);
@@ -104,7 +104,6 @@ public:
     Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
     Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void useCardMT(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -118,7 +117,7 @@ private:
     int left_seconds;
     int chosen_generals;
     bool game_started;
-    const char *waiting_for_user;
+    const char *waiting_func;
     int nullificators_count;
     QList<ServerPlayer *> nullificators;
     int signup_count;

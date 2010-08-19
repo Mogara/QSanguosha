@@ -75,6 +75,7 @@ private:
 private slots:
     void sortCards();
     void onCardItemClicked();
+    void onCardItemThrown();
     void updateEnablity(CardItem *card_item);
 
 signals:
