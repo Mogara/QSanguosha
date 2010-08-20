@@ -176,10 +176,12 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, tr("About QSanguosha"),
-                       tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
-                          "totally written in C++ Qt GUI framework <br />"
-                          "My Email: moligaloo@gmail.com"));
+    QString content =  "<center><img src=':/shencc.png'> <br /> </center>";
+    content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
+                      "totally written in C++ Qt GUI framework <br />"
+                      "My Email: moligaloo@gmail.com"));
+
+    QMessageBox::about(this, tr("About QSanguosha"), content);
 }
 
 void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)

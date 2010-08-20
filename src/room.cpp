@@ -24,7 +24,7 @@ void PassiveSkillSorter::sort(QList<const PassiveSkill *> &skills){
 }
 
 DamageStruct::DamageStruct()
-    :damager(NULL), damagee(NULL), card(NULL), damage(0), nature(Normal)
+    :from(NULL), to(NULL), card(NULL), damage(0), nature(Normal)
 {
 }
 
@@ -99,9 +99,7 @@ void Room::setPlayerProperty(ServerPlayer *player, const QVariant &data){
 }
 
 void Room::useCard(ServerPlayer *player, const QVariant &data){
-    CardUseStruct card_use = data.value<CardUseStruct>();
-
-
+    invokePassiveSkills(CardUsed, player, data);
 }
 
 void Room::addSocket(QTcpSocket *socket){

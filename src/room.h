@@ -103,16 +103,19 @@ public:
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
 
+    // non-interactive methods
     Q_INVOKABLE void activate(ServerPlayer *target);
     Q_INVOKABLE void nextPhase(ServerPlayer *player);
     Q_INVOKABLE void drawCards(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
+    Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
+    Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
+
+    // interactive methods
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForNullification(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void askForCardChosen(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void requestForCard(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
-    Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
