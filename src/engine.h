@@ -33,7 +33,7 @@ public:
     const Card *getCard(int index) const;
 
     QStringList getRandomLords(int lord_count) const;
-    QStringList getRandomGenerals(int count) const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
     void playEffect(const Phonon::MediaSource &source);
@@ -46,7 +46,7 @@ private:
     QHash<QString, const Skill *> skills;
 
     QList<Card*> cards;
-    QStringList lord_names;
+    QStringList lord_list, nonlord_list;
     Phonon::MediaObject *effect;
 };
 

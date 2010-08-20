@@ -33,7 +33,10 @@ void Engine::addPackage(Package *package){
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
         if(general->isLord())
-            lord_names << general->objectName();
+            lord_list << general->objectName();
+        else
+            nonlord_list << general->objectName();
+
         generals.insert(general->objectName(), general);
 
         QList<const Skill *> all_skills = general->findChildren<const Skill *>();
@@ -120,31 +123,32 @@ int Engine::getCardCount() const{
 }
 
 QStringList Engine::getRandomLords(int lord_count) const{
-    QStringList lord_list;
-    int min = qMin(lord_count, lord_names.count()), i;
-    for(i=0; i<min; i++)
-        lord_list << lord_names[i];
+    QStringList lords = lord_list;
 
-    QList<const General*> all_generals = generals.values();
-    for(i=0; i<lord_count-min; i++){
-        const General *general = NULL;
+    if(lord_count < lord_list.length()){
+        QMessageBox::warning(NULL, tr("Warning"),
+                             tr("The lord count must greater or equal to the intrinsic lord number(%1)").arg(lord_list.length()));
+        return lord_list;
+    }
 
-        while(general == NULL){
-            int r = qrand() % all_generals.count();
-            const General *chosen = all_generals.at(r);
-            if(!chosen->isLord())
-                general = chosen;
-        }
+    QStringList nonlord_list = this->nonlord_list;
+    int i, n = nonlord_list.length();
+    for(i=0; i<n; i++){
+        int r1 = qrand() % n;
+        int r2 = qrand() % n;
+        nonlord_list.swap(r1, r2);
+    }
 
-        lord_list << general->objectName();
-    }    
+    int extra = lord_count - lord_list.length();
+    for(i=0; i< extra; i++)
+        lords << nonlord_list.at(i);
 
-    return lord_list;
+    return lords;
 }
 
-QStringList Engine::getRandomGenerals(int count) const{
-    QStringList general_list;
-    QList<const General *> all_generals = generals.values();
+QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{
+    QStringList all_generals = generals.keys();
+
     int n = all_generals.count();
     Q_ASSERT(n >= count);
 
@@ -156,9 +160,12 @@ QStringList Engine::getRandomGenerals(int count) const{
         all_generals.swap(r1, r2);
     }
 
-    for(i=0; i<count; i++)
-        general_list << all_generals.at(i)->objectName();
+    if(!ban_set.isEmpty()){
+        QSet<QString> general_set = all_generals.toSet();
+        all_generals = general_set.subtract(ban_set).toList();
+    }
 
+    QStringList general_list = all_generals.mid(0, count);
     Q_ASSERT(general_list.count() == count);
 
     return general_list;

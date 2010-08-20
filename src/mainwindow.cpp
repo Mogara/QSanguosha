@@ -38,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // register metatypes
+    qRegisterMetaType<DamageStruct>("DamageStruct");
+    qRegisterMetaType<CardUseStruct>("CardUseStruct");
+    qRegisterMetaType<CardLostStruct>("CardLostStruct");
+
     Sanguosha = new Engine(this);
     Config.init();
 

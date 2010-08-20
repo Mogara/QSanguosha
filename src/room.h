@@ -24,11 +24,15 @@ struct ActiveRecord{
 };
 
 struct DamageStruct{
-    enum Nature { Normal, Fire, Thunder };
+    enum Nature {
+        Normal, // normal slash, duel and most damage caused by skill
+        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
+        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+    };
     DamageStruct();
 
-    ServerPlayer *damager;
-    ServerPlayer *damagee;
+    ServerPlayer *from;
+    ServerPlayer *to;
     const Card *card;
     int damage;
     Nature nature;
@@ -45,15 +49,20 @@ struct CardUseStruct{
 
 Q_DECLARE_METATYPE(CardUseStruct);
 
-// MT is short for "multiple targets"
-struct CardUseStructMT{
-    const Card *card;
+struct CardLostStruct{
+    enum Reason {
+        Lost,
+        Use,
+        Response
+    };
 
+    Reason reason;
+    const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;
 };
 
-Q_DECLARE_METATYPE(CardUseStructMT);
+Q_DECLARE_METATYPE(CardLostStruct);
 
 class Room : public QObject
 {

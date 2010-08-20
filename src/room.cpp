@@ -345,12 +345,13 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
 
     }
 
-    CardUseStructMT data;
+    CardLostStruct data;
     data.card = card;
     data.from = player;
     data.to = targets;
+    data.reason = CardLostStruct::Use;
 
-    invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
+    invokePassiveSkills(CardLost, player, QVariant::fromValue(data));
 }
 
 void Room::startGame(){
@@ -415,6 +416,7 @@ void Room::startGame(){
     broadcastProperty(the_lord, "phase", "start");
     current = the_lord;
     changePhase(the_lord);
+    invokeStackTop();
 }
 
 void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
@@ -619,9 +621,7 @@ void Room::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const Q
     while(itor.hasPrevious()){
         stack.push(itor.previous());
     }
-    queue.clear();
-
-    invokeStackTop();
+    queue.clear();    
 }
 
 void Room::changePhase(ServerPlayer *target){
