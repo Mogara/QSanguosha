@@ -73,18 +73,23 @@ class Room : public QObject
 public:
     enum TriggerEvent{
         GameStart,
+        PhaseChange,
 
         Predamage,
         Predamaged,
         Damage,
         Damaged,
 
+        Dying,
+        Death,
+
         Judge,
         JudgeOnEffect,
-        PhaseChange,
+
         CardUsed,
         CardLost,
         CardGot,
+
         Jinked,
     };
 

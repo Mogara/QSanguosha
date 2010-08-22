@@ -20,7 +20,7 @@ void GameRule::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
 }
 
 bool GameRule::trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-    Room *room = getRoom(player);
+    Room *room = player->getRoom();
 
     if(event == Room::PhaseChange){
         switch(player->getPhase()){

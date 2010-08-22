@@ -3,13 +3,17 @@
 
 #include <QHostAddress>
 
-ServerPlayer::ServerPlayer(QObject *parent)
-    : Player(parent), socket(NULL)
+ServerPlayer::ServerPlayer(Room *room)
+    : Player(room), socket(NULL), room(room)
 {
 }
 
 void ServerPlayer::drawCard(const Card *card){
     handcards << card;
+}
+
+Room *ServerPlayer::getRoom() const{
+    return room;
 }
 
 int ServerPlayer::aliveCount() const{

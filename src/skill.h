@@ -19,7 +19,6 @@ public:
     explicit Skill(const QString &name);
     bool isLordSkill() const;
     QString getDescription() const;
-    Room *getRoom(ServerPlayer *target) const;
 
     void initMediaSource();
     void playEffect(int index = -1) const;

@@ -177,7 +177,7 @@ public:
     }
 
     virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-        Room *room = getRoom(player);
+        Room *room = player->getRoom();
 
         ActiveRecord *record = new ActiveRecord;
         record->method = "setPlayerFlag";
@@ -211,7 +211,7 @@ public:
     }
 
     virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-        Room *room = getRoom(player);
+        Room *room = player->getRoom();
 
         ActiveRecord *record = new ActiveRecord;
         record->method = "setPlayerProperty";
@@ -299,7 +299,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Draw){
-            Room *room = getRoom(target);
+            Room *room = target->getRoom();
 
             ActiveRecord *ask = new ActiveRecord;
             ask->method = "askForSkillInvoke";
@@ -315,7 +315,7 @@ public:
     }
 
     virtual void onOption(ServerPlayer *target, const QString &option) const{
-        Room *room = getRoom(target);
+        Room *room = target->getRoom();
         if(option == "yes"){
             room->drawCards(target, 1);
             room->playSkillEffect(objectName());

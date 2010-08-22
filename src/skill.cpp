@@ -28,10 +28,6 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
-Room *Skill::getRoom(ServerPlayer *target) const{
-    return qobject_cast<Room *>(target->parent());
-}
-
 void Skill::initMediaSource(){
     sources.clear();
 
@@ -129,7 +125,7 @@ void PassiveSkill::onOption(ServerPlayer *target, const QString &option) const{
 }
 
 void PassiveSkill::enqueueInvoke(ServerPlayer *target) const{
-    Room *room = getRoom(target);
+    Room *room = target->getRoom();
 
     ActiveRecord *record = new ActiveRecord;
     record->method = "@InvokeSkill";
