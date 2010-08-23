@@ -16,7 +16,7 @@ class Card : public QObject
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
-    Q_PROPERTY(int id READ getID CONSTANT)
+    Q_PROPERTY(int id READ getId CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)    
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
@@ -36,8 +36,8 @@ public:
     QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
-    int getID() const;
-    void setID(int id);
+    int getId() const;
+    void setId(int id);
     int getNumber() const;
     QString getNumberString() const;
     Suit getSuit() const;

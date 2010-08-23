@@ -272,7 +272,7 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
 
         for(i=0; i<card_items.length(); i++){
             CardItem *item = card_items.at(i);
-            if(item->getCard()->getID() == card_id){
+            if(item->getCard()->getId() == card_id){
                 if(item == selected)
                     selected = NULL;
                 card_items.removeAt(i);
@@ -283,22 +283,22 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             }
         }
     }else if(place == Player::Equip){
-        if(weapon && weapon->getCard()->getID() == card_id){
+        if(weapon && weapon->getCard()->getId() == card_id){
             card_item = weapon;
             weapon = NULL;
         }
 
-        if(armor && armor->getCard()->getID() == card_id){
+        if(armor && armor->getCard()->getId() == card_id){
             card_item = armor;
             armor = NULL;
         }
 
-        if(defensive_horse && defensive_horse->getCard()->getID() == card_id){
+        if(defensive_horse && defensive_horse->getCard()->getId() == card_id){
             card_item = defensive_horse;
             defensive_horse = NULL;
         }
 
-        if(offensive_horse && offensive_horse->getCard()->getID() == card_id){
+        if(offensive_horse && offensive_horse->getCard()->getId() == card_id){
             card_item = offensive_horse;
             offensive_horse = NULL;
         }

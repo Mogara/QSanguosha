@@ -136,7 +136,7 @@ public:
 
         Card *rende_card = new RendeCard;
         foreach(CardItem *card_item, cards)
-            rende_card->addSubcard(card_item->getCard()->getID());
+            rende_card->addSubcard(card_item->getCard()->getId());
         return rende_card;
     }
 };
@@ -165,7 +165,7 @@ public:
         else{
             const Card *card = cards.first()->getCard();
             Card *slash = new Slash(card->getSuit(), card->getNumber());
-            slash->addSubcard(card->getID());
+            slash->addSubcard(card->getId());
             return slash;
         }
     }
@@ -278,7 +278,7 @@ public:
 
         Card *zhiheng_card = new ZhihengCard;
         foreach(CardItem *card_item, cards)
-            zhiheng_card->addSubcard(card_item->getCard()->getID());
+            zhiheng_card->addSubcard(card_item->getCard()->getId());
 
         return zhiheng_card;
     }

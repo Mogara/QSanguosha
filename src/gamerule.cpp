@@ -64,6 +64,16 @@ bool GameRule::trigger(Room::TriggerEvent event, ServerPlayer *player, const QVa
 
     switch(event){
     case Room::PhaseChange: onPhaseChange(player); break;
+    case Room::CardUsed: {
+            if(data.canConvert<CardUseStruct>()){
+                CardUseStruct card_use = data.value<CardUseStruct>();
+                const Card *card = card_use.card;
+
+                card->use(room, card_use.from, card_use.to);
+            }
+
+            break;
+        }
     default:
         ;
     }

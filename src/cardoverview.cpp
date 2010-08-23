@@ -47,7 +47,7 @@ void CardOverview::addCard(int i, const Card *card){
     QString package = Sanguosha->translate(card->getPackage());
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
-    name_item->setData(Qt::UserRole, card->getID());
+    name_item->setData(Qt::UserRole, card->getId());
 
     ui->tableWidget->setItem(i, 0, name_item);
     ui->tableWidget->setItem(i, 1, new QTableWidgetItem(suit_icon, suit_str));

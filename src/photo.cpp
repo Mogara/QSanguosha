@@ -94,16 +94,16 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
         card_item->setPos(pos());
         card_item->shift();
     }else if(place == Player::Equip){
-        if(weapon && weapon->getCard()->getID() == card_id){
+        if(weapon && weapon->getCard()->getId() == card_id){
             card_item = weapon;
             weapon = NULL;
-        }else if(armor && armor->getCard()->getID() == card_id){            
+        }else if(armor && armor->getCard()->getId() == card_id){            
             card_item = armor;
             armor = NULL;
-        }else if(defensive_horse && defensive_horse->getCard()->getID() == card_id){
+        }else if(defensive_horse && defensive_horse->getCard()->getId() == card_id){
             card_item = defensive_horse;
             defensive_horse = NULL;
-        }else if(offensive_horse && offensive_horse->getCard()->getID() == card_id){
+        }else if(offensive_horse && offensive_horse->getCard()->getId() == card_id){
             card_item = offensive_horse;
             offensive_horse = NULL;
         }

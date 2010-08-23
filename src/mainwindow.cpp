@@ -58,8 +58,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     StartScene *start_scene = new StartScene;
     QList<QAction*> actions;
-    actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
-            << ui->actionGeneral_Overview << ui->actionCard_Overview
+    actions << ui->actionStart_Game
+            << ui->actionConfigure
+            << ui->actionStart_Server
+            << ui->actionGeneral_Overview
+            << ui->actionCard_Overview
             << ui->actionAbout << ui->actionExit;
 
     foreach(QAction *action, actions){

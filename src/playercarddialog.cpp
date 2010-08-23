@@ -79,7 +79,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(weapon->getFullName());
         button->setIcon(weapon->getSuitIcon());
 
-        mapper->setMapping(button, weapon->getID());
+        mapper->setMapping(button, weapon->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
         layout->addWidget(button);
     }
@@ -89,7 +89,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(armor->getFullName());
         button->setIcon(armor->getSuitIcon());
 
-        mapper->setMapping(button, armor->getID());
+        mapper->setMapping(button, armor->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
         layout->addWidget(button);
     }
@@ -99,7 +99,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName());
         button->setIcon(horse->getSuitIcon());
 
-        mapper->setMapping(button, horse->getID());
+        mapper->setMapping(button, horse->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
         layout->addWidget(button);
     }
@@ -109,7 +109,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName());
         button->setIcon(horse->getSuitIcon());
 
-        mapper->setMapping(button, horse->getID());
+        mapper->setMapping(button, horse->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
         layout->addWidget(button);
     }
@@ -134,7 +134,7 @@ QWidget *PlayerCardDialog::createJudgingArea(){
         QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
         button->setIcon(card->getSuitIcon());
 
-        mapper->setMapping(button, card->getID());
+        mapper->setMapping(button, card->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
     }
 

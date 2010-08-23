@@ -454,18 +454,35 @@ void Room::throwCard(ServerPlayer *player, const Card *card){
         foreach(int subcard, subcards)
             throwCard(player, subcard);
     }else
-        throwCard(player, card->getID());
+        throwCard(player, card->getId());
 }
 
-void Room::throwCard(ServerPlayer *player, int card_id){
-    moveCard(player, Player::Hand, NULL, Player::DiscardedPile, card_id);
+void Room::throwCard(ServerPlayer *player, const QVariant &card_id){
+    CardMoveStruct data;
+    data.card_id = card_id.toInt();
+    data.from_place = Player::Hand;
+    data.to_place = Player::DiscardedPile;
+    data.from = player;
+    data.to = NULL;
+
+    moveCard(NULL, QVariant::fromValue(data));
 }
 
 QList<int> *Room::getDiscardPile() const{
     return discard_pile;
 }
 
-void Room::moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id){
+void Room::moveCard(ServerPlayer *, const QVariant &data){
+    if(!data.canConvert<CardMoveStruct>())
+        return;
+
+    CardMoveStruct move = data.value<CardMoveStruct>();
+    ServerPlayer *src = move.from;
+    ServerPlayer *dest = move.to;
+    Player::Place src_place = move.from_place;
+    Player::Place dest_place = move.to_place;
+    int card_id = move.card_id;
+
     static QMap<Player::Place, QString> place2str;
     if(place2str.isEmpty()){
         place2str.insert(Player::Hand, "hand");
@@ -487,7 +504,7 @@ void Room::moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *de
     Player::MoveCard(src, src_place, dest, dest_place, card_id);
 }
 
-void Room::invokeSkillCommand(ServerPlayer *player, const QStringList &args){
+void Room::invokeSkillCommand(ServerPlayer *, const QStringList &args){
     // FIXME: checking waiting_func and stack top
 
     ActiveRecord *record = stack.pop();

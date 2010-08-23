@@ -20,6 +20,17 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     ServerPlayer *target = targets.first();
     foreach(int card_id, subcards){
-        room->moveCard(source, Player::Hand, target, Player::Hand, card_id);
+        ActiveRecord *record = new ActiveRecord;
+        record->method = "moveCard";
+        record->target = NULL;
+
+        CardMoveStruct move;
+        move.card_id = card_id;
+        move.from = source;
+        move.to = target;
+        move.from_place = move.to_place = Player::Hand;
+        record->data = QVariant::fromValue(move);
+
+        room->enqueueRecord(record);
     }
 }

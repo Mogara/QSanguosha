@@ -56,7 +56,7 @@ QList<int> ClientPlayer::nullifications() const{
 
     foreach(const Card *card, known_cards){
         if(card->objectName() == "nullification")
-            card_ids << card->getID();
+            card_ids << card->getId();
     }
 
     return card_ids;

@@ -58,14 +58,6 @@ struct CardUseStruct{
 Q_DECLARE_METATYPE(CardUseStruct);
 
 struct CardMoveStruct{
-    enum Reason {
-        Use,
-        Discard,
-        Response,
-        Dismantle
-    };
-
-    Reason reason;
     int card_id;    
     Player::Place from_place, to_place;
     ServerPlayer *from, *to;
@@ -97,6 +89,7 @@ public:
 
         CardUsed,
         CardMove,
+        CardEffect,
 
         Jink,
         Jinked,
@@ -107,9 +100,8 @@ public:
     bool isFull() const;    
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void throwCard(ServerPlayer *player, const Card *card);
-    void throwCard(ServerPlayer *player, int card_id);
-    QList<int> *getDiscardPile() const;
-    void moveCard(ServerPlayer *src, Player::Place src_place, ServerPlayer *dest, Player::Place dest_place, int card_id);
+
+    QList<int> *getDiscardPile() const;    
     void playSkillEffect(const QString &skill_name, int index = -1);
 
     void enqueueRecord(ActiveRecord *record);
@@ -125,7 +117,9 @@ public:
     Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
 
-
+    // methods that maybe cause passive skills
+    Q_INVOKABLE void throwCard(ServerPlayer *player, const QVariant &card_id);
+    Q_INVOKABLE void moveCard(ServerPlayer *, const QVariant &data);
 
     // interactive methods
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);

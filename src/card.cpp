@@ -29,11 +29,11 @@ bool Card::isBlack() const{
     return suit == Spade || suit == Club;
 }
 
-int Card::getID() const{
+int Card::getId() const{
     return id;
 }
 
-void Card::setID(int id){
+void Card::setId(int id){
     this->id = id;
 }
 

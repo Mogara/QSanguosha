@@ -544,7 +544,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
         CardItem *card_item = NULL;
         int i;
         for(i=0; i<discarded_queue.length(); i++){
-            if(discarded_queue.at(i)->getCard()->getID() == card_id){
+            if(discarded_queue.at(i)->getCard()->getId() == card_id){
                 card_item = discarded_queue.takeAt(i);
             }
         }

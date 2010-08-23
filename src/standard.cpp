@@ -27,10 +27,10 @@ int EquipCard::getTypeId() const{
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    const Card *uninstalled = source->replaceEquip(this);
-    if(uninstalled)
-        room->moveCard(source, Player::Equip, NULL, Player::DiscardedPile, uninstalled->getID());
-    room->moveCard(source, Player::Hand, source, Player::Equip, getID());
+//    const Card *uninstalled = source->replaceEquip(this);
+//    if(uninstalled)
+//        room->moveCard(source, Player::Equip, NULL, Player::DiscardedPile, uninstalled->getID());
+//    room->moveCard(source, Player::Hand, source, Player::Equip, getID());
 }
 
 QString GlobalEffect::getSubtype() const{

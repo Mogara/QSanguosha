@@ -331,8 +331,7 @@ void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_pla
     else{
         Q_ASSERT(dest != NULL);
 
-        // server side
-        if(dest->parent()->inherits("Room")){
+        if(dest->inherits("ServerPlayer")){
             Room *room = qobject_cast<Room *>(dest->parent());
             QList<int> *pile = room->getDiscardPile();
             pile->removeOne(card_id);
@@ -346,7 +345,7 @@ void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_pla
     else{
         Q_ASSERT(src != NULL);
 
-        if(src->parent()->inherits("Room")){
+        if(src->inherits("ServerPlayer")){
             Room *room = qobject_cast<Room *>(src->parent());
             QList<int> *pile = room->getDiscardPile();
             pile->prepend(card_id);
