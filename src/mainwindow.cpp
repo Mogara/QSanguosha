@@ -40,8 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // register metatypes
     qRegisterMetaType<DamageStruct>("DamageStruct");
+    qRegisterMetaType<CardEffectStruct>("CardEffectStruct");
     qRegisterMetaType<CardUseStruct>("CardUseStruct");
-    qRegisterMetaType<CardLostStruct>("CardLostStruct");
+    qRegisterMetaType<CardMoveStruct>("CardMoveStruct");
 
     Sanguosha = new Engine(this);
     Config.init();
@@ -59,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     QList<QAction*> actions;
     actions << ui->actionStart_Game << ui->actionConfigure << ui->actionStart_Server
             << ui->actionGeneral_Overview << ui->actionCard_Overview
-            << ui->actionAcknowledgement << ui->actionExit;
+            << ui->actionAbout << ui->actionExit;
 
     foreach(QAction *action, actions){
         start_scene->addButton(action);
@@ -180,6 +181,8 @@ void MainWindow::on_actionAbout_triggered()
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
                       "totally written in C++ Qt GUI framework <br />"
                       "My Email: moligaloo@gmail.com"));
+
+    // FIXME: add acknowledgement
 
     QMessageBox::about(this, tr("About QSanguosha"), content);
 }

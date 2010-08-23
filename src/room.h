@@ -40,29 +40,38 @@ struct DamageStruct{
 
 Q_DECLARE_METATYPE(DamageStruct);
 
-struct CardUseStruct{
+struct CardEffectStruct{
     const Card *card;
 
     ServerPlayer *from;
     ServerPlayer *to;
 };
 
-Q_DECLARE_METATYPE(CardUseStruct);
+Q_DECLARE_METATYPE(CardEffectStruct);
 
-struct CardLostStruct{
-    enum Reason {
-        Lost,
-        Use,
-        Response
-    };
-
-    Reason reason;
+struct CardUseStruct{
     const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;
 };
 
-Q_DECLARE_METATYPE(CardLostStruct);
+Q_DECLARE_METATYPE(CardUseStruct);
+
+struct CardMoveStruct{
+    enum Reason {
+        Use,
+        Discard,
+        Response,
+        Dismantle
+    };
+
+    Reason reason;
+    int card_id;    
+    Player::Place from_place, to_place;
+    ServerPlayer *from, *to;
+};
+
+Q_DECLARE_METATYPE(CardMoveStruct);
 
 class Room : public QObject
 {
@@ -87,9 +96,9 @@ public:
         JudgeOnEffect,
 
         CardUsed,
-        CardLost,
-        CardGot,
+        CardMove,
 
+        Jink,
         Jinked,
     };
 
@@ -115,6 +124,8 @@ public:
     Q_INVOKABLE void setPlayerFlag(ServerPlayer *player, const QVariant &flag);
     Q_INVOKABLE void setPlayerProperty(ServerPlayer *player, const QVariant &data);
     Q_INVOKABLE void useCard(ServerPlayer *player, const QVariant &data);
+
+
 
     // interactive methods
     Q_INVOKABLE void askForSkillInvoke(ServerPlayer *player, const QVariant &data);

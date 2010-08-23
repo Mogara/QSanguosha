@@ -17,6 +17,7 @@ public:
 
 private:
     void nextPhase(Room *room, ServerPlayer *target) const;
+    void onPhaseChange(ServerPlayer *player) const;
 };
 
 #endif // GAMERULE_H

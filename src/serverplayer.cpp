@@ -17,8 +17,6 @@ Room *ServerPlayer::getRoom() const{
 }
 
 int ServerPlayer::aliveCount() const{
-    Room *room = qobject_cast<Room *>(parent());
-
     return room->alivePlayerCount();
 }
 

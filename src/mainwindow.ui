@@ -48,8 +48,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
-    <addaction name="actionAcknowledgement"/>
-    <addaction name="separator"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
    <addaction name="menuGame"/>
@@ -94,11 +92,6 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
-   </property>
-  </action>
-  <action name="actionAcknowledgement">
-   <property name="text">
-    <string>Acknowledgement</string>
    </property>
   </action>
   <action name="actionCard_Overview">

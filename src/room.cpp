@@ -343,13 +343,12 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
 
     }
 
-    CardLostStruct data;
+    CardUseStruct data;
     data.card = card;
     data.from = player;
     data.to = targets;
-    data.reason = CardLostStruct::Use;
 
-    invokePassiveSkills(CardLost, player, QVariant::fromValue(data));
+    invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
 
 void Room::startGame(){

@@ -16,49 +16,56 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
-    events << Room::PhaseChange;
+    events << Room::PhaseChange << Room::CardUsed;
+}
+
+void GameRule::onPhaseChange(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    switch(player->getPhase()){
+    case Player::Start: nextPhase(room, player); break;
+    case Player::Judge: nextPhase(room, player); break;
+    case Player::Draw:{
+            ActiveRecord *draw = new ActiveRecord;
+            draw->method = "drawCards";
+            draw->target = player;
+            draw->data = 2;
+
+            room->enqueueRecord(draw);
+
+            nextPhase(room, player);
+            break;
+        }
+    case Player::Play:{
+            ActiveRecord *activate = new ActiveRecord;
+            activate->method = "activate";
+            activate->target = player;
+
+            room->enqueueRecord(activate);
+
+            break;
+        }
+    case Player::Discard:{
+            ActiveRecord *discard = new ActiveRecord;
+            discard->method = "discardCards";
+            discard->target = player;
+
+            room->enqueueRecord(discard);
+
+            nextPhase(room,player);
+            break;
+        }
+    default:
+        ;
+    }
 }
 
 bool GameRule::trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
     Room *room = player->getRoom();
 
-    if(event == Room::PhaseChange){
-        switch(player->getPhase()){
-        case Player::Start: nextPhase(room, player); break;
-        case Player::Judge: nextPhase(room, player); break;
-        case Player::Draw:{
-                ActiveRecord *draw = new ActiveRecord;
-                draw->method = "drawCards";
-                draw->target = player;
-                draw->data = 2;
-
-                room->enqueueRecord(draw);
-
-                nextPhase(room, player);
-                break;
-            }
-        case Player::Play:{
-                ActiveRecord *activate = new ActiveRecord;
-                activate->method = "activate";
-                activate->target = player;
-
-                room->enqueueRecord(activate);
-
-                break;
-            }
-        case Player::Discard:{
-                ActiveRecord *discard = new ActiveRecord;
-                discard->method = "discardCards";
-                discard->target = player;
-
-                room->enqueueRecord(discard);
-
-                nextPhase(room,player);
-                break;
-            }
-        default:
-            ;
-        }
+    switch(event){
+    case Room::PhaseChange: onPhaseChange(player); break;
+    default:
+        ;
     }
 
     return false;
