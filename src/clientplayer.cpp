@@ -3,8 +3,8 @@
 #include "client.h"
 #include "engine.h"
 
-ClientPlayer::ClientPlayer(QObject *parent)
-    :Player(parent), handcard_num(0)
+ClientPlayer::ClientPlayer(Client *client)
+    :Player(client), handcard_num(0)
 {
 }
 

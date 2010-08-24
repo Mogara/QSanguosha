@@ -4,6 +4,7 @@
 #include "player.h"
 
 class ClientPlayer;
+class Client;
 
 struct CardMoveStructForClient{
     int card_id;
@@ -18,7 +19,7 @@ class ClientPlayer : public Player
     Q_OBJECT
 
 public:
-    explicit ClientPlayer(QObject *parent);
+    explicit ClientPlayer(Client *client);
     void drawNCard(int card_num);
     QList<const Card *> getCards() const;
 

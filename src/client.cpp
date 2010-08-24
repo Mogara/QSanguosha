@@ -270,7 +270,7 @@ void CardMoveStructForClient::parse(const QString &str, bool *ok){
     }
 
     // example: 12:tenshi@equip->moligaloo@hand
-    QRegExp pattern("(\\d+):(\\w+)@(\\w+)->(\\w+)@(\\w+)");
+    QRegExp pattern("(\\d+):(.+)@(\\w+)->(.+)@(\\w+)");
     if(!pattern.exactMatch(str)){
         *ok = false;        
         return;

@@ -572,11 +572,6 @@ void Room::playSkillEffect(const QString &skill_name, int index){
 }
 
 void Room::invokeStackTop(){
-    if(stack.isEmpty()){
-        activate(current);
-        return;
-    }
-
     while(!stack.isEmpty()){
         ActiveRecord *top = stack.pop();
 
@@ -611,6 +606,9 @@ void Room::invokeStackTop(){
 
         delete top;
     }
+
+    if(current)
+        activate(current);
 }
 
 void Room::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
