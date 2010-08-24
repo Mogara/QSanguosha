@@ -33,7 +33,6 @@ class ViewAsSkill:public Skill{
 
 public:
     ViewAsSkill(const QString &name, bool disable_after_use);
-    virtual void attachPlayer(Player *player) const;
     bool isDisableAfterUse() const;
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const = 0;

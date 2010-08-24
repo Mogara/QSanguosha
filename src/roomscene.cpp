@@ -101,9 +101,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
             SLOT(chooseGeneral(const General*,QList<const General*>)));
     connect(ClientInstance, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
-    connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
-    connect(ClientInstance, SIGNAL(card_moved(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)),
-            this, SLOT(moveCard(ClientPlayer*,Player::Place,ClientPlayer*,Player::Place,int)));
+    connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));    
+    connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
 
     ClientInstance->signup();
@@ -354,8 +353,10 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Escape : {
             if(!discarded_queue.isEmpty() && discarded_queue.first()->rotation() == 0.0)
                 hideDiscards();
-            else
+            else{
                 dashboard->unselectAll();
+                enableTargets(NULL);
+            }
             break;
         }
 
@@ -558,7 +559,13 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     }
 }
 
-void RoomScene::moveCard(ClientPlayer *src, Player::Place src_place, ClientPlayer *dest, Player::Place dest_place, int card_id){
+void RoomScene::moveCard(const CardMoveStructForClient &move){
+    ClientPlayer *src = move.from;
+    ClientPlayer *dest = move.to;
+    Player::Place src_place = move.from_place;
+    Player::Place dest_place = move.to_place;
+    int card_id = move.card_id;
+
     static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
 
     CardItem *card_item = takeCardItem(src, src_place, card_id);

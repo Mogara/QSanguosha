@@ -92,9 +92,7 @@ signals:
     void n_card_drawed(ClientPlayer *player, int n);
     void card_requested(const QString pattern);
     void hp_changed(const QString &target, int delta);
-    void card_moved(ClientPlayer *src, Player::Place src_place,
-                    ClientPlayer *dest, Player::Place dest_place,
-                    int card_id);
+    void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);
 };
 

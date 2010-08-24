@@ -247,6 +247,19 @@ void Client::activate(const QString &focus_player){
 }
 
 void Client::moveCard(const QString &move_str){
+    CardMoveStructForClient move;
+    bool ok;
+    move.parse(move_str, &ok);
+
+    if(ok){
+        ClientPlayer::MoveCard(move);
+        emit card_moved(move);
+    }else{
+        QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
+    }
+}
+
+void CardMoveStructForClient::parse(const QString &str, bool *ok){
     static QMap<QString, Player::Place> place_map;
     if(place_map.isEmpty()){
         place_map["hand"] = Player::Hand;
@@ -258,42 +271,34 @@ void Client::moveCard(const QString &move_str){
 
     // example: 12:tenshi@equip->moligaloo@hand
     QRegExp pattern("(\\d+):(\\w+)@(\\w+)->(\\w+)@(\\w+)");
-    if(pattern.indexIn(move_str) == -1){
-        QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
+    if(!pattern.exactMatch(str)){
+        *ok = false;        
         return;
     }
 
     QStringList words = pattern.capturedTexts();
 
-    int card_id = words.at(1).toInt();
+    card_id = words.at(1).toInt();
 
-    ClientPlayer *src = NULL;
-    if(words.at(2) != "_")
-        src = findChild<ClientPlayer *>(words.at(2));
-    Player::Place src_place = place_map.value(words.at(3), Player::DiscardedPile);
+    if(words.at(2) == "_")
+        from = NULL;
+    else
+        from = ClientInstance->findChild<ClientPlayer *>(words.at(2));
+    from_place = place_map.value(words.at(3), Player::DiscardedPile);
 
-    ClientPlayer *dest = NULL;
-    if(words.at(4) != "_")
-        dest = findChild<ClientPlayer *>(words.at(4));
-    Player::Place dest_place = place_map.value(words.at(5), Player::DiscardedPile);
+    if(words.at(4) == "_")
+        to = NULL;
+    else
+        to = ClientInstance->findChild<ClientPlayer *>(words.at(4));
+    to_place = place_map.value(words.at(5), Player::DiscardedPile);
 
-    Player::MoveCard(src, src_place, dest, dest_place, card_id);
-    emit card_moved(src, src_place, dest, dest_place, card_id);
+    *ok = true;
 }
 
+
 void Client::startGame(const QString &){
-    // attach all skills
-    QList<ClientPlayer *> players = findChildren<ClientPlayer*>();
-    foreach(ClientPlayer *player, players){
-        const General *general = Sanguosha->getGeneral(player->getGeneral());
-        const QList<const ViewAsSkill *> skills = general->findChildren<const ViewAsSkill *>();
-        foreach(const ViewAsSkill *skill, skills){
-            skill->attachPlayer(self);
-        }
-    }
-
+    QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
-
     emit status_changed(NotActive);
 }
 

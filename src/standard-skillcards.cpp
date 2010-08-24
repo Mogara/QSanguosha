@@ -29,6 +29,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         move.from = source;
         move.to = target;
         move.from_place = move.to_place = Player::Hand;
+        move.open = false;
         record->data = QVariant::fromValue(move);
 
         room->enqueueRecord(record);

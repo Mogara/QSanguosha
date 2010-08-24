@@ -1,6 +1,7 @@
 #include "clientplayer.h"
 #include "skill.h"
 #include "client.h"
+#include "engine.h"
 
 ClientPlayer::ClientPlayer(QObject *parent)
     :Player(parent), handcard_num(0)
@@ -26,7 +27,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
             handcard_num++;
             break;
         }
-    case Equip: replaceEquip(card); break;
+    case Equip: setEquip(card); break;
     default:
         // FIXME
         ;
@@ -60,4 +61,17 @@ QList<int> ClientPlayer::nullifications() const{
     }
 
     return card_ids;
+}
+
+void ClientPlayer::MoveCard(const CardMoveStructForClient &move){
+    const Card *card = Sanguosha->getCard(move.card_id);
+    if(move.from)
+        move.from->removeCard(card, move.from_place);
+    else
+        ClientInstance->discarded_list.removeOne(card);
+
+    if(move.to)
+        move.to->addCard(card, move.to_place);
+    else
+        ClientInstance->discarded_list.prepend(card);
 }

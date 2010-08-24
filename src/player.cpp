@@ -224,24 +224,29 @@ void Player::setPhaseString(const QString &phase_str){
     phase = phase_map.value(phase_str, NotActive);
 }
 
-const Card *Player::replaceEquip(const Card *equip){
-    const Card *uninstall = NULL;
-    QString subtype = equip->getSubtype();
-    if(subtype == "weapon"){
-        uninstall = weapon;
-        weapon = qobject_cast<const Weapon*>(equip);
-    }else if(subtype == "armor"){
-        uninstall = armor;
-        armor = qobject_cast<const Armor*>(equip);
-    }else if(subtype == "defensive_horse"){
-        uninstall = defensive_horse;
-        defensive_horse = qobject_cast<const Horse*>(equip);
-    }else if(subtype == "offensive_horse"){
-        uninstall = offensive_horse;
-        offensive_horse = qobject_cast<const Horse*>(equip);
-    }
+const EquipCard *Player::getEquip(const QString &subtype) const{
+    if(subtype == "weapon")
+        return weapon;
+    else if(subtype == "armor")
+        return armor;
+    else if(subtype == "defensive_horse")
+        return defensive_horse;
+    else if(subtype == "offensive_horse")
+        return offensive_horse;
+    else
+        return NULL;
+}
 
-    return uninstall;
+void Player::setEquip(const Card *card){
+    QString subtype = card->getSubtype();
+    if(subtype == "weapon")
+        weapon = qobject_cast<const Weapon*>(card);
+    else if(subtype == "armor")
+        armor = qobject_cast<const Armor*>(card);
+    else if(subtype == "defensive_horse")
+        defensive_horse = qobject_cast<const Horse*>(card);
+    else if(subtype == "offensive_horse")
+        offensive_horse = qobject_cast<const Horse*>(card);
 }
 
 void Player::removeEquip(const Card *equip){
@@ -272,16 +277,6 @@ const Horse *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
-void Player::attachSkill(const Skill *skill, bool prepend){
-    if(prepend)
-        skills.prepend(skill);
-    else
-        skills.append(skill);
-}
-
-QList<const Skill *> Player::getSkills() const{
-    return skills;
-}
 
 QStack<const Card *> Player::getJudgingArea() const{
     return judging_area;
@@ -318,41 +313,6 @@ int Player::getMaxCards() const{
 
 void Player::setMaxCards(int max_cards){
     this->max_cards = max_cards;
-}
-
-void Player::detachSkill(const Skill *skill){
-    skills.removeOne(skill);
-}
-
-void Player::MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id){
-    const Card *card = Sanguosha->getCard(card_id);
-    if(src)
-        src->removeCard(card, src_place);
-    else{
-        Q_ASSERT(dest != NULL);
-
-        if(dest->inherits("ServerPlayer")){
-            Room *room = qobject_cast<Room *>(dest->parent());
-            QList<int> *pile = room->getDiscardPile();
-            pile->removeOne(card_id);
-        }else{
-            ClientInstance->discarded_list.removeOne(card);
-        }
-    }
-
-    if(dest)
-        dest->addCard(card, dest_place);
-    else{
-        Q_ASSERT(src != NULL);
-
-        if(src->inherits("ServerPlayer")){
-            Room *room = qobject_cast<Room *>(src->parent());
-            QList<int> *pile = room->getDiscardPile();
-            pile->prepend(card_id);
-        }else{
-            ClientInstance->discarded_list.prepend(card);
-        }
-    }
 }
 
 bool Player::isKongcheng() const{

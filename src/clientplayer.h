@@ -3,6 +3,16 @@
 
 #include "player.h"
 
+class ClientPlayer;
+
+struct CardMoveStructForClient{
+    int card_id;
+    ClientPlayer *from, *to;
+    Player::Place from_place, to_place;
+
+    void parse(const QString &str, bool *ok);
+};
+
 class ClientPlayer : public Player
 {
     Q_OBJECT
@@ -18,6 +28,8 @@ public:
     virtual void addCard(const Card *card, Place place);
 
     QList<int> nullifications() const;
+
+    static void MoveCard(const CardMoveStructForClient &move);
 
 private:
     int handcard_num;

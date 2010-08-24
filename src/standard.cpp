@@ -26,11 +26,37 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
-void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-//    const Card *uninstalled = source->replaceEquip(this);
-//    if(uninstalled)
-//        room->moveCard(source, Player::Equip, NULL, Player::DiscardedPile, uninstalled->getID());
-//    room->moveCard(source, Player::Hand, source, Player::Equip, getID());
+void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    const EquipCard *equipped = source->getEquip(getSubtype());
+    if(equipped){
+        CardMoveStruct detach;
+        detach.card_id = equipped->getId();
+        detach.from = source;
+        detach.to = NULL;
+        detach.from_place = Player::Equip;
+        detach.to_place = Player::DiscardedPile;
+        detach.open = true;
+
+        ActiveRecord *uninstall = new ActiveRecord;
+        uninstall->method = "moveCard";
+        uninstall->target = NULL;
+        uninstall->data = QVariant::fromValue(detach);
+        room->enqueueRecord(uninstall);
+    }
+
+    CardMoveStruct attach;
+    attach.card_id = getId();
+    attach.from = source;
+    attach.to = source;
+    attach.from_place = Player::Hand;
+    attach.to_place = Player::Equip;
+    attach.open = true;
+
+    ActiveRecord *install = new ActiveRecord;
+    install->method = "moveCard";
+    install->target = NULL;
+    install->data = QVariant::fromValue(attach);
+    room->enqueueRecord(install);
 }
 
 QString GlobalEffect::getSubtype() const{

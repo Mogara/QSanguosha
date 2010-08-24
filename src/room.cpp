@@ -464,6 +464,7 @@ void Room::throwCard(ServerPlayer *player, const QVariant &card_id){
     data.to_place = Player::DiscardedPile;
     data.from = player;
     data.to = NULL;
+    data.open = true;
 
     moveCard(NULL, QVariant::fromValue(data));
 }
@@ -477,12 +478,11 @@ void Room::moveCard(ServerPlayer *, const QVariant &data){
         return;
 
     CardMoveStruct move = data.value<CardMoveStruct>();
-    ServerPlayer *src = move.from;
-    ServerPlayer *dest = move.to;
-    Player::Place src_place = move.from_place;
-    Player::Place dest_place = move.to_place;
-    int card_id = move.card_id;
+    broadcast("! moveCard " + move.toString());
+    ServerPlayer::MoveCard(move);
+}
 
+QString CardMoveStruct::toString() const{
     static QMap<Player::Place, QString> place2str;
     if(place2str.isEmpty()){
         place2str.insert(Player::Hand, "hand");
@@ -492,16 +492,13 @@ void Room::moveCard(ServerPlayer *, const QVariant &data){
         place2str.insert(Player::DiscardedPile, "_");
     }
 
-    QString src_str = src ? src->objectName() : "_";
-    QString dest_str = dest ? dest->objectName() : "_";
+    QString from_str = from ? from->objectName() : "_";
+    QString to_str = to ? to->objectName() : "_";
 
-    broadcast(QString("! moveCard %1:%2@%3->%4@%5")
-              .arg(card_id)
-              .arg(src_str).arg(place2str.value(src_place, "_"))
-              .arg(dest_str).arg(place2str.value(dest_place, "_"))
-              );
-
-    Player::MoveCard(src, src_place, dest, dest_place, card_id);
+    return QString("%1:%2@%3->%4@%5")
+            .arg(card_id)
+            .arg(from_str).arg(place2str.value(from_place, "_"))
+            .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
 void Room::invokeSkillCommand(ServerPlayer *, const QStringList &args){
@@ -584,7 +581,10 @@ void Room::invokeStackTop(){
         ActiveRecord *top = stack.pop();
 
 #ifndef QT_NO_DEBUG
-        qDebug("pop (%s %s %s)", top->method, qPrintable(top->target->objectName()), qPrintable(top->data.toString()));
+        if(top->target)
+            qDebug("pop (%s %s %s)", top->method, qPrintable(top->target->objectName()), qPrintable(top->data.toString()));
+        else
+            qDebug("pop (%s NULL %s)", top->method, qPrintable(top->data.toString()));
 #endif
 
         bool invoked;

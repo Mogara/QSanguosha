@@ -1,5 +1,6 @@
 #include "serverplayer.h"
 #include "skill.h"
+#include "engine.h"
 
 #include <QHostAddress>
 
@@ -80,9 +81,26 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
     case Hand: handcards << card; break;
-    case Equip: replaceEquip(card);break;
+    case Equip: setEquip(card); break;
     default:
         // FIXME
         ;
+    }
+}
+
+void ServerPlayer::MoveCard(const CardMoveStruct &move){
+    const Card *card = Sanguosha->getCard(move.card_id);
+    if(move.from)
+        move.from->removeCard(card, move.from_place);
+    else{
+        Room *room = move.from->getRoom();
+        room->getDiscardPile()->removeOne(move.card_id);
+    }
+
+    if(move.to){
+        move.to->addCard(card, move.to_place);        
+    }else{
+        Room *room = move.to->getRoom();
+        room->getDiscardPile()->prepend(move.card_id);
     }
 }

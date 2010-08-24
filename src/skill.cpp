@@ -69,11 +69,6 @@ ViewAsSkill::ViewAsSkill(const QString &name, bool disable_after_use)
 
 }
 
-void ViewAsSkill::attachPlayer(Player *player) const{
-    if(parent()->objectName() == player->getGeneral())
-        player->attachSkill(this);
-}
-
 bool ViewAsSkill::isDisableAfterUse() const{
     return disable_after_use;
 }

@@ -38,8 +38,7 @@ public:
     EquipCard(Suit suit, int number):Card(suit, number, true){}
     virtual QString getType() const;
     virtual int getTypeId() const;
-
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class GlobalEffect:public TrickCard{

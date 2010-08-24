@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include <QStack>
 
+class EquipCard;
 class Weapon;
 class Armor;
 class Horse;
@@ -91,7 +92,8 @@ public:
     const General *getAvatarGeneral() const;
     bool hasSkill(const QString &skill_name) const;
 
-    const Card *replaceEquip(const Card *equip);
+    const EquipCard *getEquip(const QString &subtype) const;
+    void setEquip(const Card *card);
     void removeEquip(const Card *equip);
 
     virtual int getHandcardNum() const = 0;
@@ -103,15 +105,9 @@ public:
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
 
-    void attachSkill(const Skill *skill, bool prepend = false);
-    void detachSkill(const Skill *skill);
-    QList<const Skill *> getSkills() const;
-
     QStack<const Card *> getJudgingArea() const;
     bool isKongcheng() const;
     bool isNude() const;
-
-    static void MoveCard(Player *src, Place src_place, Player *dest, Place dest_place, int card_id);
 
 private:
     const General *general;
@@ -135,7 +131,6 @@ private:
     const Weapon *weapon;
     const Armor *armor;
     const Horse *defensive_horse, *offensive_horse;
-    QList<const Skill *> skills;
     bool face_up;
     QStack<const Card *> judging_area;
 
