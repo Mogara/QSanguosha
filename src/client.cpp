@@ -9,6 +9,41 @@
 #include <QCommandLinkButton>
 #include <QTimer>
 
+bool CardMoveStructForClient::parse(const QString &str){
+    static QMap<QString, Player::Place> place_map;
+    if(place_map.isEmpty()){
+        place_map["hand"] = Player::Hand;
+        place_map["equip"] = Player::Equip;
+        place_map["delayed_trick"] = Player::DelayedTrick;
+        place_map["special"] = Player::Special;
+        place_map["_"] = Player::DiscardedPile;
+    }
+
+    // example: 12:tenshi@equip->moligaloo@hand
+    QRegExp pattern("(\\d+):(.+)@(\\w+)->(.+)@(\\w+)");
+    if(!pattern.exactMatch(str)){
+        return false;
+    }
+
+    QStringList words = pattern.capturedTexts();
+
+    card_id = words.at(1).toInt();
+
+    if(words.at(2) == "_")
+        from = NULL;
+    else
+        from = ClientInstance->findChild<ClientPlayer *>(words.at(2));
+    from_place = place_map.value(words.at(3), Player::DiscardedPile);
+
+    if(words.at(4) == "_")
+        to = NULL;
+    else
+        to = ClientInstance->findChild<ClientPlayer *>(words.at(4));
+    to_place = place_map.value(words.at(5), Player::DiscardedPile);
+
+    return true;
+}
+
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
@@ -248,53 +283,14 @@ void Client::activate(const QString &focus_player){
 
 void Client::moveCard(const QString &move_str){
     CardMoveStructForClient move;
-    bool ok;
-    move.parse(move_str, &ok);
 
-    if(ok){
+    if(move.parse(move_str)){
         ClientPlayer::MoveCard(move);
         emit card_moved(move);
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
     }
 }
-
-void CardMoveStructForClient::parse(const QString &str, bool *ok){
-    static QMap<QString, Player::Place> place_map;
-    if(place_map.isEmpty()){
-        place_map["hand"] = Player::Hand;
-        place_map["equip"] = Player::Equip;
-        place_map["delayed_trick"] = Player::DelayedTrick;
-        place_map["special"] = Player::Special;
-        place_map["_"] = Player::DiscardedPile;
-    }
-
-    // example: 12:tenshi@equip->moligaloo@hand
-    QRegExp pattern("(\\d+):(.+)@(\\w+)->(.+)@(\\w+)");
-    if(!pattern.exactMatch(str)){
-        *ok = false;        
-        return;
-    }
-
-    QStringList words = pattern.capturedTexts();
-
-    card_id = words.at(1).toInt();
-
-    if(words.at(2) == "_")
-        from = NULL;
-    else
-        from = ClientInstance->findChild<ClientPlayer *>(words.at(2));
-    from_place = place_map.value(words.at(3), Player::DiscardedPile);
-
-    if(words.at(4) == "_")
-        to = NULL;
-    else
-        to = ClientInstance->findChild<ClientPlayer *>(words.at(4));
-    to_place = place_map.value(words.at(5), Player::DiscardedPile);
-
-    *ok = true;
-}
-
 
 void Client::startGame(const QString &){
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
@@ -341,6 +337,10 @@ void Client::judge(const QString &judge_str){
 void Client::setStatus(Status status){
     if(this->status != status){
         this->status = status;
+
+        if(status == Playing)
+            turn_tag.clear();
+
         emit status_changed(status);
     }
 }

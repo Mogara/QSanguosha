@@ -58,7 +58,7 @@ public:
     Q_INVOKABLE void askForCardChosen(const QString &ask_str);
 
     CardPattern *pattern;
-    QVariantMap tag;
+    QVariantMap tag, turn_tag;
     QList<CardPattern *> enable_patterns, disable_patterns;
     QList<const Card*> discarded_list;
 

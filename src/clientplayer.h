@@ -11,7 +11,7 @@ struct CardMoveStructForClient{
     ClientPlayer *from, *to;
     Player::Place from_place, to_place;
 
-    void parse(const QString &str, bool *ok);
+    bool parse(const QString &str);
 };
 
 class ClientPlayer : public Player

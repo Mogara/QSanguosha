@@ -105,6 +105,11 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
 
+    daqiao = new Daqiao;
+    daqiao->shift();
+    daqiao->hide();
+    addItem(daqiao);
+
     ClientInstance->signup();
 
     startEnterAnimation();    

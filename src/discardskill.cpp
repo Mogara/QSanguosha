@@ -18,7 +18,7 @@ public:
 };
 
 DiscardSkill::DiscardSkill()
-    :ViewAsSkill("discard", true), card(new DiscardCard), num(0)
+    :ViewAsSkill("discard"), card(new DiscardCard), num(0)
 {
     card->setParent(this);
 }

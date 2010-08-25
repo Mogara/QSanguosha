@@ -103,7 +103,7 @@ public:
 
 class Qingguo:public ViewAsSkill{
 public:
-    Qingguo():ViewAsSkill("qingguo", false){
+    Qingguo():ViewAsSkill("qingguo"){
 
     }
 
@@ -123,7 +123,7 @@ public:
 
 class Rende:public ViewAsSkill{
 public:
-    Rende():ViewAsSkill("rende", false){
+    Rende():ViewAsSkill("rende"){
     }
 
     virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
@@ -151,7 +151,7 @@ public:
 class Wusheng:public ViewAsSkill{
 public:
     Wusheng()
-        :ViewAsSkill("wusheng", true)
+        :ViewAsSkill("wusheng")
     {
     }
 
@@ -264,7 +264,7 @@ public:
 
 class Zhiheng:public ViewAsSkill{
 public:
-    Zhiheng():ViewAsSkill("zhiheng", true){
+    Zhiheng():ViewAsSkill("zhiheng"){
 
     }
 
@@ -334,7 +334,7 @@ public:
 
 class Luanji:public ViewAsSkill{
 public:
-    Luanji():ViewAsSkill("luanji", false){
+    Luanji():ViewAsSkill("luanji"){
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{

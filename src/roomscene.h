@@ -6,6 +6,7 @@
 #include "card.h"
 #include "client.h"
 #include "discardskill.h"
+#include "daqiao.h"
 
 #include <QGraphicsScene>
 
@@ -54,6 +55,7 @@ private:
     QComboBox *role_combobox;
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;
+    Daqiao *daqiao;
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;

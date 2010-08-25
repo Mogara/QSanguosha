@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "player.h"
 #include "room.h"
+#include "client.h"
 
 #include <QFile>
 
@@ -63,18 +64,31 @@ void Skill::playEffect(int index) const{
     }
 }
 
-ViewAsSkill::ViewAsSkill(const QString &name, bool disable_after_use)
-    :Skill(name), disable_after_use(disable_after_use)
+ViewAsSkill::ViewAsSkill(const QString &name)
+    :Skill(name)
 {
 
 }
 
-bool ViewAsSkill::isDisableAfterUse() const{
-    return disable_after_use;
+bool ViewAsSkill::isAvailable() const{
+    switch(ClientInstance->getStatus()){
+    case Client::Playing: return isEnabledAtPlay();
+    case Client::Responsing: return isEnabledAtResponse();
+    default:
+        return false;
+    }
 }
 
-ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name, bool disable_after_use)
-    :ViewAsSkill(name, disable_after_use)
+bool ViewAsSkill::isEnabledAtPlay() const{
+    return true;
+}
+
+bool ViewAsSkill::isEnabledAtResponse() const{
+    return false;
+}
+
+ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
+    :ViewAsSkill(name)
 {
 
 }
@@ -91,7 +105,7 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<CardItem *> &, const CardItem *
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    :ViewAsSkill(name, false)
+    :ViewAsSkill(name)
 {
 }
 

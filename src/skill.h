@@ -32,21 +32,23 @@ class ViewAsSkill:public Skill{
     Q_OBJECT
 
 public:
-    ViewAsSkill(const QString &name, bool disable_after_use);
-    bool isDisableAfterUse() const;
+    ViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const = 0;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
 
-private:
-    bool disable_after_use;
+    bool isAvailable() const;
+protected:
+
+    virtual bool isEnabledAtPlay() const;
+    virtual bool isEnabledAtResponse() const;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill{
     Q_OBJECT
 
 public:
-    ZeroCardViewAsSkill(const QString &name, bool disable_after_use);
+    ZeroCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const;
