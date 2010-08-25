@@ -61,6 +61,9 @@ void Dashboard::updateAvatar(){
     avatar->changePixmap(general->getPixmapPath("big"));
     kingdom->setPixmap(QPixmap(general->getKingdomPath()));
 
+    avatar->show();
+    kingdom->show();
+
     update();
 }
 
@@ -122,6 +125,11 @@ void Dashboard::unselectAll(){
 
 void Dashboard::sort(int order){
     sort_combobox->setCurrentIndex(order);
+}
+
+void Dashboard::hideAvatar(){
+    avatar->hide();
+    kingdom->hide();
 }
 
 void Dashboard::installDelayedTrick(CardItem *trick){

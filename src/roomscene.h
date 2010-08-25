@@ -85,6 +85,7 @@ private slots:
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
+    void hideAvatars();
 };
 
 #endif // ROOMSCENE_H

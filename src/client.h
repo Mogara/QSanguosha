@@ -94,6 +94,7 @@ signals:
     void hp_changed(const QString &target, int delta);
     void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);
+    void avatars_hiden();
 };
 
 extern Client *ClientInstance;

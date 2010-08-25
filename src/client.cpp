@@ -233,7 +233,12 @@ void Client::useCard(const Card *card){
 }
 
 void Client::startInXs(const QString &left_seconds){
+    int seconds = left_seconds.toInt();
     emit prompt_changed(tr("Game will start in %1 seconds").arg(left_seconds));
+
+    if(seconds == 0){
+        emit avatars_hiden();
+    }
 }
 
 void Client::duplicationError(const QString &){

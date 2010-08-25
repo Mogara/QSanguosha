@@ -23,6 +23,7 @@ public:
     void installEquip(CardItem *equip);
     void installDelayedTrick(CardItem *trick);
     void addCardItem(CardItem *card_item);
+    void hideAvatar();
 
 public slots:
     void updateAvatar();
@@ -44,6 +45,7 @@ private:
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;
     QGraphicsPixmapItem *order_item;
+    bool hide_avatar;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

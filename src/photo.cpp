@@ -17,7 +17,9 @@ Photo::Photo(int order)
     player(NULL),
     avatar_frame(":/avatar-frame.png"),
     handcard(":/handcard.png"),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL)
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+    order_item(new QGraphicsPixmapItem(QPixmap(QString(":/number/%1.png").arg(order+1)),this)),
+    hide_avatar(false)
 {
     setAcceptHoverEvents(true);
 
@@ -35,7 +37,6 @@ Photo::Photo(int order)
     widget->setWidget(role_combobox);
     widget->setPos(pixmap.width()/2, pixmap.height()-10);
 
-    order_item = new QGraphicsPixmapItem(QPixmap(QString(":/number/%1.png").arg(order+1)),this);
     order_item->setVisible(false);
 }
 
@@ -55,6 +56,12 @@ void Photo::setPlayer(const ClientPlayer *player)
     updateAvatar();
 }
 
+void Photo::hideAvatar(){
+    hide_avatar = true;
+
+    update();
+}
+
 void Photo::updateAvatar(){
     if(player){
         const General *general = player->getAvatarGeneral();
@@ -65,6 +72,8 @@ void Photo::updateAvatar(){
         avatar = QPixmap();
         kingdom = QPixmap();
     }
+
+    hide_avatar = false;
 
     update();
 }
@@ -150,52 +159,53 @@ void Photo::addCardItem(CardItem *card_item){
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
-    if(player){
-        painter->drawPixmap(1, 13, avatar);
-        painter->drawPixmap(0, 10, avatar_frame);
-        painter->drawPixmap(0,  0, kingdom);
+    if(!player || hide_avatar)
+        return;
 
-        painter->setPen(Qt::white);
-        painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
+    painter->drawPixmap(1, 13, avatar);
+    painter->drawPixmap(0, 10, avatar_frame);
+    painter->drawPixmap(0,  0, kingdom);
 
-        // draw magatamas, similar with dashboard, but magatama is smaller
-        int hp = player->getHp();
-        if(hp > 0){
-            QPixmap *magatama;
-            if(player->isWounded())
-                magatama = &magatamas[hp-1];
-            else
-                magatama = &magatamas[4]; // the green magatama which denote full blood state
-            int i;
-            for(i=0; i<hp; i++)
-                painter->drawPixmap(34 + i*(magatama->width()+2), 78, *magatama);
-        }
-        int n = player->getHandcardNum();
-        if(n > 0){
-            painter->drawPixmap(0, 72, handcard);
-            painter->drawText(8, 95, QString::number(n));
-        }
+    painter->setPen(Qt::white);
+    painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
 
-        if(!player->getState().isEmpty()){
-            painter->drawText(100, 100, Sanguosha->translate(player->getState()));
-        }
-
-        if(player->getPhase() != Player::NotActive){
-            painter->drawRect(boundingRect());
-            painter->drawText(0, pixmap.height(), Sanguosha->translate(player->getPhaseString()));
-        }
-
-        drawEquip(painter, weapon, 0);
-        drawEquip(painter, armor, 1);
-        drawEquip(painter, defensive_horse, 2);
-        drawEquip(painter, offensive_horse, 3);
-
+    // draw magatamas, similar with dashboard, but magatama is smaller
+    int hp = player->getHp();
+    if(hp > 0){
+        QPixmap *magatama;
+        if(player->isWounded())
+            magatama = &magatamas[hp-1];
+        else
+            magatama = &magatamas[4]; // the green magatama which denote full blood state
         int i;
-        for(i=0; i<judging_area.count(); i++){
-            QRect rect(i * 25, 171, 20, 20);
-            CardItem *trick = judging_area.at(i);
-            painter->drawPixmap(rect, trick->getIconPixmap());
-        }
+        for(i=0; i<hp; i++)
+            painter->drawPixmap(34 + i*(magatama->width()+2), 78, *magatama);
+    }
+    int n = player->getHandcardNum();
+    if(n > 0){
+        painter->drawPixmap(0, 72, handcard);
+        painter->drawText(8, 95, QString::number(n));
+    }
+
+    if(!player->getState().isEmpty()){
+        painter->drawText(100, 100, Sanguosha->translate(player->getState()));
+    }
+
+    if(player->getPhase() != Player::NotActive){
+        painter->drawRect(boundingRect());
+        painter->drawText(0, pixmap.height(), Sanguosha->translate(player->getPhaseString()));
+    }
+
+    drawEquip(painter, weapon, 0);
+    drawEquip(painter, armor, 1);
+    drawEquip(painter, defensive_horse, 2);
+    drawEquip(painter, offensive_horse, 3);
+
+    int i;
+    for(i=0; i<judging_area.count(); i++){
+        QRect rect(i * 25, 171, 20, 20);
+        CardItem *trick = judging_area.at(i);
+        painter->drawPixmap(rect, trick->getIconPixmap());
     }
 }
 

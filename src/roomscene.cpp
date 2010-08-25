@@ -104,6 +104,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));    
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
+    connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -995,4 +996,11 @@ void RoomScene::doCancelButton(){
 
 void RoomScene::doDiscardButton(){
     // FIXME
+}
+
+void RoomScene::hideAvatars(){
+    foreach(Photo *photo, photos)
+        photo->hideAvatar();
+
+    dashboard->hideAvatar();
 }

@@ -26,6 +26,7 @@ public:
     const Card *getSelected() const;
     void unselectAll();
     void sort(int order);
+    void hideAvatar();
 
     void disableAllCards();
     void enableCards();
