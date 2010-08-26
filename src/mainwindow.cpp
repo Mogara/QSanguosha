@@ -146,7 +146,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    RoomScene *room_scene = new RoomScene(2, this);
+    RoomScene *room_scene = new RoomScene(Config.PlayerCount, this);
     ui->actionView_Discarded->setEnabled(true);
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
 

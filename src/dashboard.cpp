@@ -367,11 +367,6 @@ void Dashboard::enableCards(){
         card_item->setEnabled(card_item->getCard()->isAvailable());
 }
 
-void Dashboard::enableCards(const CardPattern *pattern){
-    foreach(CardItem *card_item, card_items)
-        card_item->setEnabled(pattern->match(card_item->getCard()));
-}
-
 void Dashboard::startPending(const ViewAsSkill *skill){
     if(view_as_skill){
         stopPending();

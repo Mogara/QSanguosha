@@ -4,7 +4,6 @@
 class PassiveSkill;
 
 #include "serverplayer.h"
-#include "cardpattern.h"
 
 #include <QTcpSocket>
 #include <QStack>

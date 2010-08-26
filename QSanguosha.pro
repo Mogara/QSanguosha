@@ -38,7 +38,8 @@ SOURCES += src/main.cpp \
     src/playercarddialog.cpp \
     src/magatamawidget.cpp \
     src/discardskill.cpp \
-    src/daqiao.cpp
+    src/daqiao.cpp \
+    src/roomthread.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -69,7 +70,8 @@ HEADERS += src/mainwindow.h \
     src/playercarddialog.h \
     src/magatamawidget.h \
     src/discardskill.h \
-    src/daqiao.h
+    src/daqiao.h \
+    src/roomthread.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

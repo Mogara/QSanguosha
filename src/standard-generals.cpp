@@ -190,6 +190,7 @@ public:
     }
 };
 
+// should be ViewAsSkill
 class Longdan:public Skill{
 public:
     Longdan():Skill("longdan"){

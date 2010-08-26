@@ -44,12 +44,14 @@ void Server::processNewConnection(){
 
     Room *free_room = NULL;
     foreach(Room *room, rooms){
-        if(!room->isFull())
+        if(!room->isFull()){
             free_room = room;
+            break;
+        }
     }
 
     if(free_room == NULL){
-        free_room = new Room(this, 2);
+        free_room = new Room(this, Config.PlayerCount);
         rooms << free_room;
         connect(free_room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }
