@@ -50,7 +50,8 @@ void Photo::setPlayer(const ClientPlayer *player)
         role_combobox->addItem(QIcon(":/roles/renegade.png"), tr("renegade"));
 
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
-        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));        
+        connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     }
 
     updateAvatar();
@@ -75,6 +76,11 @@ void Photo::updateAvatar(){
 
     hide_avatar = false;
 
+    update();
+}
+
+void Photo::refresh(){
+    // just simply call update() to redraw itself
     update();
 }
 

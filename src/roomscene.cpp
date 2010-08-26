@@ -51,7 +51,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     dashboard->setPlayer(player);
     connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
-    connect(ClientInstance, SIGNAL(card_requested(QString)), dashboard, SLOT(enableCards(QString)));
     connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
     connect(dashboard, SIGNAL(card_to_use()), this, SLOT(useSelectedCard()));
 
@@ -632,10 +631,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
 
 void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
-    QString general_name = player->getGeneral();
-    if(general_name.isEmpty())
-        return;
-    const General *general = Sanguosha->getGeneral(general_name);
+    const General *general = player->getGeneral();
 
     main_window->setStatusBar(NULL);
     skill_buttons.clear();
@@ -761,7 +757,7 @@ void RoomScene::updateSelectedTargets(){
         if(photo->isSelected()){
             const ClientPlayer *target = photo->getPlayer();
             selected_targets << target;
-            general_names << Sanguosha->translate(target->getGeneral());
+            general_names << Sanguosha->translate(target->getGeneralName());
         }
     }
 

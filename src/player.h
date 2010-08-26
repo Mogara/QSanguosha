@@ -22,7 +22,7 @@ class Player : public QObject
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
-    Q_PROPERTY(QString general READ getGeneral WRITE setGeneral)
+    Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
     Q_PROPERTY(QString state READ getState WRITE setState)
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
@@ -57,8 +57,8 @@ public:
     bool isWounded() const;   
     void setRole(const QString &role);
     QString getRole() const;
-    void setGeneral(const QString &general_name);
-    QString getGeneral() const;
+    void setGeneralName(const QString &general_name);
+    QString getGeneralName() const;
     void setState(const QString &state);
     QString getState() const;
     int getSeat() const;
@@ -90,6 +90,7 @@ public:
     int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
+    const General *getGeneral() const;
     bool hasSkill(const QString &skill_name) const;
 
     const EquipCard *getEquip(const QString &subtype) const;
@@ -137,7 +138,7 @@ private:
 signals:
     void general_changed();
     void role_changed(const QString &new_role);
-    void state_changed(const QString &new_state);
+    void state_changed();
 };
 
 #endif // PLAYER_H

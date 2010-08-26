@@ -28,6 +28,7 @@ public:
 public slots:
     void updateAvatar();
     void updateRoleCombobox(const QString &new_role);
+    void refresh();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

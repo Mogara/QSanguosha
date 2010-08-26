@@ -137,7 +137,7 @@ int Player::getGeneralMaxHP() const{
     return general->getMaxHp();
 }
 
-void Player::setGeneral(const QString &general_name){
+void Player::setGeneralName(const QString &general_name){
     const General *new_general = Sanguosha->getGeneral(general_name);
 
     if(this->general != new_general){
@@ -149,7 +149,7 @@ void Player::setGeneral(const QString &general_name){
     }
 }
 
-QString Player::getGeneral() const{
+QString Player::getGeneralName() const{
     if(general)
         return general->objectName();
     else
@@ -163,7 +163,7 @@ QString Player::getState() const{
 void Player::setState(const QString &state){
     if(this->state != state){
         this->state = state;
-        emit state_changed(state);
+        emit state_changed();
     }
 }
 
@@ -186,6 +186,10 @@ const General *Player::getAvatarGeneral() const{
     if(general_name.isEmpty())
         return NULL;
     return Sanguosha->getGeneral(general_name);
+}
+
+const General *Player::getGeneral() const{
+    return general;
 }
 
 bool Player::hasSkill(const QString &skill_name) const{

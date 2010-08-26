@@ -24,7 +24,7 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
     static QSize avatar_size(80, 80);
 
     QToolButton *source_button = new QToolButton;
-    const General *source_general = Sanguosha->getGeneral(source->getGeneral());
+    const General *source_general = source->getGeneral();
     QString source_general_name = Sanguosha->translate(source_general->objectName());
     source_button->setIcon(QIcon(source_general->getPixmapPath("big")));
     source_button->setIconSize(avatar_size);
@@ -32,7 +32,7 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
     source_button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *target_button = new QToolButton;
-    const General *target_general = Sanguosha->getGeneral(target->getGeneral());    
+    const General *target_general = target->getGeneral();
     QString target_general_name = Sanguosha->translate(target_general->objectName());
     target_button->setIcon(QIcon(target_general->getPixmapPath("big")));
     target_button->setIconSize(avatar_size);

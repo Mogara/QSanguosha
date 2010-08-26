@@ -7,8 +7,7 @@ class Room;
 #include <QMutex>
 #include <QVariant>
 
-class RoomThread : public QThread
-{
+class RoomThread : public QThread{
 Q_OBJECT
 public:
     explicit RoomThread(Room *room, QMutex *mutex);

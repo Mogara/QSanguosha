@@ -162,7 +162,6 @@ private:
     void predamage(ServerPlayer *target, const DamageStruct &data);
     void damage(ServerPlayer *target, const DamageStruct &data);
 
-    Q_INVOKABLE void setCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);

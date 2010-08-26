@@ -89,7 +89,6 @@ signals:
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
-    void card_requested(const QString pattern);
     void hp_changed(const QString &target, int delta);
     void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);

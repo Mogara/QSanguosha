@@ -199,12 +199,6 @@ void Room::processRequest(const QString &request){
         invokeStackTop();
 }
 
-void Room::setCommand(ServerPlayer *player, const QStringList &args){
-    QString field = args[1];
-    QString value = args[2];
-    player->setProperty(field.toAscii(), value);
-}
-
 void Room::signupCommand(ServerPlayer *player, const QStringList &args){
     QString name = args[1];
     QString avatar = args[2];
@@ -298,7 +292,7 @@ void Room::assignRoles(){
 
 void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     QString general_name = args[1];
-    player->setGeneral(general_name);    
+    player->setGeneralName(general_name);
 
     if(player->getRole() == "lord"){
         broadcastProperty(player, "general");
@@ -385,8 +379,7 @@ void Room::startGame(){
     }
 
     foreach(ServerPlayer *player, players){
-        QString general_name = player->getGeneral();
-        const General *general = Sanguosha->getGeneral(general_name);
+        const General *general = player->getGeneral();
 
         QList<const PassiveSkill *> skills = general->findChildren<const PassiveSkill *>();
         foreach(const PassiveSkill *skill, skills){
