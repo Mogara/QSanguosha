@@ -47,7 +47,7 @@ bool CardMoveStructForClient::parse(const QString &str){
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), pattern(NULL), room(new QObject(this)), status(NotActive), alive_count(1)
+    :QTcpSocket(parent), room(new QObject(this)), status(NotActive), alive_count(1)
 {
     ClientInstance = this;
 
@@ -363,19 +363,17 @@ void Client::updateFrequentFlags(int state){
 }
 
 void Client::requestForCard(const QString &request_str){
-    QRegExp rx("(\\w+):(\\w+):(\\d+)-(\\d+):([cr]*)");
-    if(!rx.exactMatch(request_str)){
-        QMessageBox::warning(NULL, tr("Warning"), tr("Request string (%1) is not well formatted").arg(request_str));
-        return;
+    static QSet<QString> patterns;
+    if(patterns.isEmpty()){
+        patterns << "jink" << "slash";
     }
 
-    QStringList captured_texts = rx.capturedTexts();
-    pattern = Sanguosha->cloneCardPattern(captured_texts);
-    if(pattern == NULL){
-        QMessageBox::warning(NULL, tr("Warning"), tr("Can not create card pattern from string : %1").arg(request_str));
+    if(patterns.contains(request_str)){
+        card_pattern = request_str;
+        setStatus(Responsing);
+    }else{
+        QMessageBox::warning(NULL, "", tr("Unknown request card pattern: %1").arg(request_str));
     }
-
-    setStatus(Responsing);
 }
 
 void Client::askForSkillInvoke(const QString &ask_str){

@@ -243,7 +243,7 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
         switch(ClientInstance->getStatus()){
         case Client::NotActive: item->setEnabled(false); break;
         case Client::Playing: item->setEnabled(card->isAvailable()); break;
-        case Client::Responsing: item->setEnabled(ClientInstance->pattern->match(card)); break;
+        case Client::Responsing: break; // FIXME
         case Client::Discarding: item->setEnabled(true); break;
         }
 
@@ -917,10 +917,9 @@ void RoomScene::updateStatus(Client::Status status){
     case Client::Responsing: {
             ok_button->setText("Responsing");
 
-            dashboard->enableCards(ClientInstance->pattern);
+            // FIXME
 
             ok_button->setEnabled(true);
-            cancel_button->setDisabled(ClientInstance->pattern->compulsory);
             discard_button->setEnabled(false);            
             break;
         }

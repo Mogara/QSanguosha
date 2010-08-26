@@ -34,7 +34,7 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
     BasicCard::use(room, source, targets);
 
     foreach(ServerPlayer *target, targets){
-        room->requestForCard(target, "NamePattern:jink:1-1:r");
+        room->requestForCard(target, "jink");
     }
 }
 

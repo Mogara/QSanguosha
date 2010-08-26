@@ -4,7 +4,6 @@
 #include "clientplayer.h"
 #include "card.h"
 #include "skill.h"
-#include "cardpattern.h"
 
 #include <QTcpSocket>
 
@@ -57,9 +56,9 @@ public:
     Q_INVOKABLE void askForNullification(const QString &ask_str);
     Q_INVOKABLE void askForCardChosen(const QString &ask_str);
 
-    CardPattern *pattern;
+    // public fields
+    QString card_pattern;
     QVariantMap tag, turn_tag;
-    QList<CardPattern *> enable_patterns, disable_patterns;
     QList<const Card*> discarded_list;
 
 public slots:    

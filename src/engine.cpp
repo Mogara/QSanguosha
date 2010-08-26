@@ -14,10 +14,6 @@ Engine::Engine(QObject *parent)
     :QObject(parent), effect(Phonon::createPlayer(Phonon::MusicCategory))
 {
     addPackage(new StandardPackage);
-
-    metaobjects.insert("NamePattern", &NamePattern::staticMetaObject);
-    metaobjects.insert("TypePattern", &TypePattern::staticMetaObject);
-    metaobjects.insert("ClassPattern", &ClassPattern::staticMetaObject);
 }
 
 void Engine::addPackage(Package *package){
@@ -87,35 +83,6 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         return card;
     }else
         return NULL;
-}
-
-CardPattern *Engine::cloneCardPattern(const QStringList &captured_texts){
-    QString name = captured_texts.at(1);
-    QString pattern_str = captured_texts.at(2);
-    int min = captured_texts.at(3).toInt();
-    int max = captured_texts.at(4).toInt();
-    QString flags = captured_texts.at(5);
-
-    const QMetaObject *meta = metaobjects.value(name, NULL);
-    if(meta){
-        QObject *pattern_obj = meta->newInstance(Q_ARG(QString, pattern_str));
-        CardPattern *pattern = qobject_cast<CardPattern *>(pattern_obj);
-        if(pattern){
-            pattern->min = min;
-            pattern->max = max;
-
-            static QChar compulsory_symbol('c');
-            static QChar response_symbol('r');
-            if(flags.contains(compulsory_symbol))
-                pattern->compulsory = true;
-            if(flags.contains(response_symbol))
-                pattern->response = true;
-
-            return pattern;
-        }
-    }
-
-    return NULL;
 }
 
 int Engine::getCardCount() const{

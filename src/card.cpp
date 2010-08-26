@@ -227,17 +227,10 @@ QList<int> Card::getSubcards() const{
 }
 
 bool Card::isAvailable() const{
-    foreach(CardPattern *pattern, ClientInstance->disable_patterns){
-        if(pattern->match(this))
-            return false;
-    }
-
-    foreach(CardPattern *pattern, ClientInstance->enable_patterns){
-        if(pattern->match(this))
-            return true;        
-    }
-
-    return isAvailableAtPlay();
+    if(ClientInstance->card_pattern.isEmpty())
+        return isAvailableAtPlay();
+    else
+        return match(ClientInstance->card_pattern);
 }
 
 void Card::onYes(const Card *yes_card){

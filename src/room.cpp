@@ -607,7 +607,7 @@ void Room::invokeStackTop(){
         delete top;
     }
 
-    if(current)
+    if(current && !waiting_func)
         activate(current);
 }
 
