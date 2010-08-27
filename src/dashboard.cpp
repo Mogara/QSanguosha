@@ -53,6 +53,8 @@ void Dashboard::addCardItem(CardItem *card_item){
 
 void Dashboard::setPlayer(const Player *player){
     this->player = player;
+
+    connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     updateAvatar();
 }
 
@@ -64,6 +66,11 @@ void Dashboard::updateAvatar(){
     avatar->show();
     kingdom->show();
 
+    update();
+}
+
+// similar with Photo::refresh, just an alias to update
+void Dashboard::refresh(){
     update();
 }
 

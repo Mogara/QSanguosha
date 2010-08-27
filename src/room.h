@@ -165,7 +165,6 @@ private:
     Q_INVOKABLE void signupCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QStringList &args);
-    Q_INVOKABLE void judgeCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void invokeSkillCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void replyNullificationCommand(ServerPlayer *player, const QStringList &args);
     Q_INVOKABLE void chooseCardCommand(ServerPlayer *player, const QStringList &args);

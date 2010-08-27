@@ -18,8 +18,10 @@ Player::Player(QObject *parent)
 }
 
 void Player::setHp(int hp){
-    if(hp >= 0 && hp <= max_hp)
+    if(hp >= 0 && hp <= max_hp && this->hp != hp){
         this->hp = hp;
+        emit state_changed();
+    }
 }
 
 int Player::getHp() const{

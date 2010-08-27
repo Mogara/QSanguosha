@@ -433,14 +433,6 @@ void Room::drawCards(ServerPlayer *player, const QVariant &data){
     broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
 }
 
-void Room::judgeCommand(ServerPlayer *player, const QStringList &args){
-    QString target = args.at(1);
-    int card_id = drawCard();
-    discard_pile->append(card_id);
-
-    broadcast(QString("! judge %1:%2").arg(target).arg(card_id));
-}
-
 void Room::throwCard(ServerPlayer *player, const Card *card){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();

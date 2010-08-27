@@ -41,7 +41,8 @@ public:
     const Card *pendingCard() const;
 
 public slots:
-    void updateAvatar();    
+    void updateAvatar();
+    void refresh();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
