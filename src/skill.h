@@ -75,25 +75,21 @@ public:
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;
-
-    virtual void onOption(ServerPlayer *target, const QString &option) const;
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const = 0;
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const = 0;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;
 
     Frequency getFrequency() const;
 
 protected:
     enum Frequency frequency;
-
-    void enqueueInvoke(ServerPlayer *target) const;
 };
 
 class MasochismSkill: public PassiveSkill{
 public:
     MasochismSkill(const QString &name);
 
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
@@ -102,8 +98,8 @@ class PhaseChangeSkill: public PassiveSkill{
 public:
     PhaseChangeSkill(const QString &name);
 
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
@@ -113,7 +109,7 @@ class EnvironSkill: public PassiveSkill{
 
 public:
     EnvironSkill(const QString &name);
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
 };
 
 #endif // SKILL_H

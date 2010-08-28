@@ -1,5 +1,6 @@
 #include "server.h"
 #include "settings.h"
+#include "room.h"
 
 #include <QInputDialog>
 #include <QNetworkInterface>

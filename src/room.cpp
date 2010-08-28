@@ -1,7 +1,7 @@
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
-#include "gamerule.h"
+
 
 #include <QStringList>
 #include <QMessageBox>
@@ -10,35 +10,14 @@
 #include <QMetaEnum>
 #include <QTimerEvent>
 
-static PassiveSkillSorter Sorter;
-
-bool PassiveSkillSorter::operator ()(const PassiveSkill *a, const PassiveSkill *b){
-    int x = a->getPriority(target);
-    int y = b->getPriority(target);
-
-    return x > y;
-}
-
-void PassiveSkillSorter::sort(QList<const PassiveSkill *> &skills){
-    qSort(skills.begin(), skills.end(), *this);
-}
-
-DamageStruct::DamageStruct()
-    :from(NULL), to(NULL), card(NULL), damage(0), nature(Normal)
-{
-}
-
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), current(NULL),
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false),
-    waiting_func(NULL), nullificators_count(0), signup_count(0)
+    chosen_generals(0), game_started(false), signup_count(0),
+    nullificators_count(0),
+    thread(NULL), sem(NULL)
 {
-}
-
-void Room::enqueueRecord(ActiveRecord *record){
-    queue.enqueue(record);
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -49,16 +28,21 @@ int Room::alivePlayerCount() const{
     return alive_players.count();
 }
 
-void Room::askForSkillInvoke(ServerPlayer *player, const QVariant &data){
-    player->invoke("askForSkillInvoke", data.toString());
+QString Room::askForSkillInvoke(ServerPlayer *player, const QString &ask_str){
+    player->invoke("askForSkillInvoke", ask_str);    
+    reply_func = "invokeSkillCommand";
+    sem->acquire();
 
-    waiting_func = __func__;
+    return result;
+}
+
+void Room::invokeSkillCommand(ServerPlayer *, const QString &arg){
+    result = arg;
+    sem->release();
 }
 
 void Room::askForNullification(ServerPlayer *, const QVariant &data){
     broadcastInvoke("askForNullification", data.toString());
-
-    waiting_func = __func__;
 
     int index = alive_players.indexOf(current), i;
     for(i=index; i<alive_players.count(); i++)
@@ -74,32 +58,20 @@ void Room::askForNullification(ServerPlayer *, const QVariant &data){
 void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
     player->invoke("askForCardChosen", data.toString());
 
-    waiting_func = __func__;
 }
 
 void Room::requestForCard(ServerPlayer *player, const QVariant &data){
     player->invoke("requestForCard", data.toString());
 
-    waiting_func = __func__;
 }
 
-void Room::setPlayerFlag(ServerPlayer *player, const QVariant &flag){
-    QString flag_str = flag.toString();
-    player->setFlags(flag_str);
-    broadcast(QString("#%1 flags %1").arg(flag_str));
+void Room::responseCardCommand(ServerPlayer *player, const QStringList &args){
+
 }
 
-void Room::setPlayerProperty(ServerPlayer *player, const QVariant &data){
-    QVariantList list = data.toList();
-    const char *property_name = list.at(0).toByteArray().data();
-    QVariant value = list.at(1);
-    player->setProperty(property_name, value);
-
-    broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value.toString()));
-}
-
-void Room::useCard(ServerPlayer *player, const QVariant &data){
-    invokePassiveSkills(CardUsed, player, data);
+void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
+    player->setFlags(flag);
+    broadcast(QString("#%1 flags %1").arg(flag));
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -185,23 +157,32 @@ void Room::processRequest(const QString &request){
     }
 
     command.append("Command");
+
+    if(!reply_func.isEmpty() && reply_func != command){
+        emit room_message(tr("Reply function should be %1 instead of %2").arg(reply_func).arg(command));
+        return;
+    }
+
     bool invoked = QMetaObject::invokeMethod(this,
                                              command.toAscii(),
                                              Qt::DirectConnection,
                                              Q_ARG(ServerPlayer *, player),
-                                             Q_ARG(QStringList, args));
+                                             Q_ARG(QString, args.at(1)));
     if(invoked)
         emit room_message(player->reportHeader() + request);
     else
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
-
-    if(game_started && !waiting_func)
-        invokeStackTop();
 }
 
-void Room::signupCommand(ServerPlayer *player, const QStringList &args){
-    QString name = args[1];
-    QString avatar = args[2];
+void Room::signupCommand(ServerPlayer *player, const QString &arg){
+    QRegExp rx("(.+):(.+)");
+    if(!rx.exactMatch(arg)){
+        return;
+    }
+
+    QStringList words = rx.capturedTexts();
+    QString name = words[1];
+    QString avatar = words[2];
 
     if(findChild<ServerPlayer*>(name)){
         player->invoke("duplicationError");
@@ -290,8 +271,7 @@ void Room::assignRoles(){
         players.at(i)->setSeat(i+1);
 }
 
-void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
-    QString general_name = args[1];
+void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     player->setGeneralName(general_name);
 
     if(player->getRole() == "lord"){
@@ -319,8 +299,16 @@ void Room::chooseCommand(ServerPlayer *player, const QStringList &args){
     }
 }
 
-void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
-    QString card_str = args.at(1);
+void Room::useCardCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
+    sem->release();
+}
+
+void Room::useCard(ServerPlayer *player, const QString &arg){
+    QStringList words = arg.split("->");
+    QString card_str = words.at(0);
+    QString target_str = words.at(1);
+
     const Card *card = Card::Parse(card_str);
 
     if(card == NULL){
@@ -329,8 +317,8 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
     }
 
     QList<ServerPlayer *> targets;
-    if(args.at(2) != "."){
-        QStringList target_names = args.at(2).split("+");
+    if(target_str != "."){
+        QStringList target_names = target_str.split("+");
 
         foreach(QString target_name, target_names)
             targets << findChild<ServerPlayer *>(target_name);
@@ -342,7 +330,9 @@ void Room::useCardCommand(ServerPlayer *player, const QStringList &args){
     data.from = player;
     data.to = targets;
 
-    invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
+
+
+    thread->invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
 
 void Room::startGame(){
@@ -378,26 +368,6 @@ void Room::startGame(){
         drawCards(players.at(i), 4);
     }
 
-    foreach(ServerPlayer *player, players){
-        const General *general = player->getGeneral();
-
-        QList<const PassiveSkill *> skills = general->findChildren<const PassiveSkill *>();
-        foreach(const PassiveSkill *skill, skills){
-            passive_skills.insert(skill->objectName(), skill);
-        }        
-    }
-    GameRule *game_rule = new GameRule;
-    passive_skills.insert(game_rule->objectName(), game_rule);
-
-    // construct trigger_table
-    foreach(const PassiveSkill *skill, passive_skills){
-        QList<TriggerEvent> events;
-        skill->getTriggerEvents(events);
-        foreach(TriggerEvent event, events){
-            trigger_table[event] << skill;
-        }
-    }
-
     broadcast("! startGame .");
     game_started = true;
 
@@ -405,8 +375,10 @@ void Room::startGame(){
     the_lord->setPhase(Player::Start);
     broadcastProperty(the_lord, "phase", "start");
     current = the_lord;
-    changePhase(the_lord);
-    invokeStackTop();
+
+    sem = new QSemaphore;
+    thread = new RoomThread(this, sem);
+    thread->start();
 }
 
 void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
@@ -417,8 +389,7 @@ void Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
         broadcast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
-void Room::drawCards(ServerPlayer *player, const QVariant &data){
-    int n = data.toInt();
+void Room::drawCards(ServerPlayer *player, int n){
     QStringList cards_str;
 
     int i;
@@ -442,27 +413,23 @@ void Room::throwCard(ServerPlayer *player, const Card *card){
         throwCard(player, card->getId());
 }
 
-void Room::throwCard(ServerPlayer *player, const QVariant &card_id){
-    CardMoveStruct data;
-    data.card_id = card_id.toInt();
-    data.from_place = Player::Hand;
-    data.to_place = Player::DiscardedPile;
-    data.from = player;
-    data.to = NULL;
-    data.open = true;
+void Room::throwCard(ServerPlayer *player, int card_id){
+    CardMoveStruct move;
+    move.card_id = card_id;
+    move.from_place = Player::Hand;
+    move.to_place = Player::DiscardedPile;
+    move.from = player;
+    move.to = NULL;
+    move.open = true;
 
-    moveCard(NULL, QVariant::fromValue(data));
+    moveCard(NULL, move);
 }
 
 QList<int> *Room::getDiscardPile() const{
     return discard_pile;
 }
 
-void Room::moveCard(ServerPlayer *, const QVariant &data){
-    if(!data.canConvert<CardMoveStruct>())
-        return;
-
-    CardMoveStruct move = data.value<CardMoveStruct>();
+void Room::moveCard(ServerPlayer *, const CardMoveStruct &move){
     broadcast("! moveCard " + move.toString());
     ServerPlayer::MoveCard(move);
 }
@@ -486,22 +453,6 @@ QString CardMoveStruct::toString() const{
             .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
-void Room::invokeSkillCommand(ServerPlayer *, const QStringList &args){
-    // FIXME: checking waiting_func and stack top
-
-    ActiveRecord *record = stack.pop();
-    QString skill_name = record->data.toString();
-    const PassiveSkill *skill = passive_skills.value(skill_name, NULL);
-    if(skill){
-        QString option = args.at(1);
-        skill->onOption(record->target, option);
-    }else{
-        emit room_message(tr("No such skill named %1").arg(skill_name));
-    }
-
-    waiting_func = NULL;
-}
-
 void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &args){
     int card_id = args.at(1).toInt();
 
@@ -510,7 +461,6 @@ void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &ar
     nullificators_count --;
 
     if(nullificators_count == 0){
-        waiting_func = NULL;
 
         if(nullificators.isEmpty()){
             // execute the trick
@@ -556,87 +506,18 @@ void Room::playSkillEffect(const QString &skill_name, int index){
     broadcastInvoke("playSkillEffect", QString("%1:%2").arg(skill_name).arg(index));
 }
 
-void Room::invokeStackTop(){
-    while(!stack.isEmpty()){
-        ActiveRecord *top = stack.pop();
-
-#ifndef QT_NO_DEBUG
-        if(top->target)
-            qDebug("pop (%s %s %s)", top->method, qPrintable(top->target->objectName()), qPrintable(top->data.toString()));
-        else
-            qDebug("pop (%s NULL %s)", top->method, qPrintable(top->data.toString()));
-#endif
-
-        bool invoked;
-
-        if(top->data.isValid())
-            invoked = QMetaObject::invokeMethod(this,
-                                                top->method,
-                                                Qt::DirectConnection,
-                                                Q_ARG(ServerPlayer *, top->target),
-                                                Q_ARG(QVariant, top->data)
-                                                );
-        else
-            invoked = QMetaObject::invokeMethod(this,
-                                                top->method,
-                                                Qt::DirectConnection,
-                                                Q_ARG(ServerPlayer *, top->target)
-                                                );
-
-        if(!invoked)
-            emit room_message(tr("Unknown method :%1 ").arg(top->method));
-
-        if(waiting_func)
-            return;
-
-        delete top;
-    }
-
-    if(current && !waiting_func)
-        activate(current);
-}
-
-void Room::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
-    QList<const PassiveSkill *> skills, triggers = trigger_table[event];
-
-    foreach(const PassiveSkill *skill, triggers){
-        if(skill->triggerable(target))
-            skills << skill;
-    }
-
-    Sorter.target = target;
-    Sorter.sort(skills);
-
-    queue.clear();
-    foreach(const PassiveSkill *skill, skills){
-        if(skill->trigger(event, target, data))
-            break;
-    }
-
-    QListIterator<ActiveRecord *> itor(queue);
-    itor.toBack();
-    while(itor.hasPrevious()){
-        stack.push(itor.previous());
-    }
-    queue.clear();    
-}
-
 void Room::changePhase(ServerPlayer *target){
-    invokePassiveSkills(PhaseChange, target);
-}
-
-void Room::predamage(ServerPlayer *target, const DamageStruct &data){
-    // FIXME
-}
-
-void Room::damage(ServerPlayer *target, const DamageStruct &data){
-    // FIXME
+    thread->invokePassiveSkills(PhaseChange, target);
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg){
     broadcast(QString("! %1 %2").arg(method).arg(arg));
 }
 
-void Room::activate(ServerPlayer *target){
+QString Room::activate(ServerPlayer *target){
     broadcastInvoke("activate", target->objectName());
+
+    sem->acquire();
+
+    return result;
 }

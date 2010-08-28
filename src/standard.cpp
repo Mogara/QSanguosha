@@ -37,11 +37,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         detach.to_place = Player::DiscardedPile;
         detach.open = true;
 
-        ActiveRecord *uninstall = new ActiveRecord;
-        uninstall->method = "moveCard";
-        uninstall->target = NULL;
-        uninstall->data = QVariant::fromValue(detach);
-        room->enqueueRecord(uninstall);
+        room->moveCard(NULL, detach);
     }
 
     CardMoveStruct attach;
@@ -52,11 +48,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     attach.to_place = Player::Equip;
     attach.open = true;
 
-    ActiveRecord *install = new ActiveRecord;
-    install->method = "moveCard";
-    install->target = NULL;
-    install->data = QVariant::fromValue(attach);
-    room->enqueueRecord(install);
+    room->moveCard(NULL, attach);
 }
 
 QString GlobalEffect::getSubtype() const{

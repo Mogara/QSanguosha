@@ -115,10 +115,8 @@ PassiveSkill::PassiveSkill(const QString &name, Frequency frequency)
 
 }
 
-int PassiveSkill::getPriority(ServerPlayer *target) const{
-    // FIXME
-
-    return 0;
+int PassiveSkill::getPriority(ServerPlayer *target) const{    
+    return 1;
 }
 
 bool PassiveSkill::triggerable(const ServerPlayer *target) const{
@@ -129,32 +127,17 @@ PassiveSkill::Frequency PassiveSkill::getFrequency() const{
     return frequency;
 }
 
-void PassiveSkill::onOption(ServerPlayer *target, const QString &option) const{
-
-}
-
-void PassiveSkill::enqueueInvoke(ServerPlayer *target) const{
-    Room *room = target->getRoom();
-
-    ActiveRecord *record = new ActiveRecord;
-    record->method = "@InvokeSkill";
-    record->data = objectName();
-    record->target = target;
-
-    room->enqueueRecord(record);
-}
-
 MasochismSkill::MasochismSkill(const QString &name)
     :PassiveSkill(name)
 {
 
 }
 
-void MasochismSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
-    events << Room::Damaged;
+void MasochismSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+    events << Damaged;
 }
 
-bool MasochismSkill::trigger(Room::TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
 
     onDamaged(player, damage);
@@ -167,11 +150,11 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 {
 }
 
-void PhaseChangeSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
-    events << Room::PhaseChange;
+void PhaseChangeSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+    events << PhaseChange;
 }
 
-bool PhaseChangeSkill::trigger(Room::TriggerEvent, ServerPlayer *player, const QVariant &) const{
+bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &) const{
     return onPhaseChange(player);
 }
 
@@ -180,7 +163,7 @@ EnvironSkill::EnvironSkill(const QString &name)
 {
 }
 
-void EnvironSkill::getTriggerEvents(QList<Room::TriggerEvent> &events) const{
-    events << Room::GameStart;
+void EnvironSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+    events << GameStart;
 }
 

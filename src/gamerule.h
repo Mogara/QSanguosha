@@ -12,11 +12,10 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority(ServerPlayer *target) const;
 
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const;
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
 private:
-    void nextPhase(Room *room, ServerPlayer *target) const;
     void onPhaseChange(ServerPlayer *player) const;
 };
 

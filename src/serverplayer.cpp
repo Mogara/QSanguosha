@@ -30,10 +30,16 @@ void ServerPlayer::setSocket(QTcpSocket *socket){
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));
+
+        connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
     }
 }
 
 void ServerPlayer::unicast(const QString &message){
+    emit message_cast(message);
+}
+
+void ServerPlayer::castMessage(const QString &message){
     if(socket){
         socket->write(message.toAscii());
         socket->write("\n");

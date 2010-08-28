@@ -38,11 +38,11 @@ public:
         frequency = Frequent;
     }
 
-    virtual void getTriggerEvents(QList<Room::TriggerEvent> &events) const{
-        events << Room::JudgeOnEffect;
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
+        events << JudgeOnEffect;
     }
 
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
         // FIXME
         // obtain the judge card
 
@@ -176,15 +176,9 @@ public:
     Paoxiao():EnvironSkill("paoxiao"){
     }
 
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
         Room *room = player->getRoom();
-
-        ActiveRecord *record = new ActiveRecord;
-        record->method = "setPlayerFlag";
-        record->target = player;
-        record->data = "paoxiao";
-
-        room->enqueueRecord(record);
+        room->setPlayerFlag(player, "paoxiao");
 
         return false;
     }
@@ -211,19 +205,8 @@ public:
 
     }
 
-    virtual bool trigger(Room::TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-        Room *room = player->getRoom();
-
-        ActiveRecord *record = new ActiveRecord;
-        record->method = "setPlayerProperty";
-        record->target = player;
-
-        QVariantList list;
-        list << "correct" << "skill_src:-1";
-
-        record->data = list;
-
-        room->enqueueRecord(record);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+        // Room *room = player->getRoom();
 
         return false;
     }
@@ -301,26 +284,15 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Draw){
             Room *room = target->getRoom();
+            QString result = room->askForSkillInvoke(target, "yingzi:yes+no");
+            if(result == "yes"){
+                room->drawCards(target, 1);
+                room->playSkillEffect(objectName());
+            }
 
-            ActiveRecord *ask = new ActiveRecord;
-            ask->method = "askForSkillInvoke";
-            ask->target = target;
-            ask->data = "yingzi:yes+no";
-
-            room->enqueueRecord(ask);
-
-            enqueueInvoke(target);
         }
 
         return false;
-    }
-
-    virtual void onOption(ServerPlayer *target, const QString &option) const{
-        Room *room = target->getRoom();
-        if(option == "yes"){
-            room->drawCards(target, 1);
-            room->playSkillEffect(objectName());
-        }
     }
 };
 

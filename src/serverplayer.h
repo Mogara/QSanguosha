@@ -6,6 +6,8 @@ struct CardMoveStruct;
 
 #include "player.h"
 
+#include <QMutex>
+
 class ServerPlayer : public Player
 {
     Q_OBJECT
@@ -34,10 +36,12 @@ private:
 
 private slots:
     void getRequest();
+    void castMessage(const QString &message);
 
 signals:
     void disconnected();
     void request_got(const QString &request);
+    void message_cast(const QString &message);
 };
 
 #endif // SERVERPLAYER_H

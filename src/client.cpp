@@ -72,7 +72,7 @@ void Client::request(const QString &message){
 }
 
 void Client::signup(){
-    request(QString("signup %1 %2").arg(Config.UserName).arg(Config.UserAvatar));
+    request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
 void Client::processReply(){
@@ -215,7 +215,11 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
     QStringList target_names;
     foreach(const ClientPlayer *target, targets)
         target_names << target->objectName();
-    request(QString("useCard %1 %2").arg(card->toString()).arg(target_names.join("+")));
+
+    if(target_names.isEmpty())
+        request(QString("useCard %1->.").arg(card->toString()));
+    else
+        request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
     card->use(targets);
 
@@ -226,7 +230,7 @@ void Client::useCard(const Card *card){
     if(!card)
         return;
 
-    request(QString("useCard %1 .").arg(card->toString()));
+    request(QString("useCard %1->.").arg(card->toString()));
     card->use(QList<const ClientPlayer *>());
 
     setStatus(NotActive);

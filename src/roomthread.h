@@ -2,23 +2,104 @@
 #define ROOMTHREAD_H
 
 class Room;
+class PassiveSkill;
+class ServerPlayer;
+class Card;
+
+#include "player.h"
 
 #include <QThread>
-#include <QMutex>
+#include <QSemaphore>
 #include <QVariant>
 
+struct PassiveSkillSorter{
+    ServerPlayer *target;
+
+    bool operator()(const PassiveSkill *a, const PassiveSkill *b);
+    void sort(QList<const PassiveSkill *> &skills);
+};
+
+struct DamageStruct{
+    enum Nature {
+        Normal, // normal slash, duel and most damage caused by skill
+        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
+        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+    };
+    DamageStruct();
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+    const Card *card;
+    int damage;
+    Nature nature;
+};
+
+Q_DECLARE_METATYPE(DamageStruct);
+
+struct CardEffectStruct{
+    const Card *card;
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+};
+
+Q_DECLARE_METATYPE(CardEffectStruct);
+
+struct CardUseStruct{
+    const Card *card;
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+};
+
+Q_DECLARE_METATYPE(CardUseStruct);
+
+struct CardMoveStruct{
+    int card_id;
+    Player::Place from_place, to_place;
+    ServerPlayer *from, *to;
+    bool open;
+
+    QString toString() const;
+};
+
+Q_DECLARE_METATYPE(CardMoveStruct);
+
+enum TriggerEvent{
+    GameStart,
+    PhaseChange,
+
+    Predamage,
+    Predamaged,
+    Damage,
+    Damaged,
+
+    Dying,
+    Death,
+
+    Judge,
+    JudgeOnEffect,
+
+    CardUsed,
+    CardMove,
+    CardEffect,
+};
+
 class RoomThread : public QThread{
-Q_OBJECT
+    Q_OBJECT
+
 public:
-    explicit RoomThread(Room *room, QMutex *mutex);
+    explicit RoomThread(Room *room, QSemaphore *sem);
+    void invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
 
 protected:
     virtual void run();
 
 private:
     Room *room;
-    QMutex *mutex;
-    QVariant data;
+    QSemaphore *sem;
+
+    QMap<QString, const PassiveSkill *> passive_skills;
+    QMap<TriggerEvent, QList<const PassiveSkill *> > trigger_table;
 };
 
 #endif // ROOMTHREAD_H
