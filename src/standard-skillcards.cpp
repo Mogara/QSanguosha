@@ -27,6 +27,6 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         move.from_place = move.to_place = Player::Hand;
         move.open = false;
 
-        room->moveCard(NULL, move);
+        room->moveCard(move);
     }
 }

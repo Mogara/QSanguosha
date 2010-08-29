@@ -422,14 +422,14 @@ void Room::throwCard(ServerPlayer *player, int card_id){
     move.to = NULL;
     move.open = true;
 
-    moveCard(NULL, move);
+    moveCard(move);
 }
 
 QList<int> *Room::getDiscardPile() const{
     return discard_pile;
 }
 
-void Room::moveCard(ServerPlayer *, const CardMoveStruct &move){
+void Room::moveCard(const CardMoveStruct &move){
     broadcast("! moveCard " + move.toString());
     ServerPlayer::MoveCard(move);
 }
@@ -516,6 +516,7 @@ void Room::broadcastInvoke(const char *method, const QString &arg){
 
 QString Room::activate(ServerPlayer *target){
     broadcastInvoke("activate", target->objectName());
+    reply_func = "useCardCommand";
 
     sem->acquire();
 

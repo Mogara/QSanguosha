@@ -110,9 +110,13 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 PassiveSkill::PassiveSkill(const QString &name, Frequency frequency)
-    :Skill(name), frequency(frequency)
+    :Skill(name), frequency(frequency), view_as_skill(NULL)
 {
 
+}
+
+const ViewAsSkill *PassiveSkill::getViewAsSkill() const{
+    return view_as_skill;
 }
 
 int PassiveSkill::getPriority(ServerPlayer *target) const{    

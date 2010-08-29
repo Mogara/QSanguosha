@@ -233,14 +233,6 @@ bool Card::isAvailable() const{
         return match(ClientInstance->card_pattern);
 }
 
-void Card::onYes(const Card *yes_card){
-
-}
-
-void Card::onNo(){
-
-}
-
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()

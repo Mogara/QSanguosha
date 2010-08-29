@@ -32,7 +32,7 @@ public:
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void changePhase(ServerPlayer *target);
     void throwCard(ServerPlayer *player, int card_id);
-    void moveCard(ServerPlayer *, const CardMoveStruct &move);
+    void moveCard(const CardMoveStruct &move);
     void useCard(ServerPlayer *player, const QString &card_str);
 
     // interactive methods

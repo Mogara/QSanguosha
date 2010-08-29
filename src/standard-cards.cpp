@@ -225,6 +225,11 @@ public:
         setObjectName("ex_nihilo");
         target_fixed = true;
     }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+        room->throwCard(source, this);
+        room->drawCards(source, 2);
+    }
 };
 
 Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {

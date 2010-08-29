@@ -67,9 +67,6 @@ public:
 
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
-    virtual void onYes(const Card *yes_card);
-    virtual void onNo();
-
     virtual void use(const QList<const ClientPlayer *> &targets) const;
 
     // static functions

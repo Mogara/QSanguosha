@@ -72,6 +72,7 @@ public:
     };
 
     PassiveSkill(const QString &name, Frequency frequency = NotFrequent);
+    const ViewAsSkill *getViewAsSkill() const;
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;
@@ -82,6 +83,7 @@ public:
 
 protected:
     enum Frequency frequency;
+    const ViewAsSkill *view_as_skill;
 };
 
 class MasochismSkill: public PassiveSkill{

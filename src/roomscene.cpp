@@ -646,40 +646,49 @@ void RoomScene::updateSkillButtons(){
             const PassiveSkill *passive_skill = qobject_cast<const PassiveSkill *>(skill);
             switch(passive_skill->getFrequency()){
             case PassiveSkill::Frequent:{
-                QCheckBox *checkbox = new QCheckBox(skill_name);
+                    QCheckBox *checkbox = new QCheckBox(skill_name);
 
-                checkbox->setObjectName(skill->objectName());
-                checkbox->setChecked(false);
-                connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
-                checkbox->setChecked(true);
+                    checkbox->setObjectName(skill->objectName());
+                    checkbox->setChecked(false);
+                    connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
+                    checkbox->setChecked(true);
 
-                button = checkbox;
-                break;
+                    button = checkbox;
+                    break;
             }
-            case PassiveSkill::NotFrequent:
-                button = new QPushButton(skill_name);
-                break;
+            case PassiveSkill::NotFrequent:{
+                    const ViewAsSkill *view_as_skill = passive_skill->getViewAsSkill();
+                    button = new QPushButton(skill_name);                    
+                    if(view_as_skill){
+                        button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
+                        connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+                    }
 
-            case PassiveSkill::Compulsory:
-                button = new QPushButton(skill_name);
-                button->setEnabled(false);
-                break;
+                    break;
             }
+
+            case PassiveSkill::Compulsory:{
+                    button = new QPushButton(skill_name + tr(" [Compulsory]"));
+                    button->setEnabled(false);
+                    break;
+                }
+            }
+        }else if(skill->inherits("ViewAsSkill")){
+            button = new QPushButton(skill_name);
+            button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
+            connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
         }else
             button = new QPushButton(skill_name);
+            // QMessageBox::warning(NULL, tr("Warning"), tr("Only view as skill and passive skill is supported now!"));
 
+        button->setObjectName(skill->objectName());
         if(skill->isLordSkill())
-            button->setText(button->text() + tr("[Lord Skill]"));
+            button->setText(button->text() + tr(" [Lord Skill]"));
 
         button->setToolTip(skill->getDescription());
 
         status_bar->addPermanentWidget(button);
         skill_buttons << button;
-
-        if(skill->inherits("ViewAsSkill")){
-            button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
-            connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-        }
     }
 
     status_bar->addPermanentWidget(role_combobox);
@@ -691,8 +700,11 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
 
     if(new_role != "lord"){
         foreach(QAbstractButton *button, skill_buttons){
-            if(button->text().contains(tr("[Lord Skill]")))
-                button->setDisabled(true);
+            const Skill *skill = Sanguosha->getSkill(button->objectName());
+
+            Q_ASSERT(skill != NULL);
+            if(skill->isLordSkill())
+                button->hide();
         }
     }
 }

@@ -37,7 +37,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         detach.to_place = Player::DiscardedPile;
         detach.open = true;
 
-        room->moveCard(NULL, detach);
+        room->moveCard(detach);
     }
 
     CardMoveStruct attach;
@@ -48,7 +48,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     attach.to_place = Player::Equip;
     attach.open = true;
 
-    room->moveCard(NULL, attach);
+    room->moveCard(attach);
 }
 
 QString GlobalEffect::getSubtype() const{
