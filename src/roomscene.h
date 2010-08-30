@@ -75,7 +75,6 @@ private:
     void startViewAsSkill(const ViewAsSkill *skill);
     void callViewAsSkill();
     void cancelViewAsSkill();
-    void setSkillButtonEnablity(bool enablity);
 
 private slots:
     void updateSkillButtons();

@@ -742,8 +742,12 @@ void RoomScene::enableTargets(const Card *card){
             photo->setEnabled(true);
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
+
+        ok_button->setEnabled(true);
         return;
     }
+
+    ok_button->setEnabled(false);
 
     avatar->setEnabled(card->targetFilter(selected_targets, ClientInstance->getPlayer()));
 
@@ -773,18 +777,20 @@ void RoomScene::updateSelectedTargets(){
         }
     }
 
-    if(selected_targets.isEmpty()){
-        changePrompt();
-        return;
-    }
-
-    QString targets = general_names.join(",");
     const Card *card = dashboard->getSelected();
     if(card){
+        ok_button->setEnabled(card->targetsFeasible(selected_targets));
+
+        if(selected_targets.isEmpty()){
+            changePrompt();
+            return;
+        }
+
         QString card_name = card->getName();
+        QString targets = general_names.join(",");
+
         changePrompt(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
-    }else
-        changePrompt(tr("You choose %1 as target").arg(targets));
+    }
 }
 
 void RoomScene::useSelectedCard(){
@@ -911,10 +917,11 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
+#ifndef QT_NO_DEBUG
             ok_button->setText("NotActive");
+#endif
 
             dashboard->disableAllCards();
-            setSkillButtonEnablity(false);            
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
@@ -922,43 +929,47 @@ void RoomScene::updateStatus(Client::Status status){
 
             break;
         }
-    case Client::Responsing: {
-            ok_button->setText("Responsing");
 
-            // FIXME
+    case Client::Responsing: {
+#ifndef QT_NO_DEBUG
+            ok_button->setText("Responsing");
+#endif
 
             ok_button->setEnabled(true);
+            cancel_button->setEnabled(true);
             discard_button->setEnabled(false);            
             break;
         }
 
     case Client::Playing:{
+#ifndef QT_NO_DEBUG
             ok_button->setText("Playing");
-
+#endif
             dashboard->enableCards();
-            setSkillButtonEnablity(true);
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
             discard_button->setEnabled(true);
             break;
         }
-    case Client::Discarding:{
-            ok_button->setText("Discarding");
 
-            setSkillButtonEnablity(false);
+    case Client::Discarding:{
+#ifndef QT_NO_DEBUG
+            ok_button->setText("Discarding");
+#endif
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
-            discard_button->setEnabled(false);
+            discard_button->setEnabled(true);
             break;
         }
     }
-}
 
-void RoomScene::setSkillButtonEnablity(bool enablity){
-    foreach(QAbstractButton *button, skill_buttons)
-        button->setEnabled(enablity);
+    QMapIterator<QAbstractButton *, const ViewAsSkill *> itor(button2skill);
+    while(itor.hasNext()){
+        itor.next();
+        itor.key()->setEnabled(itor.value()->isAvailable());
+    }
 }
 
 void RoomScene::doSkillButton(){
@@ -975,6 +986,9 @@ void RoomScene::doOkButton(){
             const ViewAsSkill *skill = dashboard->currentSkill();
             if(skill)
                 callViewAsSkill();
+            else
+                useSelectedCard();
+
             break;
         }
     case Client::Responsing:{
@@ -993,6 +1007,8 @@ void RoomScene::doCancelButton(){
             const ViewAsSkill *skill = dashboard->currentSkill();
             if(skill)
                 cancelViewAsSkill();
+            else
+                dashboard->unselectAll();
             break;
         }
 

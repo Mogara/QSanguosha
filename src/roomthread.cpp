@@ -2,8 +2,6 @@
 #include "room.h"
 #include "gamerule.h"
 
-static PassiveSkillSorter Sorter;
-
 bool PassiveSkillSorter::operator ()(const PassiveSkill *a, const PassiveSkill *b){
     int x = a->getPriority(target);
     int y = b->getPriority(target);
@@ -52,17 +50,15 @@ void RoomThread::run(){
 void RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    QList<const PassiveSkill *> skills, triggers = trigger_table[event];
+    QList<const PassiveSkill *> skills = trigger_table[event];
 
-    foreach(const PassiveSkill *skill, triggers){
+    static PassiveSkillSorter sorter;
+
+    sorter.target = target;
+    sorter.sort(skills);
+
+    foreach(const PassiveSkill *skill, skills){
         if(skill->triggerable(target))
-            skills << skill;
-    }
-
-    Sorter.target = target;
-    Sorter.sort(skills);
-
-    foreach(const PassiveSkill *skill, skills){        
-        skill->trigger(event, target, data);        
+            skill->trigger(event, target, data);
     }
 }

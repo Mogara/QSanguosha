@@ -78,6 +78,8 @@ bool Peach::isAvailableAtPlay() const{
 
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
+
+    target_fixed = true;
 }
 
 QString Shit::getSubtype() const{

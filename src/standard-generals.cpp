@@ -18,10 +18,19 @@ public:
     }
 };
 
-class Hujia:public Skill{
+class Hujia:public ZeroCardViewAsSkill{
 public:
-    Hujia():Skill("hujia$"){
+    Hujia():ZeroCardViewAsSkill("hujia$"){
 
+    }
+
+    virtual const Card *viewAs() const{
+        return NULL;
+    }
+
+protected:
+    virtual bool isEnabledAtPlay() const{
+        return false;
     }
 };
 

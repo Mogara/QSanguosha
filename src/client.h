@@ -34,27 +34,29 @@ public:
     Status getStatus() const;
     int alivePlayerCount() const;
 
-    Q_INVOKABLE void addPlayer(const QString &player_info);
-    Q_INVOKABLE void removePlayer(const QString &player_name);
-    Q_INVOKABLE void drawCards(const QString &cards_str);
-    Q_INVOKABLE void drawNCards(const QString &draw_str);
-    Q_INVOKABLE void getLords(const QString &lords_str);
-    Q_INVOKABLE void getGenerals(const QString &generals_str);
-    Q_INVOKABLE void startInXs(const QString &);
-    Q_INVOKABLE void duplicationError(const QString &);
-    Q_INVOKABLE void arrangeSeats(const QString &seats);
-    Q_INVOKABLE void moveCard(const QString &move_str);
-    Q_INVOKABLE void activate(const QString &focus_player);
-    Q_INVOKABLE void startGame(const QString &);
-    Q_INVOKABLE void hpDamage(const QString &damage_str);
-    Q_INVOKABLE void hpFlow(const QString &flow_str);
-    Q_INVOKABLE void hpRecover(const QString &recover_str);
-    Q_INVOKABLE void judge(const QString &judge_str);
-    Q_INVOKABLE void requestForCard(const QString &request_str);
-    Q_INVOKABLE void askForSkillInvoke(const QString &ask_str);
-    Q_INVOKABLE void playSkillEffect(const QString &play_str);
-    Q_INVOKABLE void askForNullification(const QString &ask_str);
-    Q_INVOKABLE void askForCardChosen(const QString &ask_str);
+    typedef void (Client::*Callback)(const QString &);
+
+    void addPlayer(const QString &player_info);
+    void removePlayer(const QString &player_name);
+    void drawCards(const QString &cards_str);
+    void drawNCards(const QString &draw_str);
+    void getLords(const QString &lords_str);
+    void getGenerals(const QString &generals_str);
+    void startInXs(const QString &);
+    void duplicationError(const QString &);
+    void arrangeSeats(const QString &seats);
+    void moveCard(const QString &move_str);
+    void activate(const QString &focus_player);
+    void startGame(const QString &);
+    void hpDamage(const QString &damage_str);
+    void hpFlow(const QString &flow_str);
+    void hpRecover(const QString &recover_str);
+    void judge(const QString &judge_str);
+    void requestForCard(const QString &request_str);
+    void askForSkillInvoke(const QString &ask_str);
+    void playSkillEffect(const QString &play_str);
+    void askForNullification(const QString &ask_str);
+    void askForCardChosen(const QString &ask_str);
 
     // public fields
     QString card_pattern;
@@ -73,6 +75,7 @@ private:
     Status status;
     QSet<QString> frequent_flags;
     int alive_count;
+    QHash<QString, Callback> callbacks;
 
 private slots:
     void processReply();

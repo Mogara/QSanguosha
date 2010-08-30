@@ -60,6 +60,28 @@ Client::Client(QObject *parent)
     connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+
+    callbacks["addPlayer"] = &Client::addPlayer;
+    callbacks["removePlayer"] = &Client::removePlayer;
+    callbacks["drawCards"] = &Client::drawCards;
+    callbacks["drawNCards"] = &Client::drawNCards;
+    callbacks["getLords"] = &Client::getLords;
+    callbacks["getGenerals"] = &Client::getGenerals;
+    callbacks["startInXs"] = &Client::startInXs;
+    callbacks["duplicationError"] = &Client::duplicationError;
+    callbacks["arrangeSeats"] = &Client::arrangeSeats;
+    callbacks["moveCard"] = &Client::moveCard;
+    callbacks["activate"] = &Client::activate;
+    callbacks["startGame"] = &Client::startGame;
+    callbacks["hpDamage"] = &Client::hpDamage;
+    callbacks["hpFlow"] = &Client::hpFlow;
+    callbacks["hpRecover"] = &Client::hpRecover;
+    callbacks["judge"] = &Client::judge;
+    callbacks["requestForCard"] = &Client::requestForCard;
+    callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
+    callbacks["playSkillEffect"] = &Client::playSkillEffect;
+    callbacks["askForNullification"] = &Client::askForNullification;
+    callbacks["askForCardChosen"] = &Client::askForCardChosen;    
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -104,10 +126,12 @@ void Client::processReply(){
             player->setProperty(field, value);
         }else if(object.startsWith(method_prefix)){
             // invoke methods
-            bool invoked = QMetaObject::invokeMethod(this, field, Qt::DirectConnection, Q_ARG(QString, value));
-            if(!invoked){
+            Callback callback = callbacks.value(words[1], NULL);
+            if(callback)
+                (this->*callback)(value);
+            else
                 QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(words[1]));
-            }
+
         }else
             QMessageBox::information(NULL, tr("Reply format error!"), reply);
     }
