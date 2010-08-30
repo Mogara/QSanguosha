@@ -44,6 +44,10 @@ RoomThread::RoomThread(Room *room, QSemaphore *sem)
 
 void RoomThread::run(){
     // start game, draw initial cards
+    foreach(ServerPlayer *player, room->players){
+        invokePassiveSkills(GameStart, player);
+    }
+
     room->changePhase(room->players.first());
 }
 

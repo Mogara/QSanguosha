@@ -18,6 +18,15 @@ Room::Room(QObject *parent, int player_count)
     nullificators_count(0),
     thread(NULL), sem(NULL)
 {
+    // init callback table
+    callbacks["useCardCommand"] = &Room::useCardCommand;
+    callbacks["invokeSkillCommand"] = &Room::invokeSkillCommand;
+    callbacks["replyNullificationCommand"] = &Room::replyNullificationCommand;
+    callbacks["chooseCardCommand"] = &Room::chooseCardCommand;
+    callbacks["responseCardCommand"] = &Room::responseCardCommand;
+
+    callbacks["signupCommand"] = &Room::signupCommand;
+    callbacks["chooseCommand"] = &Room::chooseCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -65,7 +74,7 @@ void Room::requestForCard(ServerPlayer *player, const QVariant &data){
 
 }
 
-void Room::responseCardCommand(ServerPlayer *player, const QStringList &args){
+void Room::responseCardCommand(ServerPlayer *player, const QString &arg){
 
 }
 
@@ -163,26 +172,18 @@ void Room::processRequest(const QString &request){
         return;
     }
 
-    bool invoked = QMetaObject::invokeMethod(this,
-                                             command.toAscii(),
-                                             Qt::DirectConnection,
-                                             Q_ARG(ServerPlayer *, player),
-                                             Q_ARG(QString, args.at(1)));
-    if(invoked)
+    Callback callback = callbacks.value(command, NULL);
+    if(callback){
+        (this->*callback)(player, args.at(1));
         emit room_message(player->reportHeader() + request);
-    else
+    }else
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
 }
 
 void Room::signupCommand(ServerPlayer *player, const QString &arg){
-    QRegExp rx("(.+):(.+)");
-    if(!rx.exactMatch(arg)){
-        return;
-    }
-
-    QStringList words = rx.capturedTexts();
-    QString name = words[1];
-    QString avatar = words[2];
+    QStringList words = arg.split(":");
+    QString name = words[0];
+    QString avatar = words[1];
 
     if(findChild<ServerPlayer*>(name)){
         player->invoke("duplicationError");
@@ -316,21 +317,15 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
         return;
     }
 
-    QList<ServerPlayer *> targets;
-    if(target_str != "."){
-        QStringList target_names = target_str.split("+");
-
-        foreach(QString target_name, target_names)
-            targets << findChild<ServerPlayer *>(target_name);
-
-    }
-
     CardUseStruct data;
     data.card = card;
     data.from = player;
-    data.to = targets;
 
-
+    if(target_str != "."){
+        QStringList target_names = target_str.split("+");
+        foreach(QString target_name, target_names)
+            data.to << findChild<ServerPlayer *>(target_name);
+    }
 
     thread->invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
@@ -361,11 +356,6 @@ void Room::startGame(){
 
         broadcastProperty(player, "max_hp");
         broadcastProperty(player, "hp");
-    }
-
-    // every player draw 4 cards and them start from the lord
-    for(i=0; i<player_count; i++){
-        drawCards(players.at(i), 4);
     }
 
     broadcast("! startGame .");
@@ -453,8 +443,8 @@ QString CardMoveStruct::toString() const{
             .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
-void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &args){
-    int card_id = args.at(1).toInt();
+void Room::replyNullificationCommand(ServerPlayer *player, const QString &arg){
+    int card_id = arg.toInt();
 
     if(card_id == -1)
         nullificators.removeOne(player);
@@ -473,7 +463,7 @@ void Room::replyNullificationCommand(ServerPlayer *player, const QStringList &ar
     }
 }
 
-void Room::chooseCardCommand(ServerPlayer *player, const QStringList &args){
+void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
     // FIXME
 }
 

@@ -16,7 +16,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << PhaseChange << CardUsed;
+    events << GameStart << PhaseChange << CardUsed;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -46,6 +46,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     Room *room = player->getRoom();
 
     switch(event){
+    case GameStart: room->drawCards(player, 4); break;
     case PhaseChange: onPhaseChange(player); break;
     case CardUsed: {
             if(data.canConvert<CardUseStruct>()){

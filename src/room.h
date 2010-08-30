@@ -13,6 +13,7 @@ class Room : public QObject{
 
 public:
     friend class RoomThread;
+    typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
@@ -37,19 +38,22 @@ public:
 
     // interactive methods
     QString activate(ServerPlayer *target);
-    Q_INVOKABLE void useCardCommand(ServerPlayer *player, const QString &card_str);
+    void useCardCommand(ServerPlayer *player, const QString &card_str);
 
     QString askForSkillInvoke(ServerPlayer *player, const QString &ask_str);
-    Q_INVOKABLE void invokeSkillCommand(ServerPlayer *player, const QString &arg);
+    void invokeSkillCommand(ServerPlayer *player, const QString &arg);
 
     void askForNullification(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void replyNullificationCommand(ServerPlayer *player, const QStringList &args);
+    void replyNullificationCommand(ServerPlayer *player, const QString &arg);
 
     void askForCardChosen(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void chooseCardCommand(ServerPlayer *player, const QStringList &args);
+    void chooseCardCommand(ServerPlayer *player, const QString &arg);
 
     void requestForCard(ServerPlayer *player, const QVariant &data);
-    Q_INVOKABLE void responseCardCommand(ServerPlayer *player, const QStringList &args);
+    void responseCardCommand(ServerPlayer *player, const QString &arg);
+
+    void signupCommand(ServerPlayer *player, const QString &arg);
+    void chooseCommand(ServerPlayer *player, const QString &general_name);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -73,12 +77,11 @@ private:
     QString result;
     QString reply_func;
 
+    QHash<QString, Callback> callbacks;
+
     int drawCard();
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
-
-    Q_INVOKABLE void signupCommand(ServerPlayer *player, const QString &arg);
-    Q_INVOKABLE void chooseCommand(ServerPlayer *player, const QString &general_name);
 
 private slots:
     void reportDisconnection();
