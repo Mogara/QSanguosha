@@ -55,6 +55,7 @@ public:
     void playSkillEffect(const QString &play_str);
     void askForNullification(const QString &ask_str);
     void askForCardChosen(const QString &ask_str);
+    void playCardEffect(const QString &play_str);
 
     // public fields
     QString card_pattern;

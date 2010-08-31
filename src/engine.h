@@ -11,6 +11,9 @@
 #include <MediaObject>
 #include <QMetaObject>
 
+using Phonon::MediaObject;
+using Phonon::MediaSource;
+
 class Engine: public QObject
 {
     Q_OBJECT
@@ -34,18 +37,20 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
-    void playEffect(const Phonon::MediaSource &source);
+    void playEffect(const MediaSource &source);
     void playSkillEffect(const QString &skill_name, int index);
+    void playCardEffect(const QString &card_name, bool is_male);
 
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
+    QHash<QString, MediaSource> male_effects, female_effects;
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
-    Phonon::MediaObject *effect;
+    MediaObject *effect;
 };
 
 extern Engine *Sanguosha;

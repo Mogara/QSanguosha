@@ -79,7 +79,8 @@ Client::Client(QObject *parent)
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["askForNullification"] = &Client::askForNullification;
-    callbacks["askForCardChosen"] = &Client::askForCardChosen;    
+    callbacks["askForCardChosen"] = &Client::askForCardChosen;
+    callbacks["playCardEffect"] = &Client::playCardEffect;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -483,6 +484,18 @@ void Client::askForCardChosen(const QString &ask_str){
     connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
 
     dialog->exec();
+}
+
+void Client::playCardEffect(const QString &play_str){
+    QRegExp pattern("(\\w+):([MF])");
+    if(!pattern.exactMatch(play_str))
+        return;
+
+    QStringList texts = pattern.capturedTexts();
+    QString card_name = texts.at(1);
+    bool is_male = texts.at(2) == "M";
+
+    Sanguosha->playCardEffect(card_name, is_male);
 }
 
 void Client::chooseCard(int card_id){

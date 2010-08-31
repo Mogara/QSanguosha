@@ -18,12 +18,25 @@ Engine::Engine(QObject *parent)
 
 void Engine::addPackage(Package *package){
     package->setParent(this);
+    QString package_name = package->objectName();
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach(Card *card, all_cards){
         card->setId(cards.length());
         cards << card;
-        metaobjects.insert(card->objectName(), card->metaObject());
+
+        QString card_name = card->objectName();
+        metaobjects.insert(card_name, card->metaObject());
+
+        if(!male_effects.contains(card_name)){
+            MediaSource male_source(QString("%1/card-effects/male/%2.mp3").arg(package_name).arg(card_name));
+            male_effects.insert(card_name, male_source);
+        }
+
+        if(female_effects.contains(card_name)){
+            MediaSource female_source(QString("%1/card-effects/female/%2.mp3").arg(package_name).arg(card_name));
+            female_effects.insert(card_name, female_source);
+        }
     }
 
     QList<General *> all_generals = package->findChildren<General *>();
@@ -150,10 +163,13 @@ QList<int> Engine::getRandomCards() const{
         list.swap(r1, r2);
     }
 
+    list.prepend(55);
+    list.prepend(55);
+
     return list;
 }
 
-void Engine::playEffect(const Phonon::MediaSource &source){
+void Engine::playEffect(const MediaSource &source){
     effect->setCurrentSource(source);
     effect->play();
 }
@@ -162,6 +178,14 @@ void Engine::playSkillEffect(const QString &skill_name, int index){
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
         skill->playEffect(index);
+}
+
+void Engine::playCardEffect(const QString &card_name, bool is_male){
+    QHash<QString, MediaSource> &source = is_male ? male_effects : female_effects;
+    if(source.contains(card_name))
+        playEffect(source[card_name]);
+    else
+        QMessageBox::warning(NULL, tr("Warning"), tr("No suitable card effect was found! Card name is %1").arg(card_name));
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{

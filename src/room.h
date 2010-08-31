@@ -39,6 +39,7 @@ public:
     void obtainCard(ServerPlayer *target, const Card *card);
     void damage(ServerPlayer *victim, int damage);
     void recover(ServerPlayer *player, int recover);
+    void playCardEffect(ServerPlayer *player, const QString &card_name);
 
     // interactive methods
     QString activate(ServerPlayer *target);

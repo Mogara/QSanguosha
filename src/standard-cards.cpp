@@ -33,6 +33,8 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);
 
+    room->playCardEffect(source, objectName());
+
     foreach(ServerPlayer *target, targets){
         room->requestForCard(target, "jink");
     }

@@ -378,6 +378,12 @@ void Room::recover(ServerPlayer *player, int recover){
     broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
 }
 
+void Room::playCardEffect(ServerPlayer *player, const QString &card_name){
+    bool is_male = player->getGeneral()->isMale();
+    QString gender = is_male ? "M" : "F";
+    broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
+}
+
 void Room::damage(const DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
     bool broken = thread->invokePassiveSkills(Predamage, damage_data.from, data);

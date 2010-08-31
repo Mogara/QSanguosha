@@ -1045,7 +1045,13 @@ void RoomScene::changeHp(const QString &who, int delta){
     }
 
     // play effect;
-    static Phonon::MediaSource damage_effect("audio/damage.wav");
-    if(delta < 0)
-        Sanguosha->playEffect(damage_effect);
+    static Phonon::MediaSource male_damage_effect("audio/male-damage.mp3");
+    static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
+    if(delta < 0){
+        ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
+        if(player->getGeneral()->isMale())
+            Sanguosha->playEffect(male_damage_effect);
+        else
+            Sanguosha->playEffect(female_damage_effect);
+    }
 }
