@@ -61,10 +61,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     case Damaged: {
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
-                ServerPlayer *victim = damage.to;
-                int new_hp = victim->getHp() - damage.damage;
-                new_hp = qMax(0, new_hp);
-                room->setPlayerProperty(victim, "hp", new_hp);
+                room->damage(damage.to, damage.damage);
             }
             break;
         }

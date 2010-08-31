@@ -48,9 +48,7 @@ public:
     void moveCard(const QString &move_str);
     void activate(const QString &focus_player);
     void startGame(const QString &);
-    void hpDamage(const QString &damage_str);
-    void hpFlow(const QString &flow_str);
-    void hpRecover(const QString &recover_str);
+    void hpChange(const QString &change_str);
     void judge(const QString &judge_str);
     void requestForCard(const QString &request_str);
     void askForSkillInvoke(const QString &ask_str);
@@ -92,11 +90,10 @@ signals:
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);
-    void hp_changed(const QString &target, int delta);
+    void hp_changed(const QString &who, int delta);
     void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);
     void avatars_hiden();
-    void damaged(const QString &who);
 };
 
 extern Client *ClientInstance;

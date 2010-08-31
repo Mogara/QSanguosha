@@ -84,7 +84,7 @@ private slots:
     void doCancelButton();
     void doDiscardButton();
     void hideAvatars();
-    void damagePlayer(const QString &who);
+    void changeHp(const QString &who, int delta);
 };
 
 #endif // ROOMSCENE_H

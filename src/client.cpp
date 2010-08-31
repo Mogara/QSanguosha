@@ -73,9 +73,7 @@ Client::Client(QObject *parent)
     callbacks["moveCard"] = &Client::moveCard;
     callbacks["activate"] = &Client::activate;
     callbacks["startGame"] = &Client::startGame;
-    callbacks["hpDamage"] = &Client::hpDamage;
-    callbacks["hpFlow"] = &Client::hpFlow;
-    callbacks["hpRecover"] = &Client::hpRecover;
+    callbacks["hpChange"] = &Client::hpChange;
     callbacks["judge"] = &Client::judge;
     callbacks["requestForCard"] = &Client::requestForCard;
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
@@ -331,16 +329,17 @@ void Client::startGame(const QString &){
     emit status_changed(NotActive);
 }
 
-void Client::hpDamage(const QString &who){
-    emit damaged(who);
-}
+void Client::hpChange(const QString &change_str){
+    QRegExp rx("(.+):(-?\\d+)");
 
-void Client::hpFlow(const QString &flow_str){
-    // FIXME
-}
+    if(!rx.exactMatch(change_str))
+        return;
 
-void Client::hpRecover(const QString &recover_str){
-    // FIXME
+    QStringList texts = rx.capturedTexts();
+    QString who = texts.at(1);
+    int delta = texts.at(2).toInt();
+
+    emit hp_changed(who, delta);
 }
 
 void Client::ackForHpChange(int delta){

@@ -21,7 +21,6 @@ public:
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void throwCard(ServerPlayer *player, const Card *card);
 
-    QList<int> *getDiscardPile() const;    
     void playSkillEffect(const QString &skill_name, int index = -1);
 
     ServerPlayer *getCurrent() const;
@@ -38,6 +37,8 @@ public:
     void useCard(ServerPlayer *player, const QString &card_str);
     void damage(const DamageStruct &data);
     void obtainCard(ServerPlayer *target, const Card *card);
+    void damage(ServerPlayer *victim, int damage);
+    void recover(ServerPlayer *player, int recover);
 
     // interactive methods
     QString activate(ServerPlayer *target);
@@ -81,6 +82,9 @@ private:
     QString reply_func;
 
     QHash<QString, Callback> callbacks;
+
+    QMap<int, Player::Place> place_map;
+    QMap<int, ServerPlayer*> owner_map;
 
     int drawCard();
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());

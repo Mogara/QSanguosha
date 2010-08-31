@@ -68,8 +68,6 @@ bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, c
     sorter.sort(skills);
 
     foreach(const PassiveSkill *skill, skills){
-        qDebug("%s", qPrintable(skill->objectName()));
-
         if(skill->trigger(event, target, data))
             return true;
     }

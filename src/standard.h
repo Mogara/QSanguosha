@@ -130,9 +130,12 @@ protected:
 
 class Peach: public BasicCard{
     Q_OBJECT
+
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
     virtual QString getSubtype() const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+
 protected:
     virtual bool isAvailableAtPlay() const;
 };

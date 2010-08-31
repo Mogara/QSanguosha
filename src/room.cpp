@@ -362,6 +362,22 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
     thread->invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
 
+void Room::damage(ServerPlayer *victim, int damage){
+    int new_hp = victim->getHp() - damage;
+    new_hp = qMax(0, new_hp);
+
+    setPlayerProperty(victim, "hp", new_hp);
+    broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-damage));
+}
+
+void Room::recover(ServerPlayer *player, int recover){
+    int new_hp = player->getHp() + recover;
+    new_hp = qMin(player->getMaxHP(), new_hp);
+
+    setPlayerProperty(player, "hp", new_hp);
+    broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
+}
+
 void Room::damage(const DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
     bool broken = thread->invokePassiveSkills(Predamage, damage_data.from, data);
@@ -371,10 +387,8 @@ void Room::damage(const DamageStruct &damage_data){
     if(!broken)
         broken = thread->invokePassiveSkills(Damage, damage_data.from, data);
 
-    if(!broken){
-        thread->invokePassiveSkills(Damaged, damage_data.to, data);
-        broadcastInvoke("hpDamage", damage_data.to->objectName());
-    }
+    if(!broken)
+        thread->invokePassiveSkills(Damaged, damage_data.to, data);    
 }
 
 void Room::startGame(){
@@ -462,13 +476,23 @@ void Room::throwCard(ServerPlayer *player, int card_id){
     moveCard(move);
 }
 
-QList<int> *Room::getDiscardPile() const{
-    return discard_pile;
-}
-
 void Room::moveCard(const CardMoveStruct &move){
     broadcast("! moveCard " + move.toString());
-    ServerPlayer::MoveCard(move);
+
+    const Card *card = Sanguosha->getCard(move.card_id);
+    if(move.from)
+        move.from->removeCard(card, move.from_place);
+    else{
+        if(move.to)
+            discard_pile->removeOne(move.card_id);
+    }
+
+    if(move.to){
+        move.to->addCard(card, move.to_place);
+    }else{
+        if(move.from)
+            discard_pile->prepend(move.card_id);
+    }
 }
 
 QString CardMoveStruct::toString() const{

@@ -91,24 +91,3 @@ void ServerPlayer::addCard(const Card *card, Place place){
         ;
     }
 }
-
-void ServerPlayer::MoveCard(const CardMoveStruct &move){
-    const Card *card = Sanguosha->getCard(move.card_id);
-    if(move.from)
-        move.from->removeCard(card, move.from_place);
-    else{
-        if(move.to){
-            Room *room = move.to->getRoom();
-            room->getDiscardPile()->removeOne(move.card_id);
-        }
-    }
-
-    if(move.to){
-        move.to->addCard(card, move.to_place);        
-    }else{
-        if(move.from){
-            Room *room = move.from->getRoom();
-            room->getDiscardPile()->prepend(move.card_id);
-        }
-    }
-}

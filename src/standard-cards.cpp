@@ -72,6 +72,11 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
+void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(source, this);
+    room->recover(source, 1);
+}
+
 bool Peach::isAvailableAtPlay() const{
     return ClientInstance->getPlayer()->isWounded();
 }

@@ -104,7 +104,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
-    connect(ClientInstance, SIGNAL(damaged(QString)), this, SLOT(damagePlayer(QString)));
+    connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -1035,7 +1035,7 @@ void RoomScene::hideAvatars(){
     dashboard->hideAvatar();
 }
 
-void RoomScene::damagePlayer(const QString &who){
+void RoomScene::changeHp(const QString &who, int delta){
     if(who == Config.UserName){
         dashboard->update();
     }else{
@@ -1046,5 +1046,6 @@ void RoomScene::damagePlayer(const QString &who){
 
     // play effect;
     static Phonon::MediaSource damage_effect("audio/damage.wav");
-    Sanguosha->playEffect(damage_effect);
+    if(delta < 0)
+        Sanguosha->playEffect(damage_effect);
 }

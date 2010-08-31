@@ -150,15 +150,6 @@ QList<int> Engine::getRandomCards() const{
         list.swap(r1, r2);
     }
 
-#ifndef QT_NO_DEBUG
-
-    list.prepend(55);
-    list.prepend(55);
-    list.prepend(55);
-    list.prepend(55);
-
-#endif
-
     return list;
 }
 
