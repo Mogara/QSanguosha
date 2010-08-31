@@ -14,8 +14,7 @@ CardItem::CardItem(const Card *card)
 
     suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
     icon_pixmap.load(card->getIconPath());
-    pixmap = pixmap.scaled(150*0.8, 210*0.8);
-    setFlags(ItemIsFocusable);
+    pixmap = pixmap.scaled(150*0.8, 210*0.8);    
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 

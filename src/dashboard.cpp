@@ -44,6 +44,7 @@ Dashboard::Dashboard()
 void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
     card_item->setRotation(0.0);
+    card_item->setFlags(ItemIsFocusable);
     card_items << card_item;
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));

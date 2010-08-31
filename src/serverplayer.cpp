@@ -56,9 +56,7 @@ void ServerPlayer::invoke(const char *method, const QString &arg){
 
 QString ServerPlayer::reportHeader() const{
     QString name = objectName();
-    if(name.isEmpty())
-        name = tr("Anonymous");
-    return QString("%1[%2] ").arg(name).arg(socket->peerAddress().toString());
+    return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
 void ServerPlayer::sendProperty(const char *property_name){
