@@ -72,7 +72,6 @@ private:
     void selectNextTarget(bool multiple);
     void unselectAllTargets(const QGraphicsItem *except = NULL);
 
-    void startViewAsSkill(const ViewAsSkill *skill);
     void callViewAsSkill();
     void cancelViewAsSkill();
 
@@ -85,6 +84,7 @@ private slots:
     void doCancelButton();
     void doDiscardButton();
     void hideAvatars();
+    void damagePlayer(const QString &who);
 };
 
 #endif // ROOMSCENE_H

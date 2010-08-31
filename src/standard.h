@@ -142,6 +142,8 @@ class Shit:public BasicCard{
 public:
     Q_INVOKABLE Shit(Card::Suit suit, int number);
     virtual QString getSubtype() const;
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class Snatch:public SingleTargetTrick{

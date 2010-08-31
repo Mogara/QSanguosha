@@ -96,6 +96,7 @@ signals:
     void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);
     void avatars_hiden();
+    void damaged(const QString &who);
 };
 
 extern Client *ClientInstance;

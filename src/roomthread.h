@@ -19,19 +19,20 @@ struct PassiveSkillSorter{
     void sort(QList<const PassiveSkill *> &skills);
 };
 
+enum DamageNature{
+    Normal, // normal slash, duel and most damage caused by skill
+    Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
+    Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+};
+
 struct DamageStruct{
-    enum Nature {
-        Normal, // normal slash, duel and most damage caused by skill
-        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
-    };
     DamageStruct();
 
     ServerPlayer *from;
     ServerPlayer *to;
     const Card *card;
     int damage;
-    Nature nature;
+    DamageNature nature;
 };
 
 Q_DECLARE_METATYPE(DamageStruct);
@@ -44,6 +45,14 @@ struct CardEffectStruct{
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct);
+
+struct SlashEffectStruct{
+    const Card *slash;
+
+    DamageNature nature;
+};
+
+Q_DECLARE_METATYPE(SlashEffectStruct);
 
 struct CardUseStruct{
     const Card *card;
@@ -88,15 +97,14 @@ class RoomThread : public QThread{
     Q_OBJECT
 
 public:
-    explicit RoomThread(Room *room, QSemaphore *sem);
-    void invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
+    explicit RoomThread(Room *room);
+    bool invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
 
 protected:
     virtual void run();
 
 private:
     Room *room;
-    QSemaphore *sem;
 
     QMap<QString, const PassiveSkill *> passive_skills;
     QMap<TriggerEvent, QList<const PassiveSkill *> > trigger_table;

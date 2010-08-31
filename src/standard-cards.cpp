@@ -86,6 +86,18 @@ QString Shit::getSubtype() const{
     return "disgusting_card";
 }
 
+void Shit::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(source, this);
+
+    DamageStruct damage;
+    damage.from = damage.to = source;
+    damage.card = this;
+    damage.damage = 1;
+    damage.nature = Normal;
+
+    room->damage(damage);
+}
+
 class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){

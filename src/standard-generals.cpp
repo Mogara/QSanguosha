@@ -13,8 +13,18 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        // FIXME
-        // obtain the card that cause damage
+        Room *room = target->getRoom();
+        const Card *card = damage.card;
+        if(card->isVirtualCard()){
+            QList<int> subcards = card->getSubcards();
+            if(subcards.isEmpty())
+                return;
+        }
+
+        if(room->askForSkillInvoke(target, "jianxiong:yes+no") == "yes"){            
+            room->obtainCard(target, card);
+            room->playSkillEffect(objectName());
+        }
     }
 };
 
@@ -554,6 +564,8 @@ void StandardPackage::addGenerals(){
     // passive skill description
     t["yingzi:yes"] = tr("yingzi:yes");
     t["yingzi:no"] = t["nothing"];
+    t["jianxiong:yes"] = tr("jianxiong:yes");
+    t["jianxiong:no"] = t["nothing"];
 
     t["luanji"] = tr("luanji");
 }

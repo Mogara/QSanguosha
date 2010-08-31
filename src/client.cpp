@@ -331,13 +331,8 @@ void Client::startGame(const QString &){
     emit status_changed(NotActive);
 }
 
-void Client::hpDamage(const QString &damage_str){
-    // damage string example: 4:caocao<-liubei
-    QRegExp pattern("(\\d+):(.+)<-(.+)");
-    pattern.indexIn(damage_str);
-    QStringList words = pattern.capturedTexts();
-
-
+void Client::hpDamage(const QString &who){
+    emit damaged(who);
 }
 
 void Client::hpFlow(const QString &flow_str){

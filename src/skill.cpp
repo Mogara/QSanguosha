@@ -137,6 +137,10 @@ MasochismSkill::MasochismSkill(const QString &name)
 
 }
 
+int MasochismSkill::getPriority(ServerPlayer *) const{
+    return -1;
+}
+
 void MasochismSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
     events << Damaged;
 }

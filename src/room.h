@@ -31,10 +31,13 @@ public:
     void nextPhase(ServerPlayer *player);
     void drawCards(ServerPlayer *player, int n);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
+    void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void changePhase(ServerPlayer *target);
     void throwCard(ServerPlayer *player, int card_id);
     void moveCard(const CardMoveStruct &move);
     void useCard(ServerPlayer *player, const QString &card_str);
+    void damage(const DamageStruct &data);
+    void obtainCard(ServerPlayer *target, const Card *card);
 
     // interactive methods
     QString activate(ServerPlayer *target);

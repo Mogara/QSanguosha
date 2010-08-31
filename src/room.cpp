@@ -50,6 +50,33 @@ void Room::invokeSkillCommand(ServerPlayer *, const QString &arg){
     sem->release();
 }
 
+void Room::obtainCard(ServerPlayer *target, const Card *card){
+    if(card->isVirtualCard()){
+        QList<int> subcards = card->getSubcards();
+        foreach(int card_id, subcards){
+            CardMoveStruct move;
+            move.card_id = card_id;
+            move.from = NULL;
+            move.from_place = Player::DiscardedPile;
+            move.to = target;
+            move.to_place = Player::Hand;
+            move.open = true;
+
+            moveCard(move);
+        }
+    }else{
+        CardMoveStruct move;
+        move.card_id = card->getId();
+        move.from = NULL;
+        move.from_place = Player::DiscardedPile;
+        move.to = target;
+        move.to_place = Player::Hand;
+        move.open = true;
+
+        moveCard(move);
+    }
+}
+
 void Room::askForNullification(ServerPlayer *, const QVariant &data){
     broadcastInvoke("askForNullification", data.toString());
 
@@ -81,6 +108,11 @@ void Room::responseCardCommand(ServerPlayer *player, const QString &arg){
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
     player->setFlags(flag);
     broadcast(QString("#%1 flags %1").arg(flag));
+}
+
+void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value){
+    player->setProperty(property_name, value);
+    broadcastProperty(player, property_name);
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -330,6 +362,21 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
     thread->invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
 }
 
+void Room::damage(const DamageStruct &damage_data){
+    QVariant data = QVariant::fromValue(damage_data);
+    bool broken = thread->invokePassiveSkills(Predamage, damage_data.from, data);
+    if(!broken)
+        broken = thread->invokePassiveSkills(Predamaged, damage_data.to, data);
+
+    if(!broken)
+        broken = thread->invokePassiveSkills(Damage, damage_data.from, data);
+
+    if(!broken){
+        thread->invokePassiveSkills(Damaged, damage_data.to, data);
+        broadcastInvoke("hpDamage", damage_data.to->objectName());
+    }
+}
+
 void Room::startGame(){
     // broadcast all generals except the lord
     int i;
@@ -367,7 +414,7 @@ void Room::startGame(){
     current = the_lord;
 
     sem = new QSemaphore;
-    thread = new RoomThread(this, sem);
+    thread = new RoomThread(this);
     thread->start();
 }
 

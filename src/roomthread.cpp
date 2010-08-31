@@ -18,8 +18,8 @@ DamageStruct::DamageStruct()
 {
 }
 
-RoomThread::RoomThread(Room *room, QSemaphore *sem)
-    :QThread(room), room(room), sem(sem)
+RoomThread::RoomThread(Room *room)
+    :QThread(room), room(room)
 {
     foreach(ServerPlayer *player, room->players){
         const General *general = player->getGeneral();
@@ -51,10 +51,16 @@ void RoomThread::run(){
     room->changePhase(room->players.first());
 }
 
-void RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
+bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    QList<const PassiveSkill *> skills = trigger_table[event];
+    QList<const PassiveSkill *> skills = trigger_table[event];    
+    QMutableListIterator<const PassiveSkill *> itor(skills);
+    while(itor.hasNext()){
+        const PassiveSkill *skill = itor.next();
+        if(!skill->triggerable(target))
+            itor.remove();
+    }
 
     static PassiveSkillSorter sorter;
 
@@ -62,7 +68,11 @@ void RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, c
     sorter.sort(skills);
 
     foreach(const PassiveSkill *skill, skills){
-        if(skill->triggerable(target))
-            skill->trigger(event, target, data);
+        qDebug("%s", qPrintable(skill->objectName()));
+
+        if(skill->trigger(event, target, data))
+            return true;
     }
+
+    return false;
 }

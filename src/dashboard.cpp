@@ -43,6 +43,7 @@ Dashboard::Dashboard()
 
 void Dashboard::addCardItem(CardItem *card_item){
     card_item->setParentItem(this);
+    card_item->setRotation(0.0);
     card_items << card_item;
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
@@ -115,7 +116,9 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
 }
 
 const Card *Dashboard::getSelected() const{
-    if(selected)
+    if(view_as_skill)
+        return pending_card;
+    else if(selected)
         return selected->getCard();
     else
         return NULL;
@@ -375,11 +378,6 @@ void Dashboard::enableCards(){
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){
-    if(view_as_skill){
-        stopPending();
-        view_as_skill = NULL;
-    }
-
     view_as_skill = skill;
 
     foreach(CardItem *card_item, card_items){
@@ -387,13 +385,14 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     }
 
     pending_card = skill->viewAs(pendings);
+    emit card_selected(pending_card);
 }
 
 void Dashboard::stopPending(){
     view_as_skill = NULL;
     pending_card = NULL;
+    emit card_selected(pending_card);
 
-    card_items.append(pendings);
     pendings.clear();
     adjustCards();
 }
@@ -404,10 +403,13 @@ void Dashboard::onCardItemClicked(){
         return;
 
     if(view_as_skill){
-        if(card_item->isPending())
+        if(card_item->isPending()){
             card_item->unselect();
-        else
+            pendings.removeOne(card_item);
+        }else{
             card_item->select();
+            pendings << card_item;
+        }
 
         foreach(CardItem *c, card_items){
             if(!c->isPending())
@@ -420,6 +422,7 @@ void Dashboard::onCardItemClicked(){
         updateEnablity(offensive_horse);
 
         pending_card = view_as_skill->viewAs(pendings);
+        emit card_selected(pending_card);
 
     }else{
         if(card_item->isPending()){

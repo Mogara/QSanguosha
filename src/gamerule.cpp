@@ -16,7 +16,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed;
+    events << GameStart << PhaseChange << CardUsed << Damaged;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -58,6 +58,17 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
 
             break;
         }
+    case Damaged: {
+            if(data.canConvert<DamageStruct>()){
+                DamageStruct damage = data.value<DamageStruct>();
+                ServerPlayer *victim = damage.to;
+                int new_hp = victim->getHp() - damage.damage;
+                new_hp = qMax(0, new_hp);
+                room->setPlayerProperty(victim, "hp", new_hp);
+            }
+            break;
+        }
+
     default:
         ;
     }

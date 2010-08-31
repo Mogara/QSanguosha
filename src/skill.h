@@ -90,6 +90,7 @@ class MasochismSkill: public PassiveSkill{
 public:
     MasochismSkill(const QString &name);
 
+    virtual int getPriority(ServerPlayer *target) const;
     virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 

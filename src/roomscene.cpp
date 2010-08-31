@@ -104,6 +104,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
+    connect(ClientInstance, SIGNAL(damaged(QString)), this, SLOT(damagePlayer(QString)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -560,6 +561,8 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
             card_item->setPos(DiscardedPos);
         }
 
+        card_item->disconnect(this);
+
         return card_item;
     }
 }
@@ -810,17 +813,6 @@ void RoomScene::useCard(const Card *card){
     enableTargets(NULL);
 }
 
-void RoomScene::startViewAsSkill(const ViewAsSkill *skill){
-    dashboard->startPending(skill);
-
-    QAbstractButton *button = button2skill.key(skill);
-    if(button){
-        button->setEnabled(false);
-        ok_button->setEnabled(true);
-        cancel_button->setEnabled(true);
-    }
-}
-
 void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
@@ -973,21 +965,36 @@ void RoomScene::updateStatus(Client::Status status){
 }
 
 void RoomScene::doSkillButton(){
+    const ViewAsSkill *current = dashboard->currentSkill();
+    if(current){
+        dashboard->stopPending();
+        QAbstractButton *button = button2skill.key(current);
+        if(button)
+            button->setEnabled(true);
+    }
+
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     const ViewAsSkill *skill = button2skill.value(button, NULL);
 
-    if(skill)
-        startViewAsSkill(skill);
+    if(skill){
+        dashboard->startPending(skill);
+
+        button->setEnabled(false);
+        ok_button->setEnabled(true);
+        cancel_button->setEnabled(true);
+    }
 }
 
 void RoomScene::doOkButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
+            useSelectedCard();
+
             const ViewAsSkill *skill = dashboard->currentSkill();
-            if(skill)
-                callViewAsSkill();
-            else
-                useSelectedCard();
+            if(skill){
+                skill->playEffect();
+                dashboard->stopPending();
+            }
 
             break;
         }
@@ -1026,4 +1033,18 @@ void RoomScene::hideAvatars(){
         photo->hideAvatar();
 
     dashboard->hideAvatar();
+}
+
+void RoomScene::damagePlayer(const QString &who){
+    if(who == Config.UserName){
+        dashboard->update();
+    }else{
+        Photo *photo = name2photo.value(who, NULL);
+        if(photo)
+            photo->update();
+    }
+
+    // play effect;
+    static Phonon::MediaSource damage_effect("audio/damage.wav");
+    Sanguosha->playEffect(damage_effect);
 }
