@@ -80,8 +80,8 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::restoreFromConfig(){
-    resize(Config.value("WindowSize").toSize());
-    move(Config.value("WindowPosition").toPoint());
+    resize(Config.value("WindowSize", QSize(1042, 719)).toSize());
+    move(Config.value("WindowPosition", QPoint(20,20)).toPoint());
 
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);

@@ -19,20 +19,22 @@ struct PassiveSkillSorter{
     void sort(QList<const PassiveSkill *> &skills);
 };
 
-enum DamageNature{
-    Normal, // normal slash, duel and most damage caused by skill
-    Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-    Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
-};
+
 
 struct DamageStruct{
     DamageStruct();
+
+    enum Nature{
+        Normal, // normal slash, duel and most damage caused by skill
+        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
+        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+    };
 
     ServerPlayer *from;
     ServerPlayer *to;
     const Card *card;
     int damage;
-    DamageNature nature;
+    Nature nature;
 };
 
 Q_DECLARE_METATYPE(DamageStruct);
@@ -42,17 +44,11 @@ struct CardEffectStruct{
 
     ServerPlayer *from;
     ServerPlayer *to;
+
+    QSet<QString> flags;
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct);
-
-struct SlashEffectStruct{
-    const Card *slash;
-
-    DamageNature nature;
-};
-
-Q_DECLARE_METATYPE(SlashEffectStruct);
 
 struct CardUseStruct{
     const Card *card;

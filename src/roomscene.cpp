@@ -569,11 +569,20 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     }else{
         Photo *photo = name2photo.value(dest->objectName());
         if(photo){
-            if(dest_place == Player::Equip){
+            switch(dest_place){
+            case Player::Equip:
                 photo->installEquip(card_item);
                 Sanguosha->playEffect(install_equip_source);
-            }else if(dest_place == Player::Hand)
+                break;
+            case Player::Hand:
                 photo->addCardItem(card_item);
+                break;
+            case Player::DelayedTrick:
+                photo->installDelayedTrick(card_item);
+                break;
+            default:
+                ;
+            }
         }
     }
 }

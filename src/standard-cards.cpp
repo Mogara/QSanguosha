@@ -101,7 +101,7 @@ void Shit::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) 
     damage.from = damage.to = source;
     damage.card = this;
     damage.damage = 1;
-    damage.nature = Normal;
+    damage.nature = DamageStruct::Normal;
 
     room->damage(damage);
 }
@@ -285,6 +285,24 @@ class Indulgence:public DelayedTrick{
 public:
     Indulgence(Suit suit, int number):DelayedTrick(suit, number){
         setObjectName("indulgence");
+        target_fixed = false;
+    }
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+        return targets.isEmpty() && !to_select->hasFlag("qianxun");
+    }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+        CardMoveStruct move;
+        move.from = source;
+        move.from_place = Player::Hand;
+        move.to = targets.first();
+        move.to_place = Player::DelayedTrick;
+        move.open = true;
+        move.card_id = getId();
+
+        room->moveCard(move);
+        source->playCardEffect(this);
     }
 };
 
@@ -385,7 +403,7 @@ void StandardPackage::addCards(){
           << new Horse("dilu", Card::Club, 5, +1)
           << new Horse("zhuahuangfeidian", Card::Heart, 13, +1)
           << new Horse("chitu", Card::Heart, 5, -1)
-          << new Horse("dawan", Card::Spade, 13, -1)
+          << new Horse("dayuan", Card::Spade, 13, -1)
           << new Horse("zixing", Card::Diamond, 13, -1)
 
           << new AmazingGrace(Card::Heart, 3)
@@ -470,7 +488,7 @@ void StandardPackage::addCards(){
     t["dilu"] = tr("dilu");
     t["zhuahuangfeidian"] = tr("zhuahuangfeidian");
     t["chitu"] = tr("chitu");
-    t["dawan"] = tr("dawan");
+    t["dayuan"] = tr("dayuan");
     t["zixing"] = tr("zixing");
 
     t["amazing_grace"] = tr("amazing_grace");

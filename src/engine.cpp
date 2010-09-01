@@ -163,8 +163,8 @@ QList<int> Engine::getRandomCards() const{
         list.swap(r1, r2);
     }
 
-    list.prepend(55);
-    list.prepend(55);
+    list.prepend(106);
+    list.prepend(105);
 
     return list;
 }
