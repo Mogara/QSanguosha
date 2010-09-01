@@ -40,7 +40,6 @@ public:
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);
     void drawNCards(const QString &draw_str);
-    void getLords(const QString &lords_str);
     void getGenerals(const QString &generals_str);
     void startInXs(const QString &);
     void duplicationError(const QString &);
@@ -86,8 +85,7 @@ signals:
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);
     void cards_drawed(const QList<const Card *> &cards);
-    void lords_got(const QList<const General*> &lords);
-    void generals_got(const General *lord, const QList<const General *> &generals);
+    void generals_got(const QList<const General *> &generals);
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);

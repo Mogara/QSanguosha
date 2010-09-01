@@ -26,11 +26,9 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
-    void chooseLord(const QList<const General *> &lords);
-    void chooseGeneral(const General *lord, const QList<const General*> &generals);
+    void chooseGeneral(const QList<const General*> &generals);
     void changePrompt(const QString &prompt_str = QString());
     void moveCard(const CardMoveStructForClient &move);
-
     void updatePhotos(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
     void hideDiscards();

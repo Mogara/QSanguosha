@@ -94,10 +94,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
-    connect(ClientInstance, SIGNAL(lords_got(QList<const General*>)), SLOT(chooseLord(QList<const General*>)));
-    connect(ClientInstance, SIGNAL(generals_got(const General*,QList<const General*>)),
-            SLOT(chooseGeneral(const General*,QList<const General*>)));
+    connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));    
+    connect(ClientInstance, SIGNAL(generals_got(QList<const General*>)), this, SLOT(chooseGeneral(QList<const General*>)));
     connect(ClientInstance, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));    
@@ -413,67 +411,15 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     }
 }
 
-void RoomScene::chooseLord(const QList<const General *> &lords){
-    QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(tr("Choose lord"));
-    dialog->setModal(true);
-    QHBoxLayout *layout = new QHBoxLayout;
-    QSignalMapper *mapper = new QSignalMapper(dialog);
-
-    foreach(const General *lord, lords){
-        QString icon_path = lord->getPixmapPath("card");
-        QString caption = Sanguosha->translate(lord->objectName());
-        OptionButton *button = new OptionButton(icon_path, caption);
-        button->setIconSize(GeneralSize);
-        layout->addWidget(button);
-
-        mapper->setMapping(button, lord->objectName());
-        connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));        
-        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
-    }
-
-    mapper->setMapping(dialog, lords.first()->objectName());
-    connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
-
-    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
-
-    dialog->setLayout(layout);    
-    dialog->show();
-}
-
-void RoomScene::chooseGeneral(const General *lord, const QList<const General *> &generals){
+void RoomScene::chooseGeneral(const QList<const General *> &generals){
     if(photos.length()>1)
         changePrompt(tr("Please wait for other players choosing their generals"));
 
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose general"));
-    dialog->setModal(true);
 
     QHBoxLayout *layout = new QHBoxLayout;
     QSignalMapper *mapper = new QSignalMapper(dialog);
-
-    {
-        QString icon_path = lord->getPixmapPath("bust");
-        QString lord_name = Sanguosha->translate(lord->objectName());
-
-        QString role_str = ClientInstance->getPlayer()->getRole();
-        QString role_tip;
-        if(role_str == "loyalist")
-            role_tip = tr("This is your boss, help him kill all rebels and renegades");
-        else if(role_str == "rebel")
-            role_tip = tr("Kill this guy and you will win");
-        else if(role_str == "renegade")
-            role_tip = tr("Kill all other guys, and beat him at final PK");
-
-        role_str = Sanguosha->translate(role_str);
-
-        QString caption = tr("Lord is %1\nYour role is %2").arg(lord_name).arg(role_str);
-        OptionButton *button = new OptionButton(icon_path, caption);
-        button->setIconSize(GeneralSize);
-        button->setToolTip(role_tip);
-
-        layout->addWidget(button);
-    }
 
     foreach(const General *general, generals){
         QString icon_path = general->getPixmapPath("card");
@@ -493,7 +439,7 @@ void RoomScene::chooseGeneral(const General *lord, const QList<const General *> 
     connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
 
     dialog->setLayout(layout);
-    dialog->show();
+    dialog->exec();
 }
 
 void RoomScene::changePrompt(const QString &prompt_str){

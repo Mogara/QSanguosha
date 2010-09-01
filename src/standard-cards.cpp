@@ -31,12 +31,11 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    BasicCard::use(room, source, targets);
-
-    room->playCardEffect(source, objectName());
+    BasicCard::use(room, source, targets);    
 
     foreach(ServerPlayer *target, targets){
-        room->requestForCard(target, "jink");
+        room->slash(source, target);
+        source->playCardEffect(this);
     }
 }
 
@@ -78,7 +77,7 @@ void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &)
     room->throwCard(source, this);
     room->recover(source, 1);
 
-    room->playCardEffect(source, objectName());
+    source->playCardEffect(this);
 }
 
 bool Peach::isAvailableAtPlay() const{
@@ -252,6 +251,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
         room->throwCard(source, this);
         room->drawCards(source, 2);
+
+        source->playCardEffect(this);
     }
 };
 

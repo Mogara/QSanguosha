@@ -21,6 +21,7 @@ public:
     void unicast(const QString &message);
     void drawCard(const Card *card);
     Room *getRoom() const;
+    void playCardEffect(const Card *card);
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

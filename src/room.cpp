@@ -292,7 +292,7 @@ void Room::assignRoles(){
             broadcastProperty(player, "role", "lord");
 
             QStringList lord_list = Sanguosha->getRandomLords(Config.LordCount);
-            player->invoke("getLords", lord_list.join("+"));
+            player->invoke("getGenerals", lord_list.join("+"));
         }else
             player->sendProperty("role");
     }
@@ -322,7 +322,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             for(j=0; j<choice_count; j++)
                 choices << general_list[(i-1)*choice_count + j];
 
-            players[i]->invoke("getGenerals", QString("%1+%2").arg(general_name).arg(choices.join("+")));
+            players[i]->invoke("getGenerals", choices.join("+"));
         }
     }
 
@@ -378,10 +378,13 @@ void Room::recover(ServerPlayer *player, int recover){
     broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
 }
 
-void Room::playCardEffect(ServerPlayer *player, const QString &card_name){
-    bool is_male = player->getGeneral()->isMale();
+void Room::playCardEffect(const QString &card_name, bool is_male){
     QString gender = is_male ? "M" : "F";
     broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
+}
+
+void Room::slash(ServerPlayer *from, ServerPlayer *to){
+
 }
 
 void Room::damage(const DamageStruct &damage_data){

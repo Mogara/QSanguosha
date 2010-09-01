@@ -17,6 +17,10 @@ Room *ServerPlayer::getRoom() const{
     return room;
 }
 
+void ServerPlayer::playCardEffect(const Card *card){
+    room->playCardEffect(card->objectName(), getGeneral()->isMale());
+}
+
 int ServerPlayer::aliveCount() const{
     return room->alivePlayerCount();
 }

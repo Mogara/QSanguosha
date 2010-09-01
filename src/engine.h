@@ -50,7 +50,6 @@ private:
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
-    MediaObject *effect;
 };
 
 extern Engine *Sanguosha;

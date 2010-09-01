@@ -25,7 +25,6 @@ SOURCES += src/main.cpp \
     src/generaloverview.cpp \
     src/player.cpp \
     src/skill.cpp \
-    src/optionbutton.cpp \
     src/cardoverview.cpp \
     src/serverplayer.cpp \
     src/clientplayer.cpp \
@@ -39,7 +38,8 @@ SOURCES += src/main.cpp \
     src/magatamawidget.cpp \
     src/discardskill.cpp \
     src/daqiao.cpp \
-    src/roomthread.cpp
+    src/roomthread.cpp \
+    src/optionbutton.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -59,7 +59,6 @@ HEADERS += src/mainwindow.h \
     src/generaloverview.h \
     src/player.h \
     src/skill.h \
-    src/optionbutton.h \
     src/cardoverview.h \
     src/serverplayer.h \
     src/clientplayer.h \
@@ -71,7 +70,8 @@ HEADERS += src/mainwindow.h \
     src/magatamawidget.h \
     src/discardskill.h \
     src/daqiao.h \
-    src/roomthread.h
+    src/roomthread.h \
+    src/optionbutton.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

@@ -39,7 +39,8 @@ public:
     void obtainCard(ServerPlayer *target, const Card *card);
     void damage(ServerPlayer *victim, int damage);
     void recover(ServerPlayer *player, int recover);
-    void playCardEffect(ServerPlayer *player, const QString &card_name);
+    void playCardEffect(const QString &card_name, bool is_male);
+    void slash(ServerPlayer *from, ServerPlayer *to);
 
     // interactive methods
     QString activate(ServerPlayer *target);

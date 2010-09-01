@@ -11,7 +11,7 @@
 Engine *Sanguosha = NULL;
 
 Engine::Engine(QObject *parent)
-    :QObject(parent), effect(Phonon::createPlayer(Phonon::MusicCategory))
+    :QObject(parent)
 {
     addPackage(new StandardPackage);
 }
@@ -33,7 +33,7 @@ void Engine::addPackage(Package *package){
             male_effects.insert(card_name, male_source);
         }
 
-        if(female_effects.contains(card_name)){
+        if(!female_effects.contains(card_name)){
             MediaSource female_source(QString("%1/card-effects/female/%2.mp3").arg(package_name).arg(card_name));
             female_effects.insert(card_name, female_source);
         }
@@ -170,6 +170,8 @@ QList<int> Engine::getRandomCards() const{
 }
 
 void Engine::playEffect(const MediaSource &source){
+    MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory);
+
     effect->setCurrentSource(source);
     effect->play();
 }

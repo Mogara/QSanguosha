@@ -65,7 +65,6 @@ Client::Client(QObject *parent)
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["drawCards"] = &Client::drawCards;
     callbacks["drawNCards"] = &Client::drawNCards;
-    callbacks["getLords"] = &Client::getLords;
     callbacks["getGenerals"] = &Client::getGenerals;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["duplicationError"] = &Client::duplicationError;
@@ -203,17 +202,6 @@ void Client::drawNCards(const QString &draw_str){
     }
 }
 
-void Client::getLords(const QString &lords_str){
-    QStringList lord_list = lords_str.split("+");
-    QList<const General *> lords;
-    foreach(QString lord_name, lord_list){
-        const General *general = Sanguosha->getGeneral(lord_name);
-        lords << general;
-    }
-
-    emit lords_got(lords);
-}
-
 void Client::getGenerals(const QString &generals_str){
     QStringList generals_list = generals_str.split("+");
     QList<const General *> generals;
@@ -222,8 +210,7 @@ void Client::getGenerals(const QString &generals_str){
         generals << general;
     }
 
-    const General *lord = generals.takeFirst();
-    emit generals_got(lord, generals);
+    emit generals_got(generals);
 }
 
 void Client::itemChosen(const QString &item_name){
