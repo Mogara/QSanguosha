@@ -77,6 +77,8 @@ QString Peach::getSubtype() const{
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(source, this);
     room->recover(source, 1);
+
+    room->playCardEffect(source, objectName());
 }
 
 bool Peach::isAvailableAtPlay() const{
