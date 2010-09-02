@@ -15,11 +15,8 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         Room *room = target->getRoom();
         const Card *card = damage.card;
-        if(card->isVirtualCard()){
-            QList<int> subcards = card->getSubcards();
-            if(subcards.isEmpty())
-                return;
-        }
+        if(!room->obtainable(card, target))
+            return;
 
         if(room->askForSkillInvoke(target, "jianxiong:yes+no") == "yes"){            
             room->obtainCard(target, card);
@@ -190,9 +187,9 @@ public:
     }
 };
 
-class Paoxiao:public EnvironSkill{
+class Paoxiao:public GameStartSkill{
 public:
-    Paoxiao():EnvironSkill("paoxiao"){
+    Paoxiao():GameStartSkill("paoxiao"){
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
@@ -218,15 +215,14 @@ public:
     }
 };
 
-class Mashu:public EnvironSkill{
+class Mashu:public GameStartSkill{
 public:
-    Mashu():EnvironSkill("mashu"){
+    Mashu():GameStartSkill("mashu"){
 
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-        // Room *room = player->getRoom();
-
+        player->getRoom()->setPlayerCorrect(player, "skill_src", -1);
         return false;
     }
 };
@@ -243,10 +239,9 @@ public:
     }
 };
 
-class Kongcheng:public Skill{
+class Kongcheng:public FlagSkill{
 public:
-    Kongcheng():Skill("kongcheng"){
-
+    Kongcheng():FlagSkill("kongcheng"){
     }
 };
 

@@ -55,6 +55,7 @@ public:
     void askForNullification(const QString &ask_str);
     void askForCardChosen(const QString &ask_str);
     void playCardEffect(const QString &play_str);
+    void prompt(const QString &prompt_str);
 
     // public fields
     QString card_pattern;
@@ -86,6 +87,7 @@ signals:
     void player_removed(const QString &player_name);
     void cards_drawed(const QList<const Card *> &cards);
     void generals_got(const QList<const General *> &generals);
+    void message_changed(const QString &message);
     void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);
     void n_card_drawed(ClientPlayer *player, int n);

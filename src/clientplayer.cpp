@@ -2,6 +2,7 @@
 #include "skill.h"
 #include "client.h"
 #include "engine.h"
+#include "standard.h"
 
 ClientPlayer::ClientPlayer(Client *client)
     :Player(client), handcard_num(0)
@@ -27,7 +28,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
             handcard_num++;
             break;
         }
-    case Equip: setEquip(card); break;
+    case Equip: setEquip(qobject_cast<const EquipCard*>(card)); break;
     default:
         // FIXME
         ;
@@ -41,7 +42,7 @@ void ClientPlayer::removeCard(const Card *card, Place place){
             known_cards.removeOne(card);
             break;
         }
-    case Equip: removeEquip(card); break;
+    case Equip: removeEquip(qobject_cast<const EquipCard*>(card)); break;
     default:
         // FIXME
         ;

@@ -166,12 +166,23 @@ bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVarian
     return onPhaseChange(player);
 }
 
-EnvironSkill::EnvironSkill(const QString &name)
+GameStartSkill::GameStartSkill(const QString &name)
     :PassiveSkill(name)
 {
 }
 
-void EnvironSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+void GameStartSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
     events << GameStart;
+}
+
+FlagSkill::FlagSkill(const QString &name)
+    :GameStartSkill(name){
+
+}
+
+bool FlagSkill::trigger(TriggerEvent , ServerPlayer *player, const QVariant &) const{
+    player->getRoom()->setPlayerFlag(player, objectName());
+
+    return false;
 }
 

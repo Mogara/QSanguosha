@@ -94,8 +94,8 @@ public:
     bool hasSkill(const QString &skill_name) const;
 
     const EquipCard *getEquip(const QString &subtype) const;
-    void setEquip(const Card *card);
-    void removeEquip(const Card *equip);
+    void setEquip(const EquipCard *card);
+    void removeEquip(const EquipCard *equip);
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;

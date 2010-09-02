@@ -107,12 +107,20 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
-class EnvironSkill: public PassiveSkill{
+class GameStartSkill: public PassiveSkill{
     Q_OBJECT
 
 public:
-    EnvironSkill(const QString &name);
+    GameStartSkill(const QString &name);
     virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+};
+
+class FlagSkill : public GameStartSkill{
+    Q_OBJECT
+
+public:
+    FlagSkill(const QString &name);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 };
 
 #endif // SKILL_H

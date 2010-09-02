@@ -51,6 +51,14 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->moveCard(attach);
 }
 
+void EquipCard::onInstall(ServerPlayer *player) const{
+
+}
+
+void EquipCard::onUninstall(ServerPlayer *player) const{
+
+}
+
 QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }

@@ -37,6 +37,25 @@ int Room::alivePlayerCount() const{
     return alive_players.count();
 }
 
+bool Room::obtainable(const Card *card, ServerPlayer *player){
+    if(card->isVirtualCard()){
+        QList<int> subcards = card->getSubcards();
+        if(subcards.isEmpty())
+            return false;        
+    }else{
+        ServerPlayer *owner = getCardOwner(card->getId());
+        Player::Place place = getCardPlace(card->getId());
+        if(owner == player && place == Player::Hand)
+            return false;
+    }
+
+    return true;
+}
+
+void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
+    to->invoke("prompt", prompt_str);
+}
+
 QString Room::askForSkillInvoke(ServerPlayer *player, const QString &ask_str){
     player->invoke("askForSkillInvoke", ask_str);    
     reply_func = "invokeSkillCommand";
@@ -53,28 +72,22 @@ void Room::invokeSkillCommand(ServerPlayer *, const QString &arg){
 void Room::obtainCard(ServerPlayer *target, const Card *card){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
-        foreach(int card_id, subcards){
-            CardMoveStruct move;
-            move.card_id = card_id;
-            move.from = NULL;
-            move.from_place = Player::DiscardedPile;
-            move.to = target;
-            move.to_place = Player::Hand;
-            move.open = true;
+        foreach(int card_id, subcards)
+            obtainCard(target, card_id);
+    }else
+        obtainCard(target, card->getId());
+}
 
-            moveCard(move);
-        }
-    }else{
-        CardMoveStruct move;
-        move.card_id = card->getId();
-        move.from = NULL;
-        move.from_place = Player::DiscardedPile;
-        move.to = target;
-        move.to_place = Player::Hand;
-        move.open = true;
+void Room::obtainCard(ServerPlayer *target, int card_id){
+    CardMoveStruct move;
+    move.card_id = card_id;
+    move.from = getCardOwner(card_id);
+    move.from_place = getCardPlace(card_id);
+    move.to = target;
+    move.to_place = Player::Hand;
+    move.open = true;
 
-        moveCard(move);
-    }
+    moveCard(move);
 }
 
 void Room::askForNullification(ServerPlayer *, const QVariant &data){
@@ -113,6 +126,12 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value){
     player->setProperty(property_name, value);
     broadcastProperty(player, property_name);
+}
+
+void Room::setPlayerCorrect(ServerPlayer *player, const QString &field, int correct){
+    QString correct_str = QString("%1:%2").arg(field).arg(correct);
+    player->setCorrect(correct_str);
+    broadcastProperty(player, "correct", correct_str);
 }
 
 void Room::addSocket(QTcpSocket *socket){
@@ -436,6 +455,11 @@ void Room::startGame(){
     broadcastProperty(the_lord, "phase", "start");
     current = the_lord;
 
+    // initialize the place_map and owner_map;
+    foreach(int card_id, *draw_pile){
+        setCardMapping(card_id, NULL, Player::DrawPile);
+    }
+
     sem = new QSemaphore;
     thread = new RoomThread(this);
     thread->start();
@@ -458,6 +482,9 @@ void Room::drawCards(ServerPlayer *player, int n){
         const Card *card = Sanguosha->getCard(card_id);
         player->drawCard(card);
         cards_str << QString::number(drawCard());
+
+        // update place_map & owner_map
+        setCardMapping(card_id, player, Player::Hand);
     }
 
     player->invoke("drawCards", cards_str.join("+"));
@@ -476,13 +503,17 @@ void Room::throwCard(ServerPlayer *player, const Card *card){
 void Room::throwCard(ServerPlayer *player, int card_id){
     CardMoveStruct move;
     move.card_id = card_id;
-    move.from_place = Player::Hand;
+    move.from_place = getCardPlace(card_id);
     move.to_place = Player::DiscardedPile;
-    move.from = player;
+    move.from = getCardOwner(card_id);
     move.to = NULL;
     move.open = true;
 
     moveCard(move);
+}
+
+RoomThread *Room::getThread() const{
+    return thread;
 }
 
 void Room::moveCard(const CardMoveStruct &move){
@@ -502,6 +533,8 @@ void Room::moveCard(const CardMoveStruct &move){
         if(move.from)
             discard_pile->prepend(move.card_id);
     }
+
+    setCardMapping(move.card_id, move.to, move.to_place);
 }
 
 QString CardMoveStruct::toString() const{
@@ -591,4 +624,17 @@ QString Room::activate(ServerPlayer *target){
     sem->acquire();
 
     return result;
+}
+
+void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place){
+    owner_map.insert(card_id, owner);
+    place_map.insert(card_id, place);
+}
+
+ServerPlayer *Room::getCardOwner(int card_id) const{
+    return owner_map.value(card_id);
+}
+
+Player::Place Room::getCardPlace(int card_id) const{
+    return place_map.value(card_id);
 }

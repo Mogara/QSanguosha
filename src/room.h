@@ -20,16 +20,20 @@ public:
     bool isFull() const;    
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void throwCard(ServerPlayer *player, const Card *card);
-
+    RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
-
+    Player::Place getCardPlace(int card_id) const;
+    ServerPlayer *getCardOwner(int card_id) const;
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
+    bool obtainable(const Card *card, ServerPlayer *player);
+    void promptUser(ServerPlayer *to, const QString &prompt_str);
 
     // non-interactive methods    
     void nextPhase(ServerPlayer *player);
     void drawCards(ServerPlayer *player, int n);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
+    void setPlayerCorrect(ServerPlayer *player, const QString &field, int correct);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void changePhase(ServerPlayer *target);
     void throwCard(ServerPlayer *player, int card_id);
@@ -37,6 +41,7 @@ public:
     void useCard(ServerPlayer *player, const QString &card_str);
     void damage(const DamageStruct &data);
     void obtainCard(ServerPlayer *target, const Card *card);
+    void obtainCard(ServerPlayer *target, int card_id);
     void damage(ServerPlayer *victim, int damage);
     void recover(ServerPlayer *player, int recover);
     void playCardEffect(const QString &card_name, bool is_male);
@@ -91,6 +96,7 @@ private:
     int drawCard();
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
+    void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
 private slots:
     void reportDisconnection();

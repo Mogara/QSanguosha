@@ -344,7 +344,7 @@ static bool CompareByAvailability(const CardItem *a, const CardItem *b){
     bool x = a->isEnabled();
     bool y = b->isEnabled();
     if(x != y)
-        return x;
+        return y;
     else
         return CompareBySuitNumber(a, b);
 }

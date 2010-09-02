@@ -19,8 +19,6 @@ struct PassiveSkillSorter{
     void sort(QList<const PassiveSkill *> &skills);
 };
 
-
-
 struct DamageStruct{
     DamageStruct();
 
@@ -95,6 +93,8 @@ class RoomThread : public QThread{
 public:
     explicit RoomThread(Room *room);
     bool invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
+    void addPassiveSkill(const PassiveSkill *skill);
+    void removePassiveSkill(const PassiveSkill *skill);
 
 protected:
     virtual void run();
@@ -103,7 +103,7 @@ private:
     Room *room;
 
     QMap<QString, const PassiveSkill *> passive_skills;
-    QMap<TriggerEvent, QList<const PassiveSkill *> > trigger_table;
+    QMap<TriggerEvent, QList<const PassiveSkill *> > skill_table;
 };
 
 #endif // ROOMTHREAD_H

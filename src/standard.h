@@ -39,6 +39,10 @@ public:
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+
+    // should be pure virtual
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class GlobalEffect:public TrickCard{

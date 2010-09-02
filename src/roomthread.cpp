@@ -33,17 +33,12 @@ RoomThread::RoomThread(Room *room)
     passive_skills.insert(game_rule->objectName(), game_rule);
 
     // construct trigger_table
-    foreach(const PassiveSkill *skill, passive_skills){
-        QList<TriggerEvent> events;
-        skill->getTriggerEvents(events);
-        foreach(TriggerEvent event, events){
-            trigger_table[event] << skill;            
-        }
-    }
+    foreach(const PassiveSkill *skill, passive_skills)
+        addPassiveSkill(skill);
 }
 
 void RoomThread::run(){
-    // start game, draw initial cards
+    // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
         invokePassiveSkills(GameStart, player);
     }
@@ -54,7 +49,7 @@ void RoomThread::run(){
 bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    QList<const PassiveSkill *> skills = trigger_table[event];    
+    QList<const PassiveSkill *> skills = skill_table[event];
     QMutableListIterator<const PassiveSkill *> itor(skills);
     while(itor.hasNext()){
         const PassiveSkill *skill = itor.next();
@@ -73,4 +68,20 @@ bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, c
     }
 
     return false;
+}
+
+void RoomThread::addPassiveSkill(const PassiveSkill *skill){
+    QList<TriggerEvent> events;
+    skill->getTriggerEvents(events);
+    foreach(TriggerEvent event, events){
+        skill_table[event] << skill;
+    }
+}
+
+void RoomThread::removePassiveSkill(const PassiveSkill *skill){
+    QList<TriggerEvent> events;
+    skill->getTriggerEvents(events);
+    foreach(TriggerEvent event, events){
+        skill_table[event].removeOne(skill);
+    }
 }

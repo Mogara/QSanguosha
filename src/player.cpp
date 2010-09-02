@@ -243,7 +243,7 @@ const EquipCard *Player::getEquip(const QString &subtype) const{
         return NULL;
 }
 
-void Player::setEquip(const Card *card){
+void Player::setEquip(const EquipCard *card){
     QString subtype = card->getSubtype();
     if(subtype == "weapon")
         weapon = qobject_cast<const Weapon*>(card);
@@ -255,7 +255,7 @@ void Player::setEquip(const Card *card){
         offensive_horse = qobject_cast<const Horse*>(card);
 }
 
-void Player::removeEquip(const Card *equip){
+void Player::removeEquip(const EquipCard *equip){
     QString subtype = equip->getSubtype();
     if(subtype == "weapon")
         weapon = NULL;

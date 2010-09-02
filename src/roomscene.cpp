@@ -96,18 +96,20 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
     connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));    
     connect(ClientInstance, SIGNAL(generals_got(QList<const General*>)), this, SLOT(chooseGeneral(QList<const General*>)));
-    connect(ClientInstance, SIGNAL(prompt_changed(QString)),  SLOT(changePrompt(QString)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(updatePhotos(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));    
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
+    connect(ClientInstance, SIGNAL(message_changed(QString)), this, SLOT(changeMessage(QString)));
 
     daqiao = new Daqiao;
     daqiao->shift();
     daqiao->hide();
     addItem(daqiao);
+
+    connect(ClientInstance, SIGNAL(prompt_changed(QString)), daqiao, SLOT(setContent(QString)));
 
     ClientInstance->signup();
 
@@ -413,7 +415,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
 
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
     if(photos.length()>1)
-        changePrompt(tr("Please wait for other players choosing their generals"));
+        changeMessage(tr("Please wait for other players choosing their generals"));
 
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose general"));
@@ -442,11 +444,11 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
     dialog->exec();
 }
 
-void RoomScene::changePrompt(const QString &prompt_str){
-    if(prompt_str.isNull())
+void RoomScene::changeMessage(const QString &message){
+    if(message.isNull())
         main_window->statusBar()->clearMessage();
     else
-        main_window->statusBar()->showMessage(prompt_str);
+        main_window->statusBar()->showMessage(message);
 }
 
 void RoomScene::viewDiscards(){
@@ -687,11 +689,11 @@ void RoomScene::enableTargets(const Card *card){
             photo->setEnabled(false);
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
-        changePrompt();
+        changeMessage();
         return;
     }
 
-    changePrompt(tr("You choosed card [%1]").arg(card->getName()));
+    changeMessage(tr("You choosed card [%1]").arg(card->getName()));
 
     if(card->targetFixed()){
         avatar->setEnabled(true);
@@ -740,14 +742,14 @@ void RoomScene::updateSelectedTargets(){
         ok_button->setEnabled(card->targetsFeasible(selected_targets));
 
         if(selected_targets.isEmpty()){
-            changePrompt();
+            changeMessage();
             return;
         }
 
         QString card_name = card->getName();
         QString targets = general_names.join(",");
 
-        changePrompt(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
+        changeMessage(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
     }
 }
 
@@ -756,14 +758,14 @@ void RoomScene::useSelectedCard(){
     if(card)
         useCard(card);
     else
-        changePrompt(tr("You didn't choose any card to use yet!"));
+        changeMessage(tr("You didn't choose any card to use yet!"));
 }
 
 void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets))
         ClientInstance->useCard(card, selected_targets);
     else
-        changePrompt(tr("Not enough targets"));
+        changeMessage(tr("Not enough targets"));
 
     enableTargets(NULL);
 }
@@ -772,7 +774,7 @@ void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
     if(card == NULL){
-        changePrompt(tr("Not enough cards to call skill"));
+        changeMessage(tr("Not enough cards to call skill"));
         return;
     }
 
@@ -784,7 +786,7 @@ void RoomScene::callViewAsSkill(){
         dashboard->stopPending();
         useCard(card);
     }else{
-        changePrompt(tr("Card [%1] can not be used right now").arg(card->getName()));
+        changeMessage(tr("Card [%1] can not be used right now").arg(card->getName()));
     }
 }
 

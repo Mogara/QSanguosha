@@ -1,6 +1,7 @@
 #include "serverplayer.h"
 #include "skill.h"
 #include "engine.h"
+#include "standard.h"
 
 #include <QHostAddress>
 
@@ -79,7 +80,12 @@ void ServerPlayer::getRequest(){
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
     case Hand: handcards.removeOne(card); break;
-    case Equip: removeEquip(card); break;
+    case Equip: {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+            removeEquip(equip);
+            equip->onUninstall(this);
+            break;
+        }
     default:
         // FIXME
         ;
@@ -89,7 +95,12 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
     case Hand: handcards << card; break;
-    case Equip: setEquip(card); break;
+    case Equip: {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+            setEquip(equip);
+            equip->onInstall(this);
+            break;
+        }
     default:
         // FIXME
         ;

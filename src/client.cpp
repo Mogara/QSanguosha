@@ -80,6 +80,7 @@ Client::Client(QObject *parent)
     callbacks["askForNullification"] = &Client::askForNullification;
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["playCardEffect"] = &Client::playCardEffect;
+    callbacks["prompt"] = &Client::prompt;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -248,7 +249,7 @@ void Client::useCard(const Card *card){
 
 void Client::startInXs(const QString &left_seconds){
     int seconds = left_seconds.toInt();
-    emit prompt_changed(tr("Game will start in %1 seconds").arg(left_seconds));
+    emit message_changed(tr("Game will start in %1 seconds").arg(left_seconds));
 
     if(seconds == 0){
         emit avatars_hiden();
@@ -289,7 +290,7 @@ void Client::notifyRoleChange(const QString &new_role){
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if(new_role != "lord")
             prompt_str += tr("\n wait for the lord player choosing general, please");
-        emit prompt_changed(prompt_str);
+        emit message_changed(prompt_str);
     }
 }
 
@@ -495,4 +496,10 @@ void Client::chooseCard(int card_id){
 
 int Client::alivePlayerCount() const{
     return alive_count;
+}
+
+void Client::prompt(const QString &prompt_str){
+    // translate the prompt string
+
+    emit prompt_changed(prompt_str);
 }
