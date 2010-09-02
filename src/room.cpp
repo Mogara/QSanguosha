@@ -160,6 +160,10 @@ int Room::drawCard(){
     if(draw_pile->isEmpty()){
         Q_ASSERT(!discard_pile->isEmpty());
         qSwap(draw_pile, discard_pile);
+
+        broadcastInvoke("clearPile");
+        broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
+
         int n = draw_pile->count(), i;
         for(i=0; i<n; i++){
             int r1 = qrand() % n;
@@ -460,6 +464,8 @@ void Room::startGame(){
         setCardMapping(card_id, NULL, Player::DrawPile);
     }
 
+    broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
+
     sem = new QSemaphore;
     thread = new RoomThread(this);
     thread->start();
@@ -481,7 +487,7 @@ void Room::drawCards(ServerPlayer *player, int n){
         int card_id = drawCard();
         const Card *card = Sanguosha->getCard(card_id);
         player->drawCard(card);
-        cards_str << QString::number(drawCard());
+        cards_str << QString::number(card_id);
 
         // update place_map & owner_map
         setCardMapping(card_id, player, Player::Hand);

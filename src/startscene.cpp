@@ -59,7 +59,7 @@ void StartScene::switchToServer(Server *server){
 
     server_log->setReadOnly(true);
     server_log->setPalette(palette);
-    server_log->resize(600, 420);
+    server_log->resize(700, 420);
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
 

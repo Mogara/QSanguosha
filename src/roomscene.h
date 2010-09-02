@@ -55,6 +55,9 @@ private:
     QMenu *known_cards_menu;
     Daqiao *daqiao;
 
+    int pile_number;
+    QGraphicsTextItem *pile_number_item;
+
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
     DiscardSkill *discard_skill;
@@ -83,6 +86,8 @@ private slots:
     void doDiscardButton();
     void hideAvatars();
     void changeHp(const QString &who, int delta);
+    void clearPile();
+    void setPileNumber(int n);
 };
 
 #endif // ROOMSCENE_H

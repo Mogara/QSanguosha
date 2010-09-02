@@ -37,6 +37,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     addItem(pile);
     pile->setPos(387, -132);
 
+    pile_number_item = addText("", Config.SmallFont);
+    pile_number_item->setPos(pile->pos());
+
     // create photos
     int i;
     for(i=0;i<player_count-1;i++){
@@ -103,6 +106,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
     connect(ClientInstance, SIGNAL(message_changed(QString)), this, SLOT(changeMessage(QString)));
+    connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
+    connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -249,6 +254,8 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
 
         dashboard->addCardItem(item);
     }
+
+    setPileNumber(pile_number - cards.length());
 }
 
 void RoomScene::drawNCards(ClientPlayer *player, int n){
@@ -284,6 +291,8 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     photo->update();
+
+    setPileNumber(pile_number - n);
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -1011,4 +1020,18 @@ void RoomScene::changeHp(const QString &who, int delta){
         else
             Sanguosha->playEffect(female_damage_effect);
     }
+}
+
+void RoomScene::clearPile(){
+    foreach(CardItem *item, discarded_queue){
+        removeItem(item);
+        delete item;
+    }
+
+    discarded_queue.clear();
+}
+
+void RoomScene::setPileNumber(int n){
+    pile_number = n;
+    pile_number_item->setPlainText(QString::number(pile_number));
 }

@@ -56,6 +56,8 @@ public:
     void askForCardChosen(const QString &ask_str);
     void playCardEffect(const QString &play_str);
     void prompt(const QString &prompt_str);
+    void clearPile(const QString &);
+    void setPileNumber(const QString &pile_num);
 
     // public fields
     QString card_pattern;
@@ -95,6 +97,8 @@ signals:
     void card_moved(const CardMoveStructForClient &move);
     void status_changed(Client::Status new_status);
     void avatars_hiden();
+    void pile_cleared();
+    void pile_num_set(int n);
 };
 
 extern Client *ClientInstance;

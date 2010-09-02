@@ -81,6 +81,8 @@ Client::Client(QObject *parent)
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["prompt"] = &Client::prompt;
+    callbacks["clearPile"] = &Client::clearPile;
+    callbacks["setPileNumber"] = &Client::setPileNumber;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -502,4 +504,14 @@ void Client::prompt(const QString &prompt_str){
     // translate the prompt string
 
     emit prompt_changed(prompt_str);
+}
+
+void Client::clearPile(const QString &){
+    discarded_list.clear();
+
+    emit pile_cleared();
+}
+
+void Client::setPileNumber(const QString &pile_num){
+    emit pile_num_set(pile_num.toInt());
 }
