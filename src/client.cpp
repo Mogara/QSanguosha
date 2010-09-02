@@ -500,6 +500,13 @@ int Client::alivePlayerCount() const{
     return alive_count;
 }
 
+void Client::responseCard(const Card *card){
+    if(card)
+        request(QString("responseCard %1").arg(card->toString()));
+    else
+        request("responseCard .");
+}
+
 void Client::prompt(const QString &prompt_str){
     // translate the prompt string
 

@@ -11,7 +11,7 @@
 #include <QTimerEvent>
 
 Room::Room(QObject *parent, int player_count)
-    :QObject(parent), player_count(player_count), current(NULL),
+    :QObject(parent), player_count(player_count), current(NULL), reply_player(NULL),
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), signup_count(0),
@@ -58,7 +58,10 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
 
 QString Room::askForSkillInvoke(ServerPlayer *player, const QString &ask_str){
     player->invoke("askForSkillInvoke", ask_str);    
+
     reply_func = "invokeSkillCommand";
+    reply_player = player;
+
     sem->acquire();
 
     return result;
@@ -109,13 +112,24 @@ void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
 
 }
 
-void Room::requestForCard(ServerPlayer *player, const QVariant &data){
-    player->invoke("requestForCard", data.toString());
+const Card *Room::requestForCard(ServerPlayer *player, const QString &pattern){
+    player->invoke("requestForCard", pattern);
 
+    reply_func = "responseCardCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    if(result != ".")
+        return Card::Parse(result);
+    else
+        return NULL;
 }
 
 void Room::responseCardCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
 
+    sem->release();
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
@@ -215,8 +229,11 @@ void Room::processRequest(const QString &request){
     if(player == NULL)
         return;
 
-    if(current && current != player){
+    if(reply_player && reply_player != player){
         player->invoke("focusWarn", player->objectName());
+        QString should_be = reply_player->objectName();
+        QString instead_of = player->objectName();
+        emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
         return;
     }
 
@@ -395,7 +412,8 @@ void Room::damage(ServerPlayer *victim, int damage){
 
 void Room::recover(ServerPlayer *player, int recover){
     int new_hp = player->getHp() + recover;
-    new_hp = qMin(player->getMaxHP(), new_hp);
+    if(new_hp > player->getMaxHP())
+        return;
 
     setPlayerProperty(player, "hp", new_hp);
     broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
@@ -406,8 +424,11 @@ void Room::playCardEffect(const QString &card_name, bool is_male){
     broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
 }
 
-void Room::slash(ServerPlayer *from, ServerPlayer *to){
-
+void Room::cardEffect(const CardEffectStruct &effect){
+    QVariant data = QVariant::fromValue(effect);
+    bool broken = thread->invokePassiveSkills(CardEffect, effect.from, data);
+    if(!broken)
+        thread->invokePassiveSkills(CardEffected, effect.to, data);
 }
 
 void Room::damage(const DamageStruct &damage_data){
@@ -497,16 +518,16 @@ void Room::drawCards(ServerPlayer *player, int n){
     broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
 }
 
-void Room::throwCard(ServerPlayer *player, const Card *card){
+void Room::throwCard(const Card *card){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         foreach(int subcard, subcards)
-            throwCard(player, subcard);
+            throwCard(subcard);
     }else
-        throwCard(player, card->getId());
+        throwCard(card->getId());
 }
 
-void Room::throwCard(ServerPlayer *player, int card_id){
+void Room::throwCard(int card_id){
     CardMoveStruct move;
     move.card_id = card_id;
     move.from_place = getCardPlace(card_id);
@@ -543,6 +564,27 @@ void Room::moveCard(const CardMoveStruct &move){
     setCardMapping(move.card_id, move.to, move.to_place);
 }
 
+void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
+    if(card->isVirtualCard()){
+        QList<int> subcards = card->getSubcards();
+        foreach(int subcard, subcards)
+            moveCardTo(subcard, to, place, open);
+    }else
+        moveCardTo(card->getId(), to, place, open);
+}
+
+void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open){
+    CardMoveStruct move;
+    move.card_id = card_id;
+    move.from = getCardOwner(card_id);
+    move.from_place = getCardPlace(card_id);
+    move.to = to;
+    move.to_place = place;
+    move.open = open;
+
+    moveCard(move);
+}
+
 QString CardMoveStruct::toString() const{
     static QMap<Player::Place, QString> place2str;
     if(place2str.isEmpty()){
@@ -563,23 +605,7 @@ QString CardMoveStruct::toString() const{
 }
 
 void Room::replyNullificationCommand(ServerPlayer *player, const QString &arg){
-    int card_id = arg.toInt();
-
-    if(card_id == -1)
-        nullificators.removeOne(player);
-    nullificators_count --;
-
-    if(nullificators_count == 0){
-
-        if(nullificators.isEmpty()){
-            // execute the trick
-        }else{
-            ServerPlayer *nullificator = nullificators.first();
-            throwCard(nullificator, card_id);
-
-            // FIXME
-        }
-    }
+    // FIXME
 }
 
 void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
@@ -625,7 +651,9 @@ void Room::broadcastInvoke(const char *method, const QString &arg){
 
 QString Room::activate(ServerPlayer *target){
     broadcastInvoke("activate", target->objectName());
+
     reply_func = "useCardCommand";
+    reply_player = target;
 
     sem->acquire();
 

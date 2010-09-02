@@ -84,7 +84,9 @@ enum TriggerEvent{
 
     CardUsed,
     CardMove,
+
     CardEffect,
+    CardEffected,
 };
 
 class RoomThread : public QThread{

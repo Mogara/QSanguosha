@@ -1,12 +1,13 @@
 #include "standard.h"
 #include "room.h"
+#include "clientplayer.h"
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(source, this);
+    room->throwCard(this);
     room->drawCards(source, subcards.length());
 }
 
@@ -29,4 +30,20 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
         room->moveCard(move);
     }
+}
+
+JieyinCard::JieyinCard(){
+
+}
+
+bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
+
+    return to_select->getGeneral()->isMale() && to_select->isWounded();
+}
+
+void JieyinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->recover(source, 1);
+    room->recover(targets.first(), 1);
 }

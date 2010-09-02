@@ -33,6 +33,7 @@ public:
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
+    void responseCard(const Card *card);
 
     typedef void (Client::*Callback)(const QString &);
 

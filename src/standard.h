@@ -112,6 +112,7 @@ private:
 
 class Slash: public BasicCard{
     Q_OBJECT
+
 public:
     Q_INVOKABLE Slash(Card::Suit suit, int number);
     virtual QString getSubtype() const;
@@ -119,17 +120,21 @@ public:
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool isAvailable() const;
+
 protected:
-    virtual bool isAvailableAtPlay() const;
+    QString nature;
 };
 
 class Jink: public BasicCard{
     Q_OBJECT
+
 public:
     Q_INVOKABLE Jink(Card::Suit suit, int number);
     virtual QString getSubtype() const;
+    virtual bool isAvailable() const;
 protected:
-    virtual bool isAvailableAtPlay() const;
+
 };
 
 class Peach: public BasicCard{
@@ -139,9 +144,9 @@ public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
     virtual QString getSubtype() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-
+    virtual bool isAvailable() const;
 protected:
-    virtual bool isAvailableAtPlay() const;
+
 };
 
 class Shit:public BasicCard{
@@ -179,6 +184,15 @@ class RendeCard:public SkillCard{
 
 public:
     Q_INVOKABLE RendeCard();
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class JieyinCard:public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JieyinCard();
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

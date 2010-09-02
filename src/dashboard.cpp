@@ -378,6 +378,11 @@ void Dashboard::enableCards(){
         card_item->setEnabled(card_item->getCard()->isAvailable());
 }
 
+void Dashboard::enableCards(const QString &pattern){
+    foreach(CardItem *card_item, card_items)
+        card_item->setEnabled(card_item->getCard()->match(pattern));
+}
+
 void Dashboard::startPending(const ViewAsSkill *skill){
     view_as_skill = skill;
 

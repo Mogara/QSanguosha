@@ -8,7 +8,7 @@ Slash::Slash(Suit suit, int number):BasicCard(suit, number){
     setObjectName("slash");
 }
 
-bool Slash::isAvailableAtPlay() const{
+bool Slash::isAvailable() const{
     bool unlimited_slash = ClientInstance->tag.value("unlimited_slash", false).toBool();
     if(unlimited_slash)
         return true;
@@ -33,9 +33,17 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     BasicCard::use(room, source, targets);    
 
+    source->playCardEffect(this);
+
     foreach(ServerPlayer *target, targets){
-        room->slash(source, target);
-        source->playCardEffect(this);
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+        if(!nature.isEmpty())
+            effect.flags << nature;
+
+        room->cardEffect(effect);        
     }
 }
 
@@ -54,19 +62,21 @@ bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const Clien
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){
     setObjectName("jink");
+
+    target_fixed = true;
 }
 
 QString Jink::getSubtype() const{
     return "defense_card";
 }
 
-bool Jink::isAvailableAtPlay() const{
+bool Jink::isAvailable() const{
     return false;
 }
 
-Peach::Peach(Suit suit, int number):BasicCard(suit, number){
-    target_fixed = true;
+Peach::Peach(Suit suit, int number):BasicCard(suit, number){    
     setObjectName("peach");
+    target_fixed = true;
 }
 
 QString Peach::getSubtype() const{
@@ -74,13 +84,13 @@ QString Peach::getSubtype() const{
 }
 
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(source, this);
+    room->throwCard(this);
     room->recover(source, 1);
 
     source->playCardEffect(this);
 }
 
-bool Peach::isAvailableAtPlay() const{
+bool Peach::isAvailable() const{
     return ClientInstance->getPlayer()->isWounded();
 }
 
@@ -95,7 +105,7 @@ QString Shit::getSubtype() const{
 }
 
 void Shit::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(source, this);
+    room->throwCard(this);
 
     DamageStruct damage;
     damage.from = damage.to = source;
@@ -204,7 +214,7 @@ public:
         setObjectName("collateral");
     }
 
-    virtual bool isAvailableAtPlay() const{
+    virtual bool isAvailable() const{
         Client *client = ClientInstance;
         QList<ClientPlayer*> players = client->findChildren<ClientPlayer*>();
         foreach(ClientPlayer *player, players){
@@ -222,7 +232,7 @@ public:
         setObjectName("nullification");
     }
 
-    virtual bool isAvailableAtPlay() const{
+    virtual bool isAvailable() const{
         return false;
     }
 };
@@ -249,7 +259,7 @@ public:
     }
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-        room->throwCard(source, this);
+        room->throwCard(this);
         room->drawCards(source, 2);
 
         source->playCardEffect(this);
@@ -293,15 +303,7 @@ public:
     }
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-        CardMoveStruct move;
-        move.from = source;
-        move.from_place = Player::Hand;
-        move.to = targets.first();
-        move.to_place = Player::DelayedTrick;
-        move.open = true;
-        move.card_id = getId();
-
-        room->moveCard(move);
+        room->moveCardTo(this, targets.first(), Player::DelayedTrick, true);
         source->playCardEffect(this);
     }
 };
@@ -314,6 +316,11 @@ public:
 
     virtual bool targetFixed() const{
         return true;
+    }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+        room->moveCardTo(this, source, Player::DelayedTrick, true);
+        source->playCardEffect(this);
     }
 };
 

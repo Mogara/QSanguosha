@@ -204,11 +204,7 @@ void Card::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(source, this);
-}
-
-bool Card::isAvailableAtPlay() const{
-    return true;
+    room->throwCard(this);
 }
 
 void Card::addSubcard(int card_id){
@@ -227,10 +223,7 @@ QList<int> Card::getSubcards() const{
 }
 
 bool Card::isAvailable() const{
-    if(ClientInstance->card_pattern.isEmpty())
-        return isAvailableAtPlay();
-    else
-        return match(ClientInstance->card_pattern);
+    return true;
 }
 
 // ---------   Skill card     ------------------

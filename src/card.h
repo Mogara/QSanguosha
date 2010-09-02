@@ -49,8 +49,7 @@ public:
     QString getName() const;
 
     bool isVirtualCard() const;
-    bool match(const QString &pattern) const;
-    bool isAvailable() const;
+    bool match(const QString &pattern) const;    
     void addSubcard(int card_id);
     void addSubcards(const QList<int> &card_ids);
     QList<int> getSubcards() const;
@@ -64,6 +63,7 @@ public:
     bool targetFixed() const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool isAvailable() const;
 
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -76,7 +76,6 @@ public:
     static const Card *Parse(const QString &str);
 
 protected:
-    virtual bool isAvailableAtPlay() const;
     QString subcardString() const;
 
     QList<int> subcards;

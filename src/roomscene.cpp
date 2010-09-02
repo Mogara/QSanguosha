@@ -878,7 +878,6 @@ void RoomScene::updateStatus(Client::Status status){
 #ifndef QT_NO_DEBUG
             ok_button->setText("NotActive");
 #endif
-
             dashboard->disableAllCards();
 
             ok_button->setEnabled(false);
@@ -892,6 +891,7 @@ void RoomScene::updateStatus(Client::Status status){
 #ifndef QT_NO_DEBUG
             ok_button->setText("Responsing");
 #endif
+            dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
@@ -965,7 +965,10 @@ void RoomScene::doOkButton(){
             break;
         }
     case Client::Responsing:{
-
+            const Card *card = dashboard->getSelected();
+            if(card)
+                ClientInstance->responseCard(card);
+            break;
         }
     case Client::NotActive: break;
     case Client::Discarding: break;
@@ -982,6 +985,11 @@ void RoomScene::doCancelButton(){
                 cancelViewAsSkill();
             else
                 dashboard->unselectAll();
+            break;
+        }
+
+    case Client::Responsing:{
+            ClientInstance->responseCard(NULL);
             break;
         }
 

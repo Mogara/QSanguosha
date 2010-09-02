@@ -16,7 +16,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed << Damaged;
+    events << GameStart << PhaseChange << CardUsed << Damaged << CardEffected;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -63,6 +63,36 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
                 DamageStruct damage = data.value<DamageStruct>();
                 room->damage(damage.to, damage.damage);
             }
+            break;
+        }
+
+    case CardEffected:{
+            if(data.canConvert<CardEffectStruct>()){
+                CardEffectStruct effect = data.value<CardEffectStruct>();
+                QString card_name = effect.card->objectName();
+
+                if(card_name == "slash"){
+                    const Card *card = room->requestForCard(effect.to, "jink");
+                    if(!card){
+                        DamageStruct damage;
+                        damage.card = effect.card;
+                        damage.damage = 1;
+                        damage.from = effect.from;
+                        damage.to = effect.to;
+
+                        if(effect.flags.contains("fire"))
+                            damage.nature = DamageStruct::Fire;
+                        else if(effect.flags.contains("thunder"))
+                            damage.nature = DamageStruct::Thunder;
+                        else
+                            damage.nature = DamageStruct::Normal;
+
+                        room->damage(damage);
+                    }
+                }
+            }
+
+
             break;
         }
 
