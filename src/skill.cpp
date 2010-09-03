@@ -109,30 +109,30 @@ FilterSkill::FilterSkill(const QString &name)
 {
 }
 
-PassiveSkill::PassiveSkill(const QString &name, Frequency frequency)
+TriggerSkill::TriggerSkill(const QString &name, Frequency frequency)
     :Skill(name), frequency(frequency), view_as_skill(NULL)
 {
 
 }
 
-const ViewAsSkill *PassiveSkill::getViewAsSkill() const{
+const ViewAsSkill *TriggerSkill::getViewAsSkill() const{
     return view_as_skill;
 }
 
-int PassiveSkill::getPriority(ServerPlayer *target) const{    
+int TriggerSkill::getPriority(ServerPlayer *target) const{    
     return 1;
 }
 
-bool PassiveSkill::triggerable(const ServerPlayer *target) const{
+bool TriggerSkill::triggerable(const ServerPlayer *target) const{
     return target->isAlive() && target->hasSkill(objectName());
 }
 
-PassiveSkill::Frequency PassiveSkill::getFrequency() const{
+TriggerSkill::Frequency TriggerSkill::getFrequency() const{
     return frequency;
 }
 
 MasochismSkill::MasochismSkill(const QString &name)
-    :PassiveSkill(name)
+    :TriggerSkill(name)
 {
 
 }
@@ -154,7 +154,7 @@ bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant 
 }
 
 PhaseChangeSkill::PhaseChangeSkill(const QString &name)
-    :PassiveSkill(name)
+    :TriggerSkill(name)
 {
 }
 
@@ -167,7 +167,7 @@ bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVarian
 }
 
 GameStartSkill::GameStartSkill(const QString &name)
-    :PassiveSkill(name)
+    :TriggerSkill(name)
 {
 }
 

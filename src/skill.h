@@ -61,7 +61,7 @@ public:
     FilterSkill(const QString &name);
 };
 
-class PassiveSkill:public Skill{
+class TriggerSkill:public Skill{
     Q_OBJECT
 
 public:
@@ -71,7 +71,7 @@ public:
         Compulsory
     };
 
-    PassiveSkill(const QString &name, Frequency frequency = NotFrequent);
+    TriggerSkill(const QString &name, Frequency frequency = NotFrequent);
     const ViewAsSkill *getViewAsSkill() const;
 
     virtual int getPriority(ServerPlayer *target) const;
@@ -86,7 +86,7 @@ protected:
     const ViewAsSkill *view_as_skill;
 };
 
-class MasochismSkill: public PassiveSkill{
+class MasochismSkill: public TriggerSkill{
 public:
     MasochismSkill(const QString &name);
 
@@ -97,7 +97,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
 
-class PhaseChangeSkill: public PassiveSkill{
+class PhaseChangeSkill: public TriggerSkill{
 public:
     PhaseChangeSkill(const QString &name);
 
@@ -107,7 +107,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
-class GameStartSkill: public PassiveSkill{
+class GameStartSkill: public TriggerSkill{
     Q_OBJECT
 
 public:

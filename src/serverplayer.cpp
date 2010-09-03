@@ -19,7 +19,13 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::playCardEffect(const Card *card){
-    room->playCardEffect(card->objectName(), getGeneral()->isMale());
+    if(!card->isVirtualCard())
+        room->playCardEffect(card->objectName(), getGeneral()->isMale());
+}
+
+int ServerPlayer::getRandomHandCard() const{
+    int index = qrand() % handcards.length();
+    return handcards.at(index)->getId();
 }
 
 int ServerPlayer::aliveCount() const{

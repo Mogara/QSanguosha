@@ -3,7 +3,7 @@
 #include "room.h"
 
 GameRule::GameRule()
-    :PassiveSkill("game_rule")
+    :TriggerSkill("game_rule")
 {
 }
 
@@ -36,7 +36,13 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             room->nextPhase(player);
             break;
         }
-    case Player::Discard:
+    case Player::Discard:{
+            int discard_num = player->getMaxCards() - player->getHandcardNum();
+            QList<int> card_ids = room->askForDiscard(player, discard_num);
+            foreach(int card_id, card_ids)
+                room->throwCard(card_id);
+            break;
+        }
     default:
         ;
     }
@@ -69,29 +75,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     case CardEffected:{
             if(data.canConvert<CardEffectStruct>()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                QString card_name = effect.card->objectName();
-
-                if(card_name == "slash"){
-                    const Card *card = room->requestForCard(effect.to, "jink");
-                    if(!card){
-                        DamageStruct damage;
-                        damage.card = effect.card;
-                        damage.damage = 1;
-                        damage.from = effect.from;
-                        damage.to = effect.to;
-
-                        if(effect.flags.contains("fire"))
-                            damage.nature = DamageStruct::Fire;
-                        else if(effect.flags.contains("thunder"))
-                            damage.nature = DamageStruct::Thunder;
-                        else
-                            damage.nature = DamageStruct::Normal;
-
-                        room->damage(damage);
-                    }
-                }
+                effect.card->onEffect(effect);
             }
-
 
             break;
         }

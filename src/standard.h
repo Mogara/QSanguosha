@@ -67,6 +67,8 @@ class SingleTargetTrick: public TrickCard{
 public:
     SingleTargetTrick(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class DelayedTrick:public TrickCard{
@@ -118,6 +120,8 @@ public:
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool isAvailable() const;
@@ -164,10 +168,9 @@ class Snatch:public SingleTargetTrick{
 public:
     Snatch(Suit suit, int number);
 
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;    
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
-
-
 
 // Skill cards
 

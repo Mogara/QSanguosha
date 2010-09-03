@@ -5,6 +5,7 @@
 #include <QFontDatabase>
 #include <QStringList>
 #include <QFile>
+#include <QMessageBox>
 
 Settings Config("Donghua University", "Sanguosha");
 
@@ -25,7 +26,8 @@ void Settings::init(){
         BigFont.setFamily(font_family);
         SmallFont.setFamily(font_family);
         TinyFont.setFamily(font_family);
-    }
+    }else
+        QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
     BigFont.setPixelSize(56);
     SmallFont.setPixelSize(32);

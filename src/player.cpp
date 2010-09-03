@@ -329,3 +329,7 @@ bool Player::isNude() const{
     return getHandcardNum() == 0 && getWeapon() == NULL && getArmor() == NULL
             && getDefensiveHorse() == NULL && getOffensiveHorse() == NULL;
 }
+
+bool Player::isAllNude() const{
+    return isNude() && judging_area.isEmpty();
+}

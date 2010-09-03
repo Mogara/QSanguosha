@@ -7,8 +7,9 @@
 #include <QPixmap>
 #include <QBrush>
 
-class Settings : public QSettings
-{
+class Settings : public QSettings{
+    Q_OBJECT
+
 public:
     explicit Settings(const QString &organization, const QString &application);
     void init();

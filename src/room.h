@@ -1,7 +1,7 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-class PassiveSkill;
+class TriggerSkill;
 
 #include "serverplayer.h"
 #include "roomthread.h"
@@ -20,16 +20,17 @@ public:
     bool isFull() const;    
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void throwCard(const Card *card);
+    void throwCard(int card_id);
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
+    QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
+
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
-
-    // non-interactive methods    
     void nextPhase(ServerPlayer *player);
     void drawCards(ServerPlayer *player, int n);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
@@ -54,13 +55,16 @@ public:
     QString askForSkillInvoke(ServerPlayer *player, const QString &ask_str);
     void invokeSkillCommand(ServerPlayer *player, const QString &arg);
 
+    QList<int> askForDiscard(ServerPlayer *target, int discard_num);
+    void discardCardCommand(ServerPlayer *player, const QString &arg);
+
     void askForNullification(ServerPlayer *player, const QVariant &data);
     void replyNullificationCommand(ServerPlayer *player, const QString &arg);
 
-    void askForCardChosen(ServerPlayer *player, const QVariant &data);
+    int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     void chooseCardCommand(ServerPlayer *player, const QString &arg);
 
-    const Card *requestForCard(ServerPlayer *player, const QString &pattern);
+    const Card *requestForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     void responseCardCommand(ServerPlayer *player, const QString &arg);
 
     void signupCommand(ServerPlayer *player, const QString &arg);
@@ -98,8 +102,7 @@ private:
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
-    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);
-    void throwCard(int card_id);
+    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);    
 
 private slots:
     void reportDisconnection();

@@ -24,6 +24,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["replyNullificationCommand"] = &Room::replyNullificationCommand;
     callbacks["chooseCardCommand"] = &Room::chooseCardCommand;
     callbacks["responseCardCommand"] = &Room::responseCardCommand;
+    callbacks["discardCardCommand"] = &Room::discardCardCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -35,6 +36,20 @@ ServerPlayer *Room::getCurrent() const{
 
 int Room::alivePlayerCount() const{
     return alive_players.count();
+}
+
+QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except){
+    int index = alive_players.indexOf(except);
+
+    QList<ServerPlayer *> other_players;
+    int i;
+    for(i=index+1; i<alive_players.length(); i++)
+        other_players << alive_players.at(i);
+
+    for(i=0; i<index; i++)
+        other_players << alive_players.at(i);
+
+    return other_players;
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -107,22 +122,36 @@ void Room::askForNullification(ServerPlayer *, const QVariant &data){
     nullificators_count = alive_players.length();
 }
 
-void Room::askForCardChosen(ServerPlayer *player, const QVariant &data){
-    player->invoke("askForCardChosen", data.toString());
+int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
+    player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
 
+    reply_func = "chooseCardCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    return result.toInt();
 }
 
-const Card *Room::requestForCard(ServerPlayer *player, const QString &pattern){
-    player->invoke("requestForCard", pattern);
+void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
+
+    sem->release();
+}
+
+const Card *Room::requestForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+    player->invoke("requestForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
     reply_func = "responseCardCommand";
     reply_player = player;
 
     sem->acquire();
 
-    if(result != ".")
-        return Card::Parse(result);
-    else
+    if(result != "."){
+        const Card *card = Card::Parse(result);
+        throwCard(card);
+        return card;
+    }else
         return NULL;
 }
 
@@ -134,7 +163,7 @@ void Room::responseCardCommand(ServerPlayer *player, const QString &arg){
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
     player->setFlags(flag);
-    broadcast(QString("#%1 flags %1").arg(flag));
+    broadcast(QString("#%1 flags %2").arg(player->objectName()).arg(flag));
 }
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value){
@@ -608,10 +637,6 @@ void Room::replyNullificationCommand(ServerPlayer *player, const QString &arg){
     // FIXME
 }
 
-void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
-    // FIXME
-}
-
 void Room::nextPhase(ServerPlayer *player){
     Player::Phase next_phase = player->getNextPhase();
 
@@ -658,6 +683,28 @@ QString Room::activate(ServerPlayer *target){
     sem->acquire();
 
     return result;
+}
+
+QList<int> Room::askForDiscard(ServerPlayer *target, int discard_num){
+    target->invoke("askForDiscard", QString::number(discard_num));
+
+    reply_func = "discardCardCommand";
+    reply_player = target;
+
+    sem->acquire();
+
+    QStringList card_strs = result.split("+");
+    QList<int> card_ids;
+    foreach(QString card_str, card_strs)
+        card_ids << card_str.toInt();
+
+    return card_ids;
+}
+
+void Room::discardCardCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
+
+    sem->release();
 }
 
 void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place){

@@ -22,6 +22,7 @@ public:
     void drawCard(const Card *card);
     Room *getRoom() const;
     void playCardEffect(const Card *card);
+    int getRandomHandCard() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

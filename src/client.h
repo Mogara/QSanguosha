@@ -59,9 +59,11 @@ public:
     void prompt(const QString &prompt_str);
     void clearPile(const QString &);
     void setPileNumber(const QString &pile_num);
+    void askForDiscard(const QString &discard_str);
 
     // public fields
     QString card_pattern;
+    int discard_num;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
 

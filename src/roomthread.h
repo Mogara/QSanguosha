@@ -2,7 +2,7 @@
 #define ROOMTHREAD_H
 
 class Room;
-class PassiveSkill;
+class TriggerSkill;
 class ServerPlayer;
 class Card;
 
@@ -15,8 +15,8 @@ class Card;
 struct PassiveSkillSorter{
     ServerPlayer *target;
 
-    bool operator()(const PassiveSkill *a, const PassiveSkill *b);
-    void sort(QList<const PassiveSkill *> &skills);
+    bool operator()(const TriggerSkill *a, const TriggerSkill *b);
+    void sort(QList<const TriggerSkill *> &skills);
 };
 
 struct DamageStruct{
@@ -95,8 +95,8 @@ class RoomThread : public QThread{
 public:
     explicit RoomThread(Room *room);
     bool invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
-    void addPassiveSkill(const PassiveSkill *skill);
-    void removePassiveSkill(const PassiveSkill *skill);
+    void addPassiveSkill(const TriggerSkill *skill);
+    void removePassiveSkill(const TriggerSkill *skill);
 
 protected:
     virtual void run();
@@ -104,8 +104,8 @@ protected:
 private:
     Room *room;
 
-    QMap<QString, const PassiveSkill *> passive_skills;
-    QMap<TriggerEvent, QList<const PassiveSkill *> > skill_table;
+    QMap<QString, const TriggerSkill *> trigger_skills;
+    QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
 };
 
 #endif // ROOMTHREAD_H

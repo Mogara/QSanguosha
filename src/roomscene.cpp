@@ -611,10 +611,10 @@ void RoomScene::updateSkillButtons(){
     foreach(const Skill* skill, skills){
         QAbstractButton *button = NULL;
         QString skill_name = Sanguosha->translate(skill->objectName());
-        if(skill->inherits("PassiveSkill")){
-            const PassiveSkill *passive_skill = qobject_cast<const PassiveSkill *>(skill);
-            switch(passive_skill->getFrequency()){
-            case PassiveSkill::Frequent:{
+        if(skill->inherits("TriggerSkill")){
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            switch(trigger_skill->getFrequency()){
+            case TriggerSkill::Frequent:{
                     QCheckBox *checkbox = new QCheckBox(skill_name);
 
                     checkbox->setObjectName(skill->objectName());
@@ -625,8 +625,8 @@ void RoomScene::updateSkillButtons(){
                     button = checkbox;
                     break;
             }
-            case PassiveSkill::NotFrequent:{
-                    const ViewAsSkill *view_as_skill = passive_skill->getViewAsSkill();
+            case TriggerSkill::NotFrequent:{
+                    const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
                     button = new QPushButton(skill_name);                    
                     if(view_as_skill){
                         button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
@@ -636,7 +636,7 @@ void RoomScene::updateSkillButtons(){
                     break;
             }
 
-            case PassiveSkill::Compulsory:{
+            case TriggerSkill::Compulsory:{
                     button = new QPushButton(skill_name + tr(" [Compulsory]"));
                     button->setEnabled(false);
                     break;
@@ -893,7 +893,7 @@ void RoomScene::updateStatus(Client::Status status){
 #endif
             dashboard->enableCards(ClientInstance->card_pattern);
 
-            ok_button->setEnabled(true);
+            ok_button->setEnabled(false);
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);            
             break;
@@ -923,10 +923,10 @@ void RoomScene::updateStatus(Client::Status status){
         }
     }
 
-    QMapIterator<QAbstractButton *, const ViewAsSkill *> itor(button2skill);
-    while(itor.hasNext()){
-        itor.next();
-        itor.key()->setEnabled(itor.value()->isAvailable());
+    foreach(QAbstractButton *button, skill_buttons){
+        const ViewAsSkill *skill = button2skill.value(button, NULL);
+        if(skill)
+            button->setEnabled(skill->isAvailable());
     }
 }
 
@@ -966,8 +966,10 @@ void RoomScene::doOkButton(){
         }
     case Client::Responsing:{
             const Card *card = dashboard->getSelected();
-            if(card)
+            if(card){
                 ClientInstance->responseCard(card);
+                daqiao->hide();
+            }
             break;
         }
     case Client::NotActive: break;
@@ -990,6 +992,7 @@ void RoomScene::doCancelButton(){
 
     case Client::Responsing:{
             ClientInstance->responseCard(NULL);
+            daqiao->hide();
             break;
         }
 
@@ -999,7 +1002,8 @@ void RoomScene::doCancelButton(){
 }
 
 void RoomScene::doDiscardButton(){
-    // FIXME
+    if(ClientInstance->getStatus() == Client::Playing)
+        ClientInstance->useCard(NULL);
 }
 
 void RoomScene::hideAvatars(){

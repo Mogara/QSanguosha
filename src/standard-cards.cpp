@@ -47,6 +47,28 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
     }
 }
 
+void Slash::onEffect(const CardEffectStruct &effect) const{
+    QString prompt = "@slash-jink:" + effect.from->objectName();
+    Room *room = effect.from->getRoom();
+    const Card *card = room->requestForCard(effect.to, "jink", prompt);
+    if(!card){
+        DamageStruct damage;
+        damage.card = effect.card;
+        damage.damage = 1;
+        damage.from = effect.from;
+        damage.to = effect.to;
+
+        if(effect.flags.contains("fire"))
+            damage.nature = DamageStruct::Fire;
+        else if(effect.flags.contains("thunder"))
+            damage.nature = DamageStruct::Thunder;
+        else
+            damage.nature = DamageStruct::Normal;
+
+        room->damage(damage);
+    }
+}
+
 bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{   
     return !targets.isEmpty();
 }
@@ -206,7 +228,31 @@ public:
         :AOE(suit, number) {
         setObjectName("savage_assault");
     }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+        QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
+        foreach(ServerPlayer *player, other_players){
+            CardEffectStruct effect;
+            effect.card = this;
+            effect.from = source;
+            effect.to = player;
+
+            room->cardEffect(effect);
+        }
+    }
 };
+
+void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+    source->playCardEffect(this);
+
+    CardEffectStruct effect;
+    effect.card = this;
+    effect.from = source;
+    effect.to = targets.first();
+
+    room->cardEffect(effect);
+}
 
 class Collateral:public SingleTargetTrick{
 public:
@@ -270,7 +316,6 @@ Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
     setObjectName("snatch");
 }
 
-
 bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
@@ -281,13 +326,37 @@ bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const Clie
     if(to_select->hasFlag("weimu") && isBlack())
         return false;
 
+    if(to_select->isAllNude())
+        return false;
+
     return true;
+}
+
+void Snatch::onEffect(const CardEffectStruct &effect) const{
+    if(effect.to->isAllNude())
+        return;
+
+    Room *room = effect.to->getRoom();
+    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
+    if(card_id == -1)
+        card_id = effect.to->getRandomHandCard();
+
+    room->obtainCard(effect.from, card_id);
 }
 
 class Dismantlement:public SingleTargetTrick{
 public:
     Dismantlement(Suit suit, int number):SingleTargetTrick(suit, number) {
         setObjectName("dismantlement");
+    }
+
+    virtual void onEffect(const CardEffectStruct &effect) const{
+        Room *room = effect.to->getRoom();
+        int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
+        if(card_id == -1)
+            card_id = effect.to->getRandomHandCard();
+
+        room->throwCard(card_id);
     }
 };
 
@@ -511,4 +580,6 @@ void StandardPackage::addCards(){
     t["nullification"] = tr("nullification");
     t["indulgence"] = tr("indulgence");
     t["lightning"] = tr("lightning");
+
+    t["@slash-jink"] = tr("@slash-jink");
 }

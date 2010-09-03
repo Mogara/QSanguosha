@@ -83,6 +83,7 @@ Client::Client(QObject *parent)
     callbacks["prompt"] = &Client::prompt;
     callbacks["clearPile"] = &Client::clearPile;
     callbacks["setPileNumber"] = &Client::setPileNumber;
+    callbacks["askForDiscard"] = &Client::askForDiscard;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -124,7 +125,10 @@ void Client::processReply(){
             // others
             object.remove(other_prefix);
             ClientPlayer *player = findChild<ClientPlayer*>(object);
-            player->setProperty(field, value);
+            if(player)
+                player->setProperty(field, value);
+            else
+                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(field));
         }else if(object.startsWith(method_prefix)){
             // invoke methods
             Callback callback = callbacks.value(words[1], NULL);
@@ -222,8 +226,11 @@ void Client::itemChosen(const QString &item_name){
 }
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
-    if(!card)
+    if(!card){
+        request("useCard .");
+        setStatus(NotActive);
         return;
+    }
 
     QStringList target_names;
     foreach(const ClientPlayer *target, targets)
@@ -381,8 +388,18 @@ void Client::requestForCard(const QString &request_str){
         patterns << "jink" << "slash";
     }
 
-    if(patterns.contains(request_str)){
-        card_pattern = request_str;
+    QStringList texts = request_str.split(":");
+    QString pattern = texts.first();
+
+    if(patterns.contains(pattern)){
+        card_pattern = pattern;
+        QString prompt = Sanguosha->translate(texts.at(1));
+        if(texts.length() >= 3){
+            QString src = texts.at(2);
+            prompt.replace("%src", src);
+        }
+
+        emit prompt_changed(prompt);
         setStatus(Responsing);
     }else{
         QMessageBox::warning(NULL, "", tr("Unknown request card pattern: %1").arg(request_str));
@@ -466,10 +483,10 @@ void Client::askForCardChosen(const QString &ask_str){
     QString player_name = texts.at(1);
     ClientPlayer *player = findChild<ClientPlayer *>(player_name);
     QString flags = texts.at(2);
-    QString trick_name = texts.at(3);
+    QString reason = texts.at(3);
 
     PlayerCardDialog *dialog = new PlayerCardDialog(player, flags);
-    dialog->setWindowTitle(Sanguosha->translate(trick_name));
+    dialog->setWindowTitle(Sanguosha->translate(reason));
 
     connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
 
@@ -521,4 +538,9 @@ void Client::clearPile(const QString &){
 
 void Client::setPileNumber(const QString &pile_num){
     emit pile_num_set(pile_num.toInt());
+}
+
+void Client::askForDiscard(const QString &discard_str){
+    discard_num = discard_str.toInt();
+    setStatus(Discarding);
 }

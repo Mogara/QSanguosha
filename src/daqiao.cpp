@@ -15,7 +15,7 @@ void Daqiao::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     Pixmap::paint(painter, option, widget);
 
-    painter->setFont(Config.TinyFont);
+    // painter->setFont(Config.TinyFont);
     painter->drawText(ContentRect, content);
 }
 

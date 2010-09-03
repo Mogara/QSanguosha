@@ -207,6 +207,10 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) 
     room->throwCard(this);
 }
 
+void Card::onEffect(const CardEffectStruct &effect) const{
+
+}
+
 void Card::addSubcard(int card_id){
     if(card_id < 0)
         qWarning(qPrintable(tr("Subcard must not be virtual card!")));

@@ -2,14 +2,14 @@
 #include "room.h"
 #include "gamerule.h"
 
-bool PassiveSkillSorter::operator ()(const PassiveSkill *a, const PassiveSkill *b){
+bool PassiveSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
     int x = a->getPriority(target);
     int y = b->getPriority(target);
 
     return x > y;
 }
 
-void PassiveSkillSorter::sort(QList<const PassiveSkill *> &skills){
+void PassiveSkillSorter::sort(QList<const TriggerSkill *> &skills){
     qSort(skills.begin(), skills.end(), *this);
 }
 
@@ -24,16 +24,16 @@ RoomThread::RoomThread(Room *room)
     foreach(ServerPlayer *player, room->players){
         const General *general = player->getGeneral();
 
-        QList<const PassiveSkill *> skills = general->findChildren<const PassiveSkill *>();
-        foreach(const PassiveSkill *skill, skills){
-            passive_skills.insert(skill->objectName(), skill);
+        QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+        foreach(const TriggerSkill *skill, skills){
+            trigger_skills.insert(skill->objectName(), skill);
         }
     }
     GameRule *game_rule = new GameRule;
-    passive_skills.insert(game_rule->objectName(), game_rule);
+    trigger_skills.insert(game_rule->objectName(), game_rule);
 
     // construct trigger_table
-    foreach(const PassiveSkill *skill, passive_skills)
+    foreach(const TriggerSkill *skill, trigger_skills)
         addPassiveSkill(skill);
 }
 
@@ -49,10 +49,10 @@ void RoomThread::run(){
 bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    QList<const PassiveSkill *> skills = skill_table[event];
-    QMutableListIterator<const PassiveSkill *> itor(skills);
+    QList<const TriggerSkill *> skills = skill_table[event];
+    QMutableListIterator<const TriggerSkill *> itor(skills);
     while(itor.hasNext()){
-        const PassiveSkill *skill = itor.next();
+        const TriggerSkill *skill = itor.next();
         if(!skill->triggerable(target))
             itor.remove();
     }
@@ -62,7 +62,7 @@ bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, c
     sorter.target = target;
     sorter.sort(skills);
 
-    foreach(const PassiveSkill *skill, skills){
+    foreach(const TriggerSkill *skill, skills){
         if(skill->trigger(event, target, data))
             return true;
     }
@@ -70,7 +70,7 @@ bool RoomThread::invokePassiveSkills(TriggerEvent event, ServerPlayer *target, c
     return false;
 }
 
-void RoomThread::addPassiveSkill(const PassiveSkill *skill){
+void RoomThread::addPassiveSkill(const TriggerSkill *skill){
     QList<TriggerEvent> events;
     skill->getTriggerEvents(events);
     foreach(TriggerEvent event, events){
@@ -78,7 +78,7 @@ void RoomThread::addPassiveSkill(const PassiveSkill *skill){
     }
 }
 
-void RoomThread::removePassiveSkill(const PassiveSkill *skill){
+void RoomThread::removePassiveSkill(const TriggerSkill *skill){
     QList<TriggerEvent> events;
     skill->getTriggerEvents(events);
     foreach(TriggerEvent event, events){

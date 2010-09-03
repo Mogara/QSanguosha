@@ -26,19 +26,10 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
-void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     const EquipCard *equipped = source->getEquip(getSubtype());
-    if(equipped){
-        CardMoveStruct detach;
-        detach.card_id = equipped->getId();
-        detach.from = source;
-        detach.to = NULL;
-        detach.from_place = Player::Equip;
-        detach.to_place = Player::DiscardedPile;
-        detach.open = true;
-
-        room->moveCard(detach);
-    }
+    if(equipped)
+        room->throwCard(equipped);
 
     CardMoveStruct attach;
     attach.card_id = getId();

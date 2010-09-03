@@ -9,6 +9,7 @@ class Room;
 class ServerPlayer;
 class Client;
 class ClientPlayer;
+struct CardEffectStruct;
 
 class Card : public QObject
 {
@@ -68,6 +69,7 @@ public:
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);

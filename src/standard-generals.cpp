@@ -48,9 +48,9 @@ public:
     }
 };
 
-class Tiandu:public PassiveSkill{
+class Tiandu:public TriggerSkill{
 public:
-    Tiandu():PassiveSkill("tiandu"){
+    Tiandu():TriggerSkill("tiandu"){
         frequency = Frequent;
     }
 
@@ -77,17 +77,37 @@ public:
     }
 };
 
-class Ganglie:public Skill{
+class Ganglie:public MasochismSkill{
 public:
-    Ganglie():Skill("ganglie"){
+    Ganglie():MasochismSkill("ganglie"){
 
+    }
+
+    virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
+        ServerPlayer *from = damage.from;
+        Room *room = xiahou->getRoom();
+        if(from && room->askForSkillInvoke(xiahou, "ganglie:yes+no") == "yes"){
+            // FIXME:
+        }
     }
 };
 
-class Fankui:public Skill{
+class Fankui:public MasochismSkill{
 public:
-    Fankui():Skill("fankui"){
+    Fankui():MasochismSkill("fankui"){
 
+    }
+
+    virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
+        ServerPlayer *from = damage.from;
+        Room *room = simayi->getRoom();
+        if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui:yes+no") == "yes"){
+            int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
+            if(card_id == -1)
+                card_id = from->getRandomHandCard();
+            room->obtainCard(simayi, card_id);
+            room->playSkillEffect(objectName());
+        }
     }
 };
 
@@ -561,6 +581,9 @@ void StandardPackage::addGenerals(){
     t["yingzi:no"] = t["nothing"];
     t["jianxiong:yes"] = tr("jianxiong:yes");
     t["jianxiong:no"] = t["nothing"];
+    t["fankui:yes"] = tr("fankui:yes");
+    t["fankui:nothing"] = t["nothing"];   
+    
 
     t["luanji"] = tr("luanji");
 }

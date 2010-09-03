@@ -109,6 +109,7 @@ public:
     QStack<const Card *> getJudgingArea() const;
     bool isKongcheng() const;
     bool isNude() const;
+    bool isAllNude() const;
 
 private:
     const General *general;

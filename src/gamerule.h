@@ -3,7 +3,7 @@
 
 #include "skill.h"
 
-class GameRule : public PassiveSkill{
+class GameRule : public TriggerSkill{
     Q_OBJECT
 
 public:
