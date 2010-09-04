@@ -31,8 +31,7 @@ void CardItem::goBack(bool kieru){
         return;
 
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
-    goback->setEndValue(home_pos);
-
+    goback->setEndValue(home_pos);   
     goback->setEasingCurve(QEasingCurve::OutBounce);
 
     if(kieru){

@@ -333,3 +333,13 @@ bool Player::isNude() const{
 bool Player::isAllNude() const{
     return isNude() && judging_area.isEmpty();
 }
+
+void Player::addDelayedTrick(const Card *trick){
+    judging_area.push(trick);
+}
+
+void Player::removeDelayedTrick(const Card *trick){
+    int index = judging_area.indexOf(trick);
+    if(index >= 0)
+        judging_area.remove(index);
+}

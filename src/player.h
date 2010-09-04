@@ -20,7 +20,6 @@ class Player : public QObject
     Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
     Q_PROPERTY(int max_cards READ getMaxCards WRITE setMaxCards)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
-    Q_PROPERTY(QString name READ objectName WRITE setObjectName STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
     Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
     Q_PROPERTY(QString state READ getState WRITE setState)
@@ -37,6 +36,7 @@ class Player : public QObject
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
+    Q_PROPERTY(bool all_nude READ isAllNude)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
@@ -97,6 +97,10 @@ public:
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
 
+    QStack<const Card *> getJudgingArea() const;
+    void addDelayedTrick(const Card *trick);
+    void removeDelayedTrick(const Card *trick);
+
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
     virtual void addCard(const Card *card, Place place) = 0;
@@ -104,9 +108,8 @@ public:
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
     const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;
+    const Horse *getOffensiveHorse() const;    
 
-    QStack<const Card *> getJudgingArea() const;
     bool isKongcheng() const;
     bool isNude() const;
     bool isAllNude() const;

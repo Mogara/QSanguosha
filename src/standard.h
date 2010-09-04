@@ -71,6 +71,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+
 class DelayedTrick:public TrickCard{
     Q_OBJECT
 
@@ -166,9 +167,19 @@ class Snatch:public SingleTargetTrick{
     Q_OBJECT
 
 public:
-    Snatch(Suit suit, int number);
+    Q_INVOKABLE Snatch(Card::Suit suit, int number);
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;    
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class Dismantlement: public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Dismantlement(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

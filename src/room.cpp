@@ -71,7 +71,8 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
     to->invoke("prompt", prompt_str);
 }
 
-QString Room::askForSkillInvoke(ServerPlayer *player, const QString &ask_str){
+QString Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options){
+    QString ask_str = QString("%1:%2").arg(skill_name).arg(options);
     player->invoke("askForSkillInvoke", ask_str);    
 
     reply_func = "invokeSkillCommand";
@@ -79,7 +80,11 @@ QString Room::askForSkillInvoke(ServerPlayer *player, const QString &ask_str){
 
     sem->acquire();
 
-    return result;
+    return result;    
+}
+
+bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
+    return askForSkillInvoke(player, skill_name, "yes+no") == "yes";
 }
 
 void Room::invokeSkillCommand(ServerPlayer *, const QString &arg){
@@ -130,7 +135,10 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     sem->acquire();
 
-    return result.toInt();
+    int card_id = result.toInt();
+    if(card_id == -1)
+        card_id = who->getRandomHandCard();
+    return card_id;
 }
 
 void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
@@ -139,8 +147,8 @@ void Room::chooseCardCommand(ServerPlayer *player, const QString &arg){
     sem->release();
 }
 
-const Card *Room::requestForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
-    player->invoke("requestForCard", QString("%1:%2").arg(pattern).arg(prompt));
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+    player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
     reply_func = "responseCardCommand";
     reply_player = player;

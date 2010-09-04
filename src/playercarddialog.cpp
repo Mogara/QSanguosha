@@ -128,11 +128,10 @@ QWidget *PlayerCardDialog::createJudgingArea(){
     QGroupBox *area = new QGroupBox(tr("Judging Area"));
     QVBoxLayout *layout = new QVBoxLayout;
     QStack<const Card *> cards = player->getJudgingArea();
-    QVectorIterator<const Card *> itor(cards);
-    while(itor.hasNext()){
-        const Card *card = itor.next();
+    foreach(const Card *card, cards){
         QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
         button->setIcon(card->getSuitIcon());
+        layout->addWidget(button);
 
         mapper->setMapping(button, card->getId());
         connect(button, SIGNAL(clicked()), mapper, SLOT(map()));

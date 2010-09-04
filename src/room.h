@@ -52,7 +52,8 @@ public:
     QString activate(ServerPlayer *target);
     void useCardCommand(ServerPlayer *player, const QString &card_str);
 
-    QString askForSkillInvoke(ServerPlayer *player, const QString &ask_str);
+    QString askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options);
+    bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
     void invokeSkillCommand(ServerPlayer *player, const QString &arg);
 
     QList<int> askForDiscard(ServerPlayer *target, int discard_num);
@@ -64,7 +65,7 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     void chooseCardCommand(ServerPlayer *player, const QString &arg);
 
-    const Card *requestForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     void responseCardCommand(ServerPlayer *player, const QString &arg);
 
     void signupCommand(ServerPlayer *player, const QString &arg);

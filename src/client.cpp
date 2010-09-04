@@ -74,7 +74,7 @@ Client::Client(QObject *parent)
     callbacks["startGame"] = &Client::startGame;
     callbacks["hpChange"] = &Client::hpChange;
     callbacks["judge"] = &Client::judge;
-    callbacks["requestForCard"] = &Client::requestForCard;
+    callbacks["askForCard"] = &Client::askForCard;
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["askForNullification"] = &Client::askForNullification;
@@ -96,6 +96,8 @@ void Client::request(const QString &message){
 }
 
 void Client::signup(){
+//    QString hex = Config.UserName.toUtf8().toHex();
+//    request(QString("signup %1:%2").arg(hex).arg(Config.UserAvatar));
     request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
@@ -382,7 +384,7 @@ void Client::updateFrequentFlags(int state){
         frequent_flags.remove(flag);
 }
 
-void Client::requestForCard(const QString &request_str){
+void Client::askForCard(const QString &request_str){
     static QSet<QString> patterns;
     if(patterns.isEmpty()){
         patterns << "jink" << "slash";

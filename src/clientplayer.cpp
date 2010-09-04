@@ -28,7 +28,15 @@ void ClientPlayer::addCard(const Card *card, Place place){
             handcard_num++;
             break;
         }
-    case Equip: setEquip(qobject_cast<const EquipCard*>(card)); break;
+    case Equip: {
+            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            setEquip(equip);
+            break;
+        }
+    case DelayedTrick:{
+            addDelayedTrick(card);
+            break;
+        }
     default:
         // FIXME
         ;
@@ -42,7 +50,16 @@ void ClientPlayer::removeCard(const Card *card, Place place){
             known_cards.removeOne(card);
             break;
         }
-    case Equip: removeEquip(qobject_cast<const EquipCard*>(card)); break;
+    case Equip:{
+            const EquipCard *equip = qobject_cast<const EquipCard*>(card);
+            removeEquip(equip);
+            break;
+        }
+    case DelayedTrick:{           
+            removeDelayedTrick(card);
+            break;
+        }
+
     default:
         // FIXME
         ;

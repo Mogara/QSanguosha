@@ -42,6 +42,7 @@ Dashboard::Dashboard()
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
+    card_item->setPos(mapFromScene(card_item->pos()));
     card_item->setParentItem(this);
     card_item->setRotation(0.0);
     card_item->setFlags(ItemIsFocusable);
@@ -321,15 +322,25 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             card_item = offensive_horse;
             offensive_horse = NULL;
         }
+    }else if(place == Player::DelayedTrick){
+        QMutableVectorIterator<CardItem *> itor(judging_area);
+        while(itor.hasNext()){
+            CardItem *item = itor.next();
+            if(item->getCard()->getId() == card_id){
+                card_item = item;
+                itor.remove();
+                break;
+            }
+        }
     }
 
     if(card_item){
         card_item->disconnect(this);
         return card_item;
+    }else{
+        qFatal("No such card %d in Dashboard", card_id);
+        return NULL;
     }
-
-    qFatal("No such card %d in Dashboard", card_id);
-    return NULL;
 }
 
 static bool CompareBySuitNumber(const CardItem *a, const CardItem *b){

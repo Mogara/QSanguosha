@@ -50,7 +50,7 @@ public:
     void startGame(const QString &);
     void hpChange(const QString &change_str);
     void judge(const QString &judge_str);
-    void requestForCard(const QString &request_str);
+    void askForCard(const QString &request_str);
     void askForSkillInvoke(const QString &ask_str);
     void playSkillEffect(const QString &play_str);
     void askForNullification(const QString &ask_str);

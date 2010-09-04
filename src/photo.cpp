@@ -125,8 +125,19 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
 
         if(card_item)
             card_item->setOpacity(1.0);
+    }else if(place == Player::DelayedTrick){
+        QMutableVectorIterator<CardItem *> itor(judging_area);
+        while(itor.hasNext()){
+            CardItem *item = itor.next();
+            if(item->getCard()->getId() == card_id){
+                card_item = item;
+                itor.remove();
+                break;
+            }
+        }
     }
 
+    update();
     return card_item;
 }
 

@@ -18,7 +18,7 @@ public:
         if(!room->obtainable(card, target))
             return;
 
-        if(room->askForSkillInvoke(target, "jianxiong:yes+no") == "yes"){            
+        if(room->askForSkillInvoke(target, "jianxiong")){
             room->obtainCard(target, card);
             room->playSkillEffect(objectName());
         }
@@ -86,7 +86,7 @@ public:
     virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = xiahou->getRoom();
-        if(from && room->askForSkillInvoke(xiahou, "ganglie:yes+no") == "yes"){
+        if(from && room->askForSkillInvoke(xiahou, "ganglie")){
             // FIXME:
         }
     }
@@ -101,7 +101,7 @@ public:
     virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = simayi->getRoom();
-        if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui:yes+no") == "yes"){
+        if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui")){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
             if(card_id == -1)
                 card_id = from->getRandomHandCard();
@@ -317,13 +317,11 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Draw){
-            Room *room = target->getRoom();
-            QString result = room->askForSkillInvoke(target, "yingzi:yes+no");
-            if(result == "yes"){
+            Room *room = target->getRoom();            
+            if(room->askForSkillInvoke(target, objectName())){
                 room->drawCards(target, 1);
                 room->playSkillEffect(objectName());
             }
-
         }
 
         return false;
@@ -582,8 +580,10 @@ void StandardPackage::addGenerals(){
     t["jianxiong:yes"] = tr("jianxiong:yes");
     t["jianxiong:no"] = t["nothing"];
     t["fankui:yes"] = tr("fankui:yes");
-    t["fankui:nothing"] = t["nothing"];   
-    
+    t["fankui:nothing"] = t["nothing"];
+
+    t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
+    t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
 
     t["luanji"] = tr("luanji");
 }

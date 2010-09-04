@@ -50,7 +50,7 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
 void Slash::onEffect(const CardEffectStruct &effect) const{
     QString prompt = "@slash-jink:" + effect.from->objectName();
     Room *room = effect.from->getRoom();
-    const Card *card = room->requestForCard(effect.to, "jink", prompt);
+    const Card *card = room->askForCard(effect.to, "jink", prompt);
     if(!card){
         DamageStruct damage;
         damage.card = effect.card;
@@ -295,6 +295,45 @@ public:
     Duel(Suit suit, int number):SingleTargetTrick(suit, number) {
         setObjectName("duel");
     }
+
+    virtual void onEffect(const CardEffectStruct &effect) const{
+        ServerPlayer *first = effect.to;
+        ServerPlayer *second = effect.from;
+        Room *room = first->getRoom();
+
+        forever{
+            if(second->hasFlag("wushuang")){
+                room->playSkillEffect("wushuang");
+                const Card *jink = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
+                if(jink == NULL)
+                    break;
+                else
+                    delete jink;
+
+                jink = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->objectName());
+                if(jink == NULL)
+                    break;
+                else
+                    delete jink;
+            }else{
+                const Card *jink = room->askForCard(first, "slash", "@duel-slash:" + second->objectName());
+                if(jink == NULL)
+                    break;
+                else
+                    delete jink;
+            }
+
+            qSwap(first, second);
+        }
+
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 1;
+        damage.from = second;
+        damage.to = first;
+
+        room->damage(damage);
+    }
 };
 
 class ExNihilo: public SingleTargetTrick{
@@ -320,6 +359,9 @@ bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const Clie
     if(!targets.isEmpty())
         return false;
 
+    if(ClientInstance->getPlayer()->distanceTo(to_select) > 1)
+        return false;
+
     if(to_select->hasFlag("qianxun"))
         return false;
 
@@ -338,27 +380,32 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    if(card_id == -1)
-        card_id = effect.to->getRandomHandCard();
-
     room->obtainCard(effect.from, card_id);
 }
 
-class Dismantlement:public SingleTargetTrick{
-public:
-    Dismantlement(Suit suit, int number):SingleTargetTrick(suit, number) {
-        setObjectName("dismantlement");
-    }
+Dismantlement::Dismantlement(Suit suit, int number)
+    :SingleTargetTrick(suit, number) {
+    setObjectName("dismantlement");
+}
 
-    virtual void onEffect(const CardEffectStruct &effect) const{
-        Room *room = effect.to->getRoom();
-        int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-        if(card_id == -1)
-            card_id = effect.to->getRandomHandCard();
+bool Dismantlement::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
 
-        room->throwCard(card_id);
-    }
-};
+    if(to_select->hasFlag("weimu") && isBlack())
+        return false;
+
+    if(to_select->isAllNude())
+        return false;
+
+    return true;
+}
+
+void Dismantlement::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
+    room->throwCard(card_id);
+}
 
 class Indulgence:public DelayedTrick{
 public:
@@ -582,4 +629,5 @@ void StandardPackage::addCards(){
     t["lightning"] = tr("lightning");
 
     t["@slash-jink"] = tr("@slash-jink");
+    t["@duel-slash"] = tr("@duel-slash");
 }
