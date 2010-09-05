@@ -29,12 +29,12 @@ void Engine::addPackage(Package *package){
         metaobjects.insert(card_name, card->metaObject());
 
         if(!male_effects.contains(card_name)){
-            MediaSource male_source(QString("%1/card-effects/male/%2.mp3").arg(package_name).arg(card_name));
+            MediaSource male_source(QString("%1/cards/effect/male/%2.mp3").arg(package_name).arg(card_name));
             male_effects.insert(card_name, male_source);
         }
 
         if(!female_effects.contains(card_name)){
-            MediaSource female_source(QString("%1/card-effects/female/%2.mp3").arg(package_name).arg(card_name));
+            MediaSource female_source(QString("%1/cards/effect/female/%2.mp3").arg(package_name).arg(card_name));
             female_effects.insert(card_name, female_source);
         }
     }

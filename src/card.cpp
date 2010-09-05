@@ -76,11 +76,11 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 QString Card::getPixmapPath() const{
-    return QString("%1/cards/%2.png").arg(parent()->objectName()).arg(objectName());
+    return QString("%1/cards/card/%2.png").arg(parent()->objectName()).arg(objectName());
 }
 
 QString Card::getIconPath() const{
-    return QString("%1/cards/%2-icon.png").arg(parent()->objectName()).arg(objectName());
+    return QString("%1/cards/icon/%2.png").arg(parent()->objectName()).arg(objectName());
 }
 
 QString Card::getPackage() const{
