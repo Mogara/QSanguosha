@@ -946,7 +946,7 @@ void RoomScene::doSkillButton(){
         dashboard->startPending(skill);
 
         button->setEnabled(false);
-        ok_button->setEnabled(true);
+        ok_button->setEnabled(false);
         cancel_button->setEnabled(true);
     }
 }

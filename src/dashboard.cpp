@@ -182,8 +182,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
         // draw player's judging area
         for(i=0; i<judging_area.count(); i++){
-            CardItem *trick = judging_area.at(i);
-            drawDelayedTrick(painter, trick, i);
+            CardItem *trick = judging_area.at(i);            
+            painter->drawPixmap(178 + i * 52, 5, trick->getIconPixmap());
         }
     }
 }
@@ -212,7 +212,7 @@ void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
-void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
+void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     if(!equip)
         return;
 
@@ -220,16 +220,12 @@ void Dashboard::drawEquip(QPainter *painter, CardItem *equip, int order){
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
     const Card *card = equip->getCard();
     painter->drawText(32, 83+20 + order*32, card->getNumberString());
-    painter->drawText(58, 83+20 + order*32, Sanguosha->translate(card->objectName()));
+    painter->drawText(58, 83+20 + order*32, card->getName());
 
     painter->setPen(Qt::white);
     if(equip->isMarked()){
         painter->drawRect(11, 78 + order * 34, 157, 30);
     }
-}
-
-void Dashboard::drawDelayedTrick(QPainter *painter, CardItem *trick, int order){
-    painter->drawPixmap(178 + order * 52, 5, trick->getIconPixmap());
 }
 
 void Dashboard::adjustCards(){
@@ -260,25 +256,18 @@ void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
     }
 }
 
+#include "standard.h"
+
 void Dashboard::installEquip(CardItem *equip){
     equip->setHomePos(mapToScene(QPointF(34, 37)));
     equip->goBack(true);
 
-    const Card *card = equip->getCard();
-    QString subtype = card->getSubtype();
-    CardItem *uninstall = NULL;
-    if(subtype == "weapon"){
-        uninstall = weapon;
-        weapon = equip;
-    }else if(subtype == "armor"){
-        uninstall = armor;
-        armor = equip;
-    }else if(subtype == "defensive_horse"){
-        uninstall = defensive_horse;
-        defensive_horse = equip;
-    }else if(subtype == "offensive_horse"){
-        uninstall = offensive_horse;
-        offensive_horse = equip;
+    const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
+    switch(equip_card->location()){
+    case EquipCard::WeaponLocation: weapon = equip; break;
+    case EquipCard::ArmorLocation: armor = equip; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
+    case EquipCard::OffensiveHorseLocation: offensive_horse = equip; break;
     }
 
     update();

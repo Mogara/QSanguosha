@@ -93,7 +93,6 @@ public:
     const General *getGeneral() const;
     bool hasSkill(const QString &skill_name) const;
 
-    const EquipCard *getEquip(const QString &subtype) const;
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
 

@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "carditem.h"
 #include "engine.h"
+#include "standard.h"
 
 #include <QPainter>
 #include <QMimeData>
@@ -142,15 +143,13 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
 }
 
 void Photo::installEquip(CardItem *equip){
-    QString subtype = equip->getCard()->getSubtype();
-    if(subtype == "weapon")
-        weapon = equip;
-    else if(subtype == "armor")
-        armor = equip;
-    else if(subtype == "defensive_horse")
-        defensive_horse = equip;
-    else if(subtype == "offensive_horse")
-        offensive_horse = equip;
+    const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
+    switch(equip_card->location()){
+    case EquipCard::WeaponLocation: weapon = equip; break;
+    case EquipCard::ArmorLocation: armor = equip; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
+    case EquipCard::OffensiveHorseLocation: offensive_horse = equip; break;
+    }
 
     equip->setHomePos(pos());
     equip->goBack(true);

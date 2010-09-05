@@ -215,32 +215,77 @@ public:
     }
 };
 
-class GodSalvation:public GlobalEffect{
-public:
-    GodSalvation(Suit suit = Heart, int number = 1):GlobalEffect(suit, number){
-        setObjectName("god_salvation");
-    }
-};
+GodSalvation::GodSalvation(Suit suit, int number)
+    :GlobalEffect(suit, number)
+{
+    setObjectName("god_salvation");
+}
 
-class SavageAssault:public AOE{
-public:
-    SavageAssault(Suit suit, int number)
-        :AOE(suit, number) {
-        setObjectName("savage_assault");
-    }
+void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
+    source->playCardEffect(this);
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-        QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
-        foreach(ServerPlayer *player, other_players){
+    QList<ServerPlayer *> all_players = room->getAllPlayers();
+    foreach(ServerPlayer *player, all_players){
+        if(player->isWounded()){
             CardEffectStruct effect;
             effect.card = this;
-            effect.from = source;
-            effect.to = player;
+            effect.from = effect.from;
+            effect.to  = effect.to;
 
             room->cardEffect(effect);
         }
     }
-};
+}
+
+void GodSalvation::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    room->recover(effect.to, 1);
+}
+
+SavageAssault::SavageAssault(Suit suit, int number)
+    :AOE(suit, number)
+{
+    setObjectName("savage_assault");
+}
+
+void SavageAssault::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    const Card *slash = room->askForCard(effect.to, "slash", "@savage-assault-slash");
+    if(slash == NULL){
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 1;
+        damage.from = effect.from;
+        damage.to = effect.to;
+        damage.nature = DamageStruct::Normal;
+
+        room->damage(damage);
+    }else
+        delete slash;
+}
+
+ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
+    :AOE(suit, number)
+{
+    setObjectName("archery_attack");
+}
+
+void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    const Card *jink = room->askForCard(effect.to, "jink", "@archery-attack-jink");
+    if(jink == NULL){
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 1;
+        damage.from = effect.from;
+        damage.to = effect.to;
+        damage.nature = DamageStruct::Normal;
+
+        room->damage(damage);
+    }else
+        delete jink;
+}
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
@@ -280,13 +325,6 @@ public:
 
     virtual bool isAvailable() const{
         return false;
-    }
-};
-
-class ArcheryAttack:public AOE{
-public:
-    ArcheryAttack(Suit suit = Heart, int number = 1):AOE(suit, number){
-        setObjectName("archery_attack");
     }
 };
 
@@ -630,4 +668,6 @@ void StandardPackage::addCards(){
 
     t["@slash-jink"] = tr("@slash-jink");
     t["@duel-slash"] = tr("@duel-slash");
+    t["@savage-assault-slash"] = tr("@savage-assault-slash");
+    t["@archery-attack-jink"] = tr("@archery-attack-jink");
 }

@@ -28,6 +28,7 @@ public:
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
+    QList<ServerPlayer *> getAllPlayers();
 
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
@@ -43,8 +44,8 @@ public:
     void damage(const DamageStruct &data);
     void obtainCard(ServerPlayer *target, const Card *card);
     void obtainCard(ServerPlayer *target, int card_id);
-    void damage(ServerPlayer *victim, int damage);
-    void recover(ServerPlayer *player, int recover);
+    void damage(ServerPlayer *victim, int damage = 1);
+    void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);
     void cardEffect(const CardEffectStruct &effect);
 

@@ -52,6 +52,20 @@ QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except){
     return other_players;
 }
 
+QList<ServerPlayer *> Room::getAllPlayers(){
+    int index = alive_players.indexOf(current);
+
+    QList<ServerPlayer *> all_players;
+    int i;
+    for(i=index; i<alive_players.length(); i++)
+        all_players << alive_players.at(i);
+
+    for(i=0; i<index; i++)
+        all_players << alive_players.at(i);
+
+    return all_players;
+}
+
 bool Room::obtainable(const Card *card, ServerPlayer *player){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();

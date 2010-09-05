@@ -27,7 +27,14 @@ int EquipCard::getTypeId() const{
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    const EquipCard *equipped = source->getEquip(getSubtype());
+    const EquipCard *equipped = NULL;
+    switch(location()){
+    case WeaponLocation: equipped = source->getWeapon(); break;
+    case ArmorLocation: equipped = source->getArmor(); break;
+    case DefensiveHorseLocation: equipped = source->getDefensiveHorse(); break;
+    case OffensiveHorseLocation: equipped = source->getOffensiveHorse(); break;
+    }
+
     if(equipped)
         room->throwCard(equipped);
 
@@ -54,8 +61,41 @@ QString GlobalEffect::getSubtype() const{
     return "global_effect";
 }
 
+void GlobalEffect::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
+    source->playCardEffect(this);
+
+    QList<ServerPlayer *> all_players = room->getAllPlayers();
+    foreach(ServerPlayer *player, all_players){
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = player;
+
+        room->cardEffect(effect);
+    }
+}
+
 QString AOE::getSubtype() const{
     return "aoe";
+}
+
+void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
+    source->playCardEffect(this);
+
+    QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *player, other_players){
+        if(player->hasFlag("tengjia"))
+            continue;
+
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = player;
+
+        room->cardEffect(effect);
+    }
 }
 
 QString SingleTargetTrick::getSubtype() const{
@@ -70,8 +110,16 @@ QString Weapon::getSubtype() const{
     return "weapon";
 }
 
+EquipCard::Location Weapon::location() const{
+    return WeaponLocation;
+}
+
 QString Armor::getSubtype() const{
     return "armor";
+}
+
+EquipCard::Location Armor::location() const{
+    return ArmorLocation;
 }
 
 Horse::Horse(const QString &name, Suit suit, int number, int correct)
@@ -85,6 +133,13 @@ QString Horse::getSubtype() const{
         return "defensive_horse";
     else
         return "offensive_horse";
+}
+
+EquipCard::Location Horse::location() const{
+    if(correct > 0)
+        return DefensiveHorseLocation;
+    else
+        return OffensiveHorseLocation;
 }
 
 StandardPackage::StandardPackage()

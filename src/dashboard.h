@@ -69,8 +69,7 @@ private:
 
     void adjustCards();
     void adjustCards(const QList<CardItem *> &list, int y);    
-    void drawEquip(QPainter *painter, CardItem *equip, int order);
-    void drawDelayedTrick(QPainter *painter, CardItem *trick, int order);
+    void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void addDynamicButton(QPushButton *button);
     void setSelectedItem(CardItem *card_item);
 

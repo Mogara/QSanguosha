@@ -230,41 +230,22 @@ void Player::setPhaseString(const QString &phase_str){
     phase = phase_map.value(phase_str, NotActive);
 }
 
-const EquipCard *Player::getEquip(const QString &subtype) const{
-    if(subtype == "weapon")
-        return weapon;
-    else if(subtype == "armor")
-        return armor;
-    else if(subtype == "defensive_horse")
-        return defensive_horse;
-    else if(subtype == "offensive_horse")
-        return offensive_horse;
-    else
-        return NULL;
-}
-
 void Player::setEquip(const EquipCard *card){
-    QString subtype = card->getSubtype();
-    if(subtype == "weapon")
-        weapon = qobject_cast<const Weapon*>(card);
-    else if(subtype == "armor")
-        armor = qobject_cast<const Armor*>(card);
-    else if(subtype == "defensive_horse")
-        defensive_horse = qobject_cast<const Horse*>(card);
-    else if(subtype == "offensive_horse")
-        offensive_horse = qobject_cast<const Horse*>(card);
+    switch(card->location()){
+    case EquipCard::WeaponLocation: weapon = qobject_cast<const Weapon*>(card); break;
+    case EquipCard::ArmorLocation: armor = qobject_cast<const Armor*>(card); break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = qobject_cast<const Horse*>(card); break;
+    case EquipCard::OffensiveHorseLocation: offensive_horse = qobject_cast<const Horse*>(card); break;
+    }
 }
 
 void Player::removeEquip(const EquipCard *equip){
-    QString subtype = equip->getSubtype();
-    if(subtype == "weapon")
-        weapon = NULL;
-    else if(subtype == "armor")
-        armor = NULL;
-    else if(subtype == "defensive_horse")
-        defensive_horse = NULL;
-    else if(subtype == "offensive_horse")
-        offensive_horse = NULL;
+    switch(equip->location()){
+    case EquipCard::WeaponLocation: weapon = NULL; break;
+    case EquipCard::ArmorLocation: armor = NULL; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
+    case EquipCard::OffensiveHorseLocation:offensive_horse = NULL; break;
+    }
 }
 
 const Weapon *Player::getWeapon() const{

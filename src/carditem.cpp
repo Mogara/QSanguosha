@@ -128,6 +128,4 @@ void CardItem::mark(bool marked){
 
 void CardItem::setMarkable(bool markable){
     this->markable = markable;
-
-    setEnabled(markable);
 }

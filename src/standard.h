@@ -34,7 +34,16 @@ public:
 class EquipCard:public Card{
     Q_OBJECT
 
+    Q_ENUMS(Location);
+
 public:
+    enum Location {
+        WeaponLocation,
+        ArmorLocation,
+        DefensiveHorseLocation,
+        OffensiveHorseLocation,
+    };
+
     EquipCard(Suit suit, int number):Card(suit, number, true){}
     virtual QString getType() const;
     virtual int getTypeId() const;
@@ -43,6 +52,8 @@ public:
     // should be pure virtual
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
+
+    virtual Location location() const = 0;
 };
 
 class GlobalEffect:public TrickCard{
@@ -51,6 +62,16 @@ class GlobalEffect:public TrickCard{
 public:
     GlobalEffect(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
     virtual QString getSubtype() const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class GodSalvation:public GlobalEffect{
+    Q_OBJECT
+
+public:
+    GodSalvation(Card::Suit suit = Heart, int number = 1);
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class AOE:public TrickCard{
@@ -59,6 +80,23 @@ class AOE:public TrickCard{
 public:
     AOE(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
     virtual QString getSubtype() const;
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class SavageAssault:public AOE{
+public:
+    SavageAssault(Suit suit, int number);
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class ArcheryAttack:public AOE{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ArcheryAttack(Card::Suit suit = Heart, int number = 1);
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class SingleTargetTrick: public TrickCard{
@@ -88,6 +126,8 @@ public:
         :EquipCard(suit, number), range(range){}
     virtual QString getSubtype() const;
 
+    virtual Location location() const;
+
 protected:
     int range;
 };
@@ -98,6 +138,8 @@ class Armor:public EquipCard{
 public:
     Armor(Suit suit, int number):EquipCard(suit, number){}
     virtual QString getSubtype() const;
+
+    virtual Location location() const;
 };
 
 class Horse:public EquipCard{
@@ -106,6 +148,8 @@ class Horse:public EquipCard{
 public:
     Horse(const QString &name, Suit suit, int number, int correct);
     virtual QString getSubtype() const;
+
+    virtual Location location() const;
 
 private:
     int correct;

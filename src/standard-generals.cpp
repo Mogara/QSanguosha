@@ -103,8 +103,6 @@ public:
         Room *room = simayi->getRoom();
         if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui")){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
-            if(card_id == -1)
-                card_id = from->getRandomHandCard();
             room->obtainCard(simayi, card_id);
             room->playSkillEffect(objectName());
         }
