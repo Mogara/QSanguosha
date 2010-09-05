@@ -11,7 +11,7 @@
 Engine *Sanguosha = NULL;
 
 Engine::Engine(QObject *parent)
-    :QObject(parent)
+    :QObject(parent), effect(NULL)
 {
     addPackage(new StandardPackage);
 }
@@ -174,6 +174,9 @@ QList<int> Engine::getRandomCards() const{
 }
 
 void Engine::playEffect(const MediaSource &source){
+    if(effect && effect->currentSource().fileName() == source.fileName())
+        return;
+
     MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory);
 
     effect->setCurrentSource(source);

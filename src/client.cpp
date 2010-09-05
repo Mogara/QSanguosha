@@ -84,6 +84,9 @@ Client::Client(QObject *parent)
     callbacks["clearPile"] = &Client::clearPile;
     callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["askForDiscard"] = &Client::askForDiscard;
+    callbacks["gameOver"] = &Client::gameOver;
+    callbacks["killPlayer"] = &Client::killPlayer;
+    callbacks["gameOverWarn"] = &Client::gameOverWarn;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -552,4 +555,24 @@ void Client::setPileNumber(const QString &pile_num){
 void Client::askForDiscard(const QString &discard_str){
     discard_num = discard_str.toInt();
     setStatus(Discarding);
+}
+
+void Client::gameOver(const QString &result_str){
+    QRegExp rx("(\\w+):(.+)");
+    if(!rx.exactMatch(result_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString winner = texts.at(1);
+    QStringList roles = texts.at(2).split("+");
+
+    emit game_over(winner, roles);
+}
+
+void Client::killPlayer(const QString &player_name){
+    emit player_killed(player_name);
+}
+
+void Client::gameOverWarn(const QString &){
+    QMessageBox::warning(NULL, tr("Warning"), tr("Game is over now"));
 }

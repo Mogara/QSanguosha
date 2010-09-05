@@ -160,31 +160,40 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->setPen(Qt::white);
     painter->drawText(QRectF(847, 15, 121, 17), Config.UserName, QTextOption(Qt::AlignHCenter));
 
-    if(player){
-        // draw player's hp
-        int hp = player->getHp();
-        QPixmap *magatama;
-        if(player->isWounded())
-            magatama = &magatamas[hp-1];
-        else
-            magatama = &magatamas[4]; // the green magatama which denote full blood state
-        int i;
-        for(i=0; i<hp; i++)
-            painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
+    if(!player)
+        return;
 
-        // draw player's equip area
-        painter->setFont(Config.TinyFont);
+    if(!player->isAlive()){
+        if(death_pixmap.isNull())
+            death_pixmap.load(QString(":/death/%1.png").arg(player->getRole()));
 
-        drawEquip(painter, weapon, 0);
-        drawEquip(painter, armor, 1);
-        drawEquip(painter, defensive_horse, 2);
-        drawEquip(painter, offensive_horse, 3);
+        painter->drawPixmap(397, 82, death_pixmap);
+        return;
+    }
 
-        // draw player's judging area
-        for(i=0; i<judging_area.count(); i++){
-            CardItem *trick = judging_area.at(i);            
-            painter->drawPixmap(178 + i * 52, 5, trick->getIconPixmap());
-        }
+    // draw player's hp
+    int hp = player->getHp();
+    QPixmap *magatama;
+    if(player->isWounded())
+        magatama = &magatamas[hp-1];
+    else
+        magatama = &magatamas[4]; // the green magatama which denote full blood state
+    int i;
+    for(i=0; i<hp; i++)
+        painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
+
+    // draw player's equip area
+    painter->setFont(Config.TinyFont);
+
+    drawEquip(painter, weapon, 0);
+    drawEquip(painter, armor, 1);
+    drawEquip(painter, defensive_horse, 2);
+    drawEquip(painter, offensive_horse, 3);
+
+    // draw player's judging area
+    for(i=0; i<judging_area.count(); i++){
+        CardItem *trick = judging_area.at(i);
+        painter->drawPixmap(178 + i * 52, 5, trick->getIconPixmap());
     }
 }
 

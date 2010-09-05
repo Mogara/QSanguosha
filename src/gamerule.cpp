@@ -16,7 +16,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed << Damaged << CardEffected;
+    events << GameStart << PhaseChange << CardUsed << Predamaged << Damaged << CardEffected << Dying << Death;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -68,6 +68,20 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
 
             break;
         }
+    case Predamaged:{
+            if(data.canConvert<DamageStruct>()){
+                DamageStruct damage = data.value<DamageStruct>();
+                if(player->getHp() - damage.damage <= 0){
+                    QString killer_name;
+                    if(damage.from)
+                        killer_name = damage.from->objectName();
+                    room->getThread()->invokePassiveSkills(Death, player, killer_name);
+                }
+            }
+
+            break;
+        }
+
     case Damaged: {
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
@@ -84,7 +98,48 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
 
             break;
         }
+    case Dying:{
+            // FIXME
 
+            break;
+        }
+
+    case Death:{
+            QString winner;
+            QStringList alive_roles = room->aliveRoles(player);
+
+            if(player->getRole() == "lord"){
+                if(alive_roles.length() == 1 && alive_roles.first() == "renegade")
+                    winner = "renegade";
+                else
+                    winner = "rebel";
+            }else if(player->getRole() == "rebel" || player->getRole() == "renegade"){
+                if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade"))
+                    winner = "lord";
+            }
+
+            QString killer_name = data.toString();
+            ServerPlayer *killer = NULL;
+            if(!killer_name.isEmpty())
+                killer = room->findChild<ServerPlayer *>(killer_name);
+            room->obit(player, killer);
+
+            if(winner.isNull()){
+                room->bury(player);
+                if(killer){
+                    if(player->getRole() == "rebel" && killer != player)
+                        killer->drawCards(3);
+                    else if(player->getRole() == "loyalist" && killer->getRole() == "lord")
+                        killer->throwAllCards();
+                }
+            }else{
+                player->throwAllCards();
+                room->gameOver(winner);
+                return true;
+            }
+
+            break;
+        }
     default:
         ;
     }

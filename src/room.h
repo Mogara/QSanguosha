@@ -30,6 +30,10 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
     QList<ServerPlayer *> getAllPlayers();
     void output(const QString &message);
+    void obit(ServerPlayer *victim, ServerPlayer *killer);
+    void bury(ServerPlayer *player);
+    QStringList aliveRoles(ServerPlayer *except = NULL) const;
+    void gameOver(const QString &winner);
 
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
@@ -49,6 +53,7 @@ public:
     void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);
     void cardEffect(const CardEffectStruct &effect);
+    void setLegatee(ServerPlayer *legatee);
 
     // interactive methods
     QString activate(ServerPlayer *target);
@@ -86,6 +91,7 @@ private:
     int left_seconds;
     int chosen_generals;
     bool game_started;
+    bool game_finished;
     int signup_count;
 
     int nullificators_count;
@@ -100,6 +106,7 @@ private:
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
+    ServerPlayer *legatee;
 
     int drawCard();
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());

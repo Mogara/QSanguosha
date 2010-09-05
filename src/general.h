@@ -6,6 +6,9 @@ class Package;
 
 #include <QObject>
 #include <QSet>
+#include <MediaSource>
+
+using Phonon::MediaSource;
 
 class General : public QObject
 {
@@ -33,6 +36,7 @@ public:
     QString getKingdomPath() const;
     QString getPackage() const;
     void playEffect() const;
+    void lastWord() const;
 
 private:
     QString kingdom;
@@ -40,6 +44,7 @@ private:
     bool male;
     bool lord;
     QSet<QString> skill_set;
+    MediaSource last_word;
 };
 
 #endif // GENERAL_H

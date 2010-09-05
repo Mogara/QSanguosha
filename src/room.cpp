@@ -14,9 +14,10 @@ Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), current(NULL), reply_player(NULL),
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false), signup_count(0),
+    chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     nullificators_count(0),
-    thread(NULL), sem(NULL)
+    thread(NULL), sem(NULL),
+    legatee(NULL)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::useCardCommand;
@@ -70,6 +71,56 @@ void Room::output(const QString &message){
     emit room_message(message);
 }
 
+void Room::obit(ServerPlayer *victim, ServerPlayer *killer){
+    victim->setAlive(false);
+    broadcastProperty(victim, "alive", "false");
+
+    broadcastProperty(victim, "role");
+    broadcastInvoke("killPlayer", victim->objectName());
+}
+
+void Room::bury(ServerPlayer *player){
+    if(legatee && player != legatee && legatee->isAlive())
+        player->leaveTo(legatee);
+    else
+        player->leaveTo(NULL);
+
+    int index = alive_players.indexOf(player);
+    int i;
+    for(i=index+1; i<alive_players.length(); i++){
+        ServerPlayer *p = alive_players.at(i);
+        p->setSeat(p->getSeat() - 1);
+        broadcastProperty(p, "seat");
+    }
+
+    alive_players.removeOne(player);
+}
+
+void Room::setLegatee(ServerPlayer *legatee){
+    this->legatee = legatee;
+}
+
+QStringList Room::aliveRoles(ServerPlayer *except) const{
+    QStringList roles;
+    foreach(ServerPlayer *player, alive_players){
+        if(player != except)
+            roles << player->getRole();
+    }
+
+    return roles;
+}
+
+void Room::gameOver(const QString &winner){
+    QStringList all_roles;
+    foreach(ServerPlayer *player, players)
+        all_roles << player->getRole();
+
+    broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
+    thread->quit();
+
+    game_finished = true;
+}
+
 bool Room::obtainable(const Card *card, ServerPlayer *player){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
@@ -111,6 +162,9 @@ void Room::invokeSkillCommand(ServerPlayer *, const QString &arg){
 }
 
 void Room::obtainCard(ServerPlayer *target, const Card *card){
+    if(card == NULL)
+        return;
+
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         foreach(int card_id, subcards)
@@ -284,6 +338,11 @@ void Room::processRequest(const QString &request){
     ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
     if(player == NULL)
         return;
+
+    if(game_finished){
+        player->invoke("gameOverWarn");
+        return;
+    }
 
     if(reply_player && reply_player != player){
         player->invoke("focusWarn", player->objectName());
@@ -575,6 +634,9 @@ void Room::drawCards(ServerPlayer *player, int n){
 }
 
 void Room::throwCard(const Card *card){
+    if(card == NULL)
+        return;
+
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         foreach(int subcard, subcards)

@@ -108,6 +108,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(message_changed(QString)), this, SLOT(changeMessage(QString)));
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
+    connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
+    connect(ClientInstance, SIGNAL(game_over(QString,QStringList)), this, SLOT(gameOver(QString,QStringList)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -1054,4 +1056,30 @@ void RoomScene::clearPile(){
 void RoomScene::setPileNumber(int n){
     pile_number = n;
     pile_number_item->setPlainText(QString::number(pile_number));
+}
+
+void RoomScene::gameOver(const QString &winner, const QStringList &roles){
+    QString role = ClientInstance->getPlayer()->getRole();
+    bool victory = (role == winner);
+    if(winner == "lord" && role == "loyalist")
+        victory = true;
+
+    // QMessageBox::information(NULL, "", victory ? "Victory" : "Failed");
+}
+
+void RoomScene::killPlayer(const QString &who){
+    const General *general = NULL;
+
+    if(who == Config.UserName){
+        dashboard->update();
+
+        general = ClientInstance->getPlayer()->getGeneral();
+    }else{
+        Photo *photo = name2photo[who];
+        photo->update();
+
+        general = photo->getPlayer()->getGeneral();
+    }
+
+    general->lastWord();
 }

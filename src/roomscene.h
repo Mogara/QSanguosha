@@ -35,6 +35,8 @@ public slots:
     void enableTargets(const Card *card);
     void useSelectedCard();
     void updateStatus(Client::Status status);
+    void gameOver(const QString &winner, const QStringList &roles);
+    void killPlayer(const QString &who);
 
 protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

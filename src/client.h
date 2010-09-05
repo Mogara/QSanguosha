@@ -60,6 +60,9 @@ public:
     void clearPile(const QString &);
     void setPileNumber(const QString &pile_num);
     void askForDiscard(const QString &discard_str);
+    void gameOver(const QString &result_str);
+    void killPlayer(const QString &player_name);
+    void gameOverWarn(const QString &);
 
     // public fields
     QString card_pattern;
@@ -102,6 +105,8 @@ signals:
     void avatars_hiden();
     void pile_cleared();
     void pile_num_set(int n);
+    void game_over(const QString &winner, const QStringList &roles);
+    void player_killed(const QString &who);
 };
 
 extern Client *ClientInstance;

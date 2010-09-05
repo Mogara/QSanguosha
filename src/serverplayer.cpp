@@ -28,6 +28,50 @@ int ServerPlayer::getRandomHandCard() const{
     return handcards.at(index)->getId();
 }
 
+void ServerPlayer::leaveTo(ServerPlayer *legatee){
+    if(legatee){
+        legatee->obtainCard(getWeapon());
+        legatee->obtainCard(getArmor());
+        legatee->obtainCard(getDefensiveHorse());
+        legatee->obtainCard(getOffensiveHorse());
+
+        foreach(const Card *card, handcards)
+            legatee->obtainCard(card);
+
+        QStack<const Card *> tricks = getJudgingArea();
+        foreach(const Card *trick, tricks)
+            room->throwCard(trick);
+    }else{
+        throwAllCards();
+    }
+
+    QStack<const Card *> tricks = getJudgingArea();
+    foreach(const Card *trick, tricks)
+        room->throwCard(trick);
+}
+
+void ServerPlayer::obtainCard(const Card *card){
+    room->obtainCard(this, card);
+}
+
+void ServerPlayer::throwAllCards(){
+    room->throwCard(getWeapon());
+    room->throwCard(getArmor());
+    room->throwCard(getDefensiveHorse());
+    room->throwCard(getOffensiveHorse());
+
+    foreach(const Card *card, handcards)
+        room->throwCard(card);
+
+    QStack<const Card *> tricks = getJudgingArea();
+    foreach(const Card *trick, tricks)
+        room->throwCard(trick);
+}
+
+void ServerPlayer::drawCards(int n){
+    room->drawCards(this, n);
+}
+
 int ServerPlayer::aliveCount() const{
     return room->alivePlayerCount();
 }

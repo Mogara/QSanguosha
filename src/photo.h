@@ -47,6 +47,7 @@ private:
     QStack<CardItem *> judging_area;
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;
+    QPixmap death_pixmap;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

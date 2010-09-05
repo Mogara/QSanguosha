@@ -17,6 +17,8 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
         lord = false;
         setObjectName(name);
     }
+
+    last_word = MediaSource(QString("%1/generals/death/%2.wav").arg(getPackage()).arg(objectName()));
 }
 
 int General::getMaxHp() const{
@@ -68,4 +70,8 @@ void General::playEffect() const
         int r = qrand() % skills.length();
         skills.at(r)->playEffect();
     }
+}
+
+void General::lastWord() const{
+    Sanguosha->playEffect(last_word);
 }

@@ -69,9 +69,15 @@ KurouCard::KurouCard(){
 }
 
 void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    // FIXME
-    room->damage(source, 1);
-    room->drawCards(source, 2);
+    DamageStruct damage;
+    damage.card = this;
+    damage.from = source;
+    damage.to = source;
+    damage.damage = 1;
+    room->damage(damage);
+
+    if(source->isAlive())
+        room->drawCards(source, 2);
 }
 
 LijianCard::LijianCard(){

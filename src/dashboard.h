@@ -61,6 +61,7 @@ private:
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;
     QGraphicsLinearLayout *button_layout;
+    QPixmap death_pixmap;
 
     // for pendings
     QList<CardItem *> pendings;

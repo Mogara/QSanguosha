@@ -182,6 +182,17 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     painter->drawPixmap(0, 10, avatar_frame);
     painter->drawPixmap(0,  0, kingdom);
 
+    if(!player->isAlive()){
+        if(death_pixmap.isNull()){
+            death_pixmap.load(QString(":/death/%1.png").arg(player->getRole()));
+            death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
+        }
+
+        painter->drawPixmap(5, 30, death_pixmap);
+
+        return;
+    }
+
     painter->setPen(Qt::white);
     painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
 
