@@ -153,6 +153,14 @@ public:
             return Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
         }
     }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "jink";
+    }
 };
 
 class Rende:public ViewAsSkill{

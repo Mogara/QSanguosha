@@ -60,7 +60,7 @@ class GlobalEffect:public TrickCard{
     Q_OBJECT
 
 public:
-    GlobalEffect(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
+    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
     virtual QString getSubtype() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
@@ -69,7 +69,7 @@ class GodSalvation:public GlobalEffect{
     Q_OBJECT
 
 public:
-    GodSalvation(Card::Suit suit = Heart, int number = 1);
+    Q_INVOKABLE GodSalvation(Card::Suit suit = Heart, int number = 1);
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
@@ -86,7 +86,7 @@ public:
 
 class SavageAssault:public AOE{
 public:
-    SavageAssault(Suit suit, int number);
+    Q_INVOKABLE SavageAssault(Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -95,7 +95,6 @@ class ArcheryAttack:public AOE{
 
 public:
     Q_INVOKABLE ArcheryAttack(Card::Suit suit = Heart, int number = 1);
-
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

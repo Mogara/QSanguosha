@@ -529,6 +529,8 @@ void Client::responseCard(const Card *card){
         request(QString("responseCard %1").arg(card->toString()));
     else
         request("responseCard .");
+
+    card_pattern.clear();
 }
 
 void Client::prompt(const QString &prompt_str){

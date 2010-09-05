@@ -239,8 +239,8 @@ void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         if(player->isWounded()){
             CardEffectStruct effect;
             effect.card = this;
-            effect.from = effect.from;
-            effect.to  = effect.to;
+            effect.from = source;
+            effect.to  = player;
 
             room->cardEffect(effect);
         }
@@ -487,10 +487,7 @@ class Lightning:public DelayedTrick{
 public:
     Lightning(Suit suit, int number):DelayedTrick(suit, number){
         setObjectName("lightning");
-    }
-
-    virtual bool targetFixed() const{
-        return true;
+        target_fixed = true;
     }
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{

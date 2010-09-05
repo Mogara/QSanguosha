@@ -76,7 +76,7 @@ const Card *Engine::getCard(int index) const{
     if(index < 0 || index >= cards.length())
         return NULL;
     else
-        return cards[index];
+        return cards.at(index);
 }
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
@@ -162,6 +162,13 @@ QList<int> Engine::getRandomCards() const{
         int r2 = qrand() % n;
         list.swap(r1, r2);
     }
+
+#ifndef QT_NO_DEBUG
+
+    int index = list.indexOf(107);
+    list.swap(index, 0);
+
+#endif
 
     return list;
 }

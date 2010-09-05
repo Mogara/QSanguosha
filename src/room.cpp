@@ -66,6 +66,10 @@ QList<ServerPlayer *> Room::getAllPlayers(){
     return all_players;
 }
 
+void Room::output(const QString &message){
+    emit room_message(message);
+}
+
 bool Room::obtainable(const Card *card, ServerPlayer *player){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
@@ -171,6 +175,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if(result != "."){
         const Card *card = Card::Parse(result);
+        player->playCardEffect(card);
         throwCard(card);
         return card;
     }else
