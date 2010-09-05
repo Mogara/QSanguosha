@@ -8,7 +8,7 @@
 #include <QParallelAnimationGroup>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), markable(true), marked(false)
+    :Pixmap(card->getPixmapPath(), false), card(card), markable(false), marked(false)
 {
     Q_ASSERT(card != NULL);
 

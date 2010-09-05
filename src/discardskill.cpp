@@ -1,4 +1,5 @@
 #include "discardskill.h"
+#include "carditem.h"
 
 class DiscardCard: public Card{
 public:
@@ -32,8 +33,11 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
 }
 
 const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
-    if(cards.length() == num)
+    if(cards.length() == num){
+        card->clearSubcards();
+        foreach(CardItem *card_item, cards)
+            card->addSubcard(card_item->getCard()->getId());
         return card;
-    else
+    }else
         return NULL;
 }

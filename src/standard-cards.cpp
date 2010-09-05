@@ -9,7 +9,8 @@ Slash::Slash(Suit suit, int number):BasicCard(suit, number){
 }
 
 bool Slash::isAvailable() const{
-    bool unlimited_slash = ClientInstance->tag.value("unlimited_slash", false).toBool();
+    const ClientPlayer *self = ClientInstance->getPlayer();
+    bool unlimited_slash = self->hasFlag("paoxiao") || self->hasFlag("crossbow");
     if(unlimited_slash)
         return true;
     else{
@@ -48,7 +49,7 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
 }
 
 void Slash::onEffect(const CardEffectStruct &effect) const{
-    QString prompt = "@slash-jink:" + effect.from->objectName();
+    QString prompt = "@slash-jink:" + effect.from->getGeneralName();
     Room *room = effect.from->getRoom();
     const Card *card = room->askForCard(effect.to, "jink", prompt);
     if(!card){
@@ -142,6 +143,14 @@ class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
         setObjectName("crossbow");
+    }
+
+    virtual void onInstall(ServerPlayer *player) const{
+        player->getRoom()->setPlayerFlag(player, "crossbow");
+    }
+
+    virtual void onUninstall(ServerPlayer *player) const{
+        player->getRoom()->setPlayerFlag(player, "-crossbow");
     }
 };
 
@@ -251,7 +260,7 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *slash = room->askForCard(effect.to, "slash", "@savage-assault-slash");
+    const Card *slash = room->askForCard(effect.to, "slash", "@savage-assault-slash:" + effect.from->getGeneralName());
     if(slash == NULL){
         DamageStruct damage;
         damage.card = this;
@@ -261,8 +270,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         damage.nature = DamageStruct::Normal;
 
         room->damage(damage);
-    }else
-        delete slash;
+    }
 }
 
 ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
@@ -273,7 +281,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *jink = room->askForCard(effect.to, "jink", "@archery-attack-jink");
+    const Card *jink = room->askForCard(effect.to, "jink", "@archery-attack-jink:" + effect.from->getGeneralName());
     if(jink == NULL){
         DamageStruct damage;
         damage.card = this;
@@ -283,8 +291,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
         damage.nature = DamageStruct::Normal;
 
         room->damage(damage);
-    }else
-        delete jink;
+    }
 }
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -315,6 +322,24 @@ public:
 
         return false;
     }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+        ServerPlayer *killer = targets.at(0);
+        ServerPlayer *victim = targets.at(1);
+
+        QString prompt = QString("@collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
+        const Card *slash = room->askForCard(killer, "slash", prompt);
+        if(slash){
+            CardEffectStruct effect;
+            effect.card = slash;
+            effect.from = killer;
+            effect.to = victim;
+
+            room->cardEffect(effect);            
+        }else{
+            room->obtainCard(source, killer->getWeapon()->getId());
+        }
+    }
 };
 
 class Nullification:public SingleTargetTrick{
@@ -328,51 +353,7 @@ public:
     }
 };
 
-class Duel:public SingleTargetTrick{
-public:
-    Duel(Suit suit, int number):SingleTargetTrick(suit, number) {
-        setObjectName("duel");
-    }
 
-    virtual void onEffect(const CardEffectStruct &effect) const{
-        ServerPlayer *first = effect.to;
-        ServerPlayer *second = effect.from;
-        Room *room = first->getRoom();
-
-        forever{
-            if(second->hasFlag("wushuang")){
-                room->playSkillEffect("wushuang");
-                const Card *jink = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
-                if(jink == NULL)
-                    break;
-                else
-                    delete jink;
-
-                jink = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->objectName());
-                if(jink == NULL)
-                    break;
-                else
-                    delete jink;
-            }else{
-                const Card *jink = room->askForCard(first, "slash", "@duel-slash:" + second->objectName());
-                if(jink == NULL)
-                    break;
-                else
-                    delete jink;
-            }
-
-            qSwap(first, second);
-        }
-
-        DamageStruct damage;
-        damage.card = this;
-        damage.damage = 1;
-        damage.from = second;
-        damage.to = first;
-
-        room->damage(damage);
-    }
-};
 
 class ExNihilo: public SingleTargetTrick{
 public:
@@ -388,6 +369,46 @@ public:
         source->playCardEffect(this);
     }
 };
+
+Duel::Duel(Suit suit, int number)
+    :SingleTargetTrick(suit, number)
+{
+    setObjectName("duel");
+}
+
+void Duel::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *first = effect.to;
+    ServerPlayer *second = effect.from;
+    Room *room = first->getRoom();
+
+    forever{
+        if(second->hasFlag("wushuang")){
+            room->playSkillEffect("wushuang");
+            const Card *jink = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->getGeneralName());
+            if(jink == NULL)
+                break;
+
+            jink = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->getGeneralName());
+            if(jink == NULL)
+                break;
+
+        }else{
+            const Card *jink = room->askForCard(first, "slash", "@duel-slash:" + second->getGeneralName());
+            if(jink == NULL)
+                break;
+        }
+
+        qSwap(first, second);
+    }
+
+    DamageStruct damage;
+    damage.card = this;
+    damage.damage = 1;
+    damage.from = second;
+    damage.to = first;
+
+    room->damage(damage);
+}
 
 Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
     setObjectName("snatch");
@@ -445,22 +466,22 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(card_id);
 }
 
-class Indulgence:public DelayedTrick{
-public:
-    Indulgence(Suit suit, int number):DelayedTrick(suit, number){
-        setObjectName("indulgence");
-        target_fixed = false;
-    }
+Indulgence::Indulgence(Suit suit, int number)
+    :DelayedTrick(suit, number)
+{
+    setObjectName("indulgence");
+    target_fixed = false;
+}
 
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-        return targets.isEmpty() && !to_select->hasFlag("qianxun");
-    }
+bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
+{
+    return targets.isEmpty() && !to_select->hasFlag("qianxun");
+}
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-        room->moveCardTo(this, targets.first(), Player::DelayedTrick, true);
-        source->playCardEffect(this);
-    }
-};
+void Indulgence::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->moveCardTo(this, targets.first(), Player::DelayedTrick, true);
+    source->playCardEffect(this);
+}
 
 class Lightning:public DelayedTrick{
 public:
@@ -670,4 +691,5 @@ void StandardPackage::addCards(){
     t["@duel-slash"] = tr("@duel-slash");
     t["@savage-assault-slash"] = tr("@savage-assault-slash");
     t["@archery-attack-jink"] = tr("@archery-attack-jink");
+    t["@collateral-slash"] = tr("@collateral-slash");
 }

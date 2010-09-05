@@ -135,6 +135,26 @@ QString Horse::getSubtype() const{
         return "offensive_horse";
 }
 
+void Horse::onInstall(ServerPlayer *player) const{
+    QString field;
+    if(correct > 0)
+        field = "equip_dest";
+    else
+        field = "equip_src";
+
+    player->getRoom()->setPlayerCorrect(player, field, correct);
+}
+
+void Horse::onUninstall(ServerPlayer *player) const{
+    QString field;
+    if(correct > 0)
+        field = "equip_dest";
+    else
+        field = "equip_src";
+
+    player->getRoom()->setPlayerCorrect(player, field, 0);
+}
+
 EquipCard::Location Horse::location() const{
     if(correct > 0)
         return DefensiveHorseLocation;

@@ -397,8 +397,13 @@ void Client::askForCard(const QString &request_str){
         card_pattern = pattern;
         QString prompt = Sanguosha->translate(texts.at(1));
         if(texts.length() >= 3){
-            QString src = texts.at(2);
+            QString src = Sanguosha->translate(texts.at(2));
             prompt.replace("%src", src);
+        }
+
+        if(texts.length() >= 4){
+            QString dest = Sanguosha->translate(texts.at(3));
+            prompt.replace("%dest", dest);
         }
 
         emit prompt_changed(prompt);

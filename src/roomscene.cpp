@@ -918,7 +918,10 @@ void RoomScene::updateStatus(Client::Status status){
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
-            discard_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
+            discard_skill->setNum(ClientInstance->discard_num);
+            dashboard->startPending(discard_skill);
             break;
         }
     }
@@ -948,6 +951,11 @@ void RoomScene::doSkillButton(){
         button->setEnabled(false);
         ok_button->setEnabled(false);
         cancel_button->setEnabled(true);
+
+        const Card *card = dashboard->pendingCard();
+        if(card && card->targetFixed()){
+            doOkButton();
+        }
     }
 }
 

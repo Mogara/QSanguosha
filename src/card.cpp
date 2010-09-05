@@ -116,6 +116,9 @@ QString Card::toString() const{
 }
 
 QString Card::subcardString() const{
+    if(subcards.isEmpty())
+        return ".";
+
     QStringList str;
     foreach(int subcard, subcards)
         str << QString::number(subcard);
@@ -133,8 +136,11 @@ const Card *Card::Parse(const QString &str){
         static QRegExp pattern("@(\\w+)=(.+)");
         pattern.indexIn(str);
         QStringList texts = pattern.capturedTexts();
-        QString card_name = texts.at(1);
-        QStringList subcard_ids = texts.at(2).split("+");
+        QString card_name = texts.at(1);        
+        QStringList subcard_ids;
+        QString subcard_str = texts.at(2);
+        if(subcard_str != ".")
+           subcard_ids = subcard_str.split("+");
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
         if(card == NULL)
@@ -224,6 +230,10 @@ void Card::addSubcards(const QList<int> &card_ids){
 
 QList<int> Card::getSubcards() const{
     return subcards;
+}
+
+void Card::clearSubcards(){
+    subcards.clear();
 }
 
 bool Card::isAvailable() const{

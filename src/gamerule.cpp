@@ -38,9 +38,13 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
     case Player::Discard:{
             int discard_num = player->getMaxCards() - player->getHandcardNum();
-            QList<int> card_ids = room->askForDiscard(player, discard_num);
-            foreach(int card_id, card_ids)
-                room->throwCard(card_id);
+            if(discard_num > 0){
+                QList<int> card_ids = room->askForDiscard(player, discard_num);
+                foreach(int card_id, card_ids)
+                    room->throwCard(card_id);
+            }
+
+            room->nextPhase(player);
             break;
         }
     default:
