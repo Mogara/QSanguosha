@@ -375,10 +375,18 @@ public:
     }
 };
 
-class Fanjian:public Skill{
+class Fanjian:public ZeroCardViewAsSkill{
 public:
-    Fanjian():Skill("fanjian"){
+    Fanjian():ZeroCardViewAsSkill("fanjian"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->getPlayer()->isKongcheng();
+    }
+
+    virtual const Card *viewAs() const{
+        return new FanjianCard;
     }
 };
 
@@ -591,6 +599,7 @@ void StandardPackage::addGenerals(){
     caocao->addSkill(new Rende);
     caocao->addSkill(new Zhiheng);
     caocao->addSkill(new Kurou);
+    caocao->addSkill(new Fanjian);
 #endif
 
     zhangliao = new General(this, "zhangliao", "wei");
@@ -684,7 +693,8 @@ void StandardPackage::addGenerals(){
             << &JieyinCard::staticMetaObject
             << &TuxiCard::staticMetaObject
             << &KurouCard::staticMetaObject
-            << &LijianCard::staticMetaObject;
+            << &LijianCard::staticMetaObject
+            << &FanjianCard::staticMetaObject;
 
     // for translation
     t["wei"] = tr("wei");

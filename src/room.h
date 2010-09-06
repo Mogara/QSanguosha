@@ -56,8 +56,11 @@ public:
     void setLegatee(ServerPlayer *legatee);
 
     // interactive methods
-    QString activate(ServerPlayer *target);
+    QString activate(ServerPlayer *player);
     void useCardCommand(ServerPlayer *player, const QString &card_str);
+
+    Card::Suit askForSuit(ServerPlayer *player);
+    void chooseSuitCommand(ServerPlayer *player, const QString &suit_str);
 
     QString askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);

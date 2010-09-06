@@ -12,7 +12,7 @@ class Card;
 #include <QSemaphore>
 #include <QVariant>
 
-struct PassiveSkillSorter{
+struct TriggerSkillSorter{
     ServerPlayer *target;
 
     bool operator()(const TriggerSkill *a, const TriggerSkill *b);
@@ -94,9 +94,9 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
-    bool invokePassiveSkills(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
-    void addPassiveSkill(const TriggerSkill *skill);
-    void removePassiveSkill(const TriggerSkill *skill);
+    bool trigger(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
+    void addTriggerSkill(const TriggerSkill *skill);
+    void removeTriggerSkill(const TriggerSkill *skill);
 
 protected:
     virtual void run();

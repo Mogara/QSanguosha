@@ -1,6 +1,8 @@
 #include "standard.h"
 #include "room.h"
 #include "clientplayer.h"
+#include "engine.h"
+#include "client.h"
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
@@ -61,6 +63,32 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
 void TuxiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     foreach(ServerPlayer *target, targets){
         room->obtainCard(source, target->getRandomHandCard());
+    }
+}
+
+FanjianCard::FanjianCard(){
+
+}
+
+void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.first();
+
+    int card_id = source->getRandomHandCard();
+    const Card *card = Sanguosha->getCard(card_id);
+    Card::Suit suit = room->askForSuit(target);
+
+    if(card->getSuit() != suit){
+        DamageStruct damage;
+        damage.card = this;
+        damage.from = source;
+        damage.to = target;
+        damage.damage = 1;
+
+        room->damage(damage);
+    }
+
+    if(target->isAlive()){
+        target->obtainCard(card);
     }
 }
 

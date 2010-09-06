@@ -8,6 +8,7 @@
 #include <QCheckBox>
 #include <QCommandLinkButton>
 #include <QTimer>
+#include <QVBoxLayout>
 
 bool CardMoveStructForClient::parse(const QString &str){
     static QMap<QString, Player::Place> place_map;
@@ -87,6 +88,7 @@ Client::Client(QObject *parent)
     callbacks["gameOver"] = &Client::gameOver;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
+    callbacks["askForSuit"] = &Client::askForSuit;
 }
 
 const ClientPlayer *Client::getPlayer() const{
@@ -575,4 +577,32 @@ void Client::killPlayer(const QString &player_name){
 
 void Client::gameOverWarn(const QString &){
     QMessageBox::warning(NULL, tr("Warning"), tr("Game is over now"));
+}
+
+void Client::askForSuit(const QString &){
+    QDialog *dialog = new QDialog;
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QStringList suits;
+    suits << "spade" << "club" << "heart" << "diamond";
+
+    foreach(QString suit, suits){
+        QCommandLinkButton *button = new QCommandLinkButton;
+        button->setIcon(QIcon(QString(":/suit/%1.png").arg(suit)));
+        button->setText(Sanguosha->translate(suit));
+        button->setObjectName(suit);
+
+        layout->addWidget(button);
+
+        connect(button, SIGNAL(clicked()), this, SLOT(chooseSuit()));
+        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    }
+
+    dialog->setWindowTitle(tr("Please choose a suit"));
+    dialog->setLayout(layout);
+    dialog->exec();
+}
+
+void Client::chooseSuit(){
+    request("chooseSuit " + sender()->objectName());
 }

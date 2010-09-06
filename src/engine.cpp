@@ -165,8 +165,14 @@ QList<int> Engine::getRandomCards() const{
 
 #ifndef QT_NO_DEBUG
 
-    int index = list.indexOf(107);
-    list.swap(index, 0);
+    QList<int> my_list;
+    my_list << 107;
+
+    for(i=0; i<my_list.length(); i++){
+        int card_id = my_list.at(i);
+        int index = list.indexOf(card_id);
+        list.swap(index, i);
+    }
 
 #endif
 

@@ -26,6 +26,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["chooseCardCommand"] = &Room::chooseCardCommand;
     callbacks["responseCardCommand"] = &Room::responseCardCommand;
     callbacks["discardCardCommand"] = &Room::discardCardCommand;
+    callbacks["chooseSuitCommand"] = &Room::chooseSuitCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -122,6 +123,9 @@ void Room::gameOver(const QString &winner){
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
+    if(card == NULL)
+        return false;
+
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         if(subcards.isEmpty())
@@ -514,7 +518,7 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
             data.to << findChild<ServerPlayer *>(target_name);
     }
 
-    thread->invokePassiveSkills(CardUsed, player, QVariant::fromValue(data));
+    thread->trigger(CardUsed, player, QVariant::fromValue(data));
 }
 
 void Room::damage(ServerPlayer *victim, int damage){
@@ -541,22 +545,22 @@ void Room::playCardEffect(const QString &card_name, bool is_male){
 
 void Room::cardEffect(const CardEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
-    bool broken = thread->invokePassiveSkills(CardEffect, effect.from, data);
+    bool broken = thread->trigger(CardEffect, effect.from, data);
     if(!broken)
-        thread->invokePassiveSkills(CardEffected, effect.to, data);
+        thread->trigger(CardEffected, effect.to, data);
 }
 
 void Room::damage(const DamageStruct &damage_data){
     QVariant data = QVariant::fromValue(damage_data);
-    bool broken = thread->invokePassiveSkills(Predamage, damage_data.from, data);
+    bool broken = thread->trigger(Predamage, damage_data.from, data);
     if(!broken)
-        broken = thread->invokePassiveSkills(Predamaged, damage_data.to, data);
+        broken = thread->trigger(Predamaged, damage_data.to, data);
 
     if(!broken)
-        broken = thread->invokePassiveSkills(Damage, damage_data.from, data);
+        broken = thread->trigger(Damage, damage_data.from, data);
 
     if(!broken)
-        thread->invokePassiveSkills(Damaged, damage_data.to, data);    
+        thread->trigger(Damaged, damage_data.to, data);
 }
 
 void Room::startGame(){
@@ -756,7 +760,7 @@ void Room::playSkillEffect(const QString &skill_name, int index){
 }
 
 void Room::changePhase(ServerPlayer *target){
-    thread->invokePassiveSkills(PhaseChange, target);
+    thread->trigger(PhaseChange, target);
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg){
@@ -772,6 +776,32 @@ QString Room::activate(ServerPlayer *target){
     sem->acquire();
 
     return result;
+}
+
+Card::Suit Room::askForSuit(ServerPlayer *player){
+    player->invoke("askForSuit");
+
+    reply_func = "chooseSuitCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    if(result == "spade")
+        return Card::Spade;
+    else if(result == "club")
+        return Card::Club;
+    else if(result == "heart")
+        return Card::Heart;
+    else if(result == "diamond")
+        return Card::Diamond;
+    else
+        return Card::NoSuit;
+}
+
+void Room::chooseSuitCommand(ServerPlayer *player, const QString &suit_str){
+    result = suit_str;
+
+    sem->release();
 }
 
 QList<int> Room::askForDiscard(ServerPlayer *target, int discard_num){

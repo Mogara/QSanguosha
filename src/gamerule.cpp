@@ -75,7 +75,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
                     QString killer_name;
                     if(damage.from)
                         killer_name = damage.from->objectName();
-                    room->getThread()->invokePassiveSkills(Death, player, killer_name);
+                    room->getThread()->trigger(Death, player, killer_name);
                 }
             }
 

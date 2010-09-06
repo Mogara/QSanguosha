@@ -38,7 +38,11 @@ void CardItem::goBack(bool kieru){
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
 
         QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");
+        disappear->setKeyValueAt(0.8, 1.0);
         disappear->setEndValue(0.0);
+
+        goback->setDuration(1000);
+        disappear->setDuration(1000);
 
         group->addAnimation(goback);
         group->addAnimation(disappear);

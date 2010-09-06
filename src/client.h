@@ -63,6 +63,7 @@ public:
     void gameOver(const QString &result_str);
     void killPlayer(const QString &player_name);
     void gameOverWarn(const QString &);
+    void askForSuit(const QString &);
 
     // public fields
     QString card_pattern;
@@ -88,6 +89,7 @@ private slots:
     void processReply();
     void raiseError(QAbstractSocket::SocketError socket_error);
     void notifyRoleChange(const QString &new_role);
+    void chooseSuit();
 
 signals:
     void error_message(const QString &msg);
