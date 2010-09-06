@@ -55,7 +55,7 @@ void Slash::onEffect(const CardEffectStruct &effect) const{
     if(!card){
         DamageStruct damage;
         damage.card = effect.card;
-        damage.damage = 1;
+        damage.damage = effect.from->hasFlag("luoyi") ? 2 : 1;
         damage.from = effect.from;
         damage.to = effect.to;
 
@@ -403,7 +403,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
     DamageStruct damage;
     damage.card = this;
-    damage.damage = 1;
+    damage.damage = second->hasFlag("luoyi") ? 2 : 1;
     damage.from = second;
     damage.to = first;
 

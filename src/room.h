@@ -29,6 +29,7 @@ public:
     int alivePlayerCount() const;
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
     QList<ServerPlayer *> getAllPlayers();
+    ServerPlayer *getNextPlayer(ServerPlayer *player);
     void output(const QString &message);
     void obit(ServerPlayer *victim, ServerPlayer *killer);
     void bury(ServerPlayer *player);

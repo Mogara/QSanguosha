@@ -68,6 +68,12 @@ QList<ServerPlayer *> Room::getAllPlayers(){
     return all_players;
 }
 
+ServerPlayer *Room::getNextPlayer(ServerPlayer *player){
+    int index = alive_players.indexOf(player);
+    int next = (index + 1) % alive_players.length();
+    return alive_players.at(next);
+}
+
 void Room::output(const QString &message){
     emit room_message(message);
 }
@@ -734,10 +740,17 @@ void Room::nextPhase(ServerPlayer *player){
     Player::Phase next_phase = player->getNextPhase();
 
     if(next_phase == Player::NotActive){
-        int index = alive_players.indexOf(player);
-        int next_index = (index + 1) % alive_players.length();
-        ServerPlayer *next = alive_players.at(next_index);
-        // FIXME: if face is down, turn over it
+        ServerPlayer *next;
+
+        forever{
+            next = getNextPlayer(player);
+
+            if(!next->faceUp()){
+                next->turnOver();
+                broadcastProperty(next, "face_up", "true");
+            }else
+                break;
+        }
 
         player->setPhase(Player::NotActive);
         next->setPhase(Player::Start);

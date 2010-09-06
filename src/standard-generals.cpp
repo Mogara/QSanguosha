@@ -116,10 +116,34 @@ public:
     }
 };
 
-class Luoyi:public Skill{
+class Luoyi:public PhaseChangeSkill{
 public:
-    Luoyi():Skill("luoyi"){
+    Luoyi():PhaseChangeSkill("luoyi"){
 
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        switch(target->getPhase()){
+        case Player::Draw:{
+                if(room->askForSkillInvoke(target, "luoyi")){
+                    target->drawCards(1);
+                    room->playSkillEffect(objectName());
+                    room->setPlayerFlag(target, "luoyi");
+                    return true;
+                }
+                break;
+            }
+        case Player::Finish:{
+                if(target->hasFlag("luoyi"))
+                    room->setPlayerFlag(target, "-luoyi");
+                break;
+            }
+        default:
+            ;
+        }
+
+        return false;
     }
 };
 

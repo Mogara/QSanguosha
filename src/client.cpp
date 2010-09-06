@@ -598,6 +598,9 @@ void Client::askForSuit(const QString &){
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
     }
 
+    connect(dialog, SIGNAL(rejected()), this, SLOT(chooseSuit()));
+
+    dialog->setObjectName("no_suit");
     dialog->setWindowTitle(tr("Please choose a suit"));
     dialog->setLayout(layout);
     dialog->exec();

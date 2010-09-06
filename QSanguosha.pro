@@ -39,7 +39,8 @@ SOURCES += src/main.cpp \
     src/discardskill.cpp \
     src/daqiao.cpp \
     src/roomthread.cpp \
-    src/optionbutton.cpp
+    src/optionbutton.cpp \
+    src/maneuvering.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -71,7 +72,8 @@ HEADERS += src/mainwindow.h \
     src/discardskill.h \
     src/daqiao.h \
     src/roomthread.h \
-    src/optionbutton.h
+    src/optionbutton.h \
+    src/maneuvering.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

@@ -290,6 +290,10 @@ bool Player::faceUp() const{
     return face_up;
 }
 
+void Player::setFaceUp(bool face_up){
+    this->face_up = face_up;
+}
+
 void Player::turnOver(){
     face_up = !face_up;
 }

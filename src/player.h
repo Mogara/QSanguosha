@@ -26,7 +26,7 @@ class Player : public QObject
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
-    Q_PROPERTY(bool face_up READ faceUp)
+    Q_PROPERTY(bool face_up READ faceUp WRITE setFaceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
 
@@ -84,6 +84,7 @@ public:
     bool hasFlag(const QString &flag) const;
 
     bool faceUp() const;
+    void setFaceUp(bool face_up);
     void turnOver();
 
     virtual int aliveCount() const = 0;
