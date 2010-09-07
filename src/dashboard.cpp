@@ -42,6 +42,11 @@ Dashboard::Dashboard()
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
+    if(ClientInstance->getStatus() == Client::Playing)
+        card_item->setEnabled(card_item->getCard()->isAvailable());
+    else
+        card_item->setEnabled(false);
+
     card_item->setPos(mapFromScene(card_item->pos()));
     card_item->setParentItem(this);
     card_item->setRotation(0.0);

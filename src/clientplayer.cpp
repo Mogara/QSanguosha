@@ -4,6 +4,8 @@
 #include "engine.h"
 #include "standard.h"
 
+ClientPlayer *Self = NULL;
+
 ClientPlayer::ClientPlayer(Client *client)
     :Player(client), handcard_num(0)
 {

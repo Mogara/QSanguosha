@@ -35,6 +35,7 @@ public:
     void bury(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
+    void slashResult(const SlashResultStruct &slash_result);
 
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
@@ -55,6 +56,7 @@ public:
     void playCardEffect(const QString &card_name, bool is_male);
     void cardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
+    int getJudgeCard(ServerPlayer *player);
 
     // interactive methods
     QString activate(ServerPlayer *player);

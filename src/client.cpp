@@ -52,13 +52,13 @@ Client::Client(QObject *parent)
 {
     ClientInstance = this;
 
-    self = new ClientPlayer(this);
-    self->setObjectName(Config.UserName);
-    self->setProperty("avatar", Config.UserAvatar);    
+    Self = new ClientPlayer(this);
+    Self->setObjectName(Config.UserName);
+    Self->setProperty("avatar", Config.UserAvatar);
 
     connectToHost(Config.HostAddress, Config.Port);
 
-    connect(self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 
@@ -91,10 +91,6 @@ Client::Client(QObject *parent)
     callbacks["askForSuit"] = &Client::askForSuit;
 }
 
-const ClientPlayer *Client::getPlayer() const{
-    return self;
-}
-
 void Client::request(const QString &message){
     write(message.toAscii());
     write("\n");
@@ -107,7 +103,7 @@ void Client::signup(){
 }
 
 void Client::processReply(){
-    static QChar self_prefix('.');
+    static QChar Self_prefix('.');
     static QChar room_prefix('$');
     static QChar other_prefix('#');
     static QChar method_prefix('!');
@@ -121,10 +117,10 @@ void Client::processReply(){
         const char *field = words[1].toAscii();
         QString value = words[2];
 
-        if(object.startsWith(self_prefix)){
-            // client it self
-            if(self)
-                self->setProperty(field, value);
+        if(object.startsWith(Self_prefix)){
+            // client it Self
+            if(Self)
+                Self->setProperty(field, value);
         }else if(object.startsWith(room_prefix)){
             // room
             room->setProperty(field, value);
@@ -197,7 +193,7 @@ void Client::drawCards(const QString &cards_str){
         int card_id = card_str.toInt();
         const Card *card = Sanguosha->getCard(card_id);
         cards << card;
-        self->addCard(card, Player::Hand);
+        Self->addCard(card, Player::Hand);
     }
 
     emit cards_drawed(cards);
@@ -292,10 +288,10 @@ void Client::arrangeSeats(const QString &seats_str){
         players << player;        
     }
 
-    int self_index = players.indexOf(self);
-    for(i=self_index+1; i<players.length(); i++)
+    int Self_index = players.indexOf(Self);
+    for(i=Self_index+1; i<players.length(); i++)
         seats.prepend(players.at(i));
-    for(i=0; i<self_index; i++)
+    for(i=0; i<Self_index; i++)
         seats.prepend(players.at(i));
 
     emit seats_arranged(seats);
@@ -353,7 +349,7 @@ void Client::ackForHpChange(int delta){
 
 void Client::askForJudge(const QString &player_name){
     if(player_name.isNull())
-        request("judge " + self->objectName());
+        request("judge " + Self->objectName());
     else
         request("judge " + player_name);
 }
@@ -466,7 +462,7 @@ void Client::replyNullification(int card_id){
 }
 
 void Client::askForNullification(const QString &ask_str){
-    QList<int> card_ids = self->nullifications();
+    QList<int> card_ids = Self->nullifications();
     if(card_ids.isEmpty()){
         int msec = qrand() % 1000 + 1000;
         QTimer::singleShot(msec, this, SLOT(replyNullification()));
@@ -480,7 +476,7 @@ void Client::askForNullification(const QString &ask_str){
     ClientPlayer *source = ClientInstance->findChild<ClientPlayer *>(texts.at(2));
     ClientPlayer *target = ClientInstance->findChild<ClientPlayer *>(texts.at(3));
 
-    if(Config.NeverNullifyMyTrick && source == target && source == self)
+    if(Config.NeverNullifyMyTrick && source == target && source == Self)
         replyNullification(-1);
     else{
         NullificationDialog *dialog = new NullificationDialog(trick_name, source, target, card_ids);
@@ -536,6 +532,10 @@ void Client::responseCard(const Card *card){
         request("responseCard .");
 
     card_pattern.clear();
+}
+
+bool Client::noTargetResponsing() const{
+    return status == Responsing && !card_pattern.startsWith('@');
 }
 
 void Client::prompt(const QString &prompt_str){

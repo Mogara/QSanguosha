@@ -129,14 +129,15 @@ public:
                 if(room->askForSkillInvoke(target, "luoyi")){
                     target->drawCards(1);
                     room->playSkillEffect(objectName());
-                    room->setPlayerFlag(target, "luoyi");
+
+                    setFlag(target);
                     return true;
                 }
                 break;
             }
         case Player::Finish:{
                 if(target->hasFlag("luoyi"))
-                    room->setPlayerFlag(target, "-luoyi");
+                    unsetFlag(target);
                 break;
             }
         default:
@@ -241,12 +242,6 @@ public:
     }
 };
 
-class Paoxiao:public FlagSkill{
-public:
-    Paoxiao():FlagSkill("paoxiao"){
-    }
-};
-
 // should be ViewAsSkill
 class Longdan:public ViewAsSkill{
 public:
@@ -299,17 +294,57 @@ public:
     }
 };
 
-class Tieji:public Skill{
+class Tieji:public TriggerSkill{
 public:
-    Tieji():Skill("tieji"){
+    Tieji():TriggerSkill("tieji"){
 
+    }
+
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
+        events << CardEffect;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *machao, const QVariant &data) const{
+        if(!data.canConvert<CardEffectStruct>())
+            return false;
+
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        const Slash *slash = qobject_cast<const Slash *>(effect.card);
+        if(slash == NULL)
+            return false;
+
+        if(effect.from != machao)
+            return false;
+
+        Room *room = machao->getRoom();
+        if(room->askForSkillInvoke(effect.from, "tieji")){
+            int card_id = room->getJudgeCard(machao);
+            const Card *card = Sanguosha->getCard(card_id);
+            if(card->isRed()){
+                // slash success
+                SlashResultStruct result;
+                result.from = machao;
+                result.to = effect.to;
+                result.slash = slash;
+                result.nature = effect.nature;
+                result.success = true;
+                room->slashResult(result);
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 
-class Mashu:public GameStartSkill{
+class Mashu:public TriggerSkill{
 public:
-    Mashu():GameStartSkill("mashu"){
+    Mashu():TriggerSkill("mashu"){
 
+    }
+
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
+        events << GameStart;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
@@ -327,12 +362,6 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         // FIXME
         return false;
-    }
-};
-
-class Kongcheng:public FlagSkill{
-public:
-    Kongcheng():FlagSkill("kongcheng"){
     }
 };
 
@@ -406,7 +435,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->getPlayer()->isKongcheng();
+        return !Self->isKongcheng();
     }
 
     virtual const Card *viewAs() const{
@@ -426,13 +455,6 @@ public:
             return true;
         }else
             return false;
-    }
-};
-
-class Qianxun: public FlagSkill{
-public:
-    Qianxun():FlagSkill("qianxun"){
-
     }
 };
 
@@ -527,13 +549,6 @@ public:
 
             return jieyin_card;
         }
-    }
-};
-
-class Wushuang: public FlagSkill{
-public:
-    Wushuang():FlagSkill("wushuang"){
-
     }
 };
 
@@ -656,7 +671,7 @@ void StandardPackage::addGenerals(){
     guanyu->addSkill(new Wusheng);
 
     zhangfei = new General(this, "zhangfei", "shu");
-    zhangfei->addSkill(new Paoxiao);
+    zhangfei->addSkill(new Skill("paoxiao"));
 
     zhaoyun = new General(this, "zhaoyun", "shu");
     zhaoyun->addSkill(new Longdan);
@@ -667,7 +682,7 @@ void StandardPackage::addGenerals(){
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
-    zhugeliang->addSkill(new Kongcheng);
+    zhugeliang->addSkill(new Skill("kongcheng"));
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
@@ -686,7 +701,7 @@ void StandardPackage::addGenerals(){
     lumeng->addSkill(new Keji);
 
     luxun = new General(this, "luxun", "wu", 3);
-    luxun->addSkill(new Qianxun);
+    luxun->addSkill(new Skill("qianxun"));
     luxun->addSkill(new Lianying);
 
     ganning = new General(this, "ganning", "wu");
@@ -704,7 +719,7 @@ void StandardPackage::addGenerals(){
     General *lubu, *huatuo, *diaochan;
 
     lubu = new General(this, "lubu", "qun");
-    lubu->addSkill(new Wushuang);
+    lubu->addSkill(new Skill("wushuang"));
 
     huatuo = new General(this, "huatuo", "qun", 3);
 
@@ -853,6 +868,8 @@ void StandardPackage::addGenerals(){
 
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
+    t["@wushuang-jink-1"] = tr("@wushuang-jink-1");
+    t["@wushuang-jink-2"] = tr("@wushuang-jink-2");
 
     t["luanji"] = tr("luanji");
 }

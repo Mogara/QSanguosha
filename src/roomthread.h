@@ -5,6 +5,7 @@ class Room;
 class TriggerSkill;
 class ServerPlayer;
 class Card;
+class Slash;
 
 #include "player.h"
 
@@ -43,7 +44,7 @@ struct CardEffectStruct{
     ServerPlayer *from;
     ServerPlayer *to;
 
-    QSet<QString> flags;
+    DamageStruct::Nature nature;
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct);
@@ -67,6 +68,16 @@ struct CardMoveStruct{
 
 Q_DECLARE_METATYPE(CardMoveStruct);
 
+struct SlashResultStruct{
+    const Slash *slash;
+    ServerPlayer *from;
+    ServerPlayer *to;
+    DamageStruct::Nature nature;
+    bool success;
+};
+
+Q_DECLARE_METATYPE(SlashResultStruct);
+
 enum TriggerEvent{
     GameStart,
     PhaseChange,
@@ -79,8 +90,9 @@ enum TriggerEvent{
     Dying,
     Death,
 
-    Judge,
     JudgeOnEffect,
+
+    SlashResult,
 
     CardUsed,
     CardMove,

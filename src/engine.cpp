@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "card.h"
 #include "standard.h"
+#include "maneuvering.h"
 #include "client.h"
 
 #include <QFile>
@@ -11,9 +12,10 @@
 Engine *Sanguosha = NULL;
 
 Engine::Engine(QObject *parent)
-    :QObject(parent), effect(NULL)
+    :QObject(parent)
 {
     addPackage(new StandardPackage);
+    addPackage(new ManeuveringPackage);
 }
 
 void Engine::addPackage(Package *package){
@@ -180,13 +182,18 @@ QList<int> Engine::getRandomCards() const{
 }
 
 void Engine::playEffect(const MediaSource &source){
-    if(effect && effect->currentSource().fileName() == source.fileName())
-        return;
+    foreach(MediaObject *effect, effects){
+        if(effect->currentSource().fileName() == source.fileName())
+            return;
+    }
 
     MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory);
+    effects << effect;
 
     effect->setCurrentSource(source);
     effect->play();
+
+    connect(effect, SIGNAL(finished()), this, SLOT(removeFromEffects()));
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index){
@@ -205,4 +212,11 @@ void Engine::playCardEffect(const QString &card_name, bool is_male){
 
 const Skill *Engine::getSkill(const QString &skill_name) const{
     return skills.value(skill_name, NULL);
+}
+
+void Engine::removeFromEffects(){
+    MediaObject *effect = qobject_cast<MediaObject *>(sender());
+    if(effect){
+        effects.removeOne(effect);
+    }
 }

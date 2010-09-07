@@ -107,6 +107,13 @@ void Room::setLegatee(ServerPlayer *legatee){
     this->legatee = legatee;
 }
 
+int Room::getJudgeCard(ServerPlayer *player){
+    int card_id = drawCard();
+    throwCard(card_id);
+
+    return card_id;
+}
+
 QStringList Room::aliveRoles(ServerPlayer *except) const{
     QStringList roles;
     foreach(ServerPlayer *player, alive_players){
@@ -126,6 +133,10 @@ void Room::gameOver(const QString &winner){
     thread->quit();
 
     game_finished = true;
+}
+
+void Room::slashResult(const SlashResultStruct &slash_result){
+    thread->trigger(SlashResult, slash_result.from, QVariant::fromValue(slash_result));
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){

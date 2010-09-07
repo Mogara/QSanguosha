@@ -47,10 +47,13 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QHash<QString, MediaSource> male_effects, female_effects;
-    MediaObject *effect;
+    QList<MediaObject *> effects;
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
+
+private slots:
+    void removeFromEffects();
 };
 
 extern Engine *Sanguosha;

@@ -1,6 +1,7 @@
 #include "gamerule.h"
 #include "serverplayer.h"
 #include "room.h"
+#include "standard.h"
 
 GameRule::GameRule()
     :TriggerSkill("game_rule")
@@ -16,7 +17,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed << Predamaged << Damaged << CardEffected << Dying << Death;
+    events << GameStart << PhaseChange << CardUsed << Predamaged << Damaged << CardEffected << Dying << Death << SlashResult;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -98,6 +99,32 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
 
             break;
         }
+
+    case SlashResult:{
+            if(data.canConvert<SlashResultStruct>()){
+                SlashResultStruct result = data.value<SlashResultStruct>();
+                if(result.success){
+                    DamageStruct damage;
+                    damage.card = result.slash;                    
+
+                    damage.damage = 1;
+                    if(result.from->hasFlag("luoyi"))
+                        damage.damage ++;
+                    if(result.from->hasFlag("drank")){
+                        damage.damage ++;
+                        room->setPlayerFlag(result.from, "-drank");
+                    }
+
+                    damage.from = result.from;
+                    damage.to = result.to;
+                    damage.nature = result.nature;
+
+                    room->damage(damage);
+                }
+            }
+            break;
+        }
+
     case Dying:{
             // FIXME
 

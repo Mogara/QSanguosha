@@ -22,6 +22,8 @@ public:
 
     void initMediaSource();
     void playEffect(int index = -1) const;
+    void setFlag(ServerPlayer *player) const;
+    void unsetFlag(ServerPlayer *player) const;
 
 private:
     bool lord_skill;
@@ -105,22 +107,6 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
-};
-
-class GameStartSkill: public TriggerSkill{
-    Q_OBJECT
-
-public:
-    GameStartSkill(const QString &name);
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
-};
-
-class FlagSkill : public GameStartSkill{
-    Q_OBJECT
-
-public:
-    FlagSkill(const QString &name);
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 };
 
 #endif // SKILL_H

@@ -203,7 +203,7 @@ bool Card::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
 }
 
 bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
-    return targets.isEmpty() && to_select != ClientInstance->getPlayer();
+    return targets.isEmpty() && to_select != Self;
 }
 
 void Card::use(const QList<const ClientPlayer *> &targets) const{

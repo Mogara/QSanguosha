@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<CardEffectStruct>("CardEffectStruct");
     qRegisterMetaType<CardUseStruct>("CardUseStruct");
     qRegisterMetaType<CardMoveStruct>("CardMoveStruct");
+    qRegisterMetaType<SlashResultStruct>("SlashResultStruct");
 
     Sanguosha = new Engine(this);
     Config.init();

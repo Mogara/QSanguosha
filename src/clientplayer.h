@@ -37,4 +37,6 @@ private:
     QList<const Card *> known_cards;
 };
 
+extern ClientPlayer *Self;
+
 #endif // CLIENTPLAYER_H

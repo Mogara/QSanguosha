@@ -24,7 +24,6 @@ public:
 
     explicit Client(QObject *parent = 0);
     void signup();
-    const ClientPlayer *getPlayer() const;
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
@@ -34,6 +33,7 @@ public:
     Status getStatus() const;
     int alivePlayerCount() const;
     void responseCard(const Card *card);
+    bool noTargetResponsing() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -79,7 +79,6 @@ public slots:
 
 private:
     QObject *room;
-    ClientPlayer *self;
     Status status;
     QSet<QString> frequent_flags;
     int alive_count;

@@ -64,6 +64,14 @@ void Skill::playEffect(int index) const{
     }
 }
 
+void Skill::setFlag(ServerPlayer *player) const{
+    player->getRoom()->setPlayerFlag(player, objectName());
+}
+
+void Skill::unsetFlag(ServerPlayer *player) const{
+    player->getRoom()->setPlayerFlag(player, "-" + objectName());
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
 {
@@ -165,25 +173,5 @@ void PhaseChangeSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
 
 bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &) const{
     return onPhaseChange(player);
-}
-
-GameStartSkill::GameStartSkill(const QString &name)
-    :TriggerSkill(name)
-{
-}
-
-void GameStartSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart;
-}
-
-FlagSkill::FlagSkill(const QString &name)
-    :GameStartSkill(name){
-
-}
-
-bool FlagSkill::trigger(TriggerEvent , ServerPlayer *player, const QVariant &) const{
-    player->getRoom()->setPlayerFlag(player, objectName());
-
-    return false;
 }
 

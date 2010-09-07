@@ -14,4 +14,11 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class ManeuveringPackage: public Package{
+    Q_OBJECT
+
+public:
+    ManeuveringPackage();
+};
+
 #endif // MANEUVERING_H

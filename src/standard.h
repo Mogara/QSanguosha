@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "roomthread.h"
 
 class StandardPackage:public Package{
     Q_OBJECT
@@ -188,7 +189,7 @@ public:
     virtual bool isAvailable() const;
 
 protected:
-    QString nature;
+    DamageStruct::Nature nature;
 };
 
 class Jink: public BasicCard{

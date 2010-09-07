@@ -29,7 +29,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
     ClientInstance->setParent(this);
-    const ClientPlayer *player = ClientInstance->getPlayer();
     setBackgroundBrush(Config.BackgroundBrush);
 
     // create pile
@@ -46,14 +45,14 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         Photo *photo = new Photo(i);
         photos << photo;
         addItem(photo);
-    }
+    }   
 
     // create dashboard
     dashboard = new Dashboard;
     addItem(dashboard);
-    dashboard->setPlayer(player);
-    connect(player, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
-    connect(player, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
+    dashboard->setPlayer(Self);
+    connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
+    connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
     connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
     connect(dashboard, SIGNAL(card_to_use()), this, SLOT(useSelectedCard()));
 
@@ -61,7 +60,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     role_combobox = new QComboBox;
     role_combobox->addItem(tr("Your role"));
     role_combobox->addItem(tr("Unknown"));
-    connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
+    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     QGraphicsLinearLayout *button_layout = new QGraphicsLinearLayout(Qt::Horizontal);
 
@@ -706,7 +705,7 @@ void RoomScene::enableTargets(const Card *card){
 
     changeMessage(tr("You choosed card [%1]").arg(card->getName()));
 
-    if(card->targetFixed()){
+    if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         avatar->setEnabled(true);
         avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
         foreach(Photo *photo, photos){
@@ -720,7 +719,7 @@ void RoomScene::enableTargets(const Card *card){
 
     ok_button->setEnabled(false);
 
-    avatar->setEnabled(card->targetFilter(selected_targets, ClientInstance->getPlayer()));
+    avatar->setEnabled(card->targetFilter(selected_targets, Self));
 
     foreach(Photo *photo, photos){
         if(card->targetFilter(selected_targets, photo->getPlayer())){
@@ -1059,10 +1058,12 @@ void RoomScene::setPileNumber(int n){
 }
 
 void RoomScene::gameOver(const QString &winner, const QStringList &roles){
-    QString role = ClientInstance->getPlayer()->getRole();
+    QString role = Self->getRole();
     bool victory = (role == winner);
     if(winner == "lord" && role == "loyalist")
         victory = true;
+
+    dashboard->setEnabled(false);
 
     // QMessageBox::information(NULL, "", victory ? "Victory" : "Failed");
 }
@@ -1073,7 +1074,7 @@ void RoomScene::killPlayer(const QString &who){
     if(who == Config.UserName){
         dashboard->update();
 
-        general = ClientInstance->getPlayer()->getGeneral();
+        general = Self->getGeneral();
     }else{
         Photo *photo = name2photo[who];
         photo->update();
