@@ -44,6 +44,7 @@ private:
     QPixmap magatamas[5];   
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QStack<QGraphicsPixmapItem *> judging_pixmaps;
     QStack<CardItem *> judging_area;
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;

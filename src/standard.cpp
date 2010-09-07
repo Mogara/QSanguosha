@@ -1,6 +1,7 @@
 #include "standard.h"
 #include "serverplayer.h"
 #include "room.h"
+#include "skill.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -114,6 +115,33 @@ EquipCard::Location Weapon::location() const{
     return WeaponLocation;
 }
 
+void Weapon::onInstall(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    if(range != 1)
+        room->setPlayerProperty(player, "attack_range", range);
+
+    if(set_flag)
+        room->setPlayerFlag(player, objectName());
+
+    if(skill){
+        room->output(QString("add skill %1").arg(skill->objectName()));
+        room->getThread()->addTriggerSkill(skill);
+    }
+
+}
+
+void Weapon::onUninstall(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    if(range != 1)
+        room->setPlayerProperty(player, "attack_range", 1);
+
+    if(set_flag)
+        room->setPlayerFlag(player, "-" + objectName());
+
+    if(skill)
+        room->getThread()->removeTriggerSkill(skill);
+}
+
 QString Armor::getSubtype() const{
     return "armor";
 }
@@ -193,4 +221,10 @@ StandardPackage::StandardPackage()
 
     addCards();
     addGenerals();
+}
+
+extern "C"{
+    Q_DECL_EXPORT Package *NewStandard(){
+        return new StandardPackage;
+    }
 }

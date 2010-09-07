@@ -21,6 +21,7 @@
 #include <QMenu>
 
 static const QPointF DiscardedPos(-494, -115);
+static const QPointF DrawPilePos(893, -235);
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
@@ -245,14 +246,7 @@ void RoomScene::showBust(const QString &name)
 void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
-        item->setPos(893, -235);
-        switch(ClientInstance->getStatus()){
-        case Client::NotActive: item->setEnabled(false); break;
-        case Client::Playing: item->setEnabled(card->isAvailable()); break;
-        case Client::Responsing: break; // FIXME
-        case Client::Discarding: item->setEnabled(true); break;
-        }
-
+        item->setPos(DrawPilePos);
         dashboard->addCardItem(item);
     }
 
@@ -430,19 +424,36 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Choose general"));
 
-    QHBoxLayout *layout = new QHBoxLayout;
     QSignalMapper *mapper = new QSignalMapper(dialog);
-
+    QList<OptionButton *> buttons;
     foreach(const General *general, generals){
         QString icon_path = general->getPixmapPath("card");
         QString caption = Sanguosha->translate(general->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
         button->setIconSize(GeneralSize);
-        layout->addWidget(button);
+        buttons << button;
 
         mapper->setMapping(button, general->objectName());
         connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
         connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+    }
+
+    QLayout *layout = NULL;
+    const static int columns = 5;
+    if(generals.length() <= columns){
+        layout = new QHBoxLayout;
+        foreach(OptionButton *button, buttons)
+            layout->addWidget(button);
+    }else{
+        QGridLayout *grid_layout = new QGridLayout;
+        layout = grid_layout;
+
+        int i;
+        for(i=0; i<buttons.length(); i++){
+            int row = i / columns;
+            int column = i % columns;
+            grid_layout->addWidget(buttons.at(i), row, column);
+        }
     }
 
     mapper->setMapping(dialog, generals.first()->objectName());
@@ -492,6 +503,8 @@ void RoomScene::hideDiscards(){
 
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
     if(src){
+        // from players
+
         if(src->objectName() == Config.UserName){
             CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
             card_item->setOpacity(1.0);
@@ -505,24 +518,36 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
             else
                 return NULL;
         }
-    }else{
-        CardItem *card_item = NULL;
-        int i;
-        for(i=0; i<discarded_queue.length(); i++){
-            if(discarded_queue.at(i)->getCard()->getId() == card_id){
-                card_item = discarded_queue.takeAt(i);
-            }
-        }
+    }
 
-        if(card_item == NULL){
-            card_item = new CardItem(Sanguosha->getCard(card_id));
-            card_item->setPos(DiscardedPos);
-        }
+    // from system, i.e. from draw pile or discard pile
+    CardItem *card_item = NULL;
 
-        card_item->disconnect(this);
-
+    // from draw pile
+    if(src_place == Player::DrawPile){
+        card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setPos(DrawPilePos);
+        setPileNumber(pile_number - 1);
         return card_item;
     }
+
+    // from discard pile
+    int i;
+    for(i=0; i<discarded_queue.length(); i++){
+        if(discarded_queue.at(i)->getCard()->getId() == card_id){
+            card_item = discarded_queue.takeAt(i);
+        }
+    }
+
+    if(card_item == NULL){
+        card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setPos(DiscardedPos);
+    }
+
+    card_item->disconnect(this);
+
+    return card_item;
+
 }
 
 void RoomScene::moveCard(const CardMoveStructForClient &move){
@@ -596,6 +621,8 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
                 ;
             }
         }
+
+        photo->update();
     }
 }
 
@@ -964,25 +991,39 @@ void RoomScene::doOkButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
             useSelectedCard();
-
-            const ViewAsSkill *skill = dashboard->currentSkill();
-            if(skill){
-                skill->playEffect();
-                dashboard->stopPending();
-            }
-
             break;
         }
     case Client::Responsing:{
             const Card *card = dashboard->getSelected();
             if(card){
-                ClientInstance->responseCard(card);
+                if(ClientInstance->noTargetResponsing())
+                    ClientInstance->responseCard(card);
+                else
+                    ClientInstance->responseCard(card, selected_targets);
                 daqiao->hide();
             }
             break;
         }
-    case Client::NotActive: break;
-    case Client::Discarding: break;
+    case Client::NotActive: {
+            QMessageBox::warning(main_window, tr("Warning"), tr("The OK button should not be enabled when client is not active!"));
+            return;
+        }
+
+    case Client::Discarding: {
+            const Card *card = dashboard->pendingCard();
+            if(card){
+                ClientInstance->discardCards(card);
+                dashboard->stopPending();
+                daqiao->hide();
+            }
+            break;
+        }
+    }
+
+    const ViewAsSkill *skill = dashboard->currentSkill();
+    if(skill){
+        skill->playEffect();
+        dashboard->stopPending();
     }
 }
 
@@ -1011,8 +1052,9 @@ void RoomScene::doCancelButton(){
 }
 
 void RoomScene::doDiscardButton(){
-    if(ClientInstance->getStatus() == Client::Playing)
+    if(ClientInstance->getStatus() == Client::Playing){
         ClientInstance->useCard(NULL);
+    }
 }
 
 void RoomScene::hideAvatars(){

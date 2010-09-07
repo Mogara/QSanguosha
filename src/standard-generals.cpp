@@ -41,10 +41,52 @@ protected:
     }
 };
 
-class Tuxi:public Skill{
+class TuxiViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    Tuxi():Skill("tuxi"){
+    TuxiViewAsSkill():ZeroCardViewAsSkill("tuxi"){
 
+    }
+
+    virtual const Card *viewAs() const{
+        return new TuxiCard;
+    }
+};
+
+class Tuxi:public PhaseChangeSkill{
+public:
+    Tuxi():PhaseChangeSkill("tuxi"){
+        view_as_skill = new TuxiViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhangliao) const{
+        if(zhangliao->getPhase() == Player::Draw){
+            Room *room = zhangliao->getRoom();
+            bool can_invoke = false;
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(zhangliao);
+            foreach(ServerPlayer *player, other_players){
+                if(!player->isKongcheng()){
+                    can_invoke = true;
+                    break;
+                }
+            }
+
+            if(can_invoke){
+                QList<ServerPlayer *> targets;
+                if(room->askForCardWithTargets(zhangliao, "@@tuxi", "@tuxi-card", targets)){
+                    room->playSkillEffect(objectName());
+
+                    foreach(ServerPlayer *target, targets){
+                        int card_id = target->getRandomHandCard();
+                        zhangliao->obtainCard(Sanguosha->getCard(card_id));
+                    }
+
+                    room->nextPhase(zhangliao);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 };
 
@@ -109,10 +151,31 @@ public:
     }
 };
 
-class Guicai:public Skill{
+class Guicai:public ViewAsSkill{
 public:
-    Guicai():Skill("guicai"){
+    Guicai():ViewAsSkill("guicai"){
+    }
 
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@guicai";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        Card *card = new GuicaiCard;
+        card->addSubcard(cards.first()->getCard()->getId());
+
+        return card;
     }
 };
 
@@ -155,7 +218,23 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        // FIXME
+        if(target->getPhase() == Player::Start){
+            Room *room = target->getRoom();
+            forever{
+                if(room->askForSkillInvoke(target, objectName())){
+                    room->playSkillEffect(objectName());
+
+                    int card_id = room->getJudgeCard(target);
+                    const Card *card = Sanguosha->getCard(card_id);
+                    if(card->isBlack())
+                        target->obtainCard(card);
+                    else
+                        break;
+                }else
+                    break;
+            }
+        }
+
         return false;
     }
 };
@@ -294,34 +373,23 @@ public:
     }
 };
 
-class Tieji:public TriggerSkill{
+class Tieji:public SlashBuffSkill{
 public:
-    Tieji():TriggerSkill("tieji"){
+    Tieji():SlashBuffSkill("tieji"){
 
     }
 
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
-        events << CardEffect;
-    }
-
-    virtual bool trigger(TriggerEvent, ServerPlayer *machao, const QVariant &data) const{
-        if(!data.canConvert<CardEffectStruct>())
-            return false;
-
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        const Slash *slash = qobject_cast<const Slash *>(effect.card);
-        if(slash == NULL)
-            return false;
-
-        if(effect.from != machao)
-            return false;
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        const Slash *slash = effect.slash;
+        ServerPlayer *machao = effect.from;
 
         Room *room = machao->getRoom();
         if(room->askForSkillInvoke(effect.from, "tieji")){
+            room->playSkillEffect(objectName());
+
             int card_id = room->getJudgeCard(machao);
             const Card *card = Sanguosha->getCard(card_id);
             if(card->isRed()){
-                // slash success
                 SlashResultStruct result;
                 result.from = machao;
                 result.to = effect.to;
@@ -365,20 +433,30 @@ public:
     }
 };
 
-class Jizhi:public Skill{
+class Jizhi:public TriggerSkill{
 public:
-    Jizhi():Skill("jizhi"){
+    Jizhi():TriggerSkill("jizhi"){
+        frequency = Frequent;
+    }
 
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
+        events << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+        if(data.canConvert<CardUseStruct>()){
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
+                if(player->getRoom()->askForSkillInvoke(player, objectName())){
+                    player->drawCards(1);
+                }
+            }
+        }
+
+        return false;
     }
 };
-
-class Qicai:public Skill{
-public:
-    Qicai():Skill("qicai"){
-
-    }
-};
-
 
 class Zhiheng:public ViewAsSkill{
 public:
@@ -517,12 +595,32 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() != 1)
             return NULL;
-        else{
-            const Card *first = cards.first()->getCard();
-            Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
-            indulgence->addSubcard(first->getId());
-            return indulgence;
-        }
+
+        const Card *first = cards.first()->getCard();
+        Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
+        indulgence->addSubcard(first->getId());
+        return indulgence;
+    }
+};
+
+class Liuli: public ViewAsSkill{
+public:
+    Liuli():ViewAsSkill("liuli"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        Card *card = new LiuliCard;
+        card->addSubcard(cards.first()->getCard()->getId());
+
+        return card;
     }
 };
 
@@ -574,6 +672,23 @@ public:
     }
 };
 
+class Biyue: public PhaseChangeSkill{
+public:
+    Biyue():PhaseChangeSkill("biyue"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *diaochan) const{
+        if(diaochan->getPhase() == Player::Finish){
+            if(diaochan->getRoom()->askForSkillInvoke(diaochan, objectName())){
+                diaochan->drawCards(1);
+            }
+        }
+
+        return false;
+    }
+};
+
 class Qingnang: public ViewAsSkill{
 public:
     Qingnang():ViewAsSkill("qingnang"){
@@ -592,6 +707,35 @@ public:
         qingnang_card->addSubcard(cards.first()->getCard()->getId());
 
         return qingnang_card;
+    }
+};
+
+class Jijiu: public ViewAsSkill{
+public:
+    Jijiu():ViewAsSkill("jijiu"){
+
+    }
+
+    virtual bool isAvailableAtPlay(){
+        return false;
+    }
+
+    virtual bool isAvailableAtResponse(){
+        return ClientInstance->card_pattern == "peach";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getCard()->isRed();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() == 1){
+            const Card *first = cards.first()->getCard();
+            Peach *peach = new Peach(first->getSuit(), first->getNumber());
+            return peach;
+        }
+
+        return NULL;
     }
 };
 
@@ -632,13 +776,7 @@ void StandardPackage::addGenerals(){
     caocao->addSkill(new Hujia);
 
 #ifndef QT_NO_DEBUG
-    caocao->addSkill(new Wusheng);
-    caocao->addSkill(new Yingzi);
-    caocao->addSkill(new Luanji);
-    caocao->addSkill(new Rende);
-    caocao->addSkill(new Zhiheng);
-    caocao->addSkill(new Kurou);
-    caocao->addSkill(new Fanjian);
+
 #endif
 
     zhangliao = new General(this, "zhangliao", "wei");
@@ -682,11 +820,11 @@ void StandardPackage::addGenerals(){
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
-    zhugeliang->addSkill(new Skill("kongcheng"));
+    zhugeliang->addSkill(new Skill("kongcheng", Skill::Compulsory));
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new Qicai);
+    huangyueying->addSkill(new Skill("qicai"));
 
     General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
@@ -701,7 +839,7 @@ void StandardPackage::addGenerals(){
     lumeng->addSkill(new Keji);
 
     luxun = new General(this, "luxun", "wu", 3);
-    luxun->addSkill(new Skill("qianxun"));
+    luxun->addSkill(new Skill("qianxun", Skill::Compulsory));
     luxun->addSkill(new Lianying);
 
     ganning = new General(this, "ganning", "wu");
@@ -712,6 +850,7 @@ void StandardPackage::addGenerals(){
 
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
+    daqiao->addSkill(new Skill("liuli"));
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
     sunshangxiang->addSkill(new Jieyin);
@@ -719,12 +858,15 @@ void StandardPackage::addGenerals(){
     General *lubu, *huatuo, *diaochan;
 
     lubu = new General(this, "lubu", "qun");
-    lubu->addSkill(new Skill("wushuang"));
+    lubu->addSkill(new Skill("wushuang", Skill::Compulsory));
 
     huatuo = new General(this, "huatuo", "qun", 3);
+    huatuo->addSkill(new Qingnang);
+    huatuo->addSkill(new Jijiu);
 
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
+    diaochan->addSkill(new Biyue);
 
     // for skill cards    
     metaobjects << &ZhihengCard::staticMetaObject
@@ -733,7 +875,9 @@ void StandardPackage::addGenerals(){
             << &TuxiCard::staticMetaObject
             << &KurouCard::staticMetaObject
             << &LijianCard::staticMetaObject
-            << &FanjianCard::staticMetaObject;
+            << &FanjianCard::staticMetaObject
+            << &GuicaiCard::staticMetaObject
+            << &QingnangCard::staticMetaObject;
 
     // for translation
     t["wei"] = tr("wei");
@@ -870,6 +1014,8 @@ void StandardPackage::addGenerals(){
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
     t["@wushuang-jink-1"] = tr("@wushuang-jink-1");
     t["@wushuang-jink-2"] = tr("@wushuang-jink-2");
+    t["@guicai-card"] = tr("@guicai-card");
+    t["@guidao-card"] = tr("@guidao-card");
 
     t["luanji"] = tr("luanji");
 }

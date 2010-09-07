@@ -198,7 +198,23 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // draw player's judging area
     for(i=0; i<judging_area.count(); i++){
         CardItem *trick = judging_area.at(i);
-        painter->drawPixmap(178 + i * 52, 5, trick->getIconPixmap());
+        const Card *card = trick->getCard();
+
+        QPoint pos(178 + i * 52, 5);
+
+        if(card->getSuit() == Card::Diamond || card->objectName() == "indulgence"){
+            static QPixmap indulgence;
+            if(indulgence.isNull())
+                indulgence.load("standard/cards/icon/indulgence.png");
+            painter->drawPixmap(pos, indulgence);
+        }else if(card->objectName() == "lightning"){
+            static QPixmap lightning;
+            if(lightning.isNull())
+                lightning.load("standard/cards/icon/lightning.png");
+            painter->drawPixmap(pos, lightning);
+        }else{
+            // FIXME: supply shortage
+        }
     }
 }
 

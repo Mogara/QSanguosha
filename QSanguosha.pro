@@ -40,7 +40,8 @@ SOURCES += src/main.cpp \
     src/daqiao.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
-    src/maneuvering.cpp
+    src/maneuvering.cpp \
+    src/wind.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -73,7 +74,8 @@ HEADERS += src/mainwindow.h \
     src/daqiao.h \
     src/roomthread.h \
     src/optionbutton.h \
-    src/maneuvering.h
+    src/maneuvering.h \
+    src/wind.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

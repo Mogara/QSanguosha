@@ -17,7 +17,9 @@ int GameRule::getPriority(ServerPlayer *) const{
 }
 
 void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed << Predamaged << Damaged << CardEffected << Dying << Death << SlashResult;
+    events << GameStart << PhaseChange << CardUsed << Predamaged
+            << Damaged << CardEffected << Dying << Death << SlashResult
+            << SlashEffect;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{
@@ -38,18 +40,14 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Discard:{
-            int discard_num = player->getMaxCards() - player->getHandcardNum();
-            if(discard_num > 0){
-                QList<int> card_ids = room->askForDiscard(player, discard_num);
-                foreach(int card_id, card_ids)
-                    room->throwCard(card_id);
-            }
-
+            int discard_num = player->getHandcardNum() - player->getMaxCards();
+            if(discard_num > 0)
+                room->askForDiscard(player, discard_num);
             room->nextPhase(player);
             break;
         }
-    default:
-        ;
+    case Player::Finish: room->nextPhase(player); break;
+    case Player::NotActive: return;
     }
 }
 
@@ -95,6 +93,36 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
             if(data.canConvert<CardEffectStruct>()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
                 effect.card->onEffect(effect);
+            }
+
+            break;
+        }
+
+    case SlashEffect:{
+            if(data.canConvert<SlashEffectStruct>()){
+                SlashEffectStruct effect = data.value<SlashEffectStruct>();
+
+                SlashResultStruct result;
+                result.slash = effect.slash;
+                result.from = effect.from;
+                result.to = effect.to;
+                result.nature = effect.nature;
+
+                bool jinked = false;
+                QString slasher = effect.from->getGeneralName();
+                if(effect.from->hasSkill("wushuang")){
+                    const Card *jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
+                    if(jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
+                        jinked = true;
+                }else{
+                    const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
+                    if(jink)
+                        jinked = true;
+                }
+
+                result.success = !jinked;
+
+                room->slashResult(result);
             }
 
             break;

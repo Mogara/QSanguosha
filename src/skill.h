@@ -14,9 +14,16 @@ class ServerPlayer;
 class Skill : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Frequncy)
 
 public:
-    explicit Skill(const QString &name);
+    enum Frequency{
+        Frequent,
+        NotFrequent,
+        Compulsory
+    };
+
+    explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
 
@@ -24,6 +31,10 @@ public:
     void playEffect(int index = -1) const;
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
+    Frequency getFrequency() const;
+
+protected:
+    Frequency frequency;
 
 private:
     bool lord_skill;
@@ -67,24 +78,15 @@ class TriggerSkill:public Skill{
     Q_OBJECT
 
 public:
-    enum Frequency{
-        Frequent,
-        NotFrequent,
-        Compulsory
-    };
-
-    TriggerSkill(const QString &name, Frequency frequency = NotFrequent);
+    TriggerSkill(const QString &name);
     const ViewAsSkill *getViewAsSkill() const;
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void getTriggerEvents(QList<TriggerEvent> &events) const = 0;
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;
-
-    Frequency getFrequency() const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;    
 
 protected:
-    enum Frequency frequency;
     const ViewAsSkill *view_as_skill;
 };
 
@@ -107,6 +109,16 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
+};
+
+class SlashBuffSkill: public TriggerSkill{
+public:
+    SlashBuffSkill(const QString &name);
+
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+
+    virtual bool buff(const SlashEffectStruct &effect) const = 0;
 };
 
 #endif // SKILL_H

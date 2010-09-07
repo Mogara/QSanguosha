@@ -60,12 +60,6 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    foreach(ServerPlayer *target, targets){
-        room->obtainCard(source, target->getRandomHandCard());
-    }
-}
-
 FanjianCard::FanjianCard(){
 
 }
@@ -145,4 +139,21 @@ QingnangCard::QingnangCard(){
 
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->recover(source);
+}
+
+GuicaiCard::GuicaiCard(){
+    target_fixed = true;
+}
+
+LiuliCard::LiuliCard(){
+}
+
+bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+        return false;
+
+    return Self->inMyAttackRange(to_select);
 }

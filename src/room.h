@@ -35,7 +35,8 @@ public:
     void bury(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
-    void slashResult(const SlashResultStruct &slash_result);
+    void slashEffect(const SlashEffectStruct &effect);
+    void slashResult(const SlashResultStruct &result);
 
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
@@ -60,30 +61,21 @@ public:
 
     // interactive methods
     QString activate(ServerPlayer *player);
-    void useCardCommand(ServerPlayer *player, const QString &card_str);
-
     Card::Suit askForSuit(ServerPlayer *player);
-    void chooseSuitCommand(ServerPlayer *player, const QString &suit_str);
-
     QString askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
-    void invokeSkillCommand(ServerPlayer *player, const QString &arg);
-
-    QList<int> askForDiscard(ServerPlayer *target, int discard_num);
-    void discardCardCommand(ServerPlayer *player, const QString &arg);
-
+    bool askForDiscard(ServerPlayer *target, int discard_num);
     void askForNullification(ServerPlayer *player, const QVariant &data);
-    void replyNullificationCommand(ServerPlayer *player, const QString &arg);
-
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    void chooseCardCommand(ServerPlayer *player, const QString &arg);
-
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
-    void responseCardCommand(ServerPlayer *player, const QString &arg);
+    const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
 
+    void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
 
+    void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
+    void broadcastInvoke(const char *method, const QString &arg = ".");
 protected:
     virtual void timerEvent(QTimerEvent *);
 
@@ -115,8 +107,6 @@ private:
     ServerPlayer *legatee;
 
     int drawCard();
-    void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-    void broadcastInvoke(const char *method, const QString &arg = ".");
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);    
 

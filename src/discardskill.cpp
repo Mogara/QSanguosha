@@ -3,7 +3,9 @@
 
 class DiscardCard: public Card{
 public:
-    DiscardCard():Card(NoSuit, 0, true){}
+    DiscardCard():Card(NoSuit, 0, true){
+        target_fixed = true;
+    }
 
     virtual QString getType() const{
         return "discard_card";
@@ -29,7 +31,7 @@ void DiscardSkill::setNum(int num){
 }
 
 bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-    return true;
+    return selected.length() < num && !to_select->isEquipped();
 }
 
 const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{

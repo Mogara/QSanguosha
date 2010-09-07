@@ -1,21 +1,40 @@
 #include "engine.h"
 #include "card.h"
-#include "standard.h"
-#include "maneuvering.h"
 #include "client.h"
 
 #include <QFile>
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
+#include <QLibrary>
+#include <QApplication>
 
 Engine *Sanguosha = NULL;
 
 Engine::Engine(QObject *parent)
     :QObject(parent)
 {
-    addPackage(new StandardPackage);
-    addPackage(new ManeuveringPackage);
+    QStringList package_names;
+    package_names << "Standard" << "Wind" << "Maneuvering";
+
+    QLibrary library(qApp->applicationFilePath());
+
+    if(!library.load()){
+        QMessageBox::critical(NULL, tr("Fatal error"), tr("Package loading error!"));
+        exit(1);
+    }
+
+    typedef Package *(*package_new_func)();
+
+    foreach(QString package_name, package_names){
+        QString func_name = QString("New%1").arg(package_name);
+        package_new_func new_func = (package_new_func)library.resolve(func_name.toAscii());
+        if(new_func){
+            Package *package = new_func();
+            addPackage(package);
+        }else
+            QMessageBox::critical(NULL, tr("Fatal error"), tr("Package %1 loading error!").arg(package_name));
+    }
 }
 
 void Engine::addPackage(Package *package){
@@ -147,6 +166,18 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
         all_generals = general_set.subtract(ban_set).toList();
     }
 
+#ifndef QT_NO_DEBUG
+    QStringList my_list;
+    my_list << "daqiao";
+
+    for(i=0; i<my_list.length(); i++){
+        QString my_general = my_list.at(i);
+        int index = all_generals.indexOf(my_general);
+        all_generals.swap(index, i);
+    }
+
+#endif
+
     QStringList general_list = all_generals.mid(0, count);
     Q_ASSERT(general_list.count() == count);
 
@@ -168,7 +199,7 @@ QList<int> Engine::getRandomCards() const{
 #ifndef QT_NO_DEBUG
 
     QList<int> my_list;
-    my_list << 107;
+    my_list << 58;
 
     for(i=0; i<my_list.length(); i++){
         int card_id = my_list.at(i);

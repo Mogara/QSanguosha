@@ -18,10 +18,11 @@ bool CardMoveStructForClient::parse(const QString &str){
         place_map["delayed_trick"] = Player::DelayedTrick;
         place_map["special"] = Player::Special;
         place_map["_"] = Player::DiscardedPile;
+        place_map["="] = Player::DrawPile;
     }
 
     // example: 12:tenshi@equip->moligaloo@hand
-    QRegExp pattern("(\\d+):(.+)@(\\w+)->(.+)@(\\w+)");
+    QRegExp pattern("(\\d+):(.+)@(.+)->(.+)@(.+)");
     if(!pattern.exactMatch(str)){
         return false;
     }
@@ -74,7 +75,6 @@ Client::Client(QObject *parent)
     callbacks["activate"] = &Client::activate;
     callbacks["startGame"] = &Client::startGame;
     callbacks["hpChange"] = &Client::hpChange;
-    callbacks["judge"] = &Client::judge;
     callbacks["askForCard"] = &Client::askForCard;
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
@@ -97,8 +97,6 @@ void Client::request(const QString &message){
 }
 
 void Client::signup(){
-//    QString hex = Config.UserName.toUtf8().toHex();
-//    request(QString("signup %1:%2").arg(hex).arg(Config.UserAvatar));
     request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
@@ -250,8 +248,11 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
 }
 
 void Client::useCard(const Card *card){
-    if(!card)
+    if(!card){
+        request("useCard .");
+        setStatus(NotActive);
         return;
+    }
 
     request(QString("useCard %1->.").arg(card->toString()));
     card->use(QList<const ClientPlayer *>());
@@ -347,29 +348,13 @@ void Client::ackForHpChange(int delta){
     request(QString("ackForHpChange %1").arg(delta));
 }
 
-void Client::askForJudge(const QString &player_name){
-    if(player_name.isNull())
-        request("judge " + Self->objectName());
-    else
-        request("judge " + player_name);
-}
-
-void Client::judge(const QString &judge_str){
-    QStringList words = judge_str.split(":");
-    // QString target = words.at(0);
-    // int card_id = words.at(1).toInt();
-
-
-}
-
 void Client::setStatus(Status status){
     if(this->status != status){
         this->status = status;
-
-        if(status == Playing)
-            turn_tag.clear();
-
         emit status_changed(status);
+
+        if(status == NotActive && Self->getPhase() == Player::Finish)
+            turn_tag.clear();
     }
 }
 
@@ -388,7 +373,7 @@ void Client::updateFrequentFlags(int state){
 void Client::askForCard(const QString &request_str){
     static QSet<QString> patterns;
     if(patterns.isEmpty()){
-        patterns << "jink" << "slash";
+        patterns << "jink" << "slash" << "@guicai" << "@@liuli" << "@@tuxi";
     }
 
     QStringList texts = request_str.split(":");
@@ -532,10 +517,25 @@ void Client::responseCard(const Card *card){
         request("responseCard .");
 
     card_pattern.clear();
+    setStatus(NotActive);
+}
+
+void Client::responseCard(const Card *card, const QList<const ClientPlayer *> &targets){
+    if(card == NULL){
+        request("responseCardWithTargets .");
+    }else{
+        QStringList target_names;
+        foreach(const ClientPlayer *target, targets)
+            target_names << target->objectName();
+        request(QString("responsCardWithTargets %1->%2").arg(card->toString()).arg(target_names.join("+")));
+    }
+
+    card_pattern.clear();
+    setStatus(NotActive);
 }
 
 bool Client::noTargetResponsing() const{
-    return status == Responsing && !card_pattern.startsWith('@');
+    return status == Responsing && !card_pattern.startsWith("@@");
 }
 
 void Client::prompt(const QString &prompt_str){
@@ -557,6 +557,8 @@ void Client::setPileNumber(const QString &pile_num){
 void Client::askForDiscard(const QString &discard_str){
     discard_num = discard_str.toInt();
     setStatus(Discarding);
+
+    emit prompt_changed(tr("Please discard %1 card(s)").arg(discard_num));
 }
 
 void Client::gameOver(const QString &result_str){
@@ -608,4 +610,8 @@ void Client::askForSuit(const QString &){
 
 void Client::chooseSuit(){
     request("chooseSuit " + sender()->objectName());
+}
+
+void Client::discardCards(const Card *card){
+    request(QString("discardCards %1").arg(card->subcardString()));
 }

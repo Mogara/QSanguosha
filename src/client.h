@@ -27,12 +27,12 @@ public:
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
-    void askForJudge(const QString &player_name = QString());
     void ackForHpChange(int delta);
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
     void responseCard(const Card *card);
+    void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
 
     typedef void (Client::*Callback)(const QString &);
@@ -49,7 +49,6 @@ public:
     void activate(const QString &focus_player);
     void startGame(const QString &);
     void hpChange(const QString &change_str);
-    void judge(const QString &judge_str);
     void askForCard(const QString &request_str);
     void askForSkillInvoke(const QString &ask_str);
     void playSkillEffect(const QString &play_str);
@@ -64,6 +63,7 @@ public:
     void killPlayer(const QString &player_name);
     void gameOverWarn(const QString &);
     void askForSuit(const QString &);
+    void discardCards(const Card *card);
 
     // public fields
     QString card_pattern;

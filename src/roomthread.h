@@ -43,11 +43,20 @@ struct CardEffectStruct{
 
     ServerPlayer *from;
     ServerPlayer *to;
+};
+
+Q_DECLARE_METATYPE(CardEffectStruct);
+
+struct SlashEffectStruct{
+    const Slash *slash;
+
+    ServerPlayer *from;
+    ServerPlayer *to;
 
     DamageStruct::Nature nature;
 };
 
-Q_DECLARE_METATYPE(CardEffectStruct);
+Q_DECLARE_METATYPE(SlashEffectStruct)
 
 struct CardUseStruct{
     const Card *card;
@@ -92,6 +101,7 @@ enum TriggerEvent{
 
     JudgeOnEffect,
 
+    SlashEffect,
     SlashResult,
 
     CardUsed,

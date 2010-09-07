@@ -127,7 +127,7 @@ class Indulgence:public DelayedTrick{
     Q_OBJECT
 
 public:
-    Indulgence(Suit suit, int number);
+    Q_INVOKABLE Indulgence(Card::Suit suit, int number);
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -138,13 +138,17 @@ class Weapon:public EquipCard{
 
 public:
     Weapon(Suit suit, int number, int range)
-        :EquipCard(suit, number), range(range){}
+        :EquipCard(suit, number), range(range), skill(NULL), set_flag(false){}
     virtual QString getSubtype() const;
 
     virtual Location location() const;
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
 
 protected:
     int range;
+    TriggerSkill *skill;
+    bool set_flag;
 };
 
 class Armor:public EquipCard{
@@ -277,7 +281,6 @@ class TuxiCard: public SkillCard{
 public:
     Q_INVOKABLE TuxiCard();
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class FanjianCard: public SkillCard{
@@ -316,6 +319,22 @@ public:
     Q_INVOKABLE QingnangCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class GuicaiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GuicaiCard();
+};
+
+class LiuliCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LiuliCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 };
 
 #endif // STANDARD_H

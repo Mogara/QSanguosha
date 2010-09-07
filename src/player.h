@@ -18,7 +18,8 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
-    Q_PROPERTY(int max_cards READ getMaxCards WRITE setMaxCards)
+    Q_PROPERTY(int max_cards READ getMaxCards)
+    Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString role READ getRole WRITE setRole)
     Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
@@ -53,7 +54,8 @@ public:
     int getMaxHP() const;
     void setMaxHP(int max_hp);
     int getMaxCards() const;
-    void setMaxCards(int max_cards);
+    int getXueyi() const;
+    void setXueyi(int xueyi);
     bool isWounded() const;   
     void setRole(const QString &role);
     QString getRole() const;
@@ -75,6 +77,7 @@ public:
     int getAttackRange() const;
     QString getCorrect() const;
     void setCorrect(const QString &correct_str);
+    bool inMyAttackRange(const Player *other) const;
 
     bool isAlive() const;
     void setAlive(bool alive);
@@ -116,12 +119,12 @@ public:
 
 private:
     const General *general;
-    int hp, max_hp, max_cards;
+    int hp, max_hp, xueyi;
     QString role;
     QString state;
     int seat;
     bool alive;
-    QSet<QString> flags;
+    QSet<QString> flags;    
 
     struct CorrectStruct{
         int equip_src;

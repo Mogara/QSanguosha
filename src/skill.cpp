@@ -6,7 +6,8 @@
 
 #include <QFile>
 
-Skill::Skill(const QString &name)
+Skill::Skill(const QString &name, Frequency frequency)
+    :frequency(frequency)
 {
     static QChar lord_symbol('$');
 
@@ -72,6 +73,11 @@ void Skill::unsetFlag(ServerPlayer *player) const{
     player->getRoom()->setPlayerFlag(player, "-" + objectName());
 }
 
+Skill::Frequency Skill::getFrequency() const{
+    return frequency;
+}
+
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
 {
@@ -117,8 +123,8 @@ FilterSkill::FilterSkill(const QString &name)
 {
 }
 
-TriggerSkill::TriggerSkill(const QString &name, Frequency frequency)
-    :Skill(name), frequency(frequency), view_as_skill(NULL)
+TriggerSkill::TriggerSkill(const QString &name)
+    :Skill(name), view_as_skill(NULL)
 {
 
 }
@@ -133,10 +139,6 @@ int TriggerSkill::getPriority(ServerPlayer *target) const{
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
     return target->isAlive() && target->hasSkill(objectName());
-}
-
-TriggerSkill::Frequency TriggerSkill::getFrequency() const{
-    return frequency;
 }
 
 MasochismSkill::MasochismSkill(const QString &name)
@@ -175,3 +177,23 @@ bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVarian
     return onPhaseChange(player);
 }
 
+SlashBuffSkill::SlashBuffSkill(const QString &name)
+    :TriggerSkill(name)
+{
+
+}
+
+void SlashBuffSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+    events << SlashEffect;
+}
+
+bool SlashBuffSkill::trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    if(data.canConvert<SlashEffectStruct>()){
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+
+        if(player->isAlive())
+            return buff(effect);
+    }
+
+    return false;
+}

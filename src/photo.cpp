@@ -132,7 +132,13 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
             CardItem *item = itor.next();
             if(item->getCard()->getId() == card_id){
                 card_item = item;
+
+                int index = judging_area.indexOf(item);
+                QGraphicsPixmapItem *pixmap_item = judging_pixmaps.at(index);
+                judging_pixmaps.remove(index);
+                delete pixmap_item;
                 itor.remove();
+
                 break;
             }
         }
@@ -158,12 +164,28 @@ void Photo::installEquip(CardItem *equip){
 }
 
 void Photo::installDelayedTrick(CardItem *trick){
-    judging_area.push(trick);
-
     trick->setHomePos(pos());
     trick->goBack(true);
 
-    update();
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
+    const Card *card = trick->getCard();
+    if(card->objectName() == "indulgence" || card->getSuit() == Card::Diamond){
+        static QPixmap indulgence;
+        if(indulgence.isNull())
+            indulgence.load("standard/cards/icon/indulgence.png");
+        item->setPixmap(indulgence);
+    }else if(card->objectName() == "lightning"){
+        static QPixmap lightning;
+        if(lightning.isNull())
+            lightning.load("standard/cards/icon/lightning.png");
+        item->setPixmap(lightning);
+    }else{
+        // supply shortage
+    }
+
+    item->setPos(-25, judging_area.count() * 50);
+    judging_area.push(trick);
+    judging_pixmaps.push(item);
 }
 
 void Photo::addCardItem(CardItem *card_item){
@@ -227,13 +249,6 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     drawEquip(painter, armor, 1);
     drawEquip(painter, defensive_horse, 2);
     drawEquip(painter, offensive_horse, 3);
-
-    int i;
-    for(i=0; i<judging_area.count(); i++){
-        QRect rect(i * 25, 171, 20, 20);
-        CardItem *trick = judging_area.at(i);
-        painter->drawPixmap(rect, trick->getIconPixmap());
-    }
 }
 
 void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){

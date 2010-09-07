@@ -56,6 +56,7 @@ public:
     void addSubcards(const QList<int> &card_ids);
     QList<int> getSubcards() const;
     void clearSubcards();
+    QString subcardString() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
@@ -80,8 +81,6 @@ public:
     static const Card *Parse(const QString &str);
 
 protected:
-    QString subcardString() const;
-
     QList<int> subcards;
     bool target_fixed;
 

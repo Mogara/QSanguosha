@@ -6,7 +6,7 @@
 
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL),
-    hp(-1), max_hp(-1), max_cards(-1), state("online"), seat(0), alive(true),
+    hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true)
@@ -101,6 +101,7 @@ QString Player::getCorrect() const{
 
 void Player::setCorrect(const QString &correct_str){
     QRegExp pattern("(\\w+):(-?\\d+)");
+
     pattern.indexIn(correct_str);
     QStringList texts = pattern.capturedTexts();
     QString field = texts.at(1);
@@ -116,6 +117,9 @@ void Player::setCorrect(const QString &correct_str){
         correct.skill_dest = value;
 }
 
+bool Player::inMyAttackRange(const Player *other) const{
+    return distanceTo(other) <= attack_range;
+}
 
 int Player::distanceTo(const Player *other) const{
     if(this == other)
@@ -131,7 +135,9 @@ int Player::distanceTo(const Player *other) const{
     distance += other->correct.equip_dest;
     distance += other->correct.skill_dest;
 
-    return qMin(distance, 1);
+    if(distance < 1)
+        distance = 1;
+    return distance;
 }
 
 int Player::getGeneralMaxHP() const{
@@ -299,11 +305,15 @@ void Player::turnOver(){
 }
 
 int Player::getMaxCards() const{
-    return max_cards;
+    return hp + xueyi;
 }
 
-void Player::setMaxCards(int max_cards){
-    this->max_cards = max_cards;
+int Player::getXueyi() const{
+    return xueyi;
+}
+
+void Player::setXueyi(int xueyi){
+    this->xueyi = xueyi;
 }
 
 bool Player::isKongcheng() const{

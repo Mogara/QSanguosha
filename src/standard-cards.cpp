@@ -14,8 +14,8 @@ bool Slash::isAvailable() const{
     if(unlimited_slash)
         return true;
     else{
-        int limited_slash_count = ClientInstance->tag.value("limited_slash_count", 1).toInt();
-        return ClientInstance->tag.value("slash_count").toInt() < limited_slash_count;
+        int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
+        return slash_count < 1;
     }
 }
 
@@ -27,8 +27,8 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
     BasicCard::use(targets);
 
     // increase slash count
-    int slash_count = ClientInstance->tag.value("slash_count", 0).toInt();
-    ClientInstance->tag.insert("slash_count", slash_count + 1);
+    int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
+    ClientInstance->turn_tag.insert("slash_count", slash_count + 1);
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -41,37 +41,32 @@ void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
         effect.card = this;
         effect.from = source;
         effect.to = target;
-        effect.nature = nature;
 
         room->cardEffect(effect);        
     }
 }
 
-void Slash::onEffect(const CardEffectStruct &effect) const{
-    QString prompt = "@slash-jink:" + effect.from->getGeneralName();
-    Room *room = effect.from->getRoom();
+void Slash::onEffect(const CardEffectStruct &card_effect) const{
+    Room *room = card_effect.from->getRoom();
 
-    SlashResultStruct result;
-    result.slash = this;
-    result.from = effect.from;
-    result.to = effect.to;
-    result.nature = nature;
+    SlashEffectStruct effect;
+    effect.from = card_effect.from;
+    effect.nature = nature;
+    effect.slash = this;
 
-    bool jinked = false;
-    QString slasher = effect.from->objectName();
-    if(effect.from->hasSkill("wushuang")){
-        const Card *jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
-        if(jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
-            jinked = true;
-    }else{
-        const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
-        if(jink)
-            jinked = true;
+    effect.to = card_effect.to;
+
+    if(card_effect.to->hasSkill("liuli")){
+        ServerPlayer *daqiao = card_effect.to;
+        const Card *card = NULL;
+        QList<ServerPlayer *> new_targets;
+        if(!daqiao->isNude() && (card = room->askForCardWithTargets(daqiao, "@@liuli", "@liuli-card", new_targets))){
+            ServerPlayer *target = new_targets.first();
+            effect.to = target;
+        }
     }
 
-    result.success = !jinked;
-
-    room->slashResult(result);
+    room->slashEffect(effect);
 }
 
 bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{   
@@ -153,14 +148,26 @@ class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
         setObjectName("crossbow");
+        set_flag = true;
+    }
+};
+
+class DoubleSwordSkill: public SlashBuffSkill{
+public:
+    DoubleSwordSkill():SlashBuffSkill("double_sword"){
+
     }
 
-    virtual void onInstall(ServerPlayer *player) const{
-        player->getRoom()->setPlayerFlag(player, "crossbow");
-    }
+    virtual bool buff(const SlashEffectStruct &effect) const{
+        if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
+            Room *room = effect.from->getRoom();
+            if(room->askForSkillInvoke(effect.from, objectName())){
+                if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1))
+                    effect.from->drawCards(1);
+            }
+        }
 
-    virtual void onUninstall(ServerPlayer *player) const{
-        player->getRoom()->setPlayerFlag(player, "-crossbow");
+        return false;
     }
 };
 
@@ -168,6 +175,7 @@ class DoubleSword:public Weapon{
 public:
     DoubleSword(Suit suit = Spade, int number = 2):Weapon(suit, number, 2){
         setObjectName("double_sword");
+        skill = new DoubleSwordSkill;
     }
 };
 
@@ -715,4 +723,8 @@ void StandardPackage::addCards(){
     t["savage-assault-slash"] = tr("savage-assault-slash");
     t["archery-attack-jink"] = tr("archery-attack-jink");
     t["collateral-slash"] = tr("collateral-slash");
+
+    // weapon prompt
+    t["double_sword:yes"] = tr("double_sword:yes");
+    t["double_sword:no"] = t["nothing"];
 }

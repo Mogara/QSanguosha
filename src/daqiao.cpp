@@ -20,13 +20,11 @@ void Daqiao::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 void Daqiao::setContent(const QString &content){
-    if(this->content != content){
+    if(this->content != content)
         this->content = content;
-        if(content.isEmpty())
-            hide();
-        else
-            show();
 
-        update();
-    }
+    if(content.isEmpty())
+        hide();
+    else
+        show();
 }

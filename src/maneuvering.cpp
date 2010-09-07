@@ -34,3 +34,9 @@ ManeuveringPackage::ManeuveringPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 }
+
+extern "C"{
+    Q_DECL_EXPORT Package *NewManeuvering(){
+        return new ManeuveringPackage;
+    }
+}
