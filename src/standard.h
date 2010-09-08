@@ -133,6 +133,15 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class Nullification:public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Nullification(Card::Suit suit, int number);
+
+    virtual bool isAvailable() const;
+};
+
 class Weapon:public EquipCard{
     Q_OBJECT
 
@@ -335,6 +344,8 @@ public:
     Q_INVOKABLE LiuliCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+
+    static QString SourceGeneral;
 };
 
 #endif // STANDARD_H

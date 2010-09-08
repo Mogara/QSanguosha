@@ -15,7 +15,7 @@ Engine::Engine(QObject *parent)
     :QObject(parent)
 {
     QStringList package_names;
-    package_names << "Standard" << "Wind" << "Maneuvering";
+    package_names << "Standard" << "Wind" << "Maneuvering" << "Thicket";
 
     QLibrary library(qApp->applicationFilePath());
 
@@ -168,7 +168,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 #ifndef QT_NO_DEBUG
     QStringList my_list;
-    my_list << "daqiao" << "zhangliao";
+    my_list << "daqiao" << "zhangliao" << "caoren";
 
     for(i=0; i<my_list.length(); i++){
         QString my_general = my_list.at(i);

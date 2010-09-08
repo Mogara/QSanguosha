@@ -50,7 +50,7 @@ public:
     QString getName() const;
 
     bool isVirtualCard() const;
-    bool match(const QString &pattern) const;
+    virtual bool match(const QString &pattern) const;
 
     void addSubcard(int card_id);
     void addSubcards(const QList<int> &card_ids);

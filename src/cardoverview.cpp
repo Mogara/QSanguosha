@@ -12,7 +12,7 @@ CardOverview::CardOverview(QWidget *parent) :
     ui->tableWidget->setColumnWidth(1, 60);
     ui->tableWidget->setColumnWidth(2, 30);
     ui->tableWidget->setColumnWidth(3, 60);
-    ui->tableWidget->setColumnWidth(4, 60);    
+    ui->tableWidget->setColumnWidth(4, 70);
 }
 
 void CardOverview::loadFromAll(){

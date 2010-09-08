@@ -335,6 +335,17 @@ int Room::askForAG(ServerPlayer *player){
     return result.toInt();
 }
 
+int Room::askForCardShow(ServerPlayer *player){
+    player->invoke("askForCardShow");
+
+    reply_func = "showCard";
+    reply_player = player;
+
+    sem->acquire();
+
+    return result.toInt();
+}
+
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
     player->setFlags(flag);
     broadcast(QString("#%1 flags %2").arg(player->objectName()).arg(flag));

@@ -148,11 +148,16 @@ GuicaiCard::GuicaiCard(){
 LiuliCard::LiuliCard(){
 }
 
+QString LiuliCard::SourceGeneral;
+
 bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
 
     if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+        return false;
+
+    if(to_select->getGeneralName() == SourceGeneral)
         return false;
 
     return Self->inMyAttackRange(to_select);

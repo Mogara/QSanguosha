@@ -352,9 +352,9 @@ public:
         case Client::Responsing:{
                 QString pattern = ClientInstance->card_pattern;
                 if(pattern == "slash")
-                    return to_select->objectName() == "jink";
+                    return to_select->inherits("Jink");
                 else if(pattern == "jink")
-                    return to_select->objectName() == "slash";
+                    return to_select->inherits("Slash");
             }
 
         default:
@@ -1024,6 +1024,7 @@ void StandardPackage::addGenerals(){
     t["@wushuang-jink-2"] = tr("@wushuang-jink-2");
     t["@guicai-card"] = tr("@guicai-card");
     t["@guidao-card"] = tr("@guidao-card");
+    t["@liuli-card"] = tr("@liuli-card");
 
     t["luanji"] = tr("luanji");
 }

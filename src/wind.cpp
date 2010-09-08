@@ -10,6 +10,14 @@ GuidaoCard::GuidaoCard(){
     target_fixed = true;
 }
 
+GongxinCard::GongxinCard(){
+
+}
+
+bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
+}
+
 class Guidao:public ViewAsSkill{
 public:
     Guidao():ViewAsSkill("guidao"){
@@ -56,7 +64,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(!target->getPhase() == Player::Finish){
+        if(target->getPhase() == Player::Finish){
             Room *room = target->getRoom();
             if(room->askForSkillInvoke(target, objectName())){
                 target->drawCards(3);
@@ -124,6 +132,53 @@ public:
     }
 };
 
+class Wuhun: public TriggerSkill{
+public:
+    Wuhun():TriggerSkill("wuhun"){
+
+    }
+
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
+        events << Death;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+
+
+        return false;
+    }
+};
+
+class Shelie: public PhaseChangeSkill{
+public:
+    Shelie():PhaseChangeSkill("shelie"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Draw){
+            Room *room = target->getRoom();
+            if(room->askForSkillInvoke(target, objectName())){
+                // FIXME: shelie
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+class Gongxin: ZeroCardViewAsSkill{
+public:
+    Gongxin():ZeroCardViewAsSkill("gongxin"){
+
+    }
+
+    virtual const Card *viewAs() const{
+        return new GongxinCard;
+    }
+};
+
 WindPackage::WindPackage()
     :Package("wind")
 {
@@ -147,13 +202,25 @@ WindPackage::WindPackage()
     zhangjiao->addSkill(new Skill("leiji"));
     zhangjiao->addSkill(new Skill("huangtian$"));
 
+    // two gods
+    General *shenguanyu, *shenlumeng;
+
+    shenguanyu = new General(this, "shenguanyu", "shu", 5);
+    shenguanyu->addSkill(new Wuhun);
+
+    shenlumeng = new General(this, "shenlumeng", "wu", 3);
+    shenlumeng->addSkill(new Shelie);
+    // shenlumeng->addSkill(new Gongxin);
+
     t["wind"] = tr("wind");
 
     t["xiahouyuan"] = tr("xiahouyuan");
     t["caoren"] = tr("caoren");
     t["huangzhong"] = tr("huangzhong");
     t["weiyan"] = tr("weiyan");
-    t["zhangjiao"] = tr("zhangjiao");   
+    t["zhangjiao"] = tr("zhangjiao");
+    t["shenguanyu"] = tr("shenguanyu");
+    t["shenlumeng"] = tr("shenlumeng");
 
     // skills
     t["shensu"] = tr("shensu");
@@ -163,6 +230,9 @@ WindPackage::WindPackage()
     t["guidao"] = tr("guidao");
     t["leiji"] = tr("leiji");
     t["huangtian"] = tr("huangtian");
+    t["wuhun"] = tr("wuhun");
+    t["shelie"] = tr("shelie");
+    t["gongxin"] = tr("gongxin");
 }
 
 extern "C" {

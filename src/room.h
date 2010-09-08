@@ -71,6 +71,7 @@ public:
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
     int askForAG(ServerPlayer *player);
+    int askForCardShow(ServerPlayer *player);
 
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);

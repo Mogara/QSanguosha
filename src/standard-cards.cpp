@@ -59,9 +59,26 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
         ServerPlayer *daqiao = card_effect.to;
         const Card *card = NULL;
         QList<ServerPlayer *> new_targets;
-        if(!daqiao->isNude() && (card = room->askForCardWithTargets(daqiao, "@@liuli", "@liuli-card", new_targets))){
-            ServerPlayer *target = new_targets.first();
-            effect.to = target;
+        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
+            QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
+            players.removeOne(effect.from);
+
+            bool can_invoke = false;
+            foreach(ServerPlayer *player, players){
+                if(daqiao->inMyAttackRange(player)){
+                    can_invoke = true;
+                    break;
+                }
+            }
+
+            if(can_invoke){
+                QString prompt = "@liuli-card:" + effect.from->getGeneralName();
+                card = room->askForCardWithTargets(daqiao, "@@liuli", prompt, new_targets);
+                if(card){
+                    ServerPlayer *target = new_targets.first();
+                    effect.to = target; // the key code
+                }
+            }
         }
     }
 
@@ -400,18 +417,15 @@ public:
     }
 };
 
-class Nullification:public SingleTargetTrick{
-public:
-    Nullification(Suit suit, int number):SingleTargetTrick(suit, number){
-        setObjectName("nullification");
-    }
+Nullification::Nullification(Suit suit, int number)
+    :SingleTargetTrick(suit, number)
+{
+    setObjectName("nullification");
+}
 
-    virtual bool isAvailable() const{
-        return false;
-    }
-};
-
-
+bool Nullification::isAvailable() const{
+    return false;
+}
 
 class ExNihilo: public SingleTargetTrick{
 public:

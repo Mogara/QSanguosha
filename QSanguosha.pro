@@ -41,7 +41,8 @@ SOURCES += src/main.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
-    src/wind.cpp
+    src/wind.cpp \
+    src/thicket.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -75,7 +76,8 @@ HEADERS += src/mainwindow.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \
-    src/wind.h
+    src/wind.h \
+    src/thicket.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

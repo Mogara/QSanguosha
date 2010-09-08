@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "nullificationdialog.h"
 #include "playercarddialog.h"
+#include "standard.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
@@ -385,6 +386,10 @@ void Client::askForCard(const QString &request_str){
         if(texts.length() >= 3){
             QString src = Sanguosha->translate(texts.at(2));
             prompt.replace("%src", src);
+
+            // liuli's special process
+            if(pattern == "@@liuli")
+                LiuliCard::SourceGeneral = src;
         }
 
         if(texts.length() >= 4){
