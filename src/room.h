@@ -58,6 +58,7 @@ public:
     void cardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
     int getJudgeCard(ServerPlayer *player);
+    QList<int> getNCard(int n);    
 
     // interactive methods
     QString activate(ServerPlayer *player);
@@ -69,6 +70,7 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
+    int askForAG(ServerPlayer *player);
 
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);

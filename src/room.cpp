@@ -25,9 +25,10 @@ Room::Room(QObject *parent, int player_count)
     callbacks["replyNullificationCommand"] = &Room::commonCommand;
     callbacks["chooseCardCommand"] = &Room::commonCommand;
     callbacks["responseCardCommand"] = &Room::commonCommand;
-    callbacks["responseCardCommandWithTargets"] = &Room::commonCommand;
+    callbacks["responseCardWithTargetsCommand"] = &Room::commonCommand;
     callbacks["discardCardsCommand"] = &Room::commonCommand;
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
+    callbacks["chooseAGCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -148,6 +149,18 @@ int Room::getJudgeCard(ServerPlayer *player){
     thread->trigger(JudgeOnEffect, player, card_id);
 
     return card_id;
+}
+
+QList<int> Room::getNCard(int n){
+    QList<int> card_ids;
+    int i;
+    for(i=0; i<n; i++){
+        card_ids << drawCard();
+    }
+
+    broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
+
+    return card_ids;
 }
 
 QStringList Room::aliveRoles(ServerPlayer *except) const{
@@ -292,7 +305,7 @@ const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pat
 
     player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
-    reply_func = "responseCardCommand";
+    reply_func = "responseCardWithTargetsCommand";
     reply_player = player;
 
     sem->acquire();
@@ -309,6 +322,17 @@ const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pat
         return card;
     }else
         return NULL;
+}
+
+int Room::askForAG(ServerPlayer *player){
+    player->invoke("askForAG");
+
+    reply_func = "chooseAGCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    return result.toInt();
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){

@@ -123,11 +123,8 @@ void Weapon::onInstall(ServerPlayer *player) const{
     if(set_flag)
         room->setPlayerFlag(player, objectName());
 
-    if(skill){
-        room->output(QString("add skill %1").arg(skill->objectName()));
+    if(skill)
         room->getThread()->addTriggerSkill(skill);
-    }
-
 }
 
 void Weapon::onUninstall(ServerPlayer *player) const{

@@ -168,7 +168,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 #ifndef QT_NO_DEBUG
     QStringList my_list;
-    my_list << "daqiao";
+    my_list << "daqiao" << "zhangliao";
 
     for(i=0; i<my_list.length(); i++){
         QString my_general = my_list.at(i);
@@ -199,7 +199,7 @@ QList<int> Engine::getRandomCards() const{
 #ifndef QT_NO_DEBUG
 
     QList<int> my_list;
-    my_list << 58;
+    my_list << 75 << 81 << 82 << 83;
 
     for(i=0; i<my_list.length(); i++){
         int card_id = my_list.at(i);

@@ -34,6 +34,9 @@ public:
     void responseCard(const Card *card);
     void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
+    void discardCards(const Card *card);
+    void chooseAG(int card_id);
+    QList<ClientPlayer *> getPlayers() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -63,7 +66,10 @@ public:
     void killPlayer(const QString &player_name);
     void gameOverWarn(const QString &);
     void askForSuit(const QString &);
-    void discardCards(const Card *card);
+    void fillAG(const QString &cards_str);
+    void askForAG(const QString &);
+    void takeAG(const QString &take_str);
+
 
     // public fields
     QString card_pattern;
@@ -83,6 +89,7 @@ private:
     QSet<QString> frequent_flags;
     int alive_count;
     QHash<QString, Callback> callbacks;
+    QList<ClientPlayer*> players;
 
 private slots:
     void processReply();
@@ -106,8 +113,10 @@ signals:
     void avatars_hiden();
     void pile_cleared();
     void pile_num_set(int n);
-    void game_over(const QString &winner, const QStringList &roles);
+    void game_over(bool victory, const QList<bool> &result_list);
     void player_killed(const QString &who);
+    void ag_filled(const QList<int> &card_ids);
+    void ag_taken(const QString &general_name, int card_id);
 };
 
 extern Client *ClientInstance;

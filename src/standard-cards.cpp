@@ -10,8 +10,7 @@ Slash::Slash(Suit suit, int number):BasicCard(suit, number){
 }
 
 bool Slash::isAvailable() const{
-    bool unlimited_slash = Self->hasSkill("paoxiao") || Self->hasFlag("crossbow");
-    if(unlimited_slash)
+    if(Self->hasSkill("paoxiao") || Self->hasFlag("crossbow"))
         return true;
     else{
         int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
@@ -155,12 +154,20 @@ public:
 class DoubleSwordSkill: public SlashBuffSkill{
 public:
     DoubleSwordSkill():SlashBuffSkill("double_sword"){
+    }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        const Weapon *weapon = target->getWeapon();
+        return weapon && weapon->objectName() == "double_sword";
     }
 
     virtual bool buff(const SlashEffectStruct &effect) const{
+        Room *room = effect.from->getRoom();
+
+        room->output(QString("from=%1, to=%2").arg(effect.from->getGeneral()->isMale()).arg(effect.to->getGeneral()->isMale()));
+
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
-            Room *room = effect.from->getRoom();
+
             if(room->askForSkillInvoke(effect.from, objectName())){
                 if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1))
                     effect.from->drawCards(1);
@@ -239,6 +246,23 @@ class AmazingGrace:public GlobalEffect{
 public:
     AmazingGrace(Suit suit, int number):GlobalEffect(suit, number){
         setObjectName("amazing_grace");
+    }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+        room->throwCard(this);
+        source->playCardEffect(this);
+
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        QList<int> card_ids = room->getNCard(players.length());
+        QStringList card_str;
+        foreach(int card_id, card_ids)
+            card_str << QString::number(card_id);
+        room->broadcastInvoke("fillAG", card_str.join("+"));
+
+        foreach(ServerPlayer *player, players){
+            int card_id = room->askForAG(player);
+            room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->getGeneralName()).arg(card_id));
+        }
     }
 };
 

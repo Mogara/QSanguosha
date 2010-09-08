@@ -51,8 +51,8 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
 
     bool isAvailable() const;
-protected:
 
+protected:
     virtual bool isEnabledAtPlay() const;
     virtual bool isEnabledAtResponse() const;
 };

@@ -19,6 +19,8 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsLinearLayout>
 #include <QMenu>
+#include <QGroupBox>
+
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -109,7 +111,10 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
-    connect(ClientInstance, SIGNAL(game_over(QString,QStringList)), this, SLOT(gameOver(QString,QStringList)));
+    connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
+
+    connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
+    connect(ClientInstance, SIGNAL(ag_taken(QString,int)), this, SLOT(takeAmazingGrace(QString,int)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -655,9 +660,9 @@ void RoomScene::updateSkillButtons(){
             }
             case TriggerSkill::NotFrequent:{
                     const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-                    button = new QPushButton(skill_name);                    
+                    button = new QPushButton(skill_name);
                     if(view_as_skill){
-                        button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
+                        button2skill.insert(button, view_as_skill);
                         connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
                     }
 
@@ -903,9 +908,6 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
-#ifndef QT_NO_DEBUG
-            ok_button->setText("NotActive");
-#endif
             dashboard->disableAllCards();
 
             ok_button->setEnabled(false);
@@ -916,9 +918,6 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Responsing: {
-#ifndef QT_NO_DEBUG
-            ok_button->setText("Responsing");
-#endif
             dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(false);
@@ -928,9 +927,6 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Playing:{
-#ifndef QT_NO_DEBUG
-            ok_button->setText("Playing");
-#endif
             dashboard->enableCards();
 
             ok_button->setEnabled(false);
@@ -940,10 +936,6 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Discarding:{
-#ifndef QT_NO_DEBUG
-            ok_button->setText("Discarding");
-#endif
-
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
@@ -1041,7 +1033,10 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::Responsing:{
-            ClientInstance->responseCard(NULL);
+            if(ClientInstance->noTargetResponsing())
+                ClientInstance->responseCard(NULL);
+            else
+                ClientInstance->responseCard(NULL, QList<const ClientPlayer *>());
             daqiao->hide();
             break;
         }
@@ -1099,15 +1094,88 @@ void RoomScene::setPileNumber(int n){
     pile_number_item->setPlainText(QString::number(pile_number));
 }
 
-void RoomScene::gameOver(const QString &winner, const QStringList &roles){
-    QString role = Self->getRole();
-    bool victory = (role == winner);
-    if(winner == "lord" && role == "loyalist")
-        victory = true;
-
+void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     dashboard->setEnabled(false);
 
-    // QMessageBox::information(NULL, "", victory ? "Victory" : "Failed");
+    QDialog *dialog = new QDialog(main_window);
+    dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
+
+    QGroupBox *winner_box = new QGroupBox(tr("Winner(s)"));
+    QGroupBox *loser_box = new QGroupBox(tr("Loser(s)"));
+
+    QTableWidget *winner_table = new QTableWidget;
+    QTableWidget *loser_table = new QTableWidget;
+
+    QVBoxLayout *winner_layout = new QVBoxLayout;
+    winner_layout->addWidget(winner_table);
+    winner_box->setLayout(winner_layout);
+
+    QVBoxLayout *loser_layout = new QVBoxLayout;
+    loser_layout->addWidget(loser_table);
+    loser_box->setLayout(loser_layout);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(winner_box);
+    layout->addWidget(loser_box);
+    dialog->setLayout(layout);
+
+    winner_table->setColumnCount(4);
+    loser_table->setColumnCount(4);
+
+    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    QList<ClientPlayer *> winner_list, loser_list;
+    int i;
+    for(i=0; i<players.length(); i++){
+        ClientPlayer *player = players.at(i);
+        bool result = result_list.at(i);
+        if(result)
+            winner_list << player;
+        else
+            loser_list << player;
+    }
+
+    winner_table->setRowCount(winner_list.length());
+    loser_table->setRowCount(loser_list.length());
+
+    fillTable(winner_table, winner_list);
+    fillTable(loser_table, loser_list);
+
+    QStringList labels;
+    labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
+    winner_table->setHorizontalHeaderLabels(labels);
+    loser_table->setHorizontalHeaderLabels(labels);
+
+    dialog->exec();
+}
+
+void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &players){
+    int i;
+    for(i=0; i<players.length(); i++){
+        ClientPlayer *player = players.at(i);
+
+        QTableWidgetItem *item = new QTableWidgetItem;
+        item->setText(Sanguosha->translate(player->getGeneralName()));
+        table->setItem(i, 0, item);
+
+        item = new QTableWidgetItem;
+        item->setText(player->objectName());
+        table->setItem(i, 1, item);
+
+        item = new QTableWidgetItem;
+        if(player->isAlive())
+            item->setText(tr("Alive"));
+        else
+            item->setText(tr("Dead"));
+        table->setItem(i, 2, item);
+
+        item = new QTableWidgetItem;
+        QIcon icon(QString(":/roles/%1.png").arg(player->getRole()));
+        item->setIcon(icon);
+        if(!player->isAlive())
+            item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+        item->setText(Sanguosha->translate(player->getRole()));
+        table->setItem(i, 3, item);
+    }
 }
 
 void RoomScene::killPlayer(const QString &who){
@@ -1125,4 +1193,34 @@ void RoomScene::killPlayer(const QString &who){
     }
 
     general->lastWord();
+}
+
+void RoomScene::fillAmazingGrace(const QList<int> &card_ids){
+    int i;
+    for(i=0; i<card_ids.length(); i++){
+        int card_id = card_ids.at(i);
+        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+        amazing_grace << card_item;
+
+        QRectF rect = card_item->boundingRect();
+
+        int row = i / 4;
+        int column = i % 4;
+
+        addItem(card_item);
+        card_item->setPos(column * rect.width(), row * rect.height());
+    }
+}
+
+void RoomScene::clearAmazingGrace(){
+    // FIXME
+}
+
+void RoomScene::takeAmazingGrace(const QString &general_name, int card_id){
+    foreach(CardItem *card_item, amazing_grace){
+        if(card_item->getCard()->getId() == card_id){
+            card_item->setEnabled(false);
+            break;
+        }
+    }
 }

@@ -9,7 +9,7 @@
 #include "daqiao.h"
 
 #include <QGraphicsScene>
-
+#include <QTableWidget>
 #include <QQueue>
 #include <QMainWindow>
 
@@ -35,7 +35,7 @@ public slots:
     void enableTargets(const Card *card);
     void useSelectedCard();
     void updateStatus(Client::Status status);
-    void gameOver(const QString &winner, const QStringList &roles);
+    void gameOver(bool victory, const QList<bool> &result_list);
     void killPlayer(const QString &who);
 
 protected:
@@ -60,6 +60,8 @@ private:
     int pile_number;
     QGraphicsTextItem *pile_number_item;
 
+    QList<CardItem *> amazing_grace;
+
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
     DiscardSkill *discard_skill;
@@ -78,6 +80,10 @@ private:
     void callViewAsSkill();
     void cancelViewAsSkill();
 
+    void clearAmazingGrace();
+
+    void fillTable(QTableWidget *table, const QList<ClientPlayer *> &players);
+
 private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
@@ -90,6 +96,9 @@ private slots:
     void changeHp(const QString &who, int delta);
     void clearPile();
     void setPileNumber(int n);
+
+    void fillAmazingGrace(const QList<int> &card_ids);    
+    void takeAmazingGrace(const QString &general_name, int card_id);
 };
 
 #endif // ROOMSCENE_H

@@ -89,6 +89,9 @@ Client::Client(QObject *parent)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["askForSuit"] = &Client::askForSuit;
+
+    callbacks["fillAG"] = &Client::fillAG;
+    callbacks["askForAG"] = &Client::askForAG;
 }
 
 void Client::request(const QString &message){
@@ -277,7 +280,7 @@ void Client::duplicationError(const QString &){
 
 void Client::arrangeSeats(const QString &seats_str){    
     QStringList player_names = seats_str.split("+");
-    QList<const ClientPlayer*> players, seats;
+    QList<const ClientPlayer*> seats;
 
     int i;
     for(i=0; i<player_names.length(); i++){
@@ -352,9 +355,6 @@ void Client::setStatus(Status status){
     if(this->status != status){
         this->status = status;
         emit status_changed(status);
-
-        if(status == NotActive && Self->getPhase() == Player::Finish)
-            turn_tag.clear();
     }
 }
 
@@ -527,7 +527,7 @@ void Client::responseCard(const Card *card, const QList<const ClientPlayer *> &t
         QStringList target_names;
         foreach(const ClientPlayer *target, targets)
             target_names << target->objectName();
-        request(QString("responsCardWithTargets %1->%2").arg(card->toString()).arg(target_names.join("+")));
+        request(QString("responseCardWithTargets %1->%2").arg(card->toString()).arg(target_names.join("+")));
     }
 
     card_pattern.clear();
@@ -570,7 +570,28 @@ void Client::gameOver(const QString &result_str){
     QString winner = texts.at(1);
     QStringList roles = texts.at(2).split("+");
 
-    emit game_over(winner, roles);
+    Q_ASSERT(roles.length() == players.length());
+
+    int i;
+    for(i=0; i<roles.length(); i++){
+        players.at(i)->setRole(roles.at(i));
+    }
+
+    bool victory;
+    QList<bool> result_list;
+    foreach(ClientPlayer *player, players){
+        QString role = player->getRole();
+        bool result = (role == winner);
+        if(winner == "lord" && role == "loyalist")
+            result = true;
+
+        result_list << result;
+
+        if(player == Self)
+            victory = result;
+    }
+
+    emit game_over(victory, result_list);
 }
 
 void Client::killPlayer(const QString &player_name){
@@ -614,4 +635,41 @@ void Client::chooseSuit(){
 
 void Client::discardCards(const Card *card){
     request(QString("discardCards %1").arg(card->subcardString()));
+}
+
+void Client::fillAG(const QString &cards_str){
+    QStringList cards = cards_str.split("+");
+    QList<int> card_ids;
+    foreach(QString card, cards){
+        card_ids << card.toInt();
+    }
+
+    emit ag_filled(card_ids);
+}
+
+void Client::takeAG(const QString &take_str){
+    QRegExp rx("(\\w+):(\\d+)");
+    rx.exactMatch(take_str);
+
+    QStringList words = rx.capturedTexts();
+    QString general_name = words.at(1);
+    int card_id = words.at(2).toInt();
+
+    emit ag_taken(general_name, card_id);
+}
+
+void Client::askForAG(const QString &){
+    setStatus(Responsing);
+    card_pattern = "@ag";
+}
+
+void Client::chooseAG(int card_id){
+    request(QString("chooseAG %1").arg(card_id));
+
+    setStatus(NotActive);
+    card_pattern.clear();
+}
+
+QList<ClientPlayer*> Client::getPlayers() const{
+    return players;
 }

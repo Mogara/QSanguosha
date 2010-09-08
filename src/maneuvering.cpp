@@ -13,7 +13,7 @@ QString Analeptic::getSubtype() const{
 }
 
 bool Analeptic::isAvailable() const{
-    return Self->hasFlag("drank");
+    return !Self->hasFlag("drank");
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{

@@ -44,11 +44,19 @@ protected:
 class TuxiViewAsSkill: public ZeroCardViewAsSkill{
 public:
     TuxiViewAsSkill():ZeroCardViewAsSkill("tuxi"){
-
     }
 
     virtual const Card *viewAs() const{
         return new TuxiCard;
+    }
+
+protected:
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@tuxi";
     }
 };
 
