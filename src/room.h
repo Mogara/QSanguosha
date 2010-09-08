@@ -59,6 +59,8 @@ public:
     void setLegatee(ServerPlayer *legatee);
     int getJudgeCard(ServerPlayer *player);
     QList<int> getNCard(int n);    
+    void setMenghuo(ServerPlayer *menghuo);
+    ServerPlayer *getMenghuo() const;
 
     // interactive methods
     QString activate(ServerPlayer *player);
@@ -108,6 +110,8 @@ private:
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
     ServerPlayer *legatee;
+
+    ServerPlayer *menghuo;
 
     int drawCard();
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);

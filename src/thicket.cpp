@@ -69,6 +69,17 @@ public:
     }
 };
 
+class Huoshou: public GameStartSkill{
+public:
+    Huoshou():GameStartSkill("huoshou"){
+
+    }
+
+    void onGameStart(ServerPlayer *player) const{
+        player->getRoom()->setMenghuo(player);
+    }
+};
+
 class Guixin: public MasochismSkill{
 public:
     Guixin():MasochismSkill("guixin"){
@@ -105,6 +116,8 @@ ThicketPackage::ThicketPackage()
     xuhuang->addSkill(new Duanliang);
 
     menghuo = new General(this, "menghuo", "shu");
+    menghuo->addSkill(new Huoshou);
+
     zhurong = new General(this, "zhurong", "shu", 4, false);
 
     sunjian = new General(this, "sunjian", "wu");

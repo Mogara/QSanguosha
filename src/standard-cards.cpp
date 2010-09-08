@@ -317,16 +317,38 @@ SavageAssault::SavageAssault(Suit suit, int number)
     setObjectName("savage_assault");
 }
 
+void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+    source->playCardEffect(this);
+
+    QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *player, other_players){
+        if(player->hasFlag("tengjia") || player->hasFlag("nanman"))
+            continue;        
+
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = player;
+
+        room->cardEffect(effect);
+    }
+}
+
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->getGeneralName());
     if(slash == NULL){
         DamageStruct damage;
         damage.card = this;
-        damage.damage = 1;
-        damage.from = effect.from;
+        damage.damage = 1;        
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
+
+        damage.from = effect.from;
+        ServerPlayer *menghuo = room->getMenghuo();
+        if(menghuo && menghuo->isAlive())
+            damage.from = menghuo;
 
         room->damage(damage);
     }

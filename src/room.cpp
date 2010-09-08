@@ -17,7 +17,7 @@ Room::Room(QObject *parent, int player_count)
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     nullificators_count(0),
     thread(NULL), sem(NULL),
-    legatee(NULL)
+    legatee(NULL), menghuo(NULL)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
@@ -74,9 +74,18 @@ QList<ServerPlayer *> Room::getAllPlayers(){
 }
 
 ServerPlayer *Room::getNextPlayer(ServerPlayer *player){
-    int index = alive_players.indexOf(player);
-    int next = (index + 1) % alive_players.length();
-    return alive_players.at(next);
+    ServerPlayer *next = player;
+    forever{
+        int index = alive_players.indexOf(next);
+        int next_index = (index + 1) % alive_players.length();
+        next = alive_players.at(next_index);
+
+        if(!next->faceUp()){
+            next->turnOver();
+            broadcastProperty(next, "face_up", "true");
+        }else
+            return next;
+    }
 }
 
 void Room::output(const QString &message){
@@ -831,18 +840,7 @@ void Room::nextPhase(ServerPlayer *player){
     Player::Phase next_phase = player->getNextPhase();
 
     if(next_phase == Player::NotActive){
-        ServerPlayer *next;
-
-        forever{
-            next = getNextPlayer(player);
-
-            if(!next->faceUp()){
-                next->turnOver();
-                broadcastProperty(next, "face_up", "true");
-            }else
-                break;
-        }
-
+        ServerPlayer *next = getNextPlayer(player);
         player->setPhase(Player::NotActive);
         next->setPhase(Player::Start);
         current = next;
@@ -930,4 +928,12 @@ ServerPlayer *Room::getCardOwner(int card_id) const{
 
 Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
+}
+
+void Room::setMenghuo(ServerPlayer *menghuo){
+    this->menghuo = menghuo;
+}
+
+ServerPlayer *Room::getMenghuo() const{
+    return menghuo;
 }
