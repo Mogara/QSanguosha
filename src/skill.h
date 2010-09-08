@@ -121,4 +121,14 @@ public:
     virtual bool buff(const SlashEffectStruct &effect) const = 0;
 };
 
+class GameStartSkill: public TriggerSkill{
+public:
+    GameStartSkill(const QString &name);
+
+    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+
+    virtual void onGameStart(ServerPlayer *player) const = 0;
+};
+
 #endif // SKILL_H

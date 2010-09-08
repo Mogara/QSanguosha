@@ -5,19 +5,14 @@
 #include "carditem.h"
 #include "maneuvering.h"
 
-class Xingshang: public TriggerSkill{
+class Xingshang: public GameStartSkill{
 public:
-    Xingshang():TriggerSkill("xingshang"){
+    Xingshang():GameStartSkill("xingshang"){
 
     }
 
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
-        events << GameStart;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual void onGameStart(ServerPlayer *player) const{
         player->getRoom()->setLegatee(player);
-        return false;
     }
 };
 
@@ -74,6 +69,27 @@ public:
     }
 };
 
+class Guixin: public MasochismSkill{
+public:
+    Guixin():MasochismSkill("guixin"){
+
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+
+    }
+};
+
+class Feiying: public GameStartSkill{
+public:
+    Feiying():GameStartSkill("feiying"){
+
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        player->getRoom()->setPlayerCorrect(player, "skill_dest", +1);
+    }
+};
 
 ThicketPackage::ThicketPackage()
     :Package("thicket")
@@ -97,6 +113,17 @@ ThicketPackage::ThicketPackage()
     jiaxu = new General(this, "jiaxu", "qun", 3);
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
 
+    // two gods !!
+    General *shencaocao, *shenlubu;
+
+    shencaocao = new General(this, "shencaocao$", "wei", 3);
+    shencaocao->addSkill(new Guixin);
+    shencaocao->addSkill(new Feiying);
+
+    shenlubu = new General(this, "shenlubu", "qun", 5);
+
+    t["thicket"] = tr("thicket");
+
     t["caopi"] = tr("caopi");
     t["xuhuang"] = tr("xuhuang");
     t["menghuo"] = tr("menghuo");
@@ -105,6 +132,9 @@ ThicketPackage::ThicketPackage()
     t["lusu"] = tr("lusu");
     t["jiaxu"] = tr("jiaxu");
     t["dongzhuo"] = tr("dongzhuo");
+
+    t["shencaocao"] = tr("shencaocao");
+    t["shenlubu"] = tr("shenlubu");
 
     // skills
     t["xingshang"] = tr("xingshang");
@@ -125,7 +155,9 @@ ThicketPackage::ThicketPackage()
     t["roulin"] = tr("roulin");
     t["benghuai"] = tr("benghuai");
     t["baonue"] = tr("baonue");
-    
+
+    t["guixin"] = tr("guixin");
+    t["feiying"] = tr("feiying");    
 }
 
 extern "C" {

@@ -570,6 +570,18 @@ public:
     }
 };
 
+IceSword::IceSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("ice_sword");
+}
+
+RenwangShield::RenwangShield(Suit suit, int number)
+    :Armor(suit, number)
+{
+    setObjectName("renwang_shield");
+}
+
 void StandardPackage::addCards(){
     QList<Card*> cards;
 
@@ -692,7 +704,13 @@ void StandardPackage::addCards(){
           << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)
-          << new Lightning(Card::Spade, 1);
+          << new Lightning(Card::Spade, 1)
+
+          // EX cards
+          << new IceSword(Card::Spade, 2)
+          << new RenwangShield(Card::Club, 2)
+          << new Lightning(Card::Heart, 12)
+          << new Nullification(Card::Diamond, 12);
 
     foreach(Card *card, cards)
         card->setParent(this);
@@ -734,6 +752,10 @@ void StandardPackage::addCards(){
     t["kylin_bow"] = tr("kylin_bow");
 
     t["eight_diagram"] = tr("eight_diagram");
+
+    // ex
+    t["renwang_shield"] = tr("renwang_shield");
+    t["ice_sword"] = tr("ice_sword");
 
     t["jueying"] = tr("jueying");
     t["dilu"] = tr("dilu");

@@ -197,3 +197,18 @@ bool SlashBuffSkill::trigger(TriggerEvent event, ServerPlayer *player, const QVa
 
     return false;
 }
+
+GameStartSkill::GameStartSkill(const QString &name)
+    :TriggerSkill(name)
+{
+
+}
+
+void GameStartSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
+    events << GameStart;
+}
+
+bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &) const{
+    onGameStart(player);
+    return false;
+}

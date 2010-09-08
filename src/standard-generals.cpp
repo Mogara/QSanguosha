@@ -413,19 +413,14 @@ public:
     }
 };
 
-class Mashu:public TriggerSkill{
+class Mashu:public GameStartSkill{
 public:
-    Mashu():TriggerSkill("mashu"){
+    Mashu():GameStartSkill("mashu"){
 
     }
 
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
-        events << GameStart;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual void onGameStart(ServerPlayer *player) const{
         player->getRoom()->setPlayerCorrect(player, "skill_src", -1);
-        return false;
     }
 };
 

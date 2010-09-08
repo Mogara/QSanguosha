@@ -160,6 +160,13 @@ protected:
     bool set_flag;
 };
 
+class IceSword: public Weapon{
+    Q_OBJECT
+
+public:
+    IceSword(Suit suit, int number);
+};
+
 class Armor:public EquipCard{
     Q_OBJECT
 
@@ -168,6 +175,13 @@ public:
     virtual QString getSubtype() const;
 
     virtual Location location() const;
+};
+
+class RenwangShield: public Armor{
+    Q_OBJECT
+
+public:
+    RenwangShield(Suit suit, int number);
 };
 
 class Horse:public EquipCard{
