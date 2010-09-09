@@ -102,9 +102,7 @@ class Tiandu:public TriggerSkill{
 public:
     Tiandu():TriggerSkill("tiandu"){
         frequency = Frequent;
-    }
 
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
         events << JudgeOnEffect;
     }
 
@@ -440,9 +438,6 @@ class Jizhi:public TriggerSkill{
 public:
     Jizhi():TriggerSkill("jizhi"){
         frequency = Frequent;
-    }
-
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
         events << CardUsed;
     }
 

@@ -213,8 +213,4 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 }
 
-extern "C"{
-    Q_DECL_EXPORT Package *NewManeuvering(){
-        return new ManeuveringPackage;
-    }
-}
+ADD_PACKAGE(Maneuvering)

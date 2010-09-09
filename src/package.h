@@ -25,4 +25,6 @@ protected:
     QList<const QMetaObject *> metaobjects;
 };
 
+#define ADD_PACKAGE(name) extern "C" { Q_DECL_EXPORT Package *New##name(){ return new name##Package;}  }
+
 #endif // PACKAGE_H

@@ -11,8 +11,6 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority(ServerPlayer *target) const;
-
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
 
 private:

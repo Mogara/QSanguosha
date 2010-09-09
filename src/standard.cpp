@@ -220,8 +220,4 @@ StandardPackage::StandardPackage()
     addGenerals();
 }
 
-extern "C"{
-    Q_DECL_EXPORT Package *NewStandard(){
-        return new StandardPackage;
-    }
-}
+ADD_PACKAGE(Standard)

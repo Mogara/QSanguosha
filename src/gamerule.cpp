@@ -6,6 +6,9 @@
 GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
+    events << GameStart << PhaseChange << CardUsed << Predamaged
+            << Damaged << CardEffected << Dying << Death << SlashResult
+            << SlashEffect;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -14,12 +17,6 @@ bool GameRule::triggerable(const ServerPlayer *) const{
 
 int GameRule::getPriority(ServerPlayer *) const{
     return 0;
-}
-
-void GameRule::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << GameStart << PhaseChange << CardUsed << Predamaged
-            << Damaged << CardEffected << Dying << Death << SlashResult
-            << SlashEffect;
 }
 
 void GameRule::onPhaseChange(ServerPlayer *player) const{

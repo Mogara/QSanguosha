@@ -71,16 +71,14 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, const QVarian
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
-    QList<TriggerEvent> events;
-    skill->getTriggerEvents(events);
+    QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
         skill_table[event] << skill;
     }
 }
 
 void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
-    QList<TriggerEvent> events;
-    skill->getTriggerEvents(events);
+    QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
         skill_table[event].removeOne(skill);
     }

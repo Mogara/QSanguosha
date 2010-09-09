@@ -133,6 +133,10 @@ const ViewAsSkill *TriggerSkill::getViewAsSkill() const{
     return view_as_skill;
 }
 
+QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
+    return events;
+}
+
 int TriggerSkill::getPriority(ServerPlayer *target) const{    
     return 1;
 }
@@ -144,15 +148,11 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
 MasochismSkill::MasochismSkill(const QString &name)
     :TriggerSkill(name)
 {
-
+    events << Damaged;
 }
 
 int MasochismSkill::getPriority(ServerPlayer *) const{
     return -1;
-}
-
-void MasochismSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
-    events << Damaged;
 }
 
 bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
@@ -167,9 +167,6 @@ bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant 
 PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     :TriggerSkill(name)
 {
-}
-
-void PhaseChangeSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
     events << PhaseChange;
 }
 
@@ -180,10 +177,6 @@ bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVarian
 SlashBuffSkill::SlashBuffSkill(const QString &name)
     :TriggerSkill(name)
 {
-
-}
-
-void SlashBuffSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
     events << SlashEffect;
 }
 
@@ -201,10 +194,6 @@ bool SlashBuffSkill::trigger(TriggerEvent event, ServerPlayer *player, const QVa
 GameStartSkill::GameStartSkill(const QString &name)
     :TriggerSkill(name)
 {
-
-}
-
-void GameStartSkill::getTriggerEvents(QList<TriggerEvent> &events) const{
     events << GameStart;
 }
 

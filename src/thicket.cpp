@@ -30,10 +30,6 @@ public:
 class Songwei: public TriggerSkill{
 public:
     Songwei():TriggerSkill("songwei$"){
-
-    }
-
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
         events << JudgeOnEffect;
     }
 
@@ -102,6 +98,19 @@ public:
     }
 };
 
+class Baonu: public TriggerSkill{
+public:
+    Baonu():TriggerSkill("baonu"){
+        events << Damage << Damaged;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+        // increase his baonu marks
+
+        return false;
+    }
+};
+
 ThicketPackage::ThicketPackage()
     :Package("thicket")
 {
@@ -134,6 +143,7 @@ ThicketPackage::ThicketPackage()
     shencaocao->addSkill(new Feiying);
 
     shenlubu = new General(this, "shenlubu", "qun", 5);
+    shenlubu->addSkill(new Baonu);
 
     t["thicket"] = tr("thicket");
 
@@ -170,11 +180,11 @@ ThicketPackage::ThicketPackage()
     t["baonue"] = tr("baonue");
 
     t["guixin"] = tr("guixin");
-    t["feiying"] = tr("feiying");    
+    t["feiying"] = tr("feiying");
+    t["baonu"] = tr("baonu");
+    t["wumou"] = tr("wumou");
+    t["wuqian"] = tr("wuqian");
+    t["shenfen"] = tr("shenfen");
 }
 
-extern "C" {
-    Q_DECL_EXPORT Package *NewThicket(){
-        return new ThicketPackage;
-    }
-}
+ADD_PACKAGE(Thicket)

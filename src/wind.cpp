@@ -112,9 +112,6 @@ class Kuanggu: public TriggerSkill{
 public:
     Kuanggu():TriggerSkill("kuanggu"){
         frequency = Compulsory;
-    }
-
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
         events << Damage;
     }
 
@@ -135,15 +132,11 @@ public:
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-
-    }
-
-    virtual void getTriggerEvents(QList<TriggerEvent> &events) const{
         events << Death;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
-
+        // FIXME:
 
         return false;
     }
@@ -235,11 +228,6 @@ WindPackage::WindPackage()
     t["gongxin"] = tr("gongxin");
 }
 
-extern "C" {
-    Q_DECL_EXPORT Package *NewWind(){
-        return new WindPackage;
-    }
-}
-
+ADD_PACKAGE(Wind)
 
 
