@@ -29,7 +29,7 @@ public:
     int alivePlayerCount() const;
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
     QList<ServerPlayer *> getAllPlayers();
-    ServerPlayer *getNextPlayer(ServerPlayer *player);
+    void nextPlayer();
     void output(const QString &message);
     void obit(ServerPlayer *victim, ServerPlayer *killer);
     void bury(ServerPlayer *player);
@@ -40,12 +40,10 @@ public:
 
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
-    void nextPhase(ServerPlayer *player);
     void drawCards(ServerPlayer *player, int n);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerCorrect(ServerPlayer *player, const QString &field, int correct);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
-    void changePhase(ServerPlayer *target);
     void moveCard(const CardMoveStruct &move);
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void useCard(ServerPlayer *player, const QString &card_str);
@@ -61,6 +59,8 @@ public:
     QList<int> getNCard(int n);    
     void setMenghuo(ServerPlayer *menghuo);
     ServerPlayer *getMenghuo() const;
+    void skip(Player::Phase phase);
+    bool isSkipped(Player::Phase phase);
 
     // interactive methods
     QString activate(ServerPlayer *player);
@@ -112,6 +112,7 @@ private:
     ServerPlayer *legatee;
 
     ServerPlayer *menghuo;
+    QSet<Player::Phase> skip_set;
 
     int drawCard();
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);

@@ -43,7 +43,25 @@ void RoomThread::run(){
         trigger(GameStart, player);
     }
 
-    room->changePhase(room->players.first());
+    QList<Player::Phase> phases;
+    phases << Player::Start << Player::Judge << Player::Draw
+            << Player::Play << Player::Discard << Player::Finish
+            << Player::NotActive;
+
+    forever{
+        ServerPlayer *player = room->getCurrent();
+
+        foreach(Player::Phase phase, phases){
+            if(!room->isSkipped(phase)){
+                player->setPhase(phase);
+                room->broadcastProperty(player, "phase");
+
+                trigger(PhaseChange, player);
+            }
+        }
+
+        room->nextPlayer();
+    }
 }
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, const QVariant &data){

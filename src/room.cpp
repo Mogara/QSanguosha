@@ -73,8 +73,8 @@ QList<ServerPlayer *> Room::getAllPlayers(){
     return all_players;
 }
 
-ServerPlayer *Room::getNextPlayer(ServerPlayer *player){
-    ServerPlayer *next = player;
+void Room::nextPlayer(){
+    ServerPlayer *next = current;
     forever{
         int index = alive_players.indexOf(next);
         int next_index = (index + 1) % alive_players.length();
@@ -83,8 +83,10 @@ ServerPlayer *Room::getNextPlayer(ServerPlayer *player){
         if(!next->faceUp()){
             next->turnOver();
             broadcastProperty(next, "face_up", "true");
-        }else
-            return next;
+        }else{
+            current = next;
+            return;
+        }
     }
 }
 
@@ -703,10 +705,7 @@ void Room::startGame(){
     broadcast("! startGame .");
     game_started = true;
 
-    ServerPlayer *the_lord = players.first();
-    the_lord->setPhase(Player::Start);
-    broadcastProperty(the_lord, "phase", "start");
-    current = the_lord;
+    current = players.first();
 
     // initialize the place_map and owner_map;
     foreach(int card_id, *draw_pile){
@@ -836,33 +835,8 @@ QString CardMoveStruct::toString() const{
             .arg(to_str).arg(place2str.value(to_place, "_"));
 }
 
-void Room::nextPhase(ServerPlayer *player){
-    Player::Phase next_phase = player->getNextPhase();
-
-    if(next_phase == Player::NotActive){
-        ServerPlayer *next = getNextPlayer(player);
-        player->setPhase(Player::NotActive);
-        next->setPhase(Player::Start);
-        current = next;
-
-        broadcastProperty(player, "phase", "not_active");
-        broadcastProperty(next, "phase", "start");
-
-        changePhase(next);
-    }else{
-        player->setPhase(next_phase);        
-        broadcastProperty(player, "phase", player->getPhaseString());
-
-        changePhase(player);
-    }
-}
-
 void Room::playSkillEffect(const QString &skill_name, int index){
     broadcastInvoke("playSkillEffect", QString("%1:%2").arg(skill_name).arg(index));
-}
-
-void Room::changePhase(ServerPlayer *target){
-    thread->trigger(PhaseChange, target);
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg){
@@ -936,4 +910,16 @@ void Room::setMenghuo(ServerPlayer *menghuo){
 
 ServerPlayer *Room::getMenghuo() const{
     return menghuo;
+}
+
+void Room::skip(Player::Phase phase){
+    skip_set << phase;
+}
+
+bool Room::isSkipped(Player::Phase phase){
+    if(skip_set.contains(phase)){
+        skip_set.remove(phase);
+        return true;
+    }else
+        return false;
 }

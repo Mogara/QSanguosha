@@ -1145,6 +1145,7 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     winner_table->setHorizontalHeaderLabels(labels);
     loser_table->setHorizontalHeaderLabels(labels);
 
+    dialog->resize(main_window->width()/2, dialog->height());
     dialog->exec();
 }
 

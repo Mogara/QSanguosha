@@ -582,7 +582,7 @@ void Client::gameOver(const QString &result_str){
         players.at(i)->setRole(roles.at(i));
     }
 
-    bool victory;
+    bool victory = false;
     QList<bool> result_list;
     foreach(ClientPlayer *player, players){
         QString role = player->getRole();

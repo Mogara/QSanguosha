@@ -88,7 +88,6 @@ public:
                         zhangliao->obtainCard(Sanguosha->getCard(card_id));
                     }
 
-                    room->nextPhase(zhangliao);
                     return true;
                 }
             }

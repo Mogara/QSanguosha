@@ -22,9 +22,9 @@ int GameRule::getPriority(ServerPlayer *) const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
-    case Player::Start: room->nextPhase(player); break;
-    case Player::Judge: room->nextPhase(player); break;
-    case Player::Draw: room->drawCards(player, 2); room->nextPhase(player); break;
+    case Player::Start: break;
+    case Player::Judge: break;
+    case Player::Draw: player->drawCards(2); break;
     case Player::Play: {
             forever{
                 QString card = room->activate(player);
@@ -33,17 +33,15 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
                 room->useCard(player, card);
             }
-            room->nextPhase(player);
             break;
         }
     case Player::Discard:{
             int discard_num = player->getHandcardNum() - player->getMaxCards();
             if(discard_num > 0)
                 room->askForDiscard(player, discard_num);
-            room->nextPhase(player);
             break;
         }
-    case Player::Finish: room->nextPhase(player); break;
+    case Player::Finish: break;
     case Player::NotActive: return;
     }
 }
