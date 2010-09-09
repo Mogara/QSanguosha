@@ -96,9 +96,7 @@ enum TriggerEvent{
     Damage,
     Damaged,
 
-    Dying,
     Death,
-
     JudgeOnEffect,
 
     SlashEffect,

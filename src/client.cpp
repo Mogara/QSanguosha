@@ -92,6 +92,7 @@ Client::Client(QObject *parent)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["askForSuit"] = &Client::askForSuit;
+    callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -668,6 +669,26 @@ void Client::takeAG(const QString &take_str){
         taker->addCard(Sanguosha->getCard(card_id), Player::Hand);
         emit ag_taken(taker, card_id);
     }
+}
+
+void Client::askForSinglePeach(const QString &ask_str){
+    QRegExp rx("(.+):(\\d+)");
+    rx.exactMatch(ask_str);
+
+    QStringList texts = rx.capturedTexts();
+    ClientPlayer *dying = findChild<ClientPlayer *>(texts.at(1));
+    int peaches = texts.at(2).toInt();
+
+    if(dying == Self){
+        emit prompt_changed(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
+        card_pattern = "peach+analeptic";
+    }else{
+        QString dying_general = Sanguosha->translate(dying->getGeneralName());
+        emit prompt_changed(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
+        card_pattern = "peach";
+    }
+
+    setStatus(Responsing);
 }
 
 void Client::askForAG(const QString &){

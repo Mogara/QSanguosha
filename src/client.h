@@ -70,7 +70,7 @@ public:
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
     void takeAG(const QString &take_str);
-
+    void askForSinglePeach(const QString &ask_str);
 
     // public fields
     QString card_pattern;

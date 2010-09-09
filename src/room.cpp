@@ -357,6 +357,51 @@ int Room::askForCardShow(ServerPlayer *player){
     return result.toInt();
 }
 
+bool Room::askForSave(ServerPlayer *dying, int peaches){
+    QList<ServerPlayer *> players = getAllPlayers();    
+    foreach(ServerPlayer *player, players){
+        int got = askForPeach(player, dying, peaches);
+        peaches -= got;
+        if(peaches == 0)
+            return true;
+    }
+
+    return false;
+}
+
+int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
+    int got = 0;
+    while(peaches > 0){
+        bool provided = askForSinglePeach(player, dying, peaches);
+        if(provided){
+            got ++;
+            peaches --;
+        }else
+            break;
+    }
+
+    return got;
+}
+
+bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
+    player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
+
+    reply_func = "responseCardCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    if(result == ".")
+        return false;
+
+    const Card *peach = Card::Parse(result);
+    if(!peach)
+        return false;
+
+    throwCard(peach);
+    return true;
+}
+
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
     player->setFlags(flag);
     broadcast(QString("#%1 flags %2").arg(player->objectName()).arg(flag));
@@ -633,7 +678,14 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
 }
 
 void Room::lostHp(ServerPlayer *victim){
-
+    if(victim->getHp() == 1){
+        bool saved = askForSave(victim, 1);
+        if(!saved)
+            thread->trigger(Death, victim);
+    }else{
+        victim->setHp(victim->getHp());
+        broadcastProperty(victim, "hp");
+    }
 }
 
 void Room::damage(ServerPlayer *victim, int damage){

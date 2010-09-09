@@ -47,6 +47,13 @@ void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->setPlayerFlag(source, "drank");
 }
 
+bool Analeptic::match(const QString &pattern) const{
+    if(pattern == "peach+analeptic")
+        return true;
+    else
+        return BasicCard::match(pattern);
+}
+
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
 }

@@ -27,6 +27,7 @@ public:
     ServerPlayer *getCardOwner(int card_id) const;
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
+    void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
     QList<ServerPlayer *> getAllPlayers();
     void nextPlayer();
@@ -76,12 +77,18 @@ public:
     int askForAG(ServerPlayer *player);
     int askForCardShow(ServerPlayer *player);
 
+    bool askForSave(ServerPlayer *dying, int peaches);
+    int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
+    bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
+
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
+
+
 protected:
     virtual void timerEvent(QTimerEvent *);
 
@@ -115,8 +122,7 @@ private:
     ServerPlayer *menghuo;
     QSet<Player::Phase> skip_set;
 
-    int drawCard();
-    void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
+    int drawCard();    
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);    
 
 private slots:

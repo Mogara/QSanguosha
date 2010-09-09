@@ -138,6 +138,13 @@ bool Peach::isAvailable() const{
     return Self->isWounded();
 }
 
+bool Peach::match(const QString &pattern) const{
+    if(pattern == "peach+analeptic")
+        return true;
+    else
+        return BasicCard::match(pattern);
+}
+
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
 
@@ -291,6 +298,11 @@ public:
         Room *room = player->getRoom();
 
         int card_id = room->askForAG(player);
+
+        // these code is quick-and-dirty
+        player->addCard(Sanguosha->getCard(card_id), Player::Hand);
+        room->setCardMapping(card_id, player, Player::Hand);
+
         room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
     }
 };

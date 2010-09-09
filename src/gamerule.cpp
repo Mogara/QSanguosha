@@ -7,8 +7,7 @@ GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
     events << GameStart << PhaseChange << CardUsed << Predamaged
-            << Damaged << CardEffected << Dying << Death << SlashResult
-            << SlashEffect;
+            << CardEffected << Death << SlashResult << SlashEffect;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -65,22 +64,23 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     case Predamaged:{
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
-                if(player->getHp() - damage.damage <= 0){
-                    QString killer_name;
-                    if(damage.from)
-                        killer_name = damage.from->objectName();
-                    room->getThread()->trigger(Death, player, killer_name);
-                }
+                int new_hp = player->getHp() - damage.damage;
+                if(new_hp <= 0){
+                    int peaches = 1 - new_hp;
+                    bool saved = room->askForSave(player, peaches);
+                    if(!saved){
+                        QString killer_name;
+                        if(damage.from)
+                            killer_name = damage.from->objectName();
+                        room->getThread()->trigger(Death, player, killer_name);
+                    }else{
+                        player->setHp(1);
+                        room->broadcastProperty(player, "hp");
+                    }
+                }else
+                    room->damage(player, damage.damage);
             }
 
-            break;
-        }
-
-    case Damaged: {
-            if(data.canConvert<DamageStruct>()){
-                DamageStruct damage = data.value<DamageStruct>();
-                room->damage(damage.to, damage.damage);
-            }
             break;
         }
 
@@ -145,12 +145,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
                     room->damage(damage);
                 }
             }
-            break;
-        }
-
-    case Dying:{
-            // FIXME
-
             break;
         }
 

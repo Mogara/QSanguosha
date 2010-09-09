@@ -229,8 +229,6 @@ public:
     Q_INVOKABLE Jink(Card::Suit suit, int number);
     virtual QString getSubtype() const;
     virtual bool isAvailable() const;
-protected:
-
 };
 
 class Peach: public BasicCard{
@@ -241,8 +239,7 @@ public:
     virtual QString getSubtype() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual bool isAvailable() const;
-protected:
-
+    virtual bool match(const QString &pattern) const;
 };
 
 class Shit:public BasicCard{
