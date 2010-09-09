@@ -4,6 +4,7 @@
 #include "room.h"
 #include "carditem.h"
 #include "maneuvering.h"
+#include "clientplayer.h"
 
 class Xingshang: public GameStartSkill{
 public:
@@ -76,6 +77,58 @@ public:
     }
 };
 
+class Haoshi: public PhaseChangeSkill{
+public:
+    Haoshi():PhaseChangeSkill("haoshi"){
+    }
+
+    virtual int getPriority(ServerPlayer *) const{
+        return -1;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Draw){
+            Room *room = target->getRoom();
+            if(room->askForSkillInvoke(target, objectName())){
+                target->drawCards(2);
+
+                if(target->getHandcardNum() > 5){
+                    // find player(s) who has the least handcards
+
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
+DimengCard::DimengCard(){
+
+}
+
+bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(targets.length() <= 1)
+        return to_select != Self;
+    else
+        return false;
+}
+
+bool DimengCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() == 2;
+}
+
+class Dimeng: public ZeroCardViewAsSkill{
+public:
+    Dimeng():ZeroCardViewAsSkill("dimeng"){
+
+    }
+
+    virtual const Card *viewAs() const{
+        return new DimengCard;
+    }
+};
+
 class Guixin: public MasochismSkill{
 public:
     Guixin():MasochismSkill("guixin"){
@@ -131,6 +184,8 @@ ThicketPackage::ThicketPackage()
 
     sunjian = new General(this, "sunjian", "wu");
     lusu = new General(this, "lusu", "wu", 3);
+    lusu->addSkill(new Haoshi);
+    lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);

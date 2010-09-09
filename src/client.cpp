@@ -58,6 +58,8 @@ Client::Client(QObject *parent)
     Self->setObjectName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
 
+    connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
+
     connectToHost(Config.HostAddress, Config.Port);
 
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
@@ -678,3 +680,8 @@ void Client::chooseAG(int card_id){
 QList<ClientPlayer*> Client::getPlayers() const{
     return players;
 }
+
+void Client::clearTurnTag(){
+    turn_tag.clear();
+}
+

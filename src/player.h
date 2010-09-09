@@ -71,7 +71,6 @@ public:
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
-    Phase getNextPhase() const;
 
     void setAttackRange(int attack_range);
     int getAttackRange() const;
@@ -146,6 +145,7 @@ signals:
     void general_changed();
     void role_changed(const QString &new_role);
     void state_changed();
+    void turn_started();
 };
 
 #endif // PLAYER_H

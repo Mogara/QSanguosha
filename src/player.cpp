@@ -233,7 +233,7 @@ void Player::setPhaseString(const QString &phase_str){
         phase_map.insert("not_active", NotActive);
     }
 
-    phase = phase_map.value(phase_str, NotActive);
+    setPhase(phase_map.value(phase_str, NotActive));
 }
 
 void Player::setEquip(const EquipCard *card){
@@ -280,15 +280,12 @@ Player::Phase Player::getPhase() const{
 }
 
 void Player::setPhase(Phase phase){
-    this->phase = phase;
-}
+    if(this->phase != phase){
+        this->phase = phase;
 
-Player::Phase Player::getNextPhase() const{
-    if(phase == NotActive)
-        return NotActive;
-    else{
-        int phase_num = static_cast<int>(phase);
-        return static_cast<Phase>(phase_num + 1);
+        if(phase == Player::Start){
+            emit turn_started();
+        }
     }
 }
 

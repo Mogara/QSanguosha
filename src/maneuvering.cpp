@@ -1,5 +1,6 @@
 #include "maneuvering.h"
 #include "client.h"
+#include "engine.h"
 
 NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     :Slash(suit, number)
@@ -79,6 +80,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
 
     int card_id = room->askForCardShow(effect.to);
     //FIXME: broadcard players that effect.to has shown his/her card
+    const Card *card = Sanguosha->getCard(card_id);
+    QString suit_str = card->getSuitString();
+
 
 }
 

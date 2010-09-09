@@ -222,13 +222,18 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     int hp = player->getHp();
     if(hp > 0){
         QPixmap *magatama;
-        if(player->isWounded())
+        if(player->isWounded() && player->getMaxHP() <= 5)
             magatama = &magatamas[hp-1];
         else
             magatama = &magatamas[4]; // the green magatama which denote full blood state
+
         int i;
         for(i=0; i<hp; i++)
-            painter->drawPixmap(34 + i*(magatama->width()+2), 78, *magatama);
+            painter->drawPixmap(28 + i*magatama->width(), 78, *magatama);
+
+        if(player->getMaxHP() > 5){
+            // i.e. Dongzhuo
+        }
     }
     int n = player->getHandcardNum();
     if(n > 0){

@@ -96,6 +96,7 @@ private slots:
     void raiseError(QAbstractSocket::SocketError socket_error);
     void notifyRoleChange(const QString &new_role);
     void chooseSuit();
+    void clearTurnTag();
 
 signals:
     void error_message(const QString &msg);

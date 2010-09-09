@@ -54,7 +54,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
         ui->tableWidget->setItem(i, 4, package_item);
     }
 
-    ui->tableWidget->setColumnWidth(0, 60);
+    ui->tableWidget->setColumnWidth(0, 80);
     ui->tableWidget->setColumnWidth(1, 50);
     ui->tableWidget->setColumnWidth(2, 50);
     ui->tableWidget->setColumnWidth(3, 60);
