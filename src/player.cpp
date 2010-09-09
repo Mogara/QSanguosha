@@ -34,6 +34,12 @@ int Player::getMaxHP() const{
 
 void Player::setMaxHP(int max_hp){
     this->max_hp = max_hp;
+    if(hp > max_hp)
+        hp = max_hp;
+}
+
+int Player::getLostHp() const{
+    return max_hp - hp;
 }
 
 bool Player::isWounded() const{

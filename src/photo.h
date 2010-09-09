@@ -41,7 +41,7 @@ private:
     QPixmap avatar_frame;
     QPixmap kingdom;
     QPixmap handcard;
-    QPixmap magatamas[5];   
+    QPixmap magatamas[6];
     QComboBox *role_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<QGraphicsPixmapItem *> judging_pixmaps;

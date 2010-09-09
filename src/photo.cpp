@@ -29,6 +29,7 @@ Photo::Photo(int order)
         magatamas[i].load(QString(":/magatamas/%1.png").arg(i+1));
         magatamas[i] = magatamas[i].scaled(20,20);
     }
+    magatamas[5] = magatamas[4];
 
     role_combobox = new QComboBox;
     role_combobox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -221,8 +222,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // draw magatamas, similar with dashboard, but magatama is smaller
     int hp = player->getHp();
     if(hp > 0){
+        hp = qMin(hp, 6);
+
         QPixmap *magatama;
-        if(player->isWounded() && player->getMaxHP() <= 5)
+        if(player->isWounded())
             magatama = &magatamas[hp-1];
         else
             magatama = &magatamas[4]; // the green magatama which denote full blood state
@@ -231,8 +234,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         for(i=0; i<hp; i++)
             painter->drawPixmap(28 + i*magatama->width(), 78, *magatama);
 
-        if(player->getMaxHP() > 5){
-            // i.e. Dongzhuo
+        if(player->hasSkill("benghuai")){
+            QString hp_str = QString("%1/%2").arg(player->getHp()).arg(player->getMaxHP());
+            painter->drawText(28, 78, hp_str);
         }
     }
     int n = player->getHandcardNum();

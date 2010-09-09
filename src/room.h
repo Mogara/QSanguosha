@@ -50,6 +50,7 @@ public:
     void damage(const DamageStruct &data);
     void obtainCard(ServerPlayer *target, const Card *card);
     void obtainCard(ServerPlayer *target, int card_id);
+    void lostHp(ServerPlayer *victim);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);

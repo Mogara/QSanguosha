@@ -632,6 +632,10 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
     thread->trigger(CardUsed, player, QVariant::fromValue(data));
 }
 
+void Room::lostHp(ServerPlayer *victim){
+
+}
+
 void Room::damage(ServerPlayer *victim, int damage){
     int new_hp = victim->getHp() - damage;
     new_hp = qMax(0, new_hp);

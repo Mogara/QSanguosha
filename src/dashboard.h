@@ -53,10 +53,11 @@ private:
     QList<CardItem*> card_items;
     CardItem *selected;
     const Player *player;
-    QPixmap magatamas[5];
+    QPixmap magatamas[6];
     Pixmap *avatar;
     QGraphicsPixmapItem *kingdom;
     bool use_skill;
+
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;

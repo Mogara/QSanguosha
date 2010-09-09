@@ -18,6 +18,7 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
+    Q_PROPERTY(int lost_hp READ getLostHp)
     Q_PROPERTY(int max_cards READ getMaxCards)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
@@ -53,6 +54,7 @@ public:
     void setHp(int hp);
     int getMaxHP() const;
     void setMaxHP(int max_hp);
+    int getLostHp() const;
     int getMaxCards() const;
     int getXueyi() const;
     void setXueyi(int xueyi);

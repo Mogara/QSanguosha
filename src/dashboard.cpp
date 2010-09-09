@@ -16,6 +16,7 @@ Dashboard::Dashboard()
     for(i=0; i<5; i++){
         magatamas[i].load(QString(":/magatamas/%1.png").arg(i+1));
     }
+    magatamas[5] = magatamas[4];
 
     sort_combobox = new QComboBox;
     sort_combobox->addItem(tr("No sort"));
@@ -178,6 +179,7 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     // draw player's hp
     int hp = player->getHp();
+    hp = qMin(hp, 6);
     QPixmap *magatama;
     if(player->isWounded())
         magatama = &magatamas[hp-1];
@@ -186,6 +188,11 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     int i;
     for(i=0; i<hp; i++)
         painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
+
+    if(Self->hasSkill("benghuai")){
+        QString hp_str = QString("%1/%2").arg(Self->getHp()).arg(Self->getMaxHP());
+        painter->drawText(944, 192+26, hp_str);
+    }
 
     // draw player's equip area
     painter->setFont(Config.TinyFont);

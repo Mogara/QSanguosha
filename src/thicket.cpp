@@ -129,6 +129,33 @@ public:
     }
 };
 
+class Benghuai: public PhaseChangeSkill{
+public:
+    Benghuai():PhaseChangeSkill("benghuai"){
+        frequency = Compulsory;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish){
+            Room *room = target->getRoom();
+            QString result = room->askForSkillInvoke(target, objectName(), "hp+max_hp");
+            if(result == "hp"){
+                room->lostHp(target);
+            }else{
+                target->setMaxHP(target->getMaxHP() - 1);
+                if(target->getMaxHP() == 0){
+                    room->getThread()->trigger(Death, target);
+                }
+
+                room->broadcastProperty(target, "max_hp");
+                room->broadcastProperty(target, "hp");
+            }
+        }
+
+        return false;
+    }
+};
+
 class Guixin: public MasochismSkill{
 public:
     Guixin():MasochismSkill("guixin"){
@@ -189,6 +216,7 @@ ThicketPackage::ThicketPackage()
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
+    dongzhuo->addSkill(new Benghuai);
 
     // two gods !!
     General *shencaocao, *shenlubu;
