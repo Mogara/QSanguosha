@@ -63,6 +63,10 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
     setObjectName("silver_lion");
 }
 
+void SilverLion::onUninstall(ServerPlayer *player) const{
+    player->getRoom()->recover(player, 1);
+}
+
 FireAttack::FireAttack(Card::Suit suit, int number)
     :SingleTargetTrick(suit, number)
 {

@@ -62,6 +62,8 @@ class SilverLion: public Armor{
 
 public:
     SilverLion(Suit suit, int number);
+
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class IronChain: public TrickCard{

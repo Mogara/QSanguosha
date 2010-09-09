@@ -259,7 +259,9 @@ public:
             return NULL;
         else{
             const Card *card = cards.first()->getCard();
-            return Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
+            Jink *jink = new Jink(card->getSuit(), card->getNumber());
+            jink->addSubcard(card->getId());
+            return jink;
         }
     }
 
@@ -533,10 +535,23 @@ public:
     }
 };
 
-class Lianying: public Skill{
+class Lianying: public TriggerSkill{
 public:
-    Lianying():Skill("lianying"){
+    Lianying():TriggerSkill("lianying"){
+        events << CardMove;
 
+        frequency = Frequent;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, const QVariant &) const{
+        if(luxun->isKongcheng()){
+            Room *room = luxun->getRoom();
+            if(room->askForSkillInvoke(luxun, objectName())){
+                room->playSkillEffect(objectName());
+
+                luxun->drawCards(1);
+            }
+        }
     }
 };
 
@@ -644,6 +659,30 @@ public:
 
             return jieyin_card;
         }
+    }
+};
+
+class Xiaoji: public TriggerSkill{
+public:
+    Xiaoji():TriggerSkill("xiaoji"){
+        events << CardMove;
+
+        frequency = Frequent;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *sunshangxiang, const QVariant &data) const{
+        if(data.canConvert<CardMoveStruct>()){
+            CardMoveStruct move = data.value<CardMoveStruct>();
+            if(move.from_place == Player::Equip){
+                Room *room = sunshangxiang->getRoom();
+                if(room->askForSkillInvoke(sunshangxiang, objectName())){
+                    room->playSkillEffect(objectName());
+                    sunshangxiang->drawCards(2);
+                }
+            }
+        }
+
+        return false;
     }
 };
 
@@ -851,6 +890,7 @@ void StandardPackage::addGenerals(){
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
     sunshangxiang->addSkill(new Jieyin);
+    sunshangxiang->addSkill(new Xiaoji);
 
     General *lubu, *huatuo, *diaochan;
 

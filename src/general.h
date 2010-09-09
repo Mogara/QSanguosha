@@ -35,7 +35,7 @@ public:
     QString getPixmapPath(const QString &category) const;
     QString getKingdomPath() const;
     QString getPackage() const;
-    void playEffect() const;
+    void playEffect(const QString &skill_name) const;
     void lastWord() const;
 
 private:
@@ -43,7 +43,7 @@ private:
     int max_hp;
     bool male;
     bool lord;
-    QSet<QString> skill_set;
+    QMap<QString, Skill *> skill_map;
     MediaSource last_word;
 };
 

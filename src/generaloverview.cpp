@@ -76,11 +76,14 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
     QList<const Skill *> skills = general->findChildren<const Skill *>();
     ui->skillTextEdit->clear();
+    ui->skillComboBox->clear();
     foreach(const Skill *skill, skills){
-        QString skill_name = QString("<b>%1</b>").arg(Sanguosha->translate(skill->objectName()));
+        QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
         ui->skillTextEdit->append(QString("<b>%1</b>: %2 <br/>").arg(skill_name).arg(desc));
+
+        ui->skillComboBox->addItem(skill_name, QVariant::fromValue(skill->objectName()));
     }
 }
 
@@ -90,5 +93,6 @@ void GeneralOverview::on_playEffecButton_clicked()
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
 
-    general->playEffect();
+    QString skill_name = ui->skillComboBox->itemData(ui->skillComboBox->currentIndex()).toString();
+    general->playEffect(skill_name);
 }

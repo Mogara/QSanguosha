@@ -51,11 +51,21 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    if(set_flag)
+        room->setPlayerFlag(player, objectName());
 
+    if(skill)
+        room->getThread()->addTriggerSkill(skill);
 }
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    if(set_flag)
+        room->setPlayerFlag(player, "-" + objectName());
 
+    if(skill)
+        room->getThread()->removeTriggerSkill(skill);
 }
 
 QString GlobalEffect::getSubtype() const{
@@ -116,27 +126,17 @@ EquipCard::Location Weapon::location() const{
 }
 
 void Weapon::onInstall(ServerPlayer *player) const{
+    EquipCard::onInstall(player);
     Room *room = player->getRoom();
     if(range != 1)
         room->setPlayerProperty(player, "attack_range", range);
-
-    if(set_flag)
-        room->setPlayerFlag(player, objectName());
-
-    if(skill)
-        room->getThread()->addTriggerSkill(skill);
 }
 
 void Weapon::onUninstall(ServerPlayer *player) const{
+    EquipCard::onUninstall(player);
     Room *room = player->getRoom();
     if(range != 1)
         room->setPlayerProperty(player, "attack_range", 1);
-
-    if(set_flag)
-        room->setPlayerFlag(player, "-" + objectName());
-
-    if(skill)
-        room->getThread()->removeTriggerSkill(skill);
 }
 
 QString Armor::getSubtype() const{

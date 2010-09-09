@@ -50,8 +50,9 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() != Player::Start)
+        if(target->getPhase() != Player::Start){
             return false;
+        }
 
         return false;
     }
@@ -70,7 +71,8 @@ public:
                 target->drawCards(3);
                 target->turnOver();
 
-                room->broadcastProperty(target, "face_up", target->faceUp() ? "true" : "false");
+                room->broadcastProperty(target, "face_up");
+                room->playSkillEffect(objectName());
             }
         }
 

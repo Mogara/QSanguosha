@@ -82,7 +82,7 @@ void Room::nextPlayer(){
 
         if(!next->faceUp()){
             next->turnOver();
-            broadcastProperty(next, "face_up", "true");
+            broadcastProperty(next, "face_up");
         }else{
             current = next;
             return;
@@ -792,6 +792,9 @@ void Room::moveCard(const CardMoveStruct &move){
     }
 
     setCardMapping(move.card_id, move.to, move.to_place);
+
+    if(move.from)
+        thread->trigger(CardMove, move.from, QVariant::fromValue(move));
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){

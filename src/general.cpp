@@ -52,24 +52,22 @@ QString General::getKingdomPath() const{
 void General::addSkill(Skill *skill){    
     skill->setParent(this);
     skill->initMediaSource();
-    skill_set.insert(skill->objectName());
+    skill_map.insert(skill->objectName(), skill);
 }
 
 bool General::hasSkill(const QString &skill_name) const{
-    return skill_set.contains(skill_name);
+    return skill_map.contains(skill_name);
 }
 
 QString General::getPackage() const{
     return parent()->objectName();
 }
 
-void General::playEffect() const
+void General::playEffect(const QString &skill_name) const
 {
-    QList<const Skill *> skills = findChildren<const Skill *>();
-    if(!skills.isEmpty()){
-        int r = qrand() % skills.length();
-        skills.at(r)->playEffect();
-    }
+    Skill *skill = skill_map.value(skill_name, NULL);
+    if(skill)
+        skill->playEffect();
 }
 
 void General::lastWord() const{

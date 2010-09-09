@@ -46,6 +46,8 @@ bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
 }
 
 void JieyinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+
     room->recover(source, 1);
     room->recover(targets.first(), 1);
 }

@@ -45,7 +45,7 @@ public:
         OffensiveHorseLocation,
     };
 
-    EquipCard(Suit suit, int number):Card(suit, number, true){}
+    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL), set_flag(false){}
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -55,6 +55,10 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 
     virtual Location location() const = 0;
+
+protected:
+    TriggerSkill *skill;
+    bool set_flag;
 };
 
 class GlobalEffect:public TrickCard{
@@ -148,7 +152,7 @@ class Weapon:public EquipCard{
 
 public:
     Weapon(Suit suit, int number, int range)
-        :EquipCard(suit, number), range(range), skill(NULL), set_flag(false){}
+        :EquipCard(suit, number), range(range){}
     virtual QString getSubtype() const;
 
     virtual Location location() const;
@@ -157,8 +161,6 @@ public:
 
 protected:
     int range;
-    TriggerSkill *skill;
-    bool set_flag;
 };
 
 class IceSword: public Weapon{
