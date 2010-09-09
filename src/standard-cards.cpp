@@ -277,9 +277,21 @@ public:
         room->broadcastInvoke("fillAG", card_str.join("+"));
 
         foreach(ServerPlayer *player, players){
-            int card_id = room->askForAG(player);
-            room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->getGeneralName()).arg(card_id));
+            CardEffectStruct effect;
+            effect.card = this;
+            effect.from = source;
+            effect.to = player;
+
+            room->cardEffect(effect);
         }
+    }
+
+    virtual void onEffect(const CardEffectStruct &effect) const{
+        ServerPlayer *player = effect.to;
+        Room *room = player->getRoom();
+
+        int card_id = room->askForAG(player);
+        room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
     }
 };
 

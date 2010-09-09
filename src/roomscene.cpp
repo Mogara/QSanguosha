@@ -114,7 +114,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
 
     connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
-    connect(ClientInstance, SIGNAL(ag_taken(QString,int)), this, SLOT(takeAmazingGrace(QString,int)));
+    connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
 
     daqiao = new Daqiao;
     daqiao->shift();
@@ -560,13 +560,17 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     ClientPlayer *dest = move.to;
     Player::Place src_place = move.from_place;
     Player::Place dest_place = move.to_place;
-    int card_id = move.card_id;
-
-    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
+    int card_id = move.card_id;    
 
     CardItem *card_item = takeCardItem(src, src_place, card_id);
     if(card_item->scene() == NULL)
         addItem(card_item);
+
+    putCardItem(dest, dest_place, card_item);
+}
+
+void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item){
+    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
 
     if(dest == NULL){
         card_item->setHomePos(DiscardedPos);
@@ -944,6 +948,19 @@ void RoomScene::updateStatus(Client::Status status){
             dashboard->startPending(discard_skill);
             break;
         }
+
+    case Client::AskForAG:{
+            dashboard->disableAllCards();
+
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
+
+            foreach(CardItem *item, amazing_grace)
+                connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
+
+            break;
+        }
     }
 
     foreach(QAbstractButton *button, skill_buttons){
@@ -996,10 +1013,6 @@ void RoomScene::doOkButton(){
             }
             break;
         }
-    case Client::NotActive: {
-            QMessageBox::warning(main_window, tr("Warning"), tr("The OK button should not be enabled when client is not active!"));
-            return;
-        }
 
     case Client::Discarding: {
             const Card *card = dashboard->pendingCard();
@@ -1009,6 +1022,17 @@ void RoomScene::doOkButton(){
                 daqiao->hide();
             }
             break;
+        }
+
+    case Client::NotActive: {
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("The OK button should be disabled when client is not active!"));
+            return;
+        }
+    case Client::AskForAG:{
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("The OK button should be disabled when client is in asking for amazing grace status"));
+            return;
         }
     }
 
@@ -1197,31 +1221,83 @@ void RoomScene::killPlayer(const QString &who){
 }
 
 void RoomScene::fillAmazingGrace(const QList<int> &card_ids){
+    amazing_grace.clear();
+
+    static const int columns = 4;
+    static const qreal ratio = 0.8;
+
     int i;
     for(i=0; i<card_ids.length(); i++){
         int card_id = card_ids.at(i);
         CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
-        amazing_grace << card_item;
+        card_item->setScale(ratio);
 
         QRectF rect = card_item->boundingRect();
+        int row = i / columns;
+        int column = i % columns;
+        QPointF pos(column * rect.width() * ratio, row * rect.height() * ratio);
 
-        int row = i / 4;
-        int column = i % 4;
-
+        card_item->setPos(pos);
+        card_item->setHomePos(pos);
+        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
+        amazing_grace << card_item;
         addItem(card_item);
-        card_item->setPos(column * rect.width(), row * rect.height());
+    }
+
+    int row_count = amazing_grace.length() > 4 ? 2 : 1;
+    int column_count = amazing_grace.length() > 4 ? 4 : amazing_grace.length();
+    QRectF rect = amazing_grace.first()->boundingRect();
+
+    int width = rect.width() * column_count;
+    int height = rect.height() * row_count;
+    qreal dx = - width/2;
+    qreal dy = - height/2;
+
+    foreach(CardItem *card_item, amazing_grace){
+        card_item->moveBy(dx, dy);
+        card_item->setHomePos(card_item->pos());
     }
 }
 
 void RoomScene::clearAmazingGrace(){
-    // FIXME
+    foreach(CardItem *item, amazing_grace){
+        removeItem(item);
+        delete item;
+    }
+
+    amazing_grace.clear();
 }
 
-void RoomScene::takeAmazingGrace(const QString &general_name, int card_id){
+void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
     foreach(CardItem *card_item, amazing_grace){
         if(card_item->getCard()->getId() == card_id){
             card_item->setEnabled(false);
+
+            CardItem *item = new CardItem(card_item->getCard());
+            addItem(item);
+            putCardItem(taker, Player::Hand, item);
+
             break;
         }
+    }
+
+    bool should_clear = true;
+    foreach(CardItem *card_item, amazing_grace){
+        if(card_item->isEnabled()){
+            should_clear = false;
+            break;
+        }
+    }
+
+    if(should_clear)
+        clearAmazingGrace();
+}
+
+void RoomScene::chooseAmazingGrace(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if(card_item){
+        ClientInstance->chooseAG(card_item->getCard()->getId());
+        foreach(CardItem *item, amazing_grace)
+            item->disconnect(this);
     }
 }

@@ -19,7 +19,8 @@ public:
         NotActive,
         Responsing,
         Playing,
-        Discarding
+        Discarding,
+        AskForAG
     };
 
     explicit Client(QObject *parent = 0);
@@ -117,7 +118,7 @@ signals:
     void game_over(bool victory, const QList<bool> &result_list);
     void player_killed(const QString &who);
     void ag_filled(const QList<int> &card_ids);
-    void ag_taken(const QString &general_name, int card_id);
+    void ag_taken(const ClientPlayer *taker, int card_id);
 };
 
 extern Client *ClientInstance;

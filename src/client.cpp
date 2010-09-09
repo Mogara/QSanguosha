@@ -95,6 +95,7 @@ Client::Client(QObject *parent)
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
+    callbacks["takeAG"] = &Client::takeAG;
 }
 
 void Client::request(const QString &message){
@@ -655,26 +656,28 @@ void Client::fillAG(const QString &cards_str){
 }
 
 void Client::takeAG(const QString &take_str){
-    QRegExp rx("(\\w+):(\\d+)");
+    QRegExp rx("(.+):(\\d+)");
     rx.exactMatch(take_str);
 
     QStringList words = rx.capturedTexts();
-    QString general_name = words.at(1);
+    QString taker_name = words.at(1);
     int card_id = words.at(2).toInt();
 
-    emit ag_taken(general_name, card_id);
+    ClientPlayer *taker = findChild<ClientPlayer *>(taker_name);
+    if(taker){
+        taker->addCard(Sanguosha->getCard(card_id), Player::Hand);
+        emit ag_taken(taker, card_id);
+    }
 }
 
 void Client::askForAG(const QString &){
-    setStatus(Responsing);
-    card_pattern = "@ag";
+    setStatus(AskForAG);
 }
 
 void Client::chooseAG(int card_id){
     request(QString("chooseAG %1").arg(card_id));
 
     setStatus(NotActive);
-    card_pattern.clear();
 }
 
 QList<ClientPlayer*> Client::getPlayers() const{

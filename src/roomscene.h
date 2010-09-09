@@ -70,6 +70,7 @@ private:
 
     void startEnterAnimation();
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
+    void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
     void clickSkillButton(int order);
     void useCard(const Card *card);
 
@@ -98,7 +99,8 @@ private slots:
     void setPileNumber(int n);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
-    void takeAmazingGrace(const QString &general_name, int card_id);
+    void takeAmazingGrace(const ClientPlayer *taker, int card_id);
+    void chooseAmazingGrace();
 };
 
 #endif // ROOMSCENE_H

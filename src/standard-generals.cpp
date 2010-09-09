@@ -552,6 +552,8 @@ public:
                 luxun->drawCards(1);
             }
         }
+
+        return false;
     }
 };
 

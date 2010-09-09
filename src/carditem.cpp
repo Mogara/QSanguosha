@@ -101,6 +101,13 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     }
 }
 
+void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
+    if(hasFocus()){
+        event->accept();
+        emit double_clicked();
+    }
+}
+
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
