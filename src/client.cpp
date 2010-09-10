@@ -50,7 +50,8 @@ bool CardMoveStructForClient::parse(const QString &str){
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this)), status(NotActive), alive_count(1)
+    :QTcpSocket(parent), room(new QObject(this)), status(NotActive), alive_count(1),
+    nullification_dialog(NULL)
 {
     ClientInstance = this;
 
@@ -82,6 +83,7 @@ Client::Client(QObject *parent)
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["askForNullification"] = &Client::askForNullification;
+    callbacks["closeNullification"] = &Client::closeNullification;
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["prompt"] = &Client::prompt;
@@ -408,12 +410,7 @@ void Client::askForCard(const QString &request_str){
     }
 }
 
-void Client::askForSkillInvoke(const QString &ask_str){
-    QRegExp pattern("(\\w+):(.+)");
-    pattern.indexIn(ask_str);
-    QStringList words = pattern.capturedTexts();
-    QString skill_name = words.at(1);
-
+void Client::askForSkillInvoke(const QString &skill_name){
     bool auto_invoke = frequent_flags.contains(skill_name);
     if(auto_invoke)
         request("invokeSkill yes");
@@ -424,21 +421,51 @@ void Client::askForSkillInvoke(const QString &ask_str){
         box->setWindowTitle(tr("Ask for skill invoke"));
         box->setText(tr("Do you want to invoke skill [%1] ?").arg(name));
 
-        QStringList options = words.at(2).split("+");
-        foreach(QString option, options){
-            QCommandLinkButton *button = new QCommandLinkButton(box);
-            button->setObjectName(option);
-            button->setText(Sanguosha->translate(option));
-            button->setDescription(Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(option)));
+        QCommandLinkButton *yes_button = new QCommandLinkButton(box);
+        yes_button->setObjectName("yes");
+        yes_button->setText(tr("Yes"));
+        yes_button->setDescription(Sanguosha->translate(QString("%1:yes").arg(skill_name)));
+        box->addButton(yes_button, QMessageBox::AcceptRole);
 
-            box->addButton(button, QMessageBox::AcceptRole);
-        }
+        QCommandLinkButton *no_button = new QCommandLinkButton(box);
+        no_button->setObjectName("no");
+        no_button->setText(tr("No"));
+        no_button->setDescription(tr("Nothing"));
+        box->addButton(no_button, QMessageBox::AcceptRole);
 
         box->exec();
 
         QString result = box->clickedButton()->objectName();
         request("invokeSkill " + result);
     }
+}
+
+void Client::askForChoice(const QString &ask_str){
+    QRegExp pattern("(\\w+):(.+)");
+    pattern.indexIn(ask_str);
+    QStringList words = pattern.capturedTexts();
+    QString skill_name = words.at(1);    
+
+    QMessageBox *box = new QMessageBox;
+    box->setIcon(QMessageBox::Question);
+    box->setWindowTitle(Sanguosha->translate(skill_name));
+    box->setText(Sanguosha->translate(":" + skill_name));
+
+    QStringList choices = words.at(2).split("+");
+    foreach(QString choice, choices){
+        QCommandLinkButton *button = new QCommandLinkButton(box);
+        button->setObjectName(choice);
+        QString choice_str = QString("%1:%2").arg(skill_name).arg(choice);
+        button->setText(Sanguosha->translate(choice_str));
+        button->setDescription(Sanguosha->translate(":" + choice_str));
+
+        box->addButton(button, QMessageBox::AcceptRole);
+    }
+
+    box->exec();
+
+    QString choice = box->clickedButton()->objectName();
+    request("selectChoice " + choice);
 }
 
 void Client::playSkillEffect(const QString &play_str){
@@ -458,8 +485,9 @@ void Client::replyNullification(int card_id){
 void Client::askForNullification(const QString &ask_str){
     QList<int> card_ids = Self->nullifications();
     if(card_ids.isEmpty()){
-        int msec = qrand() % 1000 + 1000;
-        QTimer::singleShot(msec, this, SLOT(replyNullification()));
+        // int msec = qrand() % 1000 + 1000;
+        // QTimer::singleShot(msec, this, SLOT(replyNullification()));
+        replyNullification(-1);
         return;
     }
 
@@ -470,12 +498,21 @@ void Client::askForNullification(const QString &ask_str){
     ClientPlayer *source = ClientInstance->findChild<ClientPlayer *>(texts.at(2));
     ClientPlayer *target = ClientInstance->findChild<ClientPlayer *>(texts.at(3));
 
-    if(Config.NeverNullifyMyTrick && source == target && source == Self)
-        replyNullification(-1);
-    else{
-        NullificationDialog *dialog = new NullificationDialog(trick_name, source, target, card_ids);
-        dialog->exec();
+    if(Config.NeverNullifyMyTrick && source == Self){
+        const TrickCard *trick_card = Sanguosha->findChild<const TrickCard *>(trick_name);
+        if(trick_card->inherits("SingleTargetTrick"))
+            replyNullification(-1);
+
+        return;
     }
+
+    nullification_dialog = new NullificationDialog(trick_name, source, target, card_ids);
+    nullification_dialog->exec();
+}
+
+void Client::closeNullification(const QString &){
+    if(nullification_dialog)
+        nullification_dialog->accept();
 }
 
 void Client::askForCardChosen(const QString &ask_str){

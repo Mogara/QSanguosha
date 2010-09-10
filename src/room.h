@@ -67,10 +67,10 @@ public:
     // interactive methods
     QString activate(ServerPlayer *player);
     Card::Suit askForSuit(ServerPlayer *player);
-    QString askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
+    QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, int discard_num);
-    void askForNullification(ServerPlayer *player, const QVariant &data);
+    bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
@@ -82,12 +82,12 @@ public:
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
     void commonCommand(ServerPlayer *player, const QString &arg);
+    void replyNullificationCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".");
-
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -106,7 +106,8 @@ private:
     int signup_count;
 
     int nullificators_count;
-    QList<ServerPlayer *> nullificators;
+    ServerPlayer *nullificator;
+    QMap<ServerPlayer *, bool> nullificator_map;
 
     RoomThread *thread;
     QSemaphore *sem;

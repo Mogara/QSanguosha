@@ -75,9 +75,16 @@ QList<const Card *> ClientPlayer::getCards() const{
 QList<int> ClientPlayer::nullifications() const{
     QList<int> card_ids;
 
-    foreach(const Card *card, known_cards){
-        if(card->objectName() == "nullification")
-            card_ids << card->getId();
+    if(Self->hasSkill("kanpo")){
+        foreach(const Card *card, known_cards){
+            if(card->isBlack())
+                card_ids << card->getId();
+        }
+    }else{
+        foreach(const Card *card, known_cards){
+            if(card->objectName() == "nullification")
+                card_ids << card->getId();
+        }
     }
 
     return card_ids;

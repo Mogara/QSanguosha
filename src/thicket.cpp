@@ -5,6 +5,7 @@
 #include "carditem.h"
 #include "maneuvering.h"
 #include "clientplayer.h"
+#include "client.h"
 
 class Xingshang: public GameStartSkill{
 public:
@@ -77,6 +78,68 @@ public:
     }
 };
 
+YinghunCard::YinghunCard(){
+
+}
+
+void YinghunCard::onEffect(const CardEffectStruct &effect) const{
+    int x = effect.from->getLostHp();
+    Room *room = effect.from->getRoom();
+
+    if(x == 1){
+        effect.to->drawCards(1);
+        room->askForDiscard(effect.to, 1);
+    }else{
+        QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
+        if(choice == "d1tx"){
+            effect.from->drawCards(1);
+            room->askForDiscard(effect.to, x); // FIXME:
+        }else{
+            effect.from->drawCards(x);
+            room->askForDiscard(effect.to, 1);
+        }
+    }
+}
+
+class YinghunViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    YinghunViewAsSkill():ZeroCardViewAsSkill("yinghun"){
+    }
+
+    virtual const Card *viewAs() const{
+        return new YinghunCard;        
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@yinghun";
+    }
+};
+
+class Yinghun: public PhaseChangeSkill{
+public:
+    Yinghun():PhaseChangeSkill("yinghun"){
+        view_as_skill = new YinghunViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *sunjian) const{
+        if(sunjian->getPhase() == Player::Start && sunjian->isWounded()){
+            Room *room = sunjian->getRoom();
+            QList<ServerPlayer *> targets;
+            const Card *card = room->askForCardWithTargets(sunjian, "@@yinghun", "@yinghun-card:" + sunjian->getGeneralName(), targets);
+            if(card){
+                CardEffectStruct effect;
+                effect.from = sunjian;
+                effect.to = targets.first();
+                effect.card = card;
+
+                room->cardEffect(effect);
+            }
+        }
+
+        return false;
+    }
+};
+
 class Haoshi: public PhaseChangeSkill{
 public:
     Haoshi():PhaseChangeSkill("haoshi"){
@@ -129,6 +192,43 @@ public:
     }
 };
 
+class Luanwu: public ZeroCardViewAsSkill{
+public:
+    Luanwu():ZeroCardViewAsSkill("luanwu"){
+
+    }
+
+    virtual const Card *viewAs() const{
+        return new LuanwuCard;
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->tag.value("luanwu_used", false).toBool();
+    }
+};
+
+LuanwuCard::LuanwuCard(){
+    target_fixed = true;
+}
+
+void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    QList<ServerPlayer *> players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *player, players){
+        CardEffectStruct effect;
+        effect.from = source;
+        effect.to = player;
+        effect.card = this;
+    }
+}
+
+void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
+
+}
+
+void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
+    ClientInstance->tag.insert("luanwu_used", true);
+}
+
 class Benghuai: public PhaseChangeSkill{
 public:
     Benghuai():PhaseChangeSkill("benghuai"){
@@ -137,8 +237,9 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();
-            QString result = room->askForSkillInvoke(target, objectName(), "hp+max_hp");
+            Room *room = target->getRoom();            
+            QString result = room->askForChoice(target, "benghuai", "hp+max_hp");
+
             if(result == "hp"){
                 room->lostHp(target);
             }else{
@@ -210,11 +311,17 @@ ThicketPackage::ThicketPackage()
     zhurong = new General(this, "zhurong", "shu", 4, false);
 
     sunjian = new General(this, "sunjian", "wu");
+
+
     lusu = new General(this, "lusu", "wu", 3);
     lusu->addSkill(new Haoshi);
     lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
+    jiaxu->addSkill(new Skill("wansha"));
+    jiaxu->addSkill(new Skill("weimu"));
+    jiaxu->addSkill(new Luanwu);
+
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
     dongzhuo->addSkill(new Benghuai);
 
@@ -268,6 +375,12 @@ ThicketPackage::ThicketPackage()
     t["wumou"] = tr("wumou");
     t["wuqian"] = tr("wuqian");
     t["shenfen"] = tr("shenfen");
+
+    // skill descriptive texts
+    // t["yinghun:yes"] =
+
+    metaobjects << &DimengCard::staticMetaObject
+            << &LuanwuCard::staticMetaObject;
 }
 
 ADD_PACKAGE(Thicket)

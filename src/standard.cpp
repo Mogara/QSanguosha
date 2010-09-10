@@ -214,7 +214,6 @@ StandardPackage::StandardPackage()
     // normal phrases
     t["yes"] = tr("yes");
     t["no"] = tr("no");
-    t["nothing"] = tr("nothing");
 
     addCards();
     addGenerals();

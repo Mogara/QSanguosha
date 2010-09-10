@@ -25,18 +25,16 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
 
     QToolButton *source_button = new QToolButton;
     const General *source_general = source->getGeneral();
-    QString source_general_name = Sanguosha->translate(source_general->objectName());
     source_button->setIcon(QIcon(source_general->getPixmapPath("big")));
     source_button->setIconSize(avatar_size);
-    source_button->setText(tr("User\n%1[%2]").arg(source->objectName()).arg(source_general_name));
+    source_button->setText(tr("User[%1]").arg(Sanguosha->translate(source->getGeneralName())));
     source_button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QToolButton *target_button = new QToolButton;
     const General *target_general = target->getGeneral();
-    QString target_general_name = Sanguosha->translate(target_general->objectName());
     target_button->setIcon(QIcon(target_general->getPixmapPath("big")));
     target_button->setIconSize(avatar_size);
-    target_button->setText(tr("Target\n%1[%2]").arg(target->objectName()).arg(target_general_name));
+    target_button->setText(tr("Target[%1]").arg(Sanguosha->translate(target->getGeneralName())));
     target_button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
@@ -76,7 +74,7 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
 
     setLayout(layout);
 
-    startTimer(200); // 1/5 seconds
+    startTimer(200); // 1/5 second
 }
 
 void NullificationDialog::timerEvent(QTimerEvent *event){
@@ -92,8 +90,11 @@ void NullificationDialog::timerEvent(QTimerEvent *event){
 void NullificationDialog::reply(){
     accept();
 
-    int card_id = button_group->checkedId();
-    ClientInstance->replyNullification(card_id);
+    QAbstractButton *button = qobject_cast<QAbstractButton *>(sender());
+    if(button){
+        int card_id = button_group->id(button);
+        ClientInstance->replyNullification(card_id);
+    }
 }
 
 void NullificationDialog::onReject(){

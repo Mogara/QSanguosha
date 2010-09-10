@@ -1043,11 +1043,8 @@ void StandardPackage::addGenerals(){
 
     // passive skill description
     t["yingzi:yes"] = tr("yingzi:yes");
-    t["yingzi:no"] = t["nothing"];
     t["jianxiong:yes"] = tr("jianxiong:yes");
-    t["jianxiong:no"] = t["nothing"];
     t["fankui:yes"] = tr("fankui:yes");
-    t["fankui:nothing"] = t["nothing"];
 
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");

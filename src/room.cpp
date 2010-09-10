@@ -29,9 +29,11 @@ Room::Room(QObject *parent, int player_count)
     callbacks["discardCardsCommand"] = &Room::commonCommand;
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
+    callbacks["selectChoiceCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
+    callbacks["replyNullificationCommand"] = &Room::replyNullificationCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -226,20 +228,28 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
     to->invoke("prompt", prompt_str);
 }
 
-QString Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QString &options){
-    QString ask_str = QString("%1:%2").arg(skill_name).arg(options);
-    player->invoke("askForSkillInvoke", ask_str);    
+bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
+    player->invoke("askForSkillInvoke", skill_name);
 
     reply_func = "invokeSkillCommand";
     reply_player = player;
 
     sem->acquire();
 
-    return result;    
+    // result should be "yes" or "no"
+    return result == "yes";
 }
 
-bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
-    return askForSkillInvoke(player, skill_name, "yes+no") == "yes";
+QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
+    QString ask_str = QString("%1:%2").arg(skill_name).arg(choices);
+    player->invoke("askForChoice", ask_str);
+
+    reply_func = "selectChoiceCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    return result;
 }
 
 void Room::obtainCard(ServerPlayer *target, const Card *card){
@@ -266,18 +276,53 @@ void Room::obtainCard(ServerPlayer *target, int card_id){
     moveCard(move);
 }
 
-void Room::askForNullification(ServerPlayer *, const QVariant &data){
-    broadcastInvoke("askForNullification", data.toString());
+bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
+    QString ask_str = QString("%1:%2->%3").arg(trick_name).arg(from->objectName()).arg(to->objectName());
+    QList<ServerPlayer *> players = getAllPlayers();
+    foreach(ServerPlayer *player, players){
+        player->invoke("askForNullification", ask_str);
+    }
 
-    int index = alive_players.indexOf(current), i;
-    for(i=index; i<alive_players.count(); i++)
-        nullificators << alive_players.at(i);
-    for(i=0; i<index; i++)
-        nullificators << alive_players.at(i);
+    reply_func = "replyNullificationCommand";
+    reply_player = NULL; // everyone can reply
 
-    Q_ASSERT(nullificators.length() == alive_players.length());
+    nullificators_count = players.length();
+    nullificator = NULL;
+    nullificator_map.clear();
 
-    nullificators_count = alive_players.length();
+    sem->acquire();
+
+    if(nullificator == NULL)
+        return false; // nobody nullify the trick
+    else{
+        int card_id = result.toInt();
+        throwCard(card_id);
+
+        foreach(ServerPlayer *player, players){
+            bool replyed = nullificator_map.value(player, false);
+            if(!replyed)
+                player->invoke("closeNullification");
+        }
+
+        return !askForNullification("nullification", nullificator, to); // recursive call
+    }
+}
+
+void Room::replyNullificationCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
+    int card_id = result.toInt();
+    if(card_id == -1){
+        nullificators_count--;
+        if(nullificators_count == 0)
+            sem->release();
+    }else{
+        nullificator = player;        
+        playCardEffect("nullification", player->getGeneral()->isMale());
+
+        sem->release();
+    }
+
+    nullificator_map.insert(player, true);
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
@@ -358,7 +403,14 @@ int Room::askForCardShow(ServerPlayer *player){
 }
 
 bool Room::askForSave(ServerPlayer *dying, int peaches){
-    QList<ServerPlayer *> players = getAllPlayers();    
+    QList<ServerPlayer *> players;
+    if(current->hasSkill("wansha")){
+        players << current;
+        if(dying != current)
+            players << dying;
+    }else
+        players = getAllPlayers();
+
     foreach(ServerPlayer *player, players){
         int got = askForPeach(player, dying, peaches);
         peaches -= got;
@@ -711,6 +763,9 @@ void Room::playCardEffect(const QString &card_name, bool is_male){
 }
 
 void Room::cardEffect(const CardEffectStruct &effect){
+    if(effect.card->inherits("TrickCard") && askForNullification(effect.card->objectName(), effect.from, effect.to))
+        return;
+
     QVariant data = QVariant::fromValue(effect);
     bool broken = thread->trigger(CardEffect, effect.from, data);
     if(!broken)
@@ -814,6 +869,9 @@ void Room::throwCard(const Card *card){
 }
 
 void Room::throwCard(int card_id){
+    if(card_id == -1)
+        return;
+
     CardMoveStruct move;
     move.card_id = card_id;
     move.from_place = getCardPlace(card_id);
@@ -851,6 +909,8 @@ void Room::moveCard(const CardMoveStruct &move){
 
     if(move.from)
         thread->trigger(CardMove, move.from, QVariant::fromValue(move));
+
+    card->onMove(move);
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){

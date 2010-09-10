@@ -211,10 +211,15 @@ void Card::use(const QList<const ClientPlayer *> &targets) const{
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
+    source->playCardEffect(this);
 }
 
 void Card::onEffect(const CardEffectStruct &effect) const{
 
+}
+
+void Card::onMove(const CardMoveStruct &move) const{
+    // usually dummy
 }
 
 void Card::addSubcard(int card_id){

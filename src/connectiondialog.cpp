@@ -51,11 +51,22 @@ void ConnectionDialog::on_connectButton_clicked()
     QString username = ui->nameLineEdit->text();
     username = username.trimmed();
 
-    QRegExp pattern("[^-+@: =!#%*]+");
-    if(!pattern.exactMatch(username)){
+#ifdef CHINESE_SUPPORT
+
+    QRegExp chinese_pattern("[^-+@: =!#%*]+");
+    if(!chinese_pattern.exactMatch(username)){
         QMessageBox::warning(this, tr("Warning"), tr("User name can not contains special characters!"));
         return;
     }
+
+#else
+    QRegExp english_pattern("\\w+");
+    if(!english_pattern.exactMatch(username)){
+        QMessageBox::warning(this, tr("Warning"), tr("The game now only supports English names now"));
+        return;
+    }
+
+#endif
 
     Config.setValue("UserName", Config.UserName = username);
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());

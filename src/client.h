@@ -5,6 +5,8 @@
 #include "card.h"
 #include "skill.h"
 
+class NullificationDialog;
+
 #include <QTcpSocket>
 
 class Client : public QTcpSocket
@@ -54,9 +56,11 @@ public:
     void startGame(const QString &);
     void hpChange(const QString &change_str);
     void askForCard(const QString &request_str);
-    void askForSkillInvoke(const QString &ask_str);
+    void askForSkillInvoke(const QString &skill_name);
+    void askForChoice(const QString &ask_str);
     void playSkillEffect(const QString &play_str);
     void askForNullification(const QString &ask_str);
+    void closeNullification(const QString &);
     void askForCardChosen(const QString &ask_str);
     void playCardEffect(const QString &play_str);
     void prompt(const QString &prompt_str);
@@ -91,6 +95,7 @@ private:
     int alive_count;
     QHash<QString, Callback> callbacks;
     QList<ClientPlayer*> players;
+    NullificationDialog *nullification_dialog;
 
 private slots:
     void processReply();

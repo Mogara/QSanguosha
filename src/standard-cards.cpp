@@ -155,16 +155,17 @@ QString Shit::getSubtype() const{
     return "disgusting_card";
 }
 
-void Shit::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
+void Shit::onMove(const CardMoveStruct &move) const{
+    ServerPlayer *from = move.from;
+    if(from && move.from_place == Player::Hand && from->getRoom()->getCurrent() == move.from && move.to_place == Player::DiscardedPile){
+        DamageStruct damage;
+        damage.from = damage.to = from;
+        damage.card = this;
+        damage.damage = 1;
+        damage.nature = DamageStruct::Normal;
 
-    DamageStruct damage;
-    damage.from = damage.to = source;
-    damage.card = this;
-    damage.damage = 1;
-    damage.nature = DamageStruct::Normal;
-
-    room->damage(damage);
+        from->getRoom()->damage(damage);
+    }
 }
 
 class Crossbow:public Weapon{
@@ -482,9 +483,17 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
         room->throwCard(this);
-        source->drawCards(2);
-
         source->playCardEffect(this);
+
+        CardEffectStruct effect;
+        effect.from = effect.to = source;
+        effect.card = this;
+
+        room->cardEffect(effect);
+    }
+
+    virtual void onEffect(const CardEffectStruct &effect) const{
+        effect.to->drawCards(2);
     }
 };
 
@@ -832,5 +841,4 @@ void StandardPackage::addCards(){
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
-    t["double_sword:no"] = t["nothing"];
 }
