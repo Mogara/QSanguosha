@@ -159,7 +159,8 @@ int Room::getJudgeCard(ServerPlayer *player){
         }
     }
 
-    thread->trigger(JudgeOnEffect, player, card_id);
+    QVariant card_id_data = card_id;
+    thread->trigger(JudgeOnEffect, player, card_id_data);
 
     return card_id;
 }
@@ -203,7 +204,8 @@ void Room::slashEffect(const SlashEffectStruct &effect){
 }
 
 void Room::slashResult(const SlashResultStruct &result){
-    thread->trigger(SlashResult, result.from, QVariant::fromValue(result));
+    QVariant data = QVariant::fromValue(result);
+    thread->trigger(SlashResult, result.from, data);
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -726,7 +728,8 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
             data.to << findChild<ServerPlayer *>(target_name);
     }
 
-    thread->trigger(CardUsed, player, QVariant::fromValue(data));
+    QVariant vdata = QVariant::fromValue(data);
+    thread->trigger(CardUsed, player, vdata);
 }
 
 void Room::lostHp(ServerPlayer *victim){
@@ -907,8 +910,10 @@ void Room::moveCard(const CardMoveStruct &move){
 
     setCardMapping(move.card_id, move.to, move.to_place);
 
-    if(move.from)
-        thread->trigger(CardMove, move.from, QVariant::fromValue(move));
+    if(move.from){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardMove, move.from, data);
+    }
 
     card->onMove(move);
 }

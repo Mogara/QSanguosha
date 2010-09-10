@@ -105,7 +105,7 @@ public:
         events << JudgeOnEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         // FIXME
         // obtain the judge card
 
@@ -442,7 +442,7 @@ public:
         events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         if(data.canConvert<CardUseStruct>()){
             CardUseStruct use = data.value<CardUseStruct>();
 
@@ -547,7 +547,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, const QVariant &) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &) const{
         if(luxun->isKongcheng()){
             Room *room = luxun->getRoom();
             if(room->askForSkillInvoke(luxun, objectName())){
@@ -690,7 +690,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *sunshangxiang, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *sunshangxiang, QVariant &data) const{
         if(data.canConvert<CardMoveStruct>()){
             CardMoveStruct move = data.value<CardMoveStruct>();
             if(move.from_place == Player::Equip){

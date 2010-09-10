@@ -117,7 +117,7 @@ public:
         events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         if(data.canConvert<DamageStruct>()){
             DamageStruct damage = data.value<DamageStruct>();
 
@@ -137,7 +137,7 @@ public:
         events << Death;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         // FIXME:
 
         return false;

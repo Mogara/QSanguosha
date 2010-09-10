@@ -64,7 +64,7 @@ void RoomThread::run(){
     }
 }
 
-bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, const QVariant &data){
+bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
     QList<const TriggerSkill *> skills = skill_table[event];
@@ -86,6 +86,11 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, const QVarian
     }
 
     return false;
+}
+
+bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){
+    QVariant data;
+    return trigger(event, target, data);
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){

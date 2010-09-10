@@ -45,7 +45,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     }
 }
 
-bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
 
     switch(event){
@@ -70,7 +70,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
                     int peaches = 1 - new_hp;
                     bool saved = room->askForSave(player, peaches);
                     if(!saved){
-                        QString killer_name;
+                        QVariant killer_name;
                         if(damage.from)
                             killer_name = damage.from->objectName();
                         room->getThread()->trigger(Death, player, killer_name);

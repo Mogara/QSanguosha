@@ -155,7 +155,7 @@ int MasochismSkill::getPriority(ServerPlayer *) const{
     return -1;
 }
 
-bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &data) const{
+bool MasochismSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
 
     if(player->isAlive())
@@ -170,7 +170,7 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     events << PhaseChange;
 }
 
-bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &) const{
+bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
     return onPhaseChange(player);
 }
 
@@ -180,7 +180,7 @@ SlashBuffSkill::SlashBuffSkill(const QString &name)
     events << SlashEffect;
 }
 
-bool SlashBuffSkill::trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+bool SlashBuffSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
     if(data.canConvert<SlashEffectStruct>()){
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
@@ -197,7 +197,7 @@ GameStartSkill::GameStartSkill(const QString &name)
     events << GameStart;
 }
 
-bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, const QVariant &) const{
+bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
     onGameStart(player);
     return false;
 }

@@ -114,7 +114,8 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
-    bool trigger(TriggerEvent event, ServerPlayer *target, const QVariant &data = QVariant());
+    bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
+    bool trigger(TriggerEvent event, ServerPlayer *target);
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
 

@@ -84,7 +84,7 @@ public:
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;    
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const = 0;    
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
 
 protected:
     const ViewAsSkill *view_as_skill;
@@ -96,7 +96,7 @@ public:
     MasochismSkill(const QString &name);
 
     virtual int getPriority(ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
 
@@ -104,7 +104,7 @@ class PhaseChangeSkill: public TriggerSkill{
 public:
     PhaseChangeSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
@@ -112,7 +112,7 @@ class SlashBuffSkill: public TriggerSkill{
 public:
     SlashBuffSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual bool buff(const SlashEffectStruct &effect) const = 0;
 };
 
@@ -120,7 +120,7 @@ class GameStartSkill: public TriggerSkill{
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 

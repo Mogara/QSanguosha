@@ -35,7 +35,7 @@ public:
         events << JudgeOnEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         return false;
     }
 };
@@ -334,7 +334,7 @@ public:
         events << Damage << Damaged;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, const QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         // increase his baonu marks
 
         return false;
