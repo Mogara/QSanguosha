@@ -77,6 +77,9 @@ public:
     virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class FireAttack: public SingleTargetTrick{

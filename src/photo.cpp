@@ -12,6 +12,7 @@
 #include <QGraphicsSceneHoverEvent>
 #include <QMessageBox>
 #include <QGraphicsProxyWidget>
+#include <QTimer>
 
 Photo::Photo(int order)
     :Pixmap(":/photo-back.png"),
@@ -64,6 +65,16 @@ void Photo::hideAvatar(){
     hide_avatar = true;
 
     update();
+}
+
+void Photo::showCard(int card_id){
+    const Card *card = Sanguosha->getCard(card_id);
+
+    CardItem *card_item = new CardItem(card);
+    scene()->addItem(card_item);
+    card_item->setPos(pos());
+
+    QTimer::singleShot(2000, card_item, SLOT(deleteLater()));
 }
 
 void Photo::updateAvatar(){
@@ -262,7 +273,8 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     drawEquip(painter, offensive_horse, 3);
 
     // draw iron chain
-    painter->drawPixmap(0, 0, chain);
+    if(player->isChained())
+        painter->drawPixmap(0, 0, chain);
 }
 
 void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){

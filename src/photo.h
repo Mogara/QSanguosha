@@ -24,6 +24,7 @@ public:
     void installDelayedTrick(CardItem *trick);
     void addCardItem(CardItem *card_item);
     void hideAvatar();
+    void showCard(int card_id);
 
 public slots:
     void updateAvatar();

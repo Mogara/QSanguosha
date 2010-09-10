@@ -73,7 +73,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 
             if(can_invoke){
                 QString prompt = "@liuli-card:" + effect.from->getGeneralName();
-                card = room->askForCardWithTargets(daqiao, "@@liuli", prompt, new_targets);
+                card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
                 if(card){
                     ServerPlayer *target = new_targets.first();
                     effect.to = target; // the key code

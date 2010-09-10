@@ -477,6 +477,10 @@ public:
 
         return zhiheng_card;
     }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("zhiheng_used", false).toBool();
+    }
 };
 
 class Jiuyuan:public Skill{
@@ -627,11 +631,25 @@ public:
         return selected.isEmpty();
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern.startsWith("@@liuli");;
+    }
+
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() != 1)
+            return NULL;        
+
+        QRegExp rx("@@liuli-(.+)");
+        if(!rx.exactMatch(ClientInstance->card_pattern))
             return NULL;
 
-        Card *card = new LiuliCard;
+        QString slash_source = rx.capturedTexts().at(1);
+        LiuliCard *card = new LiuliCard;
+        card->setSlashSource(slash_source);
         card->addSubcard(cards.first()->getCard()->getId());
 
         return card;

@@ -63,6 +63,7 @@ private:
     QStack<CardItem *> judging_area;
     QGraphicsLinearLayout *button_layout;
     QPixmap death_pixmap;
+    QPixmap chain_pixmap;
 
     // for pendings
     QList<CardItem *> pendings;

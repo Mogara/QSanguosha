@@ -31,6 +31,7 @@ class Player : public QObject
     Q_PROPERTY(bool face_up READ faceUp WRITE setFaceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
+    Q_PROPERTY(bool chained READ isChained WRITE setChained)
 
     // distance related properties
     Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
@@ -118,6 +119,8 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
+    void setChained(bool chained);
+    bool isChained() const;
 private:
     const General *general;
     int hp, max_hp, xueyi;
@@ -125,7 +128,7 @@ private:
     QString state;
     int seat;
     bool alive;
-    QSet<QString> flags;    
+    QSet<QString> flags;
 
     struct CorrectStruct{
         int equip_src;
@@ -141,6 +144,7 @@ private:
     const Armor *armor;
     const Horse *defensive_horse, *offensive_horse;
     bool face_up;
+    bool chained;
     QStack<const Card *> judging_area;
 
 signals:

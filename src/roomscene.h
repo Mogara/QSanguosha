@@ -98,6 +98,7 @@ private slots:
     void changeHp(const QString &who, int delta);
     void clearPile();
     void setPileNumber(int n);
+    void showCard(const QString &player_name, int card_id);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);

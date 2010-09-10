@@ -9,7 +9,7 @@ Player::Player(QObject *parent)
     hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    face_up(true)
+    face_up(true), chained(false)
 {
     correct.equip_dest = 0;
     correct.equip_src = 0;
@@ -340,4 +340,15 @@ void Player::removeDelayedTrick(const Card *trick){
     int index = judging_area.indexOf(trick);
     if(index >= 0)
         judging_area.remove(index);
+}
+
+bool Player::isChained() const{
+    return chained;
+}
+
+void Player::setChained(bool chained){
+    if(chained){
+        this->chained = chained;
+        emit state_changed();
+    }
 }

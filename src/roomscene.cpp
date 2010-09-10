@@ -755,7 +755,13 @@ void RoomScene::enableTargets(const Card *card){
 
     ok_button->setEnabled(false);
 
-    avatar->setEnabled(card->targetFilter(selected_targets, Self));
+    if(card->targetFilter(selected_targets, Self)){
+        avatar->setEnabled(true);
+        avatar->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    }else{
+        avatar->setEnabled(false);
+        avatar->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    }
 
     foreach(Photo *photo, photos){
         if(card->targetFilter(selected_targets, photo->getPlayer())){
@@ -772,31 +778,55 @@ void RoomScene::enableTargets(const Card *card){
 }
 
 void RoomScene::updateSelectedTargets(){
-    selected_targets.clear();
-
-    QStringList general_names;
-    foreach(Photo *photo, photos){
-        if(photo->isSelected()){
-            const ClientPlayer *target = photo->getPlayer();
-            selected_targets << target;
-            general_names << Sanguosha->translate(target->getGeneralName());
-        }
+    const Card *card = dashboard->getSelected();
+    if(!card){
+        selected_targets.clear();
+        changeMessage();
+        return;
     }
 
-    const Card *card = dashboard->getSelected();
-    if(card){
-        ok_button->setEnabled(card->targetsFeasible(selected_targets));
+    QSet<const ClientPlayer *> old_set = selected_targets.toSet();
+    QSet<const ClientPlayer *> new_set;
 
-        if(selected_targets.isEmpty()){
-            changeMessage();
+    if(avatar->isSelected())
+        new_set << Self;
+    foreach(Photo *photo, photos){
+        if(photo->isSelected())
+            new_set << photo->getPlayer();
+    }
+
+    if(new_set.isEmpty()){
+        selected_targets.clear();
+        changeMessage();
+        return;
+    }
+
+    if(new_set.count() == 1){
+        selected_targets.clear();
+        selected_targets << *new_set.begin();
+    }else{
+        int change = qAbs(old_set.count() - new_set.count());
+        if(change > 1){
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("New target set and old target set is changed out of range!"));
             return;
         }
 
-        QString card_name = card->getName();
-        QString targets = general_names.join(",");
-
-        changeMessage(tr("You choose %1 as [%2]'s target").arg(targets).arg(card_name));
+        if(old_set.count() > new_set.count()){
+            const ClientPlayer *unselected = *(old_set - new_set).begin();
+            selected_targets.removeOne(unselected);
+        }else if(old_set.count() < new_set.count()){
+            const ClientPlayer *new_added = *(new_set - old_set).begin();
+            selected_targets.append(new_added);
+        }
     }
+
+    QStringList target_names;
+    foreach(const ClientPlayer *target, selected_targets)
+        target_names << Sanguosha->translate(target->getGeneralName());
+    changeMessage(tr("You choose %1 as [%2]'s target").arg(target_names.join(",")).arg(card->getName()));
+
+    ok_button->setEnabled(card->targetsFeasible(selected_targets));
 }
 
 void RoomScene::useSelectedCard(){
@@ -1310,5 +1340,12 @@ void RoomScene::chooseAmazingGrace(){
         ClientInstance->chooseAG(card_item->getCard()->getId());
         foreach(CardItem *item, amazing_grace)
             item->disconnect(this);
+    }
+}
+
+void RoomScene::showCard(const QString &player_name, int card_id){
+    Photo *photo = name2photo.value(player_name, NULL);
+    if(photo){
+        photo->showCard(card_id);
     }
 }

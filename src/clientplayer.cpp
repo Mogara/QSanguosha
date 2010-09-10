@@ -45,6 +45,11 @@ void ClientPlayer::addCard(const Card *card, Place place){
     }
 }
 
+void ClientPlayer::addKnownHandCard(const Card *card){
+    if(!known_cards.contains(card))
+        known_cards << card;
+}
+
 void ClientPlayer::removeCard(const Card *card, Place place){
     switch(place){
     case Hand: {

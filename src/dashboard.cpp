@@ -40,6 +40,8 @@ Dashboard::Dashboard()
 
     kingdom = new QGraphicsPixmapItem(this);
     kingdom->setPos(avatar->pos());
+
+    chain_pixmap.load(":/chain.png");
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -223,6 +225,9 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             // FIXME: supply shortage
         }
     }
+
+    if(player->isChained())
+        painter->drawPixmap(764, 30, chain_pixmap);
 }
 
 void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){

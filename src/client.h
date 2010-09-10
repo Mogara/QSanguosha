@@ -75,6 +75,7 @@ public:
     void askForAG(const QString &);
     void takeAG(const QString &take_str);
     void askForSinglePeach(const QString &ask_str);
+    void showCard(const QString &show_str);
 
     // public fields
     QString card_pattern;
@@ -124,6 +125,7 @@ signals:
     void player_killed(const QString &who);
     void ag_filled(const QList<int> &card_ids);
     void ag_taken(const ClientPlayer *taker, int card_id);
+    void card_shown(const QString &player_name, int card_id);
 };
 
 extern Client *ClientInstance;

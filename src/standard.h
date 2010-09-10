@@ -278,6 +278,7 @@ class ZhihengCard:public SkillCard{
 public:
     Q_INVOKABLE ZhihengCard();
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
 };
 
 class RendeCard:public SkillCard{
@@ -355,10 +356,11 @@ class LiuliCard: public SkillCard{
 
 public:
     Q_INVOKABLE LiuliCard();
-
+    void setSlashSource(const QString &slash_source);
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 
-    static QString SourceGeneral;
+private:
+    QString slash_source;
 };
 
 #endif // STANDARD_H

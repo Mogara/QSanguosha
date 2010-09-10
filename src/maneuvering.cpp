@@ -133,6 +133,31 @@ bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
     return targets.length() <= 2;
 }
 
+void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{   
+    room->throwCard(this);
+    source->playCardEffect(this); // play another effect if it is recasted
+
+    if(targets.isEmpty()){       
+        source->drawCards(1);
+    }else{
+        foreach(ServerPlayer *target, targets){
+            CardEffectStruct effect;
+            effect.card = this;
+            effect.from = source;
+            effect.to = target;
+
+            room->cardEffect(effect);
+        }
+    }
+}
+
+void IronChain::onEffect(const CardEffectStruct &effect) const{
+    bool chained = ! effect.to->isChained();
+    effect.to->setChained(chained);
+
+    effect.to->getRoom()->broadcastProperty(effect.to, "chained");
+}
+
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     :DelayedTrick(suit, number)
 {

@@ -379,36 +379,23 @@ void Client::updateFrequentFlags(int state){
 }
 
 void Client::askForCard(const QString &request_str){
-    static QSet<QString> patterns;
-    if(patterns.isEmpty()){
-        patterns << "jink" << "slash" << "@guicai" << "@@liuli" << "@@tuxi";
-    }
-
     QStringList texts = request_str.split(":");
     QString pattern = texts.first();
 
-    if(patterns.contains(pattern)){
-        card_pattern = pattern;
-        QString prompt = Sanguosha->translate(texts.at(1));
-        if(texts.length() >= 3){
-            QString src = Sanguosha->translate(texts.at(2));
-            prompt.replace("%src", src);
-
-            // liuli's special process
-            if(pattern == "@@liuli")
-                LiuliCard::SourceGeneral = src;
-        }
-
-        if(texts.length() >= 4){
-            QString dest = Sanguosha->translate(texts.at(3));
-            prompt.replace("%dest", dest);
-        }
-
-        emit prompt_changed(prompt);
-        setStatus(Responsing);
-    }else{
-        QMessageBox::warning(NULL, "", tr("Unknown request card pattern: %1").arg(request_str));
+    card_pattern = pattern;
+    QString prompt = Sanguosha->translate(texts.at(1));
+    if(texts.length() >= 3){
+        QString src = Sanguosha->translate(texts.at(2));
+        prompt.replace("%src", src);
     }
+
+    if(texts.length() >= 4){
+        QString dest = Sanguosha->translate(texts.at(3));
+        prompt.replace("%dest", dest);
+    }
+
+    emit prompt_changed(prompt);
+    setStatus(Responsing);
 }
 
 void Client::askForSkillInvoke(const QString &skill_name){
@@ -744,5 +731,21 @@ QList<ClientPlayer*> Client::getPlayers() const{
 
 void Client::clearTurnTag(){
     turn_tag.clear();
+}
+
+void Client::showCard(const QString &show_str){
+    QRegExp rx("(.+):(\\d+)");
+    if(!rx.exactMatch(show_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString player_name = texts.at(1);
+    int card_id = texts.at(2).toInt();
+
+    ClientPlayer *player = findChild<ClientPlayer *>(player_name);
+    if(player){
+        player->addKnownHandCard(Sanguosha->getCard(card_id));
+        emit card_shown(player_name, card_id);
+    }
 }
 

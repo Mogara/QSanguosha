@@ -8,6 +8,10 @@ ZhihengCard::ZhihengCard(){
     target_fixed = true;
 }
 
+void ZhihengCard::use(const QList<const ClientPlayer *> &) const{
+    ClientInstance->turn_tag.insert("zhiheng_used", true);
+}
+
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->drawCards(source, subcards.length());
@@ -150,7 +154,9 @@ GuicaiCard::GuicaiCard(){
 LiuliCard::LiuliCard(){
 }
 
-QString LiuliCard::SourceGeneral;
+void LiuliCard::setSlashSource(const QString &slash_source){
+    this->slash_source = slash_source;
+}
 
 bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
@@ -159,7 +165,7 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
         return false;
 
-    if(to_select->getGeneralName() == SourceGeneral)
+    if(to_select->objectName() == slash_source)
         return false;
 
     return Self->inMyAttackRange(to_select);
