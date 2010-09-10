@@ -81,6 +81,7 @@ Client::Client(QObject *parent)
     callbacks["hpChange"] = &Client::hpChange;
     callbacks["askForCard"] = &Client::askForCard;
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
+    callbacks["askForChoice"] = &Client::askForChoice;
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["askForNullification"] = &Client::askForNullification;
     callbacks["closeNullification"] = &Client::closeNullification;
@@ -449,7 +450,7 @@ void Client::askForChoice(const QString &ask_str){
     QMessageBox *box = new QMessageBox;
     box->setIcon(QMessageBox::Question);
     box->setWindowTitle(Sanguosha->translate(skill_name));
-    box->setText(Sanguosha->translate(":" + skill_name));
+    box->setText(Sanguosha->translate(QString(":%1:").arg(skill_name)));
 
     QStringList choices = words.at(2).split("+");
     foreach(QString choice, choices){
@@ -457,7 +458,6 @@ void Client::askForChoice(const QString &ask_str){
         button->setObjectName(choice);
         QString choice_str = QString("%1:%2").arg(skill_name).arg(choice);
         button->setText(Sanguosha->translate(choice_str));
-        button->setDescription(Sanguosha->translate(":" + choice_str));
 
         box->addButton(button, QMessageBox::AcceptRole);
     }

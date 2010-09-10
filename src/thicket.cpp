@@ -229,27 +229,60 @@ void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
     ClientInstance->tag.insert("luanwu_used", true);
 }
 
+class Jiuchi: public ViewAsSkill{
+public:
+    Jiuchi():ViewAsSkill("jiuchi"){
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Spade;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        const Card *first = cards.first()->getCard();
+        Analeptic *analeptic = new Analeptic(first->getSuit(), first->getNumber());
+        analeptic->addSubcard(first->getId());
+
+        return analeptic;
+    }
+};
+
 class Benghuai: public PhaseChangeSkill{
 public:
     Benghuai():PhaseChangeSkill("benghuai"){
         frequency = Compulsory;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();            
-            QString result = room->askForChoice(target, "benghuai", "hp+max_hp");
+    virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{
+        bool trigger_this = false;
+        Room *room = dongzhuo->getRoom();
+
+        if(dongzhuo->getPhase() == Player::Finish){            
+            QList<ServerPlayer *> players = room->getOtherPlayers(dongzhuo);
+            foreach(ServerPlayer *player, players){
+                if(dongzhuo->getHp() > player->getHp()){
+                    trigger_this = true;
+                    break;
+                }
+            }
+        }
+
+        if(trigger_this){
+            QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
             if(result == "hp"){
-                room->lostHp(target);
+                room->lostHp(dongzhuo);
             }else{
-                target->setMaxHP(target->getMaxHP() - 1);
-                if(target->getMaxHP() == 0){
-                    room->getThread()->trigger(Death, target);
+                dongzhuo->setMaxHP(dongzhuo->getMaxHP() - 1);
+                if(dongzhuo->getMaxHP() == 0){
+                    room->getThread()->trigger(Death, dongzhuo);
                 }
 
-                room->broadcastProperty(target, "max_hp");
-                room->broadcastProperty(target, "hp");
+                room->broadcastProperty(dongzhuo, "max_hp");
+                room->broadcastProperty(dongzhuo, "hp");
             }
         }
 
@@ -263,8 +296,24 @@ public:
 
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *shencc, const DamageStruct &damage) const{
+        Room *room = shencc->getRoom();
+        int i, x = damage.damage;
+        for(i=0; i<x; i++){
+            if(room->askForSkillInvoke(shencc, objectName())){
+                QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+                foreach(ServerPlayer *player, players){
+                    if(!player->isAllNude()){
+                        int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
+                        room->obtainCard(shencc, card_id);
+                    }
+                }
 
+                shencc->turnOver();
+                room->broadcastProperty(shencc, "face_up");
+            }else
+                break;
+        }
     }
 };
 
@@ -311,7 +360,7 @@ ThicketPackage::ThicketPackage()
     zhurong = new General(this, "zhurong", "shu", 4, false);
 
     sunjian = new General(this, "sunjian", "wu");
-
+    sunjian->addSkill(new Yinghun);
 
     lusu = new General(this, "lusu", "wu", 3);
     lusu->addSkill(new Haoshi);
@@ -323,6 +372,7 @@ ThicketPackage::ThicketPackage()
     jiaxu->addSkill(new Luanwu);
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
+    dongzhuo->addSkill(new Jiuchi);
     dongzhuo->addSkill(new Benghuai);
 
     // two gods !!
@@ -377,7 +427,9 @@ ThicketPackage::ThicketPackage()
     t["shenfen"] = tr("shenfen");
 
     // skill descriptive texts
-    // t["yinghun:yes"] =
+    t[":benghuai:"] = tr(":benghuai:");
+    t["benghuai:hp"] = tr("benghuai:hp");
+    t["benghuai:max_hp"] = tr("benghuai:max_hp");
 
     metaobjects << &DimengCard::staticMetaObject
             << &LuanwuCard::staticMetaObject;

@@ -50,37 +50,37 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="src/client.cpp" line="150"/>
+        <location filename="src/client.cpp" line="153"/>
         <source>Reply format error!</source>
         <translation>回复格式错误!</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="158"/>
+        <location filename="src/client.cpp" line="161"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="159"/>
+        <location filename="src/client.cpp" line="162"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="160"/>
+        <location filename="src/client.cpp" line="163"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="161"/>
+        <location filename="src/client.cpp" line="164"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="163"/>
+        <location filename="src/client.cpp" line="166"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="166"/>
+        <location filename="src/client.cpp" line="169"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -89,18 +89,18 @@
  %2</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="273"/>
+        <location filename="src/client.cpp" line="276"/>
         <source>Game will start in %1 seconds</source>
         <translation>游戏将在 %1 秒后开始</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="311"/>
+        <location filename="src/client.cpp" line="314"/>
         <source>Your role is %1</source>
         <oldsource>Your role is </oldsource>
         <translation>您的角色是 %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="313"/>
+        <location filename="src/client.cpp" line="316"/>
         <source>
  wait for the lord player choosing general, please</source>
         <oldsource>, wait for the lord player choosing general, please</oldsource>
@@ -108,91 +108,91 @@
 请等待主公选择武将</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="407"/>
+        <location filename="src/client.cpp" line="410"/>
         <source>Unknown request card pattern: %1</source>
         <translation>不明请求卡牌模式: %1</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="419"/>
+        <location filename="src/client.cpp" line="422"/>
         <source>Ask for skill invoke</source>
         <translation>技能询问</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="420"/>
+        <location filename="src/client.cpp" line="423"/>
         <source>Do you want to invoke skill [%1] ?</source>
         <translation>你是否想使用【%1】技能 ?</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="424"/>
+        <location filename="src/client.cpp" line="427"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="430"/>
+        <location filename="src/client.cpp" line="433"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="431"/>
+        <location filename="src/client.cpp" line="434"/>
         <source>Nothing</source>
         <translation>无事</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="600"/>
+        <location filename="src/client.cpp" line="607"/>
         <source>Please discard %1 card(s)</source>
         <translation>请弃掉 %1 张牌</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="641"/>
+        <location filename="src/client.cpp" line="648"/>
         <source>Game is over now</source>
         <translation>游戏已经结束</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="666"/>
+        <location filename="src/client.cpp" line="673"/>
         <source>Please choose a suit</source>
         <translation>请选择一种花色</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="713"/>
+        <location filename="src/client.cpp" line="720"/>
         <source>You are dying, please provide %1 peach(es)(or analeptic) to save yourself</source>
         <oldsource>You are dying, please provide %2 peach(es)(or analeptic) to save yourself</oldsource>
         <translation>您正在死亡线上挣扎，请提供 %1 个桃子（或酒）来救您自己</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="717"/>
+        <location filename="src/client.cpp" line="724"/>
         <source>%1 is dying, please provide %2 peach(es) to save him</source>
         <translation>%1 正在死亡线上挣扎，请提供 %2 个桃子来拯救他</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="140"/>
-        <location filename="src/client.cpp" line="147"/>
-        <location filename="src/client.cpp" line="332"/>
-        <location filename="src/client.cpp" line="641"/>
+        <location filename="src/client.cpp" line="143"/>
+        <location filename="src/client.cpp" line="150"/>
+        <location filename="src/client.cpp" line="335"/>
+        <location filename="src/client.cpp" line="648"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="140"/>
+        <location filename="src/client.cpp" line="143"/>
         <source>There is no player named %1</source>
         <translation>没有名为 %1 的玩家</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="147"/>
+        <location filename="src/client.cpp" line="150"/>
         <source>No such invokable method named %1</source>
         <translation>没有名为 %1 的可动态调用方法</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="332"/>
+        <location filename="src/client.cpp" line="335"/>
         <source>Card moving response string is not well formatted</source>
         <translation>卡牌移动回复字符串并没有格式好</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="281"/>
+        <location filename="src/client.cpp" line="284"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="281"/>
+        <location filename="src/client.cpp" line="284"/>
         <source>Name %1 duplication, you&apos;ve to be offline</source>
         <translation>注册名 %1 重复，您被迫下线</translation>
     </message>
@@ -672,22 +672,22 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="516"/>
+        <location filename="src/room.cpp" line="526"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="553"/>
+        <location filename="src/room.cpp" line="563"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="560"/>
+        <location filename="src/room.cpp" line="570"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="705"/>
+        <location filename="src/room.cpp" line="715"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1908,179 +1908,194 @@
 <context>
     <name>ThicketPackage</name>
     <message>
-        <location filename="src/thicket.cpp" line="338"/>
+        <location filename="src/thicket.cpp" line="366"/>
         <source>thicket</source>
         <translation>林包</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="340"/>
+        <location filename="src/thicket.cpp" line="368"/>
         <source>caopi</source>
         <translation>曹丕</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="341"/>
+        <location filename="src/thicket.cpp" line="369"/>
         <source>xuhuang</source>
         <translation>徐晃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="342"/>
+        <location filename="src/thicket.cpp" line="370"/>
         <source>menghuo</source>
         <translation>孟获</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="343"/>
+        <location filename="src/thicket.cpp" line="371"/>
         <source>zhurong</source>
         <translation>祝融</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="344"/>
+        <location filename="src/thicket.cpp" line="372"/>
         <source>sunjian</source>
         <translation>孙坚</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="345"/>
+        <location filename="src/thicket.cpp" line="373"/>
         <source>lusu</source>
         <translation>鲁肃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="346"/>
+        <location filename="src/thicket.cpp" line="374"/>
         <source>jiaxu</source>
         <translation>贾诩</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="347"/>
+        <location filename="src/thicket.cpp" line="375"/>
         <source>dongzhuo</source>
         <translation>董卓</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="349"/>
+        <location filename="src/thicket.cpp" line="377"/>
         <source>shencaocao</source>
         <translation>神曹操</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="350"/>
+        <location filename="src/thicket.cpp" line="378"/>
         <source>shenlubu</source>
         <translation>神吕布</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="353"/>
+        <location filename="src/thicket.cpp" line="381"/>
         <source>xingshang</source>
         <translation>行殇</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="354"/>
+        <location filename="src/thicket.cpp" line="382"/>
         <source>fangzhu</source>
         <translation>放逐</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="355"/>
+        <location filename="src/thicket.cpp" line="383"/>
         <source>songwei</source>
         <translation>颂威</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="356"/>
+        <location filename="src/thicket.cpp" line="384"/>
         <source>duanliang</source>
         <translation>断粮</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="357"/>
+        <location filename="src/thicket.cpp" line="385"/>
         <source>huoshuo</source>
         <translation>祸首</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="358"/>
+        <location filename="src/thicket.cpp" line="386"/>
         <source>zaiqi</source>
         <translation>再起</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="359"/>
+        <location filename="src/thicket.cpp" line="387"/>
         <source>juxiang</source>
         <translation>巨象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="360"/>
+        <location filename="src/thicket.cpp" line="388"/>
         <source>lieren</source>
         <translation>烈刃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="361"/>
+        <location filename="src/thicket.cpp" line="389"/>
         <source>yinghun</source>
         <translation>英魂</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="362"/>
+        <location filename="src/thicket.cpp" line="390"/>
         <source>haoshi</source>
         <translation>好施</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="363"/>
+        <location filename="src/thicket.cpp" line="391"/>
         <source>dimeng</source>
         <translation>缔盟</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="364"/>
+        <location filename="src/thicket.cpp" line="392"/>
         <source>wansha</source>
         <translation>完杀</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="365"/>
+        <location filename="src/thicket.cpp" line="393"/>
         <source>weimu</source>
         <translation>帷幕</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="366"/>
+        <location filename="src/thicket.cpp" line="394"/>
         <source>luanwu</source>
         <translation>乱武</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="367"/>
+        <location filename="src/thicket.cpp" line="395"/>
         <source>jiuchi</source>
         <translation>酒池</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="368"/>
+        <location filename="src/thicket.cpp" line="396"/>
         <source>roulin</source>
         <translation>肉林</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="369"/>
+        <location filename="src/thicket.cpp" line="397"/>
         <source>benghuai</source>
         <translation>崩坏</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="370"/>
+        <location filename="src/thicket.cpp" line="398"/>
         <source>baonue</source>
         <translation>暴虐</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="372"/>
+        <location filename="src/thicket.cpp" line="400"/>
         <source>guixin</source>
         <translation>归心</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="373"/>
+        <location filename="src/thicket.cpp" line="401"/>
         <source>feiying</source>
         <translation>飞影</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="374"/>
+        <location filename="src/thicket.cpp" line="402"/>
         <source>baonu</source>
         <translation>暴怒</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="375"/>
+        <location filename="src/thicket.cpp" line="403"/>
         <source>wumou</source>
         <translation>无谋</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="376"/>
+        <location filename="src/thicket.cpp" line="404"/>
         <source>wuqian</source>
         <translation>无前</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="377"/>
+        <location filename="src/thicket.cpp" line="405"/>
         <source>shenfen</source>
         <translation>神愤</translation>
+    </message>
+    <message>
+        <location filename="src/thicket.cpp" line="408"/>
+        <source>:benghuai:</source>
+        <translation>请选择减体力还是体力上限:</translation>
+    </message>
+    <message>
+        <location filename="src/thicket.cpp" line="409"/>
+        <source>benghuai:hp</source>
+        <translation>体力</translation>
+    </message>
+    <message>
+        <location filename="src/thicket.cpp" line="410"/>
+        <source>benghuai:max_hp</source>
+        <translation>体力上限</translation>
     </message>
 </context>
 <context>

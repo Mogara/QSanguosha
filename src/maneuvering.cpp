@@ -44,7 +44,19 @@ bool Analeptic::isAvailable() const{
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->setPlayerFlag(source, "drank");
+    room->throwCard(this);
+    source->playCardEffect(this);
+
+    CardEffectStruct effect;
+    effect.card = this;
+    effect.from = source;
+    effect.to = source;
+
+    room->cardEffect(effect);
+}
+
+void Analeptic::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
 }
 
 bool Analeptic::match(const QString &pattern) const{

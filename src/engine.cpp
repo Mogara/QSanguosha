@@ -168,7 +168,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 #ifndef QT_NO_DEBUG
     QStringList my_list;
-    my_list << "sunshangxiang" << "shenguanyu" << "shenlumeng";
+    my_list << "sunshangxiang" << "machao";
 
     for(i=0; i<my_list.length(); i++){
         QString my_general = my_list.at(i);

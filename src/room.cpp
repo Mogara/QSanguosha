@@ -735,7 +735,7 @@ void Room::lostHp(ServerPlayer *victim){
         if(!saved)
             thread->trigger(Death, victim);
     }else{
-        victim->setHp(victim->getHp());
+        victim->setHp(victim->getHp() - 1);
         broadcastProperty(victim, "hp");
     }
 }
