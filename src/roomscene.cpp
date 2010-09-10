@@ -1265,7 +1265,13 @@ void RoomScene::clearAmazingGrace(){
         delete item;
     }
 
+    foreach(QGraphicsSimpleTextItem *item, taker_names){
+        removeItem(item);
+        delete item;
+    }
+
     amazing_grace.clear();
+    taker_names.clear();
 }
 
 void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
@@ -1276,6 +1282,11 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             CardItem *item = new CardItem(card_item->getCard());
             addItem(item);
             putCardItem(taker, Player::Hand, item);
+
+            QString name = Sanguosha->translate(taker->getGeneralName());
+            QGraphicsSimpleTextItem *text_item = addSimpleText(name, Config.SmallFont);
+            text_item->setPos(card_item->pos() + QPointF(20, 70));
+            taker_names << text_item;
 
             break;
         }

@@ -500,10 +500,10 @@ void Client::askForNullification(const QString &ask_str){
 
     if(Config.NeverNullifyMyTrick && source == Self){
         const TrickCard *trick_card = Sanguosha->findChild<const TrickCard *>(trick_name);
-        if(trick_card->inherits("SingleTargetTrick"))
+        if(trick_card->inherits("SingleTargetTrick")){
             replyNullification(-1);
-
-        return;
+            return;
+        }
     }
 
     nullification_dialog = new NullificationDialog(trick_name, source, target, card_ids);

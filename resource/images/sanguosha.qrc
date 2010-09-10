@@ -34,5 +34,10 @@
         <file>death/loyalist.png</file>
         <file>death/rebel.png</file>
         <file>death/renegade.png</file>
+        <file>chain.png</file>
+        <file>kingdom/qun.png</file>
+        <file>kingdom/shu.png</file>
+        <file>kingdom/wei.png</file>
+        <file>kingdom/wu.png</file>
     </qresource>
 </RCC>

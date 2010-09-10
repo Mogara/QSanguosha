@@ -45,8 +45,8 @@ QString General::getPixmapPath(const QString &category) const{
     return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
 }
 
-QString General::getKingdomPath() const{
-    return QString("%1/generals/kingdom/%2.png").arg(getPackage()).arg(kingdom);
+QString General::getKingdomPath() const{    
+    return QString(":/kingdom/%1.png").arg(kingdom);
 }
 
 void General::addSkill(Skill *skill){    

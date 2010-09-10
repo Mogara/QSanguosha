@@ -61,6 +61,7 @@ private:
     QGraphicsTextItem *pile_number_item;
 
     QList<CardItem *> amazing_grace;
+    QList<QGraphicsSimpleTextItem *> taker_names;
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;

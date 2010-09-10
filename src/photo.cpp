@@ -18,6 +18,7 @@ Photo::Photo(int order)
     player(NULL),
     avatar_frame(":/avatar-frame.png"),
     handcard(":/handcard.png"),
+    chain(":/chain.png"),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     order_item(new QGraphicsPixmapItem(QPixmap(QString(":/number/%1.png").arg(order+1)),this)),
     hide_avatar(false)
@@ -239,6 +240,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
             painter->drawText(28, 78, hp_str);
         }
     }
+
     int n = player->getHandcardNum();
     if(n > 0){
         painter->drawPixmap(0, 72, handcard);
@@ -258,6 +260,9 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     drawEquip(painter, armor, 1);
     drawEquip(painter, defensive_horse, 2);
     drawEquip(painter, offensive_horse, 3);
+
+    // draw iron chain
+    painter->drawPixmap(0, 0, chain);
 }
 
 void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
