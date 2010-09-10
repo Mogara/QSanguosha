@@ -347,7 +347,7 @@ bool Player::isChained() const{
 }
 
 void Player::setChained(bool chained){
-    if(chained){
+    if(this->chained != chained){
         this->chained = chained;
         emit state_changed();
     }

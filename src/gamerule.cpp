@@ -49,7 +49,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     Room *room = player->getRoom();
 
     switch(event){
-    case GameStart: room->drawCards(player, 4); break;
+    case GameStart: player->drawCards(4); break;
     case PhaseChange: onPhaseChange(player); break;
     case CardUsed: {
             if(data.canConvert<CardUseStruct>()){
@@ -64,6 +64,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
     case Predamaged:{
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
+                bool chained = player->isChained();
                 int new_hp = player->getHp() - damage.damage;
                 if(new_hp <= 0){
                     int peaches = 1 - new_hp;
@@ -73,12 +74,29 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, const QVariant 
                         if(damage.from)
                             killer_name = damage.from->objectName();
                         room->getThread()->trigger(Death, player, killer_name);
-                    }else{
-                        player->setHp(1);
-                        room->broadcastProperty(player, "hp");
+                    }else{                        
+                        room->setPlayerProperty(player, "hp", 1);
                     }
                 }else
                     room->damage(player, damage.damage);
+
+                if(damage.nature != DamageStruct::Normal && chained){
+                    room->setPlayerProperty(player, "chained", false);
+
+                    // iron chain effect
+                    QList<ServerPlayer *> chained_players = room->getAllPlayers();
+                    chained_players.removeOne(player);
+
+                    foreach(ServerPlayer *chained_player, chained_players){
+                        if(chained_player->isChained()){
+                            DamageStruct chain_damage = damage;
+                            chain_damage.to = chained_player;
+
+                            room->setPlayerProperty(chained_player, "chained", false);
+                            room->damage(chain_damage);
+                        }
+                    }
+                }
             }
 
             break;
