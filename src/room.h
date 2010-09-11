@@ -77,7 +77,7 @@ public:
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
     int askForAG(ServerPlayer *player);
-    int askForCardShow(ServerPlayer *player);
+    int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
 
     bool askForSave(ServerPlayer *dying, int peaches);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);

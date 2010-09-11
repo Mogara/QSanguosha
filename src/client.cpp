@@ -78,24 +78,27 @@ Client::Client(QObject *parent)
     callbacks["moveCard"] = &Client::moveCard;
     callbacks["activate"] = &Client::activate;
     callbacks["startGame"] = &Client::startGame;
-    callbacks["hpChange"] = &Client::hpChange;
-    callbacks["askForCard"] = &Client::askForCard;
-    callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
-    callbacks["askForChoice"] = &Client::askForChoice;
-    callbacks["playSkillEffect"] = &Client::playSkillEffect;
-    callbacks["askForNullification"] = &Client::askForNullification;
-    callbacks["closeNullification"] = &Client::closeNullification;
-    callbacks["askForCardChosen"] = &Client::askForCardChosen;
+    callbacks["hpChange"] = &Client::hpChange;    
+    callbacks["playSkillEffect"] = &Client::playSkillEffect;    
+    callbacks["closeNullification"] = &Client::closeNullification;    
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["prompt"] = &Client::prompt;
     callbacks["clearPile"] = &Client::clearPile;
-    callbacks["setPileNumber"] = &Client::setPileNumber;
-    callbacks["askForDiscard"] = &Client::askForDiscard;
+    callbacks["setPileNumber"] = &Client::setPileNumber;    
     callbacks["gameOver"] = &Client::gameOver;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
+    callbacks["showCard"] = &Client::showCard;
+
+    callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
     callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
+    callbacks["askForCardChosen"] = &Client::askForCardChosen;
+    callbacks["askForCard"] = &Client::askForCard;
+    callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
+    callbacks["askForChoice"] = &Client::askForChoice;
+    callbacks["askForNullification"] = &Client::askForNullification;
+    callbacks["askForCardShow"] = &Client::askForCardShow;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -126,7 +129,7 @@ void Client::processReply(){
         QStringList words = reply.split(QChar(' '));
 
         QString object = words[0];        
-        const char *field = words[1].toAscii();
+        const char *field = words[1].toStdString().c_str();
         QString value = words[2];
 
         if(object.startsWith(Self_prefix)){
@@ -140,10 +143,11 @@ void Client::processReply(){
             // others
             object.remove(other_prefix);
             ClientPlayer *player = findChild<ClientPlayer*>(object);
-            if(player)
+            if(player){
                 player->setProperty(field, value);
-            else
-                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(field));
+            }else
+                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object));
+
         }else if(object.startsWith(method_prefix)){
             // invoke methods
             Callback callback = callbacks.value(words[1], NULL);
@@ -721,6 +725,14 @@ void Client::askForSinglePeach(const QString &ask_str){
     setStatus(Responsing);
 }
 
+void Client::askForCardShow(const QString &requestor){
+    QString name = Sanguosha->translate(requestor);
+    emit prompt_changed(tr("%1 request you to show one hand card").arg(name));
+
+    card_pattern = "."; // any card can be matched
+    setStatus(Responsing);    
+}
+
 void Client::askForAG(const QString &){
     setStatus(AskForAG);
 }
@@ -747,6 +759,9 @@ void Client::showCard(const QString &show_str){
     QStringList texts = rx.capturedTexts();
     QString player_name = texts.at(1);
     int card_id = texts.at(2).toInt();
+
+    if(player_name == Config.UserName)
+        return;
 
     ClientPlayer *player = findChild<ClientPlayer *>(player_name);
     if(player){

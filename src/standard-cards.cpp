@@ -5,7 +5,8 @@
 #include "room.h"
 #include "carditem.h"
 
-Slash::Slash(Suit suit, int number):BasicCard(suit, number){
+Slash::Slash(Suit suit, int number): BasicCard(suit, number)
+{
     setObjectName("slash");
     nature = DamageStruct::Normal;
 }
@@ -297,10 +298,42 @@ public:
     }
 };
 
+class KylinBowSkill: public TriggerSkill{
+public:
+    KylinBowSkill():TriggerSkill("kylin_bow"){
+        events << SlashResult;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashResultStruct result = data.value<SlashResultStruct>();
+        if(result.success){
+            QStringList horses;
+            if(result.to->getDefensiveHorse())
+                horses << "dhorse";
+            if(result.to->getOffensiveHorse())
+                horses << "ohorse";
+
+            if(!horses.isEmpty()){
+                Room *room = player->getRoom();
+                if(room->askForSkillInvoke(player, objectName())){
+                    QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+                    if(horse_type == "dhorse")
+                        room->throwCard(result.to->getDefensiveHorse());
+                    else if(horse_type == "ohorse")
+                        room->throwCard(result.to->getOffensiveHorse());
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
 class KylinBow:public Weapon{
 public:
     KylinBow(Suit suit = Heart, int number = 5):Weapon(suit, number, 5){
         setObjectName("kylin_bow");
+        skill = new KylinBowSkill;
     }
 };
 
@@ -934,6 +967,8 @@ void StandardPackage::addCards(){
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
+    t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
+    t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
 
     skills << new SpearSkill;
 }

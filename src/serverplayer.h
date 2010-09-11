@@ -25,6 +25,7 @@ public:
     int getRandomHandCard() const;
     void leaveTo(ServerPlayer *legatee);
     void obtainCard(const Card *card);
+    void throwAllEquips();
     void throwAllCards();
     void drawCards(int n);
 

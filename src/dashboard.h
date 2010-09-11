@@ -21,7 +21,7 @@ public:
     CardItem *takeCardItem(int card_id, Player::Place place);
     void setPlayer(const Player *player);
     Pixmap *getAvatar();
-    void selectCard(const QString &pattern = "", bool forward = true);
+    void selectCard(const QString &pattern, bool forward = true);
     void useSelected();
     const Card *getSelected() const;
     void unselectAll();

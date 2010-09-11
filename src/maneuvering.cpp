@@ -166,12 +166,24 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->isKongcheng())
         return;
 
-    int card_id = room->askForCardShow(effect.to);
-    //FIXME: broadcard players that effect.to has shown his/her card
+    int card_id = room->askForCardShow(effect.to, effect.from);
+    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id));
+
     const Card *card = Sanguosha->getCard(card_id);
     QString suit_str = card->getSuitString();
+    const Card *to_throw = room->askForCard(effect.from, suit_str, "fire-attack");
+    if(to_throw){
+        room->throwCard(to_throw);
 
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 1;
+        damage.from = effect.from;
+        damage.to = effect.to;
+        damage.nature = DamageStruct::Fire;
 
+        room->damage(damage);
+    }
 }
 
 IronChain::IronChain(Card::Suit suit, int number)
@@ -336,6 +348,8 @@ ManeuveringPackage::ManeuveringPackage()
 
     foreach(Card *card, cards)
         card->setParent(this);
+
+    t["fire-attack"] = tr("fire-attack");
 }
 
 ADD_PACKAGE(Maneuvering)

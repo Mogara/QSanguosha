@@ -232,6 +232,7 @@ class Slash: public BasicCard{
 
 public:
     Q_INVOKABLE Slash(Card::Suit suit, int number);
+
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;

@@ -203,7 +203,7 @@ QList<int> Engine::getRandomCards() const{
 #ifndef QT_NO_DEBUG
 
     QList<int> my_list;
-    my_list << 62 << 105 << 128;
+    my_list << 62 << 105 << 141;
 
     for(i=0; i<my_list.length(); i++){
         int card_id = my_list.at(i);

@@ -18,14 +18,80 @@ public:
     }
 };
 
-class Fangzhu: public MasochismSkill{
+ShenfenCard::ShenfenCard(){
+    target_fixed = true;
+}
+
+void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    source->turnOver();
+    room->broadcastProperty(source, "face_up");
+
+    QList<ServerPlayer *> players = room->getOtherPlayers(source);
+
+    foreach(ServerPlayer *player, players){
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 1;
+        damage.from = source;
+        damage.to = player;
+        damage.nature = DamageStruct::Normal;
+
+        room->damage(damage);
+    }
+
+    foreach(ServerPlayer *player, players){
+        player->throwAllEquips();
+    }
+
+    foreach(ServerPlayer *player, players){
+        int discard_num = qMin(player->getHandcardNum(), 4);
+        room->askForDiscard(player, discard_num);
+    }
+}
+
+FangzhuCard::FangzhuCard(){
+
+}
+
+class FangzhuViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    Fangzhu():MasochismSkill("fangzhu"){
+    FangzhuViewAsSkill():ZeroCardViewAsSkill("fangzhu"){
 
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        // exile somebody
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@fangzhu";
+    }
+
+    virtual const Card *viewAs() const{
+        return new FangzhuCard;
+    }
+};
+
+class Fangzhu: public MasochismSkill{
+public:
+    Fangzhu():MasochismSkill("fangzhu"){
+        view_as_skill = new FangzhuViewAsSkill;
+    }
+
+    virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &damage) const{
+        // exile somebody        
+        Room *room = caopi->getRoom();
+        if(room->askForSkillInvoke(caopi, objectName())){
+            QList<ServerPlayer *> targets;
+            room->askForCardWithTargets(caopi, "@@fangzhu", "@fangzhu", targets);
+
+            ServerPlayer *to_exile = targets.first();
+            to_exile->drawCards(caopi->getLostHp());
+
+            bool face_up = !to_exile->faceUp();
+            room->setPlayerProperty(to_exile, "face_up", face_up);
+        }
+
     }
 };
 
@@ -341,6 +407,34 @@ public:
     }
 };
 
+class Wumo: public TriggerSkill{
+public:
+    Wumo():TriggerSkill("wumo"){
+        events << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
+            Room *room = player->getRoom();
+            room->loseHp(player);
+        }
+
+        return false;
+    }
+};
+
+class Shenfen:public ZeroCardViewAsSkill{
+public:
+    Shenfen():ZeroCardViewAsSkill("shenfen"){
+
+    }
+
+    virtual const Card *viewAs() const{
+        return new ShenfenCard;
+    }
+};
+
 ThicketPackage::ThicketPackage()
     :Package("thicket")
 {
@@ -384,6 +478,7 @@ ThicketPackage::ThicketPackage()
 
     shenlubu = new General(this, "shenlubu", "qun", 5);
     shenlubu->addSkill(new Baonu);
+    shenlubu->addSkill(new Shenfen);
 
     t["thicket"] = tr("thicket");
 
@@ -432,7 +527,9 @@ ThicketPackage::ThicketPackage()
     t["benghuai:max_hp"] = tr("benghuai:max_hp");
 
     metaobjects << &DimengCard::staticMetaObject
-            << &LuanwuCard::staticMetaObject;
+            << &LuanwuCard::staticMetaObject
+            << &YinghunCard::staticMetaObject
+            << &FangzhuCard::staticMetaObject;
 }
 
 ADD_PACKAGE(Thicket)

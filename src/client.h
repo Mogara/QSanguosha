@@ -75,6 +75,7 @@ public:
     void askForAG(const QString &);
     void takeAG(const QString &take_str);
     void askForSinglePeach(const QString &ask_str);
+    void askForCardShow(const QString &requestor);
     void showCard(const QString &show_str);
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);

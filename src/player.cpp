@@ -157,7 +157,7 @@ void Player::setGeneralName(const QString &general_name){
     if(this->general != new_general){
         this->general = new_general;
         if(new_general)
-            setHp(getMaxHP());        
+            setHp(getMaxHP());
 
         emit general_changed();
     }

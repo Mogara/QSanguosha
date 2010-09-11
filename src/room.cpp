@@ -401,10 +401,10 @@ int Room::askForAG(ServerPlayer *player){
     return result.toInt();
 }
 
-int Room::askForCardShow(ServerPlayer *player){
-    player->invoke("askForCardShow");
+int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
+    player->invoke("askForCardShow", requestor->getGeneralName());
 
-    reply_func = "showCard";
+    reply_func = "responseCardCommand";
     reply_player = player;
 
     sem->acquire();

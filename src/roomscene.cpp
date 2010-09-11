@@ -57,7 +57,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
     connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
     connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
-    connect(dashboard, SIGNAL(card_to_use()), this, SLOT(useSelectedCard()));
+    connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
 
     // add role combobox
     role_combobox = new QComboBox;
@@ -112,6 +112,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
+    connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
 
     connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
@@ -359,9 +360,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_R: dashboard->selectCard("collateral"); break;
     case Qt::Key_Y: dashboard->selectCard("god_salvation"); break;
 
-    case Qt::Key_Left: dashboard->selectCard("", false); break;
+    case Qt::Key_Left: dashboard->selectCard(".", false); break;
     case Qt::Key_Right:
-    case Qt::Key_Space:  dashboard->selectCard(); break; // iterate all cards
+    case Qt::Key_Space:  dashboard->selectCard("."); break; // iterate all cards
     case Qt::Key_F:  break; // fix the selected
 
     case Qt::Key_G: selectNextTarget(control_is_down); break; // iterate generals
@@ -641,7 +642,6 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
-
     main_window->setStatusBar(NULL);
     skill_buttons.clear();
     button2skill.clear();
@@ -1131,6 +1131,9 @@ void RoomScene::changeHp(const QString &who, int delta){
     static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
     if(delta < 0){
         ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
+
+        Q_ASSERT(player && player->getGeneral());
+
         if(player->getGeneral()->isMale())
             Sanguosha->playEffect(male_damage_effect);
         else

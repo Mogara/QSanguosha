@@ -54,11 +54,15 @@ void ServerPlayer::obtainCard(const Card *card){
     room->obtainCard(this, card);
 }
 
-void ServerPlayer::throwAllCards(){
+void ServerPlayer::throwAllEquips(){
     room->throwCard(getWeapon());
     room->throwCard(getArmor());
     room->throwCard(getDefensiveHorse());
     room->throwCard(getOffensiveHorse());
+}
+
+void ServerPlayer::throwAllCards(){
+    throwAllEquips();
 
     foreach(const Card *card, handcards)
         room->throwCard(card);

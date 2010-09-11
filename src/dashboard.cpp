@@ -32,7 +32,6 @@ Dashboard::Dashboard()
     sort_widget->setPos(0, 28);
 
     button_layout  = new QGraphicsLinearLayout(Qt::Horizontal);
-    // button_layout->addItem(sort_widget);
 
     QGraphicsWidget *form = new QGraphicsWidget(this);
     form->setLayout(button_layout);
