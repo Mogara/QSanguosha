@@ -334,12 +334,33 @@ bool Player::isAllNude() const{
 
 void Player::addDelayedTrick(const Card *trick){
     judging_area.push(trick);
+    delayed_tricks.push(DelayedTrick::CastFrom(trick));
 }
 
 void Player::removeDelayedTrick(const Card *trick){
     int index = judging_area.indexOf(trick);
-    if(index >= 0)
+    if(index >= 0){
         judging_area.remove(index);
+        delayed_tricks.remove(index);
+    }
+}
+
+const DelayedTrick *Player::topDelayedTrick() const{
+    if(delayed_tricks.isEmpty())
+        return NULL;
+    else
+        return delayed_tricks.top();
+}
+
+bool Player::containsTrick(const QString &trick_name) const{
+    QVectorIterator<const DelayedTrick *> itor(delayed_tricks);
+    while(itor.hasNext()){      
+        const DelayedTrick *trick = itor.next();
+        if(trick->objectName() == trick_name)
+            return true;
+    }
+
+    return false;
 }
 
 bool Player::isChained() const{

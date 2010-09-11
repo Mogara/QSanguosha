@@ -124,8 +124,18 @@ class DelayedTrick:public TrickCard{
     Q_OBJECT
 
 public:
-    DelayedTrick(Suit suit, int number):TrickCard(suit, number){ }
+    DelayedTrick(Suit suit, int number, bool movable = false);
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual QString getSubtype() const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual bool judge(const Card *card) const = 0;
+    virtual void takeEffect(ServerPlayer *target) const = 0;
+
+    static const DelayedTrick *CastFrom(const Card *card);
+
+private:
+    bool movable;
 };
 
 class Indulgence:public DelayedTrick{
@@ -135,6 +145,19 @@ public:
     Q_INVOKABLE Indulgence(Card::Suit suit, int number);
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+
+    virtual bool judge(const Card *card) const;
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
+class Lightning: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Lightning(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+    virtual bool judge(const Card *card) const;
+
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

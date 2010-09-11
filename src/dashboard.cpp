@@ -167,11 +167,13 @@ void Dashboard::hideAvatar(){
     kingdom->hide();
 }
 
-void Dashboard::installDelayedTrick(CardItem *trick){
-    judging_area.push(trick);
+void Dashboard::installDelayedTrick(CardItem *card){
+    judging_area.push(card);
+    const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
+    delayed_tricks.push(QPixmap(trick->getIconPath()));
 
-    trick->setHomePos(mapToScene(QPointF(34, 37)));
-    trick->goBack(true);
+    card->setHomePos(mapToScene(QPointF(34, 37)));
+    card->goBack(true);
 
     update();
 }
@@ -220,25 +222,9 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     drawEquip(painter, offensive_horse, 3);
 
     // draw player's judging area
-    for(i=0; i<judging_area.count(); i++){
-        CardItem *trick = judging_area.at(i);
-        const Card *card = trick->getCard();
-
+    for(i=0; i<delayed_tricks.count(); i++){
         QPoint pos(178 + i * 52, 5);
-
-        if(card->getSuit() == Card::Diamond || card->objectName() == "indulgence"){
-            static QPixmap indulgence;
-            if(indulgence.isNull())
-                indulgence.load("standard/cards/icon/indulgence.png");
-            painter->drawPixmap(pos, indulgence);
-        }else if(card->objectName() == "lightning"){
-            static QPixmap lightning;
-            if(lightning.isNull())
-                lightning.load("standard/cards/icon/lightning.png");
-            painter->drawPixmap(pos, lightning);
-        }else{
-            // FIXME: supply shortage
-        }
+        painter->drawPixmap(pos, delayed_tricks.at(i));
     }
 
     chain_icon->setVisible(player->isChained());
@@ -366,13 +352,14 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             card_item = offensive_horse;
             offensive_horse = NULL;
         }
-    }else if(place == Player::DelayedTrick){
-        QMutableVectorIterator<CardItem *> itor(judging_area);
-        while(itor.hasNext()){
-            CardItem *item = itor.next();
+    }else if(place == Player::Judging){
+        int i;
+        for(i=0; i<judging_area.count(); i++){
+            CardItem *item = judging_area.at(i);
             if(item->getCard()->getId() == card_id){
                 card_item = item;
-                itor.remove();
+                judging_area.remove(i);
+                delayed_tricks.remove(i);
                 break;
             }
         }

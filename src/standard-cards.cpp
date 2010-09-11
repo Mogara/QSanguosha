@@ -649,23 +649,39 @@ bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return targets.isEmpty() && !to_select->hasSkill("qianxun");
 }
 
-void Indulgence::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->moveCardTo(this, targets.first(), Player::DelayedTrick, true);
-    source->playCardEffect(this);
+void Indulgence::takeEffect(ServerPlayer *target) const{
+    target->getRoom()->skip(Player::Play);
 }
 
-class Lightning:public DelayedTrick{
-public:
-    Lightning(Suit suit, int number):DelayedTrick(suit, number){
-        setObjectName("lightning");
-        target_fixed = true;
-    }
+bool Indulgence::judge(const Card *card) const{
+    return card->getSuit() != Card::Heart;
+}
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-        room->moveCardTo(this, source, Player::DelayedTrick, true);
-        source->playCardEffect(this);
-    }
-};
+
+Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
+    setObjectName("lightning");
+    target_fixed = true;
+}
+
+void Lightning::takeEffect(ServerPlayer *target) const{
+    DamageStruct damage;
+    damage.card = this;
+    damage.damage = 3;
+    damage.from = NULL;
+    damage.to = target;
+    damage.nature = DamageStruct::Thunder;
+
+    target->getRoom()->damage(damage);
+}
+
+bool Lightning::judge(const Card *card) const{
+    return card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9;
+}
+
+void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->moveCardTo(this, source, Player::Judging);
+    source->playCardEffect(this);
+}
 
 class IceSwordSkill: public TriggerSkill{
 public:

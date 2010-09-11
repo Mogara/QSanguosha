@@ -22,7 +22,22 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
     case Player::Start: break;
-    case Player::Judge: break;
+    case Player::Judge: {
+            forever{
+                const DelayedTrick *trick = player->topDelayedTrick();
+                if(trick == NULL)
+                    break;
+
+                CardEffectStruct effect;
+                effect.card = trick;
+                effect.from = NULL;
+                effect.to = player;
+
+                room->cardEffect(effect);
+            }
+
+            break;
+        }
     case Player::Draw: player->drawCards(2); break;
     case Player::Play: {
             forever{

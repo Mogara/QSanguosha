@@ -16,7 +16,7 @@ bool CardMoveStructForClient::parse(const QString &str){
     if(place_map.isEmpty()){
         place_map["hand"] = Player::Hand;
         place_map["equip"] = Player::Equip;
-        place_map["delayed_trick"] = Player::DelayedTrick;
+        place_map["judging"] = Player::Judging;
         place_map["special"] = Player::Special;
         place_map["_"] = Player::DiscardedPile;
         place_map["="] = Player::DrawPile;
@@ -485,8 +485,11 @@ void Client::askForNullification(const QString &ask_str){
     pattern.indexIn(ask_str);
     QStringList texts = pattern.capturedTexts();
     QString trick_name = texts.at(1);
-    ClientPlayer *source = ClientInstance->findChild<ClientPlayer *>(texts.at(2));
-    ClientPlayer *target = ClientInstance->findChild<ClientPlayer *>(texts.at(3));
+    QString source_name = texts.at(2);
+    ClientPlayer *source = NULL;
+    if(source_name != ".")
+        source = findChild<ClientPlayer *>(source_name);
+    ClientPlayer *target = findChild<ClientPlayer *>(texts.at(3));
 
     if(Config.NeverNullifyMyTrick && source == Self){
         const TrickCard *trick_card = Sanguosha->findChild<const TrickCard *>(trick_name);

@@ -36,7 +36,7 @@ void ClientPlayer::addCard(const Card *card, Place place){
             setEquip(equip);
             break;
         }
-    case DelayedTrick:{
+    case Judging:{
             addDelayedTrick(card);
             break;
         }
@@ -64,7 +64,7 @@ void ClientPlayer::removeCard(const Card *card, Place place){
             removeEquip(equip);
             break;
         }
-    case DelayedTrick:{           
+    case Judging:{
             removeDelayedTrick(card);
             break;
         }

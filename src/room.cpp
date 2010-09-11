@@ -287,7 +287,7 @@ void Room::obtainCard(ServerPlayer *target, int card_id){
 }
 
 bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
-    QString ask_str = QString("%1:%2->%3").arg(trick_name).arg(from->objectName()).arg(to->objectName());
+    QString ask_str = QString("%1:%2->%3").arg(trick_name).arg(from ? from->objectName() : ".").arg(to->objectName());
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
         player->invoke("askForNullification", ask_str);
@@ -778,7 +778,10 @@ void Room::cardEffect(const CardEffectStruct &effect){
         return;
 
     QVariant data = QVariant::fromValue(effect);
-    bool broken = thread->trigger(CardEffect, effect.from, data);
+    bool broken = false;
+    if(effect.from)
+        broken = thread->trigger(CardEffect, effect.from, data);
+
     if(!broken)
         thread->trigger(CardEffected, effect.to, data);
 }
@@ -959,7 +962,7 @@ QString CardMoveStruct::toString(bool card_known) const{
     if(place2str.isEmpty()){
         place2str.insert(Player::Hand, "hand");
         place2str.insert(Player::Equip, "equip");
-        place2str.insert(Player::DelayedTrick, "delayed_trick");
+        place2str.insert(Player::Judging, "judging");
         place2str.insert(Player::Special, "special");
         place2str.insert(Player::DiscardedPile, "_");
         place2str.insert(Player::DrawPile, "=");

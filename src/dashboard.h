@@ -64,6 +64,7 @@ private:
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<CardItem *> judging_area;
+    QStack<QPixmap> delayed_tricks;
     QGraphicsLinearLayout *button_layout;
     QPixmap death_pixmap;
     Pixmap *chain_icon, *back_icon;

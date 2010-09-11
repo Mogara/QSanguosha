@@ -145,7 +145,7 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
 
         if(card_item)
             card_item->setOpacity(1.0);
-    }else if(place == Player::DelayedTrick){
+    }else if(place == Player::Judging){
         QMutableVectorIterator<CardItem *> itor(judging_area);
         while(itor.hasNext()){
             CardItem *item = itor.next();
@@ -187,20 +187,7 @@ void Photo::installDelayedTrick(CardItem *trick){
     trick->goBack(true);
 
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
-    const Card *card = trick->getCard();
-    if(card->objectName() == "indulgence" || card->getSuit() == Card::Diamond){
-        static QPixmap indulgence;
-        if(indulgence.isNull())
-            indulgence.load("standard/cards/icon/indulgence.png");
-        item->setPixmap(indulgence);
-    }else if(card->objectName() == "lightning"){
-        static QPixmap lightning;
-        if(lightning.isNull())
-            lightning.load("standard/cards/icon/lightning.png");
-        item->setPixmap(lightning);
-    }else{
-        // supply shortage
-    }
+    item->setPixmap(QPixmap(player->topDelayedTrick()->getIconPath()));
 
     item->setPos(-25, judging_area.count() * 50);
     judging_area.push(trick);

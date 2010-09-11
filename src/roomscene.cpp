@@ -606,7 +606,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
                 break;
             }
 
-        case Player::DelayedTrick:{
+        case Player::Judging:{
                 dashboard->installDelayedTrick(card_item);
                 break;
             }
@@ -626,7 +626,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             case Player::Hand:
                 photo->addCardItem(card_item);
                 break;
-            case Player::DelayedTrick:
+            case Player::Judging:
                 photo->installDelayedTrick(card_item);
                 break;
             default:

@@ -2,6 +2,7 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "skill.h"
+#include "maneuvering.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -113,8 +114,61 @@ QString SingleTargetTrick::getSubtype() const{
     return "single_target_trick";
 }
 
+DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
+    :TrickCard(suit, number), movable(movable)
+{
+}
+
+void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.first();
+    room->moveCardTo(this, target, Player::Judging, true);
+    source->playCardEffect(this);
+}
+
 QString DelayedTrick::getSubtype() const{
     return "delayed_trick";
+}
+
+#include "engine.h"
+
+void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    int card_id = room->getJudgeCard(effect.to);
+    const Card *card = Sanguosha->getCard(card_id);
+    if(judge(card)){
+        takeEffect(effect.to);
+        room->throwCard(this);
+    }else{
+        if(movable){
+            QList<ServerPlayer *> players = room->getOtherPlayers(effect.to);
+            players << effect.to;
+
+            foreach(ServerPlayer *player, players){
+                if(!player->containsTrick(objectName())){
+                    room->moveCardTo(this, player, Player::Judging, true);
+                    break;
+                }
+            }
+        }else
+            room->throwCard(this);
+    }
+}
+
+const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
+    DelayedTrick *trick = NULL;
+    Card::Suit suit = card->getSuit();
+    int number = card->getNumber();
+    if(card->getSuit() == Card::Diamond){
+        trick = new Indulgence(suit, number);
+        trick->addSubcard(card->getId());
+    }else if(card->inherits("DelayedTrick"))
+        return qobject_cast<const DelayedTrick *>(card);
+    else if(card->isBlack() && (card->inherits("BasicCard") || card->inherits("EquipCard"))){
+        trick = new SupplyShortage(suit, number);
+        trick->addSubcard(card->getId());
+    }
+
+    return trick;
 }
 
 QString Weapon::getSubtype() const{

@@ -12,6 +12,7 @@ class EquipCard;
 class Weapon;
 class Armor;
 class Horse;
+class DelayedTrick;
 
 class Player : public QObject
 {
@@ -46,7 +47,7 @@ class Player : public QObject
 
 public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
-    enum Place {Hand, Equip, DelayedTrick, Special, DiscardedPile, DrawPile};
+    enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
 
     explicit Player(QObject *parent);
 
@@ -105,6 +106,8 @@ public:
     QStack<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
+    const DelayedTrick *topDelayedTrick() const;
+    bool containsTrick(const QString &trick_name) const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;
@@ -146,6 +149,7 @@ private:
     bool face_up;
     bool chained;
     QStack<const Card *> judging_area;
+    QStack<const DelayedTrick *> delayed_tricks;
 
 signals:
     void general_changed();

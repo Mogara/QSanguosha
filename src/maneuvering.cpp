@@ -246,6 +246,14 @@ bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, co
         return distance <= 1;
 }
 
+void SupplyShortage::takeEffect(ServerPlayer *target) const{
+    target->getRoom()->skip(Player::Draw);
+}
+
+bool SupplyShortage::judge(const Card *card) const{
+    return card->getSuit() != Card::Club;
+}
+
 ManeuveringPackage::ManeuveringPackage()
     :Package("maneuvering")
 {

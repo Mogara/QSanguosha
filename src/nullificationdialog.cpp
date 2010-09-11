@@ -23,12 +23,15 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
 
     static QSize avatar_size(80, 80);
 
-    QToolButton *source_button = new QToolButton;
-    const General *source_general = source->getGeneral();
-    source_button->setIcon(QIcon(source_general->getPixmapPath("big")));
-    source_button->setIconSize(avatar_size);
-    source_button->setText(tr("User[%1]").arg(Sanguosha->translate(source->getGeneralName())));
-    source_button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    QToolButton *source_button = NULL;
+    if(source){
+        source_button = new QToolButton;
+        const General *source_general = source->getGeneral();
+        source_button->setIcon(QIcon(source_general->getPixmapPath("big")));
+        source_button->setIconSize(avatar_size);
+        source_button->setText(tr("User[%1]").arg(Sanguosha->translate(source->getGeneralName())));
+        source_button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    }
 
     QToolButton *target_button = new QToolButton;
     const General *target_general = target->getGeneral();
@@ -39,7 +42,8 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(trick_button);
-    hlayout->addWidget(source_button);
+    if(source_button)
+        hlayout->addWidget(source_button);
     hlayout->addWidget(target_button);
 
     QVBoxLayout *vlayout = new QVBoxLayout;

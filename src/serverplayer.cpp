@@ -136,6 +136,10 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             equip->onUninstall(this);
             break;
         }
+    case Judging:{
+            removeDelayedTrick(card);
+            break;
+        }
     default:
         // FIXME
         ;
@@ -149,6 +153,10 @@ void ServerPlayer::addCard(const Card *card, Place place){
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
             equip->onInstall(this);
+            break;
+        }
+    case Judging:{
+            addDelayedTrick(card);
             break;
         }
     default:
