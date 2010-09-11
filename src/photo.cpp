@@ -42,6 +42,12 @@ Photo::Photo(int order)
     widget->setPos(pixmap.width()/2, pixmap.height()-10);
 
     order_item->setVisible(false);
+
+    back_icon = new Pixmap(":/small-back.png");
+    back_icon->setParentItem(this);
+    back_icon->setPos(86, 14);
+    back_icon->hide();
+    back_icon->setZValue(1.0);
 }
 
 void Photo::setPlayer(const ClientPlayer *player)
@@ -275,6 +281,8 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // draw iron chain
     if(player->isChained())
         painter->drawPixmap(0, 0, chain);
+
+    back_icon->setVisible(! player->faceUp());
 }
 
 void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){

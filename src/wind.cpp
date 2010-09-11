@@ -10,6 +10,21 @@ GuidaoCard::GuidaoCard(){
     target_fixed = true;
 }
 
+HuangtianCard::HuangtianCard(){
+    target_fixed = true;
+}
+
+void HuangtianCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("huangtian_used", true);
+}
+
+void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
+    ServerPlayer *zhangjiao = room->getLord();
+    if(zhangjiao->hasSkill("huangtian")){
+        zhangjiao->obtainCard(this);
+    }
+}
+
 GongxinCard::GongxinCard(){
 
 }
@@ -40,6 +55,55 @@ public:
         card->addSubcard(cards.first()->getCard()->getId());
 
         return card;
+    }
+};
+
+class HuangtianViewAsSkill: public ViewAsSkill{
+public:
+    HuangtianViewAsSkill():ViewAsSkill("huangtian"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("huangtian_used", false).toBool();
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(!selected.isEmpty())
+            return false;
+
+        if(to_select->isEnabled())
+            return false;
+
+        const Card *card = to_select->getCard();
+        return card->objectName() == "jink" || card->objectName() == "lightning";
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        HuangtianCard *card = new HuangtianCard;
+        card->addSubcards(cards);
+
+        return card;
+    }
+};
+
+class Huangtian: public GameStartSkill{
+public:
+    Huangtian():GameStartSkill("huangtian"){
+
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+
+        foreach(ServerPlayer *player, players){
+            if(player->getGeneral()->getKingdom() == "qun")
+                room->attachSkillToPlayer(player, "huangtian");
+        }
     }
 };
 
@@ -195,7 +259,7 @@ WindPackage::WindPackage()
     zhangjiao = new General(this, "zhangjiao$", "qun", 3);
     zhangjiao->addSkill(new Guidao);
     zhangjiao->addSkill(new Skill("leiji"));
-    zhangjiao->addSkill(new Skill("huangtian$"));
+    zhangjiao->addSkill(new Huangtian);
 
     // two gods
     General *shenguanyu, *shenlumeng;
@@ -228,6 +292,12 @@ WindPackage::WindPackage()
     t["wuhun"] = tr("wuhun");
     t["shelie"] = tr("shelie");
     t["gongxin"] = tr("gongxin");
+
+    metaobjects << &GuidaoCard::staticMetaObject
+            << &HuangtianCard::staticMetaObject
+            << &GongxinCard::staticMetaObject;
+
+    skills << new HuangtianViewAsSkill;
 }
 
 ADD_PACKAGE(Wind)

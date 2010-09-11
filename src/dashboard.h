@@ -41,6 +41,9 @@ public:
     const ViewAsSkill *currentSkill() const;    
     const Card *pendingCard() const;
 
+    void addSkillButton(QPushButton *button);
+    void removeSkillButton(QPushButton *button);
+
 public slots:
     void updateAvatar();
     void refresh();
@@ -63,7 +66,8 @@ private:
     QStack<CardItem *> judging_area;
     QGraphicsLinearLayout *button_layout;
     QPixmap death_pixmap;
-    QPixmap chain_pixmap;
+    Pixmap *chain_icon, *back_icon;
+    QMap<QPushButton *, QGraphicsWidget *> button2widget;
 
     // for pendings
     QList<CardItem *> pendings;
@@ -72,8 +76,7 @@ private:
 
     void adjustCards();
     void adjustCards(const QList<CardItem *> &list, int y);    
-    void drawEquip(QPainter *painter, const CardItem *equip, int order);
-    void addDynamicButton(QPushButton *button);
+    void drawEquip(QPainter *painter, const CardItem *equip, int order);    
     void setSelectedItem(CardItem *card_item);
 
 private slots:

@@ -39,5 +39,7 @@
         <file>kingdom/shu.png</file>
         <file>kingdom/wei.png</file>
         <file>kingdom/wu.png</file>
+        <file>big-back.png</file>
+        <file>small-back.png</file>
     </qresource>
 </RCC>

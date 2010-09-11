@@ -79,6 +79,10 @@ void Engine::addPackage(Package *package){
         metaobjects.insert(meta->className(), meta);
 
     translations.unite(package->getTranslation());
+
+    QList<const Skill *> extra_skills = package->getSkills();
+    foreach(const Skill *skill, extra_skills)
+        skills.insert(skill->objectName(), skill);
 }
 
 QString Engine::translate(const QString &to_translate) const{
@@ -106,7 +110,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
         return qobject_cast<Card *>(card_obj);
     }else
-        return NULL;
+        return NULL;    
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name){
@@ -168,7 +172,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 #ifndef QT_NO_DEBUG
     QStringList my_list;
-    my_list << "sunshangxiang" << "machao";
+    my_list << "sunshangxiang" << "machao" << "lubu";
 
     for(i=0; i<my_list.length(); i++){
         QString my_general = my_list.at(i);
@@ -199,7 +203,7 @@ QList<int> Engine::getRandomCards() const{
 #ifndef QT_NO_DEBUG
 
     QList<int> my_list;
-    my_list << 136 << 131;
+    my_list << 62 << 108;
 
     for(i=0; i<my_list.length(); i++){
         int card_id = my_list.at(i);

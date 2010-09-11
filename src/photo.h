@@ -51,6 +51,7 @@ private:
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;
     QPixmap death_pixmap;
+    Pixmap *back_icon;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

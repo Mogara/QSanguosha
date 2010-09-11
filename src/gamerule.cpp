@@ -115,6 +115,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(data.canConvert<SlashEffectStruct>()){
                 SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
+                if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
+                    break;
+                }
+
                 SlashResultStruct result;
                 result.slash = effect.slash;
                 result.from = effect.from;
@@ -149,8 +153,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     damage.card = result.slash;                    
 
                     damage.damage = 1;
-                    if(result.from->hasFlag("luoyi"))
-                        damage.damage ++;
                     if(result.from->hasFlag("drank")){
                         damage.damage ++;
                         room->setPlayerFlag(result.from, "-drank");

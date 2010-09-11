@@ -70,16 +70,81 @@ Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
 }
 
+class GudingBladeSkill: public TriggerSkill{
+public:
+    GudingBladeSkill():TriggerSkill("guding_blade"){
+        events << Predamage;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card->inherits("Slash") && damage.to->isKongcheng()){
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
 GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
     setObjectName("guding_blade");
+
+    skill = new GudingBladeSkill;
 }
+
+class VineSkill: public TriggerSkill{
+public:
+    VineSkill():TriggerSkill("vine"){
+        events << Predamaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature == DamageStruct::Fire){
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
 
 Vine::Vine(Suit suit, int number):Armor(suit, number){
     setObjectName("vine");
+    set_flag = true;
 }
+
+class SilverLionSkill: public TriggerSkill{
+public:
+    SilverLionSkill():TriggerSkill("silver_lion"){
+        events << Predamaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasFlag("silver_lion");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.damage > 1){
+            damage.damage = 1;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
 
 SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
     setObjectName("silver_lion");
+
+    skill = new SilverLionSkill;
+    set_flag = true;
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{

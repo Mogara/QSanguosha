@@ -116,6 +116,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
 
+    connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
+    connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
+
     daqiao = new Daqiao;
     daqiao->shift();
     daqiao->hide();
@@ -736,6 +739,7 @@ void RoomScene::enableTargets(const Card *card){
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
         changeMessage();
+        ok_button->setEnabled(false);
         return;
     }
 
@@ -752,8 +756,6 @@ void RoomScene::enableTargets(const Card *card){
         ok_button->setEnabled(true);
         return;
     }
-
-    ok_button->setEnabled(false);
 
     if(card->targetFilter(selected_targets, Self)){
         avatar->setEnabled(true);
@@ -775,6 +777,8 @@ void RoomScene::enableTargets(const Card *card){
 
     if(Config.EnableAutoTarget)
         selectNextTarget(false);
+
+    ok_button->setEnabled(card->targetsFeasible(selected_targets));
 }
 
 void RoomScene::updateSelectedTargets(){
@@ -1347,5 +1351,49 @@ void RoomScene::showCard(const QString &player_name, int card_id){
     Photo *photo = name2photo.value(player_name, NULL);
     if(photo){
         photo->showCard(card_id);
+    }
+}
+
+const ViewAsSkill *RoomScene::getViewAsSkill(const QString &skill_name){
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(!skill){
+        QMessageBox::warning(main_window, tr("Warning"), tr("No such skill named %1").arg(skill_name));
+        return NULL;
+    }
+
+    const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
+    if(!view_as_skill){
+        QMessageBox::warning(main_window, tr("Warning"), tr("The skill %1 must be view as skill!"));
+        return NULL;
+    }
+
+    return view_as_skill;
+}
+
+void RoomScene::attachSkill(const QString &skill_name){
+    const ViewAsSkill *skill = getViewAsSkill(skill_name);
+
+    QPushButton *button = new QPushButton(Sanguosha->translate(skill_name));
+
+    skill_buttons << button;
+    button2skill.insert(button, skill);
+
+    button->setEnabled(skill->isAvailable());
+    dashboard->addSkillButton(button);    
+
+    connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+}
+
+void RoomScene::detachSkill(const QString &skill_name){
+    const ViewAsSkill *skill = getViewAsSkill(skill_name);
+
+    QAbstractButton *button = button2skill.key(skill, NULL);
+    if(button){
+        skill_buttons.removeOne(button);
+        button2skill.remove(button);
+        QPushButton *push_button = qobject_cast<QPushButton *>(button);
+        dashboard->removeSkillButton(push_button);
+
+        delete button;
     }
 }

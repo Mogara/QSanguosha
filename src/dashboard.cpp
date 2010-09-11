@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "settings.h"
 #include "client.h"
+#include "standard.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -27,12 +28,16 @@ Dashboard::Dashboard()
     sort_widget->setWidget(sort_combobox);
     connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
 
+    sort_widget->setParentItem(this);
+    sort_widget->setPos(0, 28);
+
     button_layout  = new QGraphicsLinearLayout(Qt::Horizontal);
-    button_layout->addItem(sort_widget);
+    // button_layout->addItem(sort_widget);
 
     QGraphicsWidget *form = new QGraphicsWidget(this);
     form->setLayout(button_layout);
-    form->setPos(0, 20);
+    form->setPos(sort_widget->pos());
+    form->moveBy(sort_widget->boundingRect().width(), -10);
 
     avatar = new Pixmap("");
     avatar->setPos(837, 35);    
@@ -41,7 +46,17 @@ Dashboard::Dashboard()
     kingdom = new QGraphicsPixmapItem(this);
     kingdom->setPos(avatar->pos());
 
-    chain_pixmap.load(":/chain.png");
+    chain_icon = new Pixmap(":/chain.png");
+    chain_icon->setParentItem(this);
+    chain_icon->setPos(avatar->pos());
+    chain_icon->hide();
+    chain_icon->setZValue(1.0);
+
+    back_icon = new Pixmap(":/big-back.png");
+    back_icon->setParentItem(this);
+    back_icon->setPos(922, 104);
+    back_icon->hide();
+    back_icon->setZValue(1.0);
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -226,8 +241,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         }
     }
 
-    if(player->isChained())
-        painter->drawPixmap(764, 30, chain_pixmap);
+    chain_icon->setVisible(player->isChained());
+    back_icon->setVisible(!player->faceUp());
 }
 
 void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -297,8 +312,6 @@ void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
         list[i]->goBack();
     }
 }
-
-#include "standard.h"
 
 void Dashboard::installEquip(CardItem *equip){
     equip->setHomePos(mapToScene(QPointF(34, 37)));
@@ -502,8 +515,20 @@ const Card *Dashboard::pendingCard() const{
     return pending_card;
 }
 
-void Dashboard::addDynamicButton(QPushButton *button){
+void Dashboard::addSkillButton(QPushButton *button){
     QGraphicsScene *the_scene = scene();
-    if(the_scene)
-        button_layout->addItem(the_scene->addWidget(button));
+    if(the_scene){
+        QGraphicsWidget *widget = the_scene->addWidget(button);
+        button_layout->addItem(widget);
+
+        button2widget.insert(button, widget);
+    }
+}
+
+void Dashboard::removeSkillButton(QPushButton *button){
+    QGraphicsWidget *widget = button2widget.value(button, NULL);
+    if(widget){
+        button_layout->removeItem(widget);
+        button2widget.remove(button);
+    }
 }

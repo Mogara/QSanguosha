@@ -23,7 +23,7 @@ bool CardMoveStructForClient::parse(const QString &str){
     }
 
     // example: 12:tenshi@equip->moligaloo@hand
-    QRegExp pattern("(\\d+):(.+)@(.+)->(.+)@(.+)");
+    QRegExp pattern("(-?\\d+):(.+)@(.+)->(.+)@(.+)");
     if(!pattern.exactMatch(str)){
         return false;
     }
@@ -100,6 +100,9 @@ Client::Client(QObject *parent)
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
     callbacks["takeAG"] = &Client::takeAG;
+
+    callbacks["attachSkill"] = &Client::attachSkill;
+    callbacks["detachSkill"] = &Client::detachSkill;
 }
 
 void Client::request(const QString &message){
@@ -748,4 +751,13 @@ void Client::showCard(const QString &show_str){
         emit card_shown(player_name, card_id);
     }
 }
+
+void Client::attachSkill(const QString &skill_name){
+    emit skill_attached(skill_name);
+}
+
+void Client::detachSkill(const QString &skill_name){
+    emit skill_detached(skill_name);
+}
+
 

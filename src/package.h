@@ -1,6 +1,8 @@
 #ifndef PACKAGE_H
 #define PACKAGE_H
 
+class Skill;
+
 #include <QObject>
 #include <QHash>
 
@@ -20,9 +22,14 @@ public:
         return metaobjects;
     }
 
+    QList<const Skill *> getSkills() const{
+        return skills;
+    }
+
 protected:
     QHash<QString,QString> t;
     QList<const QMetaObject *> metaobjects;
+    QList<const Skill *> skills;
 };
 
 #define ADD_PACKAGE(name) extern "C" { Q_DECL_EXPORT Package *New##name(){ return new name##Package;}  }

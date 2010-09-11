@@ -97,7 +97,7 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(player->hasFlag("tengjia"))
+        if(player->hasFlag("vine"))
             continue;
 
         CardEffectStruct effect;

@@ -26,7 +26,8 @@ int ClientPlayer::getHandcardNum() const{
 void ClientPlayer::addCard(const Card *card, Place place){
     switch(place){
     case Hand: {
-            known_cards << card;
+            if(card)
+                known_cards << card;
             handcard_num++;
             break;
         }
@@ -54,7 +55,8 @@ void ClientPlayer::removeCard(const Card *card, Place place){
     switch(place){
     case Hand: {
             handcard_num--;
-            known_cards.removeOne(card);
+            if(card)
+                known_cards.removeOne(card);
             break;
         }
     case Equip:{
@@ -99,11 +101,15 @@ void ClientPlayer::MoveCard(const CardMoveStructForClient &move){
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
         move.from->removeCard(card, move.from_place);
-    else
+    else{
+        Q_ASSERT(card != NULL);
         ClientInstance->discarded_list.removeOne(card);
+    }
 
     if(move.to)
         move.to->addCard(card, move.to_place);
-    else
+    else{
+        Q_ASSERT(card != NULL);
         ClientInstance->discarded_list.prepend(card);
+    }
 }

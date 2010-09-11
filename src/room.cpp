@@ -208,6 +208,14 @@ void Room::slashResult(const SlashResultStruct &result){
     thread->trigger(SlashResult, result.from, data);
 }
 
+void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
+    player->invoke("attachSkill", skill_name);
+}
+
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name){
+    player->invoke("detachSkill", skill_name);
+}
+
 bool Room::obtainable(const Card *card, ServerPlayer *player){
     if(card == NULL)
         return false;
@@ -732,7 +740,7 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
     thread->trigger(CardUsed, player, vdata);
 }
 
-void Room::lostHp(ServerPlayer *victim){
+void Room::loseHp(ServerPlayer *victim){
     if(victim->getHp() == 1){
         bool saved = askForSave(victim, 1);
         if(!saved)
@@ -891,7 +899,14 @@ RoomThread *Room::getThread() const{
 }
 
 void Room::moveCard(const CardMoveStruct &move){
-    broadcast("! moveCard " + move.toString());
+    if(move.open)
+        broadcast("! moveCard " + move.toString());
+    else{
+        foreach(ServerPlayer *player, players){
+            bool card_known = (player == move.from || player == move.to);
+            player->invoke("moveCard", move.toString(card_known));
+        }
+    }
 
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
@@ -939,7 +954,7 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     moveCard(move);
 }
 
-QString CardMoveStruct::toString() const{
+QString CardMoveStruct::toString(bool card_known) const{
     static QMap<Player::Place, QString> place2str;
     if(place2str.isEmpty()){
         place2str.insert(Player::Hand, "hand");
@@ -954,7 +969,7 @@ QString CardMoveStruct::toString() const{
     QString to_str = to ? to->objectName() : "_";
 
     return QString("%1:%2@%3->%4@%5")
-            .arg(card_id)
+            .arg(card_known ? card_id : -1)
             .arg(from_str).arg(place2str.value(from_place, "_"))
             .arg(to_str).arg(place2str.value(to_place, "_"));
 }
@@ -1046,4 +1061,8 @@ bool Room::isSkipped(Player::Phase phase){
         return true;
     }else
         return false;
+}
+
+ServerPlayer *Room::getLord() const{
+    return players.first();
 }

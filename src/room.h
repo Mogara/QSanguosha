@@ -38,7 +38,8 @@ public:
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);
     void slashResult(const SlashResultStruct &result);
-
+    void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
+    void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
     void drawCards(ServerPlayer *player, int n);
@@ -51,7 +52,7 @@ public:
     void damage(const DamageStruct &data);
     void obtainCard(ServerPlayer *target, const Card *card);
     void obtainCard(ServerPlayer *target, int card_id);
-    void lostHp(ServerPlayer *victim);
+    void loseHp(ServerPlayer *victim);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);
@@ -63,6 +64,7 @@ public:
     ServerPlayer *getMenghuo() const;
     void skip(Player::Phase phase);
     bool isSkipped(Player::Phase phase);
+    ServerPlayer *getLord() const;
 
     // interactive methods
     QString activate(ServerPlayer *player);

@@ -11,6 +11,16 @@ public:
     Q_INVOKABLE GuidaoCard();
 };
 
+class HuangtianCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HuangtianCard();
+
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 class GongxinCard: public SkillCard{
     Q_OBJECT
 

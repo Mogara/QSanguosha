@@ -97,13 +97,7 @@ KurouCard::KurouCard(){
 }
 
 void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    DamageStruct damage;
-    damage.card = this;
-    damage.from = source;
-    damage.to = source;
-    damage.damage = 1;
-    room->damage(damage);
-
+    room->loseHp(source);
     if(source->isAlive())
         room->drawCards(source, 2);
 }

@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
+#include "carditem.h"
 
 Slash::Slash(Suit suit, int number):BasicCard(suit, number){
     setObjectName("slash");
@@ -232,10 +233,53 @@ public:
     }
 };
 
+class SpearSkill: public ViewAsSkill{
+public:
+    SpearSkill():ViewAsSkill("spear"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.length() < 2 && !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 2)
+            return NULL;
+
+        const Card *first = cards.at(0)->getCard();
+        const Card *second = cards.at(1)->getCard();
+
+        Card::Suit suit = Card::NoSuit;
+        if(first->isBlack() && second->isBlack())
+            suit = Card::Spade;
+        else if(first->isRed() && second->isRed())
+            suit = Card::Heart;
+
+        Slash *slash = new Slash(suit, 0);
+        slash->addSubcard(first->getId());
+        slash->addSubcard(second->getId());
+
+        return slash;
+    }
+};
+
 class Spear:public Weapon{
 public:
     Spear(Suit suit = Spade, int number = 12):Weapon(suit, number, 3){
         setObjectName("spear");
+    }
+
+    virtual void onInstall(ServerPlayer *player) const{
+        Weapon::onInstall(player);
+
+        player->getRoom()->attachSkillToPlayer(player, "spear");
+    }
+
+    virtual void onUninstall(ServerPlayer *player) const{
+        Weapon::onUninstall(player);
+
+        player->getRoom()->detachSkillFromPlayer(player, "spear");
     }
 };
 
@@ -531,8 +575,6 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     DamageStruct damage;
     damage.card = this;
     damage.damage = 1;
-    if(second->hasFlag("luoyi"))
-        damage.damage ++;
     damage.from = second;
     damage.to = first;
 
@@ -625,16 +667,51 @@ public:
     }
 };
 
+class IceSwordSkill: public TriggerSkill{
+public:
+    IceSwordSkill():TriggerSkill("ice_sword"){
+        events << SlashResult;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashResultStruct result = data.value<SlashResultStruct>();
+
+        if(result.success){
+            Room *room = player->getRoom();
+
+            if(!result.to->isNude() && room->askForSkillInvoke(player, "ice_sword")){
+                int card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
+                room->throwCard(card_id);
+
+                if(!result.to->isKongcheng()){
+                    card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
+                    room->throwCard(card_id);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
 IceSword::IceSword(Suit suit, int number)
     :Weapon(suit, number, 2)
 {
     setObjectName("ice_sword");
+    skill = new IceSwordSkill;
 }
 
 RenwangShield::RenwangShield(Suit suit, int number)
     :Armor(suit, number)
 {
     setObjectName("renwang_shield");
+    set_flag = true;
 }
 
 void StandardPackage::addCards(){
@@ -841,4 +918,6 @@ void StandardPackage::addCards(){
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
+
+    skills << new SpearSkill;
 }

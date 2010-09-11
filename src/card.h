@@ -11,6 +11,7 @@ class Client;
 class ClientPlayer;
 struct CardEffectStruct;
 struct CardMoveStruct;
+class CardItem;
 
 class Card : public QObject
 {
@@ -102,6 +103,8 @@ public:
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual QString toString() const;
+
+    virtual void addSubcards(const QList<CardItem *> &card_items);
 };
 
 #endif // CARD_H

@@ -184,32 +184,47 @@ public:
     }
 };
 
-class Luoyi:public PhaseChangeSkill{
+class Luoyi:public TriggerSkill{
 public:
-    Luoyi():PhaseChangeSkill("luoyi"){
-
+    Luoyi():TriggerSkill("luoyi"){
+        events << PhaseChange << Predamage;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        Room *room = target->getRoom();
-        switch(target->getPhase()){
-        case Player::Draw:{
-                if(room->askForSkillInvoke(target, "luoyi")){
-                    target->drawCards(1);
-                    room->playSkillEffect(objectName());
+    virtual bool trigger(TriggerEvent event, ServerPlayer *xuchu, QVariant &data) const{
+        Room *room = xuchu->getRoom();
 
-                    setFlag(target);
-                    return true;
+        if(event == PhaseChange){
+            switch(xuchu->getPhase()){
+            case Player::Draw:{
+                    if(room->askForSkillInvoke(xuchu, "luoyi")){
+                        xuchu->drawCards(1);
+                        room->playSkillEffect(objectName());
+
+                        setFlag(xuchu);
+                        return true;
+                    }
+                    break;
                 }
-                break;
+            case Player::Finish:{
+                    if(xuchu->hasFlag("luoyi"))
+                        unsetFlag(xuchu);
+                    break;
+                }
+            default:
+                ;
             }
-        case Player::Finish:{
-                if(target->hasFlag("luoyi"))
-                    unsetFlag(target);
-                break;
+        }else if(event == Predamage){
+            if(xuchu->hasFlag("luoyi")){
+                DamageStruct damage = data.value<DamageStruct>();
+
+                const Card *reason = damage.card;
+                if(reason->inherits("Slash") || reason->inherits("Duel")){
+                    damage.damage ++;
+                    data = QVariant::fromValue(damage);
+                }
             }
-        default:
-            ;
+
+            return false;
         }
 
         return false;
@@ -672,13 +687,11 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() != 2)
             return NULL;
-        else{
-            JieyinCard *jieyin_card = new JieyinCard();
-            jieyin_card->addSubcard(cards.at(0)->getCard()->getId());
-            jieyin_card->addSubcard(cards.at(1)->getCard()->getId());
 
-            return jieyin_card;
-        }
+        JieyinCard *jieyin_card = new JieyinCard();
+        jieyin_card->addSubcards(cards);
+
+        return jieyin_card;
     }
 };
 

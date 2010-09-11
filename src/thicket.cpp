@@ -274,7 +274,7 @@ public:
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
             if(result == "hp"){
-                room->lostHp(dongzhuo);
+                room->loseHp(dongzhuo);
             }else{
                 dongzhuo->setMaxHP(dongzhuo->getMaxHP() - 1);
                 if(dongzhuo->getMaxHP() == 0){

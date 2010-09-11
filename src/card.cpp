@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
+#include "carditem.h"
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), suit(suit), number(number), id(-1)
@@ -151,7 +152,7 @@ const Card *Card::Parse(const QString &str){
 
         return card;        
     }else if(str.contains(QChar('='))){
-        static QRegExp pattern("(\\w+)\\[(\\w+):(\\w+)\\]=(.+)");
+        static QRegExp pattern("(\\w+)\\[(\\w+):(.+)\\]=(.+)");
         pattern.indexIn(str);
         QStringList texts = pattern.capturedTexts();
         QString name = texts.at(1);
@@ -183,6 +184,9 @@ const Card *Card::Parse(const QString &str){
             number = number_string.toInt();
 
         Card *card = Sanguosha->cloneCard(name, suit, number);
+        if(card == NULL)
+            return NULL;        
+
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
 
@@ -266,4 +270,9 @@ int SkillCard::getTypeId() const{
 
 QString SkillCard::toString() const{
     return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+}
+
+void SkillCard::addSubcards(const QList<CardItem *> &card_items){
+    foreach(CardItem *card_item, card_items)
+        subcards << card_item->getCard()->getId();
 }
