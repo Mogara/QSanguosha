@@ -232,6 +232,7 @@ class Slash: public BasicCard{
 
 public:
     Q_INVOKABLE Slash(Card::Suit suit, int number);
+    DamageStruct::Nature getNature() const;
 
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;

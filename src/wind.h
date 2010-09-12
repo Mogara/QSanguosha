@@ -11,6 +11,13 @@ public:
     Q_INVOKABLE GuidaoCard();
 };
 
+class LeijiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LeijiCard();
+};
+
 class HuangtianCard: public SkillCard{
     Q_OBJECT
 

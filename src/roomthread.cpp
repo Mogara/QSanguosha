@@ -106,3 +106,7 @@ void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
         skill_table[event].removeOne(skill);
     }
 }
+
+void RoomThread::delay(unsigned long secs){
+    sleep(secs);
+}

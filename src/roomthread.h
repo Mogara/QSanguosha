@@ -100,10 +100,12 @@ enum TriggerEvent{
     JudgeOnEffect,
 
     SlashEffect,
+    Jinked,
     SlashResult,
 
     CardUsed,
-    CardMove,
+    CardLost,
+    CardGot,    
 
     CardEffect,
     CardEffected,
@@ -118,6 +120,7 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
+    void delay(unsigned long secs);
 
 protected:
     virtual void run();

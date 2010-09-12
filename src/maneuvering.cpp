@@ -117,6 +117,7 @@ public:
 Vine::Vine(Suit suit, int number):Armor(suit, number){
     setObjectName("vine");
     set_flag = true;
+    skill = new VineSkill;
 }
 
 class SilverLionSkill: public TriggerSkill{

@@ -134,6 +134,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     break;
                 }
 
+                if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
+                    break;
+                }
+
                 SlashResultStruct result;
                 result.slash = effect.slash;
                 result.from = effect.from;

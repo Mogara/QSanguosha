@@ -3,11 +3,16 @@
 #include "wind.h"
 #include "client.h"
 #include "carditem.h"
+#include "engine.h"
 
 // skill cards
 
 GuidaoCard::GuidaoCard(){
     target_fixed = true;
+}
+
+LeijiCard::LeijiCard(){
+
 }
 
 HuangtianCard::HuangtianCard(){
@@ -104,6 +109,58 @@ public:
             if(player->getGeneral()->getKingdom() == "qun")
                 room->attachSkillToPlayer(player, "huangtian");
         }
+    }
+};
+
+class LeijiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    LeijiViewAsSkill():ZeroCardViewAsSkill("leiji"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@leiji";
+    }
+
+    virtual const Card *viewAs() const{
+        return new LeijiCard;
+    }
+};
+
+class Leiji: public TriggerSkill{
+public:
+    Leiji():TriggerSkill("leiji"){
+        events << Jinked;
+        view_as_skill = new LeijiViewAsSkill;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhangjiao, QVariant &) const{
+        Room *room = zhangjiao->getRoom();
+
+        QList<ServerPlayer *> targets;
+        const Card *leiji_card = room->askForCardWithTargets(zhangjiao, "@@leiji", "@leiji", targets);
+        if(leiji_card){
+            ServerPlayer *target = targets.first();
+
+            int card_id = room->getJudgeCard(target);
+            const Card *card = Sanguosha->getCard(card_id);
+            if(card->getSuit() == Card::Spade){
+                DamageStruct damage;
+                damage.card = leiji_card;
+                damage.damage = 2;
+                damage.from = zhangjiao;
+                damage.to = target;
+                damage.nature = DamageStruct::Thunder;
+
+                room->damage(damage);
+            }
+        }
+
+        return false;
     }
 };
 
@@ -258,7 +315,7 @@ WindPackage::WindPackage()
 
     zhangjiao = new General(this, "zhangjiao$", "qun", 3);
     zhangjiao->addSkill(new Guidao);
-    zhangjiao->addSkill(new Skill("leiji"));
+    zhangjiao->addSkill(new Leiji);
     zhangjiao->addSkill(new Huangtian);
 
     // two gods
@@ -295,7 +352,8 @@ WindPackage::WindPackage()
 
     metaobjects << &GuidaoCard::staticMetaObject
             << &HuangtianCard::staticMetaObject
-            << &GongxinCard::staticMetaObject;
+            << &GongxinCard::staticMetaObject
+            << &LeijiCard::staticMetaObject;
 
     skills << new HuangtianViewAsSkill;
 }

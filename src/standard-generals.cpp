@@ -557,7 +557,7 @@ public:
 class Lianying: public TriggerSkill{
 public:
     Lianying():TriggerSkill("lianying"){
-        events << CardMove;
+        events << CardLost;
 
         frequency = Frequent;
     }
@@ -698,7 +698,7 @@ public:
 class Xiaoji: public TriggerSkill{
 public:
     Xiaoji():TriggerSkill("xiaoji"){
-        events << CardMove;
+        events << CardLost;
 
         frequency = Frequent;
     }

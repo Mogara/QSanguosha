@@ -153,11 +153,14 @@ int Room::getJudgeCard(ServerPlayer *player){
             if(card){
                 QList<int> subcards = card->getSubcards();
                 Q_ASSERT(!subcards.isEmpty());
-                zhangjiao->obtainCard(card);
+                obtainCard(zhangjiao, card_id);
                 card_id = subcards.first();
             }
         }
     }
+
+    // judge delay
+    thread->delay(1);
 
     QVariant card_id_data = card_id;
     thread->trigger(JudgeOnEffect, player, card_id_data);
@@ -361,6 +364,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         const Card *card = Card::Parse(result);
         player->playCardEffect(card);
         throwCard(card);
+
+        if(card->inherits("Jink"))
+            thread->trigger(Jinked, player);
+
         return card;
     }else
         return NULL;
@@ -930,7 +937,12 @@ void Room::moveCard(const CardMoveStruct &move){
 
     if(move.from){
         QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardMove, move.from, data);
+        thread->trigger(CardLost, move.from, data);
+    }
+
+    if(move.to){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardGot, move.to, data);
     }
 
     card->onMove(move);

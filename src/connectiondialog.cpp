@@ -7,12 +7,22 @@ static const int ShrinkWidth = 230;
 static const int ExpandWidth = 744;
 
 #include <QMessageBox>
+#include <QRegExpValidator>
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
+
+#ifdef CHINESE_SUPPORT
+    QRegExp pattern("[^-+@: =!#%*]+");
+#else
+    QRegExp pattern("[a-zA-Z_0-9]+");
+#endif
+
+    QRegExpValidator *validator = new QRegExpValidator(pattern, this);
+    ui->nameLineEdit->setValidator(validator);
 
     ui->nameLineEdit->setText(Config.UserName);
     ui->hostLineEdit->setText(Config.HostAddress);
@@ -50,23 +60,6 @@ void ConnectionDialog::on_connectButton_clicked()
 {
     QString username = ui->nameLineEdit->text();
     username = username.trimmed();
-
-#ifdef CHINESE_SUPPORT
-
-    QRegExp chinese_pattern("[^-+@: =!#%*]+");
-    if(!chinese_pattern.exactMatch(username)){
-        QMessageBox::warning(this, tr("Warning"), tr("User name can not contains special characters!"));
-        return;
-    }
-
-#else
-    QRegExp english_pattern("\\w+");
-    if(!english_pattern.exactMatch(username)){
-        QMessageBox::warning(this, tr("Warning"), tr("The game now only supports English names now"));
-        return;
-    }
-
-#endif
 
     Config.setValue("UserName", Config.UserName = username);
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());

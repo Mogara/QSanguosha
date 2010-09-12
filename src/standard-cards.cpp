@@ -11,6 +11,10 @@ Slash::Slash(Suit suit, int number): BasicCard(suit, number)
     nature = DamageStruct::Normal;
 }
 
+DamageStruct::Nature Slash::getNature() const{
+    return nature;
+}
+
 bool Slash::isAvailable() const{
     if(Self->hasSkill("paoxiao") || Self->hasFlag("crossbow"))
         return true;
@@ -185,16 +189,13 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         const Weapon *weapon = target->getWeapon();
-        return weapon && weapon->objectName() == "double_sword";
+        return weapon && weapon->objectName() == objectName();
     }
 
     virtual bool buff(const SlashEffectStruct &effect) const{
         Room *room = effect.from->getRoom();
 
-        room->output(QString("from=%1, to=%2").arg(effect.from->getGeneral()->isMale()).arg(effect.to->getGeneral()->isMale()));
-
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
-
             if(room->askForSkillInvoke(effect.from, objectName())){
                 if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1))
                     effect.from->drawCards(1);
@@ -220,10 +221,28 @@ public:
     }
 };
 
+class YitianSwordSkill : public TriggerSkill{
+public:
+    YitianSwordSkill():TriggerSkill("yitian_sword"){
+        events << CardGot;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardMoveStruct move = data.value<CardMoveStruct>();
+        const Card *card = Sanguosha->getCard(move.card_id);
+        if(card->inherits("Slash") && move.to_place == Player::Hand){
+            // FIXME
+        }
+
+        return false;
+    }
+};
+
 class YitianSword:public Weapon{
 public:
     YitianSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("yitian_sword");
+        skill = new YitianSwordSkill;
     }
 };
 
@@ -284,10 +303,31 @@ public:
     }
 };
 
+class AxeSkill: public TriggerSkill{
+public:
+    AxeSkill():TriggerSkill("axe"){
+        events << SlashResult;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashResultStruct result = data.value<SlashResultStruct>();
+        if(!result.success){
+            Room *room = player->getRoom();
+            if(room->askForDiscard(player, 2)){
+                result.success = true;
+                data = QVariant::fromValue(result);
+            }
+        }
+
+        return false;
+    }
+};
+
 class Axe:public Weapon{
 public:
     Axe(Suit suit = Diamond, int number = 5):Weapon(suit, number, 3){
         setObjectName("axe");
+        skill = new AxeSkill;
     }
 };
 
@@ -723,7 +763,8 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        const Weapon *weapon = target->getWeapon();
+        return weapon && weapon->objectName() == objectName();
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -736,7 +777,7 @@ public:
                 int card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
                 room->throwCard(card_id);
 
-                if(!result.to->isKongcheng()){
+                if(!result.to->isNude()){
                     card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
                     room->throwCard(card_id);
                 }
