@@ -397,11 +397,24 @@ public:
 class Baonu: public TriggerSkill{
 public:
     Baonu():TriggerSkill("baonu"){
-        events << Damage << Damaged;
+        events << GameStart<< Damage << Damaged;
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        // increase his baonu marks
+        if(event == GameStart){
+            player->setMark("anger", 2);
+        }else{
+            if(player->isAlive()){
+                DamageStruct damage = data.value<DamageStruct>();
+                int value = player->getMark("anger");
+                value += damage.damage;
+                player->getRoom()->setPlayerMark(player, "anger", value);
+            }
+        }
 
         return false;
     }

@@ -3,6 +3,7 @@
 #include "room.h"
 #include "skill.h"
 #include "maneuvering.h"
+#include "clientplayer.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -112,6 +113,13 @@ QString SingleTargetTrick::getSubtype() const{
     return "single_target_trick";
 }
 
+bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(isBlack() && to_select->hasSkill("weimu"))
+        return false;
+    else
+        return true;
+}
+
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
     :TrickCard(suit, number), movable(movable)
 {
@@ -181,6 +189,9 @@ void Weapon::onInstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
     if(range != 1)
         room->setPlayerProperty(player, "attack_range", range);
+
+    if(attach_skill)
+        room->attachSkillToPlayer(player, objectName());
 }
 
 void Weapon::onUninstall(ServerPlayer *player) const{
@@ -188,6 +199,9 @@ void Weapon::onUninstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
     if(range != 1)
         room->setPlayerProperty(player, "attack_range", 1);
+
+    if(attach_skill)
+        room->detachSkillFromPlayer(player, objectName());
 }
 
 QString Armor::getSubtype() const{

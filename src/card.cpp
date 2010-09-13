@@ -172,7 +172,10 @@ const Card *Card::Parse(const QString &str){
         QString skill_name = texts.at(2);
         QString suit_string = texts.at(3);
         QString number_string = texts.at(4);
-        QStringList subcard_ids = texts.at(5).split("+");
+        QString subcard_str = texts.at(5);
+        QStringList subcard_ids;
+        if(subcard_str != ".")
+            subcard_ids = subcard_str.split("+");
 
         static QMap<QString, Card::Suit> suit_map;
         if(suit_map.isEmpty()){

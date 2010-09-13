@@ -483,6 +483,11 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     broadcastProperty(player, property_name);
 }
 
+void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
+    player->setMark(mark, value);
+    broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
+}
+
 void Room::setPlayerCorrect(ServerPlayer *player, const QString &field, int correct){
     QString correct_str = QString("%1:%2").arg(field).arg(correct);
     player->setCorrect(correct_str);
@@ -949,6 +954,8 @@ void Room::moveCard(const CardMoveStruct &move){
 
     setCardMapping(move.card_id, move.to, move.to_place);
 
+    card->onMove(move);
+
     if(move.from){
         QVariant data = QVariant::fromValue(move);
         thread->trigger(CardLost, move.from, data);
@@ -957,9 +964,7 @@ void Room::moveCard(const CardMoveStruct &move){
     if(move.to){
         QVariant data = QVariant::fromValue(move);
         thread->trigger(CardGot, move.to, data);
-    }
-
-    card->onMove(move);
+    }    
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){

@@ -46,6 +46,7 @@ public:
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerCorrect(ServerPlayer *player, const QString &field, int correct);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
+    void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void moveCard(const CardMoveStruct &move);
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void useCard(ServerPlayer *player, const QString &card_str);

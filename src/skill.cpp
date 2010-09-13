@@ -201,3 +201,12 @@ bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) con
     onGameStart(player);
     return false;
 }
+
+WeaponSkill::WeaponSkill(const QString &name)
+    :TriggerSkill(name)
+{
+}
+
+bool WeaponSkill::triggerable(const ServerPlayer *target) const{
+    return target->hasWeapon(objectName());
+}

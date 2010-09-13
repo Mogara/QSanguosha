@@ -124,4 +124,11 @@ public:
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
+class WeaponSkill: public TriggerSkill{
+public:
+    WeaponSkill(const QString &name);
+
+    virtual bool triggerable(const ServerPlayer *target) const;
+};
+
 #endif // SKILL_H

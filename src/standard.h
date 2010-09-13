@@ -111,6 +111,7 @@ public:
     SingleTargetTrick(Suit suit, int number):TrickCard(suit, number){}
     virtual QString getSubtype() const;
 
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
@@ -184,6 +185,7 @@ public:
 
 protected:
     int range;
+    bool attach_skill;
 };
 
 class IceSword: public Weapon{
@@ -233,6 +235,9 @@ class Slash: public BasicCard{
 public:
     Q_INVOKABLE Slash(Card::Suit suit, int number);
     DamageStruct::Nature getNature() const;
+    void setNature(DamageStruct::Nature nature);
+
+    static bool IsAvailable();
 
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;

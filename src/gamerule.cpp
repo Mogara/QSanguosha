@@ -38,7 +38,11 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
             break;
         }
-    case Player::Draw: player->drawCards(2); break;
+    case Player::Draw: {
+            player->drawCards(2);
+            break;
+        }
+
     case Player::Play: {
             forever{
                 QString card = room->activate(player);
@@ -49,6 +53,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
             break;
         }
+
     case Player::Discard:{
             int discard_num = player->getHandcardNum() - player->getMaxCards();
             if(discard_num > 0)

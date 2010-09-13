@@ -20,8 +20,6 @@ public:
     RoomScene(int player_count, QMainWindow *main_window);
 
 public slots:
-    void showBust(const QString &name);
-
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
     void drawCards(const QList<const Card *> &cards);
@@ -49,7 +47,6 @@ private:
     Dashboard *dashboard;
     Pixmap *pile;
     Pixmap *avatar;
-    Pixmap *bust;
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;
@@ -80,6 +77,7 @@ private:
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
     void unselectAllTargets(const QGraphicsItem *except = NULL);
+    void updateTargetsEnablity(const Card *card);
 
     void callViewAsSkill();
     void cancelViewAsSkill();    

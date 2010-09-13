@@ -124,8 +124,15 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
+    void addMark(const QString &mark);
+    void removeMark(const QString &mark);
+    void setMark(const QString &mark, int value);
+    int getMark(const QString &mark) const;
+
     void setChained(bool chained);
     bool isChained() const;
+
+    bool canSlash(const Player *other) const;
 private:
     const General *general;
     int hp, max_hp, xueyi;
@@ -134,6 +141,7 @@ private:
     int seat;
     bool alive;
     QSet<QString> flags;
+    QMap<QString, int> marks;
 
     struct CorrectStruct{
         int equip_src;

@@ -376,3 +376,35 @@ void Player::setChained(bool chained){
         emit state_changed();
     }
 }
+
+void Player::addMark(const QString &mark){
+    int value = marks.value(mark, 0);
+    value++;
+    setMark(mark, value);
+}
+
+void Player::removeMark(const QString &mark){
+    int value = marks.value(mark, 0);
+    value--;
+    value = qMin(0, value);
+    setMark(mark, value);
+}
+
+void Player::setMark(const QString &mark, int value){
+    if(marks[mark] != value){
+        marks[mark] = value;
+
+        emit state_changed();
+    }
+}
+
+int Player::getMark(const QString &mark) const{
+    return marks.value(mark, 0);
+}
+
+bool Player::canSlash(const Player *other) const{
+    if(other->hasSkill("kongcheng") && other->isKongcheng())
+        return false;
+
+    return distanceTo(other) <= getAttackRange();
+}

@@ -15,13 +15,21 @@ DamageStruct::Nature Slash::getNature() const{
     return nature;
 }
 
-bool Slash::isAvailable() const{
-    if(Self->hasSkill("paoxiao") || Self->hasFlag("crossbow"))
+void Slash::setNature(DamageStruct::Nature nature){
+    this->nature = nature;
+}
+
+bool Slash::IsAvailable(){
+    if(Self->hasSkill("paoxiao") || Self->hasWeapon("crossbow"))
         return true;
     else{
         int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
         return slash_count < 1;
     }
+}
+
+bool Slash::isAvailable() const{
+    return IsAvailable();
 }
 
 QString Slash::getSubtype() const{
@@ -98,17 +106,14 @@ bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
 
 bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     int slash_targets = 1;
-    if(Self->hasFlag("halberd") && Self->getHandcardNum() == 1){
+    if(Self->hasWeapon("halberd") && Self->getHandcardNum() == 1){
         slash_targets = 3;
     }
 
     if(targets.length() >= slash_targets)
         return false;
 
-    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
-        return false;
-
-    return Self->distanceTo(to_select) <= Self->getAttackRange();
+    return Self->canSlash(to_select);
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){
@@ -170,7 +175,6 @@ class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
         setObjectName("crossbow");
-        set_flag = true;
     }
 };
 
@@ -188,7 +192,8 @@ public:
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
-                if(effect.to->isKongcheng() || room->askForCard(effect.to, ".", "double-sword-card"))
+                QString prompt = "double-sword-card:" + effect.from->getGeneralName();
+                if(effect.to->isKongcheng() || room->askForCard(effect.to, ".", prompt))
                     effect.from->drawCards(1);
             }
         }
@@ -213,20 +218,48 @@ public:
     }
 };
 
-class YitianSwordSkill : public TriggerSkill{
+class YitianSwordSkill : public WeaponSkill{
 public:
-    YitianSwordSkill():TriggerSkill("yitian_sword"){
+    YitianSwordSkill():WeaponSkill("yitian_sword"){
         events << CardGot;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         CardMoveStruct move = data.value<CardMoveStruct>();
         const Card *card = Sanguosha->getCard(move.card_id);
-        if(card->inherits("Slash") && move.to_place == Player::Hand){
-            // FIXME
+        Room *room = player->getRoom();
+        if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand && move.open){
+            QList<ServerPlayer *> targets;
+            if(room->askForCardWithTargets(player, "@@yitian", "@yitian-sword", targets)){
+                CardUseStruct use;
+                use.card = card;
+                use.from = player;
+                use.to << targets;
+
+                QVariant use_data = QVariant::fromValue(use);
+                room->getThread()->trigger(CardUsed, player, use_data);
+            }
         }
 
         return false;
+    }
+};
+
+class YitianSwordViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    YitianSwordViewAsSkill():ZeroCardViewAsSkill("yitian_sword"){
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@yitian";
+    }
+
+    virtual const Card *viewAs() const{
+        return new Slash(Card::NoSuit, 0);
     }
 };
 
@@ -235,17 +268,14 @@ public:
     YitianSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("yitian_sword");
         skill = new YitianSwordSkill;
+        attach_skill = true;
     }
 };
 
-class BladeSkill : public TriggerSkill{
+class BladeSkill : public WeaponSkill{
 public:
-    BladeSkill():TriggerSkill("blade"){
+    BladeSkill():WeaponSkill("blade"){
         events << SlashResult;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasWeapon(objectName());
     }
 
     virtual int getPriority(ServerPlayer *target) const{
@@ -285,6 +315,14 @@ public:
 
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return Slash::IsAvailable();
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "slash";
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         return selected.length() < 2 && !to_select->isEquipped();
     }
@@ -314,24 +352,13 @@ class Spear:public Weapon{
 public:
     Spear(Suit suit = Spade, int number = 12):Weapon(suit, number, 3){
         setObjectName("spear");
-    }
-
-    virtual void onInstall(ServerPlayer *player) const{
-        Weapon::onInstall(player);
-
-        player->getRoom()->attachSkillToPlayer(player, "spear");
-    }
-
-    virtual void onUninstall(ServerPlayer *player) const{
-        Weapon::onUninstall(player);
-
-        player->getRoom()->detachSkillFromPlayer(player, "spear");
+        attach_skill = true;
     }
 };
 
-class AxeSkill: public TriggerSkill{
+class AxeSkill: public WeaponSkill{
 public:
-    AxeSkill():TriggerSkill("axe"){
+    AxeSkill():WeaponSkill("axe"){
         events << SlashResult;
     }
 
@@ -575,13 +602,9 @@ public:
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
         if(targets.isEmpty()){
-            return to_select->getWeapon() != NULL && to_select != Self;
+            return to_select->getWeapon() && to_select != Self;
         }else if(targets.length() == 1){
-            if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
-                return false;
-
-            const ClientPlayer *first = targets.first();
-            return first->distanceTo(to_select) <= first->getAttackRange();
+            return targets.first()->canSlash(to_select);
         }else
             return false;
     }
@@ -593,14 +616,9 @@ public:
         QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
         const Card *slash = room->askForCard(killer, "slash", prompt);
         if(slash){
-            CardEffectStruct effect;
-            effect.card = slash;
-            effect.from = killer;
-            effect.to = victim;
-
-            room->cardEffect(effect);            
+            room->cardEffect(slash, killer, victim);
         }else{
-            room->obtainCard(source, killer->getWeapon()->getId());
+            source->obtainCard(killer->getWeapon());
         }
     }
 };
@@ -785,11 +803,10 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        const Weapon *weapon = target->getWeapon();
-        return weapon && weapon->objectName() == objectName();
+        return target->hasWeapon(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
 
         if(result.success){
@@ -1032,8 +1049,9 @@ void StandardPackage::addCards(){
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
+    t["ice_sword:yes"] = tr("ice_sword:yes");
     t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
     t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
 
-    skills << new SpearSkill;
+    skills << new SpearSkill << new YitianSwordViewAsSkill;
 }

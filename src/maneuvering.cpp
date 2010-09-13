@@ -1,6 +1,7 @@
 #include "maneuvering.h"
 #include "client.h"
 #include "engine.h"
+#include "carditem.h"
 
 NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     :Slash(suit, number)
@@ -52,13 +53,43 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
 }
 
+class FanSkill: public ViewAsSkill{
+public:
+    FanSkill():ViewAsSkill("fan"){
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(!selected.isEmpty())
+            return false;
+
+        const Card *card = to_select->getCard();
+        if(!card->inherits("Slash"))
+            return false;
+
+        const Slash *slash = qobject_cast<const Slash *>(card);
+        return slash->getNature() == DamageStruct::Normal;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return false;
+
+        const Card *card = cards.first()->getCard();
+        Slash *slash = new Slash(card->getSuit(), card->getNumber());
+        slash->setNature(DamageStruct::Fire);
+
+        return slash;
+    }
+};
+
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
-    setObjectName("fan");
+    setObjectName("fan");    
+    attach_skill = true;
 }
 
-class GudingBladeSkill: public TriggerSkill{
+class GudingBladeSkill: public WeaponSkill{
 public:
-    GudingBladeSkill():TriggerSkill("guding_blade"){
+    GudingBladeSkill():WeaponSkill("guding_blade"){
         events << Predamage;
     }
 
@@ -75,7 +106,6 @@ public:
 
 GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
     setObjectName("guding_blade");
-
     skill = new GudingBladeSkill;
 }
 
@@ -86,7 +116,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target->hasFlag("vine");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -338,6 +368,8 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     t["fire-attack-card"] = tr("fire-attack-card");
+
+    skills << new FanSkill;
 }
 
 ADD_PACKAGE(Maneuvering)

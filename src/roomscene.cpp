@@ -27,7 +27,7 @@ static const QPointF DrawPilePos(893, -235);
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
-    :bust(NULL), main_window(main_window)
+    :main_window(main_window)
 {
     connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
 
@@ -231,26 +231,6 @@ void RoomScene::updatePhotos(const QList<const ClientPlayer*> &seats){
 
         group->addAnimation(translation);
     }
-}
-
-void RoomScene::showBust(const QString &name)
-{
-    const General *general = Sanguosha->getGeneral(name);
-    QString filename = general->getPixmapPath("bust");
-    if(!bust){
-        bust = new Pixmap(filename);
-        bust->shift();
-        addItem(bust);
-    }else
-        bust->changePixmap(filename);
-
-    QPropertyAnimation *appear = new QPropertyAnimation(bust, "scale");
-    appear->setStartValue(0.2);    
-    appear->setEndValue(1.0);
-
-    appear->start();
-
-    connect(appear, SIGNAL(finished()), bust, SIGNAL(visibleChanged()));
 }
 
 void RoomScene::drawCards(const QList<const Card *> &cards){
@@ -758,6 +738,15 @@ void RoomScene::enableTargets(const Card *card){
         return;
     }
 
+    updateTargetsEnablity(card);
+
+    if(Config.EnableAutoTarget)
+        selectNextTarget(false);
+
+    ok_button->setEnabled(card->targetsFeasible(selected_targets));
+}
+
+void RoomScene::updateTargetsEnablity(const Card *card){
     if(card->targetFilter(selected_targets, Self)){
         avatar->setEnabled(true);
         avatar->setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -775,11 +764,6 @@ void RoomScene::enableTargets(const Card *card){
             photo->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
     }
-
-    if(Config.EnableAutoTarget)
-        selectNextTarget(false);
-
-    ok_button->setEnabled(card->targetsFeasible(selected_targets));
 }
 
 void RoomScene::updateSelectedTargets(){
@@ -831,6 +815,7 @@ void RoomScene::updateSelectedTargets(){
         target_names << Sanguosha->translate(target->getGeneralName());
     changeMessage(tr("You choose %1 as [%2]'s target").arg(target_names.join(",")).arg(card->getName()));
 
+    // updateTargetsEnablity(card);
     ok_button->setEnabled(card->targetsFeasible(selected_targets));
 }
 

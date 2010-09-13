@@ -19,8 +19,8 @@ public:
             return;
 
         if(room->askForSkillInvoke(target, "jianxiong")){
-            room->obtainCard(target, card);
             room->playSkillEffect(objectName());
+            room->obtainCard(target, card);            
         }
     }
 };
@@ -1085,6 +1085,8 @@ void StandardPackage::addGenerals(){
     t["jianxiong:yes"] = tr("jianxiong:yes");
     t["fankui:yes"] = tr("fankui:yes");
     t["biyue:yes"] = tr("biyue:yes");
+    t["luoyi:yes"] = tr("luoyi:yes");
+    t["tieji:yes"] = tr("tieji:yes");
 
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");

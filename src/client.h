@@ -55,22 +55,17 @@ public:
     void activate(const QString &focus_player);
     void startGame(const QString &);
     void hpChange(const QString &change_str);
-    void askForCard(const QString &request_str);
-    void askForSkillInvoke(const QString &skill_name);
-    void askForChoice(const QString &ask_str);
     void playSkillEffect(const QString &play_str);
-    void askForNullification(const QString &ask_str);
     void closeNullification(const QString &);
-    void askForCardChosen(const QString &ask_str);
     void playCardEffect(const QString &play_str);
     void prompt(const QString &prompt_str);
     void clearPile(const QString &);
     void setPileNumber(const QString &pile_num);
-    void askForDiscard(const QString &discard_str);
     void gameOver(const QString &result_str);
     void killPlayer(const QString &player_name);
     void gameOverWarn(const QString &);
-    void askForSuit(const QString &);
+    void setMark(const QString &mark_str);
+    void showCard(const QString &show_str);
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
@@ -79,7 +74,14 @@ public:
 
     void askForSinglePeach(const QString &ask_str);
     void askForCardShow(const QString &requestor);
-    void showCard(const QString &show_str);
+    void askForCard(const QString &request_str);
+    void askForSkillInvoke(const QString &skill_name);
+    void askForChoice(const QString &ask_str);
+    void askForDiscard(const QString &discard_str);
+    void askForSuit(const QString &);
+    void askForNullification(const QString &ask_str);
+    void askForCardChosen(const QString &ask_str);
+
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
 

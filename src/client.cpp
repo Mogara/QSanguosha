@@ -89,6 +89,7 @@ Client::Client(QObject *parent)
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["showCard"] = &Client::showCard;
+    callbacks["setMark"] = &Client::setMark;
 
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
@@ -480,6 +481,8 @@ void Client::playSkillEffect(const QString &play_str){
 
 void Client::replyNullification(int card_id){
     request(QString("replyNullification %1").arg(card_id));
+    delete nullification_dialog;
+    nullification_dialog = NULL;
 }
 
 void Client::askForNullification(const QString &ask_str){
@@ -678,6 +681,21 @@ void Client::askForSuit(const QString &){
     dialog->exec();
 }
 
+void Client::setMark(const QString &mark_str){
+    QRegExp rx("(\\w+)\\.(\\w+)=(\\d+)");
+
+    if(!rx.exactMatch(mark_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString who = texts.at(1);
+    QString mark = texts.at(2);
+    int value = texts.at(3).toInt();
+
+    ClientPlayer *player = findChild<ClientPlayer*>(who);
+    player->setMark(mark, value);
+}
+
 void Client::chooseSuit(){
     request("chooseSuit " + sender()->objectName());
 }
@@ -787,5 +805,3 @@ void Client::attachSkill(const QString &skill_name){
 void Client::detachSkill(const QString &skill_name){
     emit skill_detached(skill_name);
 }
-
-
