@@ -165,25 +165,27 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case SlashResult:{
-            if(data.canConvert<SlashResultStruct>()){
-                SlashResultStruct result = data.value<SlashResultStruct>();
-                if(result.success){
-                    DamageStruct damage;
-                    damage.card = result.slash;                    
+            SlashResultStruct result = data.value<SlashResultStruct>();
+            if(result.success){
+                DamageStruct damage;
+                damage.card = result.slash;
 
-                    damage.damage = 1;
-                    if(result.from->hasFlag("drank")){
-                        damage.damage ++;
-                        room->setPlayerFlag(result.from, "-drank");
-                    }
+                damage.damage = 1;
+                if(result.from->hasFlag("drank")){
+                    damage.damage ++;
 
-                    damage.from = result.from;
-                    damage.to = result.to;
-                    damage.nature = result.nature;
-
-                    room->damage(damage);
                 }
+
+                damage.from = result.from;
+                damage.to = result.to;
+                damage.nature = result.nature;
+
+                room->damage(damage);
             }
+
+            if(result.from->hasFlag("drank"))
+                room->setPlayerFlag(result.from, "-drank");
+
             break;
         }
 

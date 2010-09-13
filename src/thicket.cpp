@@ -526,6 +526,8 @@ ThicketPackage::ThicketPackage()
     t["benghuai:hp"] = tr("benghuai:hp");
     t["benghuai:max_hp"] = tr("benghuai:max_hp");
 
+    t["guixin:yes"] = tr("guixin:yes");
+
     metaobjects << &DimengCard::staticMetaObject
             << &LuanwuCard::staticMetaObject
             << &YinghunCard::staticMetaObject

@@ -484,77 +484,77 @@
 <context>
     <name>ManeuveringPackage</name>
     <message>
-        <location filename="src/maneuvering.cpp" line="272"/>
+        <location filename="src/maneuvering.cpp" line="273"/>
         <source>maneuvering</source>
         <translation>军争</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="273"/>
+        <location filename="src/maneuvering.cpp" line="274"/>
         <source>buff_card</source>
         <translation>辅助伤害卡</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="274"/>
+        <location filename="src/maneuvering.cpp" line="275"/>
         <source>damage_spread</source>
         <translation>伤害传导</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="275"/>
+        <location filename="src/maneuvering.cpp" line="276"/>
         <source>fire_attack</source>
         <translation>火攻</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="276"/>
+        <location filename="src/maneuvering.cpp" line="277"/>
         <source>thunder_slash</source>
         <translation>雷杀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="277"/>
+        <location filename="src/maneuvering.cpp" line="278"/>
         <source>fire_slash</source>
         <translation>火杀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="278"/>
+        <location filename="src/maneuvering.cpp" line="279"/>
         <source>analeptic</source>
         <translation>酒</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="279"/>
+        <location filename="src/maneuvering.cpp" line="280"/>
         <source>fan</source>
         <translation>朱雀羽扇</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="280"/>
+        <location filename="src/maneuvering.cpp" line="281"/>
         <source>hualiu</source>
         <translation>骅骝</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="281"/>
+        <location filename="src/maneuvering.cpp" line="282"/>
         <source>guding_blade</source>
         <translation>古锭刀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="282"/>
+        <location filename="src/maneuvering.cpp" line="283"/>
         <source>vine</source>
         <translation>藤甲</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="283"/>
+        <location filename="src/maneuvering.cpp" line="284"/>
         <source>silver_lion</source>
         <translation>白银狮子</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="284"/>
+        <location filename="src/maneuvering.cpp" line="285"/>
         <source>iron_chain</source>
         <translation>铁索连环</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="285"/>
+        <location filename="src/maneuvering.cpp" line="286"/>
         <source>supply_shortage</source>
         <translation>兵粮寸断</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="352"/>
+        <location filename="src/maneuvering.cpp" line="353"/>
         <source>fire-attack</source>
         <translation type="unfinished">火攻</translation>
     </message>
@@ -661,22 +661,22 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="536"/>
+        <location filename="src/room.cpp" line="543"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="573"/>
+        <location filename="src/room.cpp" line="580"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="580"/>
+        <location filename="src/room.cpp" line="587"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="725"/>
+        <location filename="src/room.cpp" line="732"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -913,313 +913,313 @@
 <context>
     <name>StandardPackage</name>
     <message>
-        <location filename="src/standard-cards.cpp" line="920"/>
+        <location filename="src/standard-cards.cpp" line="974"/>
         <source>spade</source>
         <translation>黑桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="921"/>
+        <location filename="src/standard-cards.cpp" line="975"/>
         <source>club</source>
         <translation>梅花</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="922"/>
+        <location filename="src/standard-cards.cpp" line="976"/>
         <source>heart</source>
         <translation>红桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="923"/>
+        <location filename="src/standard-cards.cpp" line="977"/>
         <source>diamond</source>
         <translation>方块</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="925"/>
+        <location filename="src/standard-cards.cpp" line="979"/>
         <source>basic</source>
         <translation>基本牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="926"/>
+        <location filename="src/standard-cards.cpp" line="980"/>
         <source>trick</source>
         <translation>锦囊牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="927"/>
+        <location filename="src/standard-cards.cpp" line="981"/>
         <source>equip</source>
         <translation>装备牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="928"/>
+        <location filename="src/standard-cards.cpp" line="982"/>
         <source>attack_card</source>
         <translation>进攻牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="929"/>
+        <location filename="src/standard-cards.cpp" line="983"/>
         <source>defense_card</source>
         <translation>防御牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="930"/>
+        <location filename="src/standard-cards.cpp" line="984"/>
         <source>recover_card</source>
         <translation>恢复牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="931"/>
+        <location filename="src/standard-cards.cpp" line="985"/>
         <source>disgusting_card</source>
         <translation>恶心牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="932"/>
+        <location filename="src/standard-cards.cpp" line="986"/>
         <source>global_effect</source>
         <translation>全局效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="933"/>
+        <location filename="src/standard-cards.cpp" line="987"/>
         <source>aoe</source>
         <translation>范围效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="934"/>
+        <location filename="src/standard-cards.cpp" line="988"/>
         <source>single_target_trick</source>
         <translation>单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="935"/>
+        <location filename="src/standard-cards.cpp" line="989"/>
         <source>delayed_trick</source>
         <translation>延时锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="936"/>
+        <location filename="src/standard-cards.cpp" line="990"/>
         <source>weapon</source>
         <translation>武器</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="937"/>
+        <location filename="src/standard-cards.cpp" line="991"/>
         <source>armor</source>
         <translation>防具</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="938"/>
+        <location filename="src/standard-cards.cpp" line="992"/>
         <source>defensive_horse</source>
         <translation>防御马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="939"/>
+        <location filename="src/standard-cards.cpp" line="993"/>
         <source>offensive_horse</source>
         <translation>进攻马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="941"/>
+        <location filename="src/standard-cards.cpp" line="995"/>
         <source>slash</source>
         <translation>杀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="942"/>
+        <location filename="src/standard-cards.cpp" line="996"/>
         <source>jink</source>
         <translation>闪</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="943"/>
+        <location filename="src/standard-cards.cpp" line="997"/>
         <source>peach</source>
         <translation>桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="944"/>
+        <location filename="src/standard-cards.cpp" line="998"/>
         <source>shit</source>
         <translation>屎</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="946"/>
+        <location filename="src/standard-cards.cpp" line="1000"/>
         <source>crossbow</source>
         <translation>诸葛连弩</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="947"/>
+        <location filename="src/standard-cards.cpp" line="1001"/>
         <source>double_sword</source>
         <translation>雌雄双股剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="948"/>
+        <location filename="src/standard-cards.cpp" line="1002"/>
         <source>qinggang_sword</source>
         <translation>青釭剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="949"/>
+        <location filename="src/standard-cards.cpp" line="1003"/>
         <source>yitian_sword</source>
         <translation>倚天剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="950"/>
+        <location filename="src/standard-cards.cpp" line="1004"/>
         <source>blade</source>
         <translation>青龙偃月刀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="951"/>
+        <location filename="src/standard-cards.cpp" line="1005"/>
         <source>spear</source>
         <translation>丈八蛇矛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="952"/>
+        <location filename="src/standard-cards.cpp" line="1006"/>
         <source>axe</source>
         <translation>贯石斧</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="953"/>
+        <location filename="src/standard-cards.cpp" line="1007"/>
         <source>halberd</source>
         <translation>方天画戟</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="954"/>
+        <location filename="src/standard-cards.cpp" line="1008"/>
         <source>kylin_bow</source>
         <translation>麒麟弓</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="956"/>
+        <location filename="src/standard-cards.cpp" line="1010"/>
         <source>eight_diagram</source>
         <translation>八卦阵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="959"/>
+        <location filename="src/standard-cards.cpp" line="1013"/>
         <source>renwang_shield</source>
         <translation>仁王盾</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="960"/>
+        <location filename="src/standard-cards.cpp" line="1014"/>
         <source>ice_sword</source>
         <translation>寒冰剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="962"/>
+        <location filename="src/standard-cards.cpp" line="1016"/>
         <source>jueying</source>
         <translation>绝影</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="963"/>
+        <location filename="src/standard-cards.cpp" line="1017"/>
         <source>dilu</source>
         <translation>的卢</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="964"/>
+        <location filename="src/standard-cards.cpp" line="1018"/>
         <source>zhuahuangfeidian</source>
         <translation>爪黄飞电</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="965"/>
+        <location filename="src/standard-cards.cpp" line="1019"/>
         <source>chitu</source>
         <translation>赤兔</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="966"/>
+        <location filename="src/standard-cards.cpp" line="1020"/>
         <source>dayuan</source>
         <translation>大宛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="967"/>
+        <location filename="src/standard-cards.cpp" line="1021"/>
         <source>zixing</source>
         <translation>紫骍</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="969"/>
+        <location filename="src/standard-cards.cpp" line="1023"/>
         <source>amazing_grace</source>
         <translation>五谷丰登</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="970"/>
+        <location filename="src/standard-cards.cpp" line="1024"/>
         <source>god_salvation</source>
         <translation>桃园结义</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="971"/>
+        <location filename="src/standard-cards.cpp" line="1025"/>
         <source>savage_assault</source>
         <translation>南蛮入侵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="972"/>
+        <location filename="src/standard-cards.cpp" line="1026"/>
         <source>archery_attack</source>
         <translation>万箭齐发</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="973"/>
-        <location filename="src/standard-cards.cpp" line="978"/>
+        <location filename="src/standard-cards.cpp" line="1027"/>
+        <location filename="src/standard-cards.cpp" line="1032"/>
         <source>collateral</source>
         <translation>借刀杀人</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="974"/>
+        <location filename="src/standard-cards.cpp" line="1028"/>
         <source>duel</source>
         <translation>决斗</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="975"/>
+        <location filename="src/standard-cards.cpp" line="1029"/>
         <source>ex_nihilo</source>
         <translation>无中生有</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="976"/>
+        <location filename="src/standard-cards.cpp" line="1030"/>
         <source>snatch</source>
         <translation>顺手牵羊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="977"/>
+        <location filename="src/standard-cards.cpp" line="1031"/>
         <source>dismantlement</source>
         <translation>过河拆桥</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="979"/>
+        <location filename="src/standard-cards.cpp" line="1033"/>
         <source>nullification</source>
         <translation>无懈可击</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="980"/>
+        <location filename="src/standard-cards.cpp" line="1034"/>
         <source>indulgence</source>
         <translation>乐不思蜀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="981"/>
+        <location filename="src/standard-cards.cpp" line="1035"/>
         <source>lightning</source>
         <translation>闪电</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="983"/>
+        <location filename="src/standard-cards.cpp" line="1037"/>
         <source>slash-jink</source>
         <oldsource>@slash-jink</oldsource>
         <translation>%src 使用了【杀】，请打出一张【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="984"/>
+        <location filename="src/standard-cards.cpp" line="1038"/>
         <source>duel-slash</source>
         <oldsource>@duel-slash</oldsource>
         <translation>%src 向您决斗，您需要打出一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="985"/>
+        <location filename="src/standard-cards.cpp" line="1039"/>
         <source>savage-assault-slash</source>
         <oldsource>@savage-assault-slash</oldsource>
         <translation>%src 使用了【南蛮入侵】，请打出一张【杀】来响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="986"/>
+        <location filename="src/standard-cards.cpp" line="1040"/>
         <source>archery-attack-jink</source>
         <oldsource>@archery-attack-jink</oldsource>
         <translation>%src 使用了【万箭齐发】，请打出一张【闪】以响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="987"/>
+        <location filename="src/standard-cards.cpp" line="1041"/>
         <source>collateral-slash</source>
         <oldsource>@collateral-slash</oldsource>
         <translation>%src 使用了【借刀杀人】，目标是 %dest，请打出一张【杀】以响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="990"/>
+        <location filename="src/standard-cards.cpp" line="1044"/>
         <source>double_sword:yes</source>
         <translation>您可以让对方让您摸一张牌或自弃一牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="991"/>
+        <location filename="src/standard-cards.cpp" line="1045"/>
         <source>kylin_bow:dhorse</source>
         <translation>防御马(+1马)</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="992"/>
+        <location filename="src/standard-cards.cpp" line="1046"/>
         <source>kylin_bow:ohorse</source>
         <translation>进攻马(-1马)</translation>
     </message>
@@ -2114,97 +2114,102 @@
         <source>benghuai:max_hp</source>
         <translation>体力上限</translation>
     </message>
+    <message>
+        <location filename="src/thicket.cpp" line="529"/>
+        <source>guixin:yes</source>
+        <translation>您可分别从每名其他角色处（手牌、装备区和判断区）取得一张牌，若如此做，将你的武将牌翻面</translation>
+    </message>
 </context>
 <context>
     <name>WindPackage</name>
     <message>
-        <location filename="src/wind.cpp" line="274"/>
+        <location filename="src/wind.cpp" line="331"/>
         <source>wind</source>
         <translation>风包</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="276"/>
+        <location filename="src/wind.cpp" line="333"/>
         <source>xiahouyuan</source>
         <oldsource>xiaohouyuan</oldsource>
         <translation>夏侯渊</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="277"/>
+        <location filename="src/wind.cpp" line="334"/>
         <source>caoren</source>
         <translation>曹仁</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="278"/>
+        <location filename="src/wind.cpp" line="335"/>
         <source>huangzhong</source>
         <translation>黄忠</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="279"/>
+        <location filename="src/wind.cpp" line="336"/>
         <source>weiyan</source>
         <translation>魏延</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="280"/>
+        <location filename="src/wind.cpp" line="337"/>
         <source>zhangjiao</source>
         <translation>张角</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="281"/>
+        <location filename="src/wind.cpp" line="338"/>
         <source>shenguanyu</source>
         <translation>神关羽</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="282"/>
+        <location filename="src/wind.cpp" line="339"/>
         <source>shenlumeng</source>
         <translation>神吕蒙</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="285"/>
+        <location filename="src/wind.cpp" line="342"/>
         <source>shensu</source>
         <translation>神速</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="286"/>
+        <location filename="src/wind.cpp" line="343"/>
         <source>jushou</source>
         <translation>据守</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="287"/>
+        <location filename="src/wind.cpp" line="344"/>
         <source>liegong</source>
         <translation>烈弓</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="288"/>
+        <location filename="src/wind.cpp" line="345"/>
         <source>kuanggu</source>
         <translation>狂骨</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="289"/>
+        <location filename="src/wind.cpp" line="346"/>
         <source>guidao</source>
         <translation>鬼道</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="290"/>
+        <location filename="src/wind.cpp" line="347"/>
         <source>leiji</source>
         <translation>雷击</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="291"/>
+        <location filename="src/wind.cpp" line="348"/>
         <source>huangtian</source>
         <translation>黄天</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="292"/>
+        <location filename="src/wind.cpp" line="349"/>
         <source>wuhun</source>
         <translation>武魂</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="293"/>
+        <location filename="src/wind.cpp" line="350"/>
         <source>shelie</source>
         <translation>涉猎</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="294"/>
+        <location filename="src/wind.cpp" line="351"/>
         <source>gongxin</source>
         <translation>攻心</translation>
     </message>

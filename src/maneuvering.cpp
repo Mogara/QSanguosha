@@ -59,13 +59,6 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
 }
 
-bool Analeptic::match(const QString &pattern) const{
-    if(pattern == "peach+analeptic")
-        return true;
-    else
-        return BasicCard::match(pattern);
-}
-
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");
 }

@@ -420,8 +420,20 @@ void Dashboard::enableCards(){
 }
 
 void Dashboard::enableCards(const QString &pattern){
-    foreach(CardItem *card_item, card_items)
-        card_item->setEnabled(card_item->getCard()->match(pattern));
+    static QRegExp id_rx("\\d+");
+
+    if(pattern.contains("+")){
+        QStringList subpatterns = pattern.split("+");
+        foreach(QString subpattern, subpatterns)
+            enableCards(subpattern);
+    }else if(id_rx.exactMatch(pattern)){
+        int id = pattern.toInt();
+        foreach(CardItem *card_item, card_items)
+            card_item->setEnabled(card_item->getCard()->getId() == id);
+    }else{
+        foreach(CardItem *card_item, card_items)
+            card_item->setEnabled(card_item->getCard()->match(pattern));
+    }
 }
 
 void Dashboard::startPending(const ViewAsSkill *skill){

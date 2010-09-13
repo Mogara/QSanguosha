@@ -144,13 +144,6 @@ bool Peach::isAvailable() const{
     return Self->isWounded();
 }
 
-bool Peach::match(const QString &pattern) const{
-    if(pattern == "peach+analeptic")
-        return true;
-    else
-        return BasicCard::match(pattern);
-}
-
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
 
@@ -246,6 +239,40 @@ public:
     }
 };
 
+class BladeSkill : public TriggerSkill{
+public:
+    BladeSkill():TriggerSkill("blade"){
+        events << SlashResult;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        const Weapon *weapon = target->getWeapon();
+        return weapon && weapon->objectName() == objectName();
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashResultStruct result = data.value<SlashResultStruct>();
+        if(!result.success){
+            Room *room = player->getRoom();
+            const Card *card = room->askForCard(player, "slash", "blade-slash");
+            if(card){
+                CardEffectStruct effect;
+                effect.card = card;
+                effect.from = player;
+                effect.to = result.to;
+
+                room->cardEffect(effect);
+            }
+        }
+
+        return false;
+    }
+};
+
 class Blade:public Weapon{
 public:
     Blade(Suit suit = Spade, int number = 5):Weapon(suit, number, 3){
@@ -309,7 +336,7 @@ public:
         events << SlashResult;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
             Room *room = player->getRoom();

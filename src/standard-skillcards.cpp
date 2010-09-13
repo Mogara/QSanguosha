@@ -137,8 +137,33 @@ QingnangCard::QingnangCard(){
     target_fixed = true;
 }
 
-void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->recover(source);
+bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && to_select->isWounded();
+}
+
+bool QingnangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() <= 1;
+}
+
+void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+
+    ServerPlayer *target;
+    if(!targets.isEmpty())
+        target = targets.first();
+    else
+        target = source;
+
+    CardEffectStruct effect;
+    effect.card = this;
+    effect.from = source;
+    effect.to = target;
+
+    room->cardEffect(effect);
+}
+
+void QingnangCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->recover(effect.to, 1);
 }
 
 GuicaiCard::GuicaiCard(){
