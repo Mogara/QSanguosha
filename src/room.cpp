@@ -420,6 +420,8 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
 }
 
 bool Room::askForSave(ServerPlayer *dying, int peaches){
+    setPlayerProperty(dying, "hp", 0);
+
     QList<ServerPlayer *> players;
     if(current->hasSkill("wansha")){
         players << current;
@@ -750,7 +752,9 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
 void Room::loseHp(ServerPlayer *victim){
     if(victim->getHp() == 1){
         bool saved = askForSave(victim, 1);
-        if(!saved)
+        if(saved)
+            setPlayerProperty(victim, "hp", 1);
+        else
             thread->trigger(Death, victim);
     }else{
         victim->setHp(victim->getHp() - 1);
@@ -778,6 +782,16 @@ void Room::recover(ServerPlayer *player, int recover){
 void Room::playCardEffect(const QString &card_name, bool is_male){
     QString gender = is_male ? "M" : "F";
     broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
+}
+
+void Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
+    CardEffectStruct effect;
+
+    effect.card = card;
+    effect.from = from;
+    effect.to = to;
+
+    cardEffect(effect);
 }
 
 void Room::cardEffect(const CardEffectStruct &effect){

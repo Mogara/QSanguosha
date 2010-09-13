@@ -108,12 +108,21 @@ QString Card::getName() const{
     return Sanguosha->translate(objectName());
 }
 
+QString Card::getSkillName() const{
+    return skill_name;
+}
+
+void Card::setSkillName(const QString &name){
+    this->skill_name = name;
+}
 
 QString Card::toString() const{
     if(!isVirtualCard())
         return QString::number(id);
     else
-        return QString("%1[%2:%3]=%4").arg(objectName()).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
+        return QString("%1:%2[%3:%4]=%5")
+                .arg(objectName()).arg(skill_name)
+                .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
 QString Card::subcardString() const{
@@ -137,7 +146,7 @@ const Card *Card::Parse(const QString &str){
         static QRegExp pattern("@(\\w+)=(.+)");
         pattern.indexIn(str);
         QStringList texts = pattern.capturedTexts();
-        QString card_name = texts.at(1);        
+        QString card_name = texts.at(1);
         QStringList subcard_ids;
         QString subcard_str = texts.at(2);
         if(subcard_str != ".")
@@ -150,15 +159,20 @@ const Card *Card::Parse(const QString &str){
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
 
+        // skill name
+        QString skill_name = card_name.remove("Card").toLower();
+        card->setSkillName(skill_name);
+
         return card;        
     }else if(str.contains(QChar('='))){
-        static QRegExp pattern("(\\w+)\\[(\\w+):(.+)\\]=(.+)");
+        static QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         pattern.indexIn(str);
         QStringList texts = pattern.capturedTexts();
         QString name = texts.at(1);
-        QString suit_string = texts.at(2);
-        QString number_string = texts.at(3);
-        QStringList subcard_ids = texts.at(4).split("+");
+        QString skill_name = texts.at(2);
+        QString suit_string = texts.at(3);
+        QString number_string = texts.at(4);
+        QStringList subcard_ids = texts.at(5).split("+");
 
         static QMap<QString, Card::Suit> suit_map;
         if(suit_map.isEmpty()){
@@ -190,6 +204,7 @@ const Card *Card::Parse(const QString &str){
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
 
+        card->setSkillName(skill_name);
         return card;
     }else
         return Sanguosha->getCard(str.toInt());
@@ -215,7 +230,6 @@ void Card::use(const QList<const ClientPlayer *> &targets) const{
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 }
 
 void Card::onEffect(const CardEffectStruct &effect) const{
@@ -231,10 +245,6 @@ void Card::addSubcard(int card_id){
         qWarning(qPrintable(tr("Subcard must not be virtual card!")));
     else
         subcards << card_id;
-}
-
-void Card::addSubcards(const QList<int> &card_ids){
-    subcards << card_ids;
 }
 
 QList<int> Card::getSubcards() const{

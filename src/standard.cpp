@@ -75,7 +75,6 @@ QString GlobalEffect::getSubtype() const{
 
 void GlobalEffect::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 
     QList<ServerPlayer *> all_players = room->getAllPlayers();
     foreach(ServerPlayer *player, all_players){
@@ -94,7 +93,6 @@ QString AOE::getSubtype() const{
 
 void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
@@ -122,7 +120,6 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     room->moveCardTo(this, target, Player::Judging, true);
-    source->playCardEffect(this);
 }
 
 QString DelayedTrick::getSubtype() const{

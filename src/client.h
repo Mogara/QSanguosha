@@ -71,9 +71,12 @@ public:
     void killPlayer(const QString &player_name);
     void gameOverWarn(const QString &);
     void askForSuit(const QString &);
+
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
     void takeAG(const QString &take_str);
+    void clearAG(const QString &);
+
     void askForSinglePeach(const QString &ask_str);
     void askForCardShow(const QString &requestor);
     void showCard(const QString &show_str);
@@ -126,11 +129,14 @@ signals:
     void pile_num_set(int n);
     void game_over(bool victory, const QList<bool> &result_list);
     void player_killed(const QString &who);
-    void ag_filled(const QList<int> &card_ids);
-    void ag_taken(const ClientPlayer *taker, int card_id);
     void card_shown(const QString &player_name, int card_id);
+
     void skill_attached(const QString &skill_name);
     void skill_detached(const QString &skill_name);
+
+    void ag_filled(const QList<int> &card_ids);
+    void ag_taken(const ClientPlayer *taker, int card_id);
+    void ag_cleared();
 };
 
 extern Client *ClientInstance;

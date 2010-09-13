@@ -71,6 +71,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 const Card *card = card_use.card;
 
+                card_use.from->playCardEffect(card);
                 card->use(room, card_use.from, card_use.to);
             }
 
@@ -127,39 +128,39 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case SlashEffect:{
-            if(data.canConvert<SlashEffectStruct>()){
-                SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-                if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
-                    break;
-                }
-
-                if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
-                    break;
-                }
-
-                SlashResultStruct result;
-                result.slash = effect.slash;
-                result.from = effect.from;
-                result.to = effect.to;
-                result.nature = effect.nature;
-
-                bool jinked = false;
-                QString slasher = effect.from->getGeneralName();
-                if(effect.from->hasSkill("wushuang")){
-                    const Card *jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
-                    if(jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
-                        jinked = true;
-                }else{
-                    const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
-                    if(jink)
-                        jinked = true;
-                }
-
-                result.success = !jinked;
-
-                room->slashResult(result);
+            if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
+                break;
             }
+
+            if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
+                break;
+            }
+
+            SlashResultStruct result;
+            result.slash = effect.slash;
+            result.from = effect.from;
+            result.to = effect.to;
+            result.nature = effect.nature;
+            result.drank = effect.drank;
+
+            bool jinked = false;
+            QString slasher = effect.from->getGeneralName();
+            if(effect.from->hasSkill("wushuang")){
+                const Card *jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
+                if(jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
+                    jinked = true;
+            }else{
+                const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
+                if(jink)
+                    jinked = true;
+            }
+
+            result.success = !jinked;
+
+            room->slashResult(result);
+
 
             break;
         }
@@ -171,10 +172,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 damage.card = result.slash;
 
                 damage.damage = 1;
-                if(result.from->hasFlag("drank")){
-                    damage.damage ++;
-
-                }
+                if(result.drank)
+                    damage.damage ++;                
 
                 damage.from = result.from;
                 damage.to = result.to;
@@ -182,9 +181,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
                 room->damage(damage);
             }
-
-            if(result.from->hasFlag("drank"))
-                room->setPlayerFlag(result.from, "-drank");
 
             break;
         }

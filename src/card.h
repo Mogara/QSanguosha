@@ -50,12 +50,13 @@ public:
     QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getName() const;
+    QString getSkillName() const;
+    void setSkillName(const QString &skill_name);
 
     bool isVirtualCard() const;
     virtual bool match(const QString &pattern) const;
 
     void addSubcard(int card_id);
-    void addSubcards(const QList<int> &card_ids);
     QList<int> getSubcards() const;
     void clearSubcards();
     QString subcardString() const;
@@ -87,6 +88,7 @@ public:
 protected:
     QList<int> subcards;
     bool target_fixed;
+    QString skill_name;
 
 private:
     Suit suit;

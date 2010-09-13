@@ -116,7 +116,9 @@ public:
     const Weapon *getWeapon() const;
     const Armor *getArmor() const;
     const Horse *getDefensiveHorse() const;
-    const Horse *getOffensiveHorse() const;    
+    const Horse *getOffensiveHorse() const;
+
+    bool hasWeapon(const QString &weapon_name) const;
 
     bool isKongcheng() const;
     bool isNude() const;

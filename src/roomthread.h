@@ -48,10 +48,14 @@ struct CardEffectStruct{
 Q_DECLARE_METATYPE(CardEffectStruct);
 
 struct SlashEffectStruct{
+    SlashEffectStruct();
+
     const Slash *slash;
 
     ServerPlayer *from;
     ServerPlayer *to;
+
+    bool drank;
 
     DamageStruct::Nature nature;
 };
@@ -78,10 +82,13 @@ struct CardMoveStruct{
 Q_DECLARE_METATYPE(CardMoveStruct);
 
 struct SlashResultStruct{
+    SlashResultStruct();
+
     const Slash *slash;
     ServerPlayer *from;
     ServerPlayer *to;
     DamageStruct::Nature nature;
+    bool drank;
     bool success;
 };
 

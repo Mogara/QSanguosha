@@ -18,6 +18,18 @@ DamageStruct::DamageStruct()
 {
 }
 
+SlashEffectStruct::SlashEffectStruct()
+    :slash(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
+{
+}
+
+SlashResultStruct::SlashResultStruct()
+    :slash(NULL), from(NULL), to(NULL), nature(DamageStruct::Normal),
+    drank(false), success(false)
+{
+
+}
+
 RoomThread::RoomThread(Room *room)
     :QThread(room), room(room)
 {

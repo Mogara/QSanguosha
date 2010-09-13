@@ -276,6 +276,9 @@ const Horse *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
+bool Player::hasWeapon(const QString &weapon_name) const{
+    return weapon && weapon->objectName() == weapon_name;
+}
 
 QStack<const Card *> Player::getJudgingArea() const{
     return judging_area;

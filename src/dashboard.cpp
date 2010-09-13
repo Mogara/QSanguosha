@@ -366,6 +366,7 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
 
     if(card_item){
         card_item->disconnect(this);
+        update();
         return card_item;
     }else{
         qFatal("No such card %d in Dashboard", card_id);
@@ -424,8 +425,19 @@ void Dashboard::enableCards(const QString &pattern){
 
     if(pattern.contains("+")){
         QStringList subpatterns = pattern.split("+");
-        foreach(QString subpattern, subpatterns)
-            enableCards(subpattern);
+
+        foreach(CardItem *card_item, card_items){
+            const Card *card = card_item->getCard();
+            bool enabled = false;
+            foreach(QString subpattern, subpatterns){
+                if(card->match(subpattern)){
+                    enabled = true;
+                    break;
+                }
+            }
+
+            card_item->setEnabled(enabled);
+        }
     }else if(id_rx.exactMatch(pattern)){
         int id = pattern.toInt();
         foreach(CardItem *card_item, card_items)

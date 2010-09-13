@@ -45,14 +45,7 @@ bool Analeptic::isAvailable() const{
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    source->playCardEffect(this);
-
-    CardEffectStruct effect;
-    effect.card = this;
-    effect.from = source;
-    effect.to = source;
-
-    room->cardEffect(effect);
+    room->cardEffect(this, source, source);
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
@@ -165,7 +158,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
 
     const Card *card = Sanguosha->getCard(card_id);
     QString suit_str = card->getSuitString();
-    const Card *to_throw = room->askForCard(effect.from, suit_str, "fire-attack");
+    QString prompt = QString("fire-attack-card::%1:%2").arg(effect.to->getGeneralName()).arg(suit_str);
+    const Card *to_throw = room->askForCard(effect.from, suit_str, prompt);
+
     if(to_throw){
         room->throwCard(to_throw);
 
@@ -206,7 +201,6 @@ bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
 
 void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{   
     room->throwCard(this);
-    source->playCardEffect(this); // play another effect if it is recasted
 
     if(targets.isEmpty()){       
         source->drawCards(1);
@@ -343,7 +337,7 @@ ManeuveringPackage::ManeuveringPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 
-    t["fire-attack"] = tr("fire-attack");
+    t["fire-attack-card"] = tr("fire-attack-card");
 }
 
 ADD_PACKAGE(Maneuvering)

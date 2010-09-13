@@ -27,8 +27,11 @@ void CardItem::setHomePos(QPointF home_pos){
 }
 
 void CardItem::goBack(bool kieru){
-    if(home_pos == pos())
+    if(home_pos == pos()){
+        if(kieru)
+            setOpacity(0.0);
         return;
+    }
 
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);   

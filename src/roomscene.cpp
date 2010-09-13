@@ -116,6 +116,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
+    connect(ClientInstance, SIGNAL(ag_cleared()), this, SLOT(clearAmazingGrace()));
 
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
@@ -514,7 +515,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     if(src){
         // from players
 
-        if(src->objectName() == Config.UserName){
+        if(src == Self){
             CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
             card_item->setOpacity(1.0);
             card_item->setParentItem(NULL);
@@ -617,7 +618,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             // FIXME
         }
     }else{
-        Photo *photo = name2photo.value(dest->objectName());
+        Photo *photo = name2photo.value(dest->objectName(), NULL);
         if(photo){
             switch(dest_place){
             case Player::Equip:
@@ -859,9 +860,6 @@ void RoomScene::callViewAsSkill(){
     }
 
     if(card->isAvailable()){
-        const ViewAsSkill *skill = dashboard->currentSkill();
-        skill->playEffect(); // FIXME: tell the server to play effect on other clients
-
         // use card
         dashboard->stopPending();
         useCard(card);
@@ -1045,6 +1043,8 @@ void RoomScene::doOkButton(){
                     ClientInstance->responseCard(card, selected_targets);
                 daqiao->hide();
             }
+
+            dashboard->unselectAll();
             break;
         }
 
@@ -1071,10 +1071,8 @@ void RoomScene::doOkButton(){
     }
 
     const ViewAsSkill *skill = dashboard->currentSkill();
-    if(skill){
-        skill->playEffect();
+    if(skill)
         dashboard->stopPending();
-    }
 }
 
 void RoomScene::doCancelButton(){
@@ -1105,6 +1103,8 @@ void RoomScene::doCancelButton(){
 }
 
 void RoomScene::doDiscardButton(){
+    dashboard->unselectAll();
+
     if(ClientInstance->getStatus() == Client::Playing){
         ClientInstance->useCard(NULL);
     }
@@ -1126,13 +1126,11 @@ void RoomScene::changeHp(const QString &who, int delta){
             photo->update();
     }
 
-    // play effect;
-    static Phonon::MediaSource male_damage_effect("audio/male-damage.mp3");
-    static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
     if(delta < 0){
-        ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
+        static Phonon::MediaSource male_damage_effect("audio/male-damage.mp3");
+        static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
 
-        Q_ASSERT(player && player->getGeneral());
+        ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
 
         if(player->getGeneral()->isMale())
             Sanguosha->playEffect(male_damage_effect);
@@ -1328,17 +1326,6 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             break;
         }
     }
-
-    bool should_clear = true;
-    foreach(CardItem *card_item, amazing_grace){
-        if(card_item->isEnabled()){
-            should_clear = false;
-            break;
-        }
-    }
-
-    if(should_clear)
-        clearAmazingGrace();
 }
 
 void RoomScene::chooseAmazingGrace(){

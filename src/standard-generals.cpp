@@ -338,6 +338,7 @@ public:
             const Card *card = cards.first()->getCard();
             Card *slash = new Slash(card->getSuit(), card->getNumber());
             slash->addSubcard(card->getId());
+            slash->setSkillName(objectName());
             return slash;
         }
     }
@@ -386,11 +387,15 @@ public:
             return NULL;
 
         const Card *card = cards.first()->getCard();
-        if(card->objectName() == "slash")
-            return new Jink(card->getSuit(), card->getNumber());
-        else if(card->objectName() == "jink")
-            return new Slash(card->getSuit(), card->getNumber());
-        else
+        if(card->inherits("Slash")){
+            Jink *jink = new Jink(card->getSuit(), card->getNumber());
+            jink->setSkillName(objectName());
+            return jink;
+        }else if(card->inherits("Jink")){
+            Slash *slash = new Slash(card->getSuit(), card->getNumber());
+            slash->setSkillName(objectName());
+            return slash;
+        }else
             return NULL;
     }
 };
@@ -486,9 +491,8 @@ public:
         if(cards.isEmpty())
             return NULL;
 
-        Card *zhiheng_card = new ZhihengCard;
-        foreach(CardItem *card_item, cards)
-            zhiheng_card->addSubcard(card_item->getCard()->getId());
+        ZhihengCard *zhiheng_card = new ZhihengCard;
+        zhiheng_card->addSubcards(cards);
 
         return zhiheng_card;
     }
@@ -596,6 +600,7 @@ public:
             const Card *first = cards.first()->getCard();
             Dismantlement *dismantlement = new Dismantlement(first->getSuit(), first->getNumber());
             dismantlement->addSubcard(first->getId());
+            dismantlement->setSkillName(objectName());
             return dismantlement;
         }
     }
@@ -632,6 +637,7 @@ public:
         const Card *first = cards.first()->getCard();
         Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
         indulgence->addSubcard(first->getId());
+        indulgence->setSkillName(objectName());
         return indulgence;
     }
 };
@@ -744,7 +750,7 @@ public:
 class Biyue: public PhaseChangeSkill{
 public:
     Biyue():PhaseChangeSkill("biyue"){
-
+        frequency = Frequent;
     }
 
     virtual bool onPhaseChange(ServerPlayer *diaochan) const{
@@ -829,7 +835,9 @@ public:
         if(cards.length() == 2){
             const Card *first = cards.first()->getCard();
             Card::Suit suit = first->isRed() ? Card::Heart : Card::Spade;
-            return new ArcheryAttack(suit, 0);
+            ArcheryAttack *aa = new ArcheryAttack(suit, 0);
+            aa->setSkillName(objectName());
+            return aa;
         }else
             return NULL;
     }
@@ -1076,6 +1084,7 @@ void StandardPackage::addGenerals(){
     t["yingzi:yes"] = tr("yingzi:yes");
     t["jianxiong:yes"] = tr("jianxiong:yes");
     t["fankui:yes"] = tr("fankui:yes");
+    t["biyue:yes"] = tr("biyue:yes");
 
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");

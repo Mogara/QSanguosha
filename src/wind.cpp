@@ -164,15 +164,114 @@ public:
     }
 };
 
-class Shensu: public PhaseChangeSkill{
-public:
-    Shensu():PhaseChangeSkill("shensu"){
+ShensuCard::ShensuCard(){
+}
 
+bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+        return false;
+
+    return true;
+}
+
+void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+    room->playSkillEffect("shensu");
+
+    SlashEffectStruct effect;
+    effect.slash = new Slash(Card::NoSuit, 0);
+    effect.from = source;
+    effect.to = targets.first();
+    effect.nature = DamageStruct::Normal;
+
+    room->slashEffect(effect);
+}
+
+class Shensu1ViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    Shensu1ViewAsSkill():ZeroCardViewAsSkill("shensu1"){
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() != Player::Start){
-            return false;
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@shensu1";
+    }
+
+    virtual const Card *viewAs() const{
+        return new ShensuCard;
+    }
+};
+
+class Shensu2ViewAsSkill: public ViewAsSkill{
+public:
+    Shensu2ViewAsSkill():ViewAsSkill("shensu2"){
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@shensu2";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        ShensuCard *card = new ShensuCard;
+        card->addSubcards(cards);
+
+        return card;
+    }
+};
+
+class Shensu1: public PhaseChangeSkill{
+public:
+    Shensu1():PhaseChangeSkill("shensu1"){
+        view_as_skill = new Shensu1ViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
+        Room *room = xiahouyuan->getRoom();
+
+        if(xiahouyuan->getPhase() == Player::Start){
+            QList<ServerPlayer *> targets;
+            const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu1", "@shensu1", targets);
+
+            if(card)
+                room->cardEffect(card, xiahouyuan, targets.first());
+        }
+
+        return false;
+    }
+};
+
+class Shensu2: public PhaseChangeSkill{
+public:
+    Shensu2():PhaseChangeSkill("shensu2"){
+        view_as_skill = new Shensu2ViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
+        Room *room = xiahouyuan->getRoom();
+
+        if(xiahouyuan->getPhase() == Player::Start){
+            QList<ServerPlayer *> targets;
+            const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu2", "@shensu2", targets);
+
+            if(card)
+                room->cardEffect(card, xiahouyuan, targets.first());
         }
 
         return false;
@@ -302,7 +401,8 @@ WindPackage::WindPackage()
     General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao;
 
     xiahouyuan = new General(this, "xiahouyuan", "wei");
-    xiahouyuan->addSkill(new Shensu);
+    xiahouyuan->addSkill(new Shensu1);
+    xiahouyuan->addSkill(new Shensu2);
 
     caoren = new General(this, "caoren", "wei");
     caoren->addSkill(new Jushou);
@@ -349,6 +449,9 @@ WindPackage::WindPackage()
     t["wuhun"] = tr("wuhun");
     t["shelie"] = tr("shelie");
     t["gongxin"] = tr("gongxin");
+
+    // skill prompt
+    t["liegong:yes"] = tr("liegong:yes");
 
     metaobjects << &GuidaoCard::staticMetaObject
             << &HuangtianCard::staticMetaObject

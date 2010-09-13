@@ -37,9 +37,7 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    BasicCard::use(room, source, targets);    
-
-    source->playCardEffect(this);
+    BasicCard::use(room, source, targets);
 
     foreach(ServerPlayer *target, targets){
         CardEffectStruct effect;
@@ -60,6 +58,9 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.slash = this;
 
     effect.to = card_effect.to;
+    effect.drank = effect.from->hasFlag("drank");
+    if(effect.drank)
+        room->setPlayerFlag(effect.from, "-drank");
 
     if(card_effect.to->hasSkill("liuli")){
         ServerPlayer *daqiao = card_effect.to;
@@ -136,8 +137,6 @@ QString Peach::getSubtype() const{
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->recover(source, 1);
-
-    source->playCardEffect(this);
 }
 
 bool Peach::isAvailable() const{
@@ -181,8 +180,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        const Weapon *weapon = target->getWeapon();
-        return weapon && weapon->objectName() == objectName();
+        return target->hasWeapon(objectName());
     }
 
     virtual bool buff(const SlashEffectStruct &effect) const{
@@ -190,7 +188,7 @@ public:
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
-                if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1))
+                if(effect.to->isKongcheng() || room->askForCard(effect.to, ".", "double-sword-card"))
                     effect.from->drawCards(1);
             }
         }
@@ -211,6 +209,7 @@ class QinggangSword:public Weapon{
 public:
     QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("qinggang_sword");
+        set_flag = true;
     }
 };
 
@@ -246,8 +245,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        const Weapon *weapon = target->getWeapon();
-        return weapon && weapon->objectName() == objectName();
+        return target->hasWeapon(objectName());
     }
 
     virtual int getPriority(ServerPlayer *target) const{
@@ -277,6 +275,7 @@ class Blade:public Weapon{
 public:
     Blade(Suit suit = Spade, int number = 5):Weapon(suit, number, 3){
         setObjectName("blade");
+        skill = new BladeSkill;
     }
 };
 
@@ -419,7 +418,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
         room->throwCard(this);
-        source->playCardEffect(this);
 
         QList<ServerPlayer *> players = room->getAllPlayers();
         QList<int> card_ids = room->getNCard(players.length());
@@ -436,6 +434,8 @@ public:
 
             room->cardEffect(effect);
         }
+
+        room->broadcastInvoke("clearAG");
     }
 
     virtual void onEffect(const CardEffectStruct &effect) const{
@@ -460,7 +460,6 @@ GodSalvation::GodSalvation(Suit suit, int number)
 
 void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 
     QList<ServerPlayer *> all_players = room->getAllPlayers();
     foreach(ServerPlayer *player, all_players){
@@ -488,7 +487,6 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
@@ -546,7 +544,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
 
 void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
-    source->playCardEffect(this);
 
     CardEffectStruct effect;
     effect.card = this;
@@ -627,7 +624,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
         room->throwCard(this);
-        source->playCardEffect(this);
 
         CardEffectStruct effect;
         effect.from = effect.to = source;
@@ -780,7 +776,6 @@ bool Lightning::judge(const Card *card) const{
 
 void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->moveCardTo(this, source, Player::Judging);
-    source->playCardEffect(this);
 }
 
 class IceSwordSkill: public TriggerSkill{
@@ -1032,6 +1027,8 @@ void StandardPackage::addCards(){
     t["savage-assault-slash"] = tr("savage-assault-slash");
     t["archery-attack-jink"] = tr("archery-attack-jink");
     t["collateral-slash"] = tr("collateral-slash");
+    t["blade-slash"] = tr("blade-slash");
+    t["double-sword-card"] = tr("double-sword-card");
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");

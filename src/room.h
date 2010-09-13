@@ -56,6 +56,7 @@ public:
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);
+    void cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     void cardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
     int getJudgeCard(ServerPlayer *player);

@@ -82,9 +82,7 @@ private:
     void unselectAllTargets(const QGraphicsItem *except = NULL);
 
     void callViewAsSkill();
-    void cancelViewAsSkill();
-
-    void clearAmazingGrace();
+    void cancelViewAsSkill();    
 
 private slots:
     void updateSkillButtons();
@@ -103,6 +101,7 @@ private slots:
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);
     void chooseAmazingGrace();
+    void clearAmazingGrace();
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);

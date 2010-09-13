@@ -103,6 +103,7 @@ Client::Client(QObject *parent)
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
     callbacks["takeAG"] = &Client::takeAG;
+    callbacks["clearAG"] = &Client::clearAG;
 
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
@@ -399,6 +400,11 @@ void Client::askForCard(const QString &request_str){
     if(texts.length() >= 4){
         QString dest = Sanguosha->translate(texts.at(3));
         prompt.replace("%dest", dest);
+    }
+
+    if(texts.length() >= 5){
+        QString arg = Sanguosha->translate(texts.at(4));
+        prompt.replace("%arg", arg);
     }
 
     emit prompt_changed(prompt);
@@ -703,6 +709,10 @@ void Client::takeAG(const QString &take_str){
         taker->addCard(Sanguosha->getCard(card_id), Player::Hand);
         emit ag_taken(taker, card_id);
     }
+}
+
+void Client::clearAG(const QString &){
+    emit ag_cleared();
 }
 
 void Client::askForSinglePeach(const QString &ask_str){
