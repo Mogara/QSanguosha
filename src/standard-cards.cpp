@@ -69,7 +69,6 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.drank = effect.from->hasFlag("drank");
     if(effect.drank)
         room->setPlayerFlag(effect.from, "-drank");
-    effect.qinggang = effect.from->hasWeapon("qinggang_sword");
 
     if(card_effect.to->hasSkill("liuli")){
         ServerPlayer *daqiao = card_effect.to;
@@ -179,17 +178,15 @@ public:
     }
 };
 
-class DoubleSwordSkill: public SlashBuffSkill{
+class DoubleSwordSkill: public WeaponSkill{
 public:
-    DoubleSwordSkill():SlashBuffSkill("double_sword"){
+    DoubleSwordSkill():WeaponSkill("double_sword"){
+        events << SlashEffect;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasWeapon(objectName());
-    }
-
-    virtual bool buff(const SlashEffectStruct &effect) const{
-        Room *room = effect.from->getRoom();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        Room *room = player->getRoom();
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
@@ -211,10 +208,27 @@ public:
     }
 };
 
+class QinggangSwordSkill: public WeaponSkill{
+public:
+    QinggangSwordSkill():WeaponSkill("qinggang_sword"){
+        events << SlashEffect;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        Room *room = player->getRoom();
+        room->setPlayerFlag(effect.to, "armor_nullified");
+
+        return false;
+    }
+};
+
 class QinggangSword:public Weapon{
 public:
     QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("qinggang_sword");
+
+        skill = new QinggangSwordSkill;
     }
 };
 
@@ -366,7 +380,7 @@ public:
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
             Room *room = player->getRoom();
-            if(room->askForDiscard(player, 2)){
+            if(room->askForDiscard(player, 2, true)){
                 result.success = true;
                 data = QVariant::fromValue(result);
             }
@@ -610,6 +624,8 @@ public:
     }
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+        room->throwCard(this);
+
         ServerPlayer *killer = targets.at(0);
         ServerPlayer *victim = targets.at(1);
 
@@ -836,11 +852,23 @@ IceSword::IceSword(Suit suit, int number)
     skill = new IceSwordSkill;
 }
 
+class RenwangShieldSkill: public ArmorSkill{
+public:
+    RenwangShieldSkill():ArmorSkill("renwang_shield"){
+        events << SlashEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        return effect.slash->isBlack();
+    }
+};
+
 RenwangShield::RenwangShield(Suit suit, int number)
     :Armor(suit, number)
 {
     setObjectName("renwang_shield");
-    set_flag = true;
+    skill = new RenwangShieldSkill;
 }
 
 void StandardPackage::addCards(){

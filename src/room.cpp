@@ -1,7 +1,7 @@
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
-
+#include "standard.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -205,7 +205,9 @@ void Room::gameOver(const QString &winner){
 
 void Room::slashEffect(const SlashEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
-    thread->trigger(SlashEffect, effect.from, data);
+    bool broken = thread->trigger(SlashEffect, effect.from, data);
+    if(!broken)
+        thread->trigger(SlashEffected, effect.to, data);
 }
 
 void Room::slashResult(const SlashResultStruct &result){
@@ -355,6 +357,15 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+    if(pattern == "jink" && player->hasArmorEffect("eight_diagram") && askForSkillInvoke(player, "eight_diagram")){
+        int card_id = getJudgeCard(player);
+        const Card *judge_card = Sanguosha->getCard(card_id);
+        if(judge_card->isRed()){
+            thread->trigger(Jinked, player);
+            return new Jink(Card::NoSuit, 0);
+        }
+    }
+
     player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
     reply_func = "responseCardCommand";
@@ -1150,7 +1161,8 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 }
 
 const Card *Room::askForPindian(ServerPlayer *player){
-
+    // FIXME
+    return NULL;
 }
 
 bool Room::pindian(ServerPlayer *source, ServerPlayer *target){

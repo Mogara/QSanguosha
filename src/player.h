@@ -119,6 +119,7 @@ public:
     const Horse *getOffensiveHorse() const;
 
     bool hasWeapon(const QString &weapon_name) const;
+    bool hasArmorEffect(const QString &armor_name) const;
 
     bool isKongcheng() const;
     bool isNude() const;

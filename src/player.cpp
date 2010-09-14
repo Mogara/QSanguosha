@@ -280,6 +280,10 @@ bool Player::hasWeapon(const QString &weapon_name) const{
     return weapon && weapon->objectName() == weapon_name;
 }
 
+bool Player::hasArmorEffect(const QString &armor_name) const{
+    return armor && !hasFlag("armor_nullified") && armor->objectName() == armor_name;
+}
+
 QStack<const Card *> Player::getJudgingArea() const{
     return judging_area;
 }
@@ -303,7 +307,11 @@ bool Player::faceUp() const{
 }
 
 void Player::setFaceUp(bool face_up){
-    this->face_up = face_up;
+    if(this->face_up != face_up){
+        this->face_up = face_up;
+
+        emit state_changed();
+    }
 }
 
 void Player::turnOver(){

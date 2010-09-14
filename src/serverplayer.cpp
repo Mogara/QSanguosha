@@ -19,10 +19,10 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::playCardEffect(const Card *card){
-    if(!card->isVirtualCard())
-        room->playCardEffect(card->objectName(), getGeneral()->isMale());
-    else if(card->inherits("SkillCard"))
+    if(card->isVirtualCard())
         room->playSkillEffect(card->getSkillName());
+    else
+        room->playCardEffect(card->objectName(), getGeneral()->isMale());
 }
 
 int ServerPlayer::getRandomHandCard() const{

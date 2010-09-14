@@ -411,6 +411,8 @@ void Client::askForCard(const QString &request_str){
     }
 
     emit prompt_changed(prompt);
+
+    refusable = true;
     setStatus(Responsing);
 }
 
@@ -765,6 +767,7 @@ void Client::askForSinglePeach(const QString &ask_str){
         card_pattern = "peach";
     }
 
+    refusable = true;
     setStatus(Responsing);
 }
 
@@ -773,6 +776,7 @@ void Client::askForCardShow(const QString &requestor){
     emit prompt_changed(tr("%1 request you to show one hand card").arg(name));
 
     card_pattern = "."; // any card can be matched
+    refusable = false;
     setStatus(Responsing);    
 }
 

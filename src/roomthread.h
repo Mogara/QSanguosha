@@ -34,7 +34,6 @@ struct DamageStruct{
     const Card *card;
     int damage;
     Nature nature;
-    bool qinggang;
 };
 
 Q_DECLARE_METATYPE(DamageStruct);
@@ -57,7 +56,6 @@ struct SlashEffectStruct{
     ServerPlayer *to;
 
     bool drank;
-    bool qinggang;
 
     DamageStruct::Nature nature;
 };
@@ -92,7 +90,6 @@ struct SlashResultStruct{
     ServerPlayer *to;
     DamageStruct::Nature nature;
     bool drank;
-    bool qinggang;
     bool success;
 };
 
@@ -111,8 +108,10 @@ enum TriggerEvent{
     JudgeOnEffect,
 
     SlashEffect,
-    Jinked,
+    SlashEffected,
+    SlashProceed,
     SlashResult,
+    Jinked,
 
     CardUsed,
     CardLost,

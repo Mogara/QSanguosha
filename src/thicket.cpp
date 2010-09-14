@@ -337,11 +337,8 @@ LuanwuCard::LuanwuCard(){
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
-    foreach(ServerPlayer *player, players){
-        CardEffectStruct effect;
-        effect.from = source;
-        effect.to = player;
-        effect.card = this;
+    foreach(ServerPlayer *player, players){        
+        room->cardEffect(this, source, player);
     }
 }
 

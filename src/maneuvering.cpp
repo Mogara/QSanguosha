@@ -53,38 +53,29 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
 }
 
-class FanSkill: public ViewAsSkill{
+class FanSkill: public WeaponSkill{
 public:
-    FanSkill():ViewAsSkill("fan"){
+    FanSkill():WeaponSkill("fan"){
+        events << SlashEffect;
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(effect.nature == DamageStruct::Normal){
+            if(player->getRoom()->askForSkillInvoke(player, objectName())){
+                effect.nature = DamageStruct::Fire;
 
-        const Card *card = to_select->getCard();
-        if(!card->inherits("Slash"))
-            return false;
+                data = QVariant::fromValue(effect);
+            }
+        }
 
-        const Slash *slash = qobject_cast<const Slash *>(card);
-        return slash->getNature() == DamageStruct::Normal;
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return false;
-
-        const Card *card = cards.first()->getCard();
-        Slash *slash = new Slash(card->getSuit(), card->getNumber());
-        slash->setNature(DamageStruct::Fire);
-
-        return slash;
+        return false;
     }
 };
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
     setObjectName("fan");    
-    attach_skill = true;
+    skill = new FanSkill;
 }
 
 class GudingBladeSkill: public WeaponSkill{
@@ -109,21 +100,23 @@ GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
     skill = new GudingBladeSkill;
 }
 
-class VineSkill: public TriggerSkill{
+class VineSkill: public ArmorSkill{
 public:
-    VineSkill():TriggerSkill("vine"){
-        events << Predamaged;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasFlag("vine");
+    VineSkill():ArmorSkill("vine"){
+        events << Predamaged << SlashEffected;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if(damage.nature == DamageStruct::Fire){
-            damage.damage ++;
-            data = QVariant::fromValue(damage);
+        if(event == SlashEffected){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if(effect.slash->getNature() == DamageStruct::Normal)
+                return true;
+        }else if(event == Predamaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature == DamageStruct::Fire){
+                damage.damage ++;
+                data = QVariant::fromValue(damage);
+            }
         }
 
         return false;
@@ -132,23 +125,18 @@ public:
 
 Vine::Vine(Suit suit, int number):Armor(suit, number){
     setObjectName("vine");
-    set_flag = true;
     skill = new VineSkill;
 }
 
-class SilverLionSkill: public TriggerSkill{
+class SilverLionSkill: public ArmorSkill{
 public:
-    SilverLionSkill():TriggerSkill("silver_lion"){
+    SilverLionSkill():ArmorSkill("silver_lion"){
         events << Predamaged;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasFlag("silver_lion");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.damage > 1 && !damage.qinggang){
+        if(damage.damage > 1){
             damage.damage = 1;
             data = QVariant::fromValue(damage);
         }
@@ -159,13 +147,11 @@ public:
 
 SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
     setObjectName("silver_lion");
-
     skill = new SilverLionSkill;
-    set_flag = true;
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    player->getRoom()->recover(player, 1);
+    player->getRoom()->recover(player);
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)

@@ -45,7 +45,7 @@ public:
         OffensiveHorseLocation,
     };
 
-    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL), set_flag(false){}
+    EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -58,7 +58,6 @@ public:
 
 protected:
     TriggerSkill *skill;
-    bool set_flag;
 };
 
 class GlobalEffect:public TrickCard{

@@ -313,10 +313,12 @@ public:
 
     virtual bool buff(const SlashEffectStruct &effect) const{
         ServerPlayer *huangzhong = effect.from;
+        Room *room = huangzhong->getRoom();
+        if(room->getCurrent() != huangzhong)
+            return false;
 
         int num = effect.to->getHandcardNum();
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
-            Room *room = huangzhong->getRoom();
             if(room->askForSkillInvoke(huangzhong, "liegong")){
                 SlashResultStruct result;
                 result.fill(effect, true);
@@ -364,6 +366,16 @@ public:
     }
 };
 
+static bool CompareBySuit(int card1, int card2){
+    const Card *c1 = Sanguosha->getCard(card1);
+    const Card *c2 = Sanguosha->getCard(card2);
+
+    int a = static_cast<int>(c1->getSuit());
+    int b = static_cast<int>(c2->getSuit());
+
+    return a < b;
+}
+
 class Shelie: public PhaseChangeSkill{
 public:
     Shelie():PhaseChangeSkill("shelie"){
@@ -374,7 +386,13 @@ public:
         if(target->getPhase() == Player::Draw){
             Room *room = target->getRoom();
             if(room->askForSkillInvoke(target, objectName())){
-                // FIXME: shelie
+                QList<int> card_ids = room->getNCards(5);
+                qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
+                QStringList card_str;
+                foreach(int card_id, card_ids)
+                    card_str << QString::number(card_id);
+                room->broadcastInvoke("fillAG", card_str.join("+"));
+
                 return true;
             }
         }

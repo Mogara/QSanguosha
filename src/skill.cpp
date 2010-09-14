@@ -177,7 +177,7 @@ bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) c
 SlashBuffSkill::SlashBuffSkill(const QString &name)
     :TriggerSkill(name)
 {
-    events << SlashEffect;
+    events << SlashProceed;
 }
 
 bool SlashBuffSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
@@ -209,4 +209,14 @@ WeaponSkill::WeaponSkill(const QString &name)
 
 bool WeaponSkill::triggerable(const ServerPlayer *target) const{
     return target->hasWeapon(objectName());
+}
+
+ArmorSkill::ArmorSkill(const QString &name)
+    :TriggerSkill(name)
+{
+
+}
+
+bool ArmorSkill::triggerable(const ServerPlayer *target) const{
+    return target->hasArmorEffect(objectName());
 }

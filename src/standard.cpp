@@ -54,8 +54,6 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 void EquipCard::onInstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
-    if(set_flag)
-        room->setPlayerFlag(player, objectName());
 
     if(skill)
         room->getThread()->addTriggerSkill(skill);
@@ -63,8 +61,6 @@ void EquipCard::onInstall(ServerPlayer *player) const{
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
-    if(set_flag)
-        room->setPlayerFlag(player, "-" + objectName());
 
     if(skill)
         room->getThread()->removeTriggerSkill(skill);
@@ -97,15 +93,10 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(player->hasFlag("vine"))
+        if(player->hasArmorEffect("vine"))
             continue;
 
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = player;
-
-        room->cardEffect(effect);
+        room->cardEffect(this, source, player);
     }
 }
 

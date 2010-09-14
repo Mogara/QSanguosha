@@ -27,14 +27,11 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     ServerPlayer *target = targets.first();
     foreach(int card_id, subcards){
-        CardMoveStruct move;
-        move.card_id = card_id;
-        move.from = source;
-        move.to = target;
-        move.from_place = move.to_place = Player::Hand;
-        move.open = false;
+        room->moveCardTo(card_id, target, Player::Hand, false);
 
-        room->moveCard(move);
+        source->addMark("rende");
+        if(source->getMark("rende") == 2)
+            room->recover(source);
     }
 }
 

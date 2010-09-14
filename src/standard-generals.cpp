@@ -307,9 +307,9 @@ public:
     }
 };
 
-class Rende:public ViewAsSkill{
+class RendeViewAsSkill:public ViewAsSkill{
 public:
-    Rende():ViewAsSkill("rende"){
+    RendeViewAsSkill():ViewAsSkill("rende"){
     }
 
     virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
@@ -320,10 +320,23 @@ public:
         if(cards.isEmpty())
             return NULL;
 
-        Card *rende_card = new RendeCard;
-        foreach(CardItem *card_item, cards)
-            rende_card->addSubcard(card_item->getCard()->getId());
+        SkillCard *rende_card = new RendeCard;
+        rende_card->addSubcards(cards);
         return rende_card;
+    }
+};
+
+class Rende: public PhaseChangeSkill{
+public:
+    Rende():PhaseChangeSkill("rende"){
+        view_as_skill = new RendeViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Start)
+            target->setMark("rende", 0);
+
+        return false;
     }
 };
 

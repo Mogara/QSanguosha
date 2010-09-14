@@ -7,7 +7,7 @@ GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
     events << GameStart << PhaseChange << CardUsed << Predamaged
-            << CardEffected << Death << SlashResult << SlashEffect;
+            << CardEffected << Death << SlashResult << SlashEffect << SlashProceed;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -135,15 +135,14 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case SlashEffect:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            if(!effect.qinggang){
-                if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
-                    break;
-                }
+            QVariant data = QVariant::fromValue(effect);
+            room->getThread()->trigger(SlashProceed, player, data);
 
-                if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
-                    break;
-                }
-            }
+            break;
+        }
+
+    case SlashProceed:{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             bool jinked = false;
             QString slasher = effect.from->getGeneralName();
@@ -159,7 +158,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             SlashResultStruct result;
             result.fill(effect, !jinked);
-
             room->slashResult(result);
 
             break;
@@ -178,10 +176,12 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 damage.from = result.from;
                 damage.to = result.to;
                 damage.nature = result.nature;
-                damage.qinggang = result.qinggang;
 
                 room->damage(damage);
             }
+
+            if(result.to->hasFlag("armor_nullified"))
+                room->setPlayerFlag(result.to, "-armor_nullified");
 
             break;
         }

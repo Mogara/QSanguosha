@@ -951,8 +951,7 @@ void RoomScene::updateStatus(Client::Status status){
             dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(false);
-            //cancel_button->setEnabled(ClientInstance->refusable);
-            cancel_button->setEnabled(true);
+            cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);            
             break;
         }

@@ -71,6 +71,7 @@ public:
     int drawCard();
     const Card *askForPindian(ServerPlayer *player);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
+    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);
 
     // interactive methods
     QString activate(ServerPlayer *player);
@@ -130,9 +131,6 @@ private:
 
     ServerPlayer *menghuo;
     QSet<Player::Phase> skip_set;
-
-
-    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);    
 
 private slots:
     void reportDisconnection();
