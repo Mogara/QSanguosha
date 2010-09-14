@@ -66,6 +66,7 @@ public:
     void gameOverWarn(const QString &);
     void setMark(const QString &mark_str);
     void showCard(const QString &show_str);
+    void doGuanxing(const QString &guanxing_str);
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
@@ -81,12 +82,15 @@ public:
     void askForSuit(const QString &);
     void askForNullification(const QString &ask_str);
     void askForCardChosen(const QString &ask_str);
+    void askForPindian(const QString &ask_str);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
 
     // public fields
     QString card_pattern;
+    bool refusable;
+
     int discard_num;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
@@ -132,6 +136,7 @@ signals:
     void game_over(bool victory, const QList<bool> &result_list);
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
+    void guanxing(const QList<int> &card_ids);
 
     void skill_attached(const QString &skill_name);
     void skill_detached(const QString &skill_name);

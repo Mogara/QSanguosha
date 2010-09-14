@@ -396,4 +396,11 @@ private:
     QString slash_source;
 };
 
+class HujiaCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HujiaCard();
+};
+
 #endif // STANDARD_H

@@ -148,7 +148,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.damage > 1){
+        if(damage.damage > 1 && !damage.qinggang){
             damage.damage = 1;
             data = QVariant::fromValue(damage);
         }

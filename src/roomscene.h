@@ -27,7 +27,7 @@ public slots:
     void chooseGeneral(const QList<const General*> &generals);
     void changeMessage(const QString &message = QString());
     void moveCard(const CardMoveStructForClient &move);
-    void updatePhotos(const QList<const ClientPlayer*> &seats);
+    void arrangeSeats(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
     void hideDiscards();
     void enableTargets(const Card *card);
@@ -53,6 +53,7 @@ private:
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;
     Daqiao *daqiao;
+    QMap<QGraphicsItem *, const ClientPlayer *> item2player;
 
     int pile_number;
     QGraphicsTextItem *pile_number_item;
@@ -95,6 +96,7 @@ private slots:
     void clearPile();
     void setPileNumber(int n);
     void showCard(const QString &player_name, int card_id);
+    void doGuanxing(const QList<int> &card_ids);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);

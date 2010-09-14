@@ -61,19 +61,23 @@ public:
     void cardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
     int getJudgeCard(ServerPlayer *player);
-    QList<int> getNCard(int n);    
+    QList<int> getNCards(int n, bool update_pile_number = true);
     void setMenghuo(ServerPlayer *menghuo);
     ServerPlayer *getMenghuo() const;
     void skip(Player::Phase phase);
     bool isSkipped(Player::Phase phase);
     ServerPlayer *getLord() const;
+    void doGuanxing(ServerPlayer *zhuge);
+    int drawCard();
+    const Card *askForPindian(ServerPlayer *player);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);
 
     // interactive methods
     QString activate(ServerPlayer *player);
     Card::Suit askForSuit(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
-    bool askForDiscard(ServerPlayer *target, int discard_num);
+    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
@@ -127,7 +131,7 @@ private:
     ServerPlayer *menghuo;
     QSet<Player::Phase> skip_set;
 
-    int drawCard();    
+
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);    
 
 private slots:

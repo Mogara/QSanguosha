@@ -14,12 +14,12 @@ void TriggerSkillSorter::sort(QList<const TriggerSkill *> &skills){
 }
 
 DamageStruct::DamageStruct()
-    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal)
+    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), qinggang(false)
 {
 }
 
 SlashEffectStruct::SlashEffectStruct()
-    :slash(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
+    :slash(NULL), from(NULL), to(NULL), drank(false), qinggang(false), nature(DamageStruct::Normal)
 {
 }
 
@@ -27,7 +27,17 @@ SlashResultStruct::SlashResultStruct()
     :slash(NULL), from(NULL), to(NULL), nature(DamageStruct::Normal),
     drank(false), success(false)
 {
+}
 
+void SlashResultStruct::fill(const SlashEffectStruct &effect, bool success)
+{
+    slash = effect.slash;
+    from = effect.from;
+    to = effect.to;
+    nature = effect.nature;
+    drank = effect.drank;
+    qinggang = effect.qinggang;
+    this->success = success;
 }
 
 RoomThread::RoomThread(Room *room)

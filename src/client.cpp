@@ -50,7 +50,7 @@ bool CardMoveStructForClient::parse(const QString &str){
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), room(new QObject(this)), status(NotActive), alive_count(1),
+    :QTcpSocket(parent), refusable(true), room(new QObject(this)), status(NotActive), alive_count(1),
     nullification_dialog(NULL)
 {
     ClientInstance = this;
@@ -90,6 +90,7 @@ Client::Client(QObject *parent)
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
+    callbacks["doGuanxing"] = &Client::doGuanxing;
 
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
@@ -100,6 +101,7 @@ Client::Client(QObject *parent)
     callbacks["askForChoice"] = &Client::askForChoice;
     callbacks["askForNullification"] = &Client::askForNullification;
     callbacks["askForCardShow"] = &Client::askForCardShow;
+    callbacks["askForPindian"] = &Client::askForPindian;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -607,10 +609,20 @@ void Client::setPileNumber(const QString &pile_num){
 }
 
 void Client::askForDiscard(const QString &discard_str){
-    discard_num = discard_str.toInt();
-    setStatus(Discarding);
+    static QChar option_symbol('?');
+    if(discard_str.contains(option_symbol)){
+        QString copy = discard_str;
+        copy.remove(option_symbol);
+        discard_num = copy.toInt();
+        refusable = true;
+    }else{
+        discard_num = discard_str.toInt();
+        refusable = false;
+    }
 
     emit prompt_changed(tr("Please discard %1 card(s)").arg(discard_num));
+
+    setStatus(Discarding);    
 }
 
 void Client::gameOver(const QString &result_str){
@@ -701,7 +713,10 @@ void Client::chooseSuit(){
 }
 
 void Client::discardCards(const Card *card){
-    request(QString("discardCards %1").arg(card->subcardString()));
+    if(card)
+        request(QString("discardCards %1").arg(card->subcardString()));
+    else
+        request("discardCards .");
 }
 
 void Client::fillAG(const QString &cards_str){
@@ -804,4 +819,23 @@ void Client::attachSkill(const QString &skill_name){
 
 void Client::detachSkill(const QString &skill_name){
     emit skill_detached(skill_name);
+}
+
+void Client::doGuanxing(const QString &guanxing_str){
+    QStringList cards = guanxing_str.split("+");
+    QList<int> card_ids;
+    foreach(QString card, cards)
+        card_ids << card.toInt();
+
+    emit guanxing(card_ids);
+}
+
+void Client::askForPindian(const QString &ask_str){
+    QStringList words = ask_str.split("->");
+    QString from = words.at(0);
+    QString to = words.at(1);
+
+    card_pattern = ".";
+    setStatus(Responsing);
+    refusable = false;
 }

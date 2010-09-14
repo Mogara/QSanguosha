@@ -30,6 +30,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
+    callbacks["guanxingCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -168,14 +169,15 @@ int Room::getJudgeCard(ServerPlayer *player){
     return card_id;
 }
 
-QList<int> Room::getNCard(int n){
+QList<int> Room::getNCards(int n, bool update_pile_number){
     QList<int> card_ids;
     int i;
     for(i=0; i<n; i++){
         card_ids << drawCard();
     }
 
-    broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
+    if(update_pile_number)
+        broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
 
     return card_ids;
 }
@@ -1047,13 +1049,19 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
         return Card::NoSuit;
 }
 
-bool Room::askForDiscard(ServerPlayer *target, int discard_num){
-    target->invoke("askForDiscard", QString::number(discard_num));
+bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional){
+    QString ask_str = QString::number(discard_num);
+    if(optional)
+        ask_str.append("?");
+    target->invoke("askForDiscard", ask_str);
 
     reply_func = "discardCardsCommand";
     reply_player = target;
 
     sem->acquire();
+
+    if(result == ".")
+        return false;
 
     QStringList card_strs = result.split("+");   
     foreach(QString card_str, card_strs){
@@ -1061,7 +1069,7 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num){
         throwCard(card_id);
     }
 
-    return !card_strs.isEmpty();
+    return true;
 }
 
 void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place){
@@ -1099,4 +1107,58 @@ bool Room::isSkipped(Player::Phase phase){
 
 ServerPlayer *Room::getLord() const{
     return players.first();
+}
+
+void Room::doGuanxing(ServerPlayer *zhuge){
+    int n = qMin(5, alive_players.length());
+
+    QList<int> cards = getNCards(n, false);
+    QStringList cards_str;
+    foreach(int card_id, cards)
+        cards_str << QString::number(card_id);
+
+    zhuge->invoke("doGuanxing", cards_str.join("+"));
+
+    reply_func = "guanxingCommand";
+    reply_player = zhuge;
+
+    sem->acquire();
+
+    QStringList results = result.split(":");
+
+    Q_ASSERT(results.length() == 2);
+
+    QStringList top_list = results.at(0).split("+");
+    QStringList bottom_list = results.at(1).split("+");
+
+    QList<int> top_cards;
+    foreach(QString top, top_list)
+        top_cards << top.toInt();
+
+    QList<int> bottom_cards;
+    foreach(QString bottom, bottom_list)
+        bottom_cards << bottom.toInt();
+
+    QListIterator<int> i(top_cards);
+    i.toBack();
+    while(i.hasPrevious())
+        draw_pile->prepend(i.previous());
+
+    i = bottom_cards;
+    while(i.hasNext())
+        draw_pile->append(i.next());
+}
+
+const Card *Room::askForPindian(ServerPlayer *player){
+
+}
+
+bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
+    const Card *card1 = askForPindian(source);
+    const Card *card2 = askForPindian(target);
+
+    throwCard(card1);
+    throwCard(card2);
+
+    return card1->getNumber() > card2->getNumber();
 }

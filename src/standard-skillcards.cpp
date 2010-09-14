@@ -189,3 +189,9 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
 
     return Self->inMyAttackRange(to_select);
 }
+
+HujiaCard::HujiaCard(){
+    target_fixed = true;
+}
+
+

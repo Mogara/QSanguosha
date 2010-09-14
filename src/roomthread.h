@@ -34,6 +34,7 @@ struct DamageStruct{
     const Card *card;
     int damage;
     Nature nature;
+    bool qinggang;
 };
 
 Q_DECLARE_METATYPE(DamageStruct);
@@ -56,6 +57,7 @@ struct SlashEffectStruct{
     ServerPlayer *to;
 
     bool drank;
+    bool qinggang;
 
     DamageStruct::Nature nature;
 };
@@ -83,12 +85,14 @@ Q_DECLARE_METATYPE(CardMoveStruct);
 
 struct SlashResultStruct{
     SlashResultStruct();
+    void fill(const SlashEffectStruct &effect, bool success);
 
     const Slash *slash;
     ServerPlayer *from;
     ServerPlayer *to;
     DamageStruct::Nature nature;
     bool drank;
+    bool qinggang;
     bool success;
 };
 

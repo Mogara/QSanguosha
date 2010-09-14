@@ -135,20 +135,15 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case SlashEffect:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
-                break;
-            }
+            if(!effect.qinggang){
+                if(effect.to->hasFlag("renwang_shield") && effect.slash->isBlack()){
+                    break;
+                }
 
-            if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
-                break;
+                if(effect.to->hasFlag("vine") && effect.slash->getNature() == DamageStruct::Normal){
+                    break;
+                }
             }
-
-            SlashResultStruct result;
-            result.slash = effect.slash;
-            result.from = effect.from;
-            result.to = effect.to;
-            result.nature = effect.nature;
-            result.drank = effect.drank;
 
             bool jinked = false;
             QString slasher = effect.from->getGeneralName();
@@ -162,10 +157,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     jinked = true;
             }
 
-            result.success = !jinked;
+            SlashResultStruct result;
+            result.fill(effect, !jinked);
 
             room->slashResult(result);
-
 
             break;
         }
@@ -183,6 +178,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 damage.from = result.from;
                 damage.to = result.to;
                 damage.nature = result.nature;
+                damage.qinggang = result.qinggang;
 
                 room->damage(damage);
             }

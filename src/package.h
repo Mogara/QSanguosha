@@ -26,6 +26,11 @@ public:
         return skills;
     }
 
+    template<typename T>
+    void addMetaObject(){
+        metaobjects << &T::staticMetaObject;
+    }
+
 protected:
     QHash<QString,QString> t;
     QList<const QMetaObject *> metaobjects;

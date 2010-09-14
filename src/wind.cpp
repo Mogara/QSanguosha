@@ -249,8 +249,11 @@ public:
             QList<ServerPlayer *> targets;
             const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu1", "@shensu1", targets);
 
-            if(card)
+            if(card){
+                room->skip(Player::Judge);
+                room->skip(Player::Draw);
                 room->cardEffect(card, xiahouyuan, targets.first());
+            }
         }
 
         return false;
@@ -270,8 +273,10 @@ public:
             QList<ServerPlayer *> targets;
             const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu2", "@shensu2", targets);
 
-            if(card)
+            if(card){
+                room->skip(Player::Play);
                 room->cardEffect(card, xiahouyuan, targets.first());
+            }
         }
 
         return false;
@@ -314,12 +319,7 @@ public:
             Room *room = huangzhong->getRoom();
             if(room->askForSkillInvoke(huangzhong, "liegong")){
                 SlashResultStruct result;
-                result.from = huangzhong;
-                result.to = effect.to;
-                result.slash = effect.slash;
-                result.success = true;
-                result.nature = effect.nature;
-
+                result.fill(effect, true);
                 room->slashResult(result);
 
                 return true;
@@ -439,7 +439,8 @@ WindPackage::WindPackage()
     t["shenlumeng"] = tr("shenlumeng");
 
     // skills
-    t["shensu"] = tr("shensu");
+    t["shensu1"] = tr("shensu1");
+    t["shensu2"] = tr("shensu2");
     t["jushou"] = tr("jushou");
     t["liegong"] = tr("liegong");
     t["kuanggu"] = tr("kuanggu");
@@ -453,10 +454,10 @@ WindPackage::WindPackage()
     // skill prompt
     t["liegong:yes"] = tr("liegong:yes");
 
-    metaobjects << &GuidaoCard::staticMetaObject
-            << &HuangtianCard::staticMetaObject
-            << &GongxinCard::staticMetaObject
-            << &LeijiCard::staticMetaObject;
+    addMetaObject<GuidaoCard>();
+    addMetaObject<HuangtianCard>();
+    addMetaObject<GongxinCard>();
+    addMetaObject<LeijiCard>();    
 
     skills << new HuangtianViewAsSkill;
 }

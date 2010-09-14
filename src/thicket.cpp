@@ -6,6 +6,7 @@
 #include "maneuvering.h"
 #include "clientplayer.h"
 #include "client.h"
+#include "engine.h"
 
 class Xingshang: public GameStartSkill{
 public:
@@ -143,6 +144,63 @@ public:
         player->getRoom()->setMenghuo(player);
     }
 };
+
+class Lieren: public TriggerSkill{
+public:
+    Lieren():TriggerSkill("lieren"){
+        events << Damage;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhurong, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card->inherits("Slash") && damage.to->isAlive() && !damage.to->isKongcheng() && damage.to != zhurong){            
+            Room *room = zhurong->getRoom();
+            if(room->askForSkillInvoke(zhurong, objectName()) && room->pindian(zhurong, damage.to)){
+                int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
+                room->obtainCard(zhurong, card_id);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Zaiqi: public PhaseChangeSkill{
+public:
+    Zaiqi():PhaseChangeSkill("zaiqi"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *menghuo) const{
+        if(menghuo->getPhase() == Player::Draw && menghuo->isWounded()){
+            Room *room = menghuo->getRoom();
+            if(room->askForSkillInvoke(menghuo, objectName())){
+                int x = menghuo->getLostHp(), i;
+                for(i=0; i<x; i++){
+                    int card_id = room->drawCard();
+                    room->throwCard(card_id);
+                    room->getThread()->delay(1);
+
+                    const Card *card = Sanguosha->getCard(card_id);
+                    if(card->getSuit() == Card::Heart)
+                        room->recover(menghuo);
+                    else
+                        room->obtainCard(menghuo, card_id);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+//class Juxiang: public TriggerSkill{
+//
+//};
+
+
 
 YinghunCard::YinghunCard(){
 
@@ -463,8 +521,10 @@ ThicketPackage::ThicketPackage()
 
     menghuo = new General(this, "menghuo", "shu");
     menghuo->addSkill(new Huoshou);
+    menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
+    zhurong->addSkill(new Lieren);
 
     sunjian = new General(this, "sunjian", "wu");
     sunjian->addSkill(new Yinghun);
@@ -474,8 +534,8 @@ ThicketPackage::ThicketPackage()
     lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
-    jiaxu->addSkill(new Skill("wansha"));
-    jiaxu->addSkill(new Skill("weimu"));
+    jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
+    jiaxu->addSkill(new Skill("weimu", Skill::Compulsory));
     jiaxu->addSkill(new Luanwu);
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
@@ -541,10 +601,10 @@ ThicketPackage::ThicketPackage()
 
     t["guixin:yes"] = tr("guixin:yes");
 
-    metaobjects << &DimengCard::staticMetaObject
-            << &LuanwuCard::staticMetaObject
-            << &YinghunCard::staticMetaObject
-            << &FangzhuCard::staticMetaObject;
+    addMetaObject<DimengCard>();
+    addMetaObject<LuanwuCard>();
+    addMetaObject<YinghunCard>();
+    addMetaObject<FangzhuCard>();    
 }
 
 ADD_PACKAGE(Thicket)

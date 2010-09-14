@@ -32,12 +32,16 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return NULL;
+        return new HujiaCard;        
     }
 
 protected:
     virtual bool isEnabledAtPlay() const{
         return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "jink";
     }
 };
 
@@ -134,7 +138,21 @@ public:
         ServerPlayer *from = damage.from;
         Room *room = xiahou->getRoom();
         if(from && room->askForSkillInvoke(xiahou, "ganglie")){
-            // FIXME:
+            room->playSkillEffect(objectName());
+
+            int card_id = room->getJudgeCard(xiahou);
+            const Card *card = Sanguosha->getCard(card_id);
+            if(card->getSuit() != Card::Heart){
+                if(!room->askForDiscard(from, 2, true)){
+                    DamageStruct damage;
+                    damage.card = NULL;
+                    damage.damage = 1;
+                    damage.from = xiahou;
+                    damage.to = from;
+
+                    room->damage(damage);
+                }
+            }
         }
     }
 };
@@ -355,21 +373,20 @@ public:
         if(!selected.isEmpty())
             return false;
 
-        if(to_select->isEquipped())
-            return false;
+        const Card *card = to_select->getCard();       
 
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
                 // jink as slash
-                return to_select->objectName() == "jink";
+                return card->inherits("Jink");
             }
 
         case Client::Responsing:{
                 QString pattern = ClientInstance->card_pattern;
                 if(pattern == "slash")
-                    return to_select->inherits("Jink");
+                    return card->inherits("Jink");
                 else if(pattern == "jink")
-                    return to_select->inherits("Slash");
+                    return card->inherits("Slash");
             }
 
         default:
@@ -407,7 +424,6 @@ public:
     }
 
     virtual bool buff(const SlashEffectStruct &effect) const{
-        const Slash *slash = effect.slash;
         ServerPlayer *machao = effect.from;
 
         Room *room = machao->getRoom();
@@ -418,11 +434,7 @@ public:
             const Card *card = Sanguosha->getCard(card_id);
             if(card->isRed()){
                 SlashResultStruct result;
-                result.from = machao;
-                result.to = effect.to;
-                result.slash = slash;
-                result.nature = effect.nature;
-                result.success = true;
+                result.fill(effect, true);
                 room->slashResult(result);
                 return true;
             }
@@ -446,11 +458,17 @@ public:
 class Guanxing:public PhaseChangeSkill{
 public:
     Guanxing():PhaseChangeSkill("guanxing"){
-
+        frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        // FIXME
+    virtual bool onPhaseChange(ServerPlayer *zhuge) const{
+        if(zhuge->getPhase() == Player::Start){
+            Room *room = zhuge->getRoom();
+            if(room->askForSkillInvoke(zhuge, objectName())){
+                room->doGuanxing(zhuge);
+            }
+        }
+
         return false;
     }
 };
@@ -901,7 +919,7 @@ void StandardPackage::addGenerals(){
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new Skill("qicai"));
+    huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
 
     General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
@@ -947,16 +965,17 @@ void StandardPackage::addGenerals(){
     diaochan->addSkill(new Biyue);
 
     // for skill cards    
-    metaobjects << &ZhihengCard::staticMetaObject
-            << &RendeCard::staticMetaObject
-            << &JieyinCard::staticMetaObject
-            << &TuxiCard::staticMetaObject
-            << &KurouCard::staticMetaObject
-            << &LijianCard::staticMetaObject
-            << &FanjianCard::staticMetaObject
-            << &GuicaiCard::staticMetaObject
-            << &QingnangCard::staticMetaObject;
-
+    addMetaObject<ZhihengCard>();
+    addMetaObject<RendeCard>();    
+    addMetaObject<TuxiCard>();
+    addMetaObject<JieyinCard>();
+    addMetaObject<KurouCard>();
+    addMetaObject<LijianCard>();
+    addMetaObject<FanjianCard>();
+    addMetaObject<GuicaiCard>();
+    addMetaObject<QingnangCard>();
+    addMetaObject<HujiaCard>();
+    
     // for translation
     t["wei"] = tr("wei");
     t["shu"] = tr("shu");

@@ -69,6 +69,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     effect.drank = effect.from->hasFlag("drank");
     if(effect.drank)
         room->setPlayerFlag(effect.from, "-drank");
+    effect.qinggang = effect.from->hasWeapon("qinggang_sword");
 
     if(card_effect.to->hasSkill("liuli")){
         ServerPlayer *daqiao = card_effect.to;
@@ -214,7 +215,6 @@ class QinggangSword:public Weapon{
 public:
     QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
         setObjectName("qinggang_sword");
-        set_flag = true;
     }
 };
 
@@ -447,7 +447,7 @@ public:
         room->throwCard(this);
 
         QList<ServerPlayer *> players = room->getAllPlayers();
-        QList<int> card_ids = room->getNCard(players.length());
+        QList<int> card_ids = room->getNCards(players.length());
         QStringList card_str;
         foreach(int card_id, card_ids)
             card_str << QString::number(card_id);
