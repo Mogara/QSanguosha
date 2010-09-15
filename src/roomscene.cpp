@@ -1316,9 +1316,16 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
 
             CardItem *item = new CardItem(card_item->getCard());
             addItem(item);
-            putCardItem(taker, Player::Hand, item);
 
-            QString name = Sanguosha->translate(taker->getGeneralName());
+            QString name;
+            if(taker){
+                putCardItem(taker, Player::Hand, item);
+                name = Sanguosha->translate(taker->getGeneralName());
+            }else{
+                putCardItem(NULL, Player::DiscardedPile, item);
+                name = tr("Discarded Pile");
+            }
+
             QGraphicsSimpleTextItem *text_item = addSimpleText(name, Config.SmallFont);
             text_item->setPos(card_item->pos() + QPointF(20, 70));
             taker_names << text_item;

@@ -405,9 +405,9 @@ public:
     }
 };
 
-class KylinBowSkill: public TriggerSkill{
+class KylinBowSkill: public WeaponSkill{
 public:
-    KylinBowSkill():TriggerSkill("kylin_bow"){
+    KylinBowSkill():WeaponSkill("kylin_bow"){
         events << SlashResult;
     }
 
@@ -467,14 +467,8 @@ public:
             card_str << QString::number(card_id);
         room->broadcastInvoke("fillAG", card_str.join("+"));
 
-        foreach(ServerPlayer *player, players){
-            CardEffectStruct effect;
-            effect.card = this;
-            effect.from = source;
-            effect.to = player;
-
-            room->cardEffect(effect);
-        }
+        foreach(ServerPlayer *player, players)
+            room->cardEffect(this, source, player);
 
         room->broadcastInvoke("clearAG");
     }
@@ -483,7 +477,7 @@ public:
         ServerPlayer *player = effect.to;
         Room *room = player->getRoom();
 
-        int card_id = room->askForAG(player);
+        int card_id = room->askForAG(player);       
 
         // these code is quick-and-dirty
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);

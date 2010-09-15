@@ -115,6 +115,8 @@ public:
 };
 
 class Duel:public SingleTargetTrick{
+    Q_OBJECT
+
 public:
     Duel(Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;

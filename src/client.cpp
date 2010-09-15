@@ -739,11 +739,17 @@ void Client::takeAG(const QString &take_str){
     QString taker_name = words.at(1);
     int card_id = words.at(2).toInt();
 
-    ClientPlayer *taker = findChild<ClientPlayer *>(taker_name);
-    if(taker){
-        taker->addCard(Sanguosha->getCard(card_id), Player::Hand);
-        emit ag_taken(taker, card_id);
-    }
+    ClientPlayer *taker = NULL;
+    if(taker_name != ".")
+        taker = findChild<ClientPlayer *>(taker_name);
+
+    const Card *card = Sanguosha->getCard(card_id);
+    if(taker)
+        taker->addCard(card, Player::Hand);
+    else
+        discarded_list.prepend(card);
+
+    emit ag_taken(taker, card_id);
 }
 
 void Client::clearAG(const QString &){

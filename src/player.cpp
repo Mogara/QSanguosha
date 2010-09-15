@@ -414,5 +414,8 @@ bool Player::canSlash(const Player *other) const{
     if(other->hasSkill("kongcheng") && other->isKongcheng())
         return false;
 
+    if(other == this)
+        return false;
+
     return distanceTo(other) <= getAttackRange();
 }

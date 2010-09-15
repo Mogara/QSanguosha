@@ -382,22 +382,48 @@ public:
 
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Draw){
-            Room *room = target->getRoom();
-            if(room->askForSkillInvoke(target, objectName())){
-                QList<int> card_ids = room->getNCards(5);
-                qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
-                QStringList card_str;
-                foreach(int card_id, card_ids)
-                    card_str << QString::number(card_id);
-                room->broadcastInvoke("fillAG", card_str.join("+"));
+    virtual bool onPhaseChange(ServerPlayer *shenlumeng) const{
+        if(shenlumeng->getPhase() != Player::Draw)
+            return false;
 
-                return true;
+        Room *room = shenlumeng->getRoom();
+        if(!room->askForSkillInvoke(shenlumeng, objectName()))
+            return false;
+
+        QList<int> card_ids = room->getNCards(5);
+        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
+        QStringList card_str;
+        foreach(int card_id, card_ids)
+            card_str << QString::number(card_id);
+        room->broadcastInvoke("fillAG", card_str.join("+"));
+
+        while(!card_ids.isEmpty()){
+            int card_id = room->askForAG(shenlumeng);
+            room->takeAG(shenlumeng, card_id);
+
+            const Card *card = Sanguosha->getCard(card_id);
+
+            // quick-and-dirty
+            shenlumeng->addCard(card, Player::Hand);
+            room->setCardMapping(card_id, shenlumeng, Player::Hand);
+
+            Card::Suit suit = card->getSuit();
+            card_ids.removeOne(card_id);
+            QMutableListIterator<int> itor(card_ids);
+            while(itor.hasNext()){
+                const Card *c = Sanguosha->getCard(itor.next());
+                if(c->getSuit() == suit){
+                    itor.remove();
+
+                    room->setCardMapping(c->getId(), NULL, Player::DiscardedPile);
+                    room->takeAG(NULL, c->getId());
+                }
             }
         }
 
-        return false;
+        room->broadcastInvoke("clearAG");
+
+        return true;
     }
 };
 

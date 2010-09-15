@@ -72,6 +72,8 @@ public:
     const Card *askForPindian(ServerPlayer *player);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);
+    void takeAG(ServerPlayer *player, int card_id);
+    void doMove(const CardMoveStruct &move);
 
     // interactive methods
     QString activate(ServerPlayer *player);

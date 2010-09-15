@@ -293,6 +293,7 @@ public:
         else{
             const Card *card = cards.first()->getCard();
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
+            jink->setSkillName(objectName());
             jink->addSubcard(card->getId());
             return jink;
         }
@@ -419,10 +420,12 @@ public:
         const Card *card = cards.first()->getCard();
         if(card->inherits("Slash")){
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
+            jink->addSubcard(card->getId());
             jink->setSkillName(objectName());
             return jink;
         }else if(card->inherits("Jink")){
             Slash *slash = new Slash(card->getSuit(), card->getNumber());
+            slash->addSubcard(card->getId());
             slash->setSkillName(objectName());
             return slash;
         }else
@@ -827,7 +830,7 @@ public:
     }
 
     virtual bool isAvailableAtResponse(){
-        return ClientInstance->card_pattern == "peach";
+        return ClientInstance->card_pattern.contains("peach");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -838,6 +841,8 @@ public:
         if(cards.length() == 1){
             const Card *first = cards.first()->getCard();
             Peach *peach = new Peach(first->getSuit(), first->getNumber());
+            peach->addSubcard(first->getId());
+            peach->setSkillName(objectName());
             return peach;
         }
 

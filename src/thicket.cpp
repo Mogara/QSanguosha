@@ -27,6 +27,10 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     source->turnOver();
     room->broadcastProperty(source, "face_up");
 
+    int value = source->getMark("baonu");
+    value -= 6;
+    room->setPlayerMark(source, "baonu", value);
+
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
 
     foreach(ServerPlayer *player, players){
@@ -495,7 +499,10 @@ public:
 class Shenfen:public ZeroCardViewAsSkill{
 public:
     Shenfen():ZeroCardViewAsSkill("shenfen"){
+    }
 
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("baonu") >= 6;
     }
 
     virtual const Card *viewAs() const{

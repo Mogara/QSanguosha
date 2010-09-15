@@ -205,9 +205,9 @@ void Room::gameOver(const QString &winner){
 
 void Room::slashEffect(const SlashEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
-    bool broken = thread->trigger(SlashEffect, effect.from, data);
+    bool broken = thread->trigger(SlashEffected, effect.to, data);
     if(!broken)
-        thread->trigger(SlashEffected, effect.to, data);
+        thread->trigger(SlashEffect, effect.from, data);
 }
 
 void Room::slashResult(const SlashResultStruct &result){
@@ -950,6 +950,22 @@ void Room::moveCard(const CardMoveStruct &move){
         }
     }
 
+    doMove(move);
+
+    Sanguosha->getCard(move.card_id)->onMove(move);
+
+    if(move.from){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardLost, move.from, data);
+    }
+
+    if(move.to){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardGot, move.to, data);
+    }
+}
+
+void Room::doMove(const CardMoveStruct &move){
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
         move.from->removeCard(card, move.from_place);
@@ -966,18 +982,6 @@ void Room::moveCard(const CardMoveStruct &move){
     }
 
     setCardMapping(move.card_id, move.to, move.to_place);
-
-    card->onMove(move);
-
-    if(move.from){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardLost, move.from, data);
-    }
-
-    if(move.to){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardGot, move.to, data);
-    }    
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
@@ -1173,4 +1177,9 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
     throwCard(card2);
 
     return card1->getNumber() > card2->getNumber();
+}
+
+void Room::takeAG(ServerPlayer *player, int card_id){
+    QString who = player ? player->objectName() : ".";
+    broadcastInvoke("takeAG", QString("%1:%2").arg(who).arg(card_id));
 }

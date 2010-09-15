@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>744</width>
-    <height>291</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>211</width>
-     <height>241</height>
+     <height>291</height>
     </rect>
    </property>
    <property name="title">
@@ -31,8 +31,8 @@
    <widget class="QLabel" name="avatarPixmap">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>100</y>
+      <x>60</x>
+      <y>160</y>
       <width>100</width>
       <height>100</height>
      </rect>
@@ -54,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>210</y>
+      <y>260</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -66,8 +66,8 @@
    <widget class="QLabel" name="avatarLabel">
     <property name="geometry">
      <rect>
-      <x>21</x>
-      <y>99</y>
+      <x>20</x>
+      <y>130</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -76,13 +76,13 @@
      <string>Avatar:</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>21</x>
       <y>21</y>
       <width>171</width>
-      <height>74</height>
+      <height>106</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -112,7 +112,7 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="hostLineEdit"/>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="portLabel">
        <property name="text">
         <string>Port:</string>
@@ -122,8 +122,25 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLineEdit" name="portLineEdit"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="playerCountLabel">
+       <property name="text">
+        <string>Player Count:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="spinBox">
+       <property name="minimum">
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <number>8</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -134,7 +151,7 @@
      <x>240</x>
      <y>10</y>
      <width>491</width>
-     <height>261</height>
+     <height>321</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -150,11 +167,11 @@
     <enum>QListView::IconMode</enum>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>260</y>
+     <y>310</y>
      <width>158</width>
      <height>25</height>
     </rect>

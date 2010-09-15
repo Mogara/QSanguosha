@@ -28,6 +28,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->hostLineEdit->setText(Config.HostAddress);
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
+    ui->spinBox->setValue(Config.PlayerCount);
 
     ui->connectButton->setFocus();
 
@@ -64,6 +65,7 @@ void ConnectionDialog::on_connectButton_clicked()
     Config.setValue("UserName", Config.UserName = username);
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());
     Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
+    Config.setValue("PlayerCount", Config.PlayerCount = ui->spinBox->value());
 
     accept();
 }
