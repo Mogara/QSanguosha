@@ -160,7 +160,9 @@ QString Shit::getSubtype() const{
 
 void Shit::onMove(const CardMoveStruct &move) const{
     ServerPlayer *from = move.from;
-    if(from && move.from_place == Player::Hand && from->getRoom()->getCurrent() == move.from && move.to_place == Player::DiscardedPile){
+    if(from && move.from_place == Player::Hand &&
+       from->getRoom()->getCurrent() == move.from
+       && move.to_place == Player::DiscardedPile){
         DamageStruct damage;
         damage.from = damage.to = from;
         damage.card = this;
@@ -520,24 +522,10 @@ SavageAssault::SavageAssault(Suit suit, int number)
     setObjectName("savage_assault");
 }
 
-void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-
-    QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
-    foreach(ServerPlayer *player, other_players){
-        if(player->hasFlag("tengjia") || player->hasFlag("nanman"))
-            continue;        
-
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = player;
-
-        room->cardEffect(effect);
-    }
-}
-
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
+    if(effect.to->hasSkill("huoshou") || effect.to->hasSkill("juxiang"))
+        return;
+
     Room *room = effect.to->getRoom();
     const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->getGeneralName());
     if(slash == NULL){
@@ -725,6 +713,9 @@ bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const Clie
     if(to_select->isAllNude())
         return false;
 
+    if(to_select == Self)
+        return false;
+
     return true;
 }
 
@@ -750,6 +741,9 @@ bool Dismantlement::targetFilter(const QList<const ClientPlayer *> &targets, con
         return false;
 
     if(to_select->isAllNude())
+        return false;
+
+    if(to_select == Self)
         return false;
 
     return true;

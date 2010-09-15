@@ -136,6 +136,11 @@ QString Card::subcardString() const{
     return str.join("+");
 }
 
+void Card::addSubcards(const QList<CardItem *> &card_items){
+    foreach(CardItem *card_item, card_items)
+        subcards << card_item->getCard()->getId();
+}
+
 bool Card::isVirtualCard() const{
     return id < 0;
 }
@@ -283,9 +288,4 @@ int SkillCard::getTypeId() const{
 
 QString SkillCard::toString() const{
     return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
-}
-
-void SkillCard::addSubcards(const QList<CardItem *> &card_items){
-    foreach(CardItem *card_item, card_items)
-        subcards << card_item->getCard()->getId();
 }

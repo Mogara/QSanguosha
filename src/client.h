@@ -22,7 +22,8 @@ public:
         Responsing,
         Playing,
         Discarding,
-        AskForAG
+        AskForAG,
+        AskForYiji
     };
 
     explicit Client(QObject *parent = 0);
@@ -67,6 +68,7 @@ public:
     void setMark(const QString &mark_str);
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
+    void replyYiji(const Card *card, const ClientPlayer *to);
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
@@ -83,6 +85,7 @@ public:
     void askForNullification(const QString &ask_str);
     void askForCardChosen(const QString &ask_str);
     void askForPindian(const QString &ask_str);
+    void askForYiji(const QString &card_list);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -99,7 +102,7 @@ public slots:
     void itemChosen(const QString &item_name);
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
-    void chooseCard(int card_id);
+    void chooseCard(int card_id = -2);
 
 private:
     QObject *room;

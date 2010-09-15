@@ -110,8 +110,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        // FIXME
-        // obtain the judge card
+        int card_id = data.toInt();
+        player->getRoom()->obtainCard(player, card_id);
 
         return false;
     }
@@ -120,11 +120,22 @@ public:
 class Yiji:public MasochismSkill{
 public:
     Yiji():MasochismSkill("yiji"){
-
+        frequency = Frequent;
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        // FIXME
+    virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
+        Room *room = guojia->getRoom();
+
+        if(!room->askForSkillInvoke(guojia, objectName()))
+            return;
+
+        room->playSkillEffect(objectName());
+        int n = damage.damage * 2;
+        guojia->drawCards(n);
+        QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - n);
+
+        while(room->askForYiji(guojia, yiji_cards))
+            ; // empty loop
     }
 };
 

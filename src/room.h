@@ -87,6 +87,7 @@ public:
     const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
     int askForAG(ServerPlayer *player);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
+    bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
 
     bool askForSave(ServerPlayer *dying, int peaches);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);

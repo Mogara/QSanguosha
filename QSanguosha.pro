@@ -42,7 +42,8 @@ SOURCES += src/main.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
     src/wind.cpp \
-    src/thicket.cpp
+    src/thicket.cpp \
+    src/yijiviewasskill.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -77,7 +78,8 @@ HEADERS += src/mainwindow.h \
     src/optionbutton.h \
     src/maneuvering.h \
     src/wind.h \
-    src/thicket.h
+    src/thicket.h \
+    src/yijiviewasskill.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

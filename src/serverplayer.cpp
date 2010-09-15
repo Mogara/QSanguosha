@@ -170,3 +170,11 @@ void ServerPlayer::addCard(const Card *card, Place place){
         ;
     }
 }
+
+QList<int> ServerPlayer::handCards() const{
+    QList<int> card_ids;
+    foreach(const Card *card, handcards)
+        card_ids << card->getId();
+
+    return card_ids;
+}

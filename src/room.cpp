@@ -31,6 +31,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["guanxingCommand"] = &Room::commonCommand;
+    callbacks["replyYijiCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -353,6 +354,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     int card_id = result.toInt();
     if(card_id == -1)
         card_id = who->getRandomHandCard();
+
     return card_id;
 }
 
@@ -1182,4 +1184,39 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
 void Room::takeAG(ServerPlayer *player, int card_id){
     QString who = player ? player->objectName() : ".";
     broadcastInvoke("takeAG", QString("%1:%2").arg(who).arg(card_id));
+}
+
+bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
+    if(cards.isEmpty())
+        return false;
+
+    QStringList card_str;
+    foreach(int card_id, cards)
+        card_str << QString::number(card_id);
+
+    guojia->invoke("askForYiji", card_str.join("+"));
+
+    reply_func = "replyYijiCommand";
+    reply_player = guojia;
+
+    sem->acquire();
+
+    if(result == ".")
+        return false;
+    else{
+        QRegExp rx("(.+)->(\\w+)");
+        rx.exactMatch(result);
+
+        QStringList texts = rx.capturedTexts();
+        QStringList ids = texts.at(1).split("+");
+        ServerPlayer *who = findChild<ServerPlayer *>(texts.at(2));
+
+        foreach(QString id, ids){
+            int card_id = id.toInt();
+            cards.removeOne(card_id);
+            moveCardTo(card_id, who, Player::Hand, false);
+        }
+
+        return true;
+    }
 }

@@ -6,6 +6,7 @@
 #include "card.h"
 #include "client.h"
 #include "discardskill.h"
+#include "yijiviewasskill.h"
 #include "daqiao.h"
 
 #include <QGraphicsScene>
@@ -63,7 +64,9 @@ private:
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
+
     DiscardSkill *discard_skill;
+    YijiViewAsSkill *yiji_skill;
 
     QList<const ClientPlayer *> selected_targets;
 

@@ -28,6 +28,7 @@ public:
     void throwAllEquips();
     void throwAllCards();
     void drawCards(int n);
+    QList<int> handCards() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

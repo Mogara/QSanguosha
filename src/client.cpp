@@ -90,7 +90,7 @@ Client::Client(QObject *parent)
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
-    callbacks["doGuanxing"] = &Client::doGuanxing;
+    callbacks["doGuanxing"] = &Client::doGuanxing;  
 
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
@@ -102,6 +102,7 @@ Client::Client(QObject *parent)
     callbacks["askForNullification"] = &Client::askForNullification;
     callbacks["askForCardShow"] = &Client::askForCardShow;
     callbacks["askForPindian"] = &Client::askForPindian;
+    callbacks["askForYiji"] = &Client::askForYiji;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -538,6 +539,7 @@ void Client::askForCardChosen(const QString &ask_str){
     dialog->setWindowTitle(Sanguosha->translate(reason));
 
     connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(chooseCard()));
 
     dialog->exec();
 }
@@ -556,10 +558,18 @@ void Client::playCardEffect(const QString &play_str){
 
 void Client::chooseCard(int card_id){
     QDialog *dialog = qobject_cast<QDialog *>(sender());
-    if(dialog)
-        dialog->accept();
 
-    request(QString("chooseCard %1").arg(card_id));
+    if(!dialog)
+        return;
+
+    if(card_id == -2){
+        dialog->show();
+    }else{
+        dialog->accept();
+        delete dialog;
+
+        request(QString("chooseCard %1").arg(card_id));
+    }
 }
 
 int Client::alivePlayerCount() const{
@@ -848,4 +858,16 @@ void Client::askForPindian(const QString &ask_str){
     card_pattern = ".";
     setStatus(Responsing);
     refusable = false;
+}
+
+void Client::askForYiji(const QString &card_list){
+    card_pattern = card_list;
+    setStatus(AskForYiji);
+}
+
+void Client::replyYiji(const Card *card, const ClientPlayer *to){
+    if(card)
+        request(QString("replyYiji %1->%2").arg(card->subcardString()).arg(to->objectName()));
+    else
+        request("replyYiji .");
 }

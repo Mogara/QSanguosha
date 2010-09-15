@@ -89,7 +89,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     form->setPos(dashboard->boundingRect().width() - button_layout->preferredWidth(), -25);
 
     discard_skill = new DiscardSkill;
-    discard_skill->setNum(2);
+    yiji_skill = new YijiViewAsSkill;
 
     known_cards_menu = new QMenu(main_window);
 
@@ -987,6 +987,16 @@ void RoomScene::updateStatus(Client::Status status){
 
             break;
         }
+    case Client::AskForYiji:{
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
+            yiji_skill->setCards(ClientInstance->card_pattern);
+            dashboard->startPending(yiji_skill);
+
+            break;
+        }
     }
 
     foreach(QAbstractButton *button, skill_buttons){
@@ -1062,6 +1072,17 @@ void RoomScene::doOkButton(){
                                  tr("The OK button should be disabled when client is in asking for amazing grace status"));
             return;
         }
+
+    case Client::AskForYiji:{
+            const Card *card = dashboard->pendingCard();
+            if(card){
+                ClientInstance->replyYiji(card, selected_targets.first());
+                dashboard->stopPending();
+                daqiao->hide();
+            }
+
+            break;
+        }
     }
 
     const ViewAsSkill *skill = dashboard->currentSkill();
@@ -1095,10 +1116,19 @@ void RoomScene::doCancelButton(){
             dashboard->stopPending();
             ClientInstance->discardCards(NULL);
             daqiao->hide();
+            break;
         }
 
-    default:
-        ;
+    case Client::AskForYiji:{
+            dashboard->stopPending();
+            ClientInstance->replyYiji(NULL, NULL);
+            daqiao->hide();
+            break;
+        }
+
+    default:{
+            break;
+        }
     }
 }
 

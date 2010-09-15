@@ -4,6 +4,7 @@
 #include "skill.h"
 #include "maneuvering.h"
 #include "clientplayer.h"
+#include "engine.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -96,6 +97,9 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
         if(player->hasArmorEffect("vine"))
             continue;
 
+        if(isBlack() && player->hasSkill("weimu"))
+            return;
+
         room->cardEffect(this, source, player);
     }
 }
@@ -125,7 +129,7 @@ QString DelayedTrick::getSubtype() const{
     return "delayed_trick";
 }
 
-#include "engine.h"
+
 
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
