@@ -11,8 +11,8 @@ ClientPlayer::ClientPlayer(Client *client)
 {
 }
 
-void ClientPlayer::drawNCard(int card_num){
-    handcard_num += card_num;
+void ClientPlayer::handCardChange(int delta){
+    handcard_num += delta;
 }
 
 int ClientPlayer::aliveCount() const{
@@ -98,6 +98,9 @@ QList<int> ClientPlayer::nullifications() const{
 }
 
 void ClientPlayer::MoveCard(const CardMoveStructForClient &move){
+    if(move.card_id == -1)
+        return;
+
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
         move.from->removeCard(card, move.from_place);

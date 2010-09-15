@@ -10,6 +10,7 @@
 #include <QCommandLinkButton>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QLineEdit>
 
 bool CardMoveStructForClient::parse(const QString &str){
     static QMap<QString, Player::Place> place_map;
@@ -74,8 +75,7 @@ Client::Client(QObject *parent)
     callbacks["getGenerals"] = &Client::getGenerals;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["duplicationError"] = &Client::duplicationError;
-    callbacks["arrangeSeats"] = &Client::arrangeSeats;
-    callbacks["moveCard"] = &Client::moveCard;
+    callbacks["arrangeSeats"] = &Client::arrangeSeats;    
     callbacks["activate"] = &Client::activate;
     callbacks["startGame"] = &Client::startGame;
     callbacks["hpChange"] = &Client::hpChange;    
@@ -91,6 +91,9 @@ Client::Client(QObject *parent)
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["doGuanxing"] = &Client::doGuanxing;  
+
+    callbacks["moveNCards"] = &Client::moveNCards;
+    callbacks["moveCard"] = &Client::moveCard;
 
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
@@ -228,8 +231,8 @@ void Client::drawNCards(const QString &draw_str){
     int n = texts.at(2).toInt();
 
     if(player && n>0){
-        player->drawNCard(n);
-        emit n_card_drawed(player, n);
+        player->handCardChange(n);
+        emit n_cards_drawed(player, n);
     }
 }
 
@@ -248,6 +251,17 @@ void Client::itemChosen(const QString &item_name){
     if(!item_name.isEmpty())
         request("choose " + item_name);
 }
+
+#ifndef QT_NO_DEBUG
+
+void Client::cheatChoose(){
+    QLineEdit *cheat_edit = qobject_cast<QLineEdit*>(sender());
+    if(cheat_edit){
+        itemChosen(cheat_edit->text());
+    }
+}
+
+#endif
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(!card){
@@ -348,6 +362,26 @@ void Client::moveCard(const QString &move_str){
     }
 }
 
+void Client::moveNCards(const QString &move_str){
+    QRegExp rx("(\\d+):(\\w+)->(\\w+)");
+    if(rx.exactMatch(move_str)){
+        QStringList texts = rx.capturedTexts();
+        int n = texts.at(1).toInt();
+        QString from = texts.at(2);
+        QString to = texts.at(3);
+
+        ClientPlayer *src = findChild<ClientPlayer *>(from);
+        ClientPlayer *dest = findChild<ClientPlayer *>(to);
+
+        src->handCardChange(-n);
+        dest->handCardChange(n);
+
+        emit n_cards_moved(n, from, to);
+    }else{
+        QMessageBox::warning(NULL, tr("Warning"), tr("moveNCards string is not well formatted!"));
+    }
+}
+
 void Client::startGame(const QString &){
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
@@ -412,8 +446,10 @@ void Client::askForCard(const QString &request_str){
     }
 
     emit prompt_changed(prompt);
-
-    refusable = true;
+    if(pattern.endsWith("!"))
+        refusable = false;
+    else
+        refusable = true;
     setStatus(Responsing);
 }
 
@@ -870,4 +906,6 @@ void Client::replyYiji(const Card *card, const ClientPlayer *to){
         request(QString("replyYiji %1->%2").arg(card->subcardString()).arg(to->objectName()));
     else
         request("replyYiji .");
+
+    setStatus(NotActive);
 }

@@ -61,6 +61,7 @@ public:
     void clearSubcards();
     QString subcardString() const;
     void addSubcards(const QList<CardItem *> &card_items);
+    int subcardsLength() const;
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;

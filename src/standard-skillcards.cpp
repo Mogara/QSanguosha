@@ -26,13 +26,14 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
         return;
 
     ServerPlayer *target = targets.first();
-    foreach(int card_id, subcards){
-        room->moveCardTo(card_id, target, Player::Hand, false);
+    room->moveCardTo(this, target, Player::Hand, false);
 
-        source->addMark("rende");
-        if(source->getMark("rende") == 2)
-            room->recover(source);
-    }
+    int old_value = source->getMark("rende");
+    int new_value = old_value + subcards.length();
+    source->setMark("rende", new_value);
+
+    if(old_value < 2 && new_value >= 2)
+        room->recover(source);
 }
 
 JieyinCard::JieyinCard(){
@@ -139,7 +140,10 @@ bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, cons
 }
 
 bool QingnangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    return targets.length() <= 1;
+    if(Self->isWounded())
+        return targets.length() <= 1;
+    else
+        return targets.length() == 1;
 }
 
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{

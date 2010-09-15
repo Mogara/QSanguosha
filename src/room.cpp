@@ -283,15 +283,7 @@ void Room::obtainCard(ServerPlayer *target, const Card *card){
 }
 
 void Room::obtainCard(ServerPlayer *target, int card_id){
-    CardMoveStruct move;
-    move.card_id = card_id;
-    move.from = getCardOwner(card_id);
-    move.from_place = getCardPlace(card_id);
-    move.to = target;
-    move.to_place = Player::Hand;
-    move.open = true;
-
-    moveCard(move);
+    moveCardTo(card_id, target, Player::Hand, true);
 }
 
 bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
@@ -388,7 +380,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         return NULL;
 }
 
-const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets){
+const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets, bool throw_it){
     Q_ASSERT(pattern.startsWith("@@"));
 
     player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
@@ -401,7 +393,9 @@ const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pat
     if(result != "."){
         QStringList words = result.split("->");
         const Card *card = Card::Parse(words.at(0));
-        throwCard(card);
+
+        if(throw_it)
+            throwCard(card);
 
         QStringList target_names = words.at(1).split("+");
         foreach(QString target_name, target_names)
@@ -828,16 +822,31 @@ void Room::cardEffect(const CardEffectStruct &effect){
 }
 
 void Room::damage(const DamageStruct &damage_data){
+    if(damage_data.to == NULL)
+        return;
+
     QVariant data = QVariant::fromValue(damage_data);
-    bool broken = thread->trigger(Predamage, damage_data.from, data);
-    if(!broken)
-        broken = thread->trigger(Predamaged, damage_data.to, data);
 
-    if(!broken)
+    // predamage
+    bool broken = false;
+    if(damage_data.from)
+        broken = thread->trigger(Predamage, damage_data.from, data);
+    if(broken)
+        return;
+
+    // predamaged
+    broken = thread->trigger(Predamaged, damage_data.to, data);
+    if(broken)
+        return;
+
+    // damage
+    if(damage_data.from)
         broken = thread->trigger(Damage, damage_data.from, data);
+    if(broken)
+        return;
 
-    if(!broken)
-        thread->trigger(Damaged, damage_data.to, data);
+    // damaged
+    thread->trigger(Damaged, damage_data.to, data);
 }
 
 void Room::startGame(){
@@ -927,66 +936,28 @@ void Room::throwCard(int card_id){
     if(card_id == -1)
         return;
 
-    CardMoveStruct move;
-    move.card_id = card_id;
-    move.from_place = getCardPlace(card_id);
-    move.to_place = Player::DiscardedPile;
-    move.from = getCardOwner(card_id);
-    move.to = NULL;
-    move.open = true;
-
-    moveCard(move);
+    moveCardTo(card_id, NULL, Player::DiscardedPile, true);
 }
 
 RoomThread *Room::getThread() const{
     return thread;
 }
 
-void Room::moveCard(const CardMoveStruct &move){
-    if(move.open)
-        broadcast("! moveCard " + move.toString());
-    else{
+void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
+    if(!open){
+        ServerPlayer *from = getCardOwner(card);
+
+        QString private_move = QString("%1:%2->%3")
+                               .arg(card->subcardsLength())
+                               .arg(from->objectName())
+                               .arg(to->objectName());
+
         foreach(ServerPlayer *player, players){
-            bool card_known = (player == move.from || player == move.to);
-            player->invoke("moveCard", move.toString(card_known));
+            if(player != from && player != to)
+                player->invoke("moveNCards", private_move);
         }
     }
 
-    doMove(move);
-
-    Sanguosha->getCard(move.card_id)->onMove(move);
-
-    if(move.from){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardLost, move.from, data);
-    }
-
-    if(move.to){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardGot, move.to, data);
-    }
-}
-
-void Room::doMove(const CardMoveStruct &move){
-    const Card *card = Sanguosha->getCard(move.card_id);
-    if(move.from)
-        move.from->removeCard(card, move.from_place);
-    else{
-        if(move.to)
-            discard_pile->removeOne(move.card_id);
-    }
-
-    if(move.to){
-        move.to->addCard(card, move.to_place);
-    }else{
-        if(move.from)
-            discard_pile->prepend(move.card_id);
-    }
-
-    setCardMapping(move.card_id, move.to, move.to_place);
-}
-
-void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         foreach(int subcard, subcards)
@@ -1002,12 +973,46 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     move.from_place = getCardPlace(card_id);
     move.to = to;
     move.to_place = place;
-    move.open = open;
 
-    moveCard(move);
+    const Card *card = Sanguosha->getCard(move.card_id);
+    if(move.from)
+        move.from->removeCard(card, move.from_place);
+    else{
+        if(move.to)
+            discard_pile->removeOne(move.card_id);
+    }
+
+    if(move.to){
+        move.to->addCard(card, move.to_place);
+    }else{
+        if(move.from)
+            discard_pile->prepend(move.card_id);
+    }
+    setCardMapping(move.card_id, move.to, move.to_place);
+
+    QString public_move = move.toString();
+    if(open){
+        Sanguosha->getCard(move.card_id)->onMove(move);
+
+        if(move.from){
+            QVariant data = QVariant::fromValue(move);
+            thread->trigger(CardLost, move.from, data);
+        }
+
+        if(move.to){
+            QVariant data = QVariant::fromValue(move);
+            thread->trigger(CardGot, move.to, data);
+        }
+
+        broadcastInvoke("moveCard", public_move);
+    }else{
+        move.from->invoke("moveCard", public_move);
+        if(move.to != move.from)
+            move.to->invoke("moveCard", public_move);
+    }
 }
 
-QString CardMoveStruct::toString(bool card_known) const{
+QString CardMoveStruct::toString() const{
     static QMap<Player::Place, QString> place2str;
     if(place2str.isEmpty()){
         place2str.insert(Player::Hand, "hand");
@@ -1022,7 +1027,7 @@ QString CardMoveStruct::toString(bool card_known) const{
     QString to_str = to ? to->objectName() : "_";
 
     return QString("%1:%2@%3->%4@%5")
-            .arg(card_known ? card_id : -1)
+            .arg(card_id)
             .arg(from_str).arg(place2str.value(from_place, "_"))
             .arg(to_str).arg(place2str.value(to_place, "_"));
 }
@@ -1098,6 +1103,17 @@ ServerPlayer *Room::getCardOwner(int card_id) const{
     return owner_map.value(card_id);
 }
 
+ServerPlayer *Room::getCardOwner(const Card *card) const{
+    if(card->isVirtualCard()){
+        QList<int> subcards = card->getSubcards();
+        if(subcards.isEmpty())
+            return NULL;
+        else
+            return getCardOwner(subcards.first());
+    }else
+        return getCardOwner(card->getId());
+}
+
 Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
 }
@@ -1166,8 +1182,9 @@ void Room::doGuanxing(ServerPlayer *zhuge){
         draw_pile->append(i.next());
 }
 
-const Card *Room::askForPindian(ServerPlayer *player){
+const Card *Room::askForPindian(ServerPlayer *player){    
     // FIXME
+
     return NULL;
 }
 
@@ -1220,3 +1237,4 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         return true;
     }
 }
+

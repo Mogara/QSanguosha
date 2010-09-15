@@ -42,15 +42,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(equipped)
         room->throwCard(equipped);
 
-    CardMoveStruct attach;
-    attach.card_id = getId();
-    attach.from = source;
-    attach.to = source;
-    attach.from_place = Player::Hand;
-    attach.to_place = Player::Equip;
-    attach.open = true;
-
-    room->moveCard(attach);
+    room->moveCardTo(this, source, Player::Equip, true);
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{

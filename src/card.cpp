@@ -81,7 +81,12 @@ QString Card::getPixmapPath() const{
 }
 
 QString Card::getIconPath() const{
-    return QString("%1/cards/icon/%2.png").arg(parent()->objectName()).arg(objectName());
+    if(parent())
+        return QString("%1/cards/icon/%2.png").arg(parent()->objectName()).arg(objectName());
+    else{
+        const Card *card = Sanguosha->findChild<const Card *>(objectName());
+        return card->getIconPath();
+    }
 }
 
 QString Card::getPackage() const{
@@ -139,6 +144,10 @@ QString Card::subcardString() const{
 void Card::addSubcards(const QList<CardItem *> &card_items){
     foreach(CardItem *card_item, card_items)
         subcards << card_item->getCard()->getId();
+}
+
+int Card::subcardsLength() const{
+    return subcards.length();
 }
 
 bool Card::isVirtualCard() const{

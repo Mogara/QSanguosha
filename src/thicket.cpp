@@ -268,6 +268,49 @@ public:
     }
 };
 
+HaoshiCard::HaoshiCard(){
+
+}
+
+bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return to_select->getHandcardNum() == Self->getMark("haoshi");
+}
+
+class HaoshiViewAsSkill: public ViewAsSkill{
+public:
+    HaoshiViewAsSkill():ViewAsSkill("haoshi"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(to_select->isEquipped())
+            return false;
+
+        int length = Self->getHandcardNum() / 2;
+        return selected.length() < length;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        HaoshiCard *card = new HaoshiCard;        
+        card->addSubcards(cards);
+        return card;
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@@haoshi!";
+    }
+};
+
 class Haoshi: public PhaseChangeSkill{
 public:
     Haoshi():PhaseChangeSkill("haoshi"){
@@ -277,15 +320,27 @@ public:
         return -1;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Draw){
-            Room *room = target->getRoom();
-            if(room->askForSkillInvoke(target, objectName())){
-                target->drawCards(2);
+    virtual bool onPhaseChange(ServerPlayer *lusu) const{
+        if(lusu->getPhase() == Player::Draw){
+            Room *room = lusu->getRoom();
+            if(room->askForSkillInvoke(lusu, objectName())){
+                lusu->drawCards(2);
 
-                if(target->getHandcardNum() > 5){
-                    // find player(s) who has the least handcards
+                if(lusu->getHandcardNum() > 5){
+                    QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
+                    int least = 1000;
+                    foreach(ServerPlayer *player, other_players)
+                        least = qMin(player->getHandcardNum(), least);
+                    room->setPlayerMark(lusu, "haoshi", least);
 
+                    QList<ServerPlayer *> targets;
+                    const Card *card = NULL;
+                    card = room->askForCardWithTargets(lusu, "@@haoshi!", "@haoshi-card", targets, false);
+
+                    ServerPlayer *target = targets.first();
+                    QList<int> subcards = card->getSubcards();
+                    foreach(int subcard, subcards)
+                        room->obtainCard(target, subcard);
                 }
             }
         }
@@ -608,7 +663,10 @@ ThicketPackage::ThicketPackage()
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();
     addMetaObject<YinghunCard>();
-    addMetaObject<FangzhuCard>();    
+    addMetaObject<FangzhuCard>();
+    addMetaObject<HaoshiCard>();
+
+    skills << new HaoshiViewAsSkill;
 }
 
 ADD_PACKAGE(Thicket)

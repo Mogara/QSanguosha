@@ -26,8 +26,7 @@ public slots:
     void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
     void chooseGeneral(const QList<const General*> &generals);
-    void changeMessage(const QString &message = QString());
-    void moveCard(const CardMoveStructForClient &move);
+    void changeMessage(const QString &message = QString());    
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
     void hideDiscards();
@@ -100,6 +99,9 @@ private slots:
     void setPileNumber(int n);
     void showCard(const QString &player_name, int card_id);
     void doGuanxing(const QList<int> &card_ids);
+
+    void moveCard(const CardMoveStructForClient &move);
+    void moveNCards(int n, const QString &from, const QString &to);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);

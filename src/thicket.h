@@ -20,6 +20,15 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class HaoshiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HaoshiCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+};
+
 class DimengCard: public SkillCard{
     Q_OBJECT
 

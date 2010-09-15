@@ -51,8 +51,7 @@ public:
     void getGenerals(const QString &generals_str);
     void startInXs(const QString &);
     void duplicationError(const QString &);
-    void arrangeSeats(const QString &seats);
-    void moveCard(const QString &move_str);
+    void arrangeSeats(const QString &seats);    
     void activate(const QString &focus_player);
     void startGame(const QString &);
     void hpChange(const QString &change_str);
@@ -69,6 +68,9 @@ public:
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
     void replyYiji(const Card *card, const ClientPlayer *to);
+
+    void moveCard(const QString &move_str);
+    void moveNCards(const QString &move_str);
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
@@ -104,6 +106,10 @@ public slots:
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
 
+#ifndef QT_NO_DEBUG
+    void cheatChoose();
+#endif
+
 private:
     QObject *room;
     Status status;
@@ -123,15 +129,12 @@ private slots:
 signals:
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
-    void player_removed(const QString &player_name);
-    void cards_drawed(const QList<const Card *> &cards);
+    void player_removed(const QString &player_name);    
     void generals_got(const QList<const General *> &generals);
     void message_changed(const QString &message);
     void prompt_changed(const QString &prompt_str);
-    void seats_arranged(const QList<const ClientPlayer*> &seats);
-    void n_card_drawed(ClientPlayer *player, int n);
-    void hp_changed(const QString &who, int delta);
-    void card_moved(const CardMoveStructForClient &move);
+    void seats_arranged(const QList<const ClientPlayer*> &seats);    
+    void hp_changed(const QString &who, int delta);    
     void status_changed(Client::Status new_status);
     void avatars_hiden();
     void pile_cleared();
@@ -140,6 +143,12 @@ signals:
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void guanxing(const QList<int> &card_ids);
+
+    void cards_drawed(const QList<const Card *> &cards);
+    void n_cards_drawed(ClientPlayer *player, int n);
+
+    void card_moved(const CardMoveStructForClient &move);
+    void n_cards_moved(int n, const QString &from, const QString &to);
 
     void skill_attached(const QString &skill_name);
     void skill_detached(const QString &skill_name);

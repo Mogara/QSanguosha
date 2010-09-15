@@ -177,17 +177,14 @@ bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return true;
 }
 
-void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
-    room->playSkillEffect("shensu");
-
+void ShensuCard::onEffect(const CardEffectStruct &card_effect) const{
     SlashEffectStruct effect;
     effect.slash = new Slash(Card::NoSuit, 0);
-    effect.from = source;
-    effect.to = targets.first();
+    effect.from = card_effect.from;
+    effect.to = card_effect.to;
     effect.nature = DamageStruct::Normal;
 
-    room->slashEffect(effect);
+    card_effect.from->getRoom()->slashEffect(effect);
 }
 
 class Shensu1ViewAsSkill: public ZeroCardViewAsSkill{
@@ -222,7 +219,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->isEquipped();
+        return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
@@ -240,6 +237,10 @@ class Shensu1: public PhaseChangeSkill{
 public:
     Shensu1():PhaseChangeSkill("shensu1"){
         view_as_skill = new Shensu1ViewAsSkill;
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return 2;
     }
 
     virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
@@ -501,7 +502,8 @@ WindPackage::WindPackage()
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
     addMetaObject<GongxinCard>();
-    addMetaObject<LeijiCard>();    
+    addMetaObject<LeijiCard>();
+    addMetaObject<ShensuCard>();
 
     skills << new HuangtianViewAsSkill;
 }

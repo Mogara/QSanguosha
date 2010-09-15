@@ -19,15 +19,10 @@ public:
     void addSocket(QTcpSocket *socket);
     bool isFull() const;    
     void broadcast(const QString &message, ServerPlayer *except = NULL);
-    void throwCard(const Card *card);
-    void throwCard(int card_id);
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
-    Player::Place getCardPlace(int card_id) const;
-    ServerPlayer *getCardOwner(int card_id) const;
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
-    void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
     QList<ServerPlayer *> getAllPlayers();
     void nextPlayer();
@@ -42,17 +37,12 @@ public:
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
-    void drawCards(ServerPlayer *player, int n);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerCorrect(ServerPlayer *player, const QString &field, int correct);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
-    void moveCard(const CardMoveStruct &move);
-    void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void useCard(ServerPlayer *player, const QString &card_str);
     void damage(const DamageStruct &data);
-    void obtainCard(ServerPlayer *target, const Card *card);
-    void obtainCard(ServerPlayer *target, int card_id);
     void loseHp(ServerPlayer *victim);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
@@ -70,9 +60,23 @@ public:
     void doGuanxing(ServerPlayer *zhuge);
     int drawCard();
     const Card *askForPindian(ServerPlayer *player);
-    bool pindian(ServerPlayer *source, ServerPlayer *target);
-    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open = true);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void takeAG(ServerPlayer *player, int card_id);
+
+    // related to card transfer
+    Player::Place getCardPlace(int card_id) const;
+    ServerPlayer *getCardOwner(int card_id) const;
+    ServerPlayer *getCardOwner(const Card *card) const;
+    void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
+
+    void drawCards(ServerPlayer *player, int n);
+    void obtainCard(ServerPlayer *target, const Card *card);
+    void obtainCard(ServerPlayer *target, int card_id);
+
+    void throwCard(const Card *card);
+    void throwCard(int card_id);
+    void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
+    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open);
     void doMove(const CardMoveStruct &move);
 
     // interactive methods
@@ -84,7 +88,7 @@ public:
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
-    const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets);
+    const Card *askForCardWithTargets(ServerPlayer *, const QString &pattern, const QString &prompt, QList<ServerPlayer *> &targets, bool throw_it = true);
     int askForAG(ServerPlayer *player);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);

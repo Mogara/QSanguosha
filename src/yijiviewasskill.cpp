@@ -1,29 +1,12 @@
 #include "yijiviewasskill.h"
 #include "carditem.h"
-
-class YijiCard: public Card{
-public:
-    YijiCard():Card(Card::NoSuit, 0){
-    }
-
-    virtual QString getType() const{
-        return "yiji_card";
-    }
-
-    virtual QString getSubtype() const{
-        return "yiji_card";
-    }
-
-    virtual int getTypeId() const{
-        return 0;
-    }
-};
+#include "standard.h"
 
 
 YijiViewAsSkill::YijiViewAsSkill()
     :ViewAsSkill("yiji")
 {
-    card = new YijiCard;
+    card = new RendeCard;
 }
 
 void YijiViewAsSkill::setCards(const QString &card_str){

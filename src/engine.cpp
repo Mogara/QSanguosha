@@ -170,18 +170,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
         all_generals = general_set.subtract(ban_set).toList();
     }
 
-#ifndef QT_NO_DEBUG
-    QStringList my_list;
-    my_list << "zhugeliang" << "guojia" << "xiahoudun" << "shenlumeng";
-
-    for(i=0; i<my_list.length(); i++){
-        QString my_general = my_list.at(i);
-        int index = all_generals.indexOf(my_general);
-        all_generals.swap(index, i);
-    }
-
-#endif
-
     QStringList general_list = all_generals.mid(0, count);
     Q_ASSERT(general_list.count() == count);
 

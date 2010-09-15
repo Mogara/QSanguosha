@@ -20,7 +20,7 @@
 #include <QGraphicsLinearLayout>
 #include <QMenu>
 #include <QGroupBox>
-
+#include <QLineEdit>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -98,12 +98,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
-    connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));    
+    connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));    
     connect(ClientInstance, SIGNAL(generals_got(QList<const General*>)), this, SLOT(chooseGeneral(QList<const General*>)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(arrangeSeats(QList<const ClientPlayer*>)));
-    connect(ClientInstance, SIGNAL(n_card_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));    
-    connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
@@ -114,6 +111,12 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
+
+    connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
+    connect(ClientInstance, SIGNAL(n_cards_moved(int,QString,QString)), this, SLOT(moveNCards(int,QString,QString)));
+
+    connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
+    connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
     connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
@@ -269,6 +272,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 
         QPropertyAnimation *kieru = new QPropertyAnimation(pixmap, "opacity");
         kieru->setDuration(900);
+        kieru->setKeyValueAt(0.8, 1.0);
         kieru->setEndValue(0.0);
 
         moving->addAnimation(ugoku);
@@ -380,12 +384,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
 
-#ifndef QT_NO_DEBUG
-    case Qt::Key_D: {
-            // do some debugging things
-            ClientInstance->drawCards("1+2+3+4+5+6");
-        }
-#endif
     }
 }
 
@@ -461,6 +459,16 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
     connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
 
     connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
+
+#ifndef QT_NO_DEBUG
+
+    QLineEdit *cheat_edit = new QLineEdit;
+    layout->addWidget(cheat_edit);
+
+    connect(cheat_edit, SIGNAL(returnPressed()), ClientInstance, SLOT(cheatChoose()));
+    connect(cheat_edit, SIGNAL(returnPressed()), dialog, SLOT(accept()));
+
+#endif
 
     dialog->setLayout(layout);
     dialog->exec();
@@ -548,7 +556,45 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     card_item->disconnect(this);
 
     return card_item;
+}
 
+void RoomScene::moveNCards(int n, const QString &from, const QString &to){
+    Photo *src = name2photo.value(from, NULL);
+    Photo *dest = name2photo.value(to, NULL);
+
+    if(src == NULL || dest == NULL){
+        QMessageBox::warning(main_window, tr("Warning"), tr("Can not find moving targets!"));
+        return;
+    }
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup;
+
+    int i;
+    for(i=0; i<n; i++){
+        Pixmap *card_pixmap = new Pixmap(":/card-back.png");
+        addItem(card_pixmap);
+
+        QPropertyAnimation *ugoku = new QPropertyAnimation(card_pixmap, "pos");
+        ugoku->setStartValue(src->pos());
+        ugoku->setEndValue(dest->pos() + QPointF(i * 10, 0));
+        ugoku->setDuration(1000);
+
+        QPropertyAnimation *kieru = new QPropertyAnimation(card_pixmap, "opacity");
+        kieru->setStartValue(1.0);
+        kieru->setKeyValueAt(0.8, 1.0);
+        kieru->setEndValue(0.0);
+        kieru->setDuration(1000);
+
+        group->addAnimation(ugoku);
+        group->addAnimation(kieru);
+
+        connect(group, SIGNAL(finished()), card_pixmap, SLOT(deleteLater()));       
+    }
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    src->update();
+    dest->update();
 }
 
 void RoomScene::moveCard(const CardMoveStructForClient &move){
@@ -951,6 +997,16 @@ void RoomScene::updateStatus(Client::Status status){
             dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(false);
+
+            if(ClientInstance->card_pattern.endsWith("!")){
+                QRegExp rx("@@(\\w+)!");
+                if(rx.exactMatch(ClientInstance->card_pattern)){
+                    QString skill_name = rx.capturedTexts().at(1);
+                    const Skill *skill = Sanguosha->getSkill(skill_name);
+                    const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
+                    dashboard->startPending(view_as_skill);
+                }
+            }
             cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);            
             break;

@@ -244,7 +244,7 @@ public:
         CardMoveStruct move = data.value<CardMoveStruct>();
         const Card *card = Sanguosha->getCard(move.card_id);
         Room *room = player->getRoom();
-        if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand && move.open){
+        if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand){
             QList<ServerPlayer *> targets;
             if(room->askForCardWithTargets(player, "@@yitian", "@yitian-sword", targets)){
                 CardUseStruct use;
@@ -667,17 +667,17 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     forever{
         if(second->hasSkill("wushuang")){
             room->playSkillEffect("wushuang");
-            const Card *jink = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->getGeneralName());
-            if(jink == NULL)
+            const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->getGeneralName());
+            if(slash == NULL)
                 break;
 
-            jink = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->getGeneralName());
-            if(jink == NULL)
+            slash = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->getGeneralName());
+            if(slash == NULL)
                 break;
 
         }else{
-            const Card *jink = room->askForCard(first, "slash", "duel-slash:" + second->getGeneralName());
-            if(jink == NULL)
+            const Card *slash = room->askForCard(first, "slash", "duel-slash:" + second->getGeneralName());
+            if(slash == NULL)
                 break;
         }
 

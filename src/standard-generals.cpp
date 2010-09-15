@@ -109,9 +109,11 @@ public:
         events << JudgeOnEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
         int card_id = data.toInt();
-        player->getRoom()->obtainCard(player, card_id);
+        Room *room = guojia->getRoom();
+        room->obtainCard(guojia, card_id);
+        room->playSkillEffect(objectName());
 
         return false;
     }
@@ -841,7 +843,7 @@ public:
     }
 
     virtual bool isAvailableAtResponse(){
-        return ClientInstance->card_pattern.contains("peach");
+        return ClientInstance->card_pattern.contains("peach") && Self->getPhase() == Player::NotActive;
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{

@@ -20,7 +20,7 @@ class ClientPlayer : public Player
 
 public:
     explicit ClientPlayer(Client *client);
-    void drawNCard(int card_num);
+    void handCardChange(int delta);
     QList<const Card *> getCards() const;
 
     virtual int aliveCount() const;

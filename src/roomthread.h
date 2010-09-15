@@ -74,9 +74,8 @@ struct CardMoveStruct{
     int card_id;
     Player::Place from_place, to_place;
     ServerPlayer *from, *to;
-    bool open;
 
-    QString toString(bool card_known = true) const;
+    QString toString() const;
 };
 
 Q_DECLARE_METATYPE(CardMoveStruct);
