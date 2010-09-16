@@ -38,6 +38,7 @@ public:
     // pending operations
     void startPending(const ViewAsSkill *skill);
     void stopPending();
+    void updatePending();
     const ViewAsSkill *currentSkill() const;    
     const Card *pendingCard() const;
 
@@ -63,6 +64,7 @@ private:
 
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QList<CardItem **> equips;
     QStack<CardItem *> judging_area;
     QStack<QPixmap> delayed_tricks;
     QGraphicsLinearLayout *button_layout;
@@ -84,7 +86,7 @@ private slots:
     void sortCards();
     void onCardItemClicked();
     void onCardItemThrown();
-    void updateEnablity(CardItem *card_item);
+    void onMarkChanged();
 
 signals:
     void card_selected(const Card *card);

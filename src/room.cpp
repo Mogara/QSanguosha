@@ -162,7 +162,7 @@ int Room::getJudgeCard(ServerPlayer *player){
     }
 
     // judge delay
-    thread->delay(1);
+    thread->delay();
 
     QVariant card_id_data = card_id;
     thread->trigger(JudgeOnEffect, player, card_id_data);
@@ -1208,7 +1208,9 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
     const Card *card2 = askForPindian(target, ask_str);
 
     throwCard(card1);
+    thread->delay();
     throwCard(card2);
+    thread->delay();
 
     return card1->getNumber() > card2->getNumber();
 }

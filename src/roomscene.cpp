@@ -1487,6 +1487,7 @@ void RoomScene::doGuanxing(const QList<int> &card_ids){
     QList<CardItem *> card_items;
     foreach(int card_id, card_ids){
         CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
         card_item->setScale(ratio);
         card_items << card_item;
         addItem(card_item);

@@ -129,7 +129,7 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
-    void delay(unsigned long secs);
+    void delay(unsigned long secs = 1);
 
 protected:
     virtual void run();

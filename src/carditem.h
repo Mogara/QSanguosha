@@ -50,6 +50,7 @@ signals:
     void clicked();
     void double_clicked();
     void thrown();
+    void mark_changed();
 };
 
 #endif // CARDITEM_H

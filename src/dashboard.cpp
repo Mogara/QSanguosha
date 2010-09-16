@@ -56,6 +56,8 @@ Dashboard::Dashboard()
     back_icon->setPos(922, 104);
     back_icon->hide();
     back_icon->setZValue(1.0);
+
+    equips << &weapon << &armor << &defensive_horse << &offensive_horse;
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -246,10 +248,11 @@ void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){
     else if(defensive_horse_rect.contains(pos))
         to_select = defensive_horse;
     else if(offensive_horse_rect.contains(pos))
-        to_select = offensive_horse;
+        to_select = offensive_horse;   
 
-    if(to_select){
+    if(to_select && to_select->isMarkable()){
         to_select->mark(!to_select->isMarked());
+
         update();
     }
 }
@@ -409,12 +412,6 @@ void Dashboard::disableAllCards(){
     }
 }
 
-void Dashboard::updateEnablity(CardItem *card_item){
-    if(card_item){
-        card_item->setMarkable(view_as_skill->viewFilter(pendings, card_item));
-    }
-}
-
 void Dashboard::enableCards(){    
     foreach(CardItem *card_item, card_items)
         card_item->setEnabled(card_item->getCard()->isAvailable());
@@ -450,19 +447,33 @@ void Dashboard::enableCards(const QString &pattern){
 
 void Dashboard::startPending(const ViewAsSkill *skill){
     view_as_skill = skill;
+    pendings.clear();
 
-    foreach(CardItem *card_item, card_items){
-        card_item->setEnabled(skill->viewFilter(pendings, card_item));
-    }
+    updatePending();
 
-    pending_card = skill->viewAs(pendings);
-    emit card_selected(pending_card);
+    if(weapon)
+        connect(weapon, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+    if(armor)
+        connect(armor, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+    if(defensive_horse)
+        connect(defensive_horse, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+    if(offensive_horse)
+        connect(offensive_horse, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
 }
 
 void Dashboard::stopPending(){
     view_as_skill = NULL;
     pending_card = NULL;
-    emit card_selected(pending_card);
+    emit card_selected(NULL);
+
+    foreach(CardItem **equip_ptr, equips){
+        CardItem *equip = *equip_ptr;
+        if(equip){
+            equip->setMarkable(false);
+            disconnect(equip, SIGNAL(mark_changed()));
+        }
+
+    }
 
     pendings.clear();
     adjustCards();
@@ -482,18 +493,7 @@ void Dashboard::onCardItemClicked(){
             pendings << card_item;
         }
 
-        foreach(CardItem *c, card_items){
-            if(!c->isPending())
-                c->setEnabled(view_as_skill->viewFilter(pendings, c));
-        }
-
-        updateEnablity(weapon);
-        updateEnablity(armor);
-        updateEnablity(defensive_horse);
-        updateEnablity(offensive_horse);
-
-        pending_card = view_as_skill->viewAs(pendings);
-        emit card_selected(pending_card);
+        updatePending();
 
     }else{
         if(card_item->isPending()){
@@ -509,11 +509,44 @@ void Dashboard::onCardItemClicked(){
     }
 }
 
+void Dashboard::updatePending(){
+    foreach(CardItem *c, card_items){
+        if(!c->isPending())
+            c->setEnabled(view_as_skill->viewFilter(pendings, c));
+    }
+
+    foreach(CardItem **equip_ptr, equips){
+        CardItem *equip = *equip_ptr;
+        if(equip)
+            equip->setMarkable(view_as_skill->viewFilter(pendings, equip));
+    }
+
+    const Card *new_pending_card = view_as_skill->viewAs(pendings);
+    if(pending_card != new_pending_card){
+        pending_card = new_pending_card;
+        emit card_selected(pending_card);
+    }
+}
+
+
 void Dashboard::onCardItemThrown(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if(card_item){
         selected = card_item;
         emit card_to_use();
+    }
+}
+
+void Dashboard::onMarkChanged(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+
+    if(card_item){
+        if(card_item->isMarked())
+            pendings.append(card_item);
+        else
+            pendings.removeOne(card_item);
+
+        updatePending();
     }
 }
 

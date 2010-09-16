@@ -590,20 +590,32 @@ public:
     }
 };
 
-class Keji: public PhaseChangeSkill{
+class Keji: public TriggerSkill{
 public:
-    Keji():PhaseChangeSkill("keji"){
+    Keji():TriggerSkill("keji"){
+        events << PhaseChange << CardUsed;
 
+        frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Discard){            
-            // FIXME
-            return true;
-        }else
-            return false;
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::Start)
+                player->setMark("slash_count", 0);
+            else if(player->getPhase() == Player::Discard){
+                if(player->getMark("slash_count") == 0 && player->getRoom()->askForSkillInvoke(player, objectName()))
+                    return true;
+            }
+        }else if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->inherits("Slash"))
+                player->addMark("slash_count");
+        }
+
+        return false;
     }
 };
+
 
 class Lianying: public TriggerSkill{
 public:

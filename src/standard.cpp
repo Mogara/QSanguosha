@@ -121,8 +121,6 @@ QString DelayedTrick::getSubtype() const{
     return "delayed_trick";
 }
 
-
-
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     int card_id = room->getJudgeCard(effect.to);
@@ -174,8 +172,7 @@ EquipCard::Location Weapon::location() const{
 void Weapon::onInstall(ServerPlayer *player) const{
     EquipCard::onInstall(player);
     Room *room = player->getRoom();
-    if(range != 1)
-        room->setPlayerProperty(player, "attack_range", range);
+    room->setPlayerProperty(player, "attack_range", range);
 
     if(attach_skill)
         room->attachSkillToPlayer(player, objectName());
@@ -184,8 +181,7 @@ void Weapon::onInstall(ServerPlayer *player) const{
 void Weapon::onUninstall(ServerPlayer *player) const{
     EquipCard::onUninstall(player);
     Room *room = player->getRoom();
-    if(range != 1)
-        room->setPlayerProperty(player, "attack_range", 1);
+    room->setPlayerProperty(player, "attack_range", 1);
 
     if(attach_skill)
         room->detachSkillFromPlayer(player, objectName());

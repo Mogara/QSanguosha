@@ -28,12 +28,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                 if(trick == NULL)
                     break;
 
-                CardEffectStruct effect;
-                effect.card = trick;
-                effect.from = NULL;
-                effect.to = player;
-
-                room->cardEffect(effect);
+                room->cardEffect(trick, NULL, player);
             }
 
             break;

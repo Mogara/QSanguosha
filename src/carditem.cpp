@@ -128,7 +128,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 }
 
 bool CardItem::isMarked() const{
-    return marked;
+    return markable && marked;
 }
 
 bool CardItem::isMarkable() const{
@@ -136,8 +136,12 @@ bool CardItem::isMarkable() const{
 }
 
 void CardItem::mark(bool marked){
-    if(markable)
-        this->marked = marked;
+    if(markable){
+        if(this->marked != marked){
+            this->marked = marked;
+            emit mark_changed();
+        }
+    }
 }
 
 void CardItem::setMarkable(bool markable){
