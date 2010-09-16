@@ -404,4 +404,17 @@ public:
     Q_INVOKABLE HujiaCard();
 };
 
+#ifndef QT_NO_DEBUG
+
+class CheatCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CheatCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+#endif
+
 #endif // STANDARD_H

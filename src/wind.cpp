@@ -44,6 +44,10 @@ public:
 
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
     virtual bool isEnabledAtResponse() const{
         return ClientInstance->card_pattern == "@guidao";
     }
@@ -56,7 +60,7 @@ public:
         if(cards.length() != 1)
             return NULL;
 
-        Card *card = new GuidaoCard;
+        GuidaoCard *card = new GuidaoCard;
         card->addSubcard(cards.first()->getCard()->getId());
 
         return card;

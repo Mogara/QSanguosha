@@ -31,7 +31,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["guanxingCommand"] = &Room::commonCommand;
-    callbacks["replyYijiCommand"] = &Room::commonCommand;
+    callbacks["replyYijiCommand"] = &Room::commonCommand;   
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -1071,7 +1071,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
         return Card::NoSuit;
 }
 
-bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional){
+bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
     QString ask_str = QString::number(discard_num);
     if(optional)
         ask_str.append("?");

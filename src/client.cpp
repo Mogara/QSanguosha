@@ -261,6 +261,10 @@ void Client::cheatChoose(){
     }
 }
 
+void Client::requestCard(int card_id){
+    request(QString("useCard @CheatCard=%1->.").arg(card_id));
+}
+
 #endif
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){

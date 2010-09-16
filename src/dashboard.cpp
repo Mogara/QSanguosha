@@ -540,6 +540,8 @@ void Dashboard::onCardItemThrown(){
 void Dashboard::onMarkChanged(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
 
+    Q_ASSERT(card_item->isEquipped());
+
     if(card_item){
         if(card_item->isMarked())
             pendings.append(card_item);

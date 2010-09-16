@@ -355,7 +355,7 @@ public:
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
             Room *room = player->getRoom();
-            if(room->askForDiscard(player, 2, true)){
+            if(room->askForDiscard(player, 2, true, true)){
                 result.success = true;
                 data = QVariant::fromValue(result);
             }

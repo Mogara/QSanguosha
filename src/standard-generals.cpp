@@ -1063,6 +1063,12 @@ void StandardPackage::addGenerals(){
     addMetaObject<GuicaiCard>();
     addMetaObject<QingnangCard>();
     addMetaObject<HujiaCard>();
+
+#ifndef QT_NO_DEBUG
+
+    addMetaObject<CheatCard>();
+
+#endif
     
     // for translation
     t["wei"] = tr("wei");

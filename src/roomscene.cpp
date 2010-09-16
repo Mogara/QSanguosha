@@ -22,6 +22,7 @@
 #include <QMenu>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QInputDialog>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -385,6 +386,16 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
 
+#ifndef QT_NO_DEBUG
+    case Qt::Key_D:{
+            int max = Sanguosha->getCardCount();
+            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 0, 0, max);
+            ClientInstance->requestCard(card_id);
+
+            break;
+        }
+#endif
+
     }
 }
 
@@ -725,9 +736,13 @@ void RoomScene::updateSkillButtons(){
             button = new QPushButton(skill_name);
             button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
             connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-        }else
+        }else{
             button = new QPushButton(skill_name);
-            // QMessageBox::warning(NULL, tr("Warning"), tr("Only view as skill and passive skill is supported now!"));
+            if(skill->getFrequency() == Skill::Compulsory){
+                button->setText(skill_name + tr(" [Compulsory]"));
+                button->setEnabled(false);
+            }
+        }
 
         button->setObjectName(skill->objectName());
         if(skill->isLordSkill())
@@ -1413,8 +1428,9 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
                 name = tr("Discarded Pile");
             }
 
-            QGraphicsSimpleTextItem *text_item = addSimpleText(name, Config.SmallFont);
+            QGraphicsSimpleTextItem *text_item = addSimpleText(name, Config.TinyFont);
             text_item->setPos(card_item->pos() + QPointF(20, 70));
+            text_item->setZValue(card_item->zValue() + 1.0);
             taker_names << text_item;
 
             break;
@@ -1496,12 +1512,13 @@ void RoomScene::doGuanxing(const QList<int> &card_ids){
 
     QRectF rect = card_items.first()->boundingRect();
     qreal card_width = rect.width() * ratio;
-    qreal width = card_width * card_items.length();
     qreal card_height = rect.width() * ratio;
+
+    qreal width = card_width * card_items.length();
     qreal height = card_height * 2;
 
     qreal start_x = - width/2;
-    qreal start_y = - height/2;
+    qreal start_y = - height;
 
     int i;
     for(i=0; i<card_items.length(); i++){

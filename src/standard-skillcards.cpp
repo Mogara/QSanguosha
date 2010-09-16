@@ -195,4 +195,11 @@ HujiaCard::HujiaCard(){
     target_fixed = true;
 }
 
+CheatCard::CheatCard(){
+    target_fixed = true;
+}
+
+void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->obtainCard(source, subcards.first());
+}
 

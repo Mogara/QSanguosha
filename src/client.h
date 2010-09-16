@@ -108,6 +108,7 @@ public slots:
 
 #ifndef QT_NO_DEBUG
     void cheatChoose();
+    void requestCard(int card_id);
 #endif
 
 private:
