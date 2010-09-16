@@ -70,33 +70,6 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     if(effect.drank)
         room->setPlayerFlag(effect.from, "-drank");
 
-    if(card_effect.to->hasSkill("liuli")){
-        ServerPlayer *daqiao = card_effect.to;
-        const Card *card = NULL;
-        QList<ServerPlayer *> new_targets;
-        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
-            QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
-            players.removeOne(effect.from);
-
-            bool can_invoke = false;
-            foreach(ServerPlayer *player, players){
-                if(daqiao->inMyAttackRange(player)){
-                    can_invoke = true;
-                    break;
-                }
-            }
-
-            if(can_invoke){
-                QString prompt = "@liuli-card:" + effect.from->getGeneralName();
-                card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
-                if(card){
-                    ServerPlayer *target = new_targets.first();
-                    effect.to = target; // the key code
-                }
-            }
-        }
-    }
-
     room->slashEffect(effect);
 }
 

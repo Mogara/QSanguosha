@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "optionbutton.h"
 #include "cardoverview.h"
+#include "distanceviewdialog.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -1509,4 +1510,9 @@ void RoomScene::doGuanxing(const QList<int> &card_ids){
         card_item->setPos(pos);
         card_item->setHomePos(pos);
     }
+}
+
+void RoomScene::viewDistance(){
+    DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
+    dialog->show();
 }

@@ -150,6 +150,7 @@ void MainWindow::enterRoom(){
     RoomScene *room_scene = new RoomScene(Config.PlayerCount, this);
     ui->actionView_Discarded->setEnabled(true);
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
+    connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
 
     gotoScene(room_scene);
 }
@@ -198,3 +199,4 @@ void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)
         Config.setValue("NeverNullifyMyTrick", checked);
     }
 }
+

@@ -49,6 +49,13 @@ public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
     enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
 
+    struct CorrectStruct{
+        int equip_src;
+        int equip_dest;
+        int skill_src;
+        int skill_dest;
+    };
+
     explicit Player(QObject *parent);
 
     // property setters/getters
@@ -81,6 +88,7 @@ public:
     QString getCorrect() const;
     void setCorrect(const QString &correct_str);
     bool inMyAttackRange(const Player *other) const;
+    CorrectStruct getCorrectStruct() const;
 
     bool isAlive() const;
     void setAlive(bool alive);
@@ -144,12 +152,6 @@ private:
     QSet<QString> flags;
     QMap<QString, int> marks;
 
-    struct CorrectStruct{
-        int equip_src;
-        int equip_dest;
-        int skill_src;
-        int skill_dest;
-    };
     struct CorrectStruct correct;
     int attack_range;
 

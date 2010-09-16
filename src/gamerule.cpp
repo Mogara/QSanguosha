@@ -116,7 +116,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             }
 
             break;
-        }
+        }        
 
     case CardEffected:{
             if(data.canConvert<CardEffectStruct>()){

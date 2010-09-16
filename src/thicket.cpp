@@ -457,6 +457,10 @@ public:
     Jiuchi():ViewAsSkill("jiuchi"){
     }
 
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern.contains("analeptic");
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         return selected.isEmpty() && !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Spade;
     }

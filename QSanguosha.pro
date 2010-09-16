@@ -43,7 +43,8 @@ SOURCES += src/main.cpp \
     src/maneuvering.cpp \
     src/wind.cpp \
     src/thicket.cpp \
-    src/yijiviewasskill.cpp
+    src/yijiviewasskill.cpp \
+    src/distanceviewdialog.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -79,11 +80,13 @@ HEADERS += src/mainwindow.h \
     src/maneuvering.h \
     src/wind.h \
     src/thicket.h \
-    src/yijiviewasskill.h
+    src/yijiviewasskill.h \
+    src/distanceviewdialog.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
-    src/cardoverview.ui
+    src/cardoverview.ui \
+    src/distanceviewdialog.ui
 RESOURCES += resource/images/sanguosha.qrc
 RC_FILE += resource/icon.rc
 TRANSLATIONS += sanguosha.ts

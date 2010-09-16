@@ -127,6 +127,10 @@ bool Player::inMyAttackRange(const Player *other) const{
     return distanceTo(other) <= attack_range;
 }
 
+Player::CorrectStruct Player::getCorrectStruct() const{
+    return correct;
+}
+
 int Player::distanceTo(const Player *other) const{
     if(this == other)
         return 0;

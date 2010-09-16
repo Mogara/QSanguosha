@@ -701,9 +701,9 @@ public:
     }
 };
 
-class Liuli: public ViewAsSkill{
+class LiuliViewAsSkill: public ViewAsSkill{
 public:
-    Liuli():ViewAsSkill("liuli"){
+    LiuliViewAsSkill():ViewAsSkill("liuli"){
 
     }
 
@@ -723,16 +723,61 @@ public:
         if(cards.length() != 1)
             return NULL;        
 
-        QRegExp rx("@@liuli-(.+)");
-        if(!rx.exactMatch(ClientInstance->card_pattern))
+        if(!ClientInstance->card_pattern.startsWith("@@liuli-"))
             return NULL;
 
-        QString slash_source = rx.capturedTexts().at(1);
+        QString slash_source = ClientInstance->card_pattern;
+        slash_source.remove("@@liuli-");
+
         LiuliCard *card = new LiuliCard;
         card->setSlashSource(slash_source);
-        card->addSubcard(cards.first()->getCard()->getId());
+        card->addSubcards(cards);
 
         return card;
+    }
+};
+
+class Liuli: public TriggerSkill{
+public:
+    Liuli():TriggerSkill("liuli"){
+        view_as_skill = new LiuliViewAsSkill;
+
+        events << CardEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *daqiao, QVariant &data) const{
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+
+        Room *room = daqiao->getRoom();
+        const Card *card = NULL;        
+        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
+            QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
+            players.removeOne(effect.from);
+
+            bool can_invoke = false;
+            foreach(ServerPlayer *player, players){
+                if(daqiao->inMyAttackRange(player)){
+                    can_invoke = true;
+                    break;
+                }
+            }
+
+            if(can_invoke){
+                QString prompt = "@liuli-card:" + effect.from->getGeneralName();
+                QList<ServerPlayer *> new_targets;
+                card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
+                if(card){
+                    ServerPlayer *target = new_targets.first();
+                    effect.to = target; // the key code
+
+                    room->cardEffect(effect);
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 };
 

@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -42,6 +42,7 @@
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionNever_Nullify_My_Trick"/>
     <addaction name="actionView_Discarded"/>
+    <addaction name="actionView_distance"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -132,6 +133,14 @@
    </property>
    <property name="text">
     <string>Never Nullify My Trick</string>
+   </property>
+  </action>
+  <action name="actionView_distance">
+   <property name="text">
+    <string>View distance</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

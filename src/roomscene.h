@@ -99,6 +99,7 @@ private slots:
     void setPileNumber(int n);
     void showCard(const QString &player_name, int card_id);
     void doGuanxing(const QList<int> &card_ids);
+    void viewDistance();
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);
