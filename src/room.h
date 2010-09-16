@@ -52,16 +52,20 @@ public:
     void setLegatee(ServerPlayer *legatee);
     int getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);
-    void setMenghuo(ServerPlayer *menghuo);
-    ServerPlayer *getMenghuo() const;
     void skip(Player::Phase phase);
     bool isSkipped(Player::Phase phase);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge);
-    int drawCard();
-    const Card *askForPindian(ServerPlayer *player);
-    bool pindian(ServerPlayer *source, ServerPlayer *target);    
+    int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
+
+    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);
+
+    void setMenghuo(ServerPlayer *menghuo);
+    ServerPlayer *getMenghuo() const;
+    void setZhurong(ServerPlayer *zhurong);
+    ServerPlayer *getZhurong() const;
 
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;
@@ -136,7 +140,7 @@ private:
     QMap<int, ServerPlayer*> owner_map;
     ServerPlayer *legatee;
 
-    ServerPlayer *menghuo;
+    ServerPlayer *menghuo, *zhurong;
     QSet<Player::Phase> skip_set;
 
 private slots:

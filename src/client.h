@@ -31,7 +31,6 @@ public:
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
-    void ackForHpChange(int delta);
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
@@ -39,7 +38,7 @@ public:
     void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
     void discardCards(const Card *card);
-    void chooseAG(int card_id);
+
     QList<ClientPlayer *> getPlayers() const;
 
     typedef void (Client::*Callback)(const QString &);
@@ -74,6 +73,7 @@ public:
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
+    void chooseAG(int card_id);
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
 

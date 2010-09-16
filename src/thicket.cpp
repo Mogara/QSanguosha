@@ -200,10 +200,16 @@ public:
     }
 };
 
-//class Juxiang: public TriggerSkill{
-//
-//};
+class Juxiang: public GameStartSkill{
+public:
+    Juxiang():GameStartSkill("juxiang"){
 
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        player->getRoom()->setZhurong(player);
+    }
+};
 
 
 YinghunCard::YinghunCard(){
@@ -354,14 +360,47 @@ DimengCard::DimengCard(){
 }
 
 bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(targets.length() <= 1)
-        return to_select != Self;
-    else
+    if(to_select == Self)
         return false;
+
+    if(targets.isEmpty())
+        return true;
+
+    if(targets.length() == 1){
+        int max_diff = Self->getHandcardNum();
+        return max_diff >= qAbs(to_select->getHandcardNum() - targets.first()->getHandcardNum());
+    }
+
+    return false;
 }
 
 bool DimengCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
     return targets.length() == 2;
+}
+
+void DimengCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("dimeng_used", true);
+}
+
+void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *a = targets.at(0);
+    ServerPlayer *b = targets.at(1);
+
+    int n1 = a->getHandcardNum();
+    int n2 = b->getHandcardNum();
+
+    // make sure n1 >= n2
+    if(n1 < n2){
+        qSwap(a, b);
+        qSwap(n1, n2);
+    }
+
+    int diff = n1 - n2;
+    if(diff != 0){
+        room->askForDiscard(source, diff, false);
+    }
+
+    a->swapWith(b);
 }
 
 class Dimeng: public ZeroCardViewAsSkill{
@@ -372,6 +411,10 @@ public:
 
     virtual const Card *viewAs() const{
         return new DimengCard;
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->turn_tag.value("dimeng_used", false).toBool();
     }
 };
 
@@ -583,6 +626,7 @@ ThicketPackage::ThicketPackage()
     menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
+    zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
 
     sunjian = new General(this, "sunjian", "wu");

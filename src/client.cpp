@@ -401,10 +401,6 @@ void Client::hpChange(const QString &change_str){
     emit hp_changed(who, delta);
 }
 
-void Client::ackForHpChange(int delta){
-    request(QString("ackForHpChange %1").arg(delta));
-}
-
 void Client::setStatus(Status status){
     if(this->status != status){
         this->status = status;
@@ -889,11 +885,17 @@ void Client::doGuanxing(const QString &guanxing_str){
 void Client::askForPindian(const QString &ask_str){
     QStringList words = ask_str.split("->");
     QString from = words.at(0);
-    QString to = words.at(1);
+    // QString to = words.at(1);
 
-    card_pattern = ".";
-    setStatus(Responsing);
+    if(from == Self->getGeneralName())
+        emit prompt_changed(tr("Please play a card for pindian"));
+    else
+        emit prompt_changed(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
+
+    card_pattern = ".";    
     refusable = false;
+
+    setStatus(Responsing);
 }
 
 void Client::askForYiji(const QString &card_list){

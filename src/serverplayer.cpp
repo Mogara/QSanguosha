@@ -178,3 +178,7 @@ QList<int> ServerPlayer::handCards() const{
 
     return card_ids;
 }
+
+void ServerPlayer::swapWith(ServerPlayer *other){
+    qSwap(handcards, other->handcards);
+}

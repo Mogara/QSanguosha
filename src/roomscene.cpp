@@ -1008,7 +1008,7 @@ void RoomScene::updateStatus(Client::Status status){
                 }
             }
             cancel_button->setEnabled(ClientInstance->refusable);
-            discard_button->setEnabled(false);            
+            discard_button->setEnabled(false);
             break;
         }
 

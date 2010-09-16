@@ -522,6 +522,17 @@ SavageAssault::SavageAssault(Suit suit, int number)
     setObjectName("savage_assault");
 }
 
+void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    AOE::use(room, source, targets);
+
+    Player::Place place = room->getCardPlace(getId());
+    if(place == Player::DiscardedPile){
+        ServerPlayer *zhurong = room->getZhurong();
+        if(zhurong && zhurong->isAlive())
+            zhurong->obtainCard(this);
+    }
+}
+
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->hasSkill("huoshou") || effect.to->hasSkill("juxiang"))
         return;

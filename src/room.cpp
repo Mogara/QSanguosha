@@ -17,7 +17,7 @@ Room::Room(QObject *parent, int player_count)
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     nullificators_count(0),
     thread(NULL), sem(NULL),
-    legatee(NULL), menghuo(NULL)
+    legatee(NULL), menghuo(NULL), zhurong(NULL)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
@@ -865,7 +865,8 @@ void Room::startGame(){
 
     // set hp full state
     int lord_welfare = player_count > 4 ? 1 : 0;
-    players.first()->setMaxHP(players.first()->getGeneralMaxHP() + lord_welfare);
+    ServerPlayer *the_lord = players.first();
+    the_lord->setMaxHP(the_lord->getGeneralMaxHP() + lord_welfare);
 
     for(i=1; i<player_count; i++)
         players[i]->setMaxHP(players[i]->getGeneralMaxHP());
@@ -877,10 +878,10 @@ void Room::startGame(){
         broadcastProperty(player, "hp");
     }
 
-    broadcast("! startGame .");
+    broadcastInvoke("startGame");
     game_started = true;
 
-    current = players.first();
+    current = the_lord;
 
     // initialize the place_map and owner_map;
     foreach(int card_id, *draw_pile){
@@ -991,14 +992,13 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     setCardMapping(move.card_id, move.to, move.to_place);
 
     QString public_move = move.toString();
+    Sanguosha->getCard(move.card_id)->onMove(move);
+    if(move.from){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardLost, move.from, data);
+    }
+
     if(open){
-        Sanguosha->getCard(move.card_id)->onMove(move);
-
-        if(move.from){
-            QVariant data = QVariant::fromValue(move);
-            thread->trigger(CardLost, move.from, data);
-        }
-
         if(move.to){
             QVariant data = QVariant::fromValue(move);
             thread->trigger(CardGot, move.to, data);
@@ -1126,6 +1126,14 @@ ServerPlayer *Room::getMenghuo() const{
     return menghuo;
 }
 
+void Room::setZhurong(ServerPlayer *zhurong){
+    this->zhurong = zhurong;
+}
+
+ServerPlayer *Room::getZhurong() const{
+    return zhurong;
+}
+
 void Room::skip(Player::Phase phase){
     skip_set << phase;
 }
@@ -1182,15 +1190,22 @@ void Room::doGuanxing(ServerPlayer *zhuge){
         draw_pile->append(i.next());
 }
 
-const Card *Room::askForPindian(ServerPlayer *player){    
-    // FIXME
+const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
+    player->invoke("askForPindian", ask_str);
 
-    return NULL;
+    reply_func = "responseCardCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    return Card::Parse(result);
 }
 
 bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
-    const Card *card1 = askForPindian(source);
-    const Card *card2 = askForPindian(target);
+    QString ask_str = QString("%1->%2").arg(source->getGeneralName()).arg(target->getGeneralName());
+
+    const Card *card1 = askForPindian(source, ask_str);
+    const Card *card2 = askForPindian(target, ask_str);
 
     throwCard(card1);
     throwCard(card2);

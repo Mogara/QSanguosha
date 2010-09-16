@@ -29,6 +29,7 @@ public:
     void throwAllCards();
     void drawCards(int n);
     QList<int> handCards() const;
+    virtual void swapWith(ServerPlayer *other);
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
