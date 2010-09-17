@@ -22,7 +22,6 @@ public:
     // server side
     QString ListenAddress;
     int CountDownSeconds;
-    int LordCount;
     int PlayerCount;
 
     // client side

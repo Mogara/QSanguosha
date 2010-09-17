@@ -317,8 +317,8 @@ void Client::duplicationError(const QString &){
 }
 
 void Client::arrangeSeats(const QString &seats_str){    
-    QStringList player_names = seats_str.split("+");
-    QList<const ClientPlayer*> seats;
+    QStringList player_names = seats_str.split("+");    
+    players.clear();
 
     int i;
     for(i=0; i<player_names.length(); i++){
@@ -330,11 +330,17 @@ void Client::arrangeSeats(const QString &seats_str){
         players << player;        
     }
 
-    int Self_index = players.indexOf(Self);
-    for(i=Self_index+1; i<players.length(); i++)
+    QList<const ClientPlayer*> seats;
+    int self_index = players.indexOf(Self);
+
+    Q_ASSERT(self_index != -1);
+
+    for(i=self_index+1; i<players.length(); i++)
         seats.prepend(players.at(i));
-    for(i=0; i<Self_index; i++)
+    for(i=0; i<self_index; i++)
         seats.prepend(players.at(i));
+
+    Q_ASSERT(seats.length() == players.length()-1);
 
     emit seats_arranged(seats);
 }

@@ -15,7 +15,7 @@ Engine::Engine(QObject *parent)
     :QObject(parent)
 {
     QStringList package_names;
-    package_names << "Standard" << "Wind" << "Maneuvering" << "Thicket";
+    package_names << "Standard" << "Wind" << "Maneuvering" << "Thicket" << "Yitian";
 
     QLibrary library(qApp->applicationFilePath());
 
@@ -85,6 +85,10 @@ void Engine::addPackage(Package *package){
         skills.insert(skill->objectName(), skill);
 }
 
+void Engine::addBanPackage(const QString &package_name){
+    ban_package.insert(package_name);
+}
+
 QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
@@ -127,16 +131,23 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
-QStringList Engine::getRandomLords(int lord_count) const{
-    QStringList lords = lord_list;
+QStringList Engine::getRandomLords() const{
+    QStringList lords;
 
-    if(lord_count < lord_list.length()){
-        QMessageBox::warning(NULL, tr("Warning"),
-                             tr("The lord count must greater or equal to the intrinsic lord number(%1)").arg(lord_list.length()));
-        return lord_list;
+    // add intrinsic lord
+    foreach(QString lord, lord_list){
+        const General *general = generals.value(lord);
+        if(!ban_package.contains(general->getPackage()))
+            lords << lord;        
     }
 
-    QStringList nonlord_list = this->nonlord_list;
+    QStringList nonlord_list;
+    foreach(QString nonlord, this->nonlord_list){
+        const General *general = generals.value(nonlord);
+        if(!ban_package.contains(general->getPackage()))
+            nonlord_list << nonlord;
+    }
+
     int i, n = nonlord_list.length();
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
@@ -144,15 +155,28 @@ QStringList Engine::getRandomLords(int lord_count) const{
         nonlord_list.swap(r1, r2);
     }
 
-    int extra = lord_count - lord_list.length();
+    const static int extra = 2;
     for(i=0; i< extra; i++)
         lords << nonlord_list.at(i);
 
     return lords;
 }
 
+QStringList Engine::getLimitedGeneralNames() const{
+    QStringList general_names;
+    QHashIterator<QString, const General *> itor(generals);
+    while(itor.hasNext()){
+        itor.next();
+        if(!ban_package.contains(itor.value()->getPackage())){
+            general_names << itor.key();
+        }
+    }
+
+    return general_names;
+}
+
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{
-    QStringList all_generals = generals.keys();
+    QStringList all_generals = getLimitedGeneralNames();
 
     int n = all_generals.count();
     Q_ASSERT(n >= count);
@@ -179,27 +203,17 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 QList<int> Engine::getRandomCards() const{
     QList<int> list;
     int n = cards.count(), i;
-    for(i=0; i<n; i++)
-        list << i;
+    for(i=0; i<n; i++){
+        const Card *card = cards.at(i);
+        if(!ban_package.contains(card->parent()->objectName()))
+            list << i;
+    }
 
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
         int r2 = qrand() % n;
         list.swap(r1, r2);
     }
-
-#ifndef QT_NO_DEBUG
-
-    QList<int> my_list;
-    my_list << 75;
-
-    for(i=0; i<my_list.length(); i++){
-        int card_id = my_list.at(i);
-        int index = list.indexOf(card_id);
-        list.swap(index, i);
-    }
-
-#endif
 
     return list;
 }

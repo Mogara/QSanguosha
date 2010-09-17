@@ -60,7 +60,10 @@ ConnectionDialog::~ConnectionDialog()
 void ConnectionDialog::on_connectButton_clicked()
 {
     QString username = ui->nameLineEdit->text();
-    username = username.trimmed();
+    if(username.length() < 3){
+        QMessageBox::warning(NULL, tr("Warning"), tr("The user name must has 3 letters at least!"));
+        return;
+    }
 
     Config.setValue("UserName", Config.UserName = username);
     Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());

@@ -238,6 +238,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
         group->addAnimation(translation);
     }
 
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
     // set item to player mapping
     item2player.insert(avatar, Self);
     foreach(Photo *photo, photos){

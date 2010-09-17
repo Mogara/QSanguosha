@@ -689,7 +689,7 @@ void Room::assignRoles(){
             lord_index = i;
             broadcastProperty(player, "role", "lord");
 
-            QStringList lord_list = Sanguosha->getRandomLords(Config.LordCount);
+            QStringList lord_list = Sanguosha->getRandomLords();
             player->invoke("getGenerals", lord_list.join("+"));
         }else
             player->sendProperty("role");
@@ -861,7 +861,7 @@ void Room::startGame(){
         alive_players << player;
         player_circle << player->objectName();
     }
-    broadcast("! arrangeSeats " + player_circle.join("+"));
+    broadcastInvoke("arrangeSeats", player_circle.join("+"));
 
     // set hp full state
     int lord_welfare = player_count > 4 ? 1 : 0;

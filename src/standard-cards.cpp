@@ -121,31 +121,6 @@ bool Peach::isAvailable() const{
     return Self->isWounded();
 }
 
-Shit::Shit(Suit suit, int number):BasicCard(suit, number){
-    setObjectName("shit");
-
-    target_fixed = true;
-}
-
-QString Shit::getSubtype() const{
-    return "disgusting_card";
-}
-
-void Shit::onMove(const CardMoveStruct &move) const{
-    ServerPlayer *from = move.from;
-    if(from && move.from_place == Player::Hand &&
-       from->getRoom()->getCurrent() == move.from
-       && move.to_place == Player::DiscardedPile){
-        DamageStruct damage;
-        damage.from = damage.to = from;
-        damage.card = this;
-        damage.damage = 1;
-        damage.nature = DamageStruct::Normal;
-
-        from->getRoom()->damage(damage);
-    }
-}
-
 class Crossbow:public Weapon{
 public:
     Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
@@ -204,60 +179,6 @@ public:
         setObjectName("qinggang_sword");
 
         skill = new QinggangSwordSkill;
-    }
-};
-
-class YitianSwordSkill : public WeaponSkill{
-public:
-    YitianSwordSkill():WeaponSkill("yitian_sword"){
-        events << CardGot;
-    }
-
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        CardMoveStruct move = data.value<CardMoveStruct>();
-        const Card *card = Sanguosha->getCard(move.card_id);
-        Room *room = player->getRoom();
-        if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand){
-            QList<ServerPlayer *> targets;
-            if(room->askForCardWithTargets(player, "@@yitian", "@yitian-sword", targets)){
-                CardUseStruct use;
-                use.card = card;
-                use.from = player;
-                use.to << targets;
-
-                QVariant use_data = QVariant::fromValue(use);
-                room->getThread()->trigger(CardUsed, player, use_data);
-            }
-        }
-
-        return false;
-    }
-};
-
-class YitianSwordViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    YitianSwordViewAsSkill():ZeroCardViewAsSkill("yitian_sword"){
-    }
-
-    virtual bool isEnabledAtPlay() const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@yitian";
-    }
-
-    virtual const Card *viewAs() const{
-        return new Slash(Card::NoSuit, 0);
-    }
-};
-
-class YitianSword:public Weapon{
-public:
-    YitianSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
-        setObjectName("yitian_sword");
-        skill = new YitianSwordSkill;
-        attach_skill = true;
     }
 };
 
@@ -922,15 +843,10 @@ void StandardPackage::addCards(){
 
           << new Peach(Card::Diamond, 12)
 
-          << new Shit(Card::Club, 1)
-          << new Shit(Card::Heart, 1)
-          << new Shit(Card::Diamond, 1)
-
           << new Crossbow(Card::Club)
           << new Crossbow(Card::Diamond)
           << new DoubleSword
           << new QinggangSword
-          << new YitianSword
           << new Blade
           << new Spear
           << new Axe
@@ -1015,12 +931,12 @@ void StandardPackage::addCards(){
     t["slash"] = tr("slash");
     t["jink"] = tr("jink");
     t["peach"] = tr("peach");
-    t["shit"] = tr("shit");
+
 
     t["crossbow"] = tr("crossbow");
     t["double_sword"] = tr("double_sword");
     t["qinggang_sword"] = tr("qinggang_sword");
-    t["yitian_sword"] = tr("yitian_sword");
+
     t["blade"] = tr("blade");
     t["spear"] = tr("spear");
     t["axe"] = tr("axe");
@@ -1068,5 +984,5 @@ void StandardPackage::addCards(){
     t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
     t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
 
-    skills << new SpearSkill << new YitianSwordViewAsSkill;
+    skills << new SpearSkill;
 }

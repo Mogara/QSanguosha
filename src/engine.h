@@ -23,6 +23,7 @@ public:
 
     QString translate(const QString &to_translate) const;
     void addPackage(Package *package);
+    void addBanPackage(const QString &package_name);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name);
 
@@ -33,7 +34,7 @@ public:
     int getCardCount() const;
     const Card *getCard(int index) const;
 
-    QStringList getRandomLords(int lord_count) const;
+    QStringList getRandomLords() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
@@ -51,6 +52,9 @@ private:
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
+    QSet<QString> ban_package;
+
+    QStringList getLimitedGeneralNames() const;
 
 private slots:
     void removeFromEffects();

@@ -1,6 +1,7 @@
 #include "server.h"
 #include "settings.h"
 #include "room.h"
+#include "engine.h"
 
 #include <QInputDialog>
 #include <QNetworkInterface>
@@ -9,6 +10,10 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QButtonGroup>
 
 Server::Server(QObject *parent)
     :QTcpServer(parent)
@@ -18,71 +23,98 @@ Server::Server(QObject *parent)
     connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
 
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    if(addresses.length() == 1)
-        listen(addresses.first(), port);
-    else{
-        QStringList items;
-        foreach(QHostAddress address, addresses){
-            quint32 ipv4 = address.toIPv4Address();
-            if(ipv4)
-                items << QHostAddress(ipv4).toString();
-        }
 
-        int current = items.indexOf(Config.ListenAddress);
-        if(current == -1)
-            current = 0;
+    QStringList items;
+    foreach(QHostAddress address, addresses){
+        quint32 ipv4 = address.toIPv4Address();
+        if(ipv4)
+            items << QHostAddress(ipv4).toString();
+    }
 
-        QDialog *dialog = new QDialog;
-        dialog->setWindowTitle(tr("Select network address"));
+    int current = items.indexOf(Config.ListenAddress);
+    if(current == -1)
+        current = 0;
 
-        QComboBox *combobox = new QComboBox;
-        combobox->addItems(items);
-        combobox->setCurrentIndex(current);
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Select network address"));
 
-        QLineEdit *port_edit = new QLineEdit;
-        port_edit->setValidator(new QIntValidator);
-        port_edit->setText(QString::number(port));
+    QComboBox *combobox = new QComboBox;
+    combobox->addItems(items);
+    combobox->setCurrentIndex(current);
 
-        QSpinBox *spinbox = new QSpinBox;
-        spinbox->setMinimum(2);
-        spinbox->setMaximum(8);
-        spinbox->setValue(Config.PlayerCount);
+    QLineEdit *port_edit = new QLineEdit;
+    port_edit->setValidator(new QIntValidator);
+    port_edit->setText(QString::number(port));
 
-        QHBoxLayout *button_layout = new QHBoxLayout;
-        button_layout->addStretch();
+    QSpinBox *spinbox = new QSpinBox;
+    spinbox->setMinimum(2);
+    spinbox->setMaximum(8);
+    spinbox->setValue(Config.PlayerCount);
 
-        QPushButton *ok_button = new QPushButton(tr("OK"));
-        QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+    QHBoxLayout *button_layout = new QHBoxLayout;
+    button_layout->addStretch();
 
-        button_layout->addWidget(ok_button);
-        button_layout->addWidget(cancel_button);
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
 
-        connect(ok_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    button_layout->addWidget(ok_button);
+    button_layout->addWidget(cancel_button);
 
-        QFormLayout *layout = new QFormLayout;
-        layout->addRow(tr("Network address"), combobox);
-        layout->addRow(tr("Port"), port_edit);
-        layout->addRow(tr("Player count"), spinbox);
-        layout->addRow(button_layout);
+    connect(ok_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
 
-        dialog->setLayout(layout);
-        dialog->exec();
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(tr("Extension package selection"));
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QButtonGroup *extension_group = new QButtonGroup;
+    extension_group->setExclusive(false);
 
-        if(dialog->result() == QDialog::Accepted){
-            Config.ListenAddress = combobox->currentText();
-            Config.Port = port_edit->text().toInt();
-            Config.PlayerCount = spinbox->value();
+    QStringList extensions;
+    extensions << "wind" << "thicket" << "maneuvering" << "yitian";
+    foreach(QString extension, extensions){
+        QCheckBox *checkbox = new QCheckBox;
+        checkbox->setObjectName(extension);
+        checkbox->setText(Sanguosha->translate(extension));
+        checkbox->setChecked(true);
 
-            Config.setValue("ListenAddress", Config.ListenAddress);
-            Config.setValue("Port", Config.Port);
-            Config.setValue("PlayerCount", Config.PlayerCount);
+        vlayout->addWidget(checkbox);
+        extension_group->addButton(checkbox);
+    }
 
-            listen(QHostAddress(Config.ListenAddress), Config.Port);
-            if(!isListening())
-                QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(Config.ListenAddress));
+    box->setLayout(vlayout);
+
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Network address"), combobox);
+    layout->addRow(tr("Port"), port_edit);
+    layout->addRow(tr("Player count"), spinbox);
+    layout->addRow(box);
+    layout->addRow(button_layout);
+
+    dialog->setLayout(layout);
+    dialog->exec();
+
+    if(dialog->result() != QDialog::Accepted)
+        return;
+
+    Config.ListenAddress = combobox->currentText();
+    Config.Port = port_edit->text().toInt();
+    Config.PlayerCount = spinbox->value();
+
+    Config.setValue("ListenAddress", Config.ListenAddress);
+    Config.setValue("Port", Config.Port);
+    Config.setValue("PlayerCount", Config.PlayerCount);
+
+    QList<QAbstractButton *> checkboxes = extension_group->buttons();
+    foreach(QAbstractButton *checkbox, checkboxes){
+        if(!checkbox->isChecked()){
+            Sanguosha->addBanPackage(checkbox->objectName());
         }
     }
+
+    listen(QHostAddress(Config.ListenAddress), Config.Port);
+    if(!isListening())
+        QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(Config.ListenAddress));
+
 }
 
 void Server::processNewConnection(){

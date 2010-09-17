@@ -274,14 +274,6 @@ public:
     virtual bool isAvailable() const;
 };
 
-class Shit:public BasicCard{
-    Q_OBJECT
-public:
-    Q_INVOKABLE Shit(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual void onMove(const CardMoveStruct &move) const;
-};
-
 class Snatch:public SingleTargetTrick{
     Q_OBJECT
 
