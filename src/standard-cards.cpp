@@ -422,7 +422,7 @@ void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlay
     Player::Place place = room->getCardPlace(getId());
     if(place == Player::DiscardedPile){
         ServerPlayer *zhurong = room->getZhurong();
-        if(zhurong && zhurong->isAlive())
+        if(zhurong && zhurong->isAlive() && source != zhurong)
             zhurong->obtainCard(this);
     }
 }

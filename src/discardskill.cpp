@@ -30,8 +30,18 @@ void DiscardSkill::setNum(int num){
     this->num = num;
 }
 
+void DiscardSkill::setIncludeEquip(bool include_equip){
+    this->include_equip = include_equip;
+}
+
 bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-    return selected.length() < num && !to_select->isEquipped();
+    if(selected.length() >= num)
+        return false;
+
+    if(!include_equip && to_select->isEquipped())
+        return false;
+
+    return true;
 }
 
 const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{

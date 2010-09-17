@@ -114,7 +114,6 @@ Server::Server(QObject *parent)
     listen(QHostAddress(Config.ListenAddress), Config.Port);
     if(!isListening())
         QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(Config.ListenAddress));
-
 }
 
 void Server::processNewConnection(){

@@ -206,9 +206,9 @@ void Room::gameOver(const QString &winner){
 
 void Room::slashEffect(const SlashEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
-    bool broken = thread->trigger(SlashEffected, effect.to, data);
+    bool broken = thread->trigger(SlashEffect, effect.from, data);
     if(!broken)
-        thread->trigger(SlashEffect, effect.from, data);
+        thread->trigger(SlashEffected, effect.to, data);
 }
 
 void Room::slashResult(const SlashResultStruct &result){
@@ -992,24 +992,26 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     setCardMapping(move.card_id, move.to, move.to_place);
 
     QString public_move = move.toString();
-    Sanguosha->getCard(move.card_id)->onMove(move);
-    if(move.from){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardLost, move.from, data);
-    }
-
+    // tell the clients
     if(open){
-        if(move.to){
-            QVariant data = QVariant::fromValue(move);
-            thread->trigger(CardGot, move.to, data);
-        }
-
         broadcastInvoke("moveCard", public_move);
     }else{
         move.from->invoke("moveCard", public_move);
         if(move.to != move.from)
             move.to->invoke("moveCard", public_move);
     }
+
+    if(move.from){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardLost, move.from, data);
+    }
+
+    if(move.to){
+        QVariant data = QVariant::fromValue(move);
+        thread->trigger(CardGot, move.to, data);
+    }
+
+    Sanguosha->getCard(move.card_id)->onMove(move);
 }
 
 QString CardMoveStruct::toString() const{
@@ -1073,8 +1075,12 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
 
 bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
     QString ask_str = QString::number(discard_num);
+    QString flag_str;
     if(optional)
-        ask_str.append("?");
+        flag_str.append("o");
+    if(include_equip)
+        flag_str.append("e");
+
     target->invoke("askForDiscard", ask_str);
 
     reply_func = "discardCardsCommand";

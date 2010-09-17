@@ -95,7 +95,7 @@ public:
     // public fields
     QString card_pattern;
     bool refusable;
-
+    bool include_equip;
     int discard_num;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;

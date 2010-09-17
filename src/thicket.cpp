@@ -106,7 +106,20 @@ public:
         events << JudgeOnEffect;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getGeneral()->getKingdom() == "wei" && !target->isLord();
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        int card_id = data.toInt();
+        const Card *card = Sanguosha->getCard(card_id);
+        if(card->isBlack()){
+            Room *room = player->getRoom();
+            if(room->askForSkillInvoke(player, objectName())){
+                room->getLord()->drawCards(1);
+            }
+        }
+
         return false;
     }
 };
@@ -242,6 +255,10 @@ public:
 
     virtual const Card *viewAs() const{
         return new YinghunCard;        
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
     }
 
     virtual bool isEnabledAtResponse() const{
@@ -400,7 +417,7 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         room->askForDiscard(source, diff, false);
     }
 
-    a->swapWith(b);
+    // FIXME
 }
 
 class Dimeng: public ZeroCardViewAsSkill{
@@ -510,6 +527,31 @@ public:
 
                 room->broadcastProperty(dongzhuo, "max_hp");
                 room->broadcastProperty(dongzhuo, "hp");
+            }
+        }
+
+        return false;
+    }
+};
+
+class Baonue: public TriggerSkill{
+public:
+    Baonue():TriggerSkill("baonue$"){
+        events << Damage;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getGeneral()->getKingdom() == "qun" && !target->isLord();
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *dongzhuo = room->getLord();
+        if(dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
+            int card_id = room->getJudgeCard(player);
+            const Card *card = Sanguosha->getCard(card_id);
+            if(card->getSuit() == Card::Spade){
+                room->recover(dongzhuo);
             }
         }
 
@@ -648,6 +690,7 @@ ThicketPackage::ThicketPackage()
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
     dongzhuo->addSkill(new Jiuchi);
     dongzhuo->addSkill(new Benghuai);
+    dongzhuo->addSkill(new Baonue);
 
     // two gods !!
     General *shencaocao, *shenlubu;
@@ -679,7 +722,7 @@ ThicketPackage::ThicketPackage()
     t["fangzhu"] = tr("fangzhu");
     t["songwei"] = tr("songwei");
     t["duanliang"] = tr("duanliang");
-    t["huoshuo"] = tr("huoshuo");
+    t["huoshou"] = tr("huoshou");
     t["zaiqi"] = tr("zaiqi");
     t["juxiang"] = tr("juxiang");
     t["lieren"] = tr("lieren");

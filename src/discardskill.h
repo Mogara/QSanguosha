@@ -8,6 +8,7 @@ class DiscardSkill : public ViewAsSkill{
 public:
     explicit DiscardSkill();
     void setNum(int num);
+    void setIncludeEquip(bool include_equip);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const;
@@ -15,6 +16,7 @@ public:
 private:
     Card *card;
     int num;
+    bool include_equip;
 };
 
 #endif // DISCARDSKILL_H

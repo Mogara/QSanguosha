@@ -663,16 +663,18 @@ void Client::setPileNumber(const QString &pile_num){
 }
 
 void Client::askForDiscard(const QString &discard_str){
-    static QChar option_symbol('?');
-    if(discard_str.contains(option_symbol)){
-        QString copy = discard_str;
-        copy.remove(option_symbol);
-        discard_num = copy.toInt();
-        refusable = true;
-    }else{
-        discard_num = discard_str.toInt();
-        refusable = false;
+    QRegExp rx("(\\d+):[oe]*");
+    if(!rx.exactMatch(discard_str)){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Discarding string is not well formatted!"));
+        return;
     }
+
+    QStringList texts = rx.capturedTexts();
+    discard_num = texts.at(1).toInt();
+
+    QString flag_str = texts.at(2);
+    refusable = flag_str.contains("o");
+    include_equip = flag_str.contains("e");
 
     emit prompt_changed(tr("Please discard %1 card(s)").arg(discard_num));
 

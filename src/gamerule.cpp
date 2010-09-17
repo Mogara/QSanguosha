@@ -21,7 +21,11 @@ int GameRule::getPriority(ServerPlayer *) const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
-    case Player::Start: break;
+    case Player::Start: {
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
+            break;
+        }
     case Player::Judge: {
             QStack<const DelayedTrick *> tricks = player->delayedTricks();
             while(!tricks.isEmpty()){
