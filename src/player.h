@@ -114,8 +114,9 @@ public:
     QStack<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    const DelayedTrick *topDelayedTrick() const;
+    QStack<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const QString &trick_name) const;
+    const DelayedTrick *topDelayedTrick() const;
 
     virtual int getHandcardNum() const = 0;
     virtual void removeCard(const Card *card, Place place) = 0;

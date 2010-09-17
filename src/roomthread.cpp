@@ -78,6 +78,9 @@ void RoomThread::run(){
                 room->broadcastProperty(player, "phase");
 
                 trigger(PhaseChange, player);
+
+                if(!player->isAlive())
+                    break;
             }
         }
 

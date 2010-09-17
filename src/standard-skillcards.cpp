@@ -90,6 +90,10 @@ void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 }
 
+void FanjianCard::use(const QList<const ClientPlayer *> &) const{
+    ClientInstance->turn_tag.insert("fanjian_used", true);
+}
+
 KurouCard::KurouCard(){
     target_fixed = true;
 }
@@ -195,6 +199,8 @@ HujiaCard::HujiaCard(){
     target_fixed = true;
 }
 
+#ifndef QT_NO_DEBUG
+
 CheatCard::CheatCard(){
     target_fixed = true;
 }
@@ -202,4 +208,6 @@ CheatCard::CheatCard(){
 void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->obtainCard(source, subcards.first());
 }
+
+#endif
 

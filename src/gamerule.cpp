@@ -23,12 +23,12 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     switch(player->getPhase()){
     case Player::Start: break;
     case Player::Judge: {
-            forever{
-                const DelayedTrick *trick = player->topDelayedTrick();
-                if(trick == NULL)
-                    break;
-
-                room->cardEffect(trick, NULL, player);
+            QStack<const DelayedTrick *> tricks = player->delayedTricks();
+            while(!tricks.isEmpty()){
+                const DelayedTrick *trick = tricks.pop();
+                bool on_effect = room->cardEffect(trick, NULL, player);
+                if(!on_effect)
+                    trick->onNullified(player);
             }
 
             break;
@@ -82,6 +82,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 DamageStruct damage = data.value<DamageStruct>();
                 bool chained = player->isChained();
                 int new_hp = player->getHp() - damage.damage;
+                room->damage(player, damage.damage);
                 if(new_hp <= 0){
                     int peaches = 1 - new_hp;
                     bool saved = room->askForSave(player, peaches);
@@ -93,8 +94,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     }else{                        
                         room->setPlayerProperty(player, "hp", 1);
                     }
-                }else
-                    room->damage(player, damage.damage);
+                }
 
                 if(damage.nature != DamageStruct::Normal && chained){
                     room->setPlayerProperty(player, "chained", false);

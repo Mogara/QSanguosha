@@ -367,6 +367,10 @@ const DelayedTrick *Player::topDelayedTrick() const{
         return delayed_tricks.top();
 }
 
+QStack<const DelayedTrick *> Player::delayedTricks() const{
+    return delayed_tricks;
+}
+
 bool Player::containsTrick(const QString &trick_name) const{
     QVectorIterator<const DelayedTrick *> itor(delayed_tricks);
     while(itor.hasNext()){      

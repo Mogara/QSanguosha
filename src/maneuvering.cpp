@@ -245,11 +245,17 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     setObjectName("supply_shortage");
 }
 
-bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select){
+bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
 
+    if(to_select == Self)
+        return false;
+
     if(isBlack() && to_select->hasSkill("weimu"))
+        return false;
+
+    if(to_select->containsTrick(objectName()))
         return false;
 
     if(Self->hasSkill("qicai"))

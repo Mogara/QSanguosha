@@ -1229,6 +1229,12 @@ void RoomScene::changeHp(const QString &who, int delta){
     }
 
     if(delta < 0){
+        if(delta <= -3){
+            static Phonon::MediaSource lightning_effect("audio/lightning.wav");
+            Sanguosha->playEffect(lightning_effect);
+            return;
+        }
+
         static Phonon::MediaSource male_damage_effect("audio/male-damage.mp3");
         static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
 

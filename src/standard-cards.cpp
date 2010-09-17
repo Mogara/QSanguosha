@@ -748,7 +748,22 @@ Indulgence::Indulgence(Suit suit, int number)
 
 bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
 {
-    return targets.isEmpty() && !to_select->hasSkill("qianxun");
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->hasSkill("qianxun"))
+        return false;
+
+    if(isBlack() && to_select->hasSkill("weimu"))
+        return false;
+
+    if(to_select->containsTrick(objectName()))
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    return true;
 }
 
 void Indulgence::takeEffect(ServerPlayer *target) const{

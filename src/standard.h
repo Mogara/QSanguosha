@@ -127,6 +127,8 @@ class DelayedTrick:public TrickCard{
 
 public:
     DelayedTrick(Suit suit, int number, bool movable = false);
+    void onNullified(ServerPlayer *target) const;
+
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual QString getSubtype() const;
     virtual void onEffect(const CardEffectStruct &effect) const;
@@ -343,6 +345,7 @@ public:
     Q_INVOKABLE FanjianCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
 };
 
 class KurouCard: public SkillCard{

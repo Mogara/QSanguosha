@@ -97,7 +97,7 @@ class SupplyShortage: public DelayedTrick{
 public:
     Q_INVOKABLE SupplyShortage(Card::Suit suit, int number);
 
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select);
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool judge(const Card *card) const;
     virtual void takeEffect(ServerPlayer *target) const;
 };

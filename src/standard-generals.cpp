@@ -509,13 +509,13 @@ public:
         events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *huangyueying, QVariant &data) const{
         if(data.canConvert<CardUseStruct>()){
             CardUseStruct use = data.value<CardUseStruct>();
 
             if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
-                if(player->getRoom()->askForSkillInvoke(player, objectName())){
-                    player->drawCards(1);
+                if(huangyueying->getRoom()->askForSkillInvoke(huangyueying, objectName())){
+                    huangyueying->drawCards(1);
                 }
             }
         }
@@ -582,7 +582,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng();
+        return !Self->isKongcheng() && !ClientInstance->turn_tag.value("fanjian_used", false).toBool();
     }
 
     virtual const Card *viewAs() const{

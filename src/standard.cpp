@@ -123,25 +123,35 @@ QString DelayedTrick::getSubtype() const{
 
 void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
+
+    if(!movable)
+        room->throwCard(this);
+
     int card_id = room->getJudgeCard(effect.to);
     const Card *card = Sanguosha->getCard(card_id);
     if(judge(card)){
         takeEffect(effect.to);
-        room->throwCard(this);
-    }else{
-        if(movable){
-            QList<ServerPlayer *> players = room->getOtherPlayers(effect.to);
-            players << effect.to;
-
-            foreach(ServerPlayer *player, players){
-                if(!player->containsTrick(objectName())){
-                    room->moveCardTo(this, player, Player::Judging, true);
-                    break;
-                }
-            }
-        }else
+        if(room->getCardOwner(this))
             room->throwCard(this);
+    }else if(movable){
+        onNullified(effect.to);
     }
+}
+
+void DelayedTrick::onNullified(ServerPlayer *target) const{
+    Room *room = target->getRoom();
+    if(movable){
+        QList<ServerPlayer *> players = room->getOtherPlayers(target);
+        players << target;
+
+        foreach(ServerPlayer *player, players){
+            if(!player->containsTrick(objectName())){
+                room->moveCardTo(this, player, Player::Judging, true);
+                break;
+            }
+        }
+    }else
+        room->throwCard(this);
 }
 
 const DelayedTrick *DelayedTrick::CastFrom(const Card *card){

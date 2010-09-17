@@ -429,8 +429,6 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
 }
 
 bool Room::askForSave(ServerPlayer *dying, int peaches){
-    setPlayerProperty(dying, "hp", 0);
-
     QList<ServerPlayer *> players;
     if(current->hasSkill("wansha")){
         players << current;
@@ -798,19 +796,19 @@ void Room::playCardEffect(const QString &card_name, bool is_male){
     broadcastInvoke("playCardEffect", QString("%1:%2").arg(card_name).arg(gender));
 }
 
-void Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
+bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
     CardEffectStruct effect;
 
     effect.card = card;
     effect.from = from;
     effect.to = to;
 
-    cardEffect(effect);
+    return cardEffect(effect);
 }
 
-void Room::cardEffect(const CardEffectStruct &effect){
+bool Room::cardEffect(const CardEffectStruct &effect){
     if(effect.card->inherits("TrickCard") && askForNullification(effect.card->objectName(), effect.from, effect.to))
-        return;
+        return false;
 
     QVariant data = QVariant::fromValue(effect);
     bool broken = false;
@@ -819,6 +817,8 @@ void Room::cardEffect(const CardEffectStruct &effect){
 
     if(!broken)
         thread->trigger(CardEffected, effect.to, data);
+
+    return true;
 }
 
 void Room::damage(const DamageStruct &damage_data){
