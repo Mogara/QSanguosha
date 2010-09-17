@@ -94,6 +94,10 @@ struct SlashResultStruct{
 
 Q_DECLARE_METATYPE(SlashResultStruct);
 
+typedef const Card *CardStar;
+
+Q_DECLARE_METATYPE(CardStar);
+
 enum TriggerEvent{
     GameStart,
     PhaseChange,
@@ -110,9 +114,9 @@ enum TriggerEvent{
     SlashEffected,
     SlashProceed,
     SlashResult,
-    Jinked,
 
     CardUsed,
+    CardResponsed,
     CardLost,
     CardGot,    
 

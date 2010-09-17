@@ -354,10 +354,22 @@ public:
     }
 };
 
-class Jijiang:public Skill{
+class Jijiang:public ZeroCardViewAsSkill{
 public:
-    Jijiang():Skill("jijiang$"){
+    Jijiang():ZeroCardViewAsSkill("jijiang$"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Slash::IsAvailable();
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "slash";
+    }
+
+    virtual const Card *viewAs() const{
+        return new JijiangCard;
     }
 };
 
@@ -509,13 +521,15 @@ public:
         events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *huangyueying, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *yueying, QVariant &data) const{
         if(data.canConvert<CardUseStruct>()){
             CardUseStruct use = data.value<CardUseStruct>();
 
             if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
-                if(huangyueying->getRoom()->askForSkillInvoke(huangyueying, objectName())){
-                    huangyueying->drawCards(1);
+                Room *room = yueying->getRoom();
+                if(room->askForSkillInvoke(yueying, objectName())){
+                    room->playSkillEffect(objectName());
+                    yueying->drawCards(1);
                 }
             }
         }
@@ -746,10 +760,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *daqiao, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-
         Room *room = daqiao->getRoom();
-        const Card *card = NULL;        
+
+        CardEffectStruct effect = data.value<CardEffectStruct>();
         if(!daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(effect.from);
@@ -765,7 +778,7 @@ public:
             if(can_invoke){
                 QString prompt = "@liuli-card:" + effect.from->getGeneralName();
                 QList<ServerPlayer *> new_targets;
-                card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
+                const Card *card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
                 if(card){
                     ServerPlayer *target = new_targets.first();
                     effect.to = target; // the key code
@@ -1033,7 +1046,7 @@ void StandardPackage::addGenerals(){
 
     daqiao = new General(this, "daqiao", "wu", 3, false);
     daqiao->addSkill(new Guose);
-    daqiao->addSkill(new Skill("liuli"));
+    daqiao->addSkill(new Liuli);
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
     sunshangxiang->addSkill(new Jieyin);
@@ -1063,6 +1076,8 @@ void StandardPackage::addGenerals(){
     addMetaObject<GuicaiCard>();
     addMetaObject<QingnangCard>();
     addMetaObject<HujiaCard>();
+    addMetaObject<LiuliCard>();
+    addMetaObject<JijiangCard>();
 
 #ifndef QT_NO_DEBUG
 

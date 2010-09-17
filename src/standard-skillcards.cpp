@@ -199,6 +199,24 @@ HujiaCard::HujiaCard(){
     target_fixed = true;
 }
 
+JijiangCard::JijiangCard(){
+
+}
+
+bool JijiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(ClientInstance->getStatus() == Client::Playing)
+        return targets.isEmpty() && Self->canSlash(to_select);
+    else
+        return false;
+}
+
+bool JijiangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    if(ClientInstance->getStatus() == Client::Responsing)
+        return targets.isEmpty();
+    else
+        return !targets.isEmpty();
+}
+
 #ifndef QT_NO_DEBUG
 
 CheatCard::CheatCard(){

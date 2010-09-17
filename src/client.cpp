@@ -663,7 +663,7 @@ void Client::setPileNumber(const QString &pile_num){
 }
 
 void Client::askForDiscard(const QString &discard_str){
-    QRegExp rx("(\\d+):[oe]*");
+    QRegExp rx("(\\d+)([oe]*)");
     if(!rx.exactMatch(discard_str)){
         QMessageBox::warning(NULL, tr("Warning"), tr("Discarding string is not well formatted!"));
         return;

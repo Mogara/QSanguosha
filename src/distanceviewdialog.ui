@@ -52,9 +52,9 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="skillSourceLabel">
+      <widget class="QLabel" name="mashuLabel">
        <property name="text">
-        <string>Skill Source</string>
+        <string>Mashu</string>
        </property>
       </widget>
      </item>
@@ -79,9 +79,9 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="equipSourceLabel">
+      <widget class="QLabel" name="offensiveHorseLabel">
        <property name="text">
-        <string>Equip Source</string>
+        <string>-1 Horse</string>
        </property>
       </widget>
      </item>
@@ -106,9 +106,9 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="skillDestLabel">
+      <widget class="QLabel" name="feiyingLabel">
        <property name="text">
-        <string>Skill Dest</string>
+        <string>Feiying</string>
        </property>
       </widget>
      </item>
@@ -133,9 +133,9 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="equipDestLabel">
+      <widget class="QLabel" name="defensiveHorseLabel">
        <property name="text">
-        <string>Equip Dest</string>
+        <string>+1 Horse</string>
        </property>
       </widget>
      </item>

@@ -399,6 +399,16 @@ public:
     Q_INVOKABLE HujiaCard();
 };
 
+class JijiangCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JijiangCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+};
+
 #ifndef QT_NO_DEBUG
 
 class CheatCard: public SkillCard{

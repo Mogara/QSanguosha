@@ -355,7 +355,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         int card_id = getJudgeCard(player);
         const Card *judge_card = Sanguosha->getCard(card_id);
         if(judge_card->isRed()){
-            thread->trigger(Jinked, player);
             return new Jink(Card::NoSuit, 0);
         }
     }
@@ -372,8 +371,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->playCardEffect(card);
         throwCard(card);
 
-        if(card->inherits("Jink"))
-            thread->trigger(Jinked, player);
+        CardStar card_ptr = card;
+        QVariant card_star = QVariant::fromValue(card_ptr);
+        thread->trigger(CardResponsed, player, card_star);
 
         return card;
     }else
@@ -393,7 +393,7 @@ const Card *Room::askForCardWithTargets(ServerPlayer *player, const QString &pat
     if(result != "."){
         QStringList words = result.split("->");
         const Card *card = Card::Parse(words.at(0));
-
+        player->playCardEffect(card);
         if(throw_it)
             throwCard(card);
 
@@ -815,8 +815,9 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     if(effect.from)
         broken = thread->trigger(CardEffect, effect.from, data);
 
-    if(!broken)
+    if(!broken){
         thread->trigger(CardEffected, effect.to, data);
+    }
 
     return true;
 }
@@ -1075,11 +1076,10 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
 
 bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
     QString ask_str = QString::number(discard_num);
-    QString flag_str;
     if(optional)
-        flag_str.append("o");
+        ask_str.append("o");
     if(include_equip)
-        flag_str.append("e");
+        ask_str.append("e");
 
     target->invoke("askForDiscard", ask_str);
 
