@@ -33,9 +33,14 @@ int Player::getMaxHP() const{
 }
 
 void Player::setMaxHP(int max_hp){
+    if(this->max_hp == max_hp)
+        return;
+
     this->max_hp = max_hp;
     if(hp > max_hp)
         hp = max_hp;
+
+    emit state_changed();
 }
 
 int Player::getLostHp() const{
@@ -425,5 +430,8 @@ bool Player::canSlash(const Player *other) const{
     if(other == this)
         return false;
 
-    return distanceTo(other) <= getAttackRange();
+    if(hasFlag("tianyi_success"))
+        return true;
+    else
+        return distanceTo(other) <= getAttackRange();
 }

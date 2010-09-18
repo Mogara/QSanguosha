@@ -20,11 +20,17 @@ void Slash::setNature(DamageStruct::Nature nature){
 }
 
 bool Slash::IsAvailable(){
+    if(Self->hasFlag("tianyi_failed"))
+        return false;
+
     if(Self->hasSkill("paoxiao") || Self->hasWeapon("crossbow"))
         return true;
     else{
         int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
-        return slash_count < 1;
+        if(Self->hasFlag("tianyi_success"))
+            return slash_count < 2;
+        else
+            return slash_count < 1;
     }
 }
 
@@ -64,9 +70,12 @@ bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
 
 bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     int slash_targets = 1;
-    if(Self->hasWeapon("halberd") && Self->getHandcardNum() == 1){
+    if(Self->hasWeapon("halberd") && Self->isLastHandCard(this)){
         slash_targets = 3;
     }
+
+    if(Self->hasFlag("tianyi_success"))
+        slash_targets ++;
 
     if(targets.length() >= slash_targets)
         return false;

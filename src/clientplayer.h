@@ -28,6 +28,7 @@ public:
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
+    virtual bool isLastHandCard(const Card *card) const;
 
     QList<int> nullifications() const;
 

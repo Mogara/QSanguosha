@@ -330,6 +330,64 @@ public:
     }
 };
 
+TianyiCard::TianyiCard(){
+
+}
+
+bool TianyiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
+}
+
+void TianyiCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *taishici = effect.from;
+    Room *room = taishici->getRoom();
+
+    bool success = room->pindian(taishici, effect.to);
+    if(success){
+        room->setPlayerFlag(taishici, "tianyi_success");
+    }else{
+        room->setPlayerFlag(taishici, "tianyi_failed");
+    }
+}
+
+void TianyiCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("tianyi_used", true);
+}
+
+class TianyiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    TianyiViewAsSkill():ZeroCardViewAsSkill("tianyi"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->turn_tag.value("tianyi_used", false).toBool() && !Self->isKongcheng();
+    }
+
+    virtual const Card *viewAs() const{
+        return new TianyiCard;
+    }
+};
+
+class Tianyi: public PhaseChangeSkill{
+public:
+    Tianyi():PhaseChangeSkill("tianyi"){
+        view_as_skill = new TianyiViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish){
+            Room *room = target->getRoom();
+            if(target->hasFlag("tianyi_failed"))
+                room->setPlayerFlag(target, "-tianyi_failed");
+            if(target->hasFlag("tianyi_success"))
+                room->setPlayerFlag(target, "-tianyi_success");
+        }
+
+        return false;
+    }
+};
+
 FirePackage::FirePackage()
     :Package("fire")
 {
@@ -350,6 +408,7 @@ FirePackage::FirePackage()
     pangtong->addSkill(new Lianhuan);
 
     taishici = new General(this, "taishici", "wu");
+    taishici->addSkill(new Tianyi);
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);    
@@ -422,6 +481,7 @@ FirePackage::FirePackage()
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();
     addMetaObject<QiangxiCard>();
+    addMetaObject<TianyiCard>();
 }
 
 ADD_PACKAGE(Fire);
