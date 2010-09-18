@@ -11,30 +11,24 @@
 
 Engine *Sanguosha = NULL;
 
+extern "C" {
+    Package *NewStandard();
+    Package *NewWind();
+    Package *NewFire();
+    Package *NewThicket();
+    Package *NewManeuvering();
+    Package *NewYitian();
+}
+
 Engine::Engine(QObject *parent)
     :QObject(parent)
 {
-    QStringList package_names;
-    package_names << "Standard" << "Wind" << "Maneuvering" << "Thicket" << "Yitian";
-
-    QLibrary library(qApp->applicationFilePath());
-
-    if(!library.load()){
-        QMessageBox::critical(NULL, tr("Fatal error"), tr("Package loading error!"));
-        exit(1);
-    }
-
-    typedef Package *(*package_new_func)();
-
-    foreach(QString package_name, package_names){
-        QString func_name = QString("New%1").arg(package_name);
-        package_new_func new_func = (package_new_func)library.resolve(func_name.toAscii());
-        if(new_func){
-            Package *package = new_func();
-            addPackage(package);
-        }else
-            QMessageBox::critical(NULL, tr("Fatal error"), tr("Package %1 loading error!").arg(package_name));
-    }
+    addPackage(NewStandard());
+    addPackage(NewWind());
+    addPackage(NewFire());
+    addPackage(NewThicket());
+    addPackage(NewManeuvering());
+    addPackage(NewYitian());
 }
 
 void Engine::addPackage(Package *package){

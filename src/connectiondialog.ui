@@ -31,8 +31,8 @@
    <widget class="QLabel" name="avatarPixmap">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>160</y>
+      <x>90</x>
+      <y>140</y>
       <width>100</width>
       <height>100</height>
      </rect>

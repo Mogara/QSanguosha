@@ -16,7 +16,7 @@ public:
 private:
     Card *card;
     int num;
-    bool include_equip;
+    bool include_equip;    
 };
 
 #endif // DISCARDSKILL_H

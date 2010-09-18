@@ -45,7 +45,8 @@ SOURCES += src/main.cpp \
     src/thicket.cpp \
     src/yijiviewasskill.cpp \
     src/distanceviewdialog.cpp \
-    src/yitianpackage.cpp
+    src/yitianpackage.cpp \
+    src/firepackage.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -83,7 +84,8 @@ HEADERS += src/mainwindow.h \
     src/thicket.h \
     src/yijiviewasskill.h \
     src/distanceviewdialog.h \
-    src/yitianpackage.h
+    src/yitianpackage.h \
+    src/firepackage.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

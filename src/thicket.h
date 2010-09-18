@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE HaoshiCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class DimengCard: public SkillCard{
@@ -57,6 +58,7 @@ class FangzhuCard: public SkillCard{
 
 public:
     Q_INVOKABLE FangzhuCard();
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class ShenfenCard: public SkillCard{

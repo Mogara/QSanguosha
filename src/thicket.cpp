@@ -55,7 +55,14 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 }
 
 FangzhuCard::FangzhuCard(){
+}
 
+void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
+    int x = effect.from->getLostHp();
+
+    effect.to->drawCards(x);
+    effect.to->turnOver();
+    effect.to->getRoom()->setPlayerProperty(effect.to, "face_up", effect.to->faceUp());
 }
 
 class FangzhuViewAsSkill: public ZeroCardViewAsSkill{
@@ -84,19 +91,8 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &damage) const{
-        // exile somebody        
         Room *room = caopi->getRoom();
-        if(room->askForSkillInvoke(caopi, objectName())){
-            QList<ServerPlayer *> targets;
-            room->askForCardWithTargets(caopi, "@@fangzhu", "@fangzhu", targets);
-
-            ServerPlayer *to_exile = targets.first();
-            to_exile->drawCards(caopi->getLostHp());
-
-            bool face_up = !to_exile->faceUp();
-            room->setPlayerProperty(to_exile, "face_up", face_up);
-        }
-
+        room->askForUseCard(caopi, "@@fangzhu", "@fangzhu");
     }
 };
 
@@ -235,12 +231,12 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
 
     if(x == 1){
         effect.to->drawCards(1);
-        room->askForDiscard(effect.to, 1);
+        room->askForDiscard(effect.to, 1, false, true);
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
             effect.to->drawCards(1);
-            room->askForDiscard(effect.to, x); // FIXME:
+            room->askForDiscard(effect.to, x, false, true);
         }else{
             effect.to->drawCards(x);
             room->askForDiscard(effect.to, 1);
@@ -275,16 +271,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *sunjian) const{
         if(sunjian->getPhase() == Player::Start && sunjian->isWounded()){
             Room *room = sunjian->getRoom();
-            QList<ServerPlayer *> targets;
-            const Card *card = room->askForCardWithTargets(sunjian, "@@yinghun", "@yinghun-card:" + sunjian->getGeneralName(), targets);
-            if(card){
-                CardEffectStruct effect;
-                effect.from = sunjian;
-                effect.to = targets.first();
-                effect.card = card;
-
-                room->cardEffect(effect);
-            }
+            room->askForUseCard(sunjian, "@@yinghun", "@yinghun-card:" + sunjian->getGeneralName());
         }
 
         return false;
@@ -303,6 +290,10 @@ bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
         return false;
 
     return to_select->getHandcardNum() == Self->getMark("haoshi");
+}
+
+void HaoshiCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->obtainCard(this);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill{
@@ -355,15 +346,7 @@ public:
                     foreach(ServerPlayer *player, other_players)
                         least = qMin(player->getHandcardNum(), least);
                     room->setPlayerMark(lusu, "haoshi", least);
-
-                    QList<ServerPlayer *> targets;
-                    const Card *card = NULL;
-                    card = room->askForCardWithTargets(lusu, "@@haoshi!", "@haoshi-card", targets, false);
-
-                    ServerPlayer *target = targets.first();
-                    QList<int> subcards = card->getSubcards();
-                    foreach(int subcard, subcards)
-                        room->obtainCard(target, subcard);
+                    room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
                 }
             }
         }
@@ -541,7 +524,13 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneral()->getKingdom() == "qun" && !target->isLord();
+        if(target->getGeneral()->getKingdom() != "qun")
+            return false;
+
+        if(target->isLord())
+            return false;
+
+        return target->getRoom()->getLord()->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -744,12 +733,40 @@ ThicketPackage::ThicketPackage()
     t["wuqian"] = tr("wuqian");
     t["shenfen"] = tr("shenfen");
 
+    t[":xingshang"] = tr(":xingshang");
+    t[":fangzhu"] = tr(":fangzhu");
+    t[":songwei"] = tr(":songwei");
+    t[":duanliang"] = tr(":duanliang");
+    t[":huoshou"] = tr(":huoshou");
+    t[":zaiqi"] = tr(":zaiqi");
+    t[":juxiang"] = tr(":juxiang");
+    t[":lieren"] = tr(":lieren");
+    t[":yinghun"] = tr(":yinghun");
+    t[":haoshi"] = tr(":haoshi");
+    t[":dimeng"] = tr(":dimeng");
+    t[":wansha"] = tr(":wansha");
+    t[":weimu"] = tr(":weimu");
+    t[":luanwu"] = tr(":luanwu");
+    t[":jiuchi"] = tr(":jiuchi");
+    t[":roulin"] = tr(":roulin");
+    t[":benghuai"] = tr(":benghuai");
+    t[":baonue"] = tr(":baonue");
+
+    t[":guixin"] = tr(":guixin");
+    t[":feiying"] = tr(":feiying");
+    t[":baonu"] = tr(":baonu");
+    t[":wumou"] = tr(":wumou");
+    t[":wuqian"] = tr(":wuqian");
+    t[":shenfen"] = tr(":shenfen");
+
     // skill descriptive texts
     t[":benghuai:"] = tr(":benghuai:");
     t["benghuai:hp"] = tr("benghuai:hp");
     t["benghuai:max_hp"] = tr("benghuai:max_hp");
-
     t["guixin:yes"] = tr("guixin:yes");
+    t["baonue:yes"] = tr("baonue:yes");
+    t["yinghun:d1tx"] = tr("yinghun:d1tx");
+    t["yinghun:dxt1"] = tr("yinghun:dxt1");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

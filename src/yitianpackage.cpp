@@ -2,6 +2,7 @@
 #include "skill.h"
 #include "engine.h"
 #include "client.h"
+#include "carditem.h"
 
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
@@ -39,25 +40,18 @@ public:
         const Card *card = Sanguosha->getCard(move.card_id);
         Room *room = player->getRoom();
         if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand){
-            QList<ServerPlayer *> targets;
-            if(room->askForCardWithTargets(player, "@@yitian", "@yitian-sword", targets)){
-                CardUseStruct use;
-                use.card = card;
-                use.from = player;
-                use.to << targets;
-
-                QVariant use_data = QVariant::fromValue(use);
-                room->getThread()->trigger(CardUsed, player, use_data);
-            }
+            QString pattern = QString("@@yitian-%1").arg(move.card_id);
+            room->askForUseCard(player, pattern, "@yitian-sword");
         }
 
         return false;
     }
 };
 
-class YitianSwordViewAsSkill: public ZeroCardViewAsSkill{
+class YitianSwordViewAsSkill: public ViewAsSkill{
 public:
-    YitianSwordViewAsSkill():ZeroCardViewAsSkill("yitian_sword"){
+    YitianSwordViewAsSkill():ViewAsSkill("yitian_sword"){
+
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -65,11 +59,25 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@yitian";
+        return ClientInstance->card_pattern.startsWith("@@yitian-");
     }
 
-    virtual const Card *viewAs() const{
-        return new Slash(Card::NoSuit, 0);
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(!selected.isEmpty())
+            return false;
+
+        QString pattern = ClientInstance->card_pattern;
+        pattern.remove("@@yitian-");
+        int card_id = pattern.toInt();
+
+        return to_select->getCard()->getId() == card_id;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 1)
+            return NULL;
+
+        return cards.first()->getCard();
     }
 };
 

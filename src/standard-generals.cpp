@@ -82,19 +82,8 @@ public:
                 }
             }
 
-            if(can_invoke){
-                QList<ServerPlayer *> targets;
-                if(room->askForCardWithTargets(zhangliao, "@@tuxi", "@tuxi-card", targets)){
-                    room->playSkillEffect(objectName());
-
-                    foreach(ServerPlayer *target, targets){
-                        int card_id = target->getRandomHandCard();
-                        zhangliao->obtainCard(Sanguosha->getCard(card_id));
-                    }
-
-                    return true;
-                }
-            }
+            if(can_invoke && room->askForUseCard(zhangliao, "@@tuxi", "@tuxi-card"))
+                return true;            
         }
 
         return false;
@@ -607,7 +596,7 @@ public:
 class Keji: public TriggerSkill{
 public:
     Keji():TriggerSkill("keji"){
-        events << PhaseChange << CardUsed;
+        events << PhaseChange << CardUsed << CardResponsed;
 
         frequency = Frequent;
     }
@@ -623,6 +612,10 @@ public:
         }else if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Slash"))
+                player->addMark("slash_count");
+        }else if(event == CardResponsed){
+            CardStar card_star = data.value<CardStar>();
+            if(card_star->inherits("Slash"))
                 player->addMark("slash_count");
         }
 
@@ -777,15 +770,15 @@ public:
 
             if(can_invoke){
                 QString prompt = "@liuli-card:" + effect.from->getGeneralName();
-                QList<ServerPlayer *> new_targets;
-                const Card *card = room->askForCardWithTargets(daqiao, "@@liuli-" + effect.from->objectName(), prompt, new_targets);
-                if(card){
-                    ServerPlayer *target = new_targets.first();
-                    effect.to = target; // the key code
-
-                    room->cardEffect(effect);
-
-                    return true;
+                if(room->askForUseCard(daqiao, "@@liuli-" + effect.from->objectName(), prompt)){
+                    foreach(ServerPlayer *player, players){
+                        if(player->hasFlag("liuli_target")){
+                            room->setPlayerFlag(player, "-liuli_target");
+                            effect.to = player;
+                            room->cardEffect(effect);
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -933,47 +926,12 @@ public:
     }
 };
 
-#ifndef QT_NO_DEBUG
-
-class Luanji:public ViewAsSkill{
-public:
-    Luanji():ViewAsSkill("luanji"){
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(selected.isEmpty())
-            return !to_select->isEquipped();
-        else if(selected.length() == 1){
-            const Card *card = selected.first()->getCard();
-            return !to_select->isEquipped() && to_select->getCard()->getSuit() == card->getSuit();
-        }else
-            return false;
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() == 2){
-            const Card *first = cards.first()->getCard();
-            Card::Suit suit = first->isRed() ? Card::Heart : Card::Spade;
-            ArcheryAttack *aa = new ArcheryAttack(suit, 0);
-            aa->setSkillName(objectName());
-            return aa;
-        }else
-            return NULL;
-    }
-};
-
-#endif
-
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
     caocao = new General(this, "caocao$", "wei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
-
-#ifndef QT_NO_DEBUG
-
-#endif
 
     zhangliao = new General(this, "zhangliao", "wei");
     zhangliao->addSkill(new Tuxi);
@@ -1223,6 +1181,4 @@ void StandardPackage::addGenerals(){
     t["@guicai-card"] = tr("@guicai-card");
     t["@guidao-card"] = tr("@guidao-card");
     t["@liuli-card"] = tr("@liuli-card");
-
-    t["luanji"] = tr("luanji");
 }

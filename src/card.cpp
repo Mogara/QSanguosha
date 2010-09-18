@@ -242,11 +242,15 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const Client
     return targets.isEmpty() && to_select != Self;
 }
 
-void Card::use(const QList<const ClientPlayer *> &targets) const{
+void Card::use(const QList<const ClientPlayer *> &targets) const{    
 }
 
-void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
+
+    foreach(ServerPlayer *target, targets){
+        room->cardEffect(this, source, target);
+    }
 }
 
 void Card::onEffect(const CardEffectStruct &effect) const{

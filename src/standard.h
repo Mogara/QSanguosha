@@ -118,7 +118,7 @@ class Duel:public SingleTargetTrick{
     Q_OBJECT
 
 public:
-    Duel(Suit suit, int number);
+    Q_INVOKABLE Duel(Card::Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -244,7 +244,6 @@ public:
 
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
-    virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
@@ -327,7 +326,8 @@ class TuxiCard: public SkillCard{
 
 public:
     Q_INVOKABLE TuxiCard();
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;    
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class FanjianCard: public SkillCard{
@@ -387,6 +387,7 @@ public:
     Q_INVOKABLE LiuliCard();
     void setSlashSource(const QString &slash_source);
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 
 private:
     QString slash_source;

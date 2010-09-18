@@ -177,6 +177,7 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
     case RemoteHostClosedError: reason = tr("Remote host close this connection"); break;
     case HostNotFoundError: reason = tr("Host not found"); break;
     case SocketAccessError: reason = tr("Socket access error"); break;
+    case NetworkError: reason = tr("Server's' firewall blocked the connection or the network cable was plugged out"); break;
         // FIXME
     default: reason = tr("Unknow error"); break;
     }
@@ -464,28 +465,16 @@ void Client::askForSkillInvoke(const QString &skill_name){
     if(auto_invoke)
         request("invokeSkill yes");
     else{
-        QMessageBox *box = new QMessageBox;
-        box->setIcon(QMessageBox::Question);
         QString name = Sanguosha->translate(skill_name);
-        box->setWindowTitle(tr("Ask for skill invoke"));
-        box->setText(tr("Do you want to invoke skill [%1] ?").arg(name));
+        QString title = tr("Ask for skill invoke");
+        QString description = Sanguosha->translate(QString("%1:yes").arg(skill_name));
+        QString text = tr("Do you want to invoke skill [%1] ?, if you choose yes, then %2").arg(name).arg(description);
 
-        QCommandLinkButton *yes_button = new QCommandLinkButton(box);
-        yes_button->setObjectName("yes");
-        yes_button->setText(tr("Yes"));
-        yes_button->setDescription(Sanguosha->translate(QString("%1:yes").arg(skill_name)));
-        box->addButton(yes_button, QMessageBox::AcceptRole);
-
-        QCommandLinkButton *no_button = new QCommandLinkButton(box);
-        no_button->setObjectName("no");
-        no_button->setText(tr("No"));
-        no_button->setDescription(tr("Nothing"));
-        box->addButton(no_button, QMessageBox::AcceptRole);
-
-        box->exec();
-
-        QString result = box->clickedButton()->objectName();
-        request("invokeSkill " + result);
+        QMessageBox::StandardButton button = QMessageBox::question(NULL, title, text, QMessageBox::Ok | QMessageBox::No, QMessageBox::Ok);
+        if(button == QMessageBox::Ok)
+            request("invokeSkill yes");
+        else
+            request("invokeSkill no");
     }
 }
 
@@ -630,12 +619,12 @@ void Client::responseCard(const Card *card){
 
 void Client::responseCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(card == NULL){
-        request("responseCardWithTargets .");
+        request("useCard .");
     }else{
         QStringList target_names;
         foreach(const ClientPlayer *target, targets)
             target_names << target->objectName();
-        request(QString("responseCardWithTargets %1->%2").arg(card->toString()).arg(target_names.join("+")));
+        request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
     }
 
     card_pattern.clear();

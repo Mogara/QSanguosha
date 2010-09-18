@@ -1012,7 +1012,10 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Responsing: {
-            dashboard->enableCards(ClientInstance->card_pattern);
+            if(ClientInstance->card_pattern.startsWith("@"))
+                dashboard->disableAllCards();
+            else
+                dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(false);
 

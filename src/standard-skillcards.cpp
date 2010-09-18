@@ -61,7 +61,17 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     if(targets.length() >= 2)
         return false;
 
+    if(to_select == Self)
+        return false;
+
     return !to_select->isKongcheng();
+}
+
+void TuxiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    foreach(ServerPlayer *target, targets){
+        int card_id = target->getRandomHandCard();
+        room->obtainCard(source, card_id);
+    }
 }
 
 FanjianCard::FanjianCard(){
@@ -193,6 +203,10 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
         return false;
 
     return Self->inMyAttackRange(to_select);
+}
+
+void LiuliCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->setPlayerFlag(effect.to, "liuli_target");
 }
 
 HujiaCard::HujiaCard(){

@@ -37,24 +37,9 @@ QString Slash::getSubtype() const{
 }
 
 void Slash::use(const QList<const ClientPlayer *> &targets) const{
-    BasicCard::use(targets);
-
     // increase slash count
     int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
     ClientInstance->turn_tag.insert("slash_count", slash_count + 1);
-}
-
-void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    BasicCard::use(room, source, targets);
-
-    foreach(ServerPlayer *target, targets){
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = target;
-
-        room->cardEffect(effect);        
-    }
 }
 
 void Slash::onEffect(const CardEffectStruct &card_effect) const{

@@ -15,6 +15,23 @@ LeijiCard::LeijiCard(){
 
 }
 
+void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.first();
+
+    int card_id = room->getJudgeCard(target);
+    const Card *card = Sanguosha->getCard(card_id);
+    if(card->getSuit() == Card::Spade){
+        DamageStruct damage;
+        damage.card = this;
+        damage.damage = 2;
+        damage.from = zhangjiao;
+        damage.to = target;
+        damage.nature = DamageStruct::Thunder;
+
+        room->damage(damage);
+    }
+}
+
 HuangtianCard::HuangtianCard(){
     target_fixed = true;
 }
@@ -148,24 +165,7 @@ public:
             return false;
 
         Room *room = zhangjiao->getRoom();
-        QList<ServerPlayer *> targets;
-        const Card *leiji_card = room->askForCardWithTargets(zhangjiao, "@@leiji", "@leiji", targets);
-        if(leiji_card){
-            ServerPlayer *target = targets.first();
-
-            int card_id = room->getJudgeCard(target);
-            const Card *card = Sanguosha->getCard(card_id);
-            if(card->getSuit() == Card::Spade){
-                DamageStruct damage;
-                damage.card = leiji_card;
-                damage.damage = 2;
-                damage.from = zhangjiao;
-                damage.to = target;
-                damage.nature = DamageStruct::Thunder;
-
-                room->damage(damage);
-            }
-        }
+        room->askForUseCard(zhangjiao, "@@leiji", "@leiji");
 
         return false;
     }
@@ -184,6 +184,11 @@ bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return true;
 }
 
+void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+    room->cardEffect(this, source, targets.first());
+}
+
 void ShensuCard::onEffect(const CardEffectStruct &card_effect) const{
     SlashEffectStruct effect;
     effect.slash = new Slash(Card::NoSuit, 0);
@@ -194,96 +199,61 @@ void ShensuCard::onEffect(const CardEffectStruct &card_effect) const{
     card_effect.from->getRoom()->slashEffect(effect);
 }
 
-class Shensu1ViewAsSkill: public ZeroCardViewAsSkill{
+class ShensuViewAsSkill: public ViewAsSkill{
 public:
-    Shensu1ViewAsSkill():ZeroCardViewAsSkill("shensu1"){
+    ShensuViewAsSkill():ViewAsSkill("shensu"){
     }
 
     virtual bool isEnabledAtPlay() const{
         return false;
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@shensu1";
-    }
-
-    virtual const Card *viewAs() const{
-        return new ShensuCard;
-    }
-};
-
-class Shensu2ViewAsSkill: public ViewAsSkill{
-public:
-    Shensu2ViewAsSkill():ViewAsSkill("shensu2"){
-    }
-
-    virtual bool isEnabledAtPlay() const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@shensu2";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
+        if(ClientInstance->card_pattern.endsWith("1"))
+            return false;
+        else
+            return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern.startsWith("@@shensu");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
+        if(ClientInstance->card_pattern.endsWith("1")){
+            if(cards.isEmpty())
+                return new ShensuCard;
+            else
+                return NULL;
+        }else{
+            if(cards.length() != 1)
+                return NULL;
 
-        ShensuCard *card = new ShensuCard;
-        card->addSubcards(cards);
+            ShensuCard *card = new ShensuCard;
+            card->addSubcards(cards);
 
-        return card;
+            return card;
+        }
     }
 };
 
-class Shensu1: public PhaseChangeSkill{
+class Shensu: public PhaseChangeSkill{
 public:
-    Shensu1():PhaseChangeSkill("shensu1"){
-        view_as_skill = new Shensu1ViewAsSkill;
-    }
-
-    virtual int getPriority(ServerPlayer *target) const{
-        return 2;
+    Shensu():PhaseChangeSkill("shensu"){
+        view_as_skill = new ShensuViewAsSkill;
     }
 
     virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
         Room *room = xiahouyuan->getRoom();
 
         if(xiahouyuan->getPhase() == Player::Start){
-            QList<ServerPlayer *> targets;
-            const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu1", "@shensu1", targets);
-
-            if(card){
+            if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
                 room->skip(Player::Judge);
                 room->skip(Player::Draw);
-                room->cardEffect(card, xiahouyuan, targets.first());
             }
-        }
 
-        return false;
-    }
-};
-
-class Shensu2: public PhaseChangeSkill{
-public:
-    Shensu2():PhaseChangeSkill("shensu2"){
-        view_as_skill = new Shensu2ViewAsSkill;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
-        Room *room = xiahouyuan->getRoom();
-
-        if(xiahouyuan->getPhase() == Player::Start){
-            QList<ServerPlayer *> targets;
-            const Card *card = room->askForCardWithTargets(xiahouyuan, "@@shensu2", "@shensu2", targets);
-
-            if(card){
+            if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
                 room->skip(Player::Play);
-                room->cardEffect(card, xiahouyuan, targets.first());
             }
         }
 
@@ -453,8 +423,7 @@ WindPackage::WindPackage()
     General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao;
 
     xiahouyuan = new General(this, "xiahouyuan", "wei");
-    xiahouyuan->addSkill(new Shensu1);
-    xiahouyuan->addSkill(new Shensu2);
+    xiahouyuan->addSkill(new Shensu);
 
     caoren = new General(this, "caoren", "wei");
     caoren->addSkill(new Jushou);
@@ -491,8 +460,7 @@ WindPackage::WindPackage()
     t["shenlumeng"] = tr("shenlumeng");
 
     // skills
-    t["shensu1"] = tr("shensu1");
-    t["shensu2"] = tr("shensu2");
+    t["shensu"] = tr("shensu");
     t["jushou"] = tr("jushou");
     t["liegong"] = tr("liegong");
     t["kuanggu"] = tr("kuanggu");
@@ -502,6 +470,17 @@ WindPackage::WindPackage()
     t["wuhun"] = tr("wuhun");
     t["shelie"] = tr("shelie");
     t["gongxin"] = tr("gongxin");
+
+    t[":shensu"] = tr(":shensu");
+    t[":jushou"] = tr(":jushou");
+    t[":liegong"] = tr(":liegong");
+    t[":kuanggu"] = tr(":kuanggu");
+    t[":guidao"] = tr(":guidao");
+    t[":leiji"] = tr(":leiji");
+    t[":huangtian"] = tr(":huangtian");
+    t[":wuhun"] = tr(":wuhun");
+    t[":shelie"] = tr(":shelie");
+    t[":gongxin"] = tr(":gongxin");
 
     // skill prompt
     t["liegong:yes"] = tr("liegong:yes");

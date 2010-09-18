@@ -7,7 +7,7 @@ GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
     events << GameStart << PhaseChange << CardUsed << Predamaged
-            << CardEffected << Death << SlashResult << SlashEffect << SlashProceed;
+            << CardEffected << Death << SlashResult << SlashEffected << SlashProceed;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -131,11 +131,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
-    case SlashEffect:{
+    case SlashEffected:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             QVariant data = QVariant::fromValue(effect);
-            room->getThread()->trigger(SlashProceed, player, data);
+            room->getThread()->trigger(SlashProceed, effect.from, data);
 
             break;
         }
