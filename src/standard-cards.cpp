@@ -334,10 +334,22 @@ public:
     }
 };
 
+class EightDiagramSkill: public ArmorSkill{
+public:
+    EightDiagramSkill():ArmorSkill("armor_diagram"){
+
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        return false;
+    }
+};
+
 class EightDiagram:public Armor{
 public:
     EightDiagram(Suit suit, int number = 2):Armor(suit, number){
         setObjectName("eight_diagram");
+        skill = new EightDiagramSkill;
     }
 };
 
