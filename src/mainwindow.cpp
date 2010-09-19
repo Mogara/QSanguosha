@@ -38,13 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // register metatypes
-    qRegisterMetaType<DamageStruct>("DamageStruct");
-    qRegisterMetaType<CardEffectStruct>("CardEffectStruct");
-    qRegisterMetaType<CardUseStruct>("CardUseStruct");
-    qRegisterMetaType<CardMoveStruct>("CardMoveStruct");
-    qRegisterMetaType<SlashResultStruct>("SlashResultStruct");
-
     Sanguosha = new Engine(this);
     Config.init();
 
@@ -55,9 +48,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
+    config_dialog = new ConfigDialog(this);
+    connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
+    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
+
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    StartScene *start_scene = new StartScene;
+    StartScene *start_scene = new StartScene;    
+
     QList<QAction*> actions;
     actions << ui->actionStart_Game
             << ui->actionConfigure
@@ -72,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     scene = start_scene;
     FitView *view = new FitView(scene);
+
     setCentralWidget(view);
 
 //    if(Config.TitleMusic)
@@ -200,3 +199,7 @@ void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)
     }
 }
 
+void MainWindow::changeBackground(){
+    if(scene)
+        scene->setBackgroundBrush(Config.BackgroundBrush);
+}

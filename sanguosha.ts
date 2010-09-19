@@ -227,6 +227,39 @@
     </message>
 </context>
 <context>
+    <name>ConfigDialog</name>
+    <message>
+        <location filename="src/configdialog.ui" line="17"/>
+        <source>Config dialog</source>
+        <translation>配置对话框</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="45"/>
+        <source>Setup background</source>
+        <translation>设置背景</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="71"/>
+        <source>Browse ...</source>
+        <translation>浏览 ...</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="84"/>
+        <source>Reset</source>
+        <translation>重置</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.cpp" line="25"/>
+        <source>Select a background image</source>
+        <translation>请选择一个背景图片</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.cpp" line="27"/>
+        <source>Images (*.png *.bmp *.jpg)</source>
+        <translation>图像 (*.png *.bmp *.jpg)</translation>
+    </message>
+</context>
+<context>
     <name>ConnectionDialog</name>
     <message>
         <location filename="src/connectiondialog.ui" line="17"/>
@@ -395,12 +428,12 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="243"/>
+        <location filename="src/engine.cpp" line="251"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="243"/>
+        <location filename="src/engine.cpp" line="251"/>
         <source>No suitable card effect was found! Card name is %1</source>
         <translation>没有找到合适的卡牌音效! 卡牌名为 %1</translation>
     </message>
@@ -862,7 +895,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="112"/>
+        <location filename="src/mainwindow.cpp" line="111"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -972,22 +1005,22 @@
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="113"/>
+        <location filename="src/mainwindow.cpp" line="112"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="143"/>
+        <location filename="src/mainwindow.cpp" line="142"/>
         <source>Network error</source>
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="192"/>
+        <location filename="src/mainwindow.cpp" line="191"/>
         <source>About QSanguosha</source>
         <translation>关于 QSanguosha</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="186"/>
+        <location filename="src/mainwindow.cpp" line="185"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: moligaloo@gmail.com</source>
         <translation>这是 &lt;b&gt;三国杀&lt;/b&gt; 的开源克隆，完全基于 C++ Qt GUI 框架&lt;br /&gt; 我的电子邮件：moligaloo@gmail.com</translation>
     </message>
@@ -995,77 +1028,77 @@
 <context>
     <name>ManeuveringPackage</name>
     <message>
-        <location filename="src/maneuvering.cpp" line="277"/>
+        <location filename="src/maneuvering.cpp" line="279"/>
         <source>maneuvering</source>
         <translation>军争</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="278"/>
+        <location filename="src/maneuvering.cpp" line="280"/>
         <source>buff_card</source>
         <translation>辅助伤害卡</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="279"/>
+        <location filename="src/maneuvering.cpp" line="281"/>
         <source>damage_spread</source>
         <translation>伤害传导</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="280"/>
+        <location filename="src/maneuvering.cpp" line="282"/>
         <source>fire_attack</source>
         <translation>火攻</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="281"/>
+        <location filename="src/maneuvering.cpp" line="283"/>
         <source>thunder_slash</source>
         <translation>雷杀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="282"/>
+        <location filename="src/maneuvering.cpp" line="284"/>
         <source>fire_slash</source>
         <translation>火杀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="283"/>
+        <location filename="src/maneuvering.cpp" line="285"/>
         <source>analeptic</source>
         <translation>酒</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="284"/>
+        <location filename="src/maneuvering.cpp" line="286"/>
         <source>fan</source>
         <translation>朱雀羽扇</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="285"/>
+        <location filename="src/maneuvering.cpp" line="287"/>
         <source>hualiu</source>
         <translation>骅骝</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="286"/>
+        <location filename="src/maneuvering.cpp" line="288"/>
         <source>guding_blade</source>
         <translation>古锭刀</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="287"/>
+        <location filename="src/maneuvering.cpp" line="289"/>
         <source>vine</source>
         <translation>藤甲</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="288"/>
+        <location filename="src/maneuvering.cpp" line="290"/>
         <source>silver_lion</source>
         <translation>白银狮子</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="289"/>
+        <location filename="src/maneuvering.cpp" line="291"/>
         <source>iron_chain</source>
         <translation>铁索连环</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="290"/>
+        <location filename="src/maneuvering.cpp" line="292"/>
         <source>supply_shortage</source>
         <translation>兵粮寸断</translation>
     </message>
     <message>
-        <location filename="src/maneuvering.cpp" line="357"/>
+        <location filename="src/maneuvering.cpp" line="359"/>
         <source>fire-attack-card</source>
         <oldsource>fire-attack</oldsource>
         <translation>您可以弃一张与%dest所展示卡牌相同花色(%arg)的牌对%dest产生一点火焰伤害</translation>
@@ -2770,6 +2803,11 @@
         <location filename="src/thicket.cpp" line="613"/>
         <source>lieren:yes</source>
         <translation>可与受到该伤害的角色拼点：若你赢，你获得对方的一张牌</translation>
+    </message>
+    <message>
+        <location filename="src/thicket.cpp" line="614"/>
+        <source>songwei:yes</source>
+        <translation>你可进行一次判定， 若结果为黑色且生效，可以让曹丕摸一张牌</translation>
     </message>
 </context>
 <context>

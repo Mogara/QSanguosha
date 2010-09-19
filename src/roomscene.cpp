@@ -1476,7 +1476,7 @@ const ViewAsSkill *RoomScene::getViewAsSkill(const QString &skill_name){
 
     const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
     if(!view_as_skill){
-        QMessageBox::warning(main_window, tr("Warning"), tr("The skill %1 must be view as skill!"));
+        QMessageBox::warning(main_window, tr("Warning"), tr("The skill %1 must be view as skill!").arg(skill_name));
         return NULL;
     }
 

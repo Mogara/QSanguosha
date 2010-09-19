@@ -47,7 +47,8 @@ SOURCES += src/main.cpp \
     src/distanceviewdialog.cpp \
     src/yitianpackage.cpp \
     src/firepackage.cpp \
-    src/god.cpp
+    src/god.cpp \
+    src/configdialog.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -87,12 +88,14 @@ HEADERS += src/mainwindow.h \
     src/distanceviewdialog.h \
     src/yitianpackage.h \
     src/firepackage.h \
-    src/god.h
+    src/god.h \
+    src/configdialog.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
     src/cardoverview.ui \
-    src/distanceviewdialog.ui
+    src/distanceviewdialog.ui \
+    src/configdialog.ui
 RESOURCES += resource/images/sanguosha.qrc
 RC_FILE += resource/icon.rc
 TRANSLATIONS += sanguosha.ts

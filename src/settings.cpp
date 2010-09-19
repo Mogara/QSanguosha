@@ -47,6 +47,16 @@ void Settings::init(){
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableAutoTarget = value("EnableAutoTarget", false).toBool();
 
-    QString bgbrush = value("BackgroundBrush", ":/background.png").toString();
-    BackgroundBrush = QBrush(QPixmap(bgbrush));
+    QString bg_path = value("BackgroundBrush", ":/background.png").toString();
+    changeBackground(bg_path);
+}
+
+void Settings::changeBackground(const QString &new_bg){
+    QPixmap bgbrush(new_bg);
+    BackgroundBrush = QBrush(bgbrush);
+    QTransform transform;
+    transform.translate(Rect.x(), Rect.y());
+    BackgroundBrush.setTransform(transform);
+
+    setValue("BackgroundBrush", new_bg);
 }

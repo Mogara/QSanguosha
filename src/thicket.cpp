@@ -611,6 +611,7 @@ ThicketPackage::ThicketPackage()
     t["yinghun:dxt1"] = tr("yinghun:dxt1");
     t["zaiqi:yes"] = tr("zaiqi:yes");
     t["lieren:yes"] = tr("lieren:yes");
+    t["songwei:yes"] = tr("songwei:yes");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

@@ -33,6 +33,18 @@ Engine::Engine(QObject *parent)
     addPackage(NewYitian());
 }
 
+void Engine::addEffect(const QString &package_name, const QString &effect_name){
+    if(!male_effects.contains(effect_name)){
+        MediaSource male_source(QString("%1/cards/effect/male/%2.mp3").arg(package_name).arg(effect_name));
+        male_effects.insert(effect_name, male_source);
+    }
+
+    if(!female_effects.contains(effect_name)){
+        MediaSource female_source(QString("%1/cards/effect/female/%2.mp3").arg(package_name).arg(effect_name));
+        female_effects.insert(effect_name, female_source);
+    }
+}
+
 void Engine::addPackage(Package *package){
     package->setParent(this);
     QString package_name = package->objectName();
@@ -45,15 +57,12 @@ void Engine::addPackage(Package *package){
         QString card_name = card->objectName();
         metaobjects.insert(card_name, card->metaObject());
 
-        if(!male_effects.contains(card_name)){
-            MediaSource male_source(QString("%1/cards/effect/male/%2.mp3").arg(package_name).arg(card_name));
-            male_effects.insert(card_name, male_source);
-        }
+        addEffect(package_name, card_name);
+    }
 
-        if(!female_effects.contains(card_name)){
-            MediaSource female_source(QString("%1/cards/effect/female/%2.mp3").arg(package_name).arg(card_name));
-            female_effects.insert(card_name, female_source);
-        }
+    QStringList extra_effects = package->getExtraEffects();
+    foreach(QString effect_name, extra_effects){
+        addEffect(package_name, effect_name);
     }
 
     QList<General *> all_generals = package->findChildren<General *>();
@@ -198,13 +207,12 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
 QList<int> Engine::getRandomCards() const{
     QList<int> list;
-    int n = cards.count(), i;
-    for(i=0; i<n; i++){
-        const Card *card = cards.at(i);
-        if(!ban_package.contains(card->parent()->objectName()))
-            list << i;
+    foreach(Card *card, cards){
+        if(!ban_package.contains(card->getPackage()))
+            list << card->getId();
     }
 
+    int n = list.length(), i;
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
         int r2 = qrand() % n;

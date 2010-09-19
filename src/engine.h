@@ -55,6 +55,7 @@ private:
     QSet<QString> ban_package;
 
     QStringList getLimitedGeneralNames() const;
+    void addEffect(const QString &package_name, const QString &effect_name);
 
 private slots:
     void removeFromEffects();

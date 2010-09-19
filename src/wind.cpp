@@ -115,6 +115,9 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *player) const{
+        if(!player->isLord())
+            return;
+
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
 

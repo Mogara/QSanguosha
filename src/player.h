@@ -35,7 +35,7 @@ class Player : public QObject
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
 
     // distance related properties
-    Q_PROPERTY(int attack_range READ getAttackRange WRITE setAttackRange)
+    Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
     Q_PROPERTY(QString correct READ getCorrect WRITE setCorrect)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)

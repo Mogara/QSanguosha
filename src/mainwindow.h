@@ -3,6 +3,7 @@
 
 #include "engine.h"
 #include "connectiondialog.h"
+#include "configdialog.h"
 
 #include <QMainWindow>
 #include <QGraphicsScene>
@@ -26,6 +27,7 @@ private:
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
+    ConfigDialog *config_dialog;
 
     void restoreFromConfig();
 
@@ -43,6 +45,7 @@ private slots:
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
     void startGameInAnotherInstance();
+    void changeBackground();
 };
 
 #endif // MAINWINDOW_H

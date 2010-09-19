@@ -215,6 +215,7 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     if(targets.isEmpty()){       
         source->drawCards(1);
+        room->playCardEffect("recast", source->getGeneral()->isMale());
     }else{
         foreach(ServerPlayer *target, targets){
             CardEffectStruct effect;
@@ -224,6 +225,7 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
             room->cardEffect(effect);
         }
+        room->playCardEffect("tiesuo", source->getGeneral()->isMale());
     }
 }
 
@@ -356,7 +358,7 @@ ManeuveringPackage::ManeuveringPackage()
 
     t["fire-attack-card"] = tr("fire-attack-card");
 
-    skills << new FanSkill;
+    extra_effects << "tiesuo" << "recast";
 }
 
 ADD_PACKAGE(Maneuvering)
