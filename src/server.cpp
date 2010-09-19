@@ -70,7 +70,7 @@ Server::Server(QObject *parent)
     extension_group->setExclusive(false);
 
     QStringList extensions;
-    extensions << "wind" << "fire" << "thicket" << "maneuvering" << "yitian";
+    extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
     foreach(QString extension, extensions){
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);

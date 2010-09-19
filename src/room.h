@@ -58,6 +58,7 @@ public:
     void doGuanxing(ServerPlayer *zhuge);
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
+    void provide(const Card *card);
 
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
@@ -88,7 +89,7 @@ public:
     Card::Suit askForSuit(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
-    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false);
+    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false, Card::Suit suit = Card::NoSuit);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
@@ -141,6 +142,8 @@ private:
 
     ServerPlayer *menghuo, *zhurong;
     QSet<Player::Phase> skip_set;
+
+    const Card *provided;
 
 private slots:
     void reportDisconnection();

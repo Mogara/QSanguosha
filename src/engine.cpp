@@ -17,6 +17,7 @@ extern "C" {
     Package *NewFire();
     Package *NewThicket();
     Package *NewManeuvering();
+    Package *NewGod();
     Package *NewYitian();
 }
 
@@ -28,6 +29,7 @@ Engine::Engine(QObject *parent)
     addPackage(NewFire());
     addPackage(NewThicket());
     addPackage(NewManeuvering());
+    addPackage(NewGod());
     addPackage(NewYitian());
 }
 

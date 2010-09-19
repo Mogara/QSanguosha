@@ -115,6 +115,7 @@ enum TriggerEvent{
     SlashProceed,
     SlashResult,
 
+    CardAsked,
     CardUsed,
     CardResponsed,
     CardDiscarded,

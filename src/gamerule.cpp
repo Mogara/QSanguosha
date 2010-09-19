@@ -143,20 +143,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case SlashProceed:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            bool jinked = false;
             QString slasher = effect.from->getGeneralName();
-            if(effect.from->hasSkill("wushuang")){
-                const Card *jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
-                if(jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
-                    jinked = true;
-            }else{
-                const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
-                if(jink)
-                    jinked = true;
-            }
+            bool success = !room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
 
             SlashResultStruct result;
-            result.fill(effect, !jinked);
+            result.fill(effect, success);
             room->slashResult(result);
 
             break;

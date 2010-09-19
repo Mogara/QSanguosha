@@ -84,8 +84,8 @@ public:
     // static functions
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
-
     static const Card *Parse(const QString &str);
+    static QString Suit2String(Suit suit);
 
 protected:
     QList<int> subcards;

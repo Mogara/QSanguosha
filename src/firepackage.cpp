@@ -256,6 +256,25 @@ public:
     }
 };
 
+class Mengjin: public TriggerSkill{
+public:
+    Mengjin():TriggerSkill("mengjin"){
+        events << SlashResult;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *pangde, QVariant &data) const{
+        SlashResultStruct result = data.value<SlashResultStruct>();
+        if(!result.success && !result.to->isNude()){
+            Room *room = pangde->getRoom();
+            room->askForSkillInvoke(pangde, objectName());
+            int card_id = room->askForCardChosen(pangde, result.to, "he", objectName());
+            room->throwCard(card_id);
+        }
+
+        return false;
+    }
+};
+
 class Lianhuan: public ViewAsSkill{
 public:
     Lianhuan():ViewAsSkill("lianhuan"){
@@ -295,38 +314,6 @@ public:
         fire_attack->addSubcards(cards);
         fire_attack->setSkillName(objectName());
         return fire_attack;
-    }
-};
-
-class Qinyin: public TriggerSkill{
-public:
-    Qinyin():TriggerSkill("qinyin"){
-        events << CardDiscarded;
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        int discard_num = data.toInt();
-
-        if(player->getPhase() == Player::Discard && discard_num >= 2){
-            Room *room = player->getRoom();
-            QString result = room->askForChoice(player, objectName(), "up+down+no");
-            if(result == "no"){
-                return false;
-            }
-
-            QList<ServerPlayer *> all_players = room->getAllPlayers();
-            if(result == "up"){
-                foreach(ServerPlayer *player, all_players){
-                    room->recover(player);
-                }
-            }else if(result == "down"){
-                foreach(ServerPlayer *player, all_players){
-                    room->loseHp(player);
-                }
-            }
-        }
-
-        return false;
     }
 };
 
@@ -391,7 +378,7 @@ public:
 FirePackage::FirePackage()
     :Package("fire")
 {
-    General *xunyu, *dianwei, *wolong, *pangtong, *taishici, *yuanshao, *shuangxiong, *shenzhouyu, *shenzhugeliang;
+    General *xunyu, *dianwei, *wolong, *pangtong, *taishici, *yuanshao, *shuangxiong, *pangde;
 
     xunyu = new General(this, "xunyu", "wei", 3);
     xunyu->addSkill(new Quhu);
@@ -416,10 +403,9 @@ FirePackage::FirePackage()
     shuangxiong = new General(this, "shuangxiong", "qun");
     shuangxiong->addSkill(new Shuangxiong);
 
-    shenzhouyu = new General(this, "shenzhouyu", "wu");
-    shenzhouyu->addSkill(new Qinyin);
-
-    shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
+    pangde = new General(this, "pangde", "qun");
+    pangde->addSkill(new Mashu);
+    pangde->addSkill(new Mengjin);
 
     t["fire"] = tr("fire");
     t["xunyu"] = tr("xunyu");
@@ -429,8 +415,8 @@ FirePackage::FirePackage()
     t["taishici"] = tr("taishici");
     t["yuanshao"] = tr("yuanshao");
     t["shuangxiong"] = tr("shuangxiong");
-    t["shenzhouyu"] = tr("shenzhouyu");
-    t["shenzhugeliang"] = tr("shenzhugeliang");
+    t["pangde"] = tr("pangde");
+
 
     t["quhu"] = tr("quhu");
     t["jieming"] = tr("jieming");
@@ -461,22 +447,15 @@ FirePackage::FirePackage()
     t[":kanpo"] = tr(":kanpo");
     t[":tianyi"] = tr(":tianyi");
     t[":mengjin"] = tr(":mengjin");
-    t[":luanji"] = tr(":luanji");
+    t[":luanji"] = tr(":luanji");    
     t[":xueyi"] = tr(":xueyi");
+    t[":shuangxiong"] = tr(":shuangxiong");
 
-    t[":qinyin"] = tr(":qinyin");
-    t[":yeyan"] = tr(":yeyan");
-    t[":qixing"] = tr(":qixing");
-    t[":kuangfeng"] = tr(":kuangfeng");
-    t[":dawu"] = tr(":dawu");
+
 
     // descriptive texts
     t["jieming:yes"] = tr("jieming:yes");
-
-    t[":qinyin:"] = tr(":qinyin:");
-    t["qinyin:up"] = tr("qinyin:up");
-    t["qinyin:down"] = tr("qinyin:down");
-    t["qinyin:no"] = tr("qinyin:no");
+    t["shuangxiong:yes"] = tr("shuangxiong:yes");
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

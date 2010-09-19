@@ -474,16 +474,15 @@ public:
     }
 };
 
-class Mashu:public GameStartSkill{
-public:
-    Mashu():GameStartSkill("mashu"){
+Mashu::Mashu()
+    :GameStartSkill("mashu")
+{
+}
 
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setPlayerCorrect(player, "skill_src", -1);
-    }
-};
+void Mashu::onGameStart(ServerPlayer *player) const
+{
+    player->getRoom()->setPlayerCorrect(player, "skill_src", -1);
+}
 
 class Guanxing:public PhaseChangeSkill{
 public:
@@ -507,19 +506,22 @@ class Jizhi:public TriggerSkill{
 public:
     Jizhi():TriggerSkill("jizhi"){
         frequency = Frequent;
-        events << CardUsed;
+        events << CardUsed << CardResponsed;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *yueying, QVariant &data) const{
-        if(data.canConvert<CardUseStruct>()){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *yueying, QVariant &data) const{
+        CardStar card = NULL;
+        if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+        }else if(event == CardResponsed)
+            card = data.value<CardStar>();
 
-            if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
-                Room *room = yueying->getRoom();
-                if(room->askForSkillInvoke(yueying, objectName())){
-                    room->playSkillEffect(objectName());
-                    yueying->drawCards(1);
-                }
+        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+            Room *room = yueying->getRoom();
+            if(room->askForSkillInvoke(yueying, objectName())){
+                room->playSkillEffect(objectName());
+                yueying->drawCards(1);
             }
         }
 
@@ -835,6 +837,32 @@ public:
     }
 };
 
+class Wushuang: public TriggerSkill{
+public:
+    Wushuang():TriggerSkill("wushuang"){
+        events << SlashProceed;
+
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *lubu, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        Room *room = lubu->getRoom();
+        QString slasher = lubu->getGeneralName();
+        bool jinked = false;
+        room->playSkillEffect(objectName());
+        const Card *first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
+        if(first_jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
+            jinked = true;
+
+        SlashResultStruct result;
+        result.fill(effect, !jinked);
+        room->slashResult(result);
+
+        return true;
+    }
+};
+
 class Lijian: public ViewAsSkill{
 public:
     Lijian():ViewAsSkill("lijian"){
@@ -878,6 +906,10 @@ class Qingnang: public ViewAsSkill{
 public:
     Qingnang():ViewAsSkill("qingnang"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->turn_tag.value("qingnang_used", false).toBool();
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1013,7 +1045,7 @@ void StandardPackage::addGenerals(){
     General *lubu, *huatuo, *diaochan;
 
     lubu = new General(this, "lubu", "qun");
-    lubu->addSkill(new Skill("wushuang", Skill::Compulsory));
+    lubu->addSkill(new Wushuang);
 
     huatuo = new General(this, "huatuo", "qun", 3);
     huatuo->addSkill(new Qingnang);

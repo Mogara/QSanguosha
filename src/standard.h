@@ -4,6 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "roomthread.h"
+#include "skill.h"
 
 class StandardPackage:public Package{
     Q_OBJECT
@@ -370,7 +371,8 @@ public:
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;   
 };
 
 class GuicaiCard: public SkillCard{
@@ -422,5 +424,11 @@ public:
 };
 
 #endif
+
+class Mashu: public GameStartSkill{
+public:
+    Mashu();
+    virtual void onGameStart(ServerPlayer *player) const;
+};
 
 #endif // STANDARD_H

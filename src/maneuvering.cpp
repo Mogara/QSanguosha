@@ -173,16 +173,11 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id));
 
     const Card *card = Sanguosha->getCard(card_id);
-    QString suit_str = card->getSuitString();
-    QString prompt = QString("fire-attack-card::%1:%2").arg(effect.to->getGeneralName()).arg(suit_str);
-    const Card *to_throw = room->askForCard(effect.from, suit_str, prompt);
+    bool discarded = room->askForDiscard(effect.from, 1, true, false, card->getSuit());
 
-    if(to_throw){
-        room->throwCard(to_throw);
-
+    if(discarded){
         DamageStruct damage;
         damage.card = this;
-        damage.damage = 1;
         damage.from = effect.from;
         damage.to = effect.to;
         damage.nature = DamageStruct::Fire;

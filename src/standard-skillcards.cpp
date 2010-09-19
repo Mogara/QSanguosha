@@ -177,6 +177,10 @@ void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     room->cardEffect(effect);
 }
 
+void QingnangCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("qingnang_used", true);
+}
+
 void QingnangCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->recover(effect.to, 1);
 }

@@ -30,15 +30,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
-class GongxinCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE GongxinCard();
-
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-};
-
 class ShensuCard: public SkillCard{
     Q_OBJECT
 
@@ -56,7 +47,5 @@ class WindPackage: public Package{
 public:
     WindPackage();
 };
-
-
 
 #endif // WIND_H

@@ -13,6 +13,10 @@ Card::Card(Suit suit, int number, bool target_fixed)
 }
 
 QString Card::getSuitString() const{
+    return Suit2String(suit);
+}
+
+QString Card::Suit2String(Suit suit){
     switch(suit){
     case Spade: return "spade";
     case Heart: return "heart";
@@ -57,7 +61,7 @@ Card::Suit Card::getSuit() const{
 
 bool Card::match(const QString &pattern) const{
     return pattern == "." || objectName() == pattern ||
-            getType() == pattern || getSubtype() == pattern || getSuitString() == pattern;
+            getType() == pattern || getSubtype() == pattern;
 }
 
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){

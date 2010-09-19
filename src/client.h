@@ -97,6 +97,7 @@ public:
     bool refusable;
     bool include_equip;
     int discard_num;
+    Card::Suit discard_suit;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
 

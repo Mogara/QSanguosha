@@ -47,14 +47,6 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     }
 }
 
-GongxinCard::GongxinCard(){
-
-}
-
-bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
-}
-
 class Guidao:public ViewAsSkill{
 public:
     Guidao():ViewAsSkill("guidao"){
@@ -331,90 +323,6 @@ public:
     }
 };
 
-class Wuhun: public TriggerSkill{
-public:
-    Wuhun():TriggerSkill("wuhun"){
-        events << Death;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        // FIXME:
-
-        return false;
-    }
-};
-
-static bool CompareBySuit(int card1, int card2){
-    const Card *c1 = Sanguosha->getCard(card1);
-    const Card *c2 = Sanguosha->getCard(card2);
-
-    int a = static_cast<int>(c1->getSuit());
-    int b = static_cast<int>(c2->getSuit());
-
-    return a < b;
-}
-
-class Shelie: public PhaseChangeSkill{
-public:
-    Shelie():PhaseChangeSkill("shelie"){
-
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *shenlumeng) const{
-        if(shenlumeng->getPhase() != Player::Draw)
-            return false;
-
-        Room *room = shenlumeng->getRoom();
-        if(!room->askForSkillInvoke(shenlumeng, objectName()))
-            return false;
-
-        QList<int> card_ids = room->getNCards(5);
-        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
-        QStringList card_str;
-        foreach(int card_id, card_ids)
-            card_str << QString::number(card_id);
-        room->broadcastInvoke("fillAG", card_str.join("+"));
-
-        while(!card_ids.isEmpty()){
-            int card_id = room->askForAG(shenlumeng);
-            room->takeAG(shenlumeng, card_id);
-
-            const Card *card = Sanguosha->getCard(card_id);
-
-            // quick-and-dirty
-            shenlumeng->addCard(card, Player::Hand);
-            room->setCardMapping(card_id, shenlumeng, Player::Hand);
-
-            Card::Suit suit = card->getSuit();
-            card_ids.removeOne(card_id);
-            QMutableListIterator<int> itor(card_ids);
-            while(itor.hasNext()){
-                const Card *c = Sanguosha->getCard(itor.next());
-                if(c->getSuit() == suit){
-                    itor.remove();
-
-                    room->setCardMapping(c->getId(), NULL, Player::DiscardedPile);
-                    room->takeAG(NULL, c->getId());
-                }
-            }
-        }
-
-        room->broadcastInvoke("clearAG");
-
-        return true;
-    }
-};
-
-class Gongxin: ZeroCardViewAsSkill{
-public:
-    Gongxin():ZeroCardViewAsSkill("gongxin"){
-
-    }
-
-    virtual const Card *viewAs() const{
-        return new GongxinCard;
-    }
-};
 
 WindPackage::WindPackage()
     :Package("wind")
@@ -439,16 +347,6 @@ WindPackage::WindPackage()
     zhangjiao->addSkill(new Leiji);
     zhangjiao->addSkill(new Huangtian);
 
-    // two gods
-    General *shenguanyu, *shenlumeng;
-
-    shenguanyu = new General(this, "shenguanyu", "shu", 5);
-    shenguanyu->addSkill(new Wuhun);
-
-    shenlumeng = new General(this, "shenlumeng", "wu", 3);
-    shenlumeng->addSkill(new Shelie);
-    // shenlumeng->addSkill(new Gongxin);
-
     t["wind"] = tr("wind");
 
     t["xiahouyuan"] = tr("xiahouyuan");
@@ -456,8 +354,6 @@ WindPackage::WindPackage()
     t["huangzhong"] = tr("huangzhong");
     t["weiyan"] = tr("weiyan");
     t["zhangjiao"] = tr("zhangjiao");
-    t["shenguanyu"] = tr("shenguanyu");
-    t["shenlumeng"] = tr("shenlumeng");
 
     // skills
     t["shensu"] = tr("shensu");
@@ -467,9 +363,6 @@ WindPackage::WindPackage()
     t["guidao"] = tr("guidao");
     t["leiji"] = tr("leiji");
     t["huangtian"] = tr("huangtian");
-    t["wuhun"] = tr("wuhun");
-    t["shelie"] = tr("shelie");
-    t["gongxin"] = tr("gongxin");
 
     t[":shensu"] = tr(":shensu");
     t[":jushou"] = tr(":jushou");
@@ -478,16 +371,12 @@ WindPackage::WindPackage()
     t[":guidao"] = tr(":guidao");
     t[":leiji"] = tr(":leiji");
     t[":huangtian"] = tr(":huangtian");
-    t[":wuhun"] = tr(":wuhun");
-    t[":shelie"] = tr(":shelie");
-    t[":gongxin"] = tr(":gongxin");
 
     // skill prompt
     t["liegong:yes"] = tr("liegong:yes");
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
-    addMetaObject<GongxinCard>();
     addMetaObject<LeijiCard>();
     addMetaObject<ShensuCard>();
 

@@ -19,41 +19,6 @@ public:
     }
 };
 
-ShenfenCard::ShenfenCard(){
-    target_fixed = true;
-}
-
-void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    source->turnOver();
-    room->broadcastProperty(source, "face_up");
-
-    int value = source->getMark("baonu");
-    value -= 6;
-    room->setPlayerMark(source, "baonu", value);
-
-    QList<ServerPlayer *> players = room->getOtherPlayers(source);
-
-    foreach(ServerPlayer *player, players){
-        DamageStruct damage;
-        damage.card = this;
-        damage.damage = 1;
-        damage.from = source;
-        damage.to = player;
-        damage.nature = DamageStruct::Normal;
-
-        room->damage(damage);
-    }
-
-    foreach(ServerPlayer *player, players){
-        player->throwAllEquips();
-    }
-
-    foreach(ServerPlayer *player, players){
-        int discard_num = qMin(player->getHandcardNum(), 4);
-        room->askForDiscard(player, discard_num);
-    }
-}
-
 FangzhuCard::FangzhuCard(){
 }
 
@@ -168,7 +133,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card->inherits("Slash") && damage.to->isAlive() && !damage.to->isKongcheng() && damage.to != zhurong){            
             Room *room = zhurong->getRoom();
-            if(room->askForSkillInvoke(zhurong, objectName()) && room->pindian(zhurong, damage.to)){
+            if(room->askForSkillInvoke(zhurong, objectName()) && room->pindian(zhurong, damage.to) && !damage.to->isNude()){
                 int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
                 room->obtainCard(zhurong, card_id);
             }
@@ -548,101 +513,6 @@ public:
     }
 };
 
-class Guixin: public MasochismSkill{
-public:
-    Guixin():MasochismSkill("guixin"){
-
-    }
-
-    virtual void onDamaged(ServerPlayer *shencc, const DamageStruct &damage) const{
-        Room *room = shencc->getRoom();
-        int i, x = damage.damage;
-        for(i=0; i<x; i++){
-            if(room->askForSkillInvoke(shencc, objectName())){
-                QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
-                foreach(ServerPlayer *player, players){
-                    if(!player->isAllNude()){
-                        int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
-                        room->obtainCard(shencc, card_id);
-                    }
-                }
-
-                shencc->turnOver();
-                room->broadcastProperty(shencc, "face_up");
-            }else
-                break;
-        }
-    }
-};
-
-class Feiying: public GameStartSkill{
-public:
-    Feiying():GameStartSkill("feiying"){
-
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setPlayerCorrect(player, "skill_dest", +1);
-    }
-};
-
-class Baonu: public TriggerSkill{
-public:
-    Baonu():TriggerSkill("baonu"){
-        events << GameStart<< Damage << Damaged;
-    }
-
-    virtual int getPriority(ServerPlayer *target) const{
-        return -1;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
-            player->setMark("anger", 2);
-        }else{
-            if(player->isAlive()){
-                DamageStruct damage = data.value<DamageStruct>();
-                int value = player->getMark("anger");
-                value += damage.damage;
-                player->getRoom()->setPlayerMark(player, "anger", value);
-            }
-        }
-
-        return false;
-    }
-};
-
-class Wumo: public TriggerSkill{
-public:
-    Wumo():TriggerSkill("wumo"){
-        events << CardUsed;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
-            Room *room = player->getRoom();
-            room->loseHp(player);
-        }
-
-        return false;
-    }
-};
-
-class Shenfen:public ZeroCardViewAsSkill{
-public:
-    Shenfen():ZeroCardViewAsSkill("shenfen"){
-    }
-
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("baonu") >= 6;
-    }
-
-    virtual const Card *viewAs() const{
-        return new ShenfenCard;
-    }
-};
-
 ThicketPackage::ThicketPackage()
     :Package("thicket")
 {
@@ -681,17 +551,6 @@ ThicketPackage::ThicketPackage()
     dongzhuo->addSkill(new Benghuai);
     dongzhuo->addSkill(new Baonue);
 
-    // two gods !!
-    General *shencaocao, *shenlubu;
-
-    shencaocao = new General(this, "shencaocao$", "wei", 3);
-    shencaocao->addSkill(new Guixin);
-    shencaocao->addSkill(new Feiying);
-
-    shenlubu = new General(this, "shenlubu", "qun", 5);
-    shenlubu->addSkill(new Baonu);
-    shenlubu->addSkill(new Shenfen);
-
     t["thicket"] = tr("thicket");
 
     t["caopi"] = tr("caopi");
@@ -702,9 +561,6 @@ ThicketPackage::ThicketPackage()
     t["lusu"] = tr("lusu");
     t["jiaxu"] = tr("jiaxu");
     t["dongzhuo"] = tr("dongzhuo");
-
-    t["shencaocao"] = tr("shencaocao");
-    t["shenlubu"] = tr("shenlubu");
 
     // skills
     t["xingshang"] = tr("xingshang");
@@ -726,13 +582,6 @@ ThicketPackage::ThicketPackage()
     t["benghuai"] = tr("benghuai");
     t["baonue"] = tr("baonue");
 
-    t["guixin"] = tr("guixin");
-    t["feiying"] = tr("feiying");
-    t["baonu"] = tr("baonu");
-    t["wumou"] = tr("wumou");
-    t["wuqian"] = tr("wuqian");
-    t["shenfen"] = tr("shenfen");
-
     t[":xingshang"] = tr(":xingshang");
     t[":fangzhu"] = tr(":fangzhu");
     t[":songwei"] = tr(":songwei");
@@ -752,13 +601,6 @@ ThicketPackage::ThicketPackage()
     t[":benghuai"] = tr(":benghuai");
     t[":baonue"] = tr(":baonue");
 
-    t[":guixin"] = tr(":guixin");
-    t[":feiying"] = tr(":feiying");
-    t[":baonu"] = tr(":baonu");
-    t[":wumou"] = tr(":wumou");
-    t[":wuqian"] = tr(":wuqian");
-    t[":shenfen"] = tr(":shenfen");
-
     // skill descriptive texts
     t[":benghuai:"] = tr(":benghuai:");
     t["benghuai:hp"] = tr("benghuai:hp");
@@ -767,6 +609,8 @@ ThicketPackage::ThicketPackage()
     t["baonue:yes"] = tr("baonue:yes");
     t["yinghun:d1tx"] = tr("yinghun:d1tx");
     t["yinghun:dxt1"] = tr("yinghun:dxt1");
+    t["zaiqi:yes"] = tr("zaiqi:yes");
+    t["lieren:yes"] = tr("lieren:yes");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

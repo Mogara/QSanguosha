@@ -152,7 +152,10 @@ void Client::processReply(){
             object.remove(other_prefix);
             ClientPlayer *player = findChild<ClientPlayer*>(object);
             if(player){
-                player->setProperty(field, value);
+                bool declared = player->setProperty(field, value);
+                if(!declared){
+                    QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(field));
+                }
             }else
                 QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object));
 
@@ -652,7 +655,7 @@ void Client::setPileNumber(const QString &pile_num){
 }
 
 void Client::askForDiscard(const QString &discard_str){
-    QRegExp rx("(\\d+)([oe]*)");
+    QRegExp rx("(\\d+)([oe]*)([SCHD]?)");
     if(!rx.exactMatch(discard_str)){
         QMessageBox::warning(NULL, tr("Warning"), tr("Discarding string is not well formatted!"));
         return;
@@ -665,7 +668,28 @@ void Client::askForDiscard(const QString &discard_str){
     refusable = flag_str.contains("o");
     include_equip = flag_str.contains("e");
 
-    emit prompt_changed(tr("Please discard %1 card(s)").arg(discard_num));
+    QString suit = texts.at(3);    
+    if(suit.isEmpty())
+        discard_suit = Card::NoSuit;
+    else if(suit == "S")
+        discard_suit = Card::Spade;
+    else if(suit == "C")
+        discard_suit = Card::Club;
+    else if(suit == "H")
+        discard_suit = Card::Heart;
+    else if(suit == "D")
+        discard_suit = Card::Diamond;
+
+    QString prompt;
+    if(discard_suit != Card::NoSuit){
+        QString suit_string = Sanguosha->translate(Card::Suit2String(discard_suit));
+        prompt = tr("Please discard a handcard with the same suit of %1").arg(suit_string);
+    }else if(include_equip)
+        prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
+    else
+        prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
+
+    emit prompt_changed(prompt);
 
     setStatus(Discarding);    
 }

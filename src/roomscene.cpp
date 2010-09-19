@@ -1049,6 +1049,7 @@ void RoomScene::updateStatus(Client::Status status){
 
             discard_skill->setNum(ClientInstance->discard_num);
             discard_skill->setIncludeEquip(ClientInstance->include_equip);
+            discard_skill->setSuit(ClientInstance->discard_suit);
             dashboard->startPending(discard_skill);
             break;
         }

@@ -17,7 +17,8 @@ Room::Room(QObject *parent, int player_count)
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     nullificators_count(0),
     thread(NULL), sem(NULL),
-    legatee(NULL), menghuo(NULL), zhurong(NULL)
+    legatee(NULL), menghuo(NULL), zhurong(NULL),
+    provided(NULL)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
@@ -1064,12 +1065,20 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
         return Card::NoSuit;
 }
 
-bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
+bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip, Card::Suit suit){
     QString ask_str = QString::number(discard_num);
     if(optional)
         ask_str.append("o");
     if(include_equip)
         ask_str.append("e");
+
+    switch(suit){
+    case Card::Spade: ask_str.append("S"); break;
+    case Card::Club: ask_str.append("C"); break;
+    case Card::Heart: ask_str.append("H"); break;
+    case Card::Diamond: ask_str.append("D"); break;
+    default: break;
+    }
 
     target->invoke("askForDiscard", ask_str);
 
@@ -1217,6 +1226,12 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
 void Room::takeAG(ServerPlayer *player, int card_id){
     QString who = player ? player->objectName() : ".";
     broadcastInvoke("takeAG", QString("%1:%2").arg(who).arg(card_id));
+}
+
+void Room::provide(const Card *card){
+    Q_ASSERT(provided == NULL);
+
+    provided = card;
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
