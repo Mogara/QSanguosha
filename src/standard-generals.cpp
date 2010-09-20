@@ -542,6 +542,7 @@ public:
         if(zhuge->getPhase() == Player::Start){
             Room *room = zhuge->getRoom();
             if(room->askForSkillInvoke(zhuge, objectName())){
+                room->playSkillEffect(objectName());
                 room->doGuanxing(zhuge);
             }
         }

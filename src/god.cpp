@@ -12,6 +12,14 @@ bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
+void GongxinCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("gongxin_used", true);
+}
+
+void GongxinCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->getRoom()->doGongxin(effect.from, effect.to);
+}
+
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
@@ -86,7 +94,7 @@ public:
     }
 };
 
-class Gongxin: ZeroCardViewAsSkill{
+class Gongxin: public ZeroCardViewAsSkill{
 public:
     Gongxin():ZeroCardViewAsSkill("gongxin"){
 
@@ -94,6 +102,10 @@ public:
 
     virtual const Card *viewAs() const{
         return new GongxinCard;
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->turn_tag.value("gongxin_used", false).toBool();
     }
 };
 
@@ -302,6 +314,7 @@ GodPackage::GodPackage()
 
     shenlumeng = new General(this, "shenlumeng", "wu", 3);
     shenlumeng->addSkill(new Shelie);
+    shenlumeng->addSkill(new Gongxin);
 
     t["shenguanyu"] = tr("shenguanyu");
     t["shenlumeng"] = tr("shenlumeng");
@@ -313,6 +326,11 @@ GodPackage::GodPackage()
     t[":wuhun"] = tr(":wuhun");
     t[":shelie"] = tr(":shelie");
     t[":gongxin"] = tr(":gongxin");
+
+    t["shelie:yes"] = tr("shelie:yes");
+    t[":gongxin:"] = tr(":gongxin:");
+    t["gongxin:discard"] = tr("gongxin:discard");
+    t["gongxin:put"] = tr("gongxin:put");
 
     General *shenzhouyu, *shenzhugeliang;
 

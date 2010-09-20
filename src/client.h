@@ -24,7 +24,8 @@ public:
         Discarding,
         AskForAG,
         AskForYiji,
-        AskForGuanxing
+        AskForGuanxing,
+        AskForGongxin
     };
 
     explicit Client(QObject *parent = 0);
@@ -67,8 +68,10 @@ public:
     void setMark(const QString &mark_str);
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
+    void doGongxin(const QString &gongxin_str);
     void replyYiji(const Card *card, const ClientPlayer *to);
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
+    void replyGongxin(int card_id = -1);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -147,6 +150,7 @@ signals:
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void guanxing(const QList<int> &card_ids);
+    void gongxin(const QList<int> &card_ids);
 
     void cards_drawed(const QList<const Card *> &cards);
     void n_cards_drawed(ClientPlayer *player, int n);

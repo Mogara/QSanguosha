@@ -91,6 +91,14 @@ QList<const Card *> ClientPlayer::getCards() const{
     return known_cards;
 }
 
+void ClientPlayer::setCards(const QList<int> &card_ids){
+    known_cards.clear();
+
+    foreach(int card_id, card_ids){
+        known_cards << Sanguosha->getCard(card_id);
+    }
+}
+
 QList<int> ClientPlayer::nullifications() const{
     QList<int> card_ids;
 
@@ -110,21 +118,20 @@ QList<int> ClientPlayer::nullifications() const{
 }
 
 void ClientPlayer::MoveCard(const CardMoveStructForClient &move){
-    if(move.card_id == -1)
-        return;
+    Q_ASSERT(move.card_id != -1);
 
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
         move.from->removeCard(card, move.from_place);
     else{
-        Q_ASSERT(card != NULL);
-        ClientInstance->discarded_list.removeOne(card);
+        if(move.from_place == Player::DiscardedPile)
+            ClientInstance->discarded_list.removeOne(card);
     }
 
     if(move.to)
         move.to->addCard(card, move.to_place);
     else{
-        Q_ASSERT(card != NULL);
-        ClientInstance->discarded_list.prepend(card);
+        if(move.to_place == Player::DiscardedPile)
+            ClientInstance->discarded_list.prepend(card);
     }
 }

@@ -113,6 +113,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
+    connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
 
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(n_cards_moved(int,QString,QString)), this, SLOT(moveNCards(int,QString,QString)));
@@ -629,23 +630,31 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
     static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
 
     if(dest == NULL){
-        card_item->setHomePos(DiscardedPos);
-        card_item->setRotation(qrand() % 359 + 1);
-        card_item->goBack();
-        card_item->setEnabled(true);
+        if(dest_place == Player::DiscardedPile){
+            card_item->setHomePos(DiscardedPos);
+            card_item->setRotation(qrand() % 359 + 1);
+            card_item->goBack();
+            card_item->setEnabled(true);
 
-        card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
+            card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
-        card_item->setZValue(0.1*ClientInstance->discarded_list.length());
-        discarded_queue.enqueue(card_item);
+            card_item->setZValue(0.1*ClientInstance->discarded_list.length());
+            discarded_queue.enqueue(card_item);
 
-        if(discarded_queue.length() > 8){
-            CardItem *first = discarded_queue.dequeue();
-            delete first;
+            if(discarded_queue.length() > 8){
+                CardItem *first = discarded_queue.dequeue();
+                delete first;
+            }
+
+            connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
+            connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
+        }else if(dest_place == Player::DrawPile){
+            QPointF pos = DrawPilePos;
+            pos += dashboard->pos();
+            card_item->setHomePos(pos);
+            card_item->goBack(true);
         }
 
-        connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
-        connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
     }else if(dest->objectName() == Config.UserName){
         switch(dest_place){
         case Player::Equip:{
@@ -1083,6 +1092,14 @@ void RoomScene::updateStatus(Client::Status status){
 
             break;
         }
+
+    case Client::AskForGongxin:{
+            ok_button->setEnabled(true);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
+
+            break;
+        }
     }
 
     foreach(QAbstractButton *button, skill_buttons){
@@ -1190,6 +1207,17 @@ void RoomScene::doOkButton(){
             down_cards.clear();
 
             ClientInstance->replyGuanxing(up_cards, down_cards);
+
+            break;
+        }
+
+    case Client::AskForGongxin:{
+            ClientInstance->replyGongxin();
+
+            foreach(CardItem *card_item, gongxin_items)
+                delete card_item;
+
+            gongxin_items.clear();
 
             break;
         }
@@ -1618,3 +1646,53 @@ void RoomScene::viewDistance(){
     DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
     dialog->show();
 }
+
+void RoomScene::doGongxin(const QList<int> &card_ids){
+    gongxin_items.clear();
+
+    foreach(int card_id, card_ids){
+        const Card *card = Sanguosha->getCard(card_id);
+        CardItem *card_item = new CardItem(card);
+        if(card->getSuit() == Card::Heart){
+            card_item->setEnabled(true);
+            card_item->setFlag(QGraphicsItem::ItemIsFocusable);
+            connect(card_item, SIGNAL(double_clicked()), this, SLOT(chooseGongxinCard()));
+        }else
+            card_item->setEnabled(false);
+
+        addItem(card_item);
+        gongxin_items << card_item;
+    }
+
+    QRectF rect = gongxin_items.first()->boundingRect();
+    qreal card_width = rect.width();
+    qreal card_height = rect.height();
+
+    qreal width = card_width * gongxin_items.length();
+    qreal start_x = - width / 2;
+    qreal start_y = - card_height / 2;
+
+    int i;
+    for(i=0; i<gongxin_items.length(); i++){
+        QPoint pos;
+        pos.setX(start_x + i * card_width);
+        pos.setY(start_y);
+
+        gongxin_items.at(i)->setPos(pos);
+        gongxin_items.at(i)->setHomePos(pos);
+    }
+}
+
+void RoomScene::chooseGongxinCard(){
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    if(item){
+        ClientInstance->replyGongxin(item->getCard()->getId());
+
+        foreach(CardItem *card_item, gongxin_items)
+            delete card_item;
+
+        gongxin_items.clear();
+    }
+}
+

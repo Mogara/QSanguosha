@@ -72,6 +72,8 @@ private:
     QList<GuanxingCardItem *> up_items, down_items;
     QPointF guanxing_origin;
 
+    QList<CardItem *> gongxin_items;
+
     void startEnterAnimation();
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
@@ -116,6 +118,9 @@ private slots:
 
     void doGuanxing(const QList<int> &card_ids);
     void adjustGuanxing();
+
+    void doGongxin(const QList<int> &card_ids);
+    void chooseGongxinCard();
 };
 
 #endif // ROOMSCENE_H

@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE GongxinCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class GreatYeyanCard: public SkillCard{

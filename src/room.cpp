@@ -32,6 +32,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
+    callbacks["replyGongxinCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -985,8 +986,10 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     if(move.to){
         move.to->addCard(card, move.to_place);
     }else{
-        if(move.from)
+        if(place == Player::DiscardedPile)
             discard_pile->prepend(move.card_id);
+        else if(place == Player::DrawPile)
+            draw_pile->prepend(move.card_id);
     }
     setCardMapping(move.card_id, move.to, move.to_place);
 
@@ -996,7 +999,7 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
         broadcastInvoke("moveCard", public_move);
     }else{
         move.from->invoke("moveCard", public_move);
-        if(move.to != move.from)
+        if(move.to && move.to != move.from)
             move.to->invoke("moveCard", public_move);
     }
 
@@ -1166,8 +1169,7 @@ ServerPlayer *Room::getLord() const{
 }
 
 void Room::doGuanxing(ServerPlayer *zhuge){
-    //int n = qMin(5, alive_players.length());
-    int n = 5;
+    int n = qMin(5, alive_players.length());
 
     QList<int> cards = getNCards(n, false);
     QStringList cards_str;
@@ -1204,6 +1206,34 @@ void Room::doGuanxing(ServerPlayer *zhuge){
     i = bottom_cards;
     while(i.hasNext())
         draw_pile->append(i.next());
+}
+
+void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
+    QList<int> handcards = target->handCards();
+    QStringList handcards_str;
+    foreach(int handcard, handcards)
+        handcards_str << QString::number(handcard);
+
+    shenlumeng->invoke("doGongxin", QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+")));
+
+    reply_func = "replyGongxinCommand";
+    reply_player = shenlumeng;
+
+    sem->acquire();
+
+    if(result == ".")
+        return;
+
+    int card_id = result.toInt();
+    QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
+    if(result == "discard")
+        throwCard(card_id);
+    else{
+        moveCardTo(card_id, NULL, Player::DrawPile, false);
+
+        // quick-and-dirty
+        shenlumeng->invoke("moveCard", QString("%1:%2@hand->_@=").arg(card_id).arg(target->objectName()));
+    }
 }
 
 const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){

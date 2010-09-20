@@ -90,7 +90,8 @@ Client::Client(QObject *parent)
     callbacks["gameOverWarn"] = &Client::gameOverWarn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
-    callbacks["doGuanxing"] = &Client::doGuanxing;  
+    callbacks["doGuanxing"] = &Client::doGuanxing;
+    callbacks["doGongxin"] = &Client::doGongxin;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -906,6 +907,34 @@ void Client::doGuanxing(const QString &guanxing_str){
 
     emit guanxing(card_ids);
     setStatus(AskForGuanxing);
+}
+
+void Client::doGongxin(const QString &gongxin_str){
+    QRegExp rx("(\\w+):(.+)");
+    if(!rx.exactMatch(gongxin_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    ClientPlayer *who = findChild<ClientPlayer *>(texts.at(1));
+
+    QStringList cards = texts.at(2).split("+");
+    QList<int> card_ids;
+    foreach(QString card, cards)
+        card_ids << card.toInt();
+
+    who->setCards(card_ids);
+
+    emit gongxin(card_ids);
+    setStatus(AskForGongxin);
+}
+
+void Client::replyGongxin(int card_id){
+    if(card_id == -1)
+        request("replyGongxin .");
+    else
+        request(QString("replyGongxin %1").arg(card_id));
+
+    setStatus(NotActive);
 }
 
 void Client::askForPindian(const QString &ask_str){

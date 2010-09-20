@@ -56,6 +56,7 @@ public:
     bool isSkipped(Player::Phase phase);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge);
+    void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
