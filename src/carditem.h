@@ -53,4 +53,17 @@ signals:
     void mark_changed();
 };
 
+class GuanxingCardItem : public CardItem {
+    Q_OBJECT
+
+public:
+    GuanxingCardItem(const Card *card);
+
+protected:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+signals:
+    void released();
+};
+
 #endif // CARDITEM_H

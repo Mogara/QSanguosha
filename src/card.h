@@ -103,7 +103,20 @@ class SkillCard: public Card{
 
 public:
     SkillCard();
+
     virtual QString getSubtype() const;    
+    virtual QString getType() const;
+    virtual int getTypeId() const;
+    virtual QString toString() const;
+};
+
+class DummyCard: public Card{
+    Q_OBJECT
+
+public:
+    DummyCard();
+
+    virtual QString getSubtype() const;
     virtual QString getType() const;
     virtual int getTypeId() const;
     virtual QString toString() const;

@@ -30,8 +30,8 @@ Room::Room(QObject *parent, int player_count)
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
-    callbacks["guanxingCommand"] = &Room::commonCommand;
-    callbacks["replyYijiCommand"] = &Room::commonCommand;   
+    callbacks["replyYijiCommand"] = &Room::commonCommand;
+    callbacks["replyGuanxingCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -86,7 +86,7 @@ void Room::nextPlayer(){
 
         if(!next->faceUp()){
             next->turnOver();
-            broadcastProperty(next, "face_up");
+            broadcastProperty(next, "faceup");
         }else{
             current = next;
             return;
@@ -308,6 +308,10 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
     else{
         int card_id = result.toInt();
         throwCard(card_id);
+
+        CardStar card = Sanguosha->getCard(card_id);
+        QVariant data = QVariant::fromValue(card);
+        thread->trigger(CardResponsed, nullificator, data);
 
         foreach(ServerPlayer *player, players){
             bool replyed = nullificator_map.value(player, false);
@@ -1162,7 +1166,8 @@ ServerPlayer *Room::getLord() const{
 }
 
 void Room::doGuanxing(ServerPlayer *zhuge){
-    int n = qMin(5, alive_players.length());
+    //int n = qMin(5, alive_players.length());
+    int n = 5;
 
     QList<int> cards = getNCards(n, false);
     QStringList cards_str;
@@ -1171,7 +1176,7 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 
     zhuge->invoke("doGuanxing", cards_str.join("+"));
 
-    reply_func = "guanxingCommand";
+    reply_func = "replyGuanxingCommand";
     reply_player = zhuge;
 
     sem->acquire();

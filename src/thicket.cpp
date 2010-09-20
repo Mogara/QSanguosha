@@ -27,7 +27,7 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
 
     effect.to->drawCards(x);
     effect.to->turnOver();
-    effect.to->getRoom()->setPlayerProperty(effect.to, "face_up", effect.to->faceUp());
+    effect.to->getRoom()->setPlayerProperty(effect.to, "faceup", effect.to->faceUp());
 }
 
 class FangzhuViewAsSkill: public ZeroCardViewAsSkill{

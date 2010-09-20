@@ -135,7 +135,7 @@ public:
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
                 QString prompt = "double-sword-card:" + effect.from->getGeneralName();
-                if(effect.to->isKongcheng() || room->askForCard(effect.to, ".", prompt))
+                if(effect.to->isKongcheng() || !room->askForCard(effect.to, ".", prompt))
                     effect.from->drawCards(1);
             }
         }
@@ -260,6 +260,40 @@ public:
     }
 };
 
+class AxeViewAsSkill: public ViewAsSkill{
+public:
+    AxeViewAsSkill():ViewAsSkill("axe"){
+
+    }
+
+    bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@axe-card";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.length() >= 2)
+            return false;
+
+        if(to_select->isEquipped() && to_select->getCard() == Self->getWeapon())
+            return false;
+
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 2)
+            return NULL;
+
+        DummyCard *card = new DummyCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
 class AxeSkill: public WeaponSkill{
 public:
     AxeSkill():WeaponSkill("axe"){
@@ -269,8 +303,8 @@ public:
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
-            Room *room = player->getRoom();
-            if(room->askForDiscard(player, 2, true, true)){
+            Room *room = player->getRoom();            
+            if(room->askForCard(player, "@axe-card", "axe-card")){
                 result.success = true;
                 data = QVariant::fromValue(result);
             }
@@ -285,6 +319,7 @@ public:
     Axe(Suit suit = Diamond, int number = 5):Weapon(suit, number, 3){
         setObjectName("axe");
         skill = new AxeSkill;
+        attach_skill = true;
     }
 };
 
@@ -345,6 +380,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        if(!player->hasArmorEffect(objectName()))
+            return false;
+
+        if(player->getArmor()->getSkill() != this)
+            return false;
+
         QString asked = data.toString();
         if(asked == "jink"){
             Room *room = player->getRoom();
@@ -526,7 +567,8 @@ public:
         if(targets.isEmpty()){
             return to_select->getWeapon() && to_select != Self;
         }else if(targets.length() == 1){
-            return targets.first()->canSlash(to_select);
+            const ClientPlayer *first = targets.first();
+            return first != Self && first->canSlash(to_select);
         }else
             return false;
     }
@@ -999,7 +1041,8 @@ void StandardPackage::addCards(){
     t["archery-attack-jink"] = tr("archery-attack-jink");
     t["collateral-slash"] = tr("collateral-slash");
     t["blade-slash"] = tr("blade-slash");
-    t["double-sword-card"] = tr("double-sword-card");    
+    t["double-sword-card"] = tr("double-sword-card");
+    t["axe-card"] = tr("axe-card");
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
@@ -1007,5 +1050,5 @@ void StandardPackage::addCards(){
     t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
     t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
 
-    skills << new SpearSkill;
+    skills << new SpearSkill << new AxeViewAsSkill;
 }

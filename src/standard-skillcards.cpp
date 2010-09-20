@@ -54,6 +54,10 @@ void JieyinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     room->recover(targets.first(), 1);
 }
 
+void JieyinCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("jieyin_used", true);
+}
+
 TuxiCard::TuxiCard(){
 }
 
@@ -206,7 +210,11 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     if(to_select->objectName() == slash_source)
         return false;
 
-    return Self->inMyAttackRange(to_select);
+    int card_id = subcards.first();
+    if(Self->getWeapon() && Self->getWeapon()->getId() == card_id)
+        return Self->distanceTo(to_select) <= 1;
+    else
+        return Self->inMyAttackRange(to_select);
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{

@@ -19,8 +19,6 @@ class Player : public QObject
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
-    Q_PROPERTY(int lost_hp READ getLostHp)
-    Q_PROPERTY(int max_cards READ getMaxCards)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString role READ getRole WRITE setRole)
@@ -29,7 +27,7 @@ class Player : public QObject
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
-    Q_PROPERTY(bool face_up READ faceUp WRITE setFaceUp)
+    Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)

@@ -5,6 +5,7 @@
 
 class DiscardSkill : public ViewAsSkill{
     Q_OBJECT
+
 public:
     explicit DiscardSkill();
 
@@ -16,7 +17,7 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const;
 
 private:
-    Card *card;
+    DummyCard *card;
     int num;
     bool include_equip;
     Card::Suit suit;

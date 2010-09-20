@@ -69,6 +69,9 @@ private:
 
     QList<const ClientPlayer *> selected_targets;
 
+    QList<GuanxingCardItem *> up_items, down_items;
+    QPointF guanxing_origin;
+
     void startEnterAnimation();
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
@@ -97,8 +100,7 @@ private slots:
     void changeHp(const QString &who, int delta);
     void clearPile();
     void setPileNumber(int n);
-    void showCard(const QString &player_name, int card_id);
-    void doGuanxing(const QList<int> &card_ids);
+    void showCard(const QString &player_name, int card_id);    
     void viewDistance();
 
     void moveCard(const CardMoveStructForClient &move);
@@ -111,6 +113,9 @@ private slots:
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
+
+    void doGuanxing(const QList<int> &card_ids);
+    void adjustGuanxing();
 };
 
 #endif // ROOMSCENE_H

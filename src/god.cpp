@@ -180,7 +180,7 @@ public:
                 }
 
                 shencc->turnOver();
-                room->broadcastProperty(shencc, "face_up");
+                room->broadcastProperty(shencc, "faceup");
             }else
                 break;
         }
@@ -261,7 +261,7 @@ ShenfenCard::ShenfenCard(){
 
 void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     source->turnOver();
-    room->broadcastProperty(source, "face_up");
+    room->broadcastProperty(source, "faceup");
 
     int value = source->getMark("baonu");
     value -= 6;

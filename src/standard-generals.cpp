@@ -524,6 +524,7 @@ public:
 Mashu::Mashu()
     :GameStartSkill("mashu")
 {
+    frequency = Compulsory;
 }
 
 void Mashu::onGameStart(ServerPlayer *player) const
@@ -840,6 +841,10 @@ class Jieyin: public ViewAsSkill{
 public:
     Jieyin():ViewAsSkill("jieyin"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->turn_tag.value("jieyin_used", false).toBool();
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{

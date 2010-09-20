@@ -291,6 +291,8 @@ ManeuveringPackage::ManeuveringPackage()
     t["iron_chain"] = tr("iron_chain");    
     t["supply_shortage"] = tr("supply_shortage");
 
+    t["fan:yes"] = tr("fan:yes");
+
     QList<Card *> cards;
 
     // spade

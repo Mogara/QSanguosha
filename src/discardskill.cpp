@@ -1,27 +1,8 @@
 #include "discardskill.h"
 #include "carditem.h"
 
-class DiscardCard: public Card{
-public:
-    DiscardCard():Card(NoSuit, 0, true){
-        target_fixed = true;
-    }
-
-    virtual QString getType() const{
-        return "discard_card";
-    }
-
-    virtual QString getSubtype() const{
-        return "discard_card";
-    }
-
-    virtual int getTypeId() const{
-        return -1;
-    }
-};
-
 DiscardSkill::DiscardSkill()
-    :ViewAsSkill("discard"), card(new DiscardCard),
+    :ViewAsSkill("discard"), card(new DummyCard),
     num(0), include_equip(false), suit(Card::NoSuit)
 {
     card->setParent(this);

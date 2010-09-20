@@ -147,3 +147,13 @@ void CardItem::mark(bool marked){
 void CardItem::setMarkable(bool markable){
     this->markable = markable;
 }
+
+GuanxingCardItem::GuanxingCardItem(const Card *card)
+    :CardItem(card)
+{
+}
+
+void GuanxingCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+    emit released();
+}
+

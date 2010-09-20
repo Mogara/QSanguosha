@@ -182,9 +182,21 @@ const Card *Card::Parse(const QString &str){
         card->setSkillName(skill_name);
 
         return card;        
+    }else if(str.startsWith(QChar('$'))){
+        QString copy = str;
+        copy.remove(QChar('$'));
+        QStringList card_strs = copy.split("+");
+        DummyCard *dummy = new DummyCard;
+        foreach(QString card_str, card_strs){
+            dummy->addSubcard(card_str.toInt());
+        }
+
+        return dummy;
     }else if(str.contains(QChar('='))){
         static QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
-        pattern.indexIn(str);
+        if(!pattern.exactMatch(str))
+            return NULL;
+
         QStringList texts = pattern.capturedTexts();
         QString name = texts.at(1);
         QString skill_name = texts.at(2);
@@ -227,8 +239,14 @@ const Card *Card::Parse(const QString &str){
 
         card->setSkillName(skill_name);
         return card;
-    }else
-        return Sanguosha->getCard(str.toInt());
+    }else{
+        bool ok;
+        int card_id = str.toInt(&ok);
+        if(ok)
+            return Sanguosha->getCard(card_id);
+        else
+            return NULL;
+    }
 }
 
 bool Card::targetFixed() const{
@@ -305,4 +323,29 @@ int SkillCard::getTypeId() const{
 
 QString SkillCard::toString() const{
     return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+}
+
+// ---------- Dummy card      -------------------
+
+DummyCard::DummyCard()
+    :Card(NoSuit, 0)
+{
+    setObjectName("dummy");
+    target_fixed = true;
+}
+
+QString DummyCard::getType() const{
+    return "dummy_card";
+}
+
+QString DummyCard::getSubtype() const{
+    return "dummy_card";
+}
+
+int DummyCard::getTypeId() const{
+    return 0;
+}
+
+QString DummyCard::toString() const{
+    return "$" + subcardString();
 }

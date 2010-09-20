@@ -905,6 +905,7 @@ void Client::doGuanxing(const QString &guanxing_str){
         card_ids << card.toInt();
 
     emit guanxing(card_ids);
+    setStatus(AskForGuanxing);
 }
 
 void Client::askForPindian(const QString &ask_str){
@@ -933,6 +934,19 @@ void Client::replyYiji(const Card *card, const ClientPlayer *to){
         request(QString("replyYiji %1->%2").arg(card->subcardString()).arg(to->objectName()));
     else
         request("replyYiji .");
+
+    setStatus(NotActive);
+}
+
+void Client::replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards){
+    QStringList up_items, down_items;
+    foreach(int card_id, up_cards)
+        up_items << QString::number(card_id);
+
+    foreach(int card_id, down_cards)
+        down_items << QString::number(card_id);
+
+    request(QString("replyGuanxing %1:%2").arg(up_items.join("+")).arg(down_items.join("+")));
 
     setStatus(NotActive);
 }

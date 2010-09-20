@@ -22,6 +22,10 @@ int TrickCard::getTypeId() const{
     return 1;
 }
 
+TriggerSkill *EquipCard::getSkill() const{
+    return skill;
+}
+
 QString EquipCard::getType() const{
     return "equip";
 }

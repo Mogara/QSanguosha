@@ -268,7 +268,7 @@ public:
                 target->drawCards(3);
                 target->turnOver();
 
-                room->broadcastProperty(target, "face_up");
+                room->broadcastProperty(target, "faceup");
                 room->playSkillEffect(objectName());
             }
         }
@@ -376,6 +376,7 @@ WindPackage::WindPackage()
 
     // skill prompt
     t["liegong:yes"] = tr("liegong:yes");
+    t["jushou:yes"] = tr("jushou:yes");
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
