@@ -127,7 +127,7 @@ void Room::setLegatee(ServerPlayer *legatee){
     this->legatee = legatee;
 }
 
-int Room::getJudgeCard(ServerPlayer *player){
+const Card *Room::getJudgeCard(ServerPlayer *player){
     int card_id = drawCard();
     throwCard(card_id);
 
@@ -164,10 +164,11 @@ int Room::getJudgeCard(ServerPlayer *player){
     // judge delay
     thread->delay();
 
-    QVariant card_id_data = card_id;
-    thread->trigger(JudgeOnEffect, player, card_id_data);
+    CardStar card = Sanguosha->getCard(card_id);
+    QVariant card_data = QVariant::fromValue(card);
+    thread->trigger(JudgeOnEffect, player, card_data);
 
-    return card_id;
+    return card;
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -351,33 +352,35 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
-    if(pattern == "jink" && player->hasArmorEffect("eight_diagram") && askForSkillInvoke(player, "eight_diagram")){
-        int card_id = getJudgeCard(player);
-        const Card *judge_card = Sanguosha->getCard(card_id);
-        if(judge_card->isRed()){
-            return new Jink(Card::NoSuit, 0);
+    const Card *card = NULL;
+
+    QVariant asked = pattern;
+    thread->trigger(CardAsked, player, asked);
+    if(provided){
+        card = provided;
+        provided = NULL;
+    }else{
+        player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
+
+        reply_func = "responseCardCommand";
+        reply_player = player;
+
+        sem->acquire();
+
+        if(result != "."){
+            card = Card::Parse(result);
+            player->playCardEffect(card);
+            throwCard(card);
         }
     }
 
-    player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
-
-    reply_func = "responseCardCommand";
-    reply_player = player;
-
-    sem->acquire();
-
-    if(result != "."){
-        const Card *card = Card::Parse(result);
-        player->playCardEffect(card);
-        throwCard(card);
-
+    if(card){
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
         thread->trigger(CardResponsed, player, card_star);
+    }
 
-        return card;
-    }else
-        return NULL;
+    return card;
 }
 
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
@@ -1232,6 +1235,17 @@ void Room::provide(const Card *card){
     Q_ASSERT(provided == NULL);
 
     provided = card;
+}
+
+QList<ServerPlayer *> Room::getLieges(const ServerPlayer *lord) const{
+    QString kingdom = lord->getGeneral()->getKingdom();
+    QList<ServerPlayer *> lieges;
+    foreach(ServerPlayer *player, alive_players){
+        if(player != lord && player->getGeneral()->getKingdom() == kingdom)
+            lieges << player;
+    }
+
+    return lieges;
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){

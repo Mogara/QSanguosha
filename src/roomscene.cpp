@@ -1106,12 +1106,16 @@ void RoomScene::doSkillButton(){
 
         const Card *card = dashboard->pendingCard();
         if(card && card->targetFixed()){
-            doOkButton();
+            useSelectedCard();
+            dashboard->stopPending();
         }
     }
 }
 
 void RoomScene::doOkButton(){
+    if(!ok_button->isEnabled())
+        return;
+
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
             useSelectedCard();

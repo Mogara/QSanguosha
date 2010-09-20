@@ -143,6 +143,8 @@ public:
     bool isChained() const;
 
     bool canSlash(const Player *other) const;
+    int getCardCount(bool include_equip) const;
+
 private:
     const General *general;
     int hp, max_hp, xueyi;

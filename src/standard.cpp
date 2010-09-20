@@ -127,8 +127,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     if(!movable)
         room->throwCard(this);
 
-    int card_id = room->getJudgeCard(effect.to);
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = room->getJudgeCard(effect.to);
     if(judge(card)){
         takeEffect(effect.to);
         if(room->getCardOwner(this))

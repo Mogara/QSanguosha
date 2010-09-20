@@ -71,9 +71,9 @@ public:
         return target->getGeneral()->getKingdom() == "wei" && !target->isLord();
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        int card_id = data.toInt();
-        const Card *card = Sanguosha->getCard(card_id);
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        CardStar card = data.value<CardStar>();
+
         if(card->isBlack()){
             Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName())){
@@ -201,10 +201,11 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
             effect.to->drawCards(1);
+            x = qMin(x, effect.to->getCardCount(true));
             room->askForDiscard(effect.to, x, false, true);
         }else{
             effect.to->drawCards(x);
-            room->askForDiscard(effect.to, 1);
+            room->askForDiscard(effect.to, 1, false, true);
         }
     }
 }
@@ -442,6 +443,57 @@ public:
     }
 };
 
+class Roulin: public TriggerSkill{
+public:
+    Roulin():TriggerSkill("roulin"){
+        events << SlashProceed;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{        
+        return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(effect.from->hasSkill(objectName()) && effect.to->getGeneral()->isFemale()){
+            // dongzhuo slash female
+            ServerPlayer *dongzhuo = effect.from;
+            ServerPlayer *female = effect.to;
+            Room *room = dongzhuo->getRoom();
+
+            bool jinked = false;
+            const Card *jink = room->askForCard(female, "jink", "@rouli1-jink-1");
+            if(jink && room->askForCard(female, "jink", "@rouli1-jink-2"))
+                jinked = true;
+
+            SlashResultStruct result;
+            result.fill(effect, !jinked);
+            room->slashResult(result);
+            return true;
+
+        }else if(effect.from->getGeneral()->isFemale() && effect.to->hasSkill(objectName())){
+            // female slash dongzhuo
+
+            ServerPlayer *female = effect.from;
+            ServerPlayer *dongzhuo = effect.to;
+            Room *room = female->getRoom();
+
+            bool jinked = false;
+            const Card *jink = room->askForCard(dongzhuo, "jink", "@roulin2-jink-1");
+            if(jink && room->askForCard(dongzhuo, "jink", "@roulin2-jink-2"))
+                jinked = true;
+
+            SlashResultStruct result;
+            result.fill(effect, !jinked);
+            room->slashResult(result);
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
 class Benghuai: public PhaseChangeSkill{
 public:
     Benghuai():PhaseChangeSkill("benghuai"){
@@ -502,8 +554,7 @@ public:
         Room *room = player->getRoom();
         ServerPlayer *dongzhuo = room->getLord();
         if(dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
-            int card_id = room->getJudgeCard(player);
-            const Card *card = Sanguosha->getCard(card_id);
+            const Card *card = room->getJudgeCard(player);
             if(card->getSuit() == Card::Spade){
                 room->recover(dongzhuo);
             }
@@ -548,6 +599,7 @@ ThicketPackage::ThicketPackage()
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
     dongzhuo->addSkill(new Jiuchi);
+    dongzhuo->addSkill(new Roulin);
     dongzhuo->addSkill(new Benghuai);
     dongzhuo->addSkill(new Baonue);
 

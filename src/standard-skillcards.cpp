@@ -146,7 +146,6 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 }
 
 QingnangCard::QingnangCard(){
-    target_fixed = true;
 }
 
 bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -154,10 +153,11 @@ bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, cons
 }
 
 bool QingnangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    if(Self->isWounded())
-        return targets.length() <= 1;
-    else
-        return targets.length() == 1;
+    if(targets.length() > 1)
+        return false;
+
+    const ClientPlayer *to_cure = targets.isEmpty() ? Self : targets.first();
+    return to_cure->isWounded();
 }
 
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -213,26 +213,24 @@ void LiuliCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->setPlayerFlag(effect.to, "liuli_target");
 }
 
-HujiaCard::HujiaCard(){
-    target_fixed = true;
-}
-
 JijiangCard::JijiangCard(){
 
 }
 
 bool JijiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(ClientInstance->getStatus() == Client::Playing)
-        return targets.isEmpty() && Self->canSlash(to_select);
-    else
-        return false;
+    return targets.isEmpty() && Self->canSlash(to_select);
 }
 
-bool JijiangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    if(ClientInstance->getStatus() == Client::Responsing)
-        return targets.isEmpty();
-    else
-        return !targets.isEmpty();
+void JijiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    QList<ServerPlayer *> lieges = room->getLieges(source);
+    const Card *slash = NULL;
+    foreach(ServerPlayer *liege, lieges){
+        slash = room->askForCard(liege, "slash", "jijiang-slash");
+        if(slash){
+            room->cardEffect(slash, source, targets.first());
+            return;
+        }
+    }
 }
 
 #ifndef QT_NO_DEBUG

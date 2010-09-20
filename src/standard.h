@@ -395,13 +395,6 @@ private:
     QString slash_source;
 };
 
-class HujiaCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HujiaCard();
-};
-
 class JijiangCard: public SkillCard{
     Q_OBJECT
 
@@ -409,7 +402,7 @@ public:
     Q_INVOKABLE JijiangCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 #ifndef QT_NO_DEBUG

@@ -25,23 +25,42 @@ public:
     }
 };
 
-class Hujia:public ZeroCardViewAsSkill{
+class Hujia:public TriggerSkill{
 public:
-    Hujia():ZeroCardViewAsSkill("hujia$"){
-
+    Hujia():TriggerSkill("hujia$"){
+        events << CardAsked;
     }
 
-    virtual const Card *viewAs() const{
-        return new HujiaCard;        
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName()) && target->isAlive();
     }
 
-protected:
-    virtual bool isEnabledAtPlay() const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *caocao, QVariant &data) const{
+        QString pattern = data.toString();
+        if(pattern != "jink")
+            return false;
+
+        Room *room = caocao->getRoom();
+
+        if(!room->askForSkillInvoke(caocao, objectName()))
+            return false;
+
+        room->playSkillEffect(objectName());
+
+        QList<ServerPlayer *> lieges = room->getLieges(caocao);
+        foreach(ServerPlayer *liege, lieges){
+            QString result = room->askForChoice(liege, objectName(), "accept+ignore");
+            if(result == "ignore")
+                continue;
+
+            const Card *jink = room->askForCard(liege, "jink", "hujia-jink");
+            if(jink){
+                room->provide(jink);
+                return true;
+            }
+        }
+
         return false;
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "jink";
     }
 };
 
@@ -99,10 +118,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
-        int card_id = data.toInt();
-        Room *room = guojia->getRoom();
-        room->obtainCard(guojia, card_id);
-        room->playSkillEffect(objectName());
+        CardStar card = data.value<CardStar>();
+        guojia->obtainCard(card);
+        guojia->getRoom()->playSkillEffect(objectName());
 
         return false;
     }
@@ -142,8 +160,7 @@ public:
         if(from && room->askForSkillInvoke(xiahou, "ganglie")){
             room->playSkillEffect(objectName());
 
-            int card_id = room->getJudgeCard(xiahou);
-            const Card *card = Sanguosha->getCard(card_id);
+            const Card *card = room->getJudgeCard(xiahou);
             if(card->getSuit() != Card::Heart){
                 if(!room->askForDiscard(from, 2, true)){
                     DamageStruct damage;
@@ -264,8 +281,7 @@ public:
                 if(room->askForSkillInvoke(target, objectName())){
                     room->playSkillEffect(objectName());
 
-                    int card_id = room->getJudgeCard(target);
-                    const Card *card = Sanguosha->getCard(card_id);
+                    const Card *card = room->getJudgeCard(target);
                     if(card->isBlack())
                         target->obtainCard(card);
                     else
@@ -343,22 +359,54 @@ public:
     }
 };
 
-class Jijiang:public ZeroCardViewAsSkill{
+class JijiangViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    Jijiang():ZeroCardViewAsSkill("jijiang$"){
+    JijiangViewAsSkill():ZeroCardViewAsSkill("jijiang$"){
 
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "slash";
+        return Self->getRole() == "lord" && Slash::IsAvailable();
     }
 
     virtual const Card *viewAs() const{
         return new JijiangCard;
+    }
+};
+
+class Jijiang: public TriggerSkill{
+public:
+    Jijiang():TriggerSkill("jijiang$"){
+        events << CardAsked;
+
+        view_as_skill = new JijiangViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->isLord() && target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *liubei, QVariant &data) const{
+        QString pattern = data.toString();
+        if(pattern != "slash")
+            return false;
+
+        Room *room = liubei->getRoom();
+        if(!room->askForSkillInvoke(liubei, objectName()))
+            return false;
+
+        room->playSkillEffect(objectName());
+
+        QList<ServerPlayer *> lieges = room->getLieges(liubei);
+        foreach(ServerPlayer *liege, lieges){
+            const Card *slash = room->askForCard(liege, "slash", "jijiang-slash");
+            if(slash){
+                room->provide(slash);
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 
@@ -460,8 +508,7 @@ public:
         if(room->askForSkillInvoke(effect.from, "tieji")){
             room->playSkillEffect(objectName());
 
-            int card_id = room->getJudgeCard(machao);
-            const Card *card = Sanguosha->getCard(card_id);
+            const Card *card = room->getJudgeCard(machao);
             if(card->isRed()){
                 SlashResultStruct result;
                 result.fill(effect, true);
@@ -603,22 +650,22 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *lumeng, QVariant &data) const{
         if(event == PhaseChange){
-            if(player->getPhase() == Player::Start)
-                player->setMark("slash_count", 0);
-            else if(player->getPhase() == Player::Discard){
-                if(player->getMark("slash_count") == 0 && player->getRoom()->askForSkillInvoke(player, objectName()))
+            if(lumeng->getPhase() == Player::Start)
+                lumeng->setMark("slash_count", 0);
+            else if(lumeng->getPhase() == Player::Discard){
+                if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName()))
                     return true;
             }
         }else if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Slash"))
-                player->addMark("slash_count");
+                lumeng->addMark("slash_count");
         }else if(event == CardResponsed){
             CardStar card_star = data.value<CardStar>();
             if(card_star->inherits("Slash"))
-                player->addMark("slash_count");
+                lumeng->addMark("slash_count");
         }
 
         return false;
@@ -893,7 +940,9 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *diaochan) const{
         if(diaochan->getPhase() == Player::Finish){
-            if(diaochan->getRoom()->askForSkillInvoke(diaochan, objectName())){
+            Room *room = diaochan->getRoom();
+            if(room->askForSkillInvoke(diaochan, objectName())){
+                room->playSkillEffect(objectName());
                 diaochan->drawCards(1);
             }
         }
@@ -1065,7 +1114,6 @@ void StandardPackage::addGenerals(){
     addMetaObject<FanjianCard>();
     addMetaObject<GuicaiCard>();
     addMetaObject<QingnangCard>();
-    addMetaObject<HujiaCard>();
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
 
@@ -1205,6 +1253,14 @@ void StandardPackage::addGenerals(){
     t["biyue:yes"] = tr("biyue:yes");
     t["luoyi:yes"] = tr("luoyi:yes");
     t["tieji:yes"] = tr("tieji:yes");
+    t["ganglie:yes"] = tr("ganglie:yes");
+    t["hujia:yes"] = tr("hujia:yes");
+    t[":hujia:"] = tr(":hujia:");
+    t["hujia:accept"] = tr("hujia:accept");
+    t["hujia:ignore"] = tr("hujia:ignore");
+    t[":jijiang:"] = tr(":jijiang:");
+    t["jijiang:accept"] = tr("jijiang:accept");
+    t["jijiang:ignore"] = tr("jijiang:ignore");
 
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
@@ -1213,4 +1269,5 @@ void StandardPackage::addGenerals(){
     t["@guicai-card"] = tr("@guicai-card");
     t["@guidao-card"] = tr("@guidao-card");
     t["@liuli-card"] = tr("@liuli-card");
+    t["@leiji"] = tr("@leiji");
 }

@@ -240,8 +240,7 @@ public:
             room->setPlayerMark(target, "shuangxiong", 0);
         }else if(target->getPhase() == Player::Draw){
             if(room->askForSkillInvoke(target, objectName())){
-                int card_id = room->getJudgeCard(target);
-                const Card *card = Sanguosha->getCard(card_id);
+                const Card *card = room->getJudgeCard(target);
                 target->obtainCard(card);
                 if(card->isRed())
                     room->setPlayerMark(target, "shuangxiong", 1);
@@ -262,13 +261,13 @@ public:
         events << SlashResult;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *pangde, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *pangde, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success && !result.to->isNude()){
             Room *room = pangde->getRoom();
             room->askForSkillInvoke(pangde, objectName());
-            int card_id = room->askForCardChosen(pangde, result.to, "he", objectName());
-            room->throwCard(card_id);
+            int to_throw = room->askForCardChosen(pangde, result.to, "he", objectName());
+            room->throwCard(to_throw);
         }
 
         return false;
@@ -315,6 +314,37 @@ public:
         fire_attack->setSkillName(objectName());
         return fire_attack;
     }
+};
+
+class Bazhen: public TriggerSkill{
+public:
+    Bazhen():TriggerSkill("bazhen"){
+        events << CardAsked;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasFlag("armor_nullified") && target->getArmor() == NULL
+                && target->hasSkill(objectName()) && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *wolong, QVariant &data) const{
+        QString pattern = data.toString();
+
+        if(pattern != "jink")
+            return false;
+
+        Room *room = wolong->getRoom();
+        if(room->askForSkillInvoke(wolong, objectName())){
+            const Card *card = room->getJudgeCard(wolong);
+            if(card->isRed()){
+                room->provide(new Jink(Card::NoSuit, 0));
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 };
 
 TianyiCard::TianyiCard(){
@@ -375,6 +405,28 @@ public:
     }
 };
 
+class Xueyi: public TriggerSkill{
+public:
+    Xueyi():TriggerSkill("xueyi$"){
+        events << GameStart << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getGeneral()->getKingdom() == "qun";
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == GameStart){
+            if(!player->isLord())
+                return false;
+        }else if(event == Death){
+
+        }
+
+        return false;
+    }
+};
+
 FirePackage::FirePackage()
     :Package("fire")
 {
@@ -398,7 +450,8 @@ FirePackage::FirePackage()
     taishici->addSkill(new Tianyi);
 
     yuanshao = new General(this, "yuanshao$", "qun");
-    yuanshao->addSkill(new Luanji);    
+    yuanshao->addSkill(new Luanji);
+    yuanshao->addSkill(new Xueyi);
 
     shuangxiong = new General(this, "shuangxiong", "qun");
     shuangxiong->addSkill(new Shuangxiong);
@@ -416,7 +469,6 @@ FirePackage::FirePackage()
     t["yuanshao"] = tr("yuanshao");
     t["shuangxiong"] = tr("shuangxiong");
     t["pangde"] = tr("pangde");
-
 
     t["quhu"] = tr("quhu");
     t["jieming"] = tr("jieming");
@@ -451,11 +503,10 @@ FirePackage::FirePackage()
     t[":xueyi"] = tr(":xueyi");
     t[":shuangxiong"] = tr(":shuangxiong");
 
-
-
     // descriptive texts
     t["jieming:yes"] = tr("jieming:yes");
     t["shuangxiong:yes"] = tr("shuangxiong:yes");
+    t["mengjin:yes"] = tr("mengjin:yes");
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

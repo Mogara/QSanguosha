@@ -336,11 +336,26 @@ public:
 
 class EightDiagramSkill: public ArmorSkill{
 public:
-    EightDiagramSkill():ArmorSkill("armor_diagram"){
-
+    EightDiagramSkill():ArmorSkill("eight_diagram"){
+        events << CardAsked;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual int getPriority(ServerPlayer *) const{
+        return 2;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        QString asked = data.toString();
+        if(asked == "jink"){
+            Room *room = player->getRoom();
+            if(room->askForSkillInvoke(player, objectName())){
+                const Card *card = room->getJudgeCard(player);
+                if(card->isRed()){
+                    room->provide(new Jink(Card::NoSuit, 0));
+                    return true;
+                }
+            }
+        }
         return false;
     }
 };
@@ -494,8 +509,8 @@ public:
     }
 
     virtual bool isAvailable() const{
-        QList<ClientPlayer*> players = ClientInstance->findChildren<ClientPlayer*>();
-        foreach(ClientPlayer *player, players){
+        QList<const ClientPlayer*> players = ClientInstance->findChildren<const ClientPlayer*>();
+        foreach(const ClientPlayer *player, players){
             if(player->getWeapon() != NULL && player != Self)
                 return true;
         }
@@ -976,13 +991,15 @@ void StandardPackage::addCards(){
     t["indulgence"] = tr("indulgence");
     t["lightning"] = tr("lightning");
 
+    t["eight_diagram:yes"] = tr("eight_diagram:yes");
+
     t["slash-jink"] = tr("slash-jink");
     t["duel-slash"] = tr("duel-slash");
     t["savage-assault-slash"] = tr("savage-assault-slash");
     t["archery-attack-jink"] = tr("archery-attack-jink");
     t["collateral-slash"] = tr("collateral-slash");
     t["blade-slash"] = tr("blade-slash");
-    t["double-sword-card"] = tr("double-sword-card");
+    t["double-sword-card"] = tr("double-sword-card");    
 
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");

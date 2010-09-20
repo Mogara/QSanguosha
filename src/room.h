@@ -50,7 +50,7 @@ public:
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
-    int getJudgeCard(ServerPlayer *player);
+    const Card *getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);
     void skip(Player::Phase phase);
     bool isSkipped(Player::Phase phase);
@@ -59,6 +59,7 @@ public:
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
+    QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
 
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
     bool pindian(ServerPlayer *source, ServerPlayer *target);

@@ -47,6 +47,9 @@ RoomThread::RoomThread(Room *room)
 
         QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
         foreach(const TriggerSkill *skill, skills){
+            if(skill->isLordSkill() && !player->isLord())
+                continue;
+
             trigger_skills.insert(skill->objectName(), skill);
         }
     }

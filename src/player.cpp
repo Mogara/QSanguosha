@@ -435,3 +435,23 @@ bool Player::canSlash(const Player *other) const{
     else
         return distanceTo(other) <= getAttackRange();
 }
+
+int Player::getCardCount(bool include_equip) const{
+    int count = getHandcardNum();
+
+    if(include_equip){
+        if(weapon)
+            count ++;
+
+        if(armor)
+            count ++;
+
+        if(defensive_horse)
+            count ++;
+
+        if(offensive_horse)
+            count ++;
+    }
+
+    return count;
+}
