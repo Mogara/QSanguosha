@@ -68,6 +68,7 @@ Client::Client(QObject *parent)
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 
+    callbacks["setPlayerCount"] = &Client::setPlayerCount;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["drawCards"] = &Client::drawCards;
@@ -115,15 +116,22 @@ Client::Client(QObject *parent)
 
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
+
+    request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
+}
+
+void Client::setPlayerCount(const QString &count_str){
+    int count = count_str.toInt();
+
+    Config.PlayerCount = count;
+    Config.setValue("PlayerCount", count);
+
+    emit server_connected();
 }
 
 void Client::request(const QString &message){
     write(message.toAscii());
     write("\n");
-}
-
-void Client::signup(){
-    request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
 void Client::processReply(){

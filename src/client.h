@@ -28,8 +28,8 @@ public:
         AskForGongxin
     };
 
-    explicit Client(QObject *parent = 0);
-    void signup();
+    explicit Client(QObject *parent);
+
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
@@ -45,6 +45,7 @@ public:
 
     typedef void (Client::*Callback)(const QString &);
 
+    void setPlayerCount(const QString &count_str);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);
@@ -134,6 +135,7 @@ private slots:
     void clearTurnTag();
 
 signals:
+    void server_connected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);    

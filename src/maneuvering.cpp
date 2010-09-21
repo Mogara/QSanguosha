@@ -107,6 +107,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(!player->hasArmorEffect(objectName()))
+            return false;
+
+        if(player->getArmor()->getSkill() != this)
+            return false;
+
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if(effect.nature == DamageStruct::Normal)

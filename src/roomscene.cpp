@@ -135,8 +135,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     connect(ClientInstance, SIGNAL(prompt_changed(QString)), daqiao, SLOT(setContent(QString)));
 
-    ClientInstance->signup();
-
     startEnterAnimation();    
 }
 

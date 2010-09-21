@@ -347,13 +347,11 @@ public:
 
             if(!horses.isEmpty()){
                 Room *room = player->getRoom();
-                if(room->askForSkillInvoke(player, objectName())){
-                    QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
-                    if(horse_type == "dhorse")
-                        room->throwCard(result.to->getDefensiveHorse());
-                    else if(horse_type == "ohorse")
-                        room->throwCard(result.to->getOffensiveHorse());
-                }
+                QString horse_type = room->askForChoice(player, objectName(), horses.join("+") + "+no");
+                if(horse_type == "dhorse")
+                    room->throwCard(result.to->getDefensiveHorse());
+                else if(horse_type == "ohorse")
+                    room->throwCard(result.to->getOffensiveHorse());
             }
         }
 
@@ -1044,6 +1042,7 @@ void StandardPackage::addCards(){
     t["ice_sword:yes"] = tr("ice_sword:yes");
     t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
     t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
+    t["kylin_bow:no"] = tr("kylin_bow:no");
 
     skills << new SpearSkill << new AxeViewAsSkill;
 }

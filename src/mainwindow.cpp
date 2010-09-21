@@ -135,7 +135,7 @@ void MainWindow::startConnection(){
     Client *client = new Client(this);
 
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
-    connect(client, SIGNAL(connected()), SLOT(enterRoom()));
+    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
 }
 
 void MainWindow::networkError(const QString &error_msg){

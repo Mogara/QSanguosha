@@ -621,6 +621,8 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setObjectName(name);
     player->setProperty("avatar", avatar);
 
+    player->invoke("setPlayerCount", QString::number(player_count));
+
     // introduce the new joined player to existing players except himself
     broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), player);
 
