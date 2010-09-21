@@ -146,7 +146,7 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     effect.from = from;
     effect.to = to;
 
-    room->cardEffect(effect);
+    room->directCardEffect(effect);
 }
 
 QingnangCard::QingnangCard(){

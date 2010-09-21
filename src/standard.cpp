@@ -222,23 +222,19 @@ QString Horse::getSubtype() const{
 }
 
 void Horse::onInstall(ServerPlayer *player) const{
-    QString field;
+    Room *room = player->getRoom();
     if(correct > 0)
-        field = "equip_dest";
+        room->setPlayerCorrect(player, "P");
     else
-        field = "equip_src";
-
-    player->getRoom()->setPlayerCorrect(player, field, correct);
+        room->setPlayerCorrect(player, "S");
 }
 
 void Horse::onUninstall(ServerPlayer *player) const{
-    QString field;
+    Room *room = player->getRoom();
     if(correct > 0)
-        field = "equip_dest";
+        room->setPlayerCorrect(player, "-P");
     else
-        field = "equip_src";
-
-    player->getRoom()->setPlayerCorrect(player, field, 0);
+        room->setPlayerCorrect(player, "-S");
 }
 
 EquipCard::Location Horse::location() const{

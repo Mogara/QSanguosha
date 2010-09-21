@@ -494,8 +494,7 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
     broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
 }
 
-void Room::setPlayerCorrect(ServerPlayer *player, const QString &field, int correct){
-    QString correct_str = QString("%1:%2").arg(field).arg(correct);
+void Room::setPlayerCorrect(ServerPlayer *player, const QString &correct_str){
     player->setCorrect(correct_str);
     broadcastProperty(player, "correct", correct_str);
 }
@@ -809,6 +808,12 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     if(effect.card->inherits("TrickCard") && askForNullification(effect.card->objectName(), effect.from, effect.to))
         return false;
 
+    directCardEffect(effect);
+
+    return true;
+}
+
+void Room::directCardEffect(const CardEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
     bool broken = false;
     if(effect.from)
@@ -817,8 +822,6 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     if(!broken){
         thread->trigger(CardEffected, effect.to, data);
     }
-
-    return true;
 }
 
 void Room::damage(const DamageStruct &damage_data){

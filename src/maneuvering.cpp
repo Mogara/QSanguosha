@@ -109,7 +109,7 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.slash->getNature() == DamageStruct::Normal)
+            if(effect.nature == DamageStruct::Normal)
                 return true;
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();

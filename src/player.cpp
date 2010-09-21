@@ -111,21 +111,29 @@ QString Player::getCorrect() const{
 }
 
 void Player::setCorrect(const QString &correct_str){
-    QRegExp pattern("(\\w+):(-?\\d+)");
+    // F : feiying
+    // M : mashu
+    // P : plus, +1 horse
+    // S : subtract, -1 horse
 
-    pattern.indexIn(correct_str);
-    QStringList texts = pattern.capturedTexts();
-    QString field = texts.at(1);
-    int value = texts.at(2).toInt();
+    QRegExp rx("(-?)([FMPS])");
+    if(!rx.exactMatch(correct_str)){
+        qFatal("Unknown correct string!");
+        return;
+    }
 
-    if(field == "equip_src")
-        correct.equip_src = value;
-    else if(field == "equip_dest")
-        correct.equip_dest = value;
-    else if(field == "skill_src")
-        correct.skill_src = value;
-    else if(field == "skill_dest")
-        correct.skill_dest = value;
+    QStringList texts = rx.capturedTexts();
+    bool uninstall = texts.at(1) == "-";
+    QString field_name = texts.at(2);
+
+    if(field_name == "F")
+        correct.skill_dest = +1;
+    else if(field_name == "M")
+        correct.skill_src = -1;
+    else if(field_name == "P")
+        correct.equip_dest = uninstall ? 0 : +1;
+    else if(field_name == "S")
+        correct.equip_src = uninstall ? 0 : -1;
 }
 
 bool Player::inMyAttackRange(const Player *other) const{

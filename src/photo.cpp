@@ -276,14 +276,6 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     back_icon->setVisible(! player->faceUp());
 }
 
-void Photo::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
-    QGraphicsObject *obj = static_cast<QGraphicsObject*>(scene()->focusItem());
-    CardItem *card_item = qobject_cast<CardItem*>(obj);
-    if(card_item && card_item->isUnderMouse()){
-        QMessageBox::information(NULL, "", card_item->getCard()->objectName());
-    }
-}
-
 void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     if(!equip)
         return;

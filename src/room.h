@@ -38,7 +38,7 @@ public:
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
-    void setPlayerCorrect(ServerPlayer *player, const QString &field, int correct);
+    void setPlayerCorrect(ServerPlayer *player, const QString &correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void useCard(ServerPlayer *player, const QString &card_str);
@@ -49,6 +49,7 @@ public:
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
+    void directCardEffect(const CardEffectStruct &effect);
     void setLegatee(ServerPlayer *legatee);
     const Card *getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);

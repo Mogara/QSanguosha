@@ -1229,8 +1229,6 @@ void RoomScene::doOkButton(){
 }
 
 void RoomScene::doCancelButton(){
-    // FIXME
-
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
             const ViewAsSkill *skill = dashboard->currentSkill();
@@ -1238,6 +1236,7 @@ void RoomScene::doCancelButton(){
                 cancelViewAsSkill();
             else
                 dashboard->unselectAll();
+            dashboard->stopPending();
             break;
         }
 
@@ -1247,6 +1246,7 @@ void RoomScene::doCancelButton(){
             else
                 ClientInstance->responseCard(NULL, QList<const ClientPlayer *>());
             daqiao->hide();
+            dashboard->stopPending();
             break;
         }
 

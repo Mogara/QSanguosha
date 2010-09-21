@@ -529,7 +529,7 @@ Mashu::Mashu()
 
 void Mashu::onGameStart(ServerPlayer *player) const
 {
-    player->getRoom()->setPlayerCorrect(player, "skill_src", -1);
+    player->getRoom()->setPlayerCorrect(player, "M");
 }
 
 class Guanxing:public PhaseChangeSkill{
@@ -807,7 +807,7 @@ public:
         Room *room = daqiao->getRoom();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(!daqiao->isNude() && room->alivePlayerCount() > 2){
+        if(effect.card->inherits("Slash") && !daqiao->isNude() && room->alivePlayerCount() > 2){
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(effect.from);
 
@@ -931,8 +931,7 @@ public:
             return NULL;
 
         LijianCard *lijian_card = new LijianCard;
-        foreach(CardItem *card_item, cards)
-            lijian_card->addSubcard(card_item->getCard()->getId());
+        lijian_card->addSubcards(cards);
 
         return lijian_card;
     }

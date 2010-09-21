@@ -457,12 +457,7 @@ void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     QList<ServerPlayer *> all_players = room->getAllPlayers();
     foreach(ServerPlayer *player, all_players){
         if(player->isWounded()){
-            CardEffectStruct effect;
-            effect.card = this;
-            effect.from = source;
-            effect.to  = player;
-
-            room->cardEffect(effect);
+            room->cardEffect(this, source, player);
         }
     }
 }

@@ -206,7 +206,7 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setPlayerCorrect(player, "skill_dest", +1);
+        player->getRoom()->setPlayerCorrect(player, "F");
     }
 };
 

@@ -28,7 +28,7 @@ public:
     SkillCard *cloneSkillCard(const QString &name);
 
     const General *getGeneral(const QString &name) const;
-    int getGeneralCount() const;
+    int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
 
     int getCardCount() const;

@@ -52,7 +52,7 @@ JiemingCard::JiemingCard(){
 }
 
 bool JiemingCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty();
+    return to_select->getHandcardNum() < to_select->getMaxHP();
 }
 
 void JiemingCard::onEffect(const CardEffectStruct &effect) const{
@@ -93,7 +93,8 @@ public:
         Room *room = xunyu->getRoom();
         int x = damage.damage, i;
         for(i=0; i<x; i++){
-            room->askForUseCard(xunyu, "@@jieming", "@jieming");
+            if(!room->askForUseCard(xunyu, "@@jieming", "@jieming"))
+                break;
         }
     }
 };
@@ -442,6 +443,7 @@ FirePackage::FirePackage()
     wolong = new General(this, "wolong", "shu", 3);
     wolong->addSkill(new Huoji);
     wolong->addSkill(new Skill("kanpo"));
+    wolong->addSkill(new Bazhen);
 
     pangtong = new General(this, "pangtong", "shu", 3);
     pangtong->addSkill(new Lianhuan);

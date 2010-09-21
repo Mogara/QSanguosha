@@ -102,8 +102,20 @@ const General *Engine::getGeneral(const QString &name) const{
     return generals.value(name, NULL);
 }
 
-int Engine::getGeneralCount() const{
-    return generals.size();
+int Engine::getGeneralCount(bool include_banned) const{
+    if(include_banned)
+        return generals.size();
+
+    int total = generals.size();
+    QHashIterator<QString, const General *> itor(generals);
+    while(itor.hasNext()){
+        itor.next();
+        const General *general = itor.value();
+        if(ban_package.contains(general->getPackage()))
+            total--;
+    }
+
+    return total;
 }
 
 const Card *Engine::getCard(int index) const{
