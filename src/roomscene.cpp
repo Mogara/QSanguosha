@@ -1234,16 +1234,18 @@ void RoomScene::doOkButton(){
             QList<int> up_cards, down_cards;
             foreach(CardItem *card_item, up_items){
                 up_cards << card_item->getCard()->getId();
+                removeItem(card_item);
                 delete card_item;
             }
 
             foreach(CardItem *card_item, down_items){
                 down_cards << card_item->getCard()->getId();
+                removeItem(card_item);
                 delete card_item;
             }
 
             up_items.clear();
-            down_cards.clear();
+            down_items.clear();
 
             ClientInstance->replyGuanxing(up_cards, down_cards);
 
@@ -1652,10 +1654,8 @@ void RoomScene::adjustGuanxing(){
     if(item == NULL)
         return;
 
-    if(up_items.contains(item))
-        up_items.removeOne(item);
-    else
-        down_items.removeOne(item);
+    up_items.removeOne(item);
+    down_items.removeOne(item);
 
     int r = (item->y() - guanxing_origin.y()) / CardHeight;
     r = qBound(0, r, 1);
