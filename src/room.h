@@ -63,9 +63,6 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
 
-    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
-    bool pindian(ServerPlayer *source, ServerPlayer *target);
-
     void setMenghuo(ServerPlayer *menghuo);
     ServerPlayer *getMenghuo() const;
     void setZhurong(ServerPlayer *zhurong);
@@ -100,6 +97,8 @@ public:
     int askForAG(ServerPlayer *player);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
+    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);
 
     bool askForSave(ServerPlayer *dying, int peaches);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);

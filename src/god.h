@@ -29,6 +29,13 @@ public:
     Q_INVOKABLE GreatYeyanCard();
 };
 
+class SmallYeyanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SmallYeyanCard();
+};
+
 class ShenfenCard: public SkillCard{
     Q_OBJECT
 

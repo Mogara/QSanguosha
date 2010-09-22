@@ -113,10 +113,18 @@ GreatYeyanCard::GreatYeyanCard(){
 
 }
 
+SmallYeyanCard::SmallYeyanCard(){
+
+}
+
 class GreatYeyan: public ViewAsSkill{
 public:
     GreatYeyan(): ViewAsSkill("great_yeyan"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("yeyan_used", false).toBool();
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -137,6 +145,23 @@ public:
 
         GreatYeyanCard *card = new GreatYeyanCard;
         card->addSubcards(cards);
+
+        return card;
+    }
+};
+
+class SmallYeyan: public ZeroCardViewAsSkill{
+public:
+    SmallYeyan():ZeroCardViewAsSkill("small_yeyan"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("yeyan_used", false).toBool();
+    }
+
+    virtual const Card *viewAs() const{
+        return new SmallYeyanCard;
     }
 };
 
@@ -202,7 +227,7 @@ public:
 class Feiying: public GameStartSkill{
 public:
     Feiying():GameStartSkill("feiying"){
-
+        frequency = Compulsory;
     }
 
     virtual void onGameStart(ServerPlayer *player) const{
@@ -336,6 +361,8 @@ GodPackage::GodPackage()
 
     shenzhouyu = new General(this, "shenzhouyu", "wu");
     shenzhouyu->addSkill(new Qinyin);
+    shenzhouyu->addSkill(new GreatYeyan);
+    shenzhouyu->addSkill(new SmallYeyan);
 
     shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
 
@@ -352,6 +379,8 @@ GodPackage::GodPackage()
     t["qinyin:up"] = tr("qinyin:up");
     t["qinyin:down"] = tr("qinyin:down");
     t["qinyin:no"] = tr("qinyin:no");
+    t["great_yeyan"] = tr("great_yeyan");
+    t["small_yeyan"] = tr("small_yeyan");
 
     General *shencaocao, *shenlubu;
 
@@ -383,6 +412,8 @@ GodPackage::GodPackage()
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
     addMetaObject<ShenfenCard>();
+    addMetaObject<GreatYeyanCard>();
+    addMetaObject<SmallYeyanCard>();
 }
 
 ADD_PACKAGE(God)

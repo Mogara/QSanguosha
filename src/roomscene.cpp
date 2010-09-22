@@ -610,6 +610,39 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
     dest->update();
 }
 
+void RoomScene::moveCardToDrawPile(const QString &from){
+    Photo *src = name2photo.value(from, NULL);
+
+    Q_ASSERT(src != NULL);
+
+    setPileNumber(pile_number - 1);
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup;
+
+    Pixmap *card_pixmap = new Pixmap(":/card-back.png");
+    addItem(card_pixmap);
+
+    QPropertyAnimation *ugoku = new QPropertyAnimation(card_pixmap, "pos");
+    ugoku->setStartValue(src->pos());
+    ugoku->setEndValue(DrawPilePos + dashboard->pos());
+    ugoku->setDuration(1000);
+
+    QPropertyAnimation *kieru = new QPropertyAnimation(card_pixmap, "opacity");
+    kieru->setStartValue(1.0);
+    kieru->setKeyValueAt(0.8, 1.0);
+    kieru->setEndValue(0.0);
+    kieru->setDuration(1000);
+
+    group->addAnimation(ugoku);
+    group->addAnimation(kieru);
+
+    connect(group, SIGNAL(finished()), card_pixmap, SLOT(deleteLater()));
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    src->update();
+}
+
 void RoomScene::moveCard(const CardMoveStructForClient &move){
     ClientPlayer *src = move.from;
     ClientPlayer *dest = move.to;
@@ -764,11 +797,16 @@ void RoomScene::updateSkillButtons(){
     }
 
     status_bar->addPermanentWidget(role_combobox);
+
+    // disable all skill buttons
+    foreach(QAbstractButton *button, skill_buttons)
+        button->setDisabled(true);
 }
 
 void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
+    role_combobox->setCurrentIndex(1);
 
     if(new_role != "lord"){
         foreach(QAbstractButton *button, skill_buttons){
@@ -867,6 +905,9 @@ void RoomScene::updateSelectedTargets(){
     if(new_set.isEmpty()){
         selected_targets.clear();
         changeMessage();
+
+        updateTargetsEnablity(card);
+        ok_button->setEnabled(card->targetsFeasible(selected_targets));
         return;
     }
 

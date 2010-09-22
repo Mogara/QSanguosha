@@ -76,6 +76,7 @@ public:
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
+    void moveCardToDrawPile(const QString &from);
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
@@ -156,6 +157,7 @@ signals:
 
     void cards_drawed(const QList<const Card *> &cards);
     void n_cards_drawed(ClientPlayer *player, int n);
+    void card_moved_to_draw_pile(const QString &from);
 
     void card_moved(const CardMoveStructForClient &move);
     void n_cards_moved(int n, const QString &from, const QString &to);

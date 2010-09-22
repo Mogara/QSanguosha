@@ -1238,6 +1238,12 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
 
         // quick-and-dirty
         shenlumeng->invoke("moveCard", QString("%1:%2@hand->_@=").arg(card_id).arg(target->objectName()));
+
+        foreach(ServerPlayer *player, alive_players){
+            if(player != shenlumeng && player != target){
+                player->invoke("moveCardToDrawPile", target->objectName());
+            }
+        }
     }
 }
 

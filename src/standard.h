@@ -164,7 +164,7 @@ public:
     Q_INVOKABLE Lightning(Card::Suit suit, int number);
     virtual void takeEffect(ServerPlayer *target) const;
     virtual bool judge(const Card *card) const;
-
+    virtual bool isAvailable() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

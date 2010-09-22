@@ -664,6 +664,12 @@ ThicketPackage::ThicketPackage()
     t["zaiqi:yes"] = tr("zaiqi:yes");
     t["lieren:yes"] = tr("lieren:yes");
     t["songwei:yes"] = tr("songwei:yes");
+    t[":yinghun:"] = tr(":yinghun:");
+
+    t["@roulin1-jink-1"] = tr("@roulin1-jink-1");
+    t["@roulin1-jink-2"] = tr("@roulin1-jink-2");
+    t["@roulin2-jink-1"] = tr("@roulin2-jink-1");
+    t["@roulin2-jink-2"] = tr("@roulin2-jink-2");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

@@ -772,6 +772,16 @@ bool Lightning::judge(const Card *card) const{
     return card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9;
 }
 
+bool Lightning::isAvailable() const{
+    if(Self->containsTrick(objectName()))
+        return false;
+
+    if(Self->hasSkill("weimu") && isBlack())
+        return false;
+
+    return true;
+}
+
 void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->moveCardTo(this, source, Player::Judging);
 }

@@ -96,6 +96,7 @@ Client::Client(QObject *parent)
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
+    callbacks["moveCardToDrawPile"] = &Client::moveCardToDrawPile;
 
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
@@ -403,6 +404,16 @@ void Client::moveNCards(const QString &move_str){
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("moveNCards string is not well formatted!"));
     }
+}
+
+void Client::moveCardToDrawPile(const QString &from){
+    ClientPlayer *src = findChild<ClientPlayer *>(from);
+
+    Q_ASSERT(src);
+
+    src->handCardChange(-1);
+
+    emit card_moved_to_draw_pile(from);
 }
 
 void Client::startGame(const QString &){
