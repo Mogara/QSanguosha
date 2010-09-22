@@ -136,31 +136,34 @@ void Client::request(const QString &message){
 }
 
 void Client::processReply(){
-    static QChar Self_prefix('.');
-    static QChar room_prefix('$');
-    static QChar other_prefix('#');
-    static QChar method_prefix('!');
+    static char self_prefix = '.';
+    static char room_prefix = '$';
+    static char other_prefix = '#';
+    static char method_prefix = '!';
+
+    typedef char buffer_t[1024];
 
     while(canReadLine()){
-        QString reply = readLine(1024);
-        reply.chop(1);
-        QStringList words = reply.split(QChar(' '));
+        buffer_t buffer, object, field, value;
+        readLine(buffer, sizeof(buffer));
+        int count = sscanf(buffer, "%s %s %s\n", object, field, value);
 
-        QString object = words[0];        
-        const char *field = words[1].toStdString().c_str();
-        QString value = words[2];
+        if(count != 3){
+            QMessageBox::warning(NULL, tr("Warning"), tr("The reply string must contains 3 words!"));
+            return;
+        }
 
-        if(object.startsWith(Self_prefix)){
+        if(object[0] == self_prefix){
             // client it Self
             if(Self)
                 Self->setProperty(field, value);
-        }else if(object.startsWith(room_prefix)){
+        }else if(object[0] == room_prefix){
             // room
             room->setProperty(field, value);
-        }else if(object.startsWith(other_prefix)){
+        }else if(object[0] == other_prefix){
             // others
-            object.remove(other_prefix);
-            ClientPlayer *player = findChild<ClientPlayer*>(object);
+            char *object_name = object + 1;
+            ClientPlayer *player = findChild<ClientPlayer*>(object_name);
             if(player){
                 bool declared = player->setProperty(field, value);
                 if(!declared){
@@ -169,16 +172,17 @@ void Client::processReply(){
             }else
                 QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object));
 
-        }else if(object.startsWith(method_prefix)){
+        }else if(object[0] == method_prefix){
             // invoke methods
-            Callback callback = callbacks.value(words[1], NULL);
+            char *method_name = field;
+            Callback callback = callbacks.value(method_name, NULL);
             if(callback)
                 (this->*callback)(value);
             else
-                QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(words[1]));
+                QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
 
         }else
-            QMessageBox::information(NULL, tr("Reply format error!"), reply);
+            QMessageBox::information(NULL, tr("Reply format error!"), buffer);
     }
 }
 

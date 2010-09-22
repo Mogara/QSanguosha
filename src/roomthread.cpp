@@ -39,6 +39,12 @@ void SlashResultStruct::fill(const SlashEffectStruct &effect, bool success)
     this->success = success;
 }
 
+DyingStruct::DyingStruct()
+    :damage(NULL), peaches(0)
+{
+
+}
+
 RoomThread::RoomThread(Room *room)
     :QThread(room), room(room)
 {

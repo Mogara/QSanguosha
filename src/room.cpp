@@ -761,16 +761,17 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
     thread->trigger(CardUsed, player, vdata);
 }
 
-void Room::loseHp(ServerPlayer *victim){
-    if(victim->getHp() == 1){
-        bool saved = askForSave(victim, 1);
-        if(saved)
-            setPlayerProperty(victim, "hp", 1);
-        else
-            thread->trigger(Death, victim);
-    }else{
-        victim->setHp(victim->getHp() - 1);
-        broadcastProperty(victim, "hp");
+void Room::loseHp(ServerPlayer *victim, int lose){
+    int new_hp = victim->getHp() - lose;
+    damage(victim, lose);
+
+    if(new_hp <= 0){
+        DyingStruct dying;
+        dying.damage = NULL;
+        dying.peaches = 1 - new_hp;
+
+        QVariant dying_data = QVariant::fromValue(dying);
+        thread->trigger(Dying, victim, dying_data);
     }
 }
 

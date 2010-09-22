@@ -7,7 +7,8 @@ GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
     events << GameStart << PhaseChange << CardUsed << Predamaged
-            << CardEffected << Death << SlashResult << SlashEffected << SlashProceed;
+            << CardEffected << Death << Dying
+            << SlashResult << SlashEffected << SlashProceed;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -81,6 +82,21 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             break;
         }
+
+    case Dying:{
+            DyingStruct dying = data.value<DyingStruct>();
+            bool saved = room->askForSave(player, dying.peaches);
+            if(saved)
+                room->setPlayerProperty(player, "hp", 1);
+            else{
+                QVariant killer_name;
+                if(dying.damage && dying.damage->from)
+                    killer_name = dying.damage->from->objectName();
+                room->getThread()->trigger(Death, player, killer_name);
+            }
+            break;
+        }
+
     case Predamaged:{
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
@@ -88,16 +104,12 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 int new_hp = player->getHp() - damage.damage;
                 room->damage(player, damage.damage);
                 if(new_hp <= 0){
-                    int peaches = 1 - new_hp;
-                    bool saved = room->askForSave(player, peaches);
-                    if(!saved){
-                        QVariant killer_name;
-                        if(damage.from)
-                            killer_name = damage.from->objectName();
-                        room->getThread()->trigger(Death, player, killer_name);
-                    }else{                        
-                        room->setPlayerProperty(player, "hp", 1);
-                    }
+                    DyingStruct dying;
+                    dying.damage = &damage;
+                    dying.peaches = 1 - new_hp;
+
+                    QVariant dying_data = QVariant::fromValue(dying);
+                    room->getThread()->trigger(Dying, player, dying_data);
                 }
 
                 if(damage.nature != DamageStruct::Normal && chained){

@@ -378,12 +378,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        if(!player->hasArmorEffect(objectName()))
-            return false;
-
-        if(player->getArmor()->getSkill() != this)
-            return false;
-
         QString asked = data.toString();
         if(asked == "jink"){
             Room *room = player->getRoom();

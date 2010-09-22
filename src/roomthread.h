@@ -98,17 +98,27 @@ typedef const Card *CardStar;
 
 Q_DECLARE_METATYPE(CardStar);
 
+struct DyingStruct{
+    DyingStruct();
+
+    DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+    int peaches; // peaches that needs
+};
+
+Q_DECLARE_METATYPE(DyingStruct);
+
 enum TriggerEvent{
     GameStart,
     PhaseChange,
+    JudgeOnEffect,
 
     Predamage,
     Predamaged,
     Damage,
     Damaged,
 
+    Dying,
     Death,
-    JudgeOnEffect,
 
     SlashEffect,
     SlashEffected,

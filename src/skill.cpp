@@ -3,6 +3,7 @@
 #include "player.h"
 #include "room.h"
 #include "client.h"
+#include "standard.h"
 
 #include <QFile>
 
@@ -218,5 +219,5 @@ ArmorSkill::ArmorSkill(const QString &name)
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
-    return target->hasArmorEffect(objectName());
+    return target->hasArmorEffect(objectName()) && target->getArmor()->getSkill() == this;
 }

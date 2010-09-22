@@ -109,12 +109,66 @@ public:
     }
 };
 
+void YeyanCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("used", true);
+}
+
+void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
+    DamageStruct damage;
+
+    damage.card = NULL;
+    damage.from = shenzhouyu;
+    damage.to = target;
+    damage.damage = point;
+    damage.nature = DamageStruct::Fire;
+
+    shenzhouyu->getRoom()->damage(damage);
+}
+
 GreatYeyanCard::GreatYeyanCard(){
 
 }
 
+bool GreatYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty();
+}
+
+void GreatYeyanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->loseHp(source, 3);
+
+    damage(source, targets.first(), 3);
+}
+
+MediumYeyanCard::MediumYeyanCard(){
+
+}
+
+bool MediumYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < 2;
+}
+
+void MediumYeyanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->loseHp(source, 3);
+
+    ServerPlayer *first = targets.first();
+    ServerPlayer *second = targets.length() >= 2 ? targets.at(1) : NULL;
+
+    damage(source, first, 2);
+
+    if(second)
+        damage(source, second, 1);
+}
+
 SmallYeyanCard::SmallYeyanCard(){
 
+}
+
+bool SmallYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < 3;
+}
+
+void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
+    damage(effect.from, effect.to, 1);
 }
 
 class GreatYeyan: public ViewAsSkill{
@@ -124,7 +178,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("yeyan_used", false).toBool();
+        return ! ClientInstance->tag.value("yeyan_used", false).toBool();
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -150,6 +204,23 @@ public:
     }
 };
 
+class MediumYeyan: public GreatYeyan{
+public:
+    MediumYeyan(){
+        setObjectName("medium_yeyan");
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 4)
+            return NULL;
+
+        MediumYeyanCard *card = new MediumYeyanCard;
+        card->addSubcards(cards);
+
+        return card;
+    }
+};
+
 class SmallYeyan: public ZeroCardViewAsSkill{
 public:
     SmallYeyan():ZeroCardViewAsSkill("small_yeyan"){
@@ -157,7 +228,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("yeyan_used", false).toBool();
+        return ! ClientInstance->tag.value("yeyan_used", false).toBool();
     }
 
     virtual const Card *viewAs() const{
@@ -362,6 +433,7 @@ GodPackage::GodPackage()
     shenzhouyu = new General(this, "shenzhouyu", "wu");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new GreatYeyan);
+    shenzhouyu->addSkill(new MediumYeyan);
     shenzhouyu->addSkill(new SmallYeyan);
 
     shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
@@ -370,7 +442,9 @@ GodPackage::GodPackage()
     t["shenzhugeliang"] = tr("shenzhugeliang");
 
     t[":qinyin"] = tr(":qinyin");
-    t[":yeyan"] = tr(":yeyan");
+    t[":great_yeyan"] = tr(":great_yeyan");
+    t[":medium_yeyan"] = tr(":medium_yeyan");
+    t[":small_yeyan"] = tr(":small_yeyan");
     t[":qixing"] = tr(":qixing");
     t[":kuangfeng"] = tr(":kuangfeng");
     t[":dawu"] = tr(":dawu");
@@ -380,6 +454,7 @@ GodPackage::GodPackage()
     t["qinyin:down"] = tr("qinyin:down");
     t["qinyin:no"] = tr("qinyin:no");
     t["great_yeyan"] = tr("great_yeyan");
+    t["medium_yeyan"] = tr("medium_yeyan");
     t["small_yeyan"] = tr("small_yeyan");
 
     General *shencaocao, *shenlubu;
@@ -413,6 +488,7 @@ GodPackage::GodPackage()
     addMetaObject<GreatYeyanCard>();
     addMetaObject<ShenfenCard>();
     addMetaObject<GreatYeyanCard>();
+    addMetaObject<MediumYeyanCard>();
     addMetaObject<SmallYeyanCard>();
 }
 

@@ -181,8 +181,7 @@ class Weapon:public EquipCard{
     Q_OBJECT
 
 public:
-    Weapon(Suit suit, int number, int range)
-        :EquipCard(suit, number), range(range){}
+    Weapon(Suit suit, int number, int range);
     virtual QString getSubtype() const;
 
     virtual Location location() const;

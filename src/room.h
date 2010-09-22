@@ -43,7 +43,7 @@ public:
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void useCard(ServerPlayer *player, const QString &card_str);
     void damage(const DamageStruct &data);
-    void loseHp(ServerPlayer *victim);
+    void loseHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
     void playCardEffect(const QString &card_name, bool is_male);

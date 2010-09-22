@@ -296,6 +296,31 @@ public:
     }
 };
 
+class Niepan: public TriggerSkill{
+public:
+    Niepan():TriggerSkill("niepan"){
+        events << Dying;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && !target->hasFlag("niepan_used");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        if(room->askForSkillInvoke(player, objectName())){
+            player->throwAllCards();
+            room->setPlayerProperty(player, "hp", 3);
+            player->drawCards(3);
+
+            room->setPlayerFlag(player, "niepan_used");
+
+            return true;
+        }else
+            return false;
+    }
+};
+
 class Huoji: public ViewAsSkill{
 public:
     Huoji():ViewAsSkill("huoji"){
@@ -320,6 +345,7 @@ public:
 class Bazhen: public TriggerSkill{
 public:
     Bazhen():TriggerSkill("bazhen"){
+        frequency = Compulsory;
         events << CardAsked;
     }
 
@@ -447,6 +473,7 @@ FirePackage::FirePackage()
 
     pangtong = new General(this, "pangtong", "shu", 3);
     pangtong->addSkill(new Lianhuan);
+    pangtong->addSkill(new Niepan);
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
@@ -509,6 +536,7 @@ FirePackage::FirePackage()
     t["jieming:yes"] = tr("jieming:yes");
     t["shuangxiong:yes"] = tr("shuangxiong:yes");
     t["mengjin:yes"] = tr("mengjin:yes");
+    t["niepan:yes"] = tr("niepan:yes");
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();
