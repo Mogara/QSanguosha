@@ -563,6 +563,11 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
+
+            // special case
+            if(use.card->inherits("IronChain") && use.to.isEmpty())
+                return false;
+
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
@@ -600,13 +605,6 @@ public:
 
     virtual bool isEnabledAtPlay() const{
         return ! ClientInstance->turn_tag.value("zhiheng_used", false).toBool();
-    }
-};
-
-class Jiuyuan:public Skill{
-public:
-    Jiuyuan():Skill("jiuyuan$"){
-
     }
 };
 
@@ -987,11 +985,11 @@ public:
 
     }
 
-    virtual bool isAvailableAtPlay(){
+    virtual bool isEnabledAtPlay() const{
         return false;
     }
 
-    virtual bool isAvailableAtResponse(){
+    virtual bool isEnabledAtResponse() const{
         return ClientInstance->card_pattern.contains("peach") && Self->getPhase() == Player::NotActive;
     }
 
@@ -1069,7 +1067,7 @@ void StandardPackage::addGenerals(){
     General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
     sunquan->addSkill(new Zhiheng);
-    sunquan->addSkill(new Jiuyuan);
+    sunquan->addSkill(new Skill("jiuyuan$", Skill::Compulsory));
 
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);

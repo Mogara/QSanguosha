@@ -119,7 +119,16 @@ QiangxiCard::QiangxiCard(){
 }
 
 bool QiangxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty() && Self->inMyAttackRange(to_select);
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select == Self)
+        return false;
+
+    if(Self->getWeapon() && Self->getWeapon()->getId() == subcards.first())
+        return Self->distanceTo(to_select) <= 1;
+
+    return Self->inMyAttackRange(to_select);
 }
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{

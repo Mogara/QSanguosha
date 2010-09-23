@@ -100,7 +100,7 @@ public:
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
 
-    bool askForSave(ServerPlayer *dying, int peaches);
+    int askForPeaches(ServerPlayer *dying, int peaches);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 

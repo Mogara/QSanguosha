@@ -1145,6 +1145,8 @@ void RoomScene::updateStatus(Client::Status status){
         const ViewAsSkill *skill = button2skill.value(button, NULL);
         if(skill)
             button->setEnabled(skill->isAvailable());
+        else if(button->inherits("QCheckBox"))
+            button->setEnabled(true);
     }
 }
 

@@ -427,7 +427,7 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     return result.toInt();
 }
 
-bool Room::askForSave(ServerPlayer *dying, int peaches){
+int Room::askForPeaches(ServerPlayer *dying, int peaches){
     QList<ServerPlayer *> players;
     if(current->hasSkill("wansha")){
         players << current;
@@ -436,14 +436,14 @@ bool Room::askForSave(ServerPlayer *dying, int peaches){
     }else
         players = getAllPlayers();
 
+    int got = 0;
     foreach(ServerPlayer *player, players){
-        int got = askForPeach(player, dying, peaches);
-        peaches -= got;
-        if(peaches == 0)
-            return true;
+        got += askForPeach(player, dying, peaches);      
+        if(got >= peaches)
+            return got;
     }
 
-    return false;
+    return got;
 }
 
 int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
@@ -453,6 +453,16 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
         if(provided){
             got ++;
             peaches --;
+
+            // jiuyuan process
+            if(dying->isLord() && dying->hasSkill("jiuyuan")
+                && player != dying  && player->getGeneral()->getKingdom() == "wu"){
+                playSkillEffect("jiuyuan");
+
+                got ++;
+                peaches --;
+            }
+
         }else
             break;
     }

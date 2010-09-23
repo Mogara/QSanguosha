@@ -85,9 +85,9 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     case Dying:{
             DyingStruct dying = data.value<DyingStruct>();
-            bool saved = room->askForSave(player, dying.peaches);
-            if(saved)
-                room->setPlayerProperty(player, "hp", 1);
+            int got = room->askForPeaches(player, dying.peaches);
+            if(got >= dying.peaches)
+                room->setPlayerProperty(player, "hp", got - dying.peaches + 1);
             else{
                 QVariant killer_name;
                 if(dying.damage && dying.damage->from)

@@ -110,7 +110,7 @@ public:
 };
 
 void YeyanCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("used", true);
+    ClientInstance->tag.insert("yeyan_used", true);
 }
 
 void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
