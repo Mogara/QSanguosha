@@ -411,7 +411,34 @@ void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 }
 
 void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
 
+    QList<ServerPlayer *> players = room->getOtherPlayers(effect.to);
+    QList<int> distance_list;
+    int nearest = 1000;
+    foreach(ServerPlayer *player, players){
+        int distance = effect.to->distanceTo(player);
+        distance_list << distance;
+
+        nearest = qMin(nearest, distance);
+    }    
+
+
+    QList<ServerPlayer *> luanwu_targets;
+    int i;
+    for(i=0; i<distance_list.length(); i++){
+        if(distance_list.at(i) == nearest && effect.to->canSlash(players.at(i))){
+            luanwu_targets << players.at(i);
+        }
+    }
+
+    const Card *slash = NULL;
+    ServerPlayer *to_slash = NULL;
+    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "luanwu-slash"))
+        && (to_slash = room->askForPlayerChosen(effect.to, luanwu_targets))) {
+        room->cardEffect(slash, effect.to, to_slash);
+    }else
+        room->loseHp(effect.to);
 }
 
 void LuanwuCard::use(const QList<const ClientPlayer *> &) const{

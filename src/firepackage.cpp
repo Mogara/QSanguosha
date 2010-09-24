@@ -21,22 +21,36 @@ bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     if(to_select->isKongcheng())
         return false;
 
-    // FIXME: if nobody in his attack range, also return false
-
     return true;
 }
 
 void QuhuCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *xunyu = effect.from;
+    ServerPlayer *tiger = effect.to;
     Room *room = xunyu->getRoom();
 
-    bool success = room->pindian(xunyu, effect.to);
+    bool success = room->pindian(xunyu, tiger);
     if(success){
 
+        QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
+        foreach(ServerPlayer *player, players){
+            if(tiger->inMyAttackRange(player))
+                wolves << player;
+        }
+
+        ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves);
+
+        if(wolf){
+            DamageStruct damage;
+            damage.from = tiger;
+            damage.to = wolf;
+
+            room->damage(damage);
+        }
     }else{
         DamageStruct damage;
-        damage.card = this;
-        damage.from = effect.to;
+        damage.card = NULL;
+        damage.from = tiger;
         damage.to = xunyu;
 
         room->damage(damage);
@@ -110,7 +124,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return new QuhuCard();
+        return new QuhuCard;
     }
 };
 
@@ -194,8 +208,7 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.length() == 2){
             const Card *first = cards.first()->getCard();
-            Card::Suit suit = first->isRed() ? Card::Heart : Card::Spade;
-            ArcheryAttack *aa = new ArcheryAttack(suit, 0);
+            ArcheryAttack *aa = new ArcheryAttack(first->getSuit(), 0);
             aa->addSubcards(cards);
             aa->setSkillName(objectName());
             return aa;
@@ -444,6 +457,7 @@ public:
 class Xueyi: public TriggerSkill{
 public:
     Xueyi():TriggerSkill("xueyi$"){
+        frequency = Compulsory;
         events << GameStart << Death;
     }
 
@@ -452,11 +466,20 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
-            if(!player->isLord())
-                return false;
-        }else if(event == Death){
+        Room *room = player->getRoom();
+        ServerPlayer *yuanshao = room->getLord();
 
+        if(event == GameStart){
+            if(player->isLord()){
+
+                QList<ServerPlayer *> lieges = room->getLieges(yuanshao);
+                room->setPlayerProperty(yuanshao, "xueyi", lieges.length() * 2);
+            }
+        }else if(event == Death){
+            if(!player->isLord()){
+                int xueyi = yuanshao->getXueyi();
+                room->setPlayerProperty(yuanshao, "xueyi", xueyi - 2);
+            }
         }
 
         return false;
@@ -546,6 +569,8 @@ FirePackage::FirePackage()
     t["shuangxiong:yes"] = tr("shuangxiong:yes");
     t["mengjin:yes"] = tr("mengjin:yes");
     t["niepan:yes"] = tr("niepan:yes");
+
+    t["@jieming"] = tr("@jieming");
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

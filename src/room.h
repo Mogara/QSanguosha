@@ -113,13 +113,13 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
+    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
 
     int askForPeaches(ServerPlayer *dying, int peaches);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
     void commonCommand(ServerPlayer *player, const QString &arg);
-    void replyNullificationCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
@@ -140,10 +140,6 @@ private:
     bool game_started;
     bool game_finished;
     int signup_count;
-
-    int nullificators_count;
-    ServerPlayer *nullificator;
-    QMap<ServerPlayer *, bool> nullificator_map;
 
     RoomThread *thread;
     QSemaphore *sem;

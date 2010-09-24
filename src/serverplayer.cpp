@@ -139,6 +139,13 @@ void ServerPlayer::removeCard(const Card *card, Place place){
     case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             removeEquip(equip);
+
+            LogMessage log;
+            log.type = "$Uninstall";
+            log.card_str = card->toString();
+            log.from = this;
+            room->sendLog(log);
+
             equip->onUninstall(this);
             break;
         }
@@ -181,4 +188,20 @@ QList<int> ServerPlayer::handCards() const{
 
 bool ServerPlayer::isLord() const{
     return room->getLord() == this;
+}
+
+bool ServerPlayer::hasNullification() const{
+    if(hasSkill("kanpo")){
+        foreach(const Card *card, handcards){
+            if(card->isBlack() || card->objectName() == "nullification")
+                return true;
+        }
+    }else{
+        foreach(const Card *card, handcards){
+            if(card->objectName() == "nullification")
+                return true;
+        }
+    }
+
+    return false;
 }

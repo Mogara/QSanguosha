@@ -95,6 +95,7 @@ public:
     void askForCardChosen(const QString &ask_str);
     void askForPindian(const QString &ask_str);
     void askForYiji(const QString &card_list);
+    void askForPlayerChosen(const QString &ask_str);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -113,6 +114,7 @@ public slots:
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
+    void choosePlayer();
 
 #ifndef QT_NO_DEBUG
     void cheatChoose();

@@ -288,18 +288,27 @@ StandardPackage::StandardPackage()
     t["yes"] = tr("yes");
     t["no"] = tr("no");
 
+    // damage nature
+    t["normal_nature"] = tr("normal_nature");
+    t["fire_nature"] = tr("fire_nature");
+    t["thunder_nature"] = tr("thunder_nature");
+
     // log translation
     t["#DrawCards"] = tr("#DrawCards");
     t["#ChooseSuit"] = tr("#ChooseSuit");
     t["#Death"] = tr("#Death");
     t["#InvokeSkill"] = tr("#InvokeSkill");
     t["#DiscardCards"] = tr("#DiscardCards");
-
+    t["#Pindian"] = tr("#Pindian");
+    t["#PindianSuccess"] = tr("#PindianSuccess");
+    t["#PindianFailure"] = tr("#PindianFailure");
     t["#Damage"] = tr("#Damage");
     t["#DamageNoSource"] = tr("#DamageNoSource");
-    t["normal_nature"] = tr("normal_nature");
-    t["fire_nature"] = tr("fire_nature");
-    t["thunder_nature"] = tr("thunder_nature");
+
+    t["$TakeAG"] = tr("$TakeAG");
+    t["$Uninstall"] = tr("$Uninstall");
+    t["$JudgeResult"] = tr("$JudgeResult");
+    t["$PindianResult"] = tr("$PindianResult");
 
     addCards();
     addGenerals();

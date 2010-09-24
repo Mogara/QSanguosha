@@ -30,6 +30,7 @@ public:
     void drawCards(int n);
     QList<int> handCards() const;
     bool isLord() const;
+    bool hasNullification() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

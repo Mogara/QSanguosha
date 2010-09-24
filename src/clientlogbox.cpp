@@ -11,11 +11,13 @@ ClientLogBox::ClientLogBox(QWidget *parent) :
     palette.setBrush(QPalette::Base, Config.BackgroundBrush);
 
     setPalette(palette);
-    setReadOnly(true);
+    setReadOnly(true);    
+
+    resize(300, 200);
 }
 
 void ClientLogBox::appendLog(const QString &log_str){
-    QRegExp rx("(#\\w+):(\\w+)->(\\w*):(.*):(\\w*):(\\w*)");
+    QRegExp rx("([#$]\\w+):(\\w+)->(\\w*):(.*):(\\w*):(\\w*)");
 
     if(!rx.exactMatch(log_str))
         return;
@@ -49,6 +51,18 @@ void ClientLogBox::appendLog(const QString &log_str){
 
     QString log;
 
+    if(type.startsWith("$")){
+        const Card *card = Sanguosha->getCard(card_str.toInt());
+
+        log = Sanguosha->translate(type);
+        log.replace("%from", from);
+        log.replace("%card", card->getLogName());
+
+        append(log);
+
+        return;
+    }
+
     if(!card_str.isEmpty()){
         const Card *card = Card::Parse(card_str);
         QString card_name = QString("<font color='white'>%1</font>").arg(card->getLogName());
@@ -62,7 +76,7 @@ void ClientLogBox::appendLog(const QString &log_str){
                 QStringList subcard_list;
                 foreach(int card_id, card_ids){
                     const Card *subcard = Sanguosha->getCard(card_id);
-                    subcard_list << subcard->getFullName(true);
+                    subcard_list << subcard->getLogName();
                 }
 
                 QString subcard_str = subcard_list.join(",");
@@ -73,13 +87,14 @@ void ClientLogBox::appendLog(const QString &log_str){
                       .arg(subcard_str)
                       .arg(card_name);
             }
+
+            delete card;
         }else
             log = tr("%from use %1").arg(card_name);
 
         if(!to.isEmpty())
             log.append(tr(", target is %to"));
 
-        // delete card;
     }else
         log = Sanguosha->translate(type);
 

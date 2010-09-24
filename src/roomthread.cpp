@@ -87,6 +87,8 @@ void RoomThread::run(){
                 room->broadcastProperty(player, "phase");
 
                 trigger(PhaseChange, player);
+                if(room->game_finished)
+                    return;
 
                 if(!player->isAlive())
                     break;

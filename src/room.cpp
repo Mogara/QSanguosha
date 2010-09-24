@@ -32,7 +32,6 @@ Room::Room(QObject *parent, int player_count)
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    nullificators_count(0),
     thread(NULL), sem(NULL),
     legatee(NULL), menghuo(NULL), zhurong(NULL),
     provided(NULL)
@@ -46,14 +45,15 @@ Room::Room(QObject *parent, int player_count)
     callbacks["discardCardsCommand"] = &Room::commonCommand;
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
+    callbacks["choosePlayerCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
+    callbacks["replyNullificationCommand"] = &Room::commonCommand;
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
-    callbacks["replyNullificationCommand"] = &Room::replyNullificationCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -179,8 +179,14 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
         }
     }
 
+    LogMessage log;
+    log.type = "$JudgeResult";
+    log.from = player;
+    log.card_str = QString::number(card_id);
+    sendLog(log);
+
     // judge delay
-    thread->delay();
+    thread->delay();   
 
     CardStar card = Sanguosha->getCard(card_id);
     QVariant card_data = QVariant::fromValue(card);
@@ -316,56 +322,37 @@ void Room::obtainCard(ServerPlayer *target, int card_id){
 }
 
 bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
-    QString ask_str = QString("%1:%2->%3").arg(trick_name).arg(from ? from->objectName() : ".").arg(to->objectName());
+    QString ask_str = QString("%1:%2->%3")
+                      .arg(trick_name)
+                      .arg(from ? from->objectName() : ".")
+                      .arg(to->objectName());
+
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
+        if(!player->hasNullification())
+            continue;
+
         player->invoke("askForNullification", ask_str);
-    }
 
-    reply_func = "replyNullificationCommand";
-    reply_player = NULL; // everyone can reply
+        reply_func = "replyNullificationCommand";
+        reply_player = player;
 
-    nullificators_count = players.length();
-    nullificator = NULL;
-    nullificator_map.clear();
+        sem->acquire();
 
-    sem->acquire();
-
-    if(nullificator == NULL)
-        return false; // nobody nullify the trick
-    else{
         int card_id = result.toInt();
+        if(card_id == -1)
+            continue;
+
         throwCard(card_id);
 
         CardStar card = Sanguosha->getCard(card_id);
         QVariant data = QVariant::fromValue(card);
-        thread->trigger(CardResponsed, nullificator, data);
+        thread->trigger(CardResponsed, player, data);
 
-        foreach(ServerPlayer *player, players){
-            bool replyed = nullificator_map.value(player, false);
-            if(!replyed)
-                player->invoke("closeNullification");
-        }
-
-        return !askForNullification("nullification", nullificator, to); // recursive call
-    }
-}
-
-void Room::replyNullificationCommand(ServerPlayer *player, const QString &arg){
-    result = arg;
-    int card_id = result.toInt();
-    if(card_id == -1){
-        nullificators_count--;
-        if(nullificators_count == 0)
-            sem->release();
-    }else{
-        nullificator = player;        
-        playCardEffect("nullification", player->getGeneral()->isMale());
-
-        sem->release();
+        return !askForNullification("nullification", player, to);
     }
 
-    nullificator_map.insert(player, true);
+    return false;
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
@@ -1360,15 +1347,56 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
 bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
     QString ask_str = QString("%1->%2").arg(source->getGeneralName()).arg(target->getGeneralName());
 
+    LogMessage log;
+    log.type = "#Pindian";
+    log.from = source;
+    log.to << target;
+    sendLog(log);
+
     const Card *card1 = askForPindian(source, ask_str);
     const Card *card2 = askForPindian(target, ask_str);
 
     throwCard(card1);
-    thread->delay();
+    log.type = "$PindianResult";
+    log.from = source;
+    log.card_str = QString::number(card1->getId());
+    sendLog(log);
+    thread->delay();    
+
     throwCard(card2);
+    log.type = "$PindianResult";
+    log.from = target;
+    log.card_str = QString::number(card2->getId());
+    sendLog(log);
     thread->delay();
 
-    return card1->getNumber() > card2->getNumber();
+    bool success = card1->getNumber() > card2->getNumber();
+    log.type = success ? "#PindianSuccess" : "#PindianFailure";
+    log.from = source;
+    log.to.clear();
+    log.card_str.clear();
+    sendLog(log);
+
+    return success;
+}
+
+ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
+    QStringList options;
+    foreach(ServerPlayer *target, targets)
+        options << target->objectName();
+
+    player->invoke("askForPlayerChosen", options.join("+"));
+
+    reply_func = "choosePlayerCommand";
+    reply_player = player;
+
+    sem->acquire();
+
+    QString player_name = result;
+    if(player_name == ".")
+        return NULL;
+    else
+        return findChild<ServerPlayer *>(player_name);
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id){

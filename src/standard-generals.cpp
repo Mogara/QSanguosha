@@ -1274,6 +1274,7 @@ void StandardPackage::addGenerals(){
     t["@guicai-card"] = tr("@guicai-card");
     t["@guidao-card"] = tr("@guidao-card");
     t["@liuli-card"] = tr("@liuli-card");
+    t["@tuxi-card"] = tr("@tuxi-card");
     t["@leiji"] = tr("@leiji");
 
     t["#GuanxingResult"] = tr("#GuanxingResult");

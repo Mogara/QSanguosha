@@ -138,53 +138,20 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     // log box
     log_box = new ClientLogBox;
-    addWidget(log_box, Qt::SubWindow)->setPos(120, DiscardedPos.y());
+    addWidget(log_box, Qt::SubWindow)->setPos(80, DiscardedPos.y() - 10);
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
-
-    startEnterAnimation();    
-}
-
-void RoomScene::startEnterAnimation(){
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
 
     const qreal photo_width = photos.first()->boundingRect().width();
     const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
 
-    int i;
     for(i=0;i<photos.length();i++){
         Photo *photo = photos[i];
         qreal x = i * photo_width + start_x;
         qreal y =  Config.Rect.y();
-        int duration = 1500.0 * qrand()/ RAND_MAX;
-
-        QPropertyAnimation *translation = new QPropertyAnimation(photo, "pos");
-        translation->setEndValue(QPointF(x,y));
-        translation->setEasingCurve(QEasingCurve::OutBounce);
-        translation->setDuration(duration);
-
-        group->addAnimation(translation);
+        photo->setPos(x, y);
     }
 
-    QPointF start_pos(Config.Rect.topLeft());
-    QPointF end_pos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
-    int duration = 1500;
-
-    QPropertyAnimation *translation = new QPropertyAnimation(dashboard, "pos");
-    translation->setStartValue(start_pos);
-    translation->setEndValue(end_pos);
-    translation->setEasingCurve(QEasingCurve::OutBounce);
-    translation->setDuration(duration);
-
-    QPropertyAnimation *enlarge = new QPropertyAnimation(dashboard, "scale");
-    enlarge->setStartValue(0.2);
-    enlarge->setEndValue(1.0);
-    enlarge->setEasingCurve(QEasingCurve::OutBounce);
-    enlarge->setDuration(duration);
-
-    group->addAnimation(translation);
-    group->addAnimation(enlarge);
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
+    dashboard->setPos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){

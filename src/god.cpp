@@ -74,6 +74,12 @@ public:
             shenlumeng->addCard(card, Player::Hand);
             room->setCardMapping(card_id, shenlumeng, Player::Hand);
 
+            LogMessage log;
+            log.type = "$TakeAG";
+            log.from = shenlumeng;
+            log.card_str = QString::number(card_id);
+            room->sendLog(log);
+
             Card::Suit suit = card->getSuit();
             card_ids.removeOne(card_id);
             QMutableListIterator<int> itor(card_ids);
@@ -173,7 +179,7 @@ void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
 
 class GreatYeyan: public ViewAsSkill{
 public:
-    GreatYeyan(): ViewAsSkill("great_yeyan"){
+    GreatYeyan(): ViewAsSkill("greatyeyan"){
 
     }
 
@@ -207,7 +213,7 @@ public:
 class MediumYeyan: public GreatYeyan{
 public:
     MediumYeyan(){
-        setObjectName("medium_yeyan");
+        setObjectName("mediumyeyan");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
@@ -223,7 +229,7 @@ public:
 
 class SmallYeyan: public ZeroCardViewAsSkill{
 public:
-    SmallYeyan():ZeroCardViewAsSkill("small_yeyan"){
+    SmallYeyan():ZeroCardViewAsSkill("smallyeyan"){
 
     }
 
@@ -442,9 +448,9 @@ GodPackage::GodPackage()
     t["shenzhugeliang"] = tr("shenzhugeliang");
 
     t[":qinyin"] = tr(":qinyin");
-    t[":great_yeyan"] = tr(":great_yeyan");
-    t[":medium_yeyan"] = tr(":medium_yeyan");
-    t[":small_yeyan"] = tr(":small_yeyan");
+    t[":greatyeyan"] = tr(":greatyeyan");
+    t[":mediumyeyan"] = tr(":mediumyeyan");
+    t[":smallyeyan"] = tr(":smallyeyan");
     t[":qixing"] = tr(":qixing");
     t[":kuangfeng"] = tr(":kuangfeng");
     t[":dawu"] = tr(":dawu");
@@ -453,9 +459,9 @@ GodPackage::GodPackage()
     t["qinyin:up"] = tr("qinyin:up");
     t["qinyin:down"] = tr("qinyin:down");
     t["qinyin:no"] = tr("qinyin:no");
-    t["great_yeyan"] = tr("great_yeyan");
-    t["medium_yeyan"] = tr("medium_yeyan");
-    t["small_yeyan"] = tr("small_yeyan");
+    t["greatyeyan"] = tr("greatyeyan");
+    t["mediumyeyan"] = tr("mediumyeyan");
+    t["smallyeyan"] = tr("smallyeyan");
 
     General *shencaocao, *shenlubu;
 

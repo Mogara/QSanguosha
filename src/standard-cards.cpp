@@ -433,6 +433,12 @@ public:
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);
         room->setCardMapping(card_id, player, Player::Hand);
 
+        LogMessage log;
+        log.type = "$TakeAG";
+        log.from = player;
+        log.card_str = QString::number(card_id);
+        room->sendLog(log);
+
         room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
     }
 };

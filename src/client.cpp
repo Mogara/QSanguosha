@@ -4,6 +4,7 @@
 #include "nullificationdialog.h"
 #include "playercarddialog.h"
 #include "standard.h"
+#include "optionbutton.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
@@ -110,6 +111,7 @@ Client::Client(QObject *parent)
     callbacks["askForCardShow"] = &Client::askForCardShow;
     callbacks["askForPindian"] = &Client::askForPindian;
     callbacks["askForYiji"] = &Client::askForYiji;
+    callbacks["askForPlayerChosen"] = &Client::askForPlayerChosen;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -565,8 +567,6 @@ void Client::replyNullification(int card_id){
 void Client::askForNullification(const QString &ask_str){
     QList<int> card_ids = Self->nullifications();
     if(card_ids.isEmpty()){
-        // int msec = qrand() % 1000 + 1000;
-        // QTimer::singleShot(msec, this, SLOT(replyNullification()));
         replyNullification(-1);
         return;
     }
@@ -641,6 +641,16 @@ void Client::chooseCard(int card_id){
         delete dialog;
 
         request(QString("chooseCard %1").arg(card_id));
+    }
+}
+
+void Client::choosePlayer(){
+    if(sender()->inherits("QDialog")){
+        QDialog *dialog = qobject_cast<QDialog *>(sender());
+        dialog->show();
+    }else if(sender()->inherits("OptionButton")){
+        QString player_name = sender()->objectName();
+        request("choosePlayer " + player_name);
     }
 }
 
@@ -995,6 +1005,34 @@ void Client::askForPindian(const QString &ask_str){
 void Client::askForYiji(const QString &card_list){
     card_pattern = card_list;
     setStatus(AskForYiji);
+}
+
+void Client::askForPlayerChosen(const QString &ask_str){
+    QStringList player_names = ask_str.split("+");
+
+    QList<const ClientPlayer *> players;
+    foreach(QString player_name, player_names)
+        players << findChild<const ClientPlayer *>(player_name);
+
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Please choose a player"));
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    foreach(const ClientPlayer *player, players){
+        QString icon_path = player->getGeneral()->getPixmapPath("big");
+        QString caption = Sanguosha->translate(player->getGeneralName());
+        OptionButton *button = new OptionButton(icon_path, caption);
+        button->setObjectName(player->objectName());
+
+        connect(button, SIGNAL(double_clicked()), this, SLOT(choosePlayer()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+        layout->addWidget(button);
+    }
+
+    connect(dialog, SIGNAL(rejected()), this, SLOT(choosePlayer()));
+
+    dialog->setLayout(layout);
+    dialog->exec();
 }
 
 void Client::replyYiji(const Card *card, const ClientPlayer *to){
