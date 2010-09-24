@@ -8,6 +8,7 @@
 #include "discardskill.h"
 #include "yijiviewasskill.h"
 #include "daqiao.h"
+#include "clientlogbox.h"
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -73,6 +74,8 @@ private:
     QPointF guanxing_origin;
 
     QList<CardItem *> gongxin_items;
+
+    ClientLogBox *log_box;
 
     void startEnterAnimation();
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);

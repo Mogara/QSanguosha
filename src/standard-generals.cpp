@@ -614,12 +614,14 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Draw){
-            Room *room = target->getRoom();            
-            if(room->askForSkillInvoke(target, objectName())){
-                room->drawCards(target, 1);
+    virtual bool onPhaseChange(ServerPlayer *zhouyu) const{
+        if(zhouyu->getPhase() == Player::Draw){
+            Room *room = zhouyu->getRoom();
+            if(room->askForSkillInvoke(zhouyu, objectName())){
+                zhouyu->drawCards(3);
                 room->playSkillEffect(objectName());
+
+                return true;
             }
         }
 
@@ -1273,4 +1275,6 @@ void StandardPackage::addGenerals(){
     t["@guidao-card"] = tr("@guidao-card");
     t["@liuli-card"] = tr("@liuli-card");
     t["@leiji"] = tr("@leiji");
+
+    t["#GuanxingResult"] = tr("#GuanxingResult");
 }

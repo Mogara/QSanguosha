@@ -586,27 +586,26 @@ bool Nullification::isAvailable() const{
     return false;
 }
 
-class ExNihilo: public SingleTargetTrick{
-public:
-    ExNihilo(Suit suit, int number):SingleTargetTrick(suit, number){
-        setObjectName("ex_nihilo");
-        target_fixed = true;
-    }
+ExNihilo::ExNihilo(Suit suit, int number)
+    :SingleTargetTrick(suit, number)
+{
+    setObjectName("ex_nihilo");
+    target_fixed = true;
+}
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-        room->throwCard(this);
+void ExNihilo::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
 
-        CardEffectStruct effect;
-        effect.from = effect.to = source;
-        effect.card = this;
+    CardEffectStruct effect;
+    effect.from = effect.to = source;
+    effect.card = this;
 
-        room->cardEffect(effect);
-    }
+    room->cardEffect(effect);
+}
 
-    virtual void onEffect(const CardEffectStruct &effect) const{
-        effect.to->drawCards(2);
-    }
-};
+void ExNihilo::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(2);
+}
 
 Duel::Duel(Suit suit, int number)
     :SingleTargetTrick(suit, number)
@@ -967,11 +966,6 @@ void StandardPackage::addCards(){
     foreach(Card *card, cards)
         card->setParent(this);
 
-    t["spade"] = tr("spade");
-    t["club"] = tr("club");
-    t["heart"] = tr("heart");
-    t["diamond"] = tr("diamond");
-
     t["basic"] = tr("basic");
     t["trick"] = tr("trick");
     t["equip"] = tr("equip");
@@ -1049,4 +1043,10 @@ void StandardPackage::addCards(){
     t["kylin_bow:no"] = tr("kylin_bow:no");
 
     skills << new SpearSkill << new AxeViewAsSkill;
+
+    // translation for log
+
+    t["#Slash"] = tr("#Slash");
+    t["#Jink"] = tr("#Jink");
+    t["#Peach"] = tr("#Peach");
 }

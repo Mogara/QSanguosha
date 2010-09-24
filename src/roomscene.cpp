@@ -130,10 +130,16 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     daqiao = new Daqiao;
     daqiao->shift();
+    daqiao->moveBy(-100, 0);
     daqiao->hide();
     addItem(daqiao);
 
     connect(ClientInstance, SIGNAL(prompt_changed(QString)), daqiao, SLOT(setContent(QString)));
+
+    // log box
+    log_box = new ClientLogBox;
+    addWidget(log_box, Qt::SubWindow)->setPos(120, DiscardedPos.y());
+    connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
     startEnterAnimation();    
 }
@@ -615,7 +621,8 @@ void RoomScene::moveCardToDrawPile(const QString &from){
 
     Q_ASSERT(src != NULL);
 
-    setPileNumber(pile_number - 1);
+    pile_number ++;
+    setPileNumber(pile_number);
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup;
 
@@ -684,6 +691,9 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             pos += dashboard->pos();
             card_item->setHomePos(pos);
             card_item->goBack(true);
+
+            pile_number ++;
+            setPileNumber(pile_number);
         }
 
     }else if(dest->objectName() == Config.UserName){
@@ -1467,6 +1477,16 @@ void RoomScene::killPlayer(const QString &who){
         photo->update();
 
         general = photo->getPlayer()->getGeneral();
+    }
+
+    QMutableMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
+    while(itor.hasNext()){
+        itor.next();
+        if(itor.value()->objectName() == who){
+            itor.key()->setEnabled(false);
+            itor.remove();
+            break;
+        }
     }
 
     general->lastWord();

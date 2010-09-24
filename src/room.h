@@ -8,12 +8,25 @@ class TriggerSkill;
 
 #include <QTcpSocket>
 
+struct LogMessage{
+    LogMessage();
+    QString toString() const;
+
+    QString type;
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+    QString card_str;
+    QString arg;
+    QString arg2;
+};
+
 class Room : public QObject{
     Q_OBJECT
 
 public:
     friend class RoomThread;
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
+
 
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
@@ -62,6 +75,7 @@ public:
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
+    void sendLog(const LogMessage &log);
 
     void setMenghuo(ServerPlayer *menghuo);
     ServerPlayer *getMenghuo() const;

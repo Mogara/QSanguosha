@@ -92,6 +92,13 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 QVariant killer_name;
                 if(dying.damage && dying.damage->from)
                     killer_name = dying.damage->from->objectName();
+
+                LogMessage log;
+                log.type = "#Death";
+                log.from = player;
+                log.arg = player->getRole();
+                room->sendLog(log);
+
                 room->getThread()->trigger(Death, player, killer_name);
             }
             break;

@@ -104,7 +104,7 @@ QList<int> ClientPlayer::nullifications() const{
 
     if(Self->hasSkill("kanpo")){
         foreach(const Card *card, known_cards){
-            if(card->isBlack())
+            if(card->isBlack() || card->objectName() == "nullification")
                 card_ids << card->getId();
         }
     }else{
@@ -117,21 +117,3 @@ QList<int> ClientPlayer::nullifications() const{
     return card_ids;
 }
 
-void ClientPlayer::MoveCard(const CardMoveStructForClient &move){
-    Q_ASSERT(move.card_id != -1);
-
-    const Card *card = Sanguosha->getCard(move.card_id);
-    if(move.from)
-        move.from->removeCard(card, move.from_place);
-    else{
-        if(move.from_place == Player::DiscardedPile)
-            ClientInstance->discarded_list.removeOne(card);
-    }
-
-    if(move.to)
-        move.to->addCard(card, move.to_place);
-    else{
-        if(move.to_place == Player::DiscardedPile)
-            ClientInstance->discarded_list.prepend(card);
-    }
-}

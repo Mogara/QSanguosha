@@ -94,7 +94,7 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
             continue;
 
         if(isBlack() && player->hasSkill("weimu"))
-            return;
+            continue;
 
         room->cardEffect(this, source, player);
     }
@@ -261,6 +261,17 @@ StandardPackage::StandardPackage()
     t["rebel"] = tr("rebel");
     t["renegade"] = tr("renegade");
 
+    // card suit
+    t["spade"] = tr("spade");
+    t["club"] = tr("club");
+    t["heart"] = tr("heart");
+    t["diamond"] = tr("diamond");
+
+    t["spade_char"] = tr("spade_char");
+    t["club_char"] = tr("club_char");
+    t["heart_char"] = tr("heart_char");
+    t["diamond_char"] = tr("diamond_char");
+
     // phase names
     t["start"] = tr("start");
     t["judge"] = tr("judge");
@@ -276,6 +287,19 @@ StandardPackage::StandardPackage()
     // normal phrases
     t["yes"] = tr("yes");
     t["no"] = tr("no");
+
+    // log translation
+    t["#DrawCards"] = tr("#DrawCards");
+    t["#ChooseSuit"] = tr("#ChooseSuit");
+    t["#Death"] = tr("#Death");
+    t["#InvokeSkill"] = tr("#InvokeSkill");
+    t["#DiscardCards"] = tr("#DiscardCards");
+
+    t["#Damage"] = tr("#Damage");
+    t["#DamageNoSource"] = tr("#DamageNoSource");
+    t["normal_nature"] = tr("normal_nature");
+    t["fire_nature"] = tr("fire_nature");
+    t["thunder_nature"] = tr("thunder_nature");
 
     addCards();
     addGenerals();

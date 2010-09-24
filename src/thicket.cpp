@@ -447,6 +447,8 @@ class Roulin: public TriggerSkill{
 public:
     Roulin():TriggerSkill("roulin"){
         events << SlashProceed;
+
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{        

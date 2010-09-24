@@ -113,6 +113,17 @@ QString Card::getFullName(bool include_suit) const{
         return QString("%1 %2").arg(getNumberString()).arg(name);
 }
 
+QString Card::getLogName() const{
+    QString suit_char = getSuitString() + "_char";
+    suit_char = Sanguosha->translate(suit_char);
+
+    if(isRed()){
+        suit_char = QString("<font color='red'>%1</font>").arg(suit_char);
+    }
+
+    return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(getNumberString());
+}
+
 QString Card::getName() const{
     return Sanguosha->translate(objectName());
 }

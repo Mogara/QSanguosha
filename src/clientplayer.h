@@ -33,8 +33,6 @@ public:
 
     QList<int> nullifications() const;
 
-    static void MoveCard(const CardMoveStructForClient &move);
-
 private:
     int handcard_num;
     QList<const Card *> known_cards;

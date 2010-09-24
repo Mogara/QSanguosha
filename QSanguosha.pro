@@ -48,7 +48,8 @@ SOURCES += src/main.cpp \
     src/yitianpackage.cpp \
     src/firepackage.cpp \
     src/god.cpp \
-    src/configdialog.cpp
+    src/configdialog.cpp \
+    src/clientlogbox.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -89,7 +90,8 @@ HEADERS += src/mainwindow.h \
     src/yitianpackage.h \
     src/firepackage.h \
     src/god.h \
-    src/configdialog.h
+    src/configdialog.h \
+    src/clientlogbox.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

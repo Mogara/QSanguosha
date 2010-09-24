@@ -40,7 +40,9 @@ public:
     void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
     void discardCards(const Card *card);
-
+    void replyYiji(const Card *card, const ClientPlayer *to);
+    void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
+    void replyGongxin(int card_id = -1);
     QList<ClientPlayer *> getPlayers() const;
 
     typedef void (Client::*Callback)(const QString &);
@@ -70,9 +72,7 @@ public:
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
     void doGongxin(const QString &gongxin_str);
-    void replyYiji(const Card *card, const ClientPlayer *to);
-    void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
-    void replyGongxin(int card_id = -1);
+    void log(const QString &log_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -152,6 +152,7 @@ signals:
     void game_over(bool victory, const QList<bool> &result_list);
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
+    void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids);
     void gongxin(const QList<int> &card_ids);
 

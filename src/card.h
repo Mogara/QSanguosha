@@ -49,6 +49,7 @@ public:
     QString getPackage() const;
     QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
+    QString getLogName() const;
     QString getName() const;
     QString getSkillName() const;
     void setSkillName(const QString &skill_name);

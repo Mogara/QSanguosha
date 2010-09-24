@@ -93,6 +93,7 @@ Client::Client(QObject *parent)
     callbacks["setMark"] = &Client::setMark;
     callbacks["doGuanxing"] = &Client::doGuanxing;
     callbacks["doGongxin"] = &Client::doGongxin;
+    callbacks["log"] = &Client::log;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -383,7 +384,20 @@ void Client::moveCard(const QString &move_str){
     CardMoveStructForClient move;
 
     if(move.parse(move_str)){
-        ClientPlayer::MoveCard(move);
+        const Card *card = Sanguosha->getCard(move.card_id);
+        if(move.from)
+            move.from->removeCard(card, move.from_place);
+        else{
+            if(move.from_place == Player::DiscardedPile)
+                ClientInstance->discarded_list.removeOne(card);
+        }
+
+        if(move.to)
+            move.to->addCard(card, move.to_place);
+        else{
+            if(move.to_place == Player::DiscardedPile)
+                ClientInstance->discarded_list.prepend(card);
+        }
         emit card_moved(move);
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("Card moving response string is not well formatted"));
@@ -752,6 +766,8 @@ void Client::gameOver(const QString &result_str){
 }
 
 void Client::killPlayer(const QString &player_name){
+    alive_count --;
+
     emit player_killed(player_name);
 }
 
@@ -1001,4 +1017,8 @@ void Client::replyGuanxing(const QList<int> &up_cards, const QList<int> &down_ca
     request(QString("replyGuanxing %1:%2").arg(up_items.join("+")).arg(down_items.join("+")));
 
     setStatus(NotActive);
+}
+
+void Client::log(const QString &log_str){
+    emit log_received(log_str);
 }

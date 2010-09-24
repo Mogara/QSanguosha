@@ -10,6 +10,23 @@
 #include <QMetaEnum>
 #include <QTimerEvent>
 
+LogMessage::LogMessage()
+    :from(NULL)
+{
+}
+
+QString LogMessage::toString() const{
+    QStringList tos;
+    foreach(ServerPlayer *player, to)
+        tos << player->getGeneralName();
+
+    return QString("%1:%2->%3:%4:%5:%6")
+            .arg(type)
+            .arg(from ? from->getGeneralName() : "")
+            .arg(tos.join("+"))
+            .arg(card_str).arg(arg).arg(arg2);
+}
+
 Room::Room(QObject *parent, int player_count)
     :QObject(parent), player_count(player_count), current(NULL), reply_player(NULL),
     pile1(Sanguosha->getRandomCards()),
@@ -257,7 +274,17 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
     sem->acquire();
 
     // result should be "yes" or "no"
-    return result == "yes";
+    bool invoked =  result == "yes";
+    if(invoked){
+        LogMessage log;
+        log.type = "#InvokeSkill";
+        log.from = player;
+        log.arg = skill_name;
+
+        sendLog(log);
+    }
+
+    return invoked;
 }
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
@@ -374,6 +401,13 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         if(result != "."){
             card = Card::Parse(result);
+
+            LogMessage log;
+            log.card_str = result;
+            log.from = player;
+            log.type = QString("#%1").arg(card->metaObject()->className());
+            sendLog(log);
+
             player->playCardEffect(card);
             throwCard(card);
         }
@@ -767,6 +801,13 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
             data.to << findChild<ServerPlayer *>(target_name);
     }
 
+    LogMessage log;
+    log.from = player;
+    log.to = data.to;
+    log.type = QString("#%1").arg(card->metaObject()->className());
+    log.card_str = card_str;
+    sendLog(log);
+
     QVariant vdata = QVariant::fromValue(data);
     thread->trigger(CardUsed, player, vdata);
 }
@@ -855,6 +896,26 @@ void Room::damage(const DamageStruct &damage_data){
     if(broken)
         return;
 
+    LogMessage log;
+
+    if(damage_data.from){
+        log.type = "#Damage";
+        log.from = damage_data.from;
+    }else{
+        log.type = "#NoSourceDamage";
+    }
+
+    log.to << damage_data.to;
+    log.arg = QString::number(damage_data.damage);
+
+    switch(damage_data.nature){
+    case DamageStruct::Normal: log.arg2 = "normal_nature"; break;
+    case DamageStruct::Fire: log.arg2 = "fire_nature"; break;
+    case DamageStruct::Thunder: log.arg2 = "thunder_nature"; break;
+    }
+
+    sendLog(log);
+
     // damage
     if(damage_data.from)
         broken = thread->trigger(Damage, damage_data.from, data);
@@ -932,6 +993,12 @@ void Room::drawCards(ServerPlayer *player, int n){
         // update place_map & owner_map
         setCardMapping(card_id, player, Player::Hand);
     }
+
+    LogMessage log;
+    log.type = "#DrawCards";
+    log.from = player;
+    log.arg = QString::number(n);
+    sendLog(log);
 
     player->invoke("drawCards", cards_str.join("+"));
     broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
@@ -1079,6 +1146,12 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
 
     sem->acquire();
 
+    LogMessage log;
+    log.type = "#ChooseSuit";
+    log.from = player;
+    log.arg = result;
+    sendLog(log);
+
     if(result == "spade")
         return Card::Spade;
     else if(result == "club")
@@ -1122,7 +1195,15 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         throwCard(card_id);
     }
 
-    QVariant data = card_strs.length();
+    int length = card_strs.length();
+
+    LogMessage log;
+    log.type = "#DiscardCards";
+    log.from = target;
+    log.arg = QString::number(length);
+    sendLog(log);
+
+    QVariant data = length;
     thread->trigger(CardDiscarded, target, data);
 
     return true;
@@ -1205,6 +1286,13 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 
     QStringList top_list = results.at(0).split("+");
     QStringList bottom_list = results.at(1).split("+");
+
+    LogMessage log;
+    log.type = "#GuanxingResult";
+    log.from = zhuge;
+    log.arg = QString::number(top_list.length());
+    log.arg2 = QString::number(bottom_list.length());
+    sendLog(log);
 
     QList<int> top_cards;
     foreach(QString top, top_list)
@@ -1303,6 +1391,13 @@ QList<ServerPlayer *> Room::getLieges(const ServerPlayer *lord) const{
     }
 
     return lieges;
+}
+
+void Room::sendLog(const LogMessage &log){
+    if(log.type.isEmpty())
+        return;
+
+    broadcastInvoke("log", log.toString());
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
