@@ -29,6 +29,7 @@ public:
     void throwAllCards();
     void drawCards(int n);
     QList<int> handCards() const;
+    DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
 

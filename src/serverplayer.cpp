@@ -186,6 +186,14 @@ QList<int> ServerPlayer::handCards() const{
     return card_ids;
 }
 
+DummyCard *ServerPlayer::wholeHandCards() const{
+    DummyCard *dummy_card = new DummyCard;
+    foreach(const Card *card, handcards)
+        dummy_card->addSubcard(card->getId());
+
+    return dummy_card;
+}
+
 bool ServerPlayer::isLord() const{
     return room->getLord() == this;
 }

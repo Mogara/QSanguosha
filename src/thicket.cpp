@@ -366,7 +366,15 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         room->askForDiscard(source, diff, false);
     }
 
-    // FIXME
+    DummyCard *card1 = a->wholeHandCards();
+    DummyCard *card2 = b->wholeHandCards();
+
+    room->moveCardTo(card1, b, Player::Hand, false);    
+    room->getThread()->delay();
+    room->moveCardTo(card2, a, Player::Hand, false);
+
+    delete card1;
+    delete card2;
 }
 
 class Dimeng: public ZeroCardViewAsSkill{
