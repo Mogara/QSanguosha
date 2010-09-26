@@ -131,7 +131,8 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card->inherits("Slash") && damage.to->isAlive() && !damage.to->isKongcheng() && damage.to != zhurong){            
+        if(damage.card->inherits("Slash") && damage.to->isAlive()
+            && !zhurong->isKongcheng() && !damage.to->isKongcheng() && damage.to != zhurong){
             Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName()) && room->pindian(zhurong, damage.to) && !damage.to->isNude()){
                 int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());

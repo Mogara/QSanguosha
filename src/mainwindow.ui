@@ -100,7 +100,7 @@
     <string>Card Overview</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+C</string>
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionEnable_Hotkey">
@@ -140,7 +140,7 @@
     <string>View distance</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+V</string>
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

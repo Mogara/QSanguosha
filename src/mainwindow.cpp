@@ -142,6 +142,9 @@ void MainWindow::restartConnection(){
     ClientInstance->disconnectFromHost();
     ClientInstance = NULL;
 
+    delete Self;
+    Self = NULL;
+
     startConnection();
 }
 

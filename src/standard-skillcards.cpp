@@ -233,8 +233,13 @@ void JijiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     QList<ServerPlayer *> lieges = room->getLieges(source);
     const Card *slash = NULL;
     foreach(ServerPlayer *liege, lieges){
-        slash = room->askForCard(liege, "slash", "jijiang-slash");
+        QString result = room->askForChoice(liege, "jijiang", "accept+ignore");
+        if(result == "ignore")
+            continue;
+
+        slash = room->askForCard(liege, "slash", "@jijiang-slash");
         if(slash){
+            source->invoke("increaseSlashCount");
             room->cardEffect(slash, source, targets.first());
             return;
         }

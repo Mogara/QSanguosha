@@ -23,6 +23,7 @@
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QInputDialog>
+#include <QLabel>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -55,6 +56,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // create dashboard
     dashboard = new Dashboard;
     addItem(dashboard);
+    dashboard->setPos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
     dashboard->setPlayer(Self);
     connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
     connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
@@ -114,6 +116,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
+    connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
 
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(n_cards_moved(int,QString,QString)), this, SLOT(moveNCards(int,QString,QString)));
@@ -138,10 +141,27 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     // log box
     log_box = new ClientLogBox;
-    QGraphicsProxyWidget *log_box_widget = addWidget(log_box, Qt::SubWindow);
+    QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
     log_box_widget->setPos(80, DiscardedPos.y() - 10);
     log_box_widget->setZValue(-2.0);
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
+
+    // chat box
+    chat_box = new QTextEdit;
+    QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
+    chat_box_widget->setPos(-300, DiscardedPos.y() - 10);
+    chat_box_widget->setZValue(-2.0);
+    QPalette palette;
+    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
+    chat_box->resize(300, 200);
+    chat_box->setPalette(palette);
+    chat_box->setReadOnly(true);
+
+    // chat edit
+    chat_edit = new QLineEdit;
+    QGraphicsProxyWidget *chat_edit_widget = addWidget(chat_edit);
+    chat_edit_widget->setPos(dashboard->pos());
+    connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
     const qreal photo_width = photos.first()->boundingRect().width();
     const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
@@ -152,8 +172,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         qreal y =  Config.Rect.y();
         photo->setPos(x, y);
     }
-
-    dashboard->setPos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -293,6 +311,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     if(!Config.EnableHotKey)
         return;
 
+    if(chat_edit->hasFocus())
+        return;
+
     bool control_is_down = event->modifiers() & Qt::ControlModifier;
 
     switch(event->key()){        
@@ -365,8 +386,10 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 #ifndef QT_NO_DEBUG
     case Qt::Key_D:{
             int max = Sanguosha->getCardCount();
-            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 0, 0, max);
-            ClientInstance->requestCard(card_id);
+            bool ok;
+            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 0, 0, max, 1, &ok);
+            if(ok)
+                ClientInstance->requestCard(card_id);
 
             break;
         }
@@ -376,6 +399,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 }
 
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
+    QGraphicsScene::contextMenuEvent(event);
+
     QGraphicsItem *item = itemAt(event->scenePos());
     if(!item)
         return;
@@ -458,7 +483,12 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
 
 #endif
 
-    dialog->setLayout(layout);
+    QVBoxLayout *dialog_layout = new QVBoxLayout;
+    dialog_layout->addLayout(layout);
+    QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
+    dialog_layout->addWidget(role_label);
+
+    dialog->setLayout(dialog_layout);
     dialog->exec();
 }
 
@@ -1035,6 +1065,10 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
+            // enable all photos for mark roles
+            foreach(Photo *photo, photos)
+                photo->setEnabled(true);
+
             break;
         }
 
@@ -1088,8 +1122,25 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            foreach(CardItem *item, amazing_grace)
-                connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
+            // auto choose the only item
+            CardItem *only_item = NULL;
+            bool only_one = true;
+            foreach(CardItem *item, amazing_grace){
+                if(item->isEnabled()){
+                    if(only_item){
+                        only_one = false;
+                        break;
+                    }else
+                        only_item = item;
+                }
+            }
+
+            if(only_one && only_item){
+                ClientInstance->chooseAG(only_item->getCard()->getId());
+            }else{
+                foreach(CardItem *item, amazing_grace)
+                    connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
+            }
 
             break;
         }
@@ -1408,8 +1459,8 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     hlayout->addWidget(restart_button);
     layout->addLayout(hlayout);
 
-    connect(restart_button, SIGNAL(clicked()), dialog, SLOT(reject()));
-    connect(dialog, SIGNAL(rejected()), this, SIGNAL(restart()));
+    connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
 
     dialog->exec();
 }
@@ -1685,6 +1736,25 @@ void RoomScene::adjustGuanxing(){
 void RoomScene::viewDistance(){
     DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
     dialog->show();
+}
+
+void RoomScene::speak(const QString &who, const QString &text){
+    const ClientPlayer *from = ClientInstance->findChild<const ClientPlayer *>(who);
+    QString title;
+    if(from){
+        title = from->getGeneralName();
+        title = Sanguosha->translate(title);
+    }else
+        title = from->objectName();
+    title = QString("<b>%1</b>").arg(title);
+
+    QString line = QString(tr("[%1] said: %2").arg(title).arg(text));
+    chat_box->append(line);
+}
+
+void RoomScene::speak(){
+    ClientInstance->speakToServer(chat_edit->text());
+    chat_edit->clear();
 }
 
 void RoomScene::doGongxin(const QList<int> &card_ids){

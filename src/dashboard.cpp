@@ -38,7 +38,7 @@ Dashboard::Dashboard()
     form->setPos(sort_widget->pos());
     form->moveBy(sort_widget->boundingRect().width(), -10);
 
-    avatar = new Pixmap("");
+    avatar = new Pixmap;
     avatar->setPos(837, 35);    
     avatar->setParentItem(this);
 
@@ -540,9 +540,10 @@ void Dashboard::onMarkChanged(){
     Q_ASSERT(card_item->isEquipped());
 
     if(card_item){
-        if(card_item->isMarked())
-            pendings.append(card_item);
-        else
+        if(card_item->isMarked()){
+            if(!pendings.contains(card_item))
+                pendings.append(card_item);
+        }else
             pendings.removeOne(card_item);
 
         updatePending();

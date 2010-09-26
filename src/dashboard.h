@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QStack>
 #include <QGraphicsLinearLayout>
+#include <QLineEdit>
 
 class Dashboard : public Pixmap
 {
@@ -70,7 +71,7 @@ private:
     QGraphicsLinearLayout *button_layout;
     QPixmap death_pixmap;
     Pixmap *chain_icon, *back_icon;
-    QMap<QPushButton *, QGraphicsWidget *> button2widget;
+    QMap<QPushButton *, QGraphicsWidget *> button2widget;    
 
     // for pendings
     QList<CardItem *> pendings;

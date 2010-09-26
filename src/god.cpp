@@ -140,6 +140,7 @@ bool GreatYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, co
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
     room->loseHp(source, 3);
 
     damage(source, targets.first(), 3);

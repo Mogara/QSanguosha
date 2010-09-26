@@ -2,11 +2,21 @@
 
 #include <QPainter>
 #include <QGraphicsColorizeEffect>
+#include <QMessageBox>
 
 Pixmap::Pixmap(const QString &filename, bool center_as_origin):pixmap(filename)
 {
+    if(pixmap.isNull()){
+        QString warning = tr("Can not load image %1[%2]").arg(filename).arg(metaObject()->className());
+        QMessageBox::warning(NULL, tr("Warning"), warning);
+    }
+
     if(center_as_origin)
         setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
+}
+
+Pixmap::Pixmap(){
+
 }
 
 QRectF Pixmap::boundingRect() const{

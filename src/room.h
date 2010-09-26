@@ -119,6 +119,7 @@ public:
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
+    void speakCommand(ServerPlayer *player, const QString &arg);
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);

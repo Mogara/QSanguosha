@@ -95,6 +95,8 @@ Client::Client(QObject *parent)
     callbacks["doGuanxing"] = &Client::doGuanxing;
     callbacks["doGongxin"] = &Client::doGongxin;
     callbacks["log"] = &Client::log;
+    callbacks["speak"] = &Client::speak;
+    callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -654,6 +656,17 @@ void Client::choosePlayer(){
     }
 }
 
+void Client::speakToServer(const QString &text){
+    QByteArray data = text.toUtf8().toBase64();
+    request(QString("speak %1").arg(QString(data)));
+}
+
+void Client::increaseSlashCount(const QString &){
+    // increase slash count
+    int slash_count = turn_tag.value("slash_count", 0).toInt();
+    turn_tag.insert("slash_count", slash_count + 1);
+}
+
 int Client::alivePlayerCount() const{
     return alive_count;
 }
@@ -1061,4 +1074,15 @@ void Client::replyGuanxing(const QList<int> &up_cards, const QList<int> &down_ca
 
 void Client::log(const QString &log_str){
     emit log_received(log_str);
+}
+
+void Client::speak(const QString &speak_data){
+    QStringList words = speak_data.split(":");
+    QString who = words.at(0);
+    QString base64 = words.at(1);
+
+    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QString text = QString::fromUtf8(data);
+
+    emit words_spoken(who, text);
 }

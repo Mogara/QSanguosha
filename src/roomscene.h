@@ -76,6 +76,8 @@ private:
     QList<CardItem *> gongxin_items;
 
     ClientLogBox *log_box;
+    QTextEdit *chat_box;
+    QLineEdit *chat_edit;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
@@ -106,6 +108,8 @@ private slots:
     void setPileNumber(int n);
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();
+    void speak(const QString &who, const QString &text);
+    void speak();
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);

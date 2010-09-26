@@ -43,9 +43,7 @@ QString Slash::getSubtype() const{
 }
 
 void Slash::use(const QList<const ClientPlayer *> &targets) const{
-    // increase slash count
-    int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
-    ClientInstance->turn_tag.insert("slash_count", slash_count + 1);
+    ClientInstance->increaseSlashCount();
 }
 
 void Slash::onEffect(const CardEffectStruct &card_effect) const{
@@ -277,7 +275,7 @@ public:
         if(selected.length() >= 2)
             return false;
 
-        if(to_select->isEquipped() && to_select->getCard() == Self->getWeapon())
+        if(to_select->getCard() == Self->getWeapon())
             return false;
 
         return true;
@@ -616,6 +614,16 @@ Duel::Duel(Suit suit, int number)
     :SingleTargetTrick(suit, number)
 {
     setObjectName("duel");
+}
+
+bool Duel::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+        return false;
+
+    if(to_select->hasSkill("weimu") && isBlack())
+        return false;
+
+    return targets.isEmpty();
 }
 
 void Duel::onEffect(const CardEffectStruct &effect) const{

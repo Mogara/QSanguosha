@@ -118,7 +118,7 @@ void Room::output(const QString &message){
 
 void Room::obit(ServerPlayer *victim, ServerPlayer *killer){
     victim->setAlive(false);
-    broadcastProperty(victim, "alive", "false");
+    broadcastProperty(victim, "alive");
 
     broadcastProperty(victim, "role");
     broadcastInvoke("killPlayer", victim->objectName());
@@ -339,7 +339,11 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 
         sem->acquire();
 
-        int card_id = result.toInt();
+        bool ok;
+        int card_id = result.toInt(&ok);
+        if(!ok)
+            continue;
+
         if(card_id == -1)
             continue;
 
@@ -371,8 +375,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     sem->acquire();
 
-    int card_id = result.toInt();
-    if(card_id == -1)
+    bool ok;
+    int card_id = result.toInt(&ok);
+    if(!ok || card_id == -1)
         card_id = who->getRandomHandCard();
 
     return card_id;
@@ -632,6 +637,13 @@ void Room::processRequest(const QString &request){
         return;
     }
 
+    // special case: speak
+    if(command == "speak"){
+        speakCommand(player, args.at(1));
+        return;
+    }
+
+
     if(reply_player && reply_player != player){
         player->invoke("focusWarn", player->objectName());
         QString should_be = reply_player->objectName();
@@ -777,6 +789,10 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     }
 }
 
+void Room::speakCommand(ServerPlayer *player, const QString &arg){
+    broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
+}
+
 void Room::commonCommand(ServerPlayer *player, const QString &arg){
     result = arg;
     sem->release();
@@ -838,10 +854,10 @@ void Room::damage(ServerPlayer *victim, int damage){
 }
 
 void Room::recover(ServerPlayer *player, int recover){
-    int new_hp = player->getHp() + recover;
-    if(new_hp > player->getMaxHP())
+    if(player->getLostHp() == 0)
         return;
 
+    int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
     setPlayerProperty(player, "hp", new_hp);
     broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
 }
@@ -1034,8 +1050,9 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     if(!open){
         ServerPlayer *from = getCardOwner(card);
 
+        int n = card->isVirtualCard() ? card->subcardsLength() : 1;
         QString private_move = QString("%1:%2->%3")
-                               .arg(card->subcardsLength())
+                               .arg(n)
                                .arg(from->objectName())
                                .arg(to->objectName());
 
@@ -1287,8 +1304,18 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 
     Q_ASSERT(results.length() == 2);
 
-    QStringList top_list = results.at(0).split("+");
-    QStringList bottom_list = results.at(1).split("+");
+    QString top_str = results.at(0);
+    QString bottom_str = results.at(1);
+
+    QStringList top_list;
+    if(!top_str.isEmpty())
+        top_list = top_str.split("+");
+
+    QStringList bottom_list;
+    if(!bottom_str.isEmpty())
+        bottom_list = bottom_str.split("+");
+
+    Q_ASSERT(top_list.length() + bottom_list.length() == n);
 
     LogMessage log;
     log.type = "#GuanxingResult";

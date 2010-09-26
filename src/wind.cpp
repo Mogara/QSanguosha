@@ -378,6 +378,9 @@ WindPackage::WindPackage()
     t["liegong:yes"] = tr("liegong:yes");
     t["jushou:yes"] = tr("jushou:yes");
 
+    t["@shensu1"] = tr("@shensu1");
+    t["@shensu2"] = tr("@shensu2");
+
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
     addMetaObject<LeijiCard>();

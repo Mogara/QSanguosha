@@ -44,6 +44,7 @@ public:
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     void replyGongxin(int card_id = -1);
     QList<ClientPlayer *> getPlayers() const;
+    void speakToServer(const QString &text);    
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -73,6 +74,8 @@ public:
     void doGuanxing(const QString &guanxing_str);
     void doGongxin(const QString &gongxin_str);
     void log(const QString &log_str);
+    void speak(const QString &speak_data);    
+    void increaseSlashCount(const QString & = QString());
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -114,7 +117,7 @@ public slots:
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
-    void choosePlayer();
+    void choosePlayer();    
 
 #ifndef QT_NO_DEBUG
     void cheatChoose();
@@ -157,6 +160,7 @@ signals:
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids);
     void gongxin(const QList<int> &card_ids);
+    void words_spoken(const QString &who, const QString &text);
 
     void cards_drawed(const QList<const Card *> &cards);
     void n_cards_drawed(ClientPlayer *player, int n);

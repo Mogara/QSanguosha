@@ -1270,6 +1270,7 @@ void StandardPackage::addGenerals(){
     t["jijiang:accept"] = tr("jijiang:accept");
     t["jijiang:ignore"] = tr("jijiang:ignore");
 
+    t["@jijiang-slash"] = tr("@jijiang-slash");
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
     t["@wushuang-jink-1"] = tr("@wushuang-jink-1");

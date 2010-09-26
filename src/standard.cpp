@@ -90,8 +90,15 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(player->hasArmorEffect("vine"))
+        if(player->hasArmorEffect("vine")){
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = player;
+            log.arg = "vine";
+            room->sendLog(log);
+
             continue;
+        }
 
         if(isBlack() && player->hasSkill("weimu"))
             continue;
