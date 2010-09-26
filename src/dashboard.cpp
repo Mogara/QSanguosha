@@ -449,16 +449,13 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     view_as_skill = skill;
     pendings.clear();
 
-    updatePending();
+    foreach(CardItem **equip_ptr, equips){
+        CardItem *equip = *equip_ptr;
+        if(equip)
+            connect(equip, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+    }
 
-    if(weapon)
-        connect(weapon, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
-    if(armor)
-        connect(armor, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
-    if(defensive_horse)
-        connect(defensive_horse, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
-    if(offensive_horse)
-        connect(offensive_horse, SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+    updatePending();
 }
 
 void Dashboard::stopPending(){
@@ -517,7 +514,7 @@ void Dashboard::updatePending(){
 
     foreach(CardItem **equip_ptr, equips){
         CardItem *equip = *equip_ptr;
-        if(equip)
+        if(equip && !equip->isMarked())
             equip->setMarkable(view_as_skill->viewFilter(pendings, equip));
     }
 

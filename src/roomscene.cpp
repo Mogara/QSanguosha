@@ -138,7 +138,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     // log box
     log_box = new ClientLogBox;
-    addWidget(log_box, Qt::SubWindow)->setPos(80, DiscardedPos.y() - 10);
+    QGraphicsProxyWidget *log_box_widget = addWidget(log_box, Qt::SubWindow);
+    log_box_widget->setPos(80, DiscardedPos.y() - 10);
+    log_box_widget->setZValue(-2.0);
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
     const qreal photo_width = photos.first()->boundingRect().width();
@@ -1399,6 +1401,16 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     loser_table->setHorizontalHeaderLabels(labels);
 
     dialog->resize(main_window->width()/2, dialog->height());
+
+    QPushButton *restart_button = new QPushButton(tr("Restart Game"));
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(restart_button);
+    layout->addLayout(hlayout);
+
+    connect(restart_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    connect(dialog, SIGNAL(rejected()), this, SIGNAL(restart()));
+
     dialog->exec();
 }
 

@@ -138,6 +138,13 @@ void MainWindow::startConnection(){
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
 }
 
+void MainWindow::restartConnection(){
+    ClientInstance->disconnectFromHost();
+    ClientInstance = NULL;
+
+    startConnection();
+}
+
 void MainWindow::networkError(const QString &error_msg){
     QMessageBox::warning(this, tr("Network error"), error_msg);
 }
@@ -150,6 +157,7 @@ void MainWindow::enterRoom(){
     ui->actionView_Discarded->setEnabled(true);
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
+    connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
 
     gotoScene(room_scene);
 }

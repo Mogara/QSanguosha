@@ -187,7 +187,10 @@ public:
         Room *room = simayi->getRoom();
         if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui")){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
-            room->obtainCard(simayi, card_id);
+            if(room->getCardPlace(card_id) == Player::Hand)
+                room->moveCardTo(Sanguosha->getCard(card_id), simayi, Player::Hand, false);
+            else
+                room->obtainCard(simayi, card_id);
             room->playSkillEffect(objectName());
         }
     }

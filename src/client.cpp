@@ -836,6 +836,8 @@ void Client::discardCards(const Card *card){
         request(QString("discardCards %1").arg(card->subcardString()));
     else
         request("discardCards .");
+
+    setStatus(NotActive);
 }
 
 void Client::fillAG(const QString &cards_str){

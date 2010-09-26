@@ -289,7 +289,10 @@ public:
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
                         int card_id = room->askForCardChosen(shencc, player, "hej", objectName());
-                        room->obtainCard(shencc, card_id);
+                        if(room->getCardPlace(card_id) == Player::Hand)
+                            room->moveCardTo(Sanguosha->getCard(card_id), shencc, Player::Hand, false);
+                        else
+                            room->obtainCard(shencc, card_id);
                     }
                 }
 

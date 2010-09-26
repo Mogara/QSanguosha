@@ -36,8 +36,7 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
 const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
     if(cards.length() == num){
         card->clearSubcards();
-        foreach(CardItem *card_item, cards)
-            card->addSubcard(card_item->getCard()->getId());
+        card->addSubcards(cards);
         return card;
     }else
         return NULL;

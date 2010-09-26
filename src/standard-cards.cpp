@@ -128,14 +128,13 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         Room *room = player->getRoom();
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
-                QString prompt = "double-sword-card:" + effect.from->getGeneralName();
-                if(effect.to->isKongcheng() || !room->askForCard(effect.to, ".", prompt))
+                if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1, true, false))
                     effect.from->drawCards(1);
             }
         }
@@ -685,7 +684,11 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
-    room->obtainCard(effect.from, card_id);
+
+    if(room->getCardPlace(card_id) == Player::Hand)
+        room->moveCardTo(Sanguosha->getCard(card_id), effect.from, Player::Hand, false);
+    else
+        room->obtainCard(effect.from, card_id);
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)

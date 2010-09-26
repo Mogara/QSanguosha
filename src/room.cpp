@@ -345,6 +345,14 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 
         throwCard(card_id);
 
+        LogMessage log;
+        log.type = "#Nullification";
+        log.from = player;
+        log.card_str = result;
+        sendLog(log);
+
+        playCardEffect("nullification", player->getGeneral()->isMale());
+
         CardStar card = Sanguosha->getCard(card_id);
         QVariant data = QVariant::fromValue(card);
         thread->trigger(CardResponsed, player, data);
@@ -507,6 +515,14 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
         return false;
 
     throwCard(peach);
+    playCardEffect("peach", player->getGeneral()->isMale());
+
+    LogMessage log;
+    log.type = "#Peach";
+    log.card_str = result;
+    log.from = player;
+    sendLog(log);
+
     return true;
 }
 
@@ -1453,11 +1469,15 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         QStringList ids = texts.at(1).split("+");
         ServerPlayer *who = findChild<ServerPlayer *>(texts.at(2));
 
+        DummyCard *dummy_card = new DummyCard;
         foreach(QString id, ids){
             int card_id = id.toInt();
             cards.removeOne(card_id);
-            moveCardTo(card_id, who, Player::Hand, false);
+            dummy_card->addSubcard(card_id);
         }
+
+        moveCardTo(dummy_card, who, Player::Hand, false);
+        delete dummy_card;
 
         return true;
     }

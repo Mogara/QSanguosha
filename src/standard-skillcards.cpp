@@ -71,11 +71,11 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    foreach(ServerPlayer *target, targets){
-        int card_id = target->getRandomHandCard();
-        room->obtainCard(source, card_id);
-    }
+void TuxiCard::onEffect(const CardEffectStruct &effect) const{
+    int card_id = effect.to->getRandomHandCard();
+    const Card *card = Sanguosha->getCard(card_id);
+    Room *room = effect.from->getRoom();
+    room->moveCardTo(card, effect.from, Player::Hand, false);
 }
 
 FanjianCard::FanjianCard(){

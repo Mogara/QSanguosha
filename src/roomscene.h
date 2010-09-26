@@ -15,9 +15,9 @@
 #include <QQueue>
 #include <QMainWindow>
 
-class RoomScene : public QGraphicsScene
-{
+class RoomScene : public QGraphicsScene{    
     Q_OBJECT
+
 public:
     RoomScene(int player_count, QMainWindow *main_window);
 
@@ -124,6 +124,9 @@ private slots:
 
     void doGongxin(const QList<int> &card_ids);
     void chooseGongxinCard();
+
+signals:
+    void restart();
 };
 
 #endif // ROOMSCENE_H

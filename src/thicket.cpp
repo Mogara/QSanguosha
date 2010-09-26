@@ -237,7 +237,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *sunjian) const{
         if(sunjian->getPhase() == Player::Start && sunjian->isWounded()){
             Room *room = sunjian->getRoom();
-            room->askForUseCard(sunjian, "@@yinghun", "@yinghun-card:" + sunjian->getGeneralName());
+            room->askForUseCard(sunjian, "@@yinghun", "@yinghun");
         }
 
         return false;
@@ -277,6 +277,9 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != Self->getHandcardNum() / 2)
+            return NULL;
+
         HaoshiCard *card = new HaoshiCard;        
         card->addSubcards(cards);
         return card;
@@ -701,12 +704,16 @@ ThicketPackage::ThicketPackage()
     t["zaiqi:yes"] = tr("zaiqi:yes");
     t["lieren:yes"] = tr("lieren:yes");
     t["songwei:yes"] = tr("songwei:yes");
+    t["haoshi:yes"] = tr("haoshi:yes");
     t[":yinghun:"] = tr(":yinghun:");
 
     t["@roulin1-jink-1"] = tr("@roulin1-jink-1");
     t["@roulin1-jink-2"] = tr("@roulin1-jink-2");
     t["@roulin2-jink-1"] = tr("@roulin2-jink-1");
     t["@roulin2-jink-2"] = tr("@roulin2-jink-2");
+    t["@haoshi"] = tr("@haoshi");
+    t["@fangzhu"] = tr("@fangzhu");
+    t["@yinghun"] = tr("@yinghun");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();
