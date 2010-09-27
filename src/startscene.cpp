@@ -32,6 +32,8 @@ void StartScene::addButton(QAction *action){
     buttons << button;
 }
 
+#include <QNetworkInterface>
+
 void StartScene::switchToServer(Server *server){
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
@@ -68,13 +70,28 @@ void StartScene::switchToServer(Server *server){
 
     addWidget(server_log);
 
-    QString server_message;
-    server_message = tr("Server Address: %1 Port: %2")
-                     .arg(server->serverAddress().toString())
-                     .arg(server->serverPort());
-    QGraphicsSimpleTextItem *server_message_item = addSimpleText(server_message, Config.SmallFont);
-    server_message_item->setBrush(Qt::white);
-    server_message_item->setPos(-180, -250);
+    QStringList items;
+    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
+    foreach(QHostAddress address, addresses){
+        quint32 ipv4 = address.toIPv4Address();
+        if(ipv4)
+            items << address.toString();
+    }
+
+    qSort(items);
+
+    foreach(QString item, items){
+        if(item.startsWith("192.168."))
+            server_log->append(tr("Your LAN address: %1").arg(item));
+        else if(item == "127.0.0.1")
+            server_log->append(tr("Your loopback address %1").arg(item));
+        else if(item.startsWith("5."))
+            server_log->append(tr("Your Hamachi address: %1").arg(item));
+        else
+            server_log->append(tr("Your other address: %1").arg(item));
+    }
+
+    server_log->append(tr("Binding port number is %1").arg(Config.Port));
 
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
 

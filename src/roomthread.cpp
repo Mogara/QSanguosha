@@ -67,6 +67,8 @@ RoomThread::RoomThread(Room *room)
         addTriggerSkill(skill);
 }
 
+static const int GameOver = 1;
+
 void RoomThread::run(){
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
@@ -78,6 +80,9 @@ void RoomThread::run(){
             << Player::Play << Player::Discard << Player::Finish
             << Player::NotActive;
 
+    if(setjmp(env) == GameOver)
+        return;
+
     forever{
         ServerPlayer *player = room->getCurrent();
 
@@ -87,8 +92,6 @@ void RoomThread::run(){
                 room->broadcastProperty(player, "phase");
 
                 trigger(PhaseChange, player);
-                if(room->game_finished)
-                    return;
 
                 if(!player->isAlive())
                     break;
@@ -144,4 +147,8 @@ void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
 
 void RoomThread::delay(unsigned long secs){
     sleep(secs);
+}
+
+void RoomThread::end(){
+    longjmp(env, GameOver);
 }

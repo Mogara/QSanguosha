@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QButtonGroup>
+#include <QLabel>
 
 Server::Server(QObject *parent)
     :QTcpServer(parent)
@@ -22,29 +23,13 @@ Server::Server(QObject *parent)
 
     connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
 
-    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-
-    QStringList items;
-    foreach(QHostAddress address, addresses){
-        quint32 ipv4 = address.toIPv4Address();
-        if(ipv4)
-            items << QHostAddress(ipv4).toString();
-    }
-
-    int current = items.indexOf(Config.ListenAddress);
-    if(current == -1)
-        current = 0;
-
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Select network address"));
-
-    QComboBox *combobox = new QComboBox;
-    combobox->addItems(items);
-    combobox->setCurrentIndex(current);
 
     QLineEdit *port_edit = new QLineEdit;
     port_edit->setValidator(new QIntValidator);
     port_edit->setText(QString::number(port));
+    port_edit->setToolTip(tr("Change the port number is not necessary for most cases"));
 
     QSpinBox *spinbox = new QSpinBox;
     spinbox->setMinimum(2);
@@ -84,7 +69,6 @@ Server::Server(QObject *parent)
     box->setLayout(vlayout);
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Network address"), combobox);
     layout->addRow(tr("Port"), port_edit);
     layout->addRow(tr("Player count"), spinbox);
     layout->addRow(box);
@@ -96,11 +80,9 @@ Server::Server(QObject *parent)
     if(dialog->result() != QDialog::Accepted)
         return;
 
-    Config.ListenAddress = combobox->currentText();
     Config.Port = port_edit->text().toInt();
     Config.PlayerCount = spinbox->value();
 
-    Config.setValue("ListenAddress", Config.ListenAddress);
     Config.setValue("Port", Config.Port);
     Config.setValue("PlayerCount", Config.PlayerCount);
 
@@ -111,9 +93,9 @@ Server::Server(QObject *parent)
         }
     }
 
-    listen(QHostAddress(Config.ListenAddress), Config.Port);
+    listen(QHostAddress::Any, Config.Port);
     if(!isListening())
-        QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(Config.ListenAddress));
+        QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(serverAddress().toString()));
 }
 
 void Server::processNewConnection(){

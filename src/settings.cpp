@@ -33,7 +33,6 @@ void Settings::init(){
     SmallFont.setPixelSize(32);
     TinyFont.setPixelSize(18);
 
-    ListenAddress = value("ListenAddress", "127.0.0.1").toString();
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     PlayerCount = value("PlayerCount", 2).toInt();
 

@@ -53,3 +53,7 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
 
     return QGraphicsObject::itemChange(change, value);
 }
+
+void Pixmap::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    setSelected(true);
+}

@@ -13,6 +13,8 @@ class Slash;
 #include <QSemaphore>
 #include <QVariant>
 
+#include <csetjmp>
+
 struct TriggerSkillSorter{
     ServerPlayer *target;
 
@@ -146,12 +148,14 @@ public:
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
     void delay(unsigned long secs = 1);
+    void end();
 
 protected:
     virtual void run();
 
 private:
     Room *room;
+    jmp_buf env;
 
     QMap<QString, const TriggerSkill *> trigger_skills;
     QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;

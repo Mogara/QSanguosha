@@ -224,7 +224,7 @@ void Room::gameOver(const QString &winner){
         all_roles << player->getRole();
 
     broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
-    thread->quit();
+    thread->end();
 
     game_finished = true;
 }
@@ -620,8 +620,6 @@ void Room::reportDisconnection(){
         players.removeOne(player);
         if(!player->objectName().isEmpty())
             signup_count--;
-
-        delete player;
     }
 }
 

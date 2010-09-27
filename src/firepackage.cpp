@@ -569,6 +569,7 @@ FirePackage::FirePackage()
     t["shuangxiong:yes"] = tr("shuangxiong:yes");
     t["mengjin:yes"] = tr("mengjin:yes");
     t["niepan:yes"] = tr("niepan:yes");
+    t["bazhen:yes"] = tr("bazhen:yes");
 
     t["@jieming"] = tr("@jieming");
 

@@ -21,7 +21,6 @@ public:
     QFont TinyFont;
 
     // server side
-    QString ListenAddress;
     int CountDownSeconds;
     int PlayerCount;
 

@@ -420,6 +420,10 @@ public:
     {
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return Slash::IsAvailable();
+    }
+
     virtual bool isEnabledAtResponse() const{
         return ClientInstance->card_pattern == "slash";
     }
@@ -471,6 +475,10 @@ public:
         default:
             return false;
         }
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Slash::IsAvailable();
     }
 
     virtual bool isEnabledAtResponse() const{
@@ -926,7 +934,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return !selected.isEmpty();
+        return selected.isEmpty();
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
