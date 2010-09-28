@@ -138,6 +138,8 @@ bool LijianCard::targetsFeasible(const QList<const ClientPlayer *> &targets) con
 }
 
 void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
 

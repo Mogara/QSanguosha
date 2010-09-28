@@ -4,7 +4,8 @@
 #include <QGraphicsColorizeEffect>
 #include <QMessageBox>
 
-Pixmap::Pixmap(const QString &filename, bool center_as_origin):pixmap(filename)
+Pixmap::Pixmap(const QString &filename, bool center_as_origin)
+    :pixmap(filename), markable(false), marked(false)
 {
     if(pixmap.isNull()){
         QString warning = tr("Can not load image %1[%2]").arg(filename).arg(metaObject()->className());
@@ -15,8 +16,9 @@ Pixmap::Pixmap(const QString &filename, bool center_as_origin):pixmap(filename)
         setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 
-Pixmap::Pixmap(){
-
+Pixmap::Pixmap()
+    :markable(false), marked(false)
+{
 }
 
 QRectF Pixmap::boundingRect() const{
@@ -56,4 +58,26 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
 
 void Pixmap::mousePressEvent(QGraphicsSceneMouseEvent *event){
     setSelected(true);
+}
+
+
+bool Pixmap::isMarked() const{
+    return markable && marked;
+}
+
+bool Pixmap::isMarkable() const{
+    return markable;
+}
+
+void Pixmap::mark(bool marked){
+    if(markable){
+        if(this->marked != marked){
+            this->marked = marked;
+            emit mark_changed();
+        }
+    }
+}
+
+void Pixmap::setMarkable(bool markable){
+    this->markable = markable;
 }

@@ -180,7 +180,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
                 damage.damage = 1;
                 if(result.drank)
-                    damage.damage ++;                
+                    damage.damage ++;
 
                 damage.from = result.from;
                 damage.to = result.to;

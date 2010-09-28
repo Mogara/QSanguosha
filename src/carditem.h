@@ -25,11 +25,6 @@ public:
 
     bool isEquipped() const;
 
-    bool isMarked() const;
-    bool isMarkable() const;
-    void mark(bool marked = true);
-    void setMarkable(bool markable);
-
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -42,15 +37,12 @@ private:
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
 
-    bool markable, marked;
-
 signals:
     void show_discards();
     void hide_discards();
     void clicked();
     void double_clicked();
     void thrown();
-    void mark_changed();
 };
 
 class GuanxingCardItem : public CardItem {

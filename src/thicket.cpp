@@ -300,15 +300,11 @@ public:
     Haoshi():PhaseChangeSkill("haoshi"){
     }
 
-    virtual int getPriority(ServerPlayer *) const{
-        return -1;
-    }
-
     virtual bool onPhaseChange(ServerPlayer *lusu) const{
         if(lusu->getPhase() == Player::Draw){
             Room *room = lusu->getRoom();
             if(room->askForSkillInvoke(lusu, objectName())){
-                lusu->drawCards(2);
+                lusu->drawCards(4);
 
                 if(lusu->getHandcardNum() > 5){
                     QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
@@ -318,6 +314,8 @@ public:
                     room->setPlayerMark(lusu, "haoshi", least);
                     room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
                 }
+
+                return true;
             }
         }
 
@@ -566,7 +564,7 @@ public:
                     room->getThread()->trigger(Death, dongzhuo);
                 }
 
-                room->broadcastProperty(dongzhuo, "max_hp");
+                room->broadcastProperty(dongzhuo, "maxhp");
                 room->broadcastProperty(dongzhuo, "hp");
             }
         }
@@ -585,10 +583,7 @@ public:
         if(target->getGeneral()->getKingdom() != "qun")
             return false;
 
-        if(target->isLord())
-            return false;
-
-        return target->getRoom()->getLord()->hasSkill(objectName());
+        return !target->isLord();
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{

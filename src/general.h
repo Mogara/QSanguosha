@@ -14,7 +14,7 @@ class General : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
-    Q_PROPERTY(int max_hp READ getMaxHp CONSTANT)
+    Q_PROPERTY(int maxhp READ getMaxHp CONSTANT)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
     Q_PROPERTY(bool lord READ isLord CONSTANT)

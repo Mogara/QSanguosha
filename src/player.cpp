@@ -51,7 +51,7 @@ bool Player::isWounded() const{
     if(hp < 0)
         return true;
     else
-        return hp < general->getMaxHp();
+        return hp < max_hp;
 }
 
 int Player::getSeat() const{

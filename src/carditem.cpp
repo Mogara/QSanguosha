@@ -8,7 +8,7 @@
 #include <QParallelAnimationGroup>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), markable(false), marked(false)
+    :Pixmap(card->getPixmapPath(), false), card(card)
 {
     Q_ASSERT(card != NULL);
 
@@ -125,27 +125,6 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     else
         painter->setPen(Qt::black);
     painter->drawText(8, 50, card->getNumberString());
-}
-
-bool CardItem::isMarked() const{
-    return markable && marked;
-}
-
-bool CardItem::isMarkable() const{
-    return markable;
-}
-
-void CardItem::mark(bool marked){
-    if(markable){
-        if(this->marked != marked){
-            this->marked = marked;
-            emit mark_changed();
-        }
-    }
-}
-
-void CardItem::setMarkable(bool markable){
-    this->markable = markable;
 }
 
 GuanxingCardItem::GuanxingCardItem(const Card *card)

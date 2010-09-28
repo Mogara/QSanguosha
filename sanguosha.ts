@@ -3158,7 +3158,7 @@
     <message>
         <location filename="src/thicket.cpp" line="707"/>
         <source>songwei:yes</source>
-        <translation>你可进行一次判定， 若结果为黑色且生效，可以让曹丕摸一张牌</translation>
+        <translation>可以让曹丕摸一张牌</translation>
     </message>
     <message>
         <location filename="src/thicket.cpp" line="708"/>

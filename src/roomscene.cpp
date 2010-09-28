@@ -1744,8 +1744,9 @@ void RoomScene::speak(const QString &who, const QString &text){
     if(from){
         title = from->getGeneralName();
         title = Sanguosha->translate(title);
-    }else
-        title = from->objectName();
+        title.append(QString("(%1)").arg(from->objectName()));
+    }
+
     title = QString("<b>%1</b>").arg(title);
 
     QString line = QString(tr("[%1] said: %2").arg(title).arg(text));

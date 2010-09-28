@@ -41,13 +41,14 @@ public:
             return false;
 
         Room *room = caocao->getRoom();
+        QList<ServerPlayer *> lieges = room->getLieges(caocao);
+        if(lieges.isEmpty())
+            return false;
 
         if(!room->askForSkillInvoke(caocao, objectName()))
             return false;
 
         room->playSkillEffect(objectName());
-
-        QList<ServerPlayer *> lieges = room->getLieges(caocao);
         foreach(ServerPlayer *liege, lieges){
             QString result = room->askForChoice(liege, objectName(), "accept+ignore");
             if(result == "ignore")
@@ -395,12 +396,14 @@ public:
             return false;
 
         Room *room = liubei->getRoom();
+        QList<ServerPlayer *> lieges = room->getLieges(liubei);
+        if(lieges.isEmpty())
+            return false;
+
         if(!room->askForSkillInvoke(liubei, objectName()))
             return false;
 
-        room->playSkillEffect(objectName());
-
-        QList<ServerPlayer *> lieges = room->getLieges(liubei);
+        room->playSkillEffect(objectName());        
         foreach(ServerPlayer *liege, lieges){
             const Card *slash = room->askForCard(liege, "slash", "jijiang-slash");
             if(slash){

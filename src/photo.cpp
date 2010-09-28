@@ -207,7 +207,13 @@ void Photo::addCardItem(CardItem *card_item){
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
-    if(!player || hide_avatar)
+
+    if(!player)
+        return;
+    painter->setPen(Qt::white);
+    painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
+
+    if(hide_avatar)
         return;
 
     painter->drawPixmap(1, 13, avatar);
@@ -223,10 +229,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawPixmap(5, 30, death_pixmap);
 
         return;
-    }
-
-    painter->setPen(Qt::white);
-    painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
+    }    
 
     // draw magatamas, similar with dashboard, but magatama is smaller
     int hp = player->getHp();

@@ -14,12 +14,23 @@ public:
     void changePixmap(const QString &name);
     void shift();
 
+    bool isMarked() const;
+    bool isMarkable() const;
+    void mark(bool marked = true);
+    void setMarkable(bool markable);
+
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     QPixmap pixmap;
+
+private:
+    bool markable, marked;
+
+signals:
+    void mark_changed();
 };
 
 #endif // PIXMAP_H

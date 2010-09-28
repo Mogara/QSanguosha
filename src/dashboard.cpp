@@ -199,19 +199,26 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     // draw player's hp
     int hp = player->getHp();
-    hp = qMin(hp, 6);
+    int hp_index = qMin(hp, 6);
     QPixmap *magatama;
     if(player->isWounded())
-        magatama = &magatamas[hp-1];
+        magatama = &magatamas[hp_index - 1];
     else
         magatama = &magatamas[4]; // the green magatama which denote full blood state
     int i;
-    for(i=0; i<hp; i++)
+
+    int basic_hp = qMin(hp, 5);
+    for(i=0; i<basic_hp; i++)
         painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
 
-    if(Self->hasSkill("benghuai")){
+    // draw extra hp (i.e. Dongzhuo, Shen Lubu, Shen Guanyu)
+    int extra_hp = hp - basic_hp;
+    for(i=0; i<extra_hp; i++)
+        painter->drawPixmap(946 - i * 40, 184, *magatama);
+
+    if(Self->hasSkill("benghuai") && Self->getMaxHP() > 0){
         QString hp_str = QString("%1/%2").arg(Self->getHp()).arg(Self->getMaxHP());
-        painter->drawText(944, 192+26, hp_str);
+        painter->drawText(792, 180, hp_str);
     }
 
     // draw player's equip area

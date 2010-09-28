@@ -18,7 +18,7 @@ class Player : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int hp READ getHp WRITE setHp)
-    Q_PROPERTY(int max_hp READ getMaxHP WRITE setMaxHP)
+    Q_PROPERTY(int maxhp READ getMaxHP WRITE setMaxHP)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString role READ getRole WRITE setRole)

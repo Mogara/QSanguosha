@@ -757,6 +757,13 @@ void Room::assignRoles(){
 
     for(i=0; i<players.length(); i++)
         players.at(i)->setSeat(i+1);
+
+    // tell the players about the seat, and the first is always the lord
+    QStringList player_circle;
+    foreach(ServerPlayer *player, players){
+        player_circle << player->objectName();
+    }
+    broadcastInvoke("arrangeSeats", player_circle.join("+"));
 }
 
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
@@ -949,13 +956,7 @@ void Room::startGame(){
     for(i=1; i<players.count(); i++)
         broadcastProperty(players.at(i), "general");
 
-    // tell the players about the seat, and the first is always the lord
-    QStringList player_circle;
-    foreach(ServerPlayer *player, players){
-        alive_players << player;
-        player_circle << player->objectName();
-    }
-    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+    alive_players = players;
 
     // set hp full state
     int lord_welfare = player_count > 4 ? 1 : 0;
@@ -968,7 +969,7 @@ void Room::startGame(){
     foreach(ServerPlayer *player, players){
         player->setHp(player->getMaxHP());
 
-        broadcastProperty(player, "max_hp");
+        broadcastProperty(player, "maxhp");
         broadcastProperty(player, "hp");
     }
 
