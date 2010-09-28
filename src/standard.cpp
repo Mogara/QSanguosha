@@ -90,16 +90,6 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
 
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(player->hasArmorEffect("vine")){
-            LogMessage log;
-            log.type = "#InvokeSkill";
-            log.from = player;
-            log.arg = "vine";
-            room->sendLog(log);
-
-            continue;
-        }
-
         if(isBlack() && player->hasSkill("weimu"))
             continue;
 
@@ -137,6 +127,12 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
     if(!movable)
         room->throwCard(this);
+
+    LogMessage log;
+    log.from = effect.to;
+    log.type = "#DelayedTrick";
+    log.arg = effect.card->objectName();
+    room->sendLog(log);
 
     const Card *card = room->getJudgeCard(effect.to);
     if(judge(card)){
@@ -311,6 +307,9 @@ StandardPackage::StandardPackage()
     t["#PindianFailure"] = tr("#PindianFailure");
     t["#Damage"] = tr("#Damage");
     t["#DamageNoSource"] = tr("#DamageNoSource");
+    t["#DelayedTrick"] = tr("#DelayedTrick");
+    t["#SkillNullify"] = tr("#SkillNullify");
+    t["#ArmorNullify"] = tr("#ArmorNullify");
 
     t["$TakeAG"] = tr("$TakeAG");
     t["$Uninstall"] = tr("$Uninstall");

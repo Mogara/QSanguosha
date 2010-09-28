@@ -103,15 +103,35 @@ GudingBlade::GudingBlade(Suit suit, int number):Weapon(suit, number, 2){
 class VineSkill: public ArmorSkill{
 public:
     VineSkill():ArmorSkill("vine"){
-        events << Predamaged << SlashEffected;
+        events << Predamaged << SlashEffected << CardEffected;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.nature == DamageStruct::Normal)
+            if(effect.nature == DamageStruct::Normal){
+                LogMessage log;
+                log.from = player;
+                log.type = "#ArmorNullify";
+                log.arg = objectName();
+                log.arg2 = effect.slash->objectName();
+                player->getRoom()->sendLog(log);
+
                 return true;
-        }else if(event == Predamaged){
+            }
+        }else if(event == CardEffected){
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if(effect.card->inherits("AOE")){
+                LogMessage log;
+                log.from = player;
+                log.type = "#ArmorNullify";
+                log.arg = objectName();
+                log.arg2 = effect.card->objectName();
+                player->getRoom()->sendLog(log);
+
+                return true;
+            }
+        }if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
                 damage.damage ++;

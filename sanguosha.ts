@@ -1275,12 +1275,12 @@
 <context>
     <name>Pixmap</name>
     <message>
-        <location filename="src/pixmap.cpp" line="10"/>
+        <location filename="src/pixmap.cpp" line="11"/>
         <source>Can not load image %1[%2]</source>
         <translation>不能载入图片文件 %1[%2]</translation>
     </message>
     <message>
-        <location filename="src/pixmap.cpp" line="11"/>
+        <location filename="src/pixmap.cpp" line="12"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1341,7 +1341,7 @@
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="807"/>
+        <location filename="src/room.cpp" line="814"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1378,40 +1378,40 @@
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="781"/>
-        <location filename="src/roomscene.cpp" line="793"/>
+        <location filename="src/roomscene.cpp" line="784"/>
+        <location filename="src/roomscene.cpp" line="796"/>
         <source> [Compulsory]</source>
         <translation> [锁定技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="800"/>
+        <location filename="src/roomscene.cpp" line="803"/>
         <source> [Lord Skill]</source>
         <translation> [主公技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="855"/>
+        <location filename="src/roomscene.cpp" line="858"/>
         <source>You choosed card [%1]</source>
         <oldsource>You choosed card %1</oldsource>
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="946"/>
+        <location filename="src/roomscene.cpp" line="949"/>
         <source>You choose %1 as [%2]&apos;s target</source>
         <translation>您选择了 %1 作为 【%2】 的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="957"/>
+        <location filename="src/roomscene.cpp" line="960"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="584"/>
-        <location filename="src/roomscene.cpp" line="929"/>
-        <location filename="src/roomscene.cpp" line="1244"/>
-        <location filename="src/roomscene.cpp" line="1249"/>
-        <location filename="src/roomscene.cpp" line="1625"/>
-        <location filename="src/roomscene.cpp" line="1631"/>
+        <location filename="src/roomscene.cpp" line="932"/>
+        <location filename="src/roomscene.cpp" line="1247"/>
+        <location filename="src/roomscene.cpp" line="1252"/>
+        <location filename="src/roomscene.cpp" line="1628"/>
+        <location filename="src/roomscene.cpp" line="1634"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1436,88 +1436,88 @@
         <translation>不能找到卡牌移动的目标!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="930"/>
+        <location filename="src/roomscene.cpp" line="933"/>
         <source>New target set and old target set is changed out of range!</source>
         <translation>新的目标集合与原来的目标集合差异太大!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1245"/>
+        <location filename="src/roomscene.cpp" line="1248"/>
         <source>The OK button should be disabled when client is not active!</source>
         <translation>确定按钮在客户端非活动状态下是不能被禁用的!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1250"/>
+        <location filename="src/roomscene.cpp" line="1253"/>
         <source>The OK button should be disabled when client is in asking for amazing grace status</source>
         <translation>确定按钮在客户端五谷拿牌状态下是不能被禁用的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1407"/>
+        <location filename="src/roomscene.cpp" line="1410"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1407"/>
+        <location filename="src/roomscene.cpp" line="1410"/>
         <source>Failure</source>
         <translation>败北</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1409"/>
+        <location filename="src/roomscene.cpp" line="1412"/>
         <source>Winner(s)</source>
         <translation>胜利者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1410"/>
+        <location filename="src/roomscene.cpp" line="1413"/>
         <source>Loser(s)</source>
         <translation>失败者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1450"/>
+        <location filename="src/roomscene.cpp" line="1453"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1450"/>
+        <location filename="src/roomscene.cpp" line="1453"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1450"/>
-        <location filename="src/roomscene.cpp" line="1483"/>
+        <location filename="src/roomscene.cpp" line="1453"/>
+        <location filename="src/roomscene.cpp" line="1486"/>
         <source>Alive</source>
         <translation>存活</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1450"/>
+        <location filename="src/roomscene.cpp" line="1453"/>
         <source>Role</source>
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1456"/>
+        <location filename="src/roomscene.cpp" line="1459"/>
         <source>Restart Game</source>
         <translation>重新开始</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1485"/>
+        <location filename="src/roomscene.cpp" line="1488"/>
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1593"/>
+        <location filename="src/roomscene.cpp" line="1596"/>
         <source>Discarded Pile</source>
         <translation>弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1625"/>
+        <location filename="src/roomscene.cpp" line="1628"/>
         <source>No such skill named %1</source>
         <translation>没有名为 %1 的技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1631"/>
+        <location filename="src/roomscene.cpp" line="1634"/>
         <source>The skill %1 must be view as skill!</source>
         <translation>技能 %1 必须为视作技!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1751"/>
+        <location filename="src/roomscene.cpp" line="1755"/>
         <source>[%1] said: %2</source>
         <translation>[%1] 说: %2</translation>
     </message>
@@ -1547,18 +1547,18 @@
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="964"/>
+        <location filename="src/roomscene.cpp" line="967"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="973"/>
+        <location filename="src/roomscene.cpp" line="976"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="982"/>
+        <location filename="src/roomscene.cpp" line="985"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>
@@ -1640,1166 +1640,1182 @@
 <context>
     <name>StandardPackage</name>
     <message>
-        <location filename="src/standard.cpp" line="272"/>
+        <location filename="src/standard.cpp" line="277"/>
         <source>spade</source>
         <translation>黑桃</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="273"/>
+        <location filename="src/standard.cpp" line="278"/>
         <source>club</source>
         <translation>梅花</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="274"/>
+        <location filename="src/standard.cpp" line="279"/>
         <source>heart</source>
         <translation>红桃</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="275"/>
+        <location filename="src/standard.cpp" line="280"/>
         <source>diamond</source>
         <translation>方块</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="989"/>
+        <location filename="src/standard-cards.cpp" line="974"/>
         <source>basic</source>
         <translation>基本牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="990"/>
+        <location filename="src/standard-cards.cpp" line="975"/>
         <source>trick</source>
         <translation>锦囊牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="991"/>
+        <location filename="src/standard-cards.cpp" line="976"/>
         <source>equip</source>
         <translation>装备牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="992"/>
+        <location filename="src/standard-cards.cpp" line="977"/>
         <source>attack_card</source>
         <translation>进攻牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="993"/>
+        <location filename="src/standard-cards.cpp" line="978"/>
         <source>defense_card</source>
         <translation>防御牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="994"/>
+        <location filename="src/standard-cards.cpp" line="979"/>
         <source>recover_card</source>
         <translation>恢复牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="995"/>
+        <location filename="src/standard-cards.cpp" line="980"/>
         <source>disgusting_card</source>
         <translation>恶心牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="996"/>
+        <location filename="src/standard-cards.cpp" line="981"/>
         <source>global_effect</source>
         <translation>全局效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="997"/>
+        <location filename="src/standard-cards.cpp" line="982"/>
         <source>aoe</source>
         <translation>范围效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="998"/>
+        <location filename="src/standard-cards.cpp" line="983"/>
         <source>single_target_trick</source>
         <translation>单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="999"/>
+        <location filename="src/standard-cards.cpp" line="984"/>
         <source>delayed_trick</source>
         <translation>延时锦囊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1000"/>
+        <location filename="src/standard-cards.cpp" line="985"/>
         <source>weapon</source>
         <translation>武器</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1001"/>
+        <location filename="src/standard-cards.cpp" line="986"/>
         <source>armor</source>
         <translation>防具</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1002"/>
+        <location filename="src/standard-cards.cpp" line="987"/>
         <source>defensive_horse</source>
         <translation>防御马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1003"/>
+        <location filename="src/standard-cards.cpp" line="988"/>
         <source>offensive_horse</source>
         <translation>进攻马</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1005"/>
+        <location filename="src/standard-cards.cpp" line="990"/>
         <source>slash</source>
         <translation>杀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1006"/>
+        <location filename="src/standard-cards.cpp" line="991"/>
         <source>jink</source>
         <translation>闪</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1007"/>
+        <location filename="src/standard-cards.cpp" line="992"/>
         <source>peach</source>
         <translation>桃</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1010"/>
+        <location filename="src/standard-cards.cpp" line="995"/>
         <source>crossbow</source>
         <translation>诸葛连弩</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1011"/>
+        <location filename="src/standard-cards.cpp" line="996"/>
         <source>double_sword</source>
         <translation>雌雄双股剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1012"/>
+        <location filename="src/standard-cards.cpp" line="997"/>
         <source>qinggang_sword</source>
         <translation>青釭剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1014"/>
+        <location filename="src/standard-cards.cpp" line="999"/>
         <source>blade</source>
         <translation>青龙偃月刀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1015"/>
+        <location filename="src/standard-cards.cpp" line="1000"/>
         <source>spear</source>
         <translation>丈八蛇矛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1016"/>
+        <location filename="src/standard-cards.cpp" line="1001"/>
         <source>axe</source>
         <translation>贯石斧</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1017"/>
+        <location filename="src/standard-cards.cpp" line="1002"/>
         <source>halberd</source>
         <translation>方天画戟</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1018"/>
+        <location filename="src/standard-cards.cpp" line="1003"/>
         <source>kylin_bow</source>
         <translation>麒麟弓</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1020"/>
+        <location filename="src/standard-cards.cpp" line="1005"/>
         <source>eight_diagram</source>
         <translation>八卦阵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1023"/>
+        <location filename="src/standard-cards.cpp" line="1008"/>
         <source>renwang_shield</source>
         <translation>仁王盾</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1024"/>
+        <location filename="src/standard-cards.cpp" line="1009"/>
         <source>ice_sword</source>
         <translation>寒冰剑</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1026"/>
+        <location filename="src/standard-cards.cpp" line="1011"/>
         <source>jueying</source>
         <translation>绝影</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1027"/>
+        <location filename="src/standard-cards.cpp" line="1012"/>
         <source>dilu</source>
         <translation>的卢</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1028"/>
+        <location filename="src/standard-cards.cpp" line="1013"/>
         <source>zhuahuangfeidian</source>
         <translation>爪黄飞电</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1029"/>
+        <location filename="src/standard-cards.cpp" line="1014"/>
         <source>chitu</source>
         <translation>赤兔</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1030"/>
+        <location filename="src/standard-cards.cpp" line="1015"/>
         <source>dayuan</source>
         <translation>大宛</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1031"/>
+        <location filename="src/standard-cards.cpp" line="1016"/>
         <source>zixing</source>
         <translation>紫骍</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1033"/>
+        <location filename="src/standard-cards.cpp" line="1018"/>
         <source>amazing_grace</source>
         <translation>五谷丰登</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1034"/>
+        <location filename="src/standard-cards.cpp" line="1019"/>
         <source>god_salvation</source>
         <translation>桃园结义</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1035"/>
+        <location filename="src/standard-cards.cpp" line="1020"/>
         <source>savage_assault</source>
         <translation>南蛮入侵</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1036"/>
+        <location filename="src/standard-cards.cpp" line="1021"/>
         <source>archery_attack</source>
         <translation>万箭齐发</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1037"/>
-        <location filename="src/standard-cards.cpp" line="1042"/>
+        <location filename="src/standard-cards.cpp" line="1022"/>
+        <location filename="src/standard-cards.cpp" line="1027"/>
         <source>collateral</source>
         <translation>借刀杀人</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1038"/>
+        <location filename="src/standard-cards.cpp" line="1023"/>
         <source>duel</source>
         <translation>决斗</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1039"/>
+        <location filename="src/standard-cards.cpp" line="1024"/>
         <source>ex_nihilo</source>
         <translation>无中生有</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1040"/>
+        <location filename="src/standard-cards.cpp" line="1025"/>
         <source>snatch</source>
         <translation>顺手牵羊</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1041"/>
+        <location filename="src/standard-cards.cpp" line="1026"/>
         <source>dismantlement</source>
         <translation>过河拆桥</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1043"/>
+        <location filename="src/standard-cards.cpp" line="1028"/>
         <source>nullification</source>
         <translation>无懈可击</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1044"/>
+        <location filename="src/standard-cards.cpp" line="1029"/>
         <source>indulgence</source>
         <translation>乐不思蜀</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1045"/>
+        <location filename="src/standard-cards.cpp" line="1030"/>
         <source>lightning</source>
         <translation>闪电</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1047"/>
+        <location filename="src/standard-cards.cpp" line="1032"/>
         <source>eight_diagram:yes</source>
         <translation>进行一次判定，若判定结果为红色，则视为你打出了一张【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1049"/>
+        <location filename="src/standard-cards.cpp" line="1034"/>
         <source>slash-jink</source>
         <oldsource>@slash-jink</oldsource>
         <translation>%src 使用了【杀】，请打出一张【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1050"/>
+        <location filename="src/standard-cards.cpp" line="1035"/>
         <source>duel-slash</source>
         <oldsource>@duel-slash</oldsource>
         <translation>%src 向您决斗，您需要打出一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1051"/>
+        <location filename="src/standard-cards.cpp" line="1036"/>
         <source>savage-assault-slash</source>
         <oldsource>@savage-assault-slash</oldsource>
         <translation>%src 使用了【南蛮入侵】，请打出一张【杀】来响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1052"/>
+        <location filename="src/standard-cards.cpp" line="1037"/>
         <source>archery-attack-jink</source>
         <oldsource>@archery-attack-jink</oldsource>
         <translation>%src 使用了【万箭齐发】，请打出一张【闪】以响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1053"/>
+        <location filename="src/standard-cards.cpp" line="1038"/>
         <source>collateral-slash</source>
         <oldsource>@collateral-slash</oldsource>
         <translation>%src 使用了【借刀杀人】，目标是 %dest，请打出一张【杀】以响应</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1054"/>
+        <location filename="src/standard-cards.cpp" line="1039"/>
         <source>blade-slash</source>
         <translation>您可以再打出一张【杀】发动青龙偃月刀的追杀效果</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1055"/>
+        <location filename="src/standard-cards.cpp" line="1040"/>
         <source>double-sword-card</source>
         <translation>%src 发动了雌雄双股剑特效，您必须弃一张手牌或让 %src 摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1056"/>
+        <location filename="src/standard-cards.cpp" line="1041"/>
         <source>axe-card</source>
         <translation>你可再弃两张牌（包括装备）使此杀强制命中</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1059"/>
+        <location filename="src/standard-cards.cpp" line="1044"/>
         <source>double_sword:yes</source>
         <translation>您可以让对方让您摸一张牌或自弃一牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1060"/>
+        <location filename="src/standard-cards.cpp" line="1045"/>
         <source>ice_sword:yes</source>
         <translation>您可以弃掉弃两张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1061"/>
+        <location filename="src/standard-cards.cpp" line="1046"/>
         <source>kylin_bow:dhorse</source>
         <translation>防御马(+1马)</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1062"/>
+        <location filename="src/standard-cards.cpp" line="1047"/>
         <source>kylin_bow:ohorse</source>
         <translation>进攻马(-1马)</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1063"/>
+        <location filename="src/standard-cards.cpp" line="1048"/>
         <source>kylin_bow:no</source>
         <translation>无事</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1069"/>
+        <location filename="src/standard-cards.cpp" line="1054"/>
         <source>#Slash</source>
         <translation>%from 对 %to 使用了【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1070"/>
+        <location filename="src/standard-cards.cpp" line="1055"/>
         <source>#Jink</source>
         <translation>%from 使用了【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-cards.cpp" line="1071"/>
+        <location filename="src/standard-cards.cpp" line="1056"/>
         <source>#Peach</source>
         <translation>%from 吃了一个【桃】</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="263"/>
+        <location filename="src/standard.cpp" line="268"/>
         <source>standard</source>
         <translation>标准版</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="266"/>
+        <location filename="src/standard.cpp" line="271"/>
         <source>lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="267"/>
+        <location filename="src/standard.cpp" line="272"/>
         <source>loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="268"/>
+        <location filename="src/standard.cpp" line="273"/>
         <source>rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="269"/>
+        <location filename="src/standard.cpp" line="274"/>
         <source>renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="277"/>
+        <location filename="src/standard.cpp" line="282"/>
         <source>spade_char</source>
         <translation>♠</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="278"/>
+        <location filename="src/standard.cpp" line="283"/>
         <source>club_char</source>
         <translation>♣</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="279"/>
+        <location filename="src/standard.cpp" line="284"/>
         <source>heart_char</source>
         <translation>♥</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="280"/>
+        <location filename="src/standard.cpp" line="285"/>
         <source>diamond_char</source>
         <translation>♦</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="283"/>
+        <location filename="src/standard.cpp" line="288"/>
         <source>start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="284"/>
+        <location filename="src/standard.cpp" line="289"/>
         <source>judge</source>
         <translation>判定</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="285"/>
+        <location filename="src/standard.cpp" line="290"/>
         <source>draw</source>
         <translation>摸牌</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="286"/>
+        <location filename="src/standard.cpp" line="291"/>
         <source>play</source>
         <translation>出牌</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="287"/>
+        <location filename="src/standard.cpp" line="292"/>
         <source>discard</source>
         <translation>弃牌</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="288"/>
+        <location filename="src/standard.cpp" line="293"/>
         <source>finish</source>
         <translation>结束</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="291"/>
+        <location filename="src/standard.cpp" line="296"/>
         <source>online</source>
         <translation>在线</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="292"/>
+        <location filename="src/standard.cpp" line="297"/>
         <source>offline</source>
         <translation>离线</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="295"/>
+        <location filename="src/standard.cpp" line="300"/>
         <source>yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="296"/>
+        <location filename="src/standard.cpp" line="301"/>
         <source>no</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="304"/>
+        <location filename="src/standard.cpp" line="309"/>
         <source>#DrawCards</source>
         <translation>%from 摸了 %arg 张牌</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="306"/>
+        <location filename="src/standard.cpp" line="311"/>
         <source>#Death</source>
         <translation>%from 挂了，他的身份是 %arg</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="307"/>
+        <location filename="src/standard.cpp" line="312"/>
         <source>#InvokeSkill</source>
         <translation>%from 使用了技能【%arg】</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="308"/>
+        <location filename="src/standard.cpp" line="313"/>
         <source>#DiscardCards</source>
         <translation>%from 弃了 %arg 张牌</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="309"/>
+        <location filename="src/standard.cpp" line="314"/>
         <source>#Pindian</source>
         <translation>%from 向 %to 发起了拼点</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="310"/>
+        <location filename="src/standard.cpp" line="315"/>
         <source>#PindianSuccess</source>
         <translation>%from 拼点成功！\(^o^)/</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="311"/>
+        <location filename="src/standard.cpp" line="316"/>
         <source>#PindianFailure</source>
         <translation>%from 拼点失败！-_-！</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="312"/>
+        <location filename="src/standard.cpp" line="317"/>
         <source>#Damage</source>
         <translation>%from 对 %to 造成了 %arg 点伤害[%arg2]</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="313"/>
+        <location filename="src/standard.cpp" line="318"/>
         <source>#DamageNoSource</source>
         <oldsource>#DamageFire</oldsource>
         <translation>%from 受到了 %arg 点伤害[%arg2]</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="299"/>
+        <location filename="src/standard.cpp" line="304"/>
         <source>normal_nature</source>
         <translation>无属性</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="300"/>
+        <location filename="src/standard.cpp" line="305"/>
         <source>fire_nature</source>
         <translation>火焰属性</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="301"/>
+        <location filename="src/standard.cpp" line="306"/>
         <source>thunder_nature</source>
         <translation>雷电属性</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="315"/>
+        <location filename="src/standard.cpp" line="319"/>
+        <source>#DelayedTrick</source>
+        <translation>%from 的延时锦囊【%arg】开始判定</translation>
+    </message>
+    <message>
+        <location filename="src/standard.cpp" line="320"/>
+        <source>#SkillNullify</source>
+        <oldsource>#Nullify</oldsource>
+        <translation>%from 的技能【%arg】被触发，【%arg2】对其无效</translation>
+    </message>
+    <message>
+        <location filename="src/standard.cpp" line="321"/>
+        <source>#ArmorNullify</source>
+        <translation>%from 的防具【%arg】技能被处罚，【%arg2】对其无效</translation>
+    </message>
+    <message>
+        <location filename="src/standard.cpp" line="323"/>
         <source>$TakeAG</source>
         <translation>%from 拿走了 %card</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="316"/>
+        <location filename="src/standard.cpp" line="324"/>
         <source>$Uninstall</source>
         <translation>%from 卸载了 %card</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="317"/>
+        <location filename="src/standard.cpp" line="325"/>
         <source>$JudgeResult</source>
         <translation>%from 的判定结果为 %card</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="318"/>
+        <location filename="src/standard.cpp" line="326"/>
         <source>$PindianResult</source>
         <translation>%from 的拼点结果为 %card</translation>
     </message>
     <message>
-        <location filename="src/standard.cpp" line="305"/>
+        <location filename="src/standard.cpp" line="310"/>
         <source>#ChooseSuit</source>
         <translation>%from 选择了花色 %arg</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1143"/>
+        <location filename="src/standard-generals.cpp" line="1146"/>
         <source>wei</source>
         <translation>魏</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1144"/>
+        <location filename="src/standard-generals.cpp" line="1147"/>
         <source>shu</source>
         <translation>蜀</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1145"/>
+        <location filename="src/standard-generals.cpp" line="1148"/>
         <source>wu</source>
         <translation>吴</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1146"/>
+        <location filename="src/standard-generals.cpp" line="1149"/>
         <source>qun</source>
         <translation>群</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1148"/>
+        <location filename="src/standard-generals.cpp" line="1151"/>
         <source>caocao</source>
         <translation>曹操</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1149"/>
+        <location filename="src/standard-generals.cpp" line="1152"/>
         <source>zhangliao</source>
         <translation>张辽</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1150"/>
+        <location filename="src/standard-generals.cpp" line="1153"/>
         <source>guojia</source>
         <translation>郭嘉</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1151"/>
+        <location filename="src/standard-generals.cpp" line="1154"/>
         <source>xiahoudun</source>
         <translation>夏侯惇</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1152"/>
+        <location filename="src/standard-generals.cpp" line="1155"/>
         <source>simayi</source>
         <translation>司马懿</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1153"/>
+        <location filename="src/standard-generals.cpp" line="1156"/>
         <source>xuchu</source>
         <translation>许褚</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1154"/>
+        <location filename="src/standard-generals.cpp" line="1157"/>
         <source>zhenji</source>
         <translation>甄姬</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1156"/>
+        <location filename="src/standard-generals.cpp" line="1159"/>
         <source>liubei</source>
         <translation>刘备</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1157"/>
+        <location filename="src/standard-generals.cpp" line="1160"/>
         <source>guanyu</source>
         <translation>关羽</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1158"/>
+        <location filename="src/standard-generals.cpp" line="1161"/>
         <source>zhangfei</source>
         <translation>张飞</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1159"/>
+        <location filename="src/standard-generals.cpp" line="1162"/>
         <source>zhaoyun</source>
         <translation>赵云</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1160"/>
+        <location filename="src/standard-generals.cpp" line="1163"/>
         <source>machao</source>
         <translation>马超</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1161"/>
+        <location filename="src/standard-generals.cpp" line="1164"/>
         <source>zhugeliang</source>
         <translation>诸葛亮</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1162"/>
+        <location filename="src/standard-generals.cpp" line="1165"/>
         <source>huangyueying</source>
         <translation>黄月英</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1164"/>
+        <location filename="src/standard-generals.cpp" line="1167"/>
         <source>sunquan</source>
         <translation>孙权</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1165"/>
+        <location filename="src/standard-generals.cpp" line="1168"/>
         <source>zhouyu</source>
         <translation>周瑜</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1166"/>
+        <location filename="src/standard-generals.cpp" line="1169"/>
         <source>lumeng</source>
         <translation>吕蒙</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1167"/>
+        <location filename="src/standard-generals.cpp" line="1170"/>
         <source>luxun</source>
         <translation>陆逊</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1168"/>
+        <location filename="src/standard-generals.cpp" line="1171"/>
         <source>ganning</source>
         <translation>甘宁</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1169"/>
+        <location filename="src/standard-generals.cpp" line="1172"/>
         <source>huanggai</source>
         <translation>黄盖</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1170"/>
+        <location filename="src/standard-generals.cpp" line="1173"/>
         <source>daqiao</source>
         <translation>大乔</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1171"/>
+        <location filename="src/standard-generals.cpp" line="1174"/>
         <source>sunshangxiang</source>
         <translation>孙尚香</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1173"/>
+        <location filename="src/standard-generals.cpp" line="1176"/>
         <source>lubu</source>
         <translation>吕布</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1174"/>
+        <location filename="src/standard-generals.cpp" line="1177"/>
         <source>huatuo</source>
         <translation>华佗</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1175"/>
+        <location filename="src/standard-generals.cpp" line="1178"/>
         <source>diaochan</source>
         <translation>貂蝉</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1177"/>
+        <location filename="src/standard-generals.cpp" line="1180"/>
         <source>jianxiong</source>
         <translation>奸雄</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1186"/>
+        <location filename="src/standard-generals.cpp" line="1189"/>
         <source>luoshen</source>
         <translation>洛神</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1187"/>
+        <location filename="src/standard-generals.cpp" line="1190"/>
         <source>qingguo</source>
         <translation>倾国</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1189"/>
+        <location filename="src/standard-generals.cpp" line="1192"/>
         <source>rende</source>
         <translation>仁德</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1190"/>
+        <location filename="src/standard-generals.cpp" line="1193"/>
         <source>jijiang</source>
         <translation>激将</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1191"/>
+        <location filename="src/standard-generals.cpp" line="1194"/>
         <source>wusheng</source>
         <translation>武圣</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1192"/>
+        <location filename="src/standard-generals.cpp" line="1195"/>
         <source>paoxiao</source>
         <translation>咆哮</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1193"/>
+        <location filename="src/standard-generals.cpp" line="1196"/>
         <source>longdan</source>
         <translation>龙胆</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1194"/>
+        <location filename="src/standard-generals.cpp" line="1197"/>
         <source>tieji</source>
         <translation>铁骑</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1195"/>
+        <location filename="src/standard-generals.cpp" line="1198"/>
         <source>mashu</source>
         <translation>马术</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1196"/>
+        <location filename="src/standard-generals.cpp" line="1199"/>
         <source>guanxing</source>
         <translation>观星</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1197"/>
+        <location filename="src/standard-generals.cpp" line="1200"/>
         <source>kongcheng</source>
         <translation>空城</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1198"/>
+        <location filename="src/standard-generals.cpp" line="1201"/>
         <source>jizhi</source>
         <translation>集智</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1199"/>
+        <location filename="src/standard-generals.cpp" line="1202"/>
         <source>qicai</source>
         <translation>奇才</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1201"/>
+        <location filename="src/standard-generals.cpp" line="1204"/>
         <source>zhiheng</source>
         <translation>制衡</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1202"/>
+        <location filename="src/standard-generals.cpp" line="1205"/>
         <source>jiuyuan</source>
         <translation>救援</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1203"/>
+        <location filename="src/standard-generals.cpp" line="1206"/>
         <source>yingzi</source>
         <translation>英姿</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1204"/>
+        <location filename="src/standard-generals.cpp" line="1207"/>
         <source>fanjian</source>
         <translation>反间</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1205"/>
+        <location filename="src/standard-generals.cpp" line="1208"/>
         <source>keji</source>
         <translation>克己</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1206"/>
+        <location filename="src/standard-generals.cpp" line="1209"/>
         <source>qianxun</source>
         <translation>谦逊</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1207"/>
+        <location filename="src/standard-generals.cpp" line="1210"/>
         <source>lianying</source>
         <translation>连营</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1208"/>
+        <location filename="src/standard-generals.cpp" line="1211"/>
         <source>qixi</source>
         <translation>奇袭</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1209"/>
+        <location filename="src/standard-generals.cpp" line="1212"/>
         <source>kurou</source>
         <translation>苦肉</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1210"/>
+        <location filename="src/standard-generals.cpp" line="1213"/>
         <source>guose</source>
         <translation>国色</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1211"/>
+        <location filename="src/standard-generals.cpp" line="1214"/>
         <source>liuli</source>
         <translation>流离</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1212"/>
+        <location filename="src/standard-generals.cpp" line="1215"/>
         <source>jieyin</source>
         <translation>结姻</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1213"/>
+        <location filename="src/standard-generals.cpp" line="1216"/>
         <source>xiaoji</source>
         <translation>枭姬</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1215"/>
+        <location filename="src/standard-generals.cpp" line="1218"/>
         <source>wushuang</source>
         <translation>无双</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1216"/>
+        <location filename="src/standard-generals.cpp" line="1219"/>
         <source>qingnang</source>
         <translation>青囊</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1217"/>
+        <location filename="src/standard-generals.cpp" line="1220"/>
         <source>jijiu</source>
         <translation>急救</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1218"/>
+        <location filename="src/standard-generals.cpp" line="1221"/>
         <source>lijian</source>
         <translation>离间</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1219"/>
+        <location filename="src/standard-generals.cpp" line="1222"/>
         <source>biyue</source>
         <translation>闭月</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1233"/>
+        <location filename="src/standard-generals.cpp" line="1236"/>
         <source>:rende</source>
         <translation>出牌阶段，你可以将任意数量的手牌以任意分配方式交给其他角色，若你给出的牌张数不少于两张时，你回复1点体力
 ★使用仁德技能分出的牌，对方无法拒绝</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1234"/>
+        <location filename="src/standard-generals.cpp" line="1237"/>
         <source>:jijiang</source>
         <translation>主公技，当你需要使用（或打出）一张【杀】时，你可以发动激将。所有蜀势力角色按行动顺序依次选择是否打出一张【杀】“提供”给你（视为由你使用或打出），直到有一名角色或没有任何角色决定如此作时为止</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1235"/>
+        <location filename="src/standard-generals.cpp" line="1238"/>
         <source>:wusheng</source>
         <translation>你可以将你的任意一张红色牌当【杀】使用或打出
 ★若同时用到当前装备的红色装备效果时，不可把这张装备牌当【杀】来使用或打出
 ★使用武圣时，仅改变牌的类别(名称)和作用，而牌的花色和点数不变</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1236"/>
+        <location filename="src/standard-generals.cpp" line="1239"/>
         <source>:paoxiao</source>
         <translation>出牌阶段，你可以使用任意数量的【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1237"/>
+        <location filename="src/standard-generals.cpp" line="1240"/>
         <source>:longdan</source>
         <translation>你可以将你手牌的【杀】当【闪】、【闪】当【杀】使用或打出。
 ★使用龙胆时，仅改变牌的类别(名称)和作用，而牌的花色和点数不变</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1238"/>
+        <location filename="src/standard-generals.cpp" line="1241"/>
         <source>:tieji</source>
         <translation>当你使用【杀】指定一名角色为目标后，你可以进行判定，若结果为红色，此【杀】不可被闪避</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1239"/>
+        <location filename="src/standard-generals.cpp" line="1242"/>
         <source>:mashu</source>
         <translation>锁定技，当你计算与其他角色的距离时，始终-1
 ★马术的效果与装备-1马时效果一样，但你仍然可以装备一匹-1马</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1240"/>
+        <location filename="src/standard-generals.cpp" line="1243"/>
         <source>:guanxing</source>
         <translation>回合开始阶段，你可以观看牌堆顶的X张牌（X为存活角色的数量且最多为5），将其中任意数量的牌以任意顺序置于牌堆顶，其余以任意顺序置于牌堆底</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1241"/>
+        <location filename="src/standard-generals.cpp" line="1244"/>
         <source>:kongcheng</source>
         <translation>锁定技，当你没有手牌时，你不能成为【杀】或【决斗】的目标</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1242"/>
+        <location filename="src/standard-generals.cpp" line="1245"/>
         <source>:jizhi</source>
         <translation>每当你使用一张非延时类锦囊时，（在它结算之前）你可以立即摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1243"/>
+        <location filename="src/standard-generals.cpp" line="1246"/>
         <source>:qicai</source>
         <translation>你使用任何锦囊无距离限制</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1245"/>
+        <location filename="src/standard-generals.cpp" line="1248"/>
         <source>:zhiheng</source>
         <translation>出牌阶段,你可以弃掉任意数量的牌,然后摸取等量的牌.每回合限用一次</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1246"/>
+        <location filename="src/standard-generals.cpp" line="1249"/>
         <source>:jiuyuan</source>
         <translation>主公技，锁定技，其他吴势力角色在你濒死状态下对你使用【桃】时，你额外回复1点体力</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1247"/>
+        <location filename="src/standard-generals.cpp" line="1250"/>
         <source>:yingzi</source>
         <translation>摸牌阶段，你可以额外摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1248"/>
+        <location filename="src/standard-generals.cpp" line="1251"/>
         <source>:fanjian</source>
         <translation>出牌阶段，你可以令另一名角色选择一种花色，抽取你的一张手牌并亮出，若此牌与所选花色不吻合，则你对该角色造成1点伤害。然后不论结果，该角色都获得此牌。每回合限用一次</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1249"/>
+        <location filename="src/standard-generals.cpp" line="1252"/>
         <source>:keji</source>
         <translation>若你于出牌阶段未使用或打出过任何一张【杀】，你可以跳过此回合的弃牌阶段</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1250"/>
+        <location filename="src/standard-generals.cpp" line="1253"/>
         <source>:qianxun</source>
         <translation>锁定技，你不能成为【顺手牵羊】和【乐不思蜀】的目标</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1251"/>
+        <location filename="src/standard-generals.cpp" line="1254"/>
         <source>:lianying</source>
         <translation>每当你失去最后一张手牌时，可立即摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1252"/>
+        <location filename="src/standard-generals.cpp" line="1255"/>
         <source>:qixi</source>
         <translation>出牌阶段，你可以将你的任意黑色牌当【过河拆桥】使用
 ★这包括自己已装备的牌
 ★使用奇袭时，仅改变牌的类别(名称)和作用，而牌的花色和点数不变</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1253"/>
+        <location filename="src/standard-generals.cpp" line="1256"/>
         <source>:kurou</source>
         <translation>出牌阶段，你可以失去一点体力，然后摸两张牌。每回合中，你可以多次使用苦肉
 ★当你失去最后一点体力时，优先结算濒死事件，当你被救活后，你才可以摸两张牌。换言之，你可以用此技能自杀</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1254"/>
+        <location filename="src/standard-generals.cpp" line="1257"/>
         <source>:guose</source>
         <translation>出牌阶段，你可以将你的任意方块花色的牌当【乐不思蜀】使用</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1255"/>
+        <location filename="src/standard-generals.cpp" line="1258"/>
         <source>:liuli</source>
         <translation>流离：当你成为【杀】的目标时，你可以弃一张牌，并将此【杀】转移给你攻击范围内的另一名角色（该角色不得是【杀】的使用者）</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1256"/>
+        <location filename="src/standard-generals.cpp" line="1259"/>
         <source>:jieyin</source>
         <translation>出牌阶段，你可以弃两张手牌并选择一名受伤的男性角色：你和目标角色各回复1点体力。每回合限用一次
 ★使用结姻的条件是“有受伤的男性角色”，与你是否受伤无关</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1257"/>
+        <location filename="src/standard-generals.cpp" line="1260"/>
         <source>:xiaoji</source>
         <translation>当你失去一张装备区里的牌时，你可以立即摸两张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1259"/>
+        <location filename="src/standard-generals.cpp" line="1262"/>
         <source>:wushuang</source>
         <translation>锁定技，你使用【杀】时，目标角色需连续使用两张【闪】才能抵消；与你进行【决斗】的角色每次需连续打出两张【杀】
 ★若对方只有一张【闪】或【杀】则即便使用（打出）了也无效</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1260"/>
+        <location filename="src/standard-generals.cpp" line="1263"/>
         <source>:qingnang</source>
         <translation>出牌阶段，你可以主动弃掉一张手牌，令任一目标角色回复1点体力。每回合限用一次</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1261"/>
+        <location filename="src/standard-generals.cpp" line="1264"/>
         <source>:jijiu</source>
         <translation>你的回合外，你可以将你的任意红色牌当【桃】使用</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1262"/>
+        <location filename="src/standard-generals.cpp" line="1265"/>
         <source>:lijian</source>
         <translation>出牌阶段，你可以弃一张牌并选择两名男性角色。若如此作，视为其中一名男性角色对另一名男性角色使用一张【决斗】。（此【决斗】不能被【无懈可击】响应）。每回合限用一次</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1263"/>
+        <location filename="src/standard-generals.cpp" line="1266"/>
         <source>:biyue</source>
         <translation>回合结束阶段，可摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1266"/>
+        <location filename="src/standard-generals.cpp" line="1269"/>
         <source>yingzi:yes</source>
         <translation>您可以多摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1267"/>
+        <location filename="src/standard-generals.cpp" line="1270"/>
         <source>jianxiong:yes</source>
         <translation>立即获得使您受到伤害的那张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1268"/>
+        <location filename="src/standard-generals.cpp" line="1271"/>
         <source>fankui:yes</source>
         <translation>您将获得伤害来源的一张手牌或装备牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1269"/>
+        <location filename="src/standard-generals.cpp" line="1272"/>
         <source>biyue:yes</source>
         <translation>您可以摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1270"/>
+        <location filename="src/standard-generals.cpp" line="1273"/>
         <source>luoyi:yes</source>
         <translation>本回合您的【杀】和【决斗】所造成的伤害都+1</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1271"/>
+        <location filename="src/standard-generals.cpp" line="1274"/>
         <source>tieji:yes</source>
         <translation>可判定一次，若判定结果为红色，则此【杀】不可闪避</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1272"/>
+        <location filename="src/standard-generals.cpp" line="1275"/>
         <source>ganglie:yes</source>
         <translation>进行一次判定，如判定结果不为红桃，可令伤害来源受到你对其的一点无属性伤害或弃两张手牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1273"/>
+        <location filename="src/standard-generals.cpp" line="1276"/>
         <source>hujia:yes</source>
         <translation>所有魏势力角色按行动顺序依次选择是否打出一张【闪】“提供”给你（视为由你使用或打出），直到有一名角色或没有任何角色决定如此做时为止</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1274"/>
+        <location filename="src/standard-generals.cpp" line="1277"/>
         <source>:hujia:</source>
         <translation>曹操想让你帮他出一张【闪】:</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1275"/>
+        <location filename="src/standard-generals.cpp" line="1278"/>
         <source>hujia:accept</source>
         <translation>帮他护驾</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1276"/>
+        <location filename="src/standard-generals.cpp" line="1279"/>
         <source>hujia:ignore</source>
         <translation>不护驾</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1277"/>
+        <location filename="src/standard-generals.cpp" line="1280"/>
         <source>:jijiang:</source>
         <translation>刘备想让你帮其出一张【杀】:</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1278"/>
+        <location filename="src/standard-generals.cpp" line="1281"/>
         <source>jijiang:accept</source>
         <translation>响应激将</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1279"/>
+        <location filename="src/standard-generals.cpp" line="1282"/>
         <source>jijiang:ignore</source>
         <translation>不响应</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1281"/>
+        <location filename="src/standard-generals.cpp" line="1284"/>
         <source>@jijiang-slash</source>
         <translation>请打出一张【杀】以相应主公的【激将】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1282"/>
+        <location filename="src/standard-generals.cpp" line="1285"/>
         <source>@wushuang-slash-1</source>
         <translation>%src 向您决斗，由于他有【无双】技能，您必须打出两张【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1283"/>
+        <location filename="src/standard-generals.cpp" line="1286"/>
         <source>@wushuang-slash-2</source>
         <translation>%src 的决斗有【无双】效果，请再打出一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1284"/>
+        <location filename="src/standard-generals.cpp" line="1287"/>
         <source>@wushuang-jink-1</source>
         <translation>%src 拥有【无双】技能，您必须连续出两张【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1285"/>
+        <location filename="src/standard-generals.cpp" line="1288"/>
         <source>@wushuang-jink-2</source>
         <translation>%src 拥有【无双】技能，你还需出一张【闪】</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1286"/>
+        <location filename="src/standard-generals.cpp" line="1289"/>
         <source>@guicai-card</source>
         <translation>请使用【鬼才】技能来修改判定</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1287"/>
+        <location filename="src/standard-generals.cpp" line="1290"/>
         <source>@guidao-card</source>
         <translation>请使用【鬼道】技能来修改判定</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1288"/>
+        <location filename="src/standard-generals.cpp" line="1291"/>
         <source>@liuli-card</source>
         <translation>%src 对你出杀，您可以弃一张牌将其转给你能攻击到的另一名角色（除了他）</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1289"/>
+        <location filename="src/standard-generals.cpp" line="1292"/>
         <source>@tuxi-card</source>
         <translation>您是否想发动【突袭】技能？</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1290"/>
+        <location filename="src/standard-generals.cpp" line="1293"/>
         <source>@leiji</source>
         <translation>令任意一名角色判定，若为【黑桃】，你对该角色造成2点雷电伤害</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1292"/>
+        <location filename="src/standard-generals.cpp" line="1295"/>
         <source>#GuanxingResult</source>
         <translation>%from 的观星结果：%arg 上 %arg2 下</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1221"/>
+        <location filename="src/standard-generals.cpp" line="1224"/>
         <source>:jianxiong</source>
         <translation>你可以立即获得对你造成伤害的牌</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1227"/>
+        <location filename="src/standard-generals.cpp" line="1230"/>
         <source>:fankui</source>
         <translation>你可以立即从对你造成伤害的来源处获得一张牌
 ★一次无论受到多少点伤害，只能获得一张牌，若选择手牌则从对方手里随机抽取，选择面前的装备则由你任选</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1228"/>
+        <location filename="src/standard-generals.cpp" line="1231"/>
         <source>:guicai</source>
         <translation>在任意角色的判定牌生效前，你可以打出一张手牌代替之</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1229"/>
+        <location filename="src/standard-generals.cpp" line="1232"/>
         <source>:luoyi</source>
         <translation>摸牌阶段，你可以少摸一张牌；若如此做，该回合的出牌阶段，你使用【杀】或【决斗】（你为伤害来源时）造成的伤害+1</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1230"/>
+        <location filename="src/standard-generals.cpp" line="1233"/>
         <source>:luoshen</source>
         <translation>回合开始阶段，你可以进行判定：若为黑色，立即获得此生效后的判定牌，并可以再次使用洛神――如此反复，直到出现红色或你不愿意判定了为止</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1231"/>
+        <location filename="src/standard-generals.cpp" line="1234"/>
         <source>:qingguo</source>
         <translation>你可以将你的黑色手牌当【闪】使用（或打出）
 ★使用倾国时，仅改变牌的类别（名称）和作用，而牌的花色和点数不变</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1178"/>
+        <location filename="src/standard-generals.cpp" line="1181"/>
         <source>hujia</source>
         <translation>护驾</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1222"/>
+        <location filename="src/standard-generals.cpp" line="1225"/>
         <source>:hujia</source>
         <translation>主公技，当你需要使用（或打出）一张【闪】时，你可以发动护驾。所有魏势力角色按行动顺序依次选择是否打出一张【闪】“提供”给你（视为由你使用或打出），直到有一名角色或没有任何角色决定如此做时为止</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1179"/>
+        <location filename="src/standard-generals.cpp" line="1182"/>
         <source>tuxi</source>
         <translation>突袭</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1223"/>
+        <location filename="src/standard-generals.cpp" line="1226"/>
         <source>:tuxi</source>
         <translation>摸牌阶段，你可以放弃摸牌，然后从至多两名（至少一名）角色的手牌里各抽取一张牌
 ★摸牌阶段，你一旦发动突袭，就不能从牌堆获得牌
@@ -2807,47 +2823,47 @@
 ★若此时其他任何人都没有手牌，你就不能发动突袭</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1180"/>
+        <location filename="src/standard-generals.cpp" line="1183"/>
         <source>tiandu</source>
         <translation>天妒</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1224"/>
+        <location filename="src/standard-generals.cpp" line="1227"/>
         <source>:tiandu</source>
         <translation>在你的判定牌生效时，你可以立即获得它</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1181"/>
+        <location filename="src/standard-generals.cpp" line="1184"/>
         <source>yiji</source>
         <translation>遗计</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1225"/>
+        <location filename="src/standard-generals.cpp" line="1228"/>
         <source>:yiji</source>
         <translation>你每受到1点伤害，可摸两张牌，将其中的一张交给任意一名角色，然后将另一张交给任意一名角色</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1182"/>
+        <location filename="src/standard-generals.cpp" line="1185"/>
         <source>ganglie</source>
         <translation>刚烈</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1226"/>
+        <location filename="src/standard-generals.cpp" line="1229"/>
         <source>:ganglie</source>
         <translation>你每受到一次伤害，可进行一次判定：若结果不为红桃，则目标来源必须进行二选一：弃两张手牌或受到你对其造成的1点伤害</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1183"/>
+        <location filename="src/standard-generals.cpp" line="1186"/>
         <source>fankui</source>
         <translation>反馈</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1184"/>
+        <location filename="src/standard-generals.cpp" line="1187"/>
         <source>guicai</source>
         <translation>鬼才</translation>
     </message>
     <message>
-        <location filename="src/standard-generals.cpp" line="1185"/>
+        <location filename="src/standard-generals.cpp" line="1188"/>
         <source>luoyi</source>
         <translation>裸衣</translation>
     </message>
@@ -2883,182 +2899,182 @@
 <context>
     <name>ThicketPackage</name>
     <message>
-        <location filename="src/thicket.cpp" line="647"/>
+        <location filename="src/thicket.cpp" line="701"/>
         <source>thicket</source>
         <translation>林包</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="649"/>
+        <location filename="src/thicket.cpp" line="703"/>
         <source>caopi</source>
         <translation>曹丕</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="650"/>
+        <location filename="src/thicket.cpp" line="704"/>
         <source>xuhuang</source>
         <translation>徐晃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="651"/>
+        <location filename="src/thicket.cpp" line="705"/>
         <source>menghuo</source>
         <translation>孟获</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="652"/>
+        <location filename="src/thicket.cpp" line="706"/>
         <source>zhurong</source>
         <translation>祝融</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="653"/>
+        <location filename="src/thicket.cpp" line="707"/>
         <source>sunjian</source>
         <translation>孙坚</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="654"/>
+        <location filename="src/thicket.cpp" line="708"/>
         <source>lusu</source>
         <translation>鲁肃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="655"/>
+        <location filename="src/thicket.cpp" line="709"/>
         <source>jiaxu</source>
         <translation>贾诩</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="656"/>
+        <location filename="src/thicket.cpp" line="710"/>
         <source>dongzhuo</source>
         <translation>董卓</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="659"/>
+        <location filename="src/thicket.cpp" line="713"/>
         <source>xingshang</source>
         <translation>行殇</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="660"/>
+        <location filename="src/thicket.cpp" line="714"/>
         <source>fangzhu</source>
         <translation>放逐</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="661"/>
+        <location filename="src/thicket.cpp" line="715"/>
         <source>songwei</source>
         <translation>颂威</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="662"/>
+        <location filename="src/thicket.cpp" line="716"/>
         <source>duanliang</source>
         <translation>断粮</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="663"/>
+        <location filename="src/thicket.cpp" line="717"/>
         <source>huoshou</source>
         <translation>祸首</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="664"/>
+        <location filename="src/thicket.cpp" line="718"/>
         <source>zaiqi</source>
         <translation>再起</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="665"/>
+        <location filename="src/thicket.cpp" line="719"/>
         <source>juxiang</source>
         <translation>巨象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="666"/>
+        <location filename="src/thicket.cpp" line="720"/>
         <source>lieren</source>
         <translation>烈刃</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="667"/>
+        <location filename="src/thicket.cpp" line="721"/>
         <source>yinghun</source>
         <translation>英魂</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="668"/>
+        <location filename="src/thicket.cpp" line="722"/>
         <source>haoshi</source>
         <translation>好施</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="669"/>
+        <location filename="src/thicket.cpp" line="723"/>
         <source>dimeng</source>
         <translation>缔盟</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="670"/>
+        <location filename="src/thicket.cpp" line="724"/>
         <source>wansha</source>
         <translation>完杀</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="671"/>
+        <location filename="src/thicket.cpp" line="725"/>
         <source>weimu</source>
         <translation>帷幕</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="672"/>
+        <location filename="src/thicket.cpp" line="726"/>
         <source>luanwu</source>
         <translation>乱武</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="673"/>
+        <location filename="src/thicket.cpp" line="727"/>
         <source>jiuchi</source>
         <translation>酒池</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="674"/>
+        <location filename="src/thicket.cpp" line="728"/>
         <source>roulin</source>
         <translation>肉林</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="675"/>
+        <location filename="src/thicket.cpp" line="729"/>
         <source>benghuai</source>
         <translation>崩坏</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="676"/>
+        <location filename="src/thicket.cpp" line="730"/>
         <source>baonue</source>
         <translation>暴虐</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="678"/>
+        <location filename="src/thicket.cpp" line="732"/>
         <source>:xingshang</source>
         <translation>你可以立即获得死亡角色的所有牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="679"/>
+        <location filename="src/thicket.cpp" line="733"/>
         <source>:fangzhu</source>
         <translation>你每受到一次伤害，可令除你以外的任一角色补X张牌，X为你已损失的体力值，然后该角色将其武将牌翻面</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="680"/>
+        <location filename="src/thicket.cpp" line="734"/>
         <source>:songwei</source>
         <translation>主公技，其他魏势力角色的判定牌结果为黑桃或梅花且生效后，可以让你摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="681"/>
+        <location filename="src/thicket.cpp" line="735"/>
         <source>:duanliang</source>
         <translation>出牌阶段，你可以将你的一张黑桃或草花基本牌或装备牌当【兵粮寸断】使用；你可以对与你距离为2以内的角色使用【兵粮寸断】</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="682"/>
+        <location filename="src/thicket.cpp" line="736"/>
         <source>:huoshou</source>
         <translation>【南蛮入侵】对你无效;你是任何【南蛮入侵】造成伤害的来源</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="683"/>
+        <location filename="src/thicket.cpp" line="737"/>
         <source>:zaiqi</source>
         <translation>摸牌阶段，若你已受伤，你可以放弃摸牌并展示牌堆顶的X张牌，X为你已损失的体力值，其中每有一张红桃牌，你回复1点体力，然后弃掉这些红桃牌，将其余的牌收入手牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="684"/>
+        <location filename="src/thicket.cpp" line="738"/>
         <source>:juxiang</source>
         <translation>锁定技，【南蛮入侵】对你无效;若其他角色使用的【南蛮入侵】在结算完时进入弃牌堆，你立即获得它</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="685"/>
+        <location filename="src/thicket.cpp" line="739"/>
         <source>:lieren</source>
         <translation>你每使用【杀】造成一次伤害，可与受到该伤害的角色拼点：若你赢，你获得对方的一张牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="686"/>
+        <location filename="src/thicket.cpp" line="740"/>
         <source>:yinghun</source>
         <translation>回合开始阶段，若你已受伤，可令一名其他角色执行下列两项中的一项：
 　　1. 摸X张牌，然后弃一张牌
@@ -3066,142 +3082,142 @@
 　　X为你已损失的体力值,每回合限一次</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="687"/>
+        <location filename="src/thicket.cpp" line="741"/>
         <source>:haoshi</source>
         <translation>摸牌阶段，你可以额外摸两张牌，若此时你的手牌超过五张，你必须将一半(向下取整)的手牌交给除你外手牌数最少的一名角色</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="688"/>
+        <location filename="src/thicket.cpp" line="742"/>
         <source>:dimeng</source>
         <translation>出牌阶段，你可以选择其他两名角色，你弃掉等同于这两名角色手牌数差的牌，然后交换他们的手牌。每回合限一次</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="689"/>
+        <location filename="src/thicket.cpp" line="743"/>
         <source>:wansha</source>
         <translation>锁定技，在你的回合，除你以外，只有处于濒死状态的角色才能使用【桃】</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="690"/>
+        <location filename="src/thicket.cpp" line="744"/>
         <source>:weimu</source>
         <translation>锁定技，你不能成为黑色锦囊的目标</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="691"/>
+        <location filename="src/thicket.cpp" line="745"/>
         <source>:luanwu</source>
         <translation>限定技，出牌阶段，可令所有角色依次对与其距离最近的另一名角色使用一张【杀】，无法如此做者失去1点体力</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="692"/>
+        <location filename="src/thicket.cpp" line="746"/>
         <source>:jiuchi</source>
         <translation>你可以将你的任意一张黑桃手牌当【酒】使用</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="693"/>
+        <location filename="src/thicket.cpp" line="747"/>
         <source>:roulin</source>
         <translation>锁定技，你对女性角色、女性角色对你使用【杀】时，需连续使用两张【闪】才能抵消</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="694"/>
+        <location filename="src/thicket.cpp" line="748"/>
         <source>:benghuai</source>
         <translation>锁定技，回合结束阶段，若你的体力不是全场最少的(或同时为最少)，则你必须减1点体力或1点体力上限</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="695"/>
+        <location filename="src/thicket.cpp" line="749"/>
         <source>:baonue</source>
         <translation>主公技，其他群雄角色每造成一次伤害，可进行一次判定，若为黑桃，你回复1点体力</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="698"/>
+        <location filename="src/thicket.cpp" line="752"/>
         <source>:benghuai:</source>
         <translation>请选择减体力还是体力上限:</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="699"/>
+        <location filename="src/thicket.cpp" line="753"/>
         <source>benghuai:hp</source>
         <translation>体力</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="700"/>
+        <location filename="src/thicket.cpp" line="754"/>
         <source>benghuai:max_hp</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="701"/>
+        <location filename="src/thicket.cpp" line="755"/>
         <source>guixin:yes</source>
         <translation>您可分别从每名其他角色处（手牌、装备区和判断区）取得一张牌，若如此做，将你的武将牌翻面</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="702"/>
+        <location filename="src/thicket.cpp" line="756"/>
         <source>baonue:yes</source>
         <translation>你可进行一次判定，若判定结果为黑桃，则董卓回复一点体力</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="703"/>
+        <location filename="src/thicket.cpp" line="757"/>
         <source>yinghun:d1tx</source>
         <translation>摸一张牌，弃X张</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="704"/>
+        <location filename="src/thicket.cpp" line="758"/>
         <source>yinghun:dxt1</source>
         <translation>摸X张牌，弃一张牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="705"/>
+        <location filename="src/thicket.cpp" line="759"/>
         <source>zaiqi:yes</source>
         <translation>你可以放弃摸牌并展示牌堆顶的X张牌，X为你已损失的体力值，其中每有一张红桃牌，你回复1点体力，然后弃掉这些红桃牌，将其余的牌收入手牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="706"/>
+        <location filename="src/thicket.cpp" line="760"/>
         <source>lieren:yes</source>
         <translation>可与受到该伤害的角色拼点：若你赢，你获得对方的一张牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="707"/>
+        <location filename="src/thicket.cpp" line="761"/>
         <source>songwei:yes</source>
         <translation>可以让曹丕摸一张牌</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="708"/>
+        <location filename="src/thicket.cpp" line="762"/>
         <source>haoshi:yes</source>
         <translation>额外摸两张牌，若此时你的手牌超过五张，你必须将一半(向下取整)的手牌交给除你外手牌数最少的一名角色</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="709"/>
+        <location filename="src/thicket.cpp" line="763"/>
         <source>:yinghun:</source>
         <translation>请选择英魂技能的选项:</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="711"/>
+        <location filename="src/thicket.cpp" line="765"/>
         <source>@roulin1-jink-1</source>
         <translation>董卓拥有【肉林】技能，您必须出两张【闪】来闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="712"/>
+        <location filename="src/thicket.cpp" line="766"/>
         <source>@roulin1-jink-2</source>
         <translation>董卓拥有【肉林】技能，您还需要出一张【闪】来闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="713"/>
+        <location filename="src/thicket.cpp" line="767"/>
         <source>@roulin2-jink-1</source>
         <translation>你拥有【肉林】技能，女性出的【杀】您必须出两张【闪】才能闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="714"/>
+        <location filename="src/thicket.cpp" line="768"/>
         <source>@roulin2-jink-2</source>
         <translation>你拥有【肉林】技能，您还需出张【闪】才能闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="715"/>
+        <location filename="src/thicket.cpp" line="769"/>
         <source>@haoshi</source>
         <translation>请选择好施的对象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="716"/>
+        <location filename="src/thicket.cpp" line="770"/>
         <source>@fangzhu</source>
         <translation>请指定要放逐的对象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="717"/>
+        <location filename="src/thicket.cpp" line="771"/>
         <source>@yinghun</source>
         <translation>请指定要英魂的对象</translation>
     </message>

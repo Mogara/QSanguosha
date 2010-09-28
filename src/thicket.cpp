@@ -112,14 +112,62 @@ public:
     }
 };
 
-class Huoshou: public GameStartSkill{
+class NullifySavageAssault: public TriggerSkill{
 public:
-    Huoshou():GameStartSkill("huoshou"){
-
+    NullifySavageAssault():TriggerSkill("#nullify_savage_assault"){
+        events << CardEffected;
     }
 
-    void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setMenghuo(player);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+         CardEffectStruct effect = data.value<CardEffectStruct>();
+         if(effect.card->inherits("SavageAssault")){
+             LogMessage log;
+             log.type = "#SkillNullify";
+             log.from = player;
+             log.arg = player->hasSkill("huoshou") ? "huoshou" : "juxiang";
+             log.arg2 = "savage_assault";
+             player->getRoom()->sendLog(log);
+
+             return true;
+         }else
+             return false;
+    }
+};
+
+class Huoshou: public TriggerSkill{
+public:
+    Huoshou():TriggerSkill("huoshou"){
+        events << Predamage;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card && damage.card->inherits("SavageAssault")){
+            ServerPlayer *menghuo = player;
+            if(!player->hasSkill(objectName())){
+                // finding menghuo
+                Room *room = player->getRoom();
+                QList<ServerPlayer *> players = room->getOtherPlayers(player);
+                foreach(ServerPlayer *p, players){
+                    if(p->hasSkill(objectName())){
+                        menghuo = p;
+                        break;
+                    }
+                }
+            }
+
+            if(menghuo != player){
+                damage.from = menghuo;
+                menghuo->getRoom()->damage(damage);
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 
@@ -175,14 +223,33 @@ public:
     }
 };
 
-class Juxiang: public GameStartSkill{
+class Juxiang: public TriggerSkill{
 public:
-    Juxiang():GameStartSkill("juxiang"){
-
+    Juxiang():TriggerSkill("juxiang"){
+        events << CardFinished;
     }
 
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setZhurong(player);
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("SavageAssault") && !player->hasSkill(objectName())){
+            Room *room = player->getRoom();
+            if(room->getCardPlace(use.card->getId()) == Player::DiscardedPile){
+                // finding zhurong;
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *p, players){
+                    if(p->hasSkill(objectName())){
+                        p->obtainCard(use.card);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 };
 
@@ -614,10 +681,12 @@ ThicketPackage::ThicketPackage()
     xuhuang->addSkill(new Duanliang);
 
     menghuo = new General(this, "menghuo", "shu");
+    menghuo->addSkill(new NullifySavageAssault);
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
+    zhurong->addSkill(new NullifySavageAssault);
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
 

@@ -136,6 +136,7 @@ enum TriggerEvent{
 
     CardEffect,
     CardEffected,
+    CardFinished
 };
 
 class RoomThread : public QThread{

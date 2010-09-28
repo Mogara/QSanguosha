@@ -92,9 +92,10 @@ public:
 };
 
 class SavageAssault:public AOE{
+    Q_OBJECT
+
 public:
-    Q_INVOKABLE SavageAssault(Suit suit, int number);
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    Q_INVOKABLE SavageAssault(Card::Suit suit, int number);
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

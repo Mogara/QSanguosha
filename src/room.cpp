@@ -33,7 +33,7 @@ Room::Room(QObject *parent, int player_count)
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     thread(NULL), sem(NULL),
-    legatee(NULL), menghuo(NULL), zhurong(NULL),
+    legatee(NULL),
     provided(NULL)
 {
     // init callback table
@@ -834,6 +834,8 @@ void Room::useCard(ServerPlayer *player, const QString &arg){
 
     QVariant vdata = QVariant::fromValue(data);
     thread->trigger(CardUsed, player, vdata);
+
+    thread->trigger(CardFinished, player, vdata);
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
@@ -1250,22 +1252,6 @@ ServerPlayer *Room::getCardOwner(const Card *card) const{
 
 Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
-}
-
-void Room::setMenghuo(ServerPlayer *menghuo){
-    this->menghuo = menghuo;
-}
-
-ServerPlayer *Room::getMenghuo() const{
-    return menghuo;
-}
-
-void Room::setZhurong(ServerPlayer *zhurong){
-    this->zhurong = zhurong;
-}
-
-ServerPlayer *Room::getZhurong() const{
-    return zhurong;
 }
 
 void Room::skip(Player::Phase phase){

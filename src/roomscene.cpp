@@ -750,6 +750,9 @@ void RoomScene::updateSkillButtons(){
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
+        if(skill->objectName().startsWith("#"))
+            continue;
+
         QAbstractButton *button = NULL;
         QString skill_name = Sanguosha->translate(skill->objectName());
         if(skill->inherits("TriggerSkill")){

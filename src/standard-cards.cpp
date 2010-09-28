@@ -468,35 +468,17 @@ SavageAssault::SavageAssault(Suit suit, int number)
     setObjectName("savage_assault");
 }
 
-void SavageAssault::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    AOE::use(room, source, targets);
-
-    Player::Place place = room->getCardPlace(getId());
-    if(place == Player::DiscardedPile){
-        ServerPlayer *zhurong = room->getZhurong();
-        if(zhurong && zhurong->isAlive() && source != zhurong)
-            zhurong->obtainCard(this);
-    }
-}
-
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
-    if(effect.to->hasSkill("huoshou") || effect.to->hasSkill("juxiang"))
-        return;
-
     Room *room = effect.to->getRoom();
     const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->getGeneralName());
     if(slash == NULL){
         DamageStruct damage;
         damage.card = this;
-        damage.damage = 1;        
+        damage.damage = 1;
         damage.to = effect.to;
         damage.nature = DamageStruct::Normal;
 
         damage.from = effect.from;
-        ServerPlayer *menghuo = room->getMenghuo();
-        if(menghuo && menghuo->isAlive())
-            damage.from = menghuo;
-
         room->damage(damage);
     }
 }
@@ -572,12 +554,15 @@ public:
         ServerPlayer *killer = targets.at(0);
         ServerPlayer *victim = targets.at(1);
 
-        QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
-        const Card *slash = room->askForCard(killer, "slash", prompt);
-        if(slash){
-            room->cardEffect(slash, killer, victim);
-        }else{
-            source->obtainCard(killer->getWeapon());
+        bool on_effect = room->cardEffect(this, killer, victim);
+        if(on_effect){
+            QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
+            const Card *slash = room->askForCard(killer, "slash", prompt);
+            if(slash){
+                room->cardEffect(slash, killer, victim);
+            }else{
+                source->obtainCard(killer->getWeapon());
+            }
         }
     }
 };
@@ -847,7 +832,17 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        return effect.slash->isBlack();
+        if(effect.slash->isBlack()){
+            LogMessage log;
+            log.type = "#ArmorNullify";
+            log.from = player;
+            log.arg = objectName();
+            log.arg2 = effect.slash->objectName();
+            player->getRoom()->sendLog(log);
+
+            return true;
+        }else
+            return false;
     }
 };
 

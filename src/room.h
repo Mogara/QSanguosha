@@ -77,11 +77,6 @@ public:
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
 
-    void setMenghuo(ServerPlayer *menghuo);
-    ServerPlayer *getMenghuo() const;
-    void setZhurong(ServerPlayer *zhurong);
-    ServerPlayer *getZhurong() const;
-
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
@@ -153,7 +148,6 @@ private:
     QMap<int, ServerPlayer*> owner_map;
     ServerPlayer *legatee;
 
-    ServerPlayer *menghuo, *zhurong;
     QSet<Player::Phase> skip_set;
 
     const Card *provided;
