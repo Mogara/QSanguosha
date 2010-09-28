@@ -442,6 +442,7 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
         QString icon_path = general->getPixmapPath("card");
         QString caption = Sanguosha->translate(general->objectName());
         OptionButton *button = new OptionButton(icon_path, caption);
+        button->setToolTip(general->getSkillDescription());
         button->setIconSize(GeneralSize);
         buttons << button;
 

@@ -63,6 +63,23 @@ QString General::getPackage() const{
     return parent()->objectName();
 }
 
+QString General::getSkillDescription() const{
+    QString description;
+
+    QList<Skill *> skills = skill_map.values();
+    foreach(const Skill *skill, skills){
+        if(skill->objectName().startsWith("#"))
+            continue;
+
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = skill->getDescription();
+        desc.replace("\n", "<br/>");
+        description.append(QString("<b>%1</b>: %2 <br/>").arg(skill_name).arg(desc));
+    }
+
+    return description;
+}
+
 void General::playEffect(const QString &skill_name) const
 {
     Skill *skill = skill_map.value(skill_name, NULL);

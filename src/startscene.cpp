@@ -92,6 +92,7 @@ void StartScene::switchToServer(Server *server){
     }
 
     server_log->append(tr("Binding port number is %1").arg(Config.Port));
+    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));
 
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
 

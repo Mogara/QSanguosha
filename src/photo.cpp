@@ -90,6 +90,7 @@ void Photo::showCard(int card_id){
 void Photo::updateAvatar(){
     if(player){
         const General *general = player->getAvatarGeneral();
+        setToolTip(general->getSkillDescription());
         avatar.load(general->getPixmapPath("small"));
         avatar = avatar.scaled(QSize(128,58));
         kingdom = QPixmap(general->getKingdomPath());

@@ -87,6 +87,7 @@ void Dashboard::setPlayer(const Player *player){
 
 void Dashboard::updateAvatar(){
     const General *general = player->getAvatarGeneral();
+    avatar->setToolTip(general->getSkillDescription());
     avatar->changePixmap(general->getPixmapPath("big"));
     kingdom->setPixmap(QPixmap(general->getKingdomPath()));
 

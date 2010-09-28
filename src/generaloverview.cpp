@@ -78,13 +78,14 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     ui->skillTextEdit->clear();
     ui->skillComboBox->clear();
     foreach(const Skill *skill, skills){
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription();
-        desc.replace("\n", "<br/>");
-        ui->skillTextEdit->append(QString("<b>%1</b>: %2 <br/>").arg(skill_name).arg(desc));
+        if(skill->objectName().startsWith("#"))
+            continue;
 
+        QString skill_name = Sanguosha->translate(skill->objectName());
         ui->skillComboBox->addItem(skill_name, QVariant::fromValue(skill->objectName()));
     }
+
+    ui->skillTextEdit->append(general->getSkillDescription());
 }
 
 void GeneralOverview::on_playEffecButton_clicked()
