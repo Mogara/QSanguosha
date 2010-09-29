@@ -2,11 +2,12 @@
 #include "skill.h"
 #include "engine.h"
 #include "standard.h"
+#include "ai.h"
 
 #include <QHostAddress>
 
 ServerPlayer::ServerPlayer(Room *room)
-    : Player(room), socket(NULL), room(room)
+    : Player(room), socket(NULL), room(room), ai(NULL)
 {
 }
 
@@ -186,6 +187,26 @@ QList<int> ServerPlayer::handCards() const{
     return card_ids;
 }
 
+QList<const Card *> ServerPlayer::getHandcards() const{
+    return handcards;
+}
+
+QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
+    QList<const Card *> cards;
+    if(flags.contains("h"))
+        cards << handcards;
+
+    cards << getEquips();
+
+    if(flags.contains("j")){
+        QStack<const Card *> tricks = getJudgingArea();
+        foreach(const Card *trick, tricks)
+            cards << trick;
+    }
+
+    return cards;
+}
+
 DummyCard *ServerPlayer::wholeHandCards() const{
     DummyCard *dummy_card = new DummyCard;
     foreach(const Card *card, handcards)
@@ -212,4 +233,24 @@ bool ServerPlayer::hasNullification() const{
     }
 
     return false;
+}
+
+void ServerPlayer::setAIByGeneral(){
+    if(getGeneral()){
+        delete ai;
+        ai = Sanguosha->cloneAI(this);
+        if(ai == NULL)
+            ai = new TrustAI(this);
+    }
+}
+
+void ServerPlayer::setAI(AI *ai) {
+    this->ai = ai;
+}
+
+AI *ServerPlayer::getAI() const{
+    if(getState() == "online")
+        return NULL;
+    else
+        return ai;
 }

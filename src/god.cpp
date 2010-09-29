@@ -65,7 +65,7 @@ public:
         room->broadcastInvoke("fillAG", card_str.join("+"));
 
         while(!card_ids.isEmpty()){
-            int card_id = room->askForAG(shenlumeng);
+            int card_id = room->askForAG(shenlumeng, card_ids);
             room->takeAG(shenlumeng, card_id);
 
             const Card *card = Sanguosha->getCard(card_id);

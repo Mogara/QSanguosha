@@ -13,6 +13,7 @@ public:
     StandardPackage();
     void addCards();
     void addGenerals();
+    void addAIs();
 };
 
 class BasicCard:public Card{
@@ -28,9 +29,15 @@ class TrickCard:public Card{
     Q_OBJECT
 
 public:
-    TrickCard(Suit suit, int number):Card(suit, number){}
+    TrickCard(Suit suit, int number, bool aggressive)
+        :Card(suit, number), aggressive(aggressive){}
+    bool isAggressive() const;
+
     virtual QString getType() const;
     virtual int getTypeId() const;
+
+private:
+    bool aggressive;
 };
 
 class EquipCard:public Card{
@@ -47,7 +54,7 @@ public:
     };
 
     EquipCard(Suit suit, int number):Card(suit, number, true), skill(NULL){}
-    TriggerSkill *getSkill() const;
+    TriggerSkill *getSkill() const;    
 
     virtual QString getType() const;
     virtual int getTypeId() const;
@@ -67,7 +74,7 @@ class GlobalEffect:public TrickCard{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
+    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number):TrickCard(suit, number, false){ target_fixed = true;}
     virtual QString getSubtype() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
@@ -85,7 +92,7 @@ class AOE:public TrickCard{
     Q_OBJECT
 
 public:
-    AOE(Suit suit, int number):TrickCard(suit, number){ target_fixed = true;}
+    AOE(Suit suit, int number):TrickCard(suit, number, true){ target_fixed = true;}
     virtual QString getSubtype() const;
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
@@ -111,7 +118,7 @@ class SingleTargetTrick: public TrickCard{
     Q_OBJECT
 
 public:
-    SingleTargetTrick(Suit suit, int number):TrickCard(suit, number){}
+    SingleTargetTrick(Suit suit, int number, bool aggressive):TrickCard(suit, number, aggressive){}
     virtual QString getSubtype() const;
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;

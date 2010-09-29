@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "card.h"
 #include "client.h"
+#include "ai.h"
 
 #include <QFile>
 #include <QStringList>
@@ -140,6 +141,19 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
         return card;
+    }else
+        return NULL;
+}
+
+AI *Engine::cloneAI(ServerPlayer *player){
+    QString general_name = player->getGeneralName();
+    general_name[0] = general_name[0].toUpper();
+    QString ai_name = general_name + "AI";
+    const QMetaObject *meta = metaobjects.value(ai_name, NULL);
+    if(meta){
+        QObject *ai_object = meta->newInstance(Q_ARG(ServerPlayer *, player));
+        AI *ai = qobject_cast<AI *>(ai_object);
+        return ai;
     }else
         return NULL;
 }

@@ -22,7 +22,6 @@ public:
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     QPixmap pixmap;
 

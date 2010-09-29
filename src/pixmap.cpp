@@ -3,12 +3,17 @@
 #include <QPainter>
 #include <QGraphicsColorizeEffect>
 #include <QMessageBox>
+#include <QImageReader>
 
 Pixmap::Pixmap(const QString &filename, bool center_as_origin)
     :pixmap(filename), markable(false), marked(false)
 {
     if(pixmap.isNull()){
-        QString warning = tr("Can not load image %1[%2]").arg(filename).arg(metaObject()->className());
+        QImageReader reader(filename);
+        QString error_string = reader.errorString();
+
+        QString warning = tr("Can not load image %1[%2], error string is %3")
+                          .arg(filename).arg(metaObject()->className()).arg(error_string);
         QMessageBox::warning(NULL, tr("Warning"), warning);
     }
 
@@ -55,11 +60,6 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
 
     return QGraphicsObject::itemChange(change, value);
 }
-
-void Pixmap::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    setSelected(true);
-}
-
 
 bool Pixmap::isMarked() const{
     return markable && marked;

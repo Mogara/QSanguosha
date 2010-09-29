@@ -49,7 +49,9 @@ SOURCES += src/main.cpp \
     src/firepackage.cpp \
     src/god.cpp \
     src/configdialog.cpp \
-    src/clientlogbox.cpp
+    src/clientlogbox.cpp \
+    src/ai.cpp \
+    src/standard-ai.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -91,7 +93,9 @@ HEADERS += src/mainwindow.h \
     src/firepackage.h \
     src/god.h \
     src/configdialog.h \
-    src/clientlogbox.h
+    src/clientlogbox.h \
+    src/ai.h \
+    src/standard-ai.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

@@ -125,7 +125,7 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
-    :Skill(name), view_as_skill(NULL)
+    :Skill(name), view_as_skill(NULL), default_choice("no")
 {
 
 }
@@ -136,6 +136,10 @@ const ViewAsSkill *TriggerSkill::getViewAsSkill() const{
 
 QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
     return events;
+}
+
+QString TriggerSkill::getDefaultChoice() const{
+    return default_choice;
 }
 
 int TriggerSkill::getPriority(ServerPlayer *target) const{    

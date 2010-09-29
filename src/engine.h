@@ -14,6 +14,8 @@
 using Phonon::MediaObject;
 using Phonon::MediaSource;
 
+class AI;
+
 class Engine: public QObject
 {
     Q_OBJECT
@@ -26,6 +28,7 @@ public:
     void addBanPackage(const QString &package_name);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name);
+    AI *cloneAI(ServerPlayer *player);
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -48,6 +51,7 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QHash<QString, MediaSource> male_effects, female_effects;
+
     QList<MediaObject *> effects;
 
     QList<Card*> cards;

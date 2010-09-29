@@ -414,29 +414,27 @@ public:
             card_str << QString::number(card_id);
         room->broadcastInvoke("fillAG", card_str.join("+"));
 
-        foreach(ServerPlayer *player, players)
-            room->cardEffect(this, source, player);
+        foreach(ServerPlayer *player, players){
+            bool can_take = room->cardEffect(this, source, player);
+            if(can_take){
+                int card_id = room->askForAG(player, card_ids);
+                card_ids.removeOne(card_id);
+
+                // these code is quick-and-dirty
+                player->addCard(Sanguosha->getCard(card_id), Player::Hand);
+                room->setCardMapping(card_id, player, Player::Hand);
+
+                LogMessage log;
+                log.type = "$TakeAG";
+                log.from = player;
+                log.card_str = QString::number(card_id);
+                room->sendLog(log);
+
+                room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
+            }
+        }
 
         room->broadcastInvoke("clearAG");
-    }
-
-    virtual void onEffect(const CardEffectStruct &effect) const{
-        ServerPlayer *player = effect.to;
-        Room *room = player->getRoom();
-
-        int card_id = room->askForAG(player);       
-
-        // these code is quick-and-dirty
-        player->addCard(Sanguosha->getCard(card_id), Player::Hand);
-        room->setCardMapping(card_id, player, Player::Hand);
-
-        LogMessage log;
-        log.type = "$TakeAG";
-        log.from = player;
-        log.card_str = QString::number(card_id);
-        room->sendLog(log);
-
-        room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
     }
 };
 
@@ -517,7 +515,7 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<Server
 
 class Collateral:public SingleTargetTrick{
 public:
-    Collateral(Suit suit, int number):SingleTargetTrick(suit, number){
+    Collateral(Suit suit, int number):SingleTargetTrick(suit, number, false){
         setObjectName("collateral");
     }
 
@@ -568,7 +566,7 @@ public:
 };
 
 Nullification::Nullification(Suit suit, int number)
-    :SingleTargetTrick(suit, number)
+    :SingleTargetTrick(suit, number, false)
 {
     setObjectName("nullification");
 }
@@ -578,7 +576,7 @@ bool Nullification::isAvailable() const{
 }
 
 ExNihilo::ExNihilo(Suit suit, int number)
-    :SingleTargetTrick(suit, number)
+    :SingleTargetTrick(suit, number, false)
 {
     setObjectName("ex_nihilo");
     target_fixed = true;
@@ -599,7 +597,7 @@ void ExNihilo::onEffect(const CardEffectStruct &effect) const{
 }
 
 Duel::Duel(Suit suit, int number)
-    :SingleTargetTrick(suit, number)
+    :SingleTargetTrick(suit, number, true)
 {
     setObjectName("duel");
 }
@@ -609,6 +607,9 @@ bool Duel::targetFilter(const QList<const ClientPlayer *> &targets, const Client
         return false;
 
     if(to_select->hasSkill("weimu") && isBlack())
+        return false;
+
+    if(to_select == Self)
         return false;
 
     return targets.isEmpty();
@@ -648,7 +649,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     room->damage(damage);
 }
 
-Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number) {
+Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number, true) {
     setObjectName("snatch");
 }
 
@@ -688,7 +689,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
-    :SingleTargetTrick(suit, number) {
+    :SingleTargetTrick(suit, number, false) {
     setObjectName("dismantlement");
 }
 

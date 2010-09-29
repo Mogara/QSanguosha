@@ -293,6 +293,20 @@ const Horse *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
+QList<const Card *> Player::getEquips() const{
+    QList<const Card *> equips;
+    if(weapon)
+        equips << weapon;
+    if(armor)
+        equips << armor;
+    if(offensive_horse)
+        equips << offensive_horse;
+    if(defensive_horse)
+        equips << defensive_horse;
+
+    return equips;
+}
+
 bool Player::hasWeapon(const QString &weapon_name) const{
     return weapon && weapon->objectName() == weapon_name;
 }

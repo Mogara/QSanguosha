@@ -81,6 +81,7 @@ public:
     TriggerSkill(const QString &name);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
+    QString getDefaultChoice() const;
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;    
@@ -89,6 +90,7 @@ public:
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
+    QString default_choice;
 };
 
 class MasochismSkill: public TriggerSkill{

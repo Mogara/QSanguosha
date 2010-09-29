@@ -29,6 +29,7 @@ class Hujia:public TriggerSkill{
 public:
     Hujia():TriggerSkill("hujia$"){
         events << CardAsked;
+        default_choice = "ignore";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -382,6 +383,7 @@ class Jijiang: public TriggerSkill{
 public:
     Jijiang():TriggerSkill("jijiang$"){
         events << CardAsked;
+        default_choice = "ignore";
 
         view_as_skill = new JijiangViewAsSkill;
     }

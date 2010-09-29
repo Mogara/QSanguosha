@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "settings.h"
 #include "standard.h"
+#include "ai.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -272,6 +273,10 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
 }
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForSkillInvoke(skill_name);
+
     player->invoke("askForSkillInvoke", skill_name);
 
     reply_func = "invokeSkillCommand";
@@ -294,6 +299,10 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
 }
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForChoice(skill_name, choices);
+
     QString ask_str = QString("%1:%2").arg(skill_name).arg(choices);
     player->invoke("askForChoice", ask_str);
 
@@ -332,17 +341,20 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         if(!player->hasNullification())
             continue;
 
-        player->invoke("askForNullification", ask_str);
+        int card_id = -1;
+        AI *ai = player->getAI();
+        if(ai){
+            card_id = ai->askForNullification(trick_name, from, to);
+        }else{
+            player->invoke("askForNullification", ask_str);
 
-        reply_func = "replyNullificationCommand";
-        reply_player = player;
+            reply_func = "replyNullificationCommand";
+            reply_player = player;
 
-        sem->acquire();
+            sem->acquire();
 
-        bool ok;
-        int card_id = result.toInt(&ok);
-        if(!ok)
-            continue;
+            card_id = result.toInt();
+        }
 
         if(card_id == -1)
             continue;
@@ -352,7 +364,7 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         LogMessage log;
         log.type = "#Nullification";
         log.from = player;
-        log.card_str = result;
+        log.card_str = QString::number(card_id);
         sendLog(log);
 
         playCardEffect("nullification", player->getGeneral()->isMale());
@@ -368,16 +380,23 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason){
-    player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
+    int card_id;
 
-    reply_func = "chooseCardCommand";
-    reply_player = player;
+    AI *ai = player->getAI();
+    if(ai){
+        card_id = ai->askForCardChosen(who, flags, reason);
+    }else{
+        player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
 
-    sem->acquire();
+        reply_func = "chooseCardCommand";
+        reply_player = player;
 
-    bool ok;
-    int card_id = result.toInt(&ok);
-    if(!ok || card_id == -1)
+        sem->acquire();
+
+        card_id = result.toInt();
+    }
+
+    if(card_id == -1)
         card_id = who->getRandomHandCard();
 
     return card_id;
@@ -392,28 +411,32 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         card = provided;
         provided = NULL;
     }else{
-        player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
+        AI *ai = player->getAI();
+        if(ai)
+            card = ai->askForCard(pattern);
+        else{
+            player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
-        reply_func = "responseCardCommand";
-        reply_player = player;
+            reply_func = "responseCardCommand";
+            reply_player = player;
 
-        sem->acquire();
+            sem->acquire();
 
-        if(result != "."){
-            card = Card::Parse(result);
-
-            LogMessage log;
-            log.card_str = result;
-            log.from = player;
-            log.type = QString("#%1").arg(card->metaObject()->className());
-            sendLog(log);
-
-            player->playCardEffect(card);
-            throwCard(card);
+            if(result != ".")
+                card = Card::Parse(result);
         }
     }
 
     if(card){
+        LogMessage log;
+        log.card_str = card->toString();
+        log.from = player;
+        log.type = QString("#%1").arg(card->metaObject()->className());
+        sendLog(log);
+
+        player->playCardEffect(card);
+        throwCard(card);
+
         CardStar card_ptr = card;
         QVariant card_star = QVariant::fromValue(card_ptr);
         thread->trigger(CardResponsed, player, card_star);
@@ -425,32 +448,54 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
     Q_ASSERT(pattern.startsWith("@@"));
 
-    player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
+    QString answer;
+    AI *ai = player->getAI();
+    if(ai)
+        answer = ai->askForUseCard(pattern, prompt);
+    else{
+        player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
 
-    reply_func = "useCardCommand";
-    reply_player = player;
+        reply_func = "useCardCommand";
+        reply_player = player;
 
-    sem->acquire();
+        sem->acquire();
 
-    if(result != "."){
-        useCard(player, result);
+        answer = result;
+    }
+
+    if(answer != "."){
+        useCard(player, answer);
         return true;
     }else
         return false;
 }
 
-int Room::askForAG(ServerPlayer *player){
-    player->invoke("askForAG");
+int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
+    int card_id;
 
-    reply_func = "chooseAGCommand";
-    reply_player = player;
+    AI *ai = player->getAI();
+    if(ai)
+        card_id = ai->askForAG(card_ids);
+    else{
 
-    sem->acquire();
+        player->invoke("askForAG");
 
-    return result.toInt();
+        reply_func = "chooseAGCommand";
+        reply_player = player;
+
+        sem->acquire();
+
+        card_id = result.toInt();
+    }
+
+    return card_id;
 }
 
 int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForCardShow(requestor);
+
     player->invoke("askForCardShow", requestor->getGeneralName());
 
     reply_func = "responseCardCommand";
@@ -505,17 +550,25 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
 }
 
 bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
-    player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
+    const Card *peach = NULL;
 
-    reply_func = "responseCardCommand";
-    reply_player = player;
+    AI *ai = player->getAI();
+    if(ai)
+        peach = ai->askForSinglePeach(dying);
+    else{
+        player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
 
-    sem->acquire();
+        reply_func = "responseCardCommand";
+        reply_player = player;
 
-    if(result == ".")
-        return false;
+        sem->acquire();
 
-    const Card *peach = Card::Parse(result);
+        if(result == ".")
+            return false;
+
+        peach = Card::Parse(result);
+    }
+
     if(!peach)
         return false;
 
@@ -524,7 +577,7 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
 
     LogMessage log;
     log.type = "#Peach";
-    log.card_str = result;
+    log.card_str = peach->toString();
     log.from = player;
     sendLog(log);
 
@@ -973,6 +1026,9 @@ void Room::startGame(){
 
         broadcastProperty(player, "maxhp");
         broadcastProperty(player, "hp");
+
+        // setup AI
+        player->setAIByGeneral();
     }
 
     broadcastInvoke("startGame");
@@ -1149,6 +1205,10 @@ void Room::broadcastInvoke(const char *method, const QString &arg){
 }
 
 QString Room::activate(ServerPlayer *target){
+    AI *ai = target->getAI();
+    if(ai)
+        return ai->activate();
+
     broadcastInvoke("activate", target->objectName());
 
     reply_func = "useCardCommand";
@@ -1160,6 +1220,10 @@ QString Room::activate(ServerPlayer *target){
 }
 
 Card::Suit Room::askForSuit(ServerPlayer *player){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForSuit();
+
     player->invoke("askForSuit");
 
     reply_func = "chooseSuitCommand";
@@ -1186,37 +1250,47 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
 }
 
 bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip, Card::Suit suit){
-    QString ask_str = QString::number(discard_num);
-    if(optional)
-        ask_str.append("o");
-    if(include_equip)
-        ask_str.append("e");
+    QList<int> to_discard;
 
-    switch(suit){
-    case Card::Spade: ask_str.append("S"); break;
-    case Card::Club: ask_str.append("C"); break;
-    case Card::Heart: ask_str.append("H"); break;
-    case Card::Diamond: ask_str.append("D"); break;
-    default: break;
+    AI *ai = target->getAI();
+    if(ai)
+       to_discard = ai->askForDiscard(discard_num, optional, include_equip, suit);
+    else{
+        QString ask_str = QString::number(discard_num);
+        if(optional)
+            ask_str.append("o");
+        if(include_equip)
+            ask_str.append("e");
+
+        switch(suit){
+        case Card::Spade: ask_str.append("S"); break;
+        case Card::Club: ask_str.append("C"); break;
+        case Card::Heart: ask_str.append("H"); break;
+        case Card::Diamond: ask_str.append("D"); break;
+        default: break;
+        }
+
+        target->invoke("askForDiscard", ask_str);
+
+        reply_func = "discardCardsCommand";
+        reply_player = target;
+
+        sem->acquire();
+
+        if(result == ".")
+            return false;
+
+        QStringList card_strs = result.split("+");
+        foreach(QString card_str, card_strs){            
+            int card_id = card_str.toInt();
+            to_discard << card_id;
+        }
     }
 
-    target->invoke("askForDiscard", ask_str);
-
-    reply_func = "discardCardsCommand";
-    reply_player = target;
-
-    sem->acquire();
-
-    if(result == ".")
-        return false;
-
-    QStringList card_strs = result.split("+");   
-    foreach(QString card_str, card_strs){
-        int card_id = card_str.toInt();
+    foreach(int card_id, to_discard)
         throwCard(card_id);
-    }
 
-    int length = card_strs.length();
+    int length = to_discard.length();
 
     LogMessage log;
     log.type = "#DiscardCards";
@@ -1362,6 +1436,10 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
 }
 
 const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForPindian();
+
     player->invoke("askForPindian", ask_str);
 
     reply_func = "responseCardCommand";
@@ -1409,6 +1487,10 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
 }
 
 ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForPlayerChosen(targets);
+
     QStringList options;
     foreach(ServerPlayer *target, targets)
         options << target->objectName();

@@ -14,6 +14,10 @@ int BasicCard::getTypeId() const{
     return 0;
 }
 
+bool TrickCard::isAggressive() const{
+    return aggressive;
+}
+
 QString TrickCard::getType() const{
     return "trick";
 }
@@ -109,7 +113,7 @@ bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets,
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    :TrickCard(suit, number), movable(movable)
+    :TrickCard(suit, number, true), movable(movable)
 {
 }
 
@@ -318,6 +322,7 @@ StandardPackage::StandardPackage()
 
     addCards();
     addGenerals();
+    addAIs();
 }
 
 ADD_PACKAGE(Standard)

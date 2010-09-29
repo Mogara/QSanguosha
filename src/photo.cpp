@@ -211,8 +211,18 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     if(!player)
         return;
+
     painter->setPen(Qt::white);
-    painter->drawText(QRectF(0,0,132,19), player->objectName(), QTextOption(Qt::AlignHCenter));
+    QString title;
+    QString general_name = player->getGeneralName();
+    if(general_name.isEmpty())
+        title = player->objectName();
+    else{
+        general_name = Sanguosha->translate(general_name);
+        title = QString("%1[%2]").arg(player->objectName()).arg(general_name);
+    }
+
+    painter->drawText(QRectF(0,0,132,19), title, QTextOption(Qt::AlignHCenter));
 
     if(hide_avatar)
         return;

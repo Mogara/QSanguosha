@@ -3,6 +3,7 @@
 
 class Room;
 struct CardMoveStruct;
+class AI;
 
 #include "player.h"
 
@@ -29,9 +30,15 @@ public:
     void throwAllCards();
     void drawCards(int n);
     QList<int> handCards() const;
+    QList<const Card *> getHandcards() const;
+    QList<const Card *> getCards(const QString &flags) const;
     DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
+
+    void setAIByGeneral();
+    void setAI(AI *ai);
+    AI *getAI() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
@@ -42,6 +49,7 @@ private:
     QTcpSocket *socket;
     QList<const Card *> handcards;
     Room *room;
+    AI *ai;
 
 private slots:
     void getRequest();

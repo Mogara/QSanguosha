@@ -299,6 +299,8 @@ public:
 class Yinghun: public PhaseChangeSkill{
 public:
     Yinghun():PhaseChangeSkill("yinghun"){
+        default_choice = "d1tx";
+
         view_as_skill = new YinghunViewAsSkill;
     }
 
@@ -604,6 +606,7 @@ class Benghuai: public PhaseChangeSkill{
 public:
     Benghuai():PhaseChangeSkill("benghuai"){
         frequency = Compulsory;
+        default_choice = "hp";
     }
 
     virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{

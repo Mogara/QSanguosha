@@ -124,6 +124,7 @@ public:
     const Armor *getArmor() const;
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
+    QList<const Card *> getEquips() const;
 
     bool hasWeapon(const QString &weapon_name) const;
     bool hasArmorEffect(const QString &armor_name) const;
