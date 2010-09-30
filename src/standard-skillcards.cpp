@@ -151,6 +151,10 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     room->directCardEffect(effect);
 }
 
+void LijianCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("lijian_used", true);
+}
+
 QingnangCard::QingnangCard(){
 }
 

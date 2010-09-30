@@ -441,7 +441,7 @@ void Client::moveCardToDrawPile(const QString &from){
 void Client::startGame(const QString &){
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
-    emit status_changed(NotActive);
+    emit game_started();
 }
 
 void Client::hpChange(const QString &change_str){
@@ -654,6 +654,12 @@ void Client::choosePlayer(){
         QString player_name = sender()->objectName();
         request("choosePlayer " + player_name);
     }
+}
+
+void Client::trust(){
+    request("trust .");
+
+    // setStatus(NotActive);
 }
 
 void Client::speakToServer(const QString &text){

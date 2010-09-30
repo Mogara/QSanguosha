@@ -290,6 +290,7 @@ StandardPackage::StandardPackage()
     // states
     t["online"] = tr("online");
     t["offline"] = tr("offline");
+    t["trust"] = tr("trust");
 
     // normal phrases
     t["yes"] = tr("yes");

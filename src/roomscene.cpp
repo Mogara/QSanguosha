@@ -67,11 +67,21 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     role_combobox = new QComboBox;
     role_combobox->addItem(tr("Your role"));
     role_combobox->addItem(tr("Unknown"));
-    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
+    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));    
 
     QGraphicsLinearLayout *button_layout = new QGraphicsLinearLayout(Qt::Horizontal);
 
-    // add buttons
+    // add trust buttons
+    trust_button = new QPushButton(tr("Trust"));
+    trust_button->setEnabled(false);    
+    QGraphicsProxyWidget *trust_widget = addWidget(trust_button);
+    trust_widget->setPos(dashboard->pos());
+    trust_widget->moveBy(0, -30);
+
+    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+
+    // add other buttons
     ok_button = new QPushButton(tr("OK"));
     cancel_button = new QPushButton(tr("Cancel"));
     discard_button = new QPushButton(tr("Discard cards"));
@@ -117,6 +127,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
+    connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
 
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(n_cards_moved(int,QString,QString)), this, SLOT(moveNCards(int,QString,QString)));
@@ -1211,6 +1222,13 @@ void RoomScene::doSkillButton(){
     }
 }
 
+void RoomScene::updateTrustButton(){
+    if(Self->getState() == "trust")
+        trust_button->setText(tr("Cancel trust"));
+    else
+        trust_button->setText(tr("Trust"));
+}
+
 void RoomScene::doOkButton(){
     if(!ok_button->isEnabled())
         return;
@@ -1809,5 +1827,10 @@ void RoomScene::chooseGongxinCard(){
 
         gongxin_items.clear();
     }
+}
+
+void RoomScene::onGameStart(){
+    trust_button->setEnabled(true);
+    updateStatus(ClientInstance->getStatus());
 }
 

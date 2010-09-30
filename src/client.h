@@ -117,7 +117,8 @@ public slots:
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
-    void choosePlayer();    
+    void choosePlayer();
+    void trust();
 
 #ifndef QT_NO_DEBUG
     void cheatChoose();
@@ -161,6 +162,7 @@ signals:
     void guanxing(const QList<int> &card_ids);
     void gongxin(const QList<int> &card_ids);
     void words_spoken(const QString &who, const QString &text);
+    void game_started();
 
     void cards_drawed(const QList<const Card *> &cards);
     void n_cards_drawed(ClientPlayer *player, int n);

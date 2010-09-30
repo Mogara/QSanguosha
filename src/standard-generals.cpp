@@ -938,6 +938,10 @@ public:
 
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("lijian_used", false).toBool();
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         return selected.isEmpty();
     }

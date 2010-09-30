@@ -51,6 +51,7 @@ private:
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;
+    QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;
     Daqiao *daqiao;
@@ -98,6 +99,7 @@ private slots:
     void updateSkillButtons();
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
+    void updateTrustButton();
     void doSkillButton();
     void doOkButton();
     void doCancelButton();
@@ -110,6 +112,7 @@ private slots:
     void viewDistance();
     void speak(const QString &who, const QString &text);
     void speak();
+    void onGameStart();    
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);

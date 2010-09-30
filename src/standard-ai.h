@@ -12,4 +12,13 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name) const;
 };
 
+class SimayiAI: public TrustAI{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SimayiAI(ServerPlayer *player);
+
+    virtual bool askForSkillInvoke(const QString &skill_name) const;
+};
+
 #endif // STANDARDAI_H

@@ -694,6 +694,15 @@ void Room::processRequest(const QString &request){
         return;
     }
 
+    if(command == "trust"){
+        if(player->getState() == "online")
+            player->setState("trust");
+        else
+            player->setState("online");
+
+        broadcastProperty(player, "state");
+        return;
+    }
 
     if(reply_player && reply_player != player){
         player->invoke("focusWarn", player->objectName());
