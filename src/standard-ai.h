@@ -3,7 +3,7 @@
 
 #include "ai.h"
 
-class CaocaoAI: public TrustAI{
+class CaocaoAI: public SmartAI{
     Q_OBJECT
 
 public:
@@ -12,7 +12,7 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name) const;
 };
 
-class SimayiAI: public TrustAI{
+class SimayiAI: public SmartAI{
     Q_OBJECT
 
 public:

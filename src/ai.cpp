@@ -14,10 +14,9 @@ TrustAI::TrustAI(ServerPlayer *player)
 {
 }
 
-QString TrustAI::activate() const{
+void TrustAI::activate(CardUseStruct &card_use) const{
     QList<const Card *> cards = player->getHandcards();
     foreach(const Card *card, cards){
-        int card_id = card->getId();
         bool use_it = false;
 
         if(card->inherits("Peach"))
@@ -33,20 +32,17 @@ QString TrustAI::activate() const{
         }else if(card->inherits("TrickCard"))
             use_it = card->targetFixed();
 
-        if(use_it)
-            return QString("%1->.").arg(card_id);
-    }
+        if(use_it){
+            card_use.card = card;
+            card_use.from = player;
 
-    return ".";
+            return;
+        }
+    }
 }
 
 Card::Suit TrustAI::askForSuit() const{
-    static QList<Card::Suit> suits;
-    if(suits.isEmpty())
-        suits << Card::Spade << Card::Club
-                << Card::Heart << Card::Diamond;
-
-    return suits.at(qrand()%4);
+    return Card::AllSuits[qrand() % 4];
 }
 
 bool TrustAI::askForSkillInvoke(const QString &skill_name) const{
@@ -158,8 +154,7 @@ int TrustAI::askForAG(const QList<int> &card_ids) const{
 }
 
 int TrustAI::askForCardShow(ServerPlayer *) const{
-    QList<const Card *> cards = player->getHandcards();
-    return cards.at(qrand() % cards.length())->getId();
+    return player->getRandomHandCard();
 }
 
 const Card *TrustAI::askForPindian() const{
@@ -188,4 +183,41 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) const{
     }
 
     return NULL;
+}
+
+SmartAI::SmartAI(ServerPlayer *player)
+    :TrustAI(player)
+{
+
+}
+
+int SmartAI::askForCardShow(ServerPlayer *requestor) const{
+    QList<const Card *> cards = requestor->getHandcards();
+    Card::Suit lack = Card::NoSuit;
+    int i;
+    for(i=0; i<4; i++){
+        Card::Suit suit = Card::AllSuits[i];
+        bool found = false;
+        foreach(const Card *card, cards){
+            if(card->getSuit() == suit){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            lack = suit;
+            break;
+        }
+    }
+
+    cards = player->getHandcards();
+    if(lack != Card::NoSuit){
+        foreach(const Card *card, cards){
+            if(card->getSuit() == lack)
+                return card->getId();
+        }
+    }
+
+    return TrustAI::askForCardShow(requestor);
 }

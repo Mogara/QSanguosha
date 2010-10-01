@@ -2,7 +2,7 @@
 #include "standard.h"
 
 CaocaoAI::CaocaoAI(ServerPlayer *player)
-    :TrustAI(player)
+    :SmartAI(player)
 {
 
 }
@@ -12,7 +12,7 @@ bool CaocaoAI::askForSkillInvoke(const QString &skill_name) const{
 }
 
 SimayiAI::SimayiAI(ServerPlayer *player)
-    :TrustAI(player)
+    :SmartAI(player)
 {
 
 }

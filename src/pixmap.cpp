@@ -43,13 +43,15 @@ void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
-    if(change == ItemSelectedChange){
+    if(change == ItemSelectedHasChanged){
         if(value.toBool()){
             QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
-            effect->setColor(QColor(0xCC, 0x00, 0x00));
+            effect->setColor(QColor(0xCC, 0x00, 0x00));            
             setGraphicsEffect(effect);
         }else
             setGraphicsEffect(NULL);
+
+        emit selected_changed();
     }else if(change == ItemEnabledChange){
         if(value.toBool()){
             setOpacity(1.0);

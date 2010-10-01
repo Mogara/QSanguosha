@@ -45,11 +45,12 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
     case Player::Play: {
             forever{
-                QString card = room->activate(player);
-                if(card == ".")
+                CardUseStruct card_use;
+                room->activate(player, card_use);
+                if(card_use.isValid())
+                    room->useCard(card_use);
+                else
                     break;
-
-                room->useCard(player, card);
             }
             break;
         }

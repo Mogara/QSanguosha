@@ -552,7 +552,7 @@ public:
         ServerPlayer *killer = targets.at(0);
         ServerPlayer *victim = targets.at(1);
 
-        bool on_effect = room->cardEffect(this, killer, victim);
+        bool on_effect = room->cardEffect(this, source, killer);
         if(on_effect){
             QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
             const Card *slash = room->askForCard(killer, "slash", prompt);

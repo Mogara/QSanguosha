@@ -27,7 +27,6 @@ public:
     friend class RoomThread;
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
-
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
     bool isFull() const;    
@@ -54,7 +53,7 @@ public:
     void setPlayerCorrect(ServerPlayer *player, const QString &correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
-    void useCard(ServerPlayer *player, const QString &card_str);
+    void useCard(const CardUseStruct &card_use);
     void damage(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
@@ -76,6 +75,7 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);
 
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;
@@ -94,7 +94,7 @@ public:
     void doMove(const CardMoveStruct &move);
 
     // interactive methods
-    QString activate(ServerPlayer *player);
+    void activate(ServerPlayer *player, CardUseStruct &card_use);
     Card::Suit askForSuit(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
@@ -106,8 +106,7 @@ public:
     int askForAG(ServerPlayer *player, const QList<int> &card_ids);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
-    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);
-    bool pindian(ServerPlayer *source, ServerPlayer *target);
+    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
 
     int askForPeaches(ServerPlayer *dying, int peaches);
@@ -115,11 +114,12 @@ public:
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
     void speakCommand(ServerPlayer *player, const QString &arg);
+    void trustCommand(ServerPlayer *player);
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-    void broadcastInvoke(const char *method, const QString &arg = ".");
+    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

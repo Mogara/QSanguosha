@@ -5,6 +5,7 @@ class Room;
 class ServerPlayer;
 
 #include "card.h"
+#include "roomthread.h"
 
 #include <QString>
 #include <QObject>
@@ -15,7 +16,7 @@ class AI: public QObject{
 public:
     AI(ServerPlayer *player);
 
-    virtual QString activate() const = 0;
+    virtual void activate(CardUseStruct &card_use) const = 0;
     virtual Card::Suit askForSuit() const = 0;
     virtual bool askForSkillInvoke(const QString &skill_name) const = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
@@ -41,7 +42,7 @@ class TrustAI: public AI{
 public:
     TrustAI(ServerPlayer *player);
 
-    virtual QString activate() const;
+    virtual void activate(CardUseStruct &card_use) const;
     virtual Card::Suit askForSuit() const;
     virtual bool askForSkillInvoke(const QString &skill_name) const;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
@@ -55,6 +56,15 @@ public:
     virtual const Card *askForPindian() const;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) const;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) const;
+};
+
+class SmartAI: public TrustAI{
+    Q_OBJECT
+
+public:
+    SmartAI(ServerPlayer *player);
+
+    virtual int askForCardShow(ServerPlayer *requestor) const;
 };
 
 #endif // AI_H

@@ -90,6 +90,36 @@ public:
     }
 };
 
+class Conghui: public PhaseChangeSkill{
+public:
+    Conghui():PhaseChangeSkill("conghui"){
+        frequency = Compulsory;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *caochong) const{
+        if(caochong->getPhase() == Player::Discard)
+            return true;
+        else
+            return false;
+    }
+};
+
+class Zaoyao: public PhaseChangeSkill{
+public:
+    Zaoyao():PhaseChangeSkill("zaoyao"){
+        frequency = Compulsory;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *caochong) const{
+        if(caochong->getHandcardNum() > 13){
+            caochong->throwAllCards();
+            caochong->getRoom()->loseHp(caochong);
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -106,6 +136,15 @@ YitianPackage::YitianPackage()
     t["yitian"] = tr("yitian");
     t["shit"] = tr("shit");
     t["yitian_sword"] = tr("yitian_sword");
+
+    // generals
+
+    t["caochong"] = tr("caochong");
+
+    t["conghui"] = tr("conghui");
+    t["zaoyao"] = tr("zaoyao");
+
+
 
     skills << new YitianSwordViewAsSkill;
 }

@@ -31,6 +31,7 @@ class Card : public QObject
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
+    static const Suit AllSuits[4];
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);

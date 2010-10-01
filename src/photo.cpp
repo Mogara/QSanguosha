@@ -62,6 +62,9 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));        
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
+    }else{
+        role_combobox->clear();
+        role_combobox->addItem(tr("Unknown"));
     }
 
     updateAvatar();

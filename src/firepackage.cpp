@@ -66,15 +66,16 @@ JiemingCard::JiemingCard(){
 }
 
 bool JiemingCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return to_select->getHandcardNum() < to_select->getMaxHP();
+    int upper = qMin(5, to_select->getMaxHP());
+    return to_select->getHandcardNum() < upper;
 }
 
 void JiemingCard::onEffect(const CardEffectStruct &effect) const{
-    int x = effect.to->getMaxHP() - effect.to->getHandcardNum();
+    int upper = qMin(5, effect.to->getMaxHP());
+    int x = upper - effect.to->getHandcardNum();
     if(x <= 0)
         return;
 
-    x = qMin(5, x);
     effect.to->drawCards(x);
 }
 

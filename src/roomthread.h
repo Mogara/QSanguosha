@@ -65,6 +65,10 @@ struct SlashEffectStruct{
 Q_DECLARE_METATYPE(SlashEffectStruct)
 
 struct CardUseStruct{
+    CardUseStruct();
+    bool isValid() const;
+    void parse(const QString &str, Room *room);
+
     const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;

@@ -30,6 +30,7 @@ private:
 
 signals:
     void mark_changed();
+    void selected_changed();
 };
 
 #endif // PIXMAP_H

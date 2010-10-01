@@ -64,11 +64,14 @@ void ServerPlayer::throwAllEquips(){
     room->throwCard(getOffensiveHorse());
 }
 
-void ServerPlayer::throwAllCards(){
-    throwAllEquips();
-
+void ServerPlayer::throwAllHandCards(){
     foreach(const Card *card, handcards)
         room->throwCard(card);
+}
+
+void ServerPlayer::throwAllCards(){
+    throwAllEquips();
+    throwAllHandCards();
 
     QStack<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
@@ -87,8 +90,9 @@ int ServerPlayer::getHandcardNum() const{
     return handcards.length();
 }
 
-void ServerPlayer::setSocket(QTcpSocket *socket){
+void ServerPlayer::setSocket(QTcpSocket *socket){    
     this->socket = socket;
+
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));

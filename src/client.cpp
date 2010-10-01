@@ -659,7 +659,7 @@ void Client::choosePlayer(){
 void Client::trust(){
     request("trust .");
 
-    // setStatus(NotActive);
+    setStatus(NotActive);
 }
 
 void Client::speakToServer(const QString &text){

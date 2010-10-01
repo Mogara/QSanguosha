@@ -45,6 +45,30 @@ DyingStruct::DyingStruct()
 
 }
 
+CardUseStruct::CardUseStruct()
+    :card(NULL), from(NULL)
+{
+
+}
+
+bool CardUseStruct::isValid() const{
+    return card != NULL;
+}
+
+void CardUseStruct::parse(const QString &str, Room *room){
+    QStringList words = str.split("->");
+    QString card_str = words.at(0);
+    QString target_str = words.at(1);
+
+    card = Card::Parse(card_str);
+
+    if(target_str != "."){
+        QStringList target_names = target_str.split("+");
+        foreach(QString target_name, target_names)
+            to << room->findChild<ServerPlayer *>(target_name);
+    }
+}
+
 RoomThread::RoomThread(Room *room)
     :QThread(room), room(room)
 {

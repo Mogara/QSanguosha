@@ -5,6 +5,13 @@
 #include "room.h"
 #include "carditem.h"
 
+const Card::Suit Card::AllSuits[4] = {
+    Card::Spade,
+    Card::Club,
+    Card::Heart,
+    Card::Diamond
+};
+
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), suit(suit), number(number), id(-1)
 {

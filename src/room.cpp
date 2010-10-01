@@ -98,10 +98,14 @@ QList<ServerPlayer *> Room::getAllPlayers(){
 
 void Room::nextPlayer(){
     ServerPlayer *next = current;
+
     forever{
-        int index = alive_players.indexOf(next);
-        int next_index = (index + 1) % alive_players.length();
-        next = alive_players.at(next_index);
+        int index = players.indexOf(next);
+        int next_index = (index + 1) % players.length();
+        next = players.at(next_index);
+
+        if(!next->isAlive())
+            continue;
 
         if(!next->faceUp()){
             next->turnOver();
@@ -284,6 +288,9 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
 
     sem->acquire();
 
+    if(result.isEmpty())
+        return askForSkillInvoke(player, skill_name); // recursive call;
+
     // result should be "yes" or "no"
     bool invoked =  result == "yes";
     if(invoked){
@@ -311,6 +318,10 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 
     sem->acquire();
 
+    if(result.isEmpty()){
+        return askForChoice(player, skill_name, choices);
+    }
+
     return result;
 }
 
@@ -331,27 +342,32 @@ void Room::obtainCard(ServerPlayer *target, int card_id){
 }
 
 bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
-    QString ask_str = QString("%1:%2->%3")
-                      .arg(trick_name)
-                      .arg(from ? from->objectName() : ".")
-                      .arg(to->objectName());
-
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
         if(!player->hasNullification())
             continue;
 
         int card_id = -1;
+
+        trust:
         AI *ai = player->getAI();
         if(ai){
             card_id = ai->askForNullification(trick_name, from, to);
         }else{
+            QString ask_str = QString("%1:%2->%3")
+                              .arg(trick_name)
+                              .arg(from ? from->objectName() : ".")
+                              .arg(to->objectName());
+
             player->invoke("askForNullification", ask_str);
 
             reply_func = "replyNullificationCommand";
             reply_player = player;
 
             sem->acquire();
+
+            if(result.isEmpty())
+                goto trust;
 
             card_id = result.toInt();
         }
@@ -393,6 +409,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
         sem->acquire();
 
+        if(result.isEmpty())
+            return askForCardChosen(player, who, flags, reason);
+
         card_id = result.toInt();
     }
 
@@ -422,6 +441,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
             sem->acquire();
 
+            if(result.isEmpty())
+                return askForCard(player, pattern, prompt);
+
             if(result != ".")
                 card = Card::Parse(result);
         }
@@ -449,6 +471,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     Q_ASSERT(pattern.startsWith("@@"));
 
     QString answer;
+
     AI *ai = player->getAI();
     if(ai)
         answer = ai->askForUseCard(pattern, prompt);
@@ -460,14 +483,22 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 
         sem->acquire();
 
+        if(result.isEmpty())
+            return askForUseCard(player, pattern, prompt);
+
         answer = result;
     }
 
     if(answer != "."){
-        useCard(player, answer);
-        return true;
-    }else
-        return false;
+        CardUseStruct card_use;
+        card_use.parse(answer, this);
+        if(card_use.isValid()){
+            useCard(card_use);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
@@ -477,13 +508,15 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
     if(ai)
         card_id = ai->askForAG(card_ids);
     else{
-
         player->invoke("askForAG");
 
         reply_func = "chooseAGCommand";
         reply_player = player;
 
         sem->acquire();
+
+        if(result.isEmpty())
+            return askForAG(player, card_ids);
 
         card_id = result.toInt();
     }
@@ -502,6 +535,9 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     reply_player = player;
 
     sem->acquire();
+
+    if(result.isEmpty())
+        return askForCardShow(player, requestor);
 
     return result.toInt();
 }
@@ -562,6 +598,9 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
         reply_player = player;
 
         sem->acquire();
+
+        if(result.isEmpty())
+            return askForSinglePeach(player, dying, peaches);
 
         if(result == ".")
             return false;
@@ -647,7 +686,7 @@ int Room::drawCard(){
 void Room::timerEvent(QTimerEvent *event){
     if(left_seconds > 0){
         left_seconds --;
-        broadcast("! startInXs " + QString::number(left_seconds));
+        broadcastInvoke("startInXs", QString::number(left_seconds));
     }else{
         killTimer(event->timerId());
         assignRoles();
@@ -656,24 +695,62 @@ void Room::timerEvent(QTimerEvent *event){
 
 void Room::reportDisconnection(){
     ServerPlayer *player = qobject_cast<ServerPlayer*>(sender());
-    if(player){
-        emit room_message(player->reportHeader() + tr("disconnected"));
 
-        if(!player->objectName().isEmpty()){
-            if(game_started){
-                player->setState("offline");
-                broadcast(QString("#%1 state %2").arg(player->objectName()).arg("offline"));
-                player->setSocket(NULL);
-                return;
-            }else
-                broadcast("! removePlayer " + player->objectName(), player);
-        }
+    if(player == NULL)
+        return;
 
-        player->setSocket(NULL);
+    // send disconnection message to server log
+    emit room_message(player->reportHeader() + tr("disconnected"));
+
+    // the 3 kinds of circumstances
+    // 1. Just connected, with no object name : just remove it from player list
+    // 2. Connected, with an object name : remove it, tell other clients and decrease signup_count
+    // 3. Game started, do not remove it just set its state as offline, and nullify the socket
+    // all above should set its socket to NULL
+
+    player->setSocket(NULL);
+
+
+    if(player->objectName().isEmpty()){
+        // first case
+        player->setParent(NULL);
         players.removeOne(player);
-        if(!player->objectName().isEmpty())
-            signup_count--;
+    }else if(!game_started){
+        // second case
+        player->setParent(NULL);
+        players.removeOne(player);
+
+        broadcastInvoke("removePlayer", player->objectName());
+        signup_count --;
+    }else{
+        // third case
+        setPlayerProperty(player, "state", "offline");
+
+        if(reply_player == player){
+            reply_player = NULL;
+            reply_func.clear();
+            result.clear();
+
+            sem->release();
+        }
     }
+}
+
+void Room::trustCommand(ServerPlayer *player){
+    if(player->getState() == "online"){
+        player->setState("trust");
+
+        if(reply_player == player){
+            reply_player = NULL;
+            reply_func.clear();
+            result.clear();
+
+            sem->release();
+        }
+    }else
+        player->setState("online");
+
+    broadcastProperty(player, "state");
 }
 
 void Room::processRequest(const QString &request){
@@ -695,12 +772,7 @@ void Room::processRequest(const QString &request){
     }
 
     if(command == "trust"){
-        if(player->getState() == "online")
-            player->setState("trust");
-        else
-            player->setState("online");
-
-        broadcastProperty(player, "state");
+        trustCommand(player);
         return;
     }
 
@@ -743,7 +815,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->invoke("setPlayerCount", QString::number(player_count));
 
     // introduce the new joined player to existing players except himself
-    broadcast(QString("! addPlayer %1:%2").arg(name).arg(avatar), player);
+    broadcastInvoke("addPlayer", QString("%1:%2").arg(name).arg(avatar), player);
 
     // introduce all existing player to the new joined
     foreach(ServerPlayer *p, players){
@@ -758,7 +830,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
 
     signup_count ++;
     if(isFull()){
-        broadcast(QString("! startInXs %1").arg(left_seconds));        
+        broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
 }
@@ -848,7 +920,8 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
             players[i]->invoke("getGenerals", choices.join("+"));
         }
-    }
+    }else
+        player->unicast(". general " + general_name);
 
     chosen_generals ++;
     if(chosen_generals == player_count){
@@ -862,42 +935,27 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg){
 
 void Room::commonCommand(ServerPlayer *player, const QString &arg){
     result = arg;
+
+    reply_player = NULL;
+    reply_func.clear();
+
     sem->release();
 }
 
-void Room::useCard(ServerPlayer *player, const QString &arg){
-    QStringList words = arg.split("->");
-    QString card_str = words.at(0);
-    QString target_str = words.at(1);
-
-    const Card *card = Card::Parse(card_str);
-
-    if(card == NULL){
-        emit room_message(tr("Card can not parse:\n %1").arg(card_str));
-        return;
-    }
-
-    CardUseStruct data;
-    data.card = card;
-    data.from = player;
-
-    if(target_str != "."){
-        QStringList target_names = target_str.split("+");
-        foreach(QString target_name, target_names)
-            data.to << findChild<ServerPlayer *>(target_name);
-    }
+void Room::useCard(const CardUseStruct &card_use){
+    ServerPlayer *player = card_use.from;
 
     LogMessage log;
     log.from = player;
-    log.to = data.to;
-    log.type = QString("#%1").arg(card->metaObject()->className());
-    log.card_str = card_str;
+    log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = card_use.card->toString();
     sendLog(log);
 
-    QVariant vdata = QVariant::fromValue(data);
-    thread->trigger(CardUsed, player, vdata);
+    QVariant data = QVariant::fromValue(card_use);
+    thread->trigger(CardUsed, player, data);
 
-    thread->trigger(CardFinished, player, vdata);
+    thread->trigger(CardFinished, player, data);
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
@@ -1086,7 +1144,7 @@ void Room::drawCards(ServerPlayer *player, int n){
     sendLog(log);
 
     player->invoke("drawCards", cards_str.join("+"));
-    broadcast(QString("! drawNCards %1:%2").arg(player->objectName()).arg(n), player);
+    broadcastInvoke("drawNCards", QString("%1:%2").arg(player->objectName()).arg(n), player);
 }
 
 void Room::throwCard(const Card *card){
@@ -1209,23 +1267,36 @@ void Room::playSkillEffect(const QString &skill_name, int index){
     broadcastInvoke("playSkillEffect", QString("%1:%2").arg(skill_name).arg(index));
 }
 
-void Room::broadcastInvoke(const char *method, const QString &arg){
-    broadcast(QString("! %1 %2").arg(method).arg(arg));
+void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
+    broadcast(QString("! %1 %2").arg(method).arg(arg), except);
 }
 
-QString Room::activate(ServerPlayer *target){
-    AI *ai = target->getAI();
-    if(ai)
-        return ai->activate();
+void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
+    AI *ai = player->getAI();
+    if(ai){
+        ai->activate(card_use);
+    }else{
+        broadcastInvoke("activate", player->objectName());
 
-    broadcastInvoke("activate", target->objectName());
+        reply_func = "useCardCommand";
+        reply_player = player;
 
-    reply_func = "useCardCommand";
-    reply_player = target;
+        sem->acquire();
 
-    sem->acquire();
+        if(result.isEmpty())
+            return activate(player, card_use);
 
-    return result;
+        if(result == ".")
+            return;
+
+        card_use.from = player;
+        card_use.parse(result, this);
+
+        if(!card_use.isValid()){
+            emit room_message(tr("Card can not parse:\n %1").arg(result));
+            return;
+        }
+    }
 }
 
 Card::Suit Room::askForSuit(ServerPlayer *player){
@@ -1239,6 +1310,9 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
     reply_player = player;
 
     sem->acquire();
+
+    if(result.isEmpty())
+        return askForSuit(player);
 
     LogMessage log;
     log.type = "#ChooseSuit";
@@ -1285,6 +1359,9 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         reply_player = target;
 
         sem->acquire();
+
+        if(result.isEmpty())
+            return askForDiscard(target, discard_num, optional, include_equip, suit);
 
         if(result == ".")
             return false;
@@ -1368,6 +1445,12 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 
     sem->acquire();
 
+    if(result.isEmpty()){
+        foreach(int card_id, cards)
+            draw_pile->prepend(card_id);
+        return;
+    }
+
     QStringList results = result.split(":");
 
     Q_ASSERT(results.length() == 2);
@@ -1423,7 +1506,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
 
     sem->acquire();
 
-    if(result == ".")
+    if(result.isEmpty() || result == ".")
         return;
 
     int card_id = result.toInt();
@@ -1455,6 +1538,9 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     reply_player = player;
 
     sem->acquire();
+
+    if(result.isEmpty())
+        return askForPindian(player, ask_str);
 
     return Card::Parse(result);
 }
@@ -1511,6 +1597,9 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 
     sem->acquire();
 
+    if(result.isEmpty())
+        return askForPlayerChosen(player, targets);
+
     QString player_name = result;
     if(player_name == ".")
         return NULL;
@@ -1562,7 +1651,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
 
     sem->acquire();
 
-    if(result == ".")
+    if(result.isEmpty() || result == ".")
         return false;
     else{
         QRegExp rx("(.+)->(\\w+)");

@@ -121,8 +121,11 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
         CardStar card = data.value<CardStar>();
-        guojia->obtainCard(card);
-        guojia->getRoom()->playSkillEffect(objectName());
+        Room *room = guojia->getRoom();
+        if(room->askForSkillInvoke(guojia, "tiandu")){
+            guojia->obtainCard(card);
+            room->playSkillEffect(objectName());
+        }
 
         return false;
     }

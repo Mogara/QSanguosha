@@ -1074,6 +1074,7 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
+            daqiao->hide();
             dashboard->disableAllCards();
 
             ok_button->setEnabled(false);

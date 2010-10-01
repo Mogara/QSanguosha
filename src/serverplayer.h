@@ -27,6 +27,7 @@ public:
     void leaveTo(ServerPlayer *legatee);
     void obtainCard(const Card *card);
     void throwAllEquips();
+    void throwAllHandCards();
     void throwAllCards();
     void drawCards(int n);
     QList<int> handCards() const;
