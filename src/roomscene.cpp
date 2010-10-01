@@ -32,8 +32,6 @@ static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     :main_window(main_window)
 {
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(updateSelectedTargets()));
-
     ClientInstance->setParent(this);
     setBackgroundBrush(Config.BackgroundBrush);
 
@@ -108,7 +106,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     known_cards_menu = new QMenu(main_window);
 
     // get dashboard's avatar
-    avatar = dashboard->getAvatar();    
+    avatar = dashboard->getAvatar();
 
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
@@ -245,8 +243,10 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 
     // set item to player mapping
     item2player.insert(avatar, Self);
+    connect(avatar, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
     foreach(Photo *photo, photos){
         item2player.insert(photo, photo->getPlayer());
+        connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
     }
 }
 
@@ -909,59 +909,26 @@ void RoomScene::updateTargetsEnablity(const Card *card){
 }
 
 void RoomScene::updateSelectedTargets(){
-    const Card *card = dashboard->getSelected();
-    if(!card){
-        selected_targets.clear();
-        changeMessage();
+    Pixmap *item = qobject_cast<Pixmap *>(sender());
+
+    if(item == NULL)
         return;
-    }
 
-    QSet<const ClientPlayer *> old_set = selected_targets.toSet();
-    QSet<const ClientPlayer *> new_set;
-
-    if(avatar->isSelected())
-        new_set << Self;
-    foreach(Photo *photo, photos){
-        if(photo->isSelected())
-            new_set << photo->getPlayer();
-    }
-
-    if(new_set.isEmpty()){
-        selected_targets.clear();
-        changeMessage();
+    const Card *card = dashboard->getSelected();
+    if(card){
+        const ClientPlayer *player = item2player[item];
+        if(item->isSelected()){
+            selected_targets.append(player);
+        }else{
+            selected_targets.removeOne(player);
+        }
 
         updateTargetsEnablity(card);
         ok_button->setEnabled(card->targetsFeasible(selected_targets));
-        return;
-    }
-
-    if(new_set.count() == 1){
-        selected_targets.clear();
-        selected_targets << *new_set.begin();
     }else{
-        int change = qAbs(old_set.count() - new_set.count());
-        if(change > 1){
-            QMessageBox::warning(main_window, tr("Warning"),
-                                 tr("New target set and old target set is changed out of range!"));
-            return;
-        }
-
-        if(old_set.count() > new_set.count()){
-            const ClientPlayer *unselected = *(old_set - new_set).begin();
-            selected_targets.removeOne(unselected);
-        }else if(old_set.count() < new_set.count()){
-            const ClientPlayer *new_added = *(new_set - old_set).begin();
-            selected_targets.append(new_added);
-        }
+        selected_targets.clear();
+        changeMessage();
     }
-
-    QStringList target_names;
-    foreach(const ClientPlayer *target, selected_targets)
-        target_names << Sanguosha->translate(target->getGeneralName());
-    changeMessage(tr("You choose %1 as [%2]'s target").arg(target_names.join(",")).arg(card->getName()));
-
-    updateTargetsEnablity(card);
-    ok_button->setEnabled(card->targetsFeasible(selected_targets));
 }
 
 void RoomScene::useSelectedCard(){
@@ -1425,6 +1392,10 @@ void RoomScene::setPileNumber(int n){
 
 void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     dashboard->setEnabled(false);
+    avatar->setEnabled(false);
+    foreach(Photo *photo, photos)
+        photo->setEnabled(false);
+    item2player.clear();
 
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));

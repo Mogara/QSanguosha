@@ -1280,10 +1280,6 @@
 <context>
     <name>Pixmap</name>
     <message>
-        <source>Can not load image %1[%2]</source>
-        <translation type="obsolete">不能载入图片文件 %1[%2]</translation>
-    </message>
-    <message>
         <location filename="src/pixmap.cpp" line="15"/>
         <source>Can not load image %1[%2], error string is %3</source>
         <translation>不能载入图片文件 %1[%2]，错误字符串是 %3</translation>
@@ -1362,27 +1358,27 @@
 <context>
     <name>RoomScene</name>
     <message>
-        <location filename="src/roomscene.cpp" line="68"/>
+        <location filename="src/roomscene.cpp" line="66"/>
         <source>Your role</source>
         <translation>您的角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="69"/>
+        <location filename="src/roomscene.cpp" line="67"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="85"/>
+        <location filename="src/roomscene.cpp" line="83"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="86"/>
+        <location filename="src/roomscene.cpp" line="84"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="87"/>
+        <location filename="src/roomscene.cpp" line="85"/>
         <source>Discard cards</source>
         <translation>弃牌</translation>
     </message>
@@ -1404,29 +1400,23 @@
         <translation>您选择了卡牌 【%1】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="961"/>
-        <source>You choose %1 as [%2]&apos;s target</source>
-        <translation>您选择了 %1 作为 【%2】 的目标</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="972"/>
+        <location filename="src/roomscene.cpp" line="939"/>
         <source>You didn&apos;t choose any card to use yet!</source>
         <oldsource>You didn&apos;t choose any card or skill to use yet!</oldsource>
         <translation>您尚未选择将要使用的卡牌!</translation>
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="596"/>
-        <location filename="src/roomscene.cpp" line="944"/>
-        <location filename="src/roomscene.cpp" line="1267"/>
-        <location filename="src/roomscene.cpp" line="1272"/>
-        <location filename="src/roomscene.cpp" line="1648"/>
-        <location filename="src/roomscene.cpp" line="1654"/>
+        <location filename="src/roomscene.cpp" line="1234"/>
+        <location filename="src/roomscene.cpp" line="1239"/>
+        <location filename="src/roomscene.cpp" line="1619"/>
+        <location filename="src/roomscene.cpp" line="1625"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="75"/>
-        <location filename="src/roomscene.cpp" line="1230"/>
+        <location filename="src/roomscene.cpp" line="73"/>
+        <location filename="src/roomscene.cpp" line="1197"/>
         <source>Trust</source>
         <translation>托管</translation>
     </message>
@@ -1451,93 +1441,88 @@
         <translation>不能找到卡牌移动的目标!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="945"/>
-        <source>New target set and old target set is changed out of range!</source>
-        <translation>新的目标集合与原来的目标集合差异太大!</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="1228"/>
+        <location filename="src/roomscene.cpp" line="1195"/>
         <source>Cancel trust</source>
         <translation>取消托管</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1268"/>
+        <location filename="src/roomscene.cpp" line="1235"/>
         <source>The OK button should be disabled when client is not active!</source>
         <translation>确定按钮在客户端非活动状态下是不能被禁用的!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1273"/>
+        <location filename="src/roomscene.cpp" line="1240"/>
         <source>The OK button should be disabled when client is in asking for amazing grace status</source>
         <translation>确定按钮在客户端五谷拿牌状态下是不能被禁用的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1430"/>
+        <location filename="src/roomscene.cpp" line="1401"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1430"/>
+        <location filename="src/roomscene.cpp" line="1401"/>
         <source>Failure</source>
         <translation>败北</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1432"/>
+        <location filename="src/roomscene.cpp" line="1403"/>
         <source>Winner(s)</source>
         <translation>胜利者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1433"/>
+        <location filename="src/roomscene.cpp" line="1404"/>
         <source>Loser(s)</source>
         <translation>失败者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1473"/>
+        <location filename="src/roomscene.cpp" line="1444"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1473"/>
+        <location filename="src/roomscene.cpp" line="1444"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1473"/>
-        <location filename="src/roomscene.cpp" line="1506"/>
+        <location filename="src/roomscene.cpp" line="1444"/>
+        <location filename="src/roomscene.cpp" line="1477"/>
         <source>Alive</source>
         <translation>存活</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1473"/>
+        <location filename="src/roomscene.cpp" line="1444"/>
         <source>Role</source>
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1479"/>
+        <location filename="src/roomscene.cpp" line="1450"/>
         <source>Restart Game</source>
         <translation>重新开始</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1508"/>
+        <location filename="src/roomscene.cpp" line="1479"/>
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1616"/>
+        <location filename="src/roomscene.cpp" line="1587"/>
         <source>Discarded Pile</source>
         <translation>弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1648"/>
+        <location filename="src/roomscene.cpp" line="1619"/>
         <source>No such skill named %1</source>
         <translation>没有名为 %1 的技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1654"/>
+        <location filename="src/roomscene.cpp" line="1625"/>
         <source>The skill %1 must be view as skill!</source>
         <translation>技能 %1 必须为视作技!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1775"/>
+        <location filename="src/roomscene.cpp" line="1746"/>
         <source>[%1] said: %2</source>
         <translation>[%1] 说: %2</translation>
     </message>
@@ -1567,18 +1552,18 @@
         <translation>目前弃牌堆是空的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="979"/>
+        <location filename="src/roomscene.cpp" line="946"/>
         <source>Not enough targets</source>
         <translation>没有选择足够的目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="988"/>
+        <location filename="src/roomscene.cpp" line="955"/>
         <source>Not enough cards to call skill</source>
         <oldsource>No enough cards to call skill</oldsource>
         <translation>没有足够的卡牌来发动技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="997"/>
+        <location filename="src/roomscene.cpp" line="964"/>
         <source>Card [%1] can not be used right now</source>
         <translation>卡牌 【%1】 暂时不能使用</translation>
     </message>
