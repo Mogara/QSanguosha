@@ -4,7 +4,4 @@ ui_*
 Makefile*
 object_script*
 *.pro.user
-.*
-!.gitignore
-*.qm
-!qt_zh_CN.qm
+sanguosha.qm

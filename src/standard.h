@@ -347,7 +347,7 @@ class TuxiCard: public SkillCard{
 
 public:
     Q_INVOKABLE TuxiCard();
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;    
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

@@ -1,6 +1,7 @@
 #include "clientlogbox.h"
 #include "settings.h"
 #include "engine.h"
+#include "clientplayer.h"
 
 #include <QPalette>
 
@@ -16,25 +17,17 @@ ClientLogBox::ClientLogBox(QWidget *parent) :
     resize(300, 200);
 }
 
-void ClientLogBox::appendLog(const QString &log_str){
-    QRegExp rx("([#$]\\w+):(\\w+)->(\\w*):(.*):(\\w*):(\\w*)");
-
-    if(!rx.exactMatch(log_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();   
-
-    QString type = texts.at(1);
-    QString from = texts.at(2);
-    QStringList tos;
-    if(!texts.at(3).isEmpty())
-        tos = texts.at(3).split("+");
-    QString card_str = texts.at(4);
-    QString arg = texts.at(5);
-    QString arg2 = texts.at(6);
-
-    if(!from.isEmpty()){
-        from = Sanguosha->translate(from);
+void ClientLogBox::appendLog(
+        const QString &type,
+        const QString &from_general,
+        const QStringList &tos,
+        QString card_str,
+        QString arg,
+        QString arg2)
+{
+    QString from;
+    if(!from_general.isEmpty()){
+        from = Sanguosha->translate(from_general);
         from = QString("<b>%1</b>").arg(from);
     }
 
@@ -69,7 +62,7 @@ void ClientLogBox::appendLog(const QString &log_str){
 
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());
-            if(card->inherits("SkillCard")){            
+            if(card->inherits("SkillCard")){
                 log = tr("%from use skill [%1]").arg(skill_name);
             }else{
                 QList<int> card_ids = card->getSubcards();
@@ -112,4 +105,24 @@ void ClientLogBox::appendLog(const QString &log_str){
     }
 
     append(log);
+}
+
+void ClientLogBox::appendLog(const QString &log_str){
+    QRegExp rx("([#$]\\w+):(\\w+)->(\\w*):(.*):(\\w*):(\\w*)");
+
+    if(!rx.exactMatch(log_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();   
+
+    QString type = texts.at(1);
+    QString from = texts.at(2);
+    QStringList tos;
+    if(!texts.at(3).isEmpty())
+        tos = texts.at(3).split("+");
+    QString card_str = texts.at(4);
+    QString arg = texts.at(5);
+    QString arg2 = texts.at(6);
+
+    appendLog(type, from, tos, card_str, arg, arg2);
 }

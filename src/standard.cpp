@@ -302,7 +302,6 @@ StandardPackage::StandardPackage()
     t["thunder_nature"] = tr("thunder_nature");
 
     // log translation
-    t["#DrawCards"] = tr("#DrawCards");
     t["#ChooseSuit"] = tr("#ChooseSuit");
     t["#Death"] = tr("#Death");
     t["#InvokeSkill"] = tr("#InvokeSkill");
@@ -315,6 +314,7 @@ StandardPackage::StandardPackage()
     t["#DelayedTrick"] = tr("#DelayedTrick");
     t["#SkillNullify"] = tr("#SkillNullify");
     t["#ArmorNullify"] = tr("#ArmorNullify");
+    t["#DrawNCards"] = tr("#DrawNCards");
 
     t["$TakeAG"] = tr("$TakeAG");
     t["$Uninstall"] = tr("$Uninstall");

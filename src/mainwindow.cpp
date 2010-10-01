@@ -1,11 +1,11 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "startscene.h"
 #include "roomscene.h"
 #include "server.h"
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
+#include "ui_mainwindow.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>

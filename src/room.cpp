@@ -491,6 +491,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 
     if(answer != "."){
         CardUseStruct card_use;
+        card_use.from = player;
         card_use.parse(answer, this);
         if(card_use.isValid()){
             useCard(card_use);
@@ -673,12 +674,7 @@ int Room::drawCard(){
         broadcastInvoke("clearPile");
         broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
 
-        int n = draw_pile->count(), i;
-        for(i=0; i<n; i++){
-            int r1 = qrand() % n;
-            int r2 = qrand() % n;
-            draw_pile->swap(r1, r2);
-        }
+        qShuffle(*draw_pile);
     }
     return draw_pile->takeFirst();
 }
@@ -777,7 +773,6 @@ void Room::processRequest(const QString &request){
     }
 
     if(reply_player && reply_player != player){
-        player->invoke("focusWarn", player->objectName());
         QString should_be = reply_player->objectName();
         QString instead_of = player->objectName();
         emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
@@ -1136,12 +1131,6 @@ void Room::drawCards(ServerPlayer *player, int n){
         // update place_map & owner_map
         setCardMapping(card_id, player, Player::Hand);
     }
-
-    LogMessage log;
-    log.type = "#DrawCards";
-    log.from = player;
-    log.arg = QString::number(n);
-    sendLog(log);
 
     player->invoke("drawCards", cards_str.join("+"));
     broadcastInvoke("drawNCards", QString("%1:%2").arg(player->objectName()).arg(n), player);

@@ -38,6 +38,7 @@ public slots:
     void killPlayer(const QString &who);
 
 protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

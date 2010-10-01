@@ -179,13 +179,9 @@ QStringList Engine::getRandomLords() const{
             nonlord_list << nonlord;
     }
 
-    int i, n = nonlord_list.length();
-    for(i=0; i<n; i++){
-        int r1 = qrand() % n;
-        int r2 = qrand() % n;
-        nonlord_list.swap(r1, r2);
-    }
+    qShuffle(nonlord_list);
 
+    int i;
     const static int extra = 2;
     for(i=0; i< extra; i++)
         lords << nonlord_list.at(i);
@@ -209,16 +205,10 @@ QStringList Engine::getLimitedGeneralNames() const{
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{
     QStringList all_generals = getLimitedGeneralNames();
 
-    int n = all_generals.count();
-    Q_ASSERT(n >= count);
+    Q_ASSERT(all_generals.count() >= count);
 
     // shuffle them
-    int i;
-    for(i=0; i<n; i++){
-        int r1 = qrand() % n;
-        int r2 = qrand() % n;
-        all_generals.swap(r1, r2);
-    }
+    qShuffle(all_generals);
 
     if(!ban_set.isEmpty()){
         QSet<QString> general_set = all_generals.toSet();
@@ -238,12 +228,7 @@ QList<int> Engine::getRandomCards() const{
             list << card->getId();
     }
 
-    int n = list.length(), i;
-    for(i=0; i<n; i++){
-        int r1 = qrand() % n;
-        int r2 = qrand() % n;
-        list.swap(r1, r2);
-    }
+    qShuffle(list);
 
     return list;
 }

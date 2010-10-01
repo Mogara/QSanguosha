@@ -258,6 +258,8 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
     }
 
     setPileNumber(pile_number - cards.length());
+
+    log_box->appendLog("#DrawNCards", Self->getGeneralName(), QStringList(), QString(), QString::number(cards.length()));
 }
 
 void RoomScene::drawNCards(ClientPlayer *player, int n){
@@ -296,6 +298,24 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     photo->update();
 
     setPileNumber(pile_number - n);
+
+    // log_box->appendLog(player, tr("%from drawed %arg cards"), QString::number(n));
+    log_box->appendLog(
+            "#DrawNCards",
+            player->getGeneralName(),
+            QStringList(),
+            QString(),
+            QString::number(n)
+            );
+}
+
+void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    QGraphicsItem* item = itemAt(event->scenePos().x(), event->scenePos().y());
+
+    if(item && item2player.contains(item) && item->isEnabled() && item->flags() & QGraphicsItem::ItemIsSelectable)
+        item->setSelected(!item->isSelected());
+    else
+        QGraphicsScene::mousePressEvent(event);
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -398,9 +418,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_D:{
             int max = Sanguosha->getCardCount();
             bool ok;
-            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 0, 0, max, 1, &ok);
+            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 1, 1, max, 1, &ok);
             if(ok)
-                ClientInstance->requestCard(card_id);
+                ClientInstance->requestCard(card_id - 1);
 
             break;
         }
@@ -625,6 +645,8 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
 
     src->update();
     dest->update();
+
+
 }
 
 void RoomScene::moveCardToDrawPile(const QString &from){
@@ -1396,6 +1418,8 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     foreach(Photo *photo, photos)
         photo->setEnabled(false);
     item2player.clear();
+    trust_button->setEnabled(false);
+    chat_edit->setEnabled(false);
 
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));

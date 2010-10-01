@@ -7,6 +7,8 @@
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
 
+static QRectF CardItemRect(0, 0, 150*0.8, 210*0.8);
+
 CardItem::CardItem(const Card *card)
     :Pixmap(card->getPixmapPath(), false), card(card)
 {
@@ -14,7 +16,7 @@ CardItem::CardItem(const Card *card)
 
     suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
     icon_pixmap.load(card->getIconPath());
-    pixmap = pixmap.scaled(150*0.8, 210*0.8);    
+    pixmap = pixmap.scaled(CardItemRect.width(), CardItemRect.height());
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 }
 
@@ -125,6 +127,10 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     else
         painter->setPen(Qt::black);
     painter->drawText(8, 50, card->getNumberString());
+}
+
+QRectF CardItem::boundingRect() const{
+    return CardItemRect;
 }
 
 GuanxingCardItem::GuanxingCardItem(const Card *card)

@@ -328,8 +328,8 @@ bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->obtainCard(this);
+void HaoshiCard::onEffect(const CardEffectStruct &effect) const{    
+    effect.to->getRoom()->moveCardTo(this, effect.to, Player::Hand, false);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill{
