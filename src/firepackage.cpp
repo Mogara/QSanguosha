@@ -377,7 +377,7 @@ public:
                 && target->hasSkill(objectName()) && target->isAlive();
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *wolong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *wolong, QVariant &data) const{
         QString pattern = data.toString();
 
         if(pattern != "jink")
@@ -387,7 +387,9 @@ public:
         if(room->askForSkillInvoke(wolong, objectName())){
             const Card *card = room->getJudgeCard(wolong);
             if(card->isRed()){
-                room->provide(new Jink(Card::NoSuit, 0));
+                Jink *jink = new Jink(Card::NoSuit, 0);
+                jink->setSkillName(objectName());
+                room->provide(jink);
                 return true;
             }
         }

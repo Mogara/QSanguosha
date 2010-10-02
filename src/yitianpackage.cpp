@@ -144,7 +144,8 @@ YitianPackage::YitianPackage()
     t["conghui"] = tr("conghui");
     t["zaoyao"] = tr("zaoyao");
 
-
+    t[":conghui"] = tr(":conghui");
+    t[":zaoyao"] = tr(":zaoyao");
 
     skills << new YitianSwordViewAsSkill;
 }

@@ -5,14 +5,11 @@
 #include "general.h"
 #include "skill.h"
 #include "package.h"
+#include "audiere.h"
 
 #include <QHash>
 #include <QStringList>
-#include <MediaObject>
 #include <QMetaObject>
-
-using Phonon::MediaObject;
-using Phonon::MediaSource;
 
 class AI;
 
@@ -41,28 +38,27 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
-    void playEffect(const MediaSource &source);
+    void playEffect(const QString &filename, bool once);
     void playSkillEffect(const QString &skill_name, int index);
     void playCardEffect(const QString &card_name, bool is_male);
+    void playCardEffect(const QString &card_name, const QString &package, bool is_male);
+    void removeFromPlaying(audiere::OutputStreamPtr stream);
 
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
-    QHash<QString, MediaSource> male_effects, female_effects;
 
-    QList<MediaObject *> effects;
+    QHash<QString, audiere::OutputStreamPtr> effects;
+    QHash<QString, audiere::OutputStreamPtr> playing;
+    QMutex mutex;
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
     QSet<QString> ban_package;
 
     QStringList getLimitedGeneralNames() const;
-    void addEffect(const QString &package_name, const QString &effect_name);
-
-private slots:
-    void removeFromEffects();
 };
 
 extern Engine *Sanguosha;

@@ -45,6 +45,7 @@ void Settings::init(){
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableAutoTarget = value("EnableAutoTarget", false).toBool();
+    NullificationCountDown = value("NullificationCountDown", 8).toInt();
 
     QString bg_path = value("BackgroundBrush", ":/background.png").toString();
     changeBackground(bg_path);

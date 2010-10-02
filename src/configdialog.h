@@ -19,6 +19,7 @@ private:
 private slots:
     void on_resetBgButton_clicked();
     void on_browseBgButton_clicked();
+    void saveConfig();
 
 signals:
     void bg_changed();

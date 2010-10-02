@@ -1,6 +1,7 @@
 #include "nullificationdialog.h"
 #include "client.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QToolButton>
 #include <QCommandLinkButton>
@@ -82,7 +83,8 @@ NullificationDialog::NullificationDialog(const QString &trick_name, ClientPlayer
 }
 
 void NullificationDialog::timerEvent(QTimerEvent *event){
-    int new_value = progress_bar->value() + 4;
+    int step = 100 / double(Config.NullificationCountDown * 5);
+    int new_value = progress_bar->value() + step;
     if(new_value >= progress_bar->maximum()){
         killTimer(event->timerId());
         if(isVisible())

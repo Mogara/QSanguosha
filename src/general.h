@@ -6,9 +6,7 @@ class Package;
 
 #include <QObject>
 #include <QSet>
-#include <MediaSource>
-
-using Phonon::MediaSource;
+#include <QMap>
 
 class General : public QObject
 {
@@ -46,7 +44,6 @@ private:
     bool male;
     bool lord;
     QMap<QString, Skill *> skill_map;
-    MediaSource last_word;
 };
 
 #endif // GENERAL_H

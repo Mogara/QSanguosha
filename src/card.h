@@ -48,11 +48,12 @@ public:
     QString getPixmapPath() const;
     QString getIconPath() const;
     QString getPackage() const;
+    QString getEffectPath(bool is_male) const;
     QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
-    QString getSkillName() const;
+    QString getSkillName() const;   
     void setSkillName(const QString &skill_name);
 
     bool isVirtualCard() const;

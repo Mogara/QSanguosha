@@ -117,7 +117,7 @@ void ServerPlayer::castMessage(const QString &message){
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg){
-    unicast(QString("! %1 %2").arg(method).arg(arg));
+    unicast(QString("%1 %2").arg(method).arg(arg));
 }
 
 QString ServerPlayer::reportHeader() const{
@@ -127,7 +127,7 @@ QString ServerPlayer::reportHeader() const{
 
 void ServerPlayer::sendProperty(const char *property_name){
     QString value = property(property_name).toString();
-    unicast(QString(". %1 %2").arg(property_name).arg(value));
+    unicast(QString(".%1 %2").arg(property_name).arg(value));
 }
 
 void ServerPlayer::getRequest(){

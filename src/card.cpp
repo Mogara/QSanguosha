@@ -107,6 +107,11 @@ QString Card::getPackage() const{
         return "";
 }
 
+QString Card::getEffectPath(bool is_male) const{
+    QString gender = is_male ? "male" : "female";
+    return QString("%1/cards/effect/%2/%3.mp3").arg(getPackage()).arg(gender).arg(objectName());
+}
+
 QIcon Card::getSuitIcon() const{
     return QIcon(QString(":/suit/%1.png").arg(getSuitString()));
 }

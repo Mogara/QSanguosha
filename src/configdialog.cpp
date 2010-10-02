@@ -40,3 +40,10 @@ void ConfigDialog::on_resetBgButton_clicked()
     Config.changeBackground(":/background.png");
     emit bg_changed();
 }
+
+void ConfigDialog::saveConfig()
+{
+    int count_down = ui->nullificationSpinBox->value();
+    Config.NullificationCountDown = count_down;
+    Config.setValue("NullificationCountDown", count_down);
+}

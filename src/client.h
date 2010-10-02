@@ -126,7 +126,6 @@ public slots:
 #endif
 
 private:
-    QObject *room;
     Status status;
     QSet<QString> frequent_flags;
     int alive_count;

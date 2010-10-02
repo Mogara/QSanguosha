@@ -6,6 +6,9 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
+#include "audiere.h"
+
+audiere::AudioDevicePtr Device;
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -38,7 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Sanguosha = new Engine(this);
+    Device = audiere::OpenDevice();
+    Sanguosha = new Engine(this);    
     Config.init();
 
     // initialize random seed for later use

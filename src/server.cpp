@@ -101,6 +101,15 @@ Server::Server(QObject *parent)
 void Server::processNewConnection(){
     QTcpSocket *socket = nextPendingConnection();
 
+    QMutableListIterator<Room *> itor(rooms);
+    while(itor.hasNext()){
+        Room *room = itor.next();
+        if(room->isFinished()){
+            delete room;
+            itor.remove();
+        }
+    }
+
     Room *free_room = NULL;
     foreach(Room *room, rooms){
         if(!room->isFull()){
@@ -121,3 +130,4 @@ void Server::processNewConnection(){
                         .arg(socket->peerAddress().toString())
                         .arg(socket->peerPort()));
 }
+

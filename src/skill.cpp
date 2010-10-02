@@ -40,13 +40,13 @@ void Skill::initMediaSource(){
 
         QString effect_file = QString("%1/generals/effect/%2.wav").arg(package_name).arg(objectName());
         if(QFile::exists(effect_file))
-            sources << Phonon::MediaSource(effect_file);
+            sources << effect_file;
         else{
             int i=1;
             forever{
                 QString effect_file = QString("%1/generals/effect/%2%3.wav").arg(package_name).arg(objectName()).arg(i);
                 if(QFile::exists(effect_file))
-                    sources << Phonon::MediaSource(effect_file);
+                    sources << effect_file;
                 else
                     break;
                 i++;
@@ -62,7 +62,7 @@ void Skill::playEffect(int index) const{
         else
             index--;
 
-        Sanguosha->playEffect(sources.at(index));
+        Sanguosha->playEffect(sources.at(index), false);
     }
 }
 

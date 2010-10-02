@@ -2,8 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += phonon \
-    network
+QT += network
 TEMPLATE = app
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -103,5 +102,8 @@ FORMS += src/mainwindow.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
 RESOURCES += resource/images/sanguosha.qrc
-RC_FILE += resource/icon.rc
+win32{
+    RC_FILE += resource/icon.rc
+    LIBS += audiere.lib
+}
 TRANSLATIONS += sanguosha.ts

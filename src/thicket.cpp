@@ -328,8 +328,8 @@ bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::onEffect(const CardEffectStruct &effect) const{    
-    effect.to->getRoom()->moveCardTo(this, effect.to, Player::Hand, false);
+void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
+    room->moveCardTo(this, targets.first(), Player::Hand, false);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill{
@@ -543,6 +543,7 @@ public:
 
         const Card *first = cards.first()->getCard();
         Analeptic *analeptic = new Analeptic(first->getSuit(), first->getNumber());
+        analeptic->setSkillName(objectName());
         analeptic->addSubcard(first->getId());
 
         return analeptic;
@@ -570,8 +571,8 @@ public:
             Room *room = dongzhuo->getRoom();
 
             bool jinked = false;
-            const Card *jink = room->askForCard(female, "jink", "@rouli1-jink-1");
-            if(jink && room->askForCard(female, "jink", "@rouli1-jink-2"))
+            const Card *jink = room->askForCard(female, "jink", "@roulin1-jink-1");
+            if(jink && room->askForCard(female, "jink", "@roulin1-jink-2"))
                 jinked = true;
 
             SlashResultStruct result;
@@ -626,6 +627,7 @@ public:
         if(trigger_this){
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
+            room->playSkillEffect(objectName());
             if(result == "hp"){
                 room->loseHp(dongzhuo);
             }else{

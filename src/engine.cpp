@@ -3,6 +3,23 @@
 #include "client.h"
 #include "ai.h"
 
+extern audiere::AudioDevicePtr Device;
+
+class StopCallback: public audiere::StopCallback{
+public:
+    ADR_METHOD(void) streamStopped(audiere::StopEvent *event){
+        Sanguosha->removeFromPlaying(event->getOutputStream());
+    }
+
+    ADR_METHOD(void) ref(){
+
+    }
+
+    ADR_METHOD(void) unref(){
+
+    }
+};
+
 #include <QFile>
 #include <QStringList>
 #include <QMessageBox>
@@ -32,23 +49,12 @@ Engine::Engine(QObject *parent)
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
-}
 
-void Engine::addEffect(const QString &package_name, const QString &effect_name){
-    if(!male_effects.contains(effect_name)){
-        MediaSource male_source(QString("%1/cards/effect/male/%2.mp3").arg(package_name).arg(effect_name));
-        male_effects.insert(effect_name, male_source);
-    }
-
-    if(!female_effects.contains(effect_name)){
-        MediaSource female_source(QString("%1/cards/effect/female/%2.mp3").arg(package_name).arg(effect_name));
-        female_effects.insert(effect_name, female_source);
-    }
+    Device->registerCallback(new StopCallback);
 }
 
 void Engine::addPackage(Package *package){
     package->setParent(this);
-    QString package_name = package->objectName();
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach(Card *card, all_cards){
@@ -57,13 +63,6 @@ void Engine::addPackage(Package *package){
 
         QString card_name = card->objectName();
         metaobjects.insert(card_name, card->metaObject());
-
-        addEffect(package_name, card_name);
-    }
-
-    QStringList extra_effects = package->getExtraEffects();
-    foreach(QString effect_name, extra_effects){
-        addEffect(package_name, effect_name);
     }
 
     QList<General *> all_generals = package->findChildren<General *>();
@@ -233,19 +232,26 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
-void Engine::playEffect(const MediaSource &source){
-    foreach(MediaObject *effect, effects){
-        if(effect->currentSource().fileName() == source.fileName())
+void Engine::playEffect(const QString &filename, bool once){
+    audiere::OutputStreamPtr effect;
+    if(once){
+        effect = audiere::OpenSound(Device, filename.toAscii());
+    }else{
+        if(playing.contains(filename))
             return;
+
+        effect = effects.value(filename, NULL);
+        if(effect == NULL){
+            effect = audiere::OpenSound(Device, filename.toAscii());
+            effects.insert(filename, effect);
+        }
+
+        if(effect)
+            playing.insert(filename, effect);
     }
 
-    MediaObject *effect = Phonon::createPlayer(Phonon::MusicCategory);
-    effects << effect;
-
-    effect->setCurrentSource(source);
-    effect->play();
-
-    connect(effect, SIGNAL(finished()), this, SLOT(removeFromEffects()));
+    if(effect)
+        effect->play();
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index){
@@ -255,20 +261,30 @@ void Engine::playSkillEffect(const QString &skill_name, int index){
 }
 
 void Engine::playCardEffect(const QString &card_name, bool is_male){
-    QHash<QString, MediaSource> &source = is_male ? male_effects : female_effects;
-    if(source.contains(card_name))
-        playEffect(source[card_name]);
-    else
-        QMessageBox::warning(NULL, tr("Warning"), tr("No suitable card effect was found! Card name is %1").arg(card_name));
+    const Card *card = findChild<const Card *>(card_name);
+    if(card)
+        playEffect(card->getEffectPath(is_male), false);
+}
+
+void Engine::playCardEffect(const QString &card_name, const QString &package, bool is_male){
+    QString gender = is_male ? "male" : "female";
+    QString path = QString("%1/cards/effect/%2/%3.mp3").arg(package).arg(gender).arg(card_name);
+    playEffect(path, false);
+}
+
+void Engine::removeFromPlaying(audiere::OutputStreamPtr stream){
+    mutex.lock();
+
+    QString key = playing.key(stream);
+    if(!key.isEmpty()){
+        playing.remove(key);
+        qDebug("removed %s", qPrintable(key));
+    }
+
+    mutex.unlock();
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{
     return skills.value(skill_name, NULL);
 }
 
-void Engine::removeFromEffects(){
-    MediaObject *effect = qobject_cast<MediaObject *>(sender());
-    if(effect){
-        effects.removeOne(effect);
-    }
-}

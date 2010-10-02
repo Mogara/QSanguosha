@@ -29,7 +29,8 @@ public:
 
     explicit Room(QObject *parent, int player_count);
     void addSocket(QTcpSocket *socket);
-    bool isFull() const;    
+    bool isFull() const;
+    bool isFinished() const;
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);

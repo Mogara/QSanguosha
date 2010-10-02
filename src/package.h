@@ -27,10 +27,6 @@ public:
         return skills;
     }
 
-    QStringList getExtraEffects() const{
-        return extra_effects;
-    }
-
     template<typename T>
     void addMetaObject(){
         metaobjects << &T::staticMetaObject;
@@ -40,7 +36,6 @@ protected:
     QHash<QString,QString> t;
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
-    QStringList extra_effects;
 };
 
 #define ADD_PACKAGE(name) extern "C" { Q_DECL_EXPORT Package *New##name(){ return new name##Package;}  }

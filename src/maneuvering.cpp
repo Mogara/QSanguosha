@@ -41,12 +41,16 @@ QString Analeptic::getSubtype() const{
 }
 
 bool Analeptic::isAvailable() const{
-    return !Self->hasFlag("drank");
+    return ! ClientInstance->turn_tag.value("analeptic_used", false).toBool();
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->cardEffect(this, source, source);
+}
+
+void Analeptic::use(const QList<const ClientPlayer *> &) const{
+    ClientInstance->turn_tag.insert("analeptic_used", true);
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
@@ -190,7 +194,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         return;
 
     int card_id = room->askForCardShow(effect.to, effect.from);
-    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id), effect.from);
+    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id), effect.to);
 
     const Card *card = Sanguosha->getCard(card_id);
     bool discarded = room->askForDiscard(effect.from, 1, true, false, card->getSuit());
@@ -235,7 +239,8 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     if(targets.isEmpty()){       
         source->drawCards(1);
-        room->playCardEffect("recast", source->getGeneral()->isMale());
+        //room->playCardEffect("recast", source->getGeneral()->isMale());
+        room->playCardEffect("recast@" + getPackage(), source->getGeneral()->isMale());
     }else{
         foreach(ServerPlayer *target, targets){
             CardEffectStruct effect;
@@ -245,7 +250,8 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
             room->cardEffect(effect);
         }
-        room->playCardEffect("tiesuo", source->getGeneral()->isMale());
+        //room->playCardEffect("tiesuo", source->getGeneral()->isMale());
+        room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
     }
 }
 
@@ -379,8 +385,6 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     t["fire-attack-card"] = tr("fire-attack-card");
-
-    extra_effects << "tiesuo" << "recast";
 }
 
 ADD_PACKAGE(Maneuvering)

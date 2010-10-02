@@ -1,8 +1,12 @@
 #ifndef GENERALOVERVIEW_H
 #define GENERALOVERVIEW_H
 
+class General;
+
 #include <QDialog>
 #include <QTableWidgetItem>
+#include <QButtonGroup>
+#include <QHBoxLayout>
 
 namespace Ui {
     class GeneralOverview;
@@ -16,10 +20,14 @@ public:
 
 private:
     Ui::GeneralOverview *ui;
+    QHBoxLayout *button_layout;
+    QButtonGroup *button_group;
+
+    void resetButtons();
+    const General *currentGeneral();
 
 private slots:
-
-private slots:
+    void on_lastWordButton_clicked();
     void on_playEffecButton_clicked();
     void on_tableWidget_itemSelectionChanged();
 };

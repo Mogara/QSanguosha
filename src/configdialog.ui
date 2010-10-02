@@ -9,18 +9,125 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>111</height>
+    <width>395</width>
+    <height>177</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Config dialog</string>
   </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>371</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="envTab">
+    <attribute name="title">
+     <string>Environment</string>
+    </attribute>
+    <widget class="QLabel" name="backgrounSetupLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>96</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Setup background</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="bgPathLineEdit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>321</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="browseBgButton">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>60</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Browse ...</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetBgButton">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>60</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="gameTab">
+    <attribute name="title">
+     <string>Game</string>
+    </attribute>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>194</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="nullificationLabel">
+        <property name="text">
+         <string>Nullification count down</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="nullificationSpinBox">
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <number>15</number>
+        </property>
+        <property name="value">
+         <number>8</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>70</y>
+     <x>40</x>
+     <y>130</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -30,58 +137,6 @@
    </property>
    <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="backgrounSetupLabel">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>10</y>
-     <width>96</width>
-     <height>12</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Setup background</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="bgPathLineEdit">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>321</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="browseBgButton">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>40</y>
-     <width>81</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Browse ...</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="resetBgButton">
-   <property name="geometry">
-    <rect>
-     <x>450</x>
-     <y>40</y>
-     <width>71</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Reset</string>
    </property>
   </widget>
  </widget>

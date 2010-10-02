@@ -658,6 +658,10 @@ bool Room::isFull() const
     return signup_count == player_count;
 }
 
+bool Room::isFinished() const{
+    return game_finished;
+}
+
 void Room::broadcast(const QString &message, ServerPlayer *except){
     foreach(ServerPlayer *player, players){
         if(player != except){
@@ -721,6 +725,20 @@ void Room::reportDisconnection(){
     }else{
         // third case
         setPlayerProperty(player, "state", "offline");
+
+        bool someone_is_online = false;
+        foreach(ServerPlayer *player, players){
+            if(player->getState() == "online"){
+                someone_is_online = true;
+                break;
+            }
+        }
+
+        if(!someone_is_online){
+            game_finished = true;
+            // thread->end();
+            return;
+        }
 
         if(reply_player == player){
             reply_player = NULL;
@@ -916,7 +934,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             players[i]->invoke("getGenerals", choices.join("+"));
         }
     }else
-        player->unicast(". general " + general_name);
+        player->sendProperty("general");
 
     chosen_generals ++;
     if(chosen_generals == player_count){
@@ -1257,7 +1275,7 @@ void Room::playSkillEffect(const QString &skill_name, int index){
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
-    broadcast(QString("! %1 %2").arg(method).arg(arg), except);
+    broadcast(QString("%1 %2").arg(method).arg(arg), except);
 }
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
@@ -1366,12 +1384,6 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         throwCard(card_id);
 
     int length = to_discard.length();
-
-    LogMessage log;
-    log.type = "#DiscardCards";
-    log.from = target;
-    log.arg = QString::number(length);
-    sendLog(log);
 
     QVariant data = length;
     thread->trigger(CardDiscarded, target, data);

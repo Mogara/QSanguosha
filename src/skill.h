@@ -9,12 +9,11 @@ class ServerPlayer;
 #include "room.h"
 
 #include <QObject>
-#include <MediaSource>
 
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Frequncy)
+    Q_ENUMS(Frequency);
 
 public:
     enum Frequency{
@@ -38,7 +37,7 @@ protected:
 
 private:
     bool lord_skill;
-    QList<Phonon::MediaSource> sources;
+    QStringList sources;
 };
 
 class ViewAsSkill:public Skill{

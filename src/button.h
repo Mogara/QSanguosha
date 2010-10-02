@@ -2,11 +2,12 @@
 #define BUTTON_H
 
 #include "settings.h"
+#include "audiere.h"
 
 #include <QGraphicsObject>
 #include <QFont>
 #include <QFontMetrics>
-#include <MediaObject>
+
 
 class Button : public QGraphicsObject
 {
@@ -25,7 +26,7 @@ protected:
 private:
     QString label;
     qreal width, height;
-    Phonon::MediaObject *effect;    
+    audiere::SoundEffectPtr down_effect, hover_effect;
 
 signals:
     void clicked();

@@ -3,12 +3,18 @@
 #include "engine.h"
 
 #include <QMessageBox>
+#include <QRadioButton>
+
 
 GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
+
+    button_group = new QButtonGroup;
+    button_layout = new QHBoxLayout;
+    ui->skillGroupBox->setLayout(button_layout);
 
     QList<General*> generals = Sanguosha->findChildren<General*>();
     ui->tableWidget->setRowCount(generals.length());
@@ -62,11 +68,20 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     ui->tableWidget->setCurrentItem(ui->tableWidget->item(0,0));
 }
 
+void GeneralOverview::resetButtons(){
+    QList<QAbstractButton *> buttons = button_group->buttons();
+    foreach(QAbstractButton *button, buttons){
+        button_group->removeButton(button);
+        button_layout->removeWidget(button);
+        button->setParent(NULL);
+        delete button;
+    }
+}
+
 GeneralOverview::~GeneralOverview()
 {
     delete ui;
 }
-
 
 void GeneralOverview::on_tableWidget_itemSelectionChanged()
 {
@@ -76,24 +91,46 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
     QList<const Skill *> skills = general->findChildren<const Skill *>();
     ui->skillTextEdit->clear();
-    ui->skillComboBox->clear();
+
+    resetButtons();
+
     foreach(const Skill *skill, skills){
         if(skill->objectName().startsWith("#"))
             continue;
 
         QString skill_name = Sanguosha->translate(skill->objectName());
-        ui->skillComboBox->addItem(skill_name, QVariant::fromValue(skill->objectName()));
+        QRadioButton *button = new QRadioButton(skill_name);
+        button->setObjectName(skill->objectName());
+
+        button_layout->addWidget(button);
+        button_group->addButton(button);
     }
+
+    QList<QAbstractButton *> buttons = button_group->buttons();
+    if(!buttons.isEmpty())
+        buttons.first()->setChecked(true);
 
     ui->skillTextEdit->append(general->getSkillDescription());
 }
 
-void GeneralOverview::on_playEffecButton_clicked()
-{
+const General *GeneralOverview::currentGeneral(){
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
 
-    QString skill_name = ui->skillComboBox->itemData(ui->skillComboBox->currentIndex()).toString();
-    general->playEffect(skill_name);
+    return general;
+}
+
+void GeneralOverview::on_playEffecButton_clicked()
+{
+    const General *general = currentGeneral();
+    QAbstractButton *button = button_group->checkedButton();
+    if(button)
+        general->playEffect(button->objectName());
+}
+
+void GeneralOverview::on_lastWordButton_clicked()
+{
+    const General *general = currentGeneral();
+    general->lastWord();
 }

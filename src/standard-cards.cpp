@@ -242,6 +242,7 @@ public:
             suit = Card::Heart;
 
         Slash *slash = new Slash(suit, 0);
+        slash->setSkillName(objectName());
         slash->addSubcard(first->getId());
         slash->addSubcard(second->getId());
 
@@ -381,7 +382,9 @@ public:
             if(room->askForSkillInvoke(player, objectName())){
                 const Card *card = room->getJudgeCard(player);
                 if(card->isRed()){
-                    room->provide(new Jink(Card::NoSuit, 0));
+                    Jink *jink = new Jink(Card::NoSuit, 0);
+                    jink->setSkillName(objectName());
+                    room->provide(jink);
                     return true;
                 }
             }

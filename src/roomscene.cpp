@@ -192,8 +192,7 @@ void RoomScene::addPlayer(ClientPlayer *player){
 
             name2photo[player->objectName()] = photo;
 
-            static Phonon::MediaSource add_player_source("audio/add-player.wav");
-            Sanguosha->playEffect(add_player_source);
+            Sanguosha->playEffect("audio/add-player.wav", false);
 
             return;
         }
@@ -646,7 +645,12 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
     src->update();
     dest->update();
 
-
+    QString type = "#MoveNCards";
+    QString from_general = src->getPlayer()->getGeneralName();
+    QStringList tos;
+    tos << dest->getPlayer()->getGeneralName();
+    QString n_str = QString::number(n);
+    log_box->appendLog(type, from_general, tos, QString(), n_str);
 }
 
 void RoomScene::moveCardToDrawPile(const QString &from){
@@ -695,10 +699,33 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         addItem(card_item);
 
     putCardItem(dest, dest_place, card_item);
+
+    QString card_str = QString::number(card_id);
+    if(src && dest){
+        if(src == dest)
+            return;
+        // both src and dest are player
+        QString type = "$MoveCard";
+        QString from_general = src->getGeneralName();
+        QStringList tos;
+        tos << dest->getGeneralName();
+        log_box->appendLog(type, from_general, tos, card_str);
+    }else if(src){
+        // src throw card
+        if(src->getPhase() == Player::Discard){
+            QString type = "$DiscardCard";
+            QString from_general = src->getGeneralName();
+            log_box->appendLog(type, from_general, QStringList(), card_str);
+        }
+    }else if(dest){
+        QString type = "$RecycleCard";
+        QString from_general = dest->getGeneralName();
+        log_box->appendLog(type, from_general, QStringList(), card_str);
+    }
 }
 
 void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item){
-    static Phonon::MediaSource install_equip_source("audio/install-equip.wav");
+    static QString install_equip_source("audio/install-equip.wav");
 
     if(dest == NULL){
         if(dest_place == Player::DiscardedPile){
@@ -733,7 +760,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
         switch(dest_place){
         case Player::Equip:{
                 dashboard->installEquip(card_item);
-                Sanguosha->playEffect(install_equip_source);
+                Sanguosha->playEffect(install_equip_source, false);
                 break;
             }
 
@@ -757,7 +784,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             switch(dest_place){
             case Player::Equip:
                 photo->installEquip(card_item);
-                Sanguosha->playEffect(install_equip_source);
+                Sanguosha->playEffect(install_equip_source, false);
                 break;
             case Player::Hand:
                 photo->addCardItem(card_item);
@@ -1381,20 +1408,20 @@ void RoomScene::changeHp(const QString &who, int delta){
 
     if(delta < 0){
         if(delta <= -3){
-            static Phonon::MediaSource lightning_effect("audio/lightning.wav");
-            Sanguosha->playEffect(lightning_effect);
+            static QString lightning_effect("audio/lightning.wav");
+            Sanguosha->playEffect(lightning_effect, false);
             return;
         }
 
-        static Phonon::MediaSource male_damage_effect("audio/male-damage.mp3");
-        static Phonon::MediaSource female_damage_effect("audio/female-damage.mp3");
+        static QString male_damage_effect("audio/male-damage.mp3");
+        static QString female_damage_effect("audio/female-damage.mp3");
 
         ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
 
         if(player->getGeneral()->isMale())
-            Sanguosha->playEffect(male_damage_effect);
+            Sanguosha->playEffect(male_damage_effect, false);
         else
-            Sanguosha->playEffect(female_damage_effect);
+            Sanguosha->playEffect(female_damage_effect, false);
     }
 }
 

@@ -46,10 +46,12 @@ void ClientLogBox::appendLog(
 
     if(type.startsWith("$")){
         const Card *card = Sanguosha->getCard(card_str.toInt());
+        QString log_name = QString("<font color='white'>%1</font>").arg(card->getLogName());
 
         log = Sanguosha->translate(type);
         log.replace("%from", from);
-        log.replace("%card", card->getLogName());
+        log.replace("%to", to);
+        log.replace("%card", log_name);
 
         append(log);
 
@@ -75,10 +77,13 @@ void ClientLogBox::appendLog(
                 QString subcard_str = subcard_list.join(",");
                 subcard_str = QString("<font color='white'>%1</font>").arg(subcard_str);
 
-                log = tr("%from use skill [%1] use %2 as %3")
-                      .arg(skill_name)
-                      .arg(subcard_str)
-                      .arg(card_name);
+                if(subcard_list.isEmpty())
+                    log = tr("%from use skill [%1], played [%2]").arg(skill_name).arg(card_name);
+                else
+                    log = tr("%from use skill [%1] use %2 as %3")
+                          .arg(skill_name)
+                          .arg(subcard_str)
+                          .arg(card_name);
             }
 
             delete card;

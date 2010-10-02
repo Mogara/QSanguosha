@@ -1,10 +1,9 @@
 #include "button.h"
 
+extern audiere::AudioDevicePtr Device;
+
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
-
-static Phonon::MediaSource HoverSource("audio/button-hover.wav");
-static Phonon::MediaSource DownSource("audio/button-down.wav");
 
 Button::Button(const QString &label)
     :label(label){
@@ -18,14 +17,14 @@ Button::Button(const QString &label)
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
 
-    effect =  Phonon::createPlayer(Phonon::MusicCategory);
+    hover_effect = audiere::OpenSoundEffect(Device, "audio/button-hover.wav", audiere::MULTIPLE);
+    down_effect = audiere::OpenSoundEffect(Device, "audio/button-down.wav", audiere::MULTIPLE);
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    effect->setCurrentSource(HoverSource);
-    effect->play();
+    hover_effect->play();
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -33,8 +32,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    effect->setCurrentSource(DownSource);
-    effect->play();
+    down_effect->play();
 
     emit clicked();
 }

@@ -34,6 +34,7 @@ public:
     bool EnableHotKey;
     bool NeverNullifyMyTrick;
     bool EnableAutoTarget;
+    int NullificationCountDown;
 
     QBrush BackgroundBrush;
 };

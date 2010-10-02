@@ -278,6 +278,7 @@ StandardPackage::StandardPackage()
     t["club_char"] = tr("club_char");
     t["heart_char"] = tr("heart_char");
     t["diamond_char"] = tr("diamond_char");
+    t["no_suit_char"] = tr("no_suit_char");
 
     // phase names
     t["start"] = tr("start");
@@ -305,7 +306,6 @@ StandardPackage::StandardPackage()
     t["#ChooseSuit"] = tr("#ChooseSuit");
     t["#Death"] = tr("#Death");
     t["#InvokeSkill"] = tr("#InvokeSkill");
-    t["#DiscardCards"] = tr("#DiscardCards");
     t["#Pindian"] = tr("#Pindian");
     t["#PindianSuccess"] = tr("#PindianSuccess");
     t["#PindianFailure"] = tr("#PindianFailure");
@@ -315,11 +315,15 @@ StandardPackage::StandardPackage()
     t["#SkillNullify"] = tr("#SkillNullify");
     t["#ArmorNullify"] = tr("#ArmorNullify");
     t["#DrawNCards"] = tr("#DrawNCards");
+    t["#MoveNCards"] = tr("#MoveNCards");
 
     t["$TakeAG"] = tr("$TakeAG");
     t["$Uninstall"] = tr("$Uninstall");
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$PindianResult"] = tr("$PindianResult");
+    t["$MoveCard"] = tr("$MoveCard");
+    t["$DiscardCard"] = tr("$DiscardCard");
+    t["$RecycleCard"] = tr("$RecycleCard");
 
     addCards();
     addGenerals();

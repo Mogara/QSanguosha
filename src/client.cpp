@@ -52,7 +52,7 @@ bool CardMoveStructForClient::parse(const QString &str){
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), refusable(true), room(new QObject(this)), status(NotActive), alive_count(1),
+    :QTcpSocket(parent), refusable(true), status(NotActive), alive_count(1),
     nullification_dialog(NULL)
 {
     ClientInstance = this;
@@ -142,52 +142,44 @@ void Client::request(const QString &message){
 
 void Client::processReply(){
     static char self_prefix = '.';
-    static char room_prefix = '$';
     static char other_prefix = '#';
-    static char method_prefix = '!';
 
     typedef char buffer_t[1024];
 
     while(canReadLine()){
-        buffer_t buffer, object, field, value;
+        buffer_t buffer;
         readLine(buffer, sizeof(buffer));
-        int count = sscanf(buffer, "%s %s %s\n", object, field, value);
 
-        if(count != 3){
-            QMessageBox::warning(NULL, tr("Warning"), tr("The reply string must contains 3 words!"));
-            return;
-        }
-
-        if(object[0] == self_prefix){
+        if(buffer[0] == self_prefix){
             // client it Self
-            if(Self)
-                Self->setProperty(field, value);
-        }else if(object[0] == room_prefix){
-            // room
-            room->setProperty(field, value);
-        }else if(object[0] == other_prefix){
+            if(Self){
+                buffer_t property, value;
+                sscanf(buffer, ".%s %s", property, value);
+                Self->setProperty(property, value);
+            }
+        }else if(buffer[0] == other_prefix){
             // others
-            char *object_name = object + 1;
+            buffer_t object_name, property, value;
+            sscanf(buffer, "#%s %s %s", object_name, property, value);
             ClientPlayer *player = findChild<ClientPlayer*>(object_name);
             if(player){
-                bool declared = player->setProperty(field, value);
+                bool declared = player->setProperty(property, value);
                 if(!declared){
-                    QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(field));
+                    QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(property));
                 }
             }else
-                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object));
+                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object_name));
 
-        }else if(object[0] == method_prefix){
+        }else{
             // invoke methods
-            char *method_name = field;
+            buffer_t method_name, arg;
+            sscanf(buffer, "%s %s", method_name, arg);
             Callback callback = callbacks.value(method_name, NULL);
             if(callback)
-                (this->*callback)(value);
+                (this->*callback)(arg);
             else
                 QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
-
-        }else
-            QMessageBox::information(NULL, tr("Reply format error!"), buffer);
+        }
     }
 }
 
@@ -619,15 +611,23 @@ void Client::askForCardChosen(const QString &ask_str){
 }
 
 void Client::playCardEffect(const QString &play_str){
-    QRegExp pattern("(\\w+):([MF])");
-    if(!pattern.exactMatch(play_str))
-        return;
+    static QRegExp rx1("(\\w+):([MF])");
+    static QRegExp rx2("(\\w+)@(\\w+):([MF])");
 
-    QStringList texts = pattern.capturedTexts();
-    QString card_name = texts.at(1);
-    bool is_male = texts.at(2) == "M";
+    if(rx1.exactMatch(play_str)){
+        QStringList texts = rx1.capturedTexts();
+        QString card_name = texts.at(1);
+        bool is_male = texts.at(2) == "M";
 
-    Sanguosha->playCardEffect(card_name, is_male);
+        Sanguosha->playCardEffect(card_name, is_male);
+    }else if(rx2.exactMatch(play_str)){
+        QStringList texts = rx2.capturedTexts();
+        QString card_name = texts.at(1);
+        QString package_name = texts.at(2);
+        bool is_male = texts.at(3) == "M";
+
+        Sanguosha->playCardEffect(card_name, package_name, is_male);
+    }
 }
 
 void Client::chooseCard(int card_id){
