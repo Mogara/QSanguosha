@@ -52,22 +52,22 @@ bool CardMoveStructForClient::parse(const QString &str){
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
-    :QTcpSocket(parent), refusable(true), status(NotActive), alive_count(1),
+    :QObject(parent), refusable(true), status(NotActive), alive_count(1),
     nullification_dialog(NULL)
 {
-    ClientInstance = this;
+    ClientInstance = this;    
 
     Self = new ClientPlayer(this);
     Self->setObjectName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
-
     connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
-
-    connectToHost(Config.HostAddress, Config.Port);
-
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
-    connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
-    connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+
+    socket = new QTcpSocket(this);
+    socket->connectToHost(Config.HostAddress, Config.Port);
+    connect(socket, SIGNAL(readyRead()), this, SLOT(emitReplies()));
+    connect(this, SIGNAL(reply_got(char*)), this, SLOT(processReply(char*)));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 
     callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setPlayerCount"] = &Client::setPlayerCount;
@@ -147,7 +147,7 @@ void Client::checkVersion(const QString &server_version){
 }
 
 void Client::setPlayerCount(const QString &count_str){
-    if(state() != ConnectedState)
+    if(socket->state() != QAbstractSocket::ConnectedState)
         return;
 
     int count = count_str.toInt();
@@ -158,51 +158,59 @@ void Client::setPlayerCount(const QString &count_str){
     emit server_connected();
 }
 
-void Client::request(const QString &message){
-    write(message.toAscii());
-    write("\n");
+void Client::disconnectFromHost(){
+    socket->disconnectFromHost();
 }
 
-void Client::processReply(){
+void Client::request(const QString &message){
+    socket->write(message.toAscii());
+    socket->write("\n");
+}
+
+typedef char buffer_t[1024];
+
+void Client::emitReplies(){
+    while(socket->canReadLine()){
+        buffer_t reply;
+        socket->readLine(reply, sizeof(reply));
+
+        emit reply_got(reply);
+    }
+}
+
+void Client::processReply(char *reply){
     static char self_prefix = '.';
     static char other_prefix = '#';
 
-    typedef char buffer_t[1024];
-
-    while(canReadLine()){
-        buffer_t buffer;
-        readLine(buffer, sizeof(buffer));
-
-        if(buffer[0] == self_prefix){
-            // client it Self
-            if(Self){
-                buffer_t property, value;
-                sscanf(buffer, ".%s %s", property, value);
-                Self->setProperty(property, value);
-            }
-        }else if(buffer[0] == other_prefix){
-            // others
-            buffer_t object_name, property, value;
-            sscanf(buffer, "#%s %s %s", object_name, property, value);
-            ClientPlayer *player = findChild<ClientPlayer*>(object_name);
-            if(player){
-                bool declared = player->setProperty(property, value);
-                if(!declared){
-                    QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(property));
-                }
-            }else
-                QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object_name));
-
-        }else{
-            // invoke methods
-            buffer_t method_name, arg;
-            sscanf(buffer, "%s %s", method_name, arg);
-            Callback callback = callbacks.value(method_name, NULL);
-            if(callback)
-                (this->*callback)(arg);
-            else
-                QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
+    if(reply[0] == self_prefix){
+        // client it Self
+        if(Self){
+            buffer_t property, value;
+            sscanf(reply, ".%s %s", property, value);
+            Self->setProperty(property, value);
         }
+    }else if(reply[0] == other_prefix){
+        // others
+        buffer_t object_name, property, value;
+        sscanf(reply, "#%s %s %s", object_name, property, value);
+        ClientPlayer *player = findChild<ClientPlayer*>(object_name);
+        if(player){
+            bool declared = player->setProperty(property, value);
+            if(!declared){
+                QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(property));
+            }
+        }else
+            QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object_name));
+
+    }else{
+        // invoke methods
+        buffer_t method_name, arg;
+        sscanf(reply, "%s %s", method_name, arg);
+        Callback callback = callbacks.value(method_name, NULL);
+        if(callback)
+            (this->*callback)(arg);
+        else
+            QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
     }
 }
 
@@ -210,11 +218,16 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
     // translate error message
     QString reason;
     switch(socket_error){
-    case ConnectionRefusedError: reason = tr("Connection was refused or timeout"); break;
-    case RemoteHostClosedError: reason = tr("Remote host close this connection"); break;
-    case HostNotFoundError: reason = tr("Host not found"); break;
-    case SocketAccessError: reason = tr("Socket access error"); break;
-    case NetworkError: reason = tr("Server's' firewall blocked the connection or the network cable was plugged out"); break;
+    case QAbstractSocket::ConnectionRefusedError:
+        reason = tr("Connection was refused or timeout"); break;
+    case QAbstractSocket::RemoteHostClosedError:
+        reason = tr("Remote host close this connection"); break;
+    case QAbstractSocket::HostNotFoundError:
+        reason = tr("Host not found"); break;
+    case QAbstractSocket::SocketAccessError:
+        reason = tr("Socket access error"); break;
+    case QAbstractSocket::NetworkError:
+        reason = tr("Server's' firewall blocked the connection or the network cable was plugged out"); break;
         // FIXME
     default: reason = tr("Unknow error"); break;
     }
