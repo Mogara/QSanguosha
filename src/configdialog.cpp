@@ -21,7 +21,7 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::on_browseBgButton_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(NULL,
+    QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background image"),
                                                     ".",
                                                    tr("Images (*.png *.bmp *.jpg)"));
@@ -46,4 +46,22 @@ void ConfigDialog::saveConfig()
     int count_down = ui->nullificationSpinBox->value();
     Config.NullificationCountDown = count_down;
     Config.setValue("NullificationCountDown", count_down);
+}
+
+void ConfigDialog::on_browseBgMusicButton_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Select a background music"),
+                                                    ".",
+                                                    tr("Audio files (*.wav *.mp3)"));
+    if(!filename.isEmpty()){
+        ui->bgMusicPathLineEdit->setText(filename);
+        Config.setValue("BackgroundMusic", filename);
+    }
+}
+
+void ConfigDialog::on_resetBgMusicButton_clicked()
+{
+    ui->bgMusicPathLineEdit->clear();
+    Config.remove("BackgroundMusic");
 }

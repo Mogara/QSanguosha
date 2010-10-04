@@ -21,6 +21,16 @@ bool SimayiAI::askForSkillInvoke(const QString &skill_name) const{
     return true;
 }
 
+XiahoudunAI::XiahoudunAI(ServerPlayer *player)
+    :SmartAI(player)
+{
+
+}
+
+bool XiahoudunAI::askForSkillInvoke(const QString &skill_name) const{
+    return true;
+}
+
 void StandardPackage::addAIs(){
     addMetaObject<CaocaoAI>();
     addMetaObject<SimayiAI>();

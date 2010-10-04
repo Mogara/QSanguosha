@@ -48,6 +48,7 @@ public:
 
     typedef void (Client::*Callback)(const QString &);
 
+    void checkVersion(const QString &server_version);
     void setPlayerCount(const QString &count_str);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);

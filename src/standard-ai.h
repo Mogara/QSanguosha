@@ -21,4 +21,13 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name) const;
 };
 
+class XiahoudunAI: public SmartAI{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XiahoudunAI(ServerPlayer *player);
+
+    virtual bool askForSkillInvoke(const QString &skill_name) const;
+};
+
 #endif // STANDARDAI_H

@@ -404,7 +404,7 @@ bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
         return true;
 
     if(targets.length() == 1){
-        int max_diff = Self->getHandcardNum();
+        int max_diff = Self->getCardCount(true);
         return max_diff >= qAbs(to_select->getHandcardNum() - targets.first()->getHandcardNum());
     }
 
@@ -434,7 +434,7 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
     int diff = n1 - n2;
     if(diff != 0){
-        room->askForDiscard(source, diff, false);
+        room->askForDiscard(source, diff, false, true);
     }
 
     DummyCard *card1 = a->wholeHandCards();

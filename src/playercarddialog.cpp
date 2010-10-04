@@ -96,7 +96,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
 
     const Horse *horse = player->getDefensiveHorse();
     if(horse){
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName());
+        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(+1 horse)"));
         button->setIcon(horse->getSuitIcon());
 
         mapper->setMapping(button, horse->getId());
@@ -106,7 +106,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
 
     horse = player->getOffensiveHorse();
     if(horse){
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName());
+        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(-1 horse)"));
         button->setIcon(horse->getSuitIcon());
 
         mapper->setMapping(button, horse->getId());

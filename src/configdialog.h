@@ -17,6 +17,8 @@ private:
     Ui::ConfigDialog *ui;
 
 private slots:
+    void on_resetBgMusicButton_clicked();
+    void on_browseBgMusicButton_clicked();
     void on_resetBgButton_clicked();
     void on_browseBgButton_clicked();
     void saveConfig();

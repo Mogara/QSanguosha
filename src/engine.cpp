@@ -134,7 +134,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         return NULL;    
 }
 
-SkillCard *Engine::cloneSkillCard(const QString &name){
+SkillCard *Engine::cloneSkillCard(const QString &name) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
     if(meta){
         QObject *card_obj = meta->newInstance();
@@ -144,7 +144,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name){
         return NULL;
 }
 
-AI *Engine::cloneAI(ServerPlayer *player){
+AI *Engine::cloneAI(ServerPlayer *player) const{
     QString general_name = player->getGeneralName();
     general_name[0] = general_name[0].toUpper();
     QString ai_name = general_name + "AI";
@@ -155,6 +155,11 @@ AI *Engine::cloneAI(ServerPlayer *player){
         return ai;
     }else
         return NULL;
+}
+
+QString Engine::getVersion() const{
+    static const QString version = "20101003";
+    return version;
 }
 
 int Engine::getCardCount() const{
@@ -232,26 +237,21 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
-void Engine::playEffect(const QString &filename, bool once){
+void Engine::playEffect(const QString &filename){
     audiere::OutputStreamPtr effect;
-    if(once){
+    if(playing.contains(filename))
+        return;
+
+    effect = effects.value(filename, NULL);
+    if(effect == NULL){
         effect = audiere::OpenSound(Device, filename.toAscii());
-    }else{
-        if(playing.contains(filename))
-            return;
-
-        effect = effects.value(filename, NULL);
-        if(effect == NULL){
-            effect = audiere::OpenSound(Device, filename.toAscii());
-            effects.insert(filename, effect);
-        }
-
-        if(effect)
-            playing.insert(filename, effect);
+        effects.insert(filename, effect);
     }
 
-    if(effect)
+    if(effect){
+        playing.insert(filename, effect);
         effect->play();
+    }
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index){
@@ -263,23 +263,21 @@ void Engine::playSkillEffect(const QString &skill_name, int index){
 void Engine::playCardEffect(const QString &card_name, bool is_male){
     const Card *card = findChild<const Card *>(card_name);
     if(card)
-        playEffect(card->getEffectPath(is_male), false);
+        playEffect(card->getEffectPath(is_male));
 }
 
 void Engine::playCardEffect(const QString &card_name, const QString &package, bool is_male){
     QString gender = is_male ? "male" : "female";
     QString path = QString("%1/cards/effect/%2/%3.mp3").arg(package).arg(gender).arg(card_name);
-    playEffect(path, false);
+    playEffect(path);
 }
 
 void Engine::removeFromPlaying(audiere::OutputStreamPtr stream){
     mutex.lock();
 
     QString key = playing.key(stream);
-    if(!key.isEmpty()){
-        playing.remove(key);
-        qDebug("removed %s", qPrintable(key));
-    }
+    if(!key.isEmpty())
+        playing.remove(key);    
 
     mutex.unlock();
 }

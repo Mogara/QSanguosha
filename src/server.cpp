@@ -24,7 +24,7 @@ Server::Server(QObject *parent)
     connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
 
     QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(tr("Select network address"));
+    dialog->setWindowTitle(tr("Start server"));
 
     QLineEdit *port_edit = new QLineEdit;
     port_edit->setValidator(new QIntValidator);

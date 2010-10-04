@@ -82,13 +82,13 @@ void StartScene::switchToServer(Server *server){
 
     foreach(QString item, items){
         if(item.startsWith("192.168."))
-            server_log->append(tr("Your LAN address: %1").arg(item));
+            server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if(item == "127.0.0.1")
-            server_log->append(tr("Your loopback address %1").arg(item));
+            server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
         else if(item.startsWith("5."))
-            server_log->append(tr("Your Hamachi address: %1").arg(item));
+            server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
         else
-            server_log->append(tr("Your other address: %1").arg(item));
+            server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
 
     server_log->append(tr("Binding port number is %1").arg(Config.Port));

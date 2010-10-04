@@ -41,7 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+#ifdef Q_OS_WIN32
+    Device = audiere::OpenDevice("winmm");
+#else
     Device = audiere::OpenDevice();
+#endif
+
     Sanguosha = new Engine(this);    
     Config.init();
 
@@ -199,7 +204,13 @@ void MainWindow::on_actionAbout_triggered()
     QString content =  "<center><img src=':/shencc.png'> <br /> </center>";
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
                       "totally written in C++ Qt GUI framework <br />"
-                      "My Email: moligaloo@gmail.com"));
+                      "My Email: moligaloo@gmail.com <br/>"));
+
+    content.append(tr("Current version: %1 <br/>").arg(Sanguosha->getVersion()));
+
+    const char *date = __DATE__;
+    const char *time = __TIME__;
+    content.append(tr("Compilation time: %1 %2").arg(date).arg(time));
 
     // FIXME: add acknowledgement
 
@@ -217,4 +228,15 @@ void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)
 void MainWindow::changeBackground(){
     if(scene)
         scene->setBackgroundBrush(Config.BackgroundBrush);
+}
+
+void MainWindow::on_actionAbout_audiere_triggered()
+{
+    QString content = tr("Audiere is a high-level audio engine <br/>");
+    QString address = "http://audiere.sourceforge.net/";
+    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+    content.append(tr("Current version %1 <br/>").arg(audiere::GetVersion()));
+    content.append(tr("Device name: %1 <br/>").arg(Device->getName()));
+
+    QMessageBox::about(this, tr("About audiere"), content);
 }

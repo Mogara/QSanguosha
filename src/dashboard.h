@@ -61,7 +61,6 @@ private:
     QPixmap magatamas[6];
     Pixmap *avatar;
     QGraphicsPixmapItem *kingdom;
-    bool use_skill;
 
     QComboBox *sort_combobox;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;

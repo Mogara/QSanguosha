@@ -154,11 +154,15 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
 
-        foreach(ServerPlayer *player, players){
-            if(!player->containsTrick(objectName())){
-                room->moveCardTo(this, player, Player::Judging, true);
-                break;
-            }
+        foreach(ServerPlayer *player, players){            
+            if(player->containsTrick(objectName()))
+                continue;
+
+            if(player->hasSkill("weimu") && isBlack())
+                continue;
+
+            room->moveCardTo(this, player, Player::Judging, true);
+            break;
         }
     }else
         room->throwCard(this);

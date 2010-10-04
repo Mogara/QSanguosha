@@ -516,57 +516,61 @@ void SingleTargetTrick::use(Room *room, ServerPlayer *source, const QList<Server
     room->cardEffect(effect);
 }
 
-class Collateral:public SingleTargetTrick{
-public:
-    Collateral(Suit suit, int number):SingleTargetTrick(suit, number, false){
-        setObjectName("collateral");
+
+Collateral::Collateral(Card::Suit suit, int number)
+    :SingleTargetTrick(suit, number, false)
+{
+    setObjectName("collateral");
+}
+
+bool Collateral::isAvailable() const{
+    QList<const ClientPlayer*> players = ClientInstance->findChildren<const ClientPlayer*>();
+    foreach(const ClientPlayer *player, players){
+        if(player->getWeapon() != NULL && player != Self)
+            return true;
     }
 
-    virtual bool isAvailable() const{
-        QList<const ClientPlayer*> players = ClientInstance->findChildren<const ClientPlayer*>();
-        foreach(const ClientPlayer *player, players){
-            if(player->getWeapon() != NULL && player != Self)
-                return true;
-        }
+    return false;
+}
 
-        return false;
-    }
+bool Collateral::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() == 2;
+}
 
-    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-        return targets.length() == 2;
-    }
-
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-        if(targets.isEmpty()){
-            if(to_select->hasSkill("weimu") && isBlack())
-                return false;
-
-            return to_select->getWeapon() && to_select != Self;
-        }else if(targets.length() == 1){
-            const ClientPlayer *first = targets.first();
-            return first != Self && first->canSlash(to_select);
-        }else
+bool Collateral::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(targets.isEmpty()){
+        if(to_select->hasSkill("weimu") && isBlack())
             return false;
-    }
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-        room->throwCard(this);
+        return to_select->getWeapon() && to_select != Self;
+    }else if(targets.length() == 1){
+        const ClientPlayer *first = targets.first();
+        return first != Self && first->canSlash(to_select);
+    }else
+        return false;
+}
 
-        ServerPlayer *killer = targets.at(0);
-        ServerPlayer *victim = targets.at(1);
+void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
 
-        bool on_effect = room->cardEffect(this, source, killer);
-        if(on_effect){
-            QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
-            const Card *slash = room->askForCard(killer, "slash", prompt);
-            if(slash){
-                room->cardEffect(slash, killer, victim);
-            }else{
-                source->obtainCard(killer->getWeapon());
-            }
+    ServerPlayer *killer = targets.at(0);
+    ServerPlayer *victim = targets.at(1);
+    const Weapon *weapon = killer->getWeapon();
+
+    if(weapon == NULL)
+        return;
+
+    bool on_effect = room->cardEffect(this, source, killer);
+    if(on_effect){
+        QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
+        const Card *slash = room->askForCard(killer, "slash", prompt);
+        if(slash){
+            room->cardEffect(slash, killer, victim);
+        }else{
+            source->obtainCard(weapon);
         }
     }
-};
+}
 
 Nullification::Nullification(Suit suit, int number)
     :SingleTargetTrick(suit, number, false)

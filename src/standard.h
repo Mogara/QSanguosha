@@ -125,6 +125,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class Collateral:public SingleTargetTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Collateral(Card::Suit suit, int number);
+    virtual bool isAvailable() const;
+    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 class ExNihilo: public SingleTargetTrick{
     Q_OBJECT
 

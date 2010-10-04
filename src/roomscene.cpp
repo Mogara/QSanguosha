@@ -6,6 +6,8 @@
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
 
+extern audiere::AudioDevicePtr Device;
+
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QSequentialAnimationGroup>
@@ -181,6 +183,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         qreal y =  Config.Rect.y();
         photo->setPos(x, y);
     }
+
+    memory = new QSharedMemory("QSanguosha", this);
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -192,7 +196,7 @@ void RoomScene::addPlayer(ClientPlayer *player){
 
             name2photo[player->objectName()] = photo;
 
-            Sanguosha->playEffect("audio/add-player.wav", false);
+            Sanguosha->playEffect("audio/add-player.wav");
 
             return;
         }
@@ -760,7 +764,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
         switch(dest_place){
         case Player::Equip:{
                 dashboard->installEquip(card_item);
-                Sanguosha->playEffect(install_equip_source, false);
+                Sanguosha->playEffect(install_equip_source);
                 break;
             }
 
@@ -784,7 +788,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             switch(dest_place){
             case Player::Equip:
                 photo->installEquip(card_item);
-                Sanguosha->playEffect(install_equip_source, false);
+                Sanguosha->playEffect(install_equip_source);
                 break;
             case Player::Hand:
                 photo->addCardItem(card_item);
@@ -1409,7 +1413,7 @@ void RoomScene::changeHp(const QString &who, int delta){
     if(delta < 0){
         if(delta <= -3){
             static QString lightning_effect("audio/lightning.wav");
-            Sanguosha->playEffect(lightning_effect, false);
+            Sanguosha->playEffect(lightning_effect);
             return;
         }
 
@@ -1419,9 +1423,9 @@ void RoomScene::changeHp(const QString &who, int delta){
         ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
 
         if(player->getGeneral()->isMale())
-            Sanguosha->playEffect(male_damage_effect, false);
+            Sanguosha->playEffect(male_damage_effect);
         else
-            Sanguosha->playEffect(female_damage_effect, false);
+            Sanguosha->playEffect(female_damage_effect);
     }
 }
 
@@ -1447,6 +1451,8 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     item2player.clear();
     trust_button->setEnabled(false);
     chat_edit->setEnabled(false);
+    if(bgmusic)
+        bgmusic->stop();
 
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
@@ -1855,5 +1861,36 @@ void RoomScene::chooseGongxinCard(){
 void RoomScene::onGameStart(){
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
+
+    bool play_music = false;
+    if(memory->isAttached() || memory->attach()){
+        memory->lock();
+
+        char *username = static_cast<char *>(memory->data());
+        const char *my_username = Config.UserName.toAscii();
+        play_music = qstrcmp(username, my_username) == 0;
+
+        memory->unlock();
+    }else if(memory->create(255)){
+        memory->lock();
+
+        void *data = memory->data();
+        const char *username = Config.UserName.toAscii();
+        memcpy(data, username, qstrlen(username));
+        play_music = true;
+
+        memory->unlock();
+    }
+
+    if(!play_music)
+        return;
+
+    // start playing background music
+    QString bgmusic_path = Config.value("BackgroundMusic", "audio/background.mp3").toString();
+    bgmusic = audiere::OpenSound(Device, bgmusic_path.toAscii(), true);
+    if(bgmusic){
+        bgmusic->setRepeat(true);
+        bgmusic->play();
+    }
 }
 

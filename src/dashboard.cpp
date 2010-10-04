@@ -10,7 +10,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 Dashboard::Dashboard()
-    :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL), use_skill(false),
+    :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), view_as_skill(NULL)
 {
     int i;

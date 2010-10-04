@@ -825,6 +825,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setObjectName(name);
     player->setProperty("avatar", avatar);
 
+    player->invoke("checkVersion", Sanguosha->getVersion());
     player->invoke("setPlayerCount", QString::number(player_count));
 
     // introduce the new joined player to existing players except himself

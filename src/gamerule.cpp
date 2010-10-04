@@ -44,7 +44,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::Play: {
-            forever{
+            while(player->isAlive()){
                 CardUseStruct card_use;
                 room->activate(player, card_use);
                 if(card_use.isValid())

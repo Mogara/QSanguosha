@@ -55,7 +55,7 @@ public:
             if(result == "ignore")
                 continue;
 
-            const Card *jink = room->askForCard(liege, "jink", "hujia-jink");
+            const Card *jink = room->askForCard(liege, "jink", "@hujia-jink");
             if(jink){
                 room->provide(jink);
                 return true;
@@ -1291,6 +1291,7 @@ void StandardPackage::addGenerals(){
     t["jijiang:ignore"] = tr("jijiang:ignore");
 
     t["@jijiang-slash"] = tr("@jijiang-slash");
+    t["@hujia-jink"] = tr("@hujia-jink");
     t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
     t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
     t["@wushuang-jink-1"] = tr("@wushuang-jink-1");

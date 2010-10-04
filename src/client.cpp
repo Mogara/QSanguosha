@@ -69,6 +69,7 @@ Client::Client(QObject *parent)
     connect(this, SIGNAL(readyRead()), this, SLOT(processReply()));
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
 
+    callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setPlayerCount"] = &Client::setPlayerCount;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
@@ -126,7 +127,29 @@ Client::Client(QObject *parent)
     request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
 
+void Client::checkVersion(const QString &server_version){
+    QString client_version = Sanguosha->getVersion();
+
+    if(server_version == client_version)
+        return;
+
+    static QString link = "http://code.google.com/p/q-sanguosha/downloads/list";
+    QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
+    if(server_version > client_version)
+        text.append(tr("Your client version is older than the server's, please update it <br/>"));
+    else
+        text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
+
+    text.append(tr("Download link : <a href='%1'>%1</a> <br/>").arg(link));
+    QMessageBox::warning(NULL, tr("Warning"), text);
+
+    disconnectFromHost();
+}
+
 void Client::setPlayerCount(const QString &count_str){
+    if(state() != ConnectedState)
+        return;
+
     int count = count_str.toInt();
 
     Config.PlayerCount = count;

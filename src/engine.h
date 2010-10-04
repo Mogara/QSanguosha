@@ -24,8 +24,9 @@ public:
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
-    SkillCard *cloneSkillCard(const QString &name);
-    AI *cloneAI(ServerPlayer *player);
+    SkillCard *cloneSkillCard(const QString &name) const;
+    AI *cloneAI(ServerPlayer *player) const;
+    QString getVersion() const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -38,7 +39,7 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
-    void playEffect(const QString &filename, bool once);
+    void playEffect(const QString &filename);
     void playSkillEffect(const QString &skill_name, int index);
     void playCardEffect(const QString &card_name, bool is_male);
     void playCardEffect(const QString &card_name, const QString &package, bool is_male);

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>395</width>
-    <height>177</height>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,11 +22,11 @@
      <x>10</x>
      <y>10</y>
      <width>371</width>
-     <height>111</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -50,7 +50,7 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>321</width>
+       <width>331</width>
        <height>20</height>
       </rect>
      </property>
@@ -61,7 +61,7 @@
     <widget class="QPushButton" name="browseBgButton">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>180</x>
        <y>60</y>
        <width>81</width>
        <height>23</height>
@@ -74,9 +74,58 @@
     <widget class="QPushButton" name="resetBgButton">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>270</x>
        <y>60</y>
        <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="setupBgMusicLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>90</y>
+       <width>132</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Setup background music</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="bgMusicPathLineEdit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>331</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="browseBgMusicButton">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>140</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Browse ...</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetBgMusicButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>140</y>
+       <width>75</width>
        <height>23</height>
       </rect>
      </property>
@@ -89,12 +138,12 @@
     <attribute name="title">
      <string>Game</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>194</width>
+       <width>236</width>
        <height>22</height>
       </rect>
      </property>
@@ -108,6 +157,9 @@
       </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="nullificationSpinBox">
+        <property name="suffix">
+         <string> seconds</string>
+        </property>
         <property name="minimum">
          <number>5</number>
         </property>
@@ -127,7 +179,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>130</y>
+     <y>230</y>
      <width>341</width>
      <height>32</height>
     </rect>

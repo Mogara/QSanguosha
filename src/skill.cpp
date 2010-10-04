@@ -62,7 +62,7 @@ void Skill::playEffect(int index) const{
         else
             index--;
 
-        Sanguosha->playEffect(sources.at(index), false);
+        Sanguosha->playEffect(sources.at(index));
     }
 }
 
@@ -77,7 +77,6 @@ void Skill::unsetFlag(ServerPlayer *player) const{
 Skill::Frequency Skill::getFrequency() const{
     return frequency;
 }
-
 
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
