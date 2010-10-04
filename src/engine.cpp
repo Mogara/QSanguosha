@@ -158,8 +158,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    static const QString version = "20101003";
-    return version;
+    return "20101004";
 }
 
 int Engine::getCardCount() const{
