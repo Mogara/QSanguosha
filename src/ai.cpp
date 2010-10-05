@@ -60,35 +60,8 @@ QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_e
 
     if(optional)
         return to_discard;
-
-    // the special case, fire attack
-    if(suit != Card::NoSuit){
-        QList<const Card *> cards = player->getHandcards();
-        foreach(const Card *card, cards){
-            if(card->getSuit() == suit){
-                to_discard << card->getId();
-                return to_discard;
-            }
-        }
-    }
-
-    QString flags = "h";
-    if(include_equip)
-        flags.append("e");
-
-    QList<const Card *> all_cards = player->getHandcards();
-
-    int i;
-    for(i=0; i<all_cards.length(); i++){
-        int r1 = qrand() % all_cards.length();
-        int r2 = qrand() % all_cards.length();
-        all_cards.swap(r1, r2);
-    }
-
-    for(i=0; i<discard_num; i++)
-        to_discard << all_cards.at(i)->getId();
-
-    return to_discard;
+    else
+        return player->forceToDiscard(discard_num, include_equip);
 }
 
 int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) const{

@@ -416,12 +416,10 @@ GodPackage::GodPackage()
 {
     t["god"] = tr("god");
 
-    General *shenguanyu, *shenlumeng;
+    //General *shenguanyu = new General(this, "shenguanyu", "shu", 5);
+    //shenguanyu->addSkill(new Wuhun);
 
-    shenguanyu = new General(this, "shenguanyu", "shu", 5);
-    shenguanyu->addSkill(new Wuhun);
-
-    shenlumeng = new General(this, "shenlumeng", "wu", 3);
+    General *shenlumeng = new General(this, "shenlumeng", "wu", 3);
     shenlumeng->addSkill(new Shelie);
     shenlumeng->addSkill(new Gongxin);
 
@@ -441,15 +439,13 @@ GodPackage::GodPackage()
     t["gongxin:discard"] = tr("gongxin:discard");
     t["gongxin:put"] = tr("gongxin:put");
 
-    General *shenzhouyu, *shenzhugeliang;
-
-    shenzhouyu = new General(this, "shenzhouyu", "wu");
+    General *shenzhouyu = new General(this, "shenzhouyu", "wu");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new GreatYeyan);
     shenzhouyu->addSkill(new MediumYeyan);
     shenzhouyu->addSkill(new SmallYeyan);
 
-    shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
+    //General *shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
 
     t["shenzhouyu"] = tr("shenzhouyu");
     t["shenzhugeliang"] = tr("shenzhugeliang");
@@ -470,15 +466,13 @@ GodPackage::GodPackage()
     t["mediumyeyan"] = tr("mediumyeyan");
     t["smallyeyan"] = tr("smallyeyan");
 
-    General *shencaocao, *shenlubu;
-
-    shencaocao = new General(this, "shencaocao$", "wei", 3);
+    General *shencaocao = new General(this, "shencaocao$", "wei", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 
-    shenlubu = new General(this, "shenlubu", "qun", 5);
-    shenlubu->addSkill(new Baonu);
-    shenlubu->addSkill(new Shenfen);
+    //General *shenlubu = new General(this, "shenlubu", "qun", 5);
+    //shenlubu->addSkill(new Baonu);
+    //shenlubu->addSkill(new Shenfen);
 
     t["shencaocao"] = tr("shencaocao");
     t["shenlubu"] = tr("shenlubu");

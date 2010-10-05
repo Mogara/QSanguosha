@@ -14,6 +14,11 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
         ui->bgPathLineEdit->setText(bg_path);
 
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
+
+    ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
+    ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
+
+    connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 }
 
 ConfigDialog::~ConfigDialog()
@@ -51,7 +56,15 @@ void ConfigDialog::saveConfig()
 
     float volume = ui->volumeSlider->value() / 100.0;
     Config.Volume = volume;
-    Config.setValue("Volumne", volume);
+    Config.setValue("Volume", volume);
+
+    bool enabled = ui->enableEffectCheckBox->isChecked();
+    Config.EnableEffects = enabled;
+    Config.setValue("EnableEffects", enabled);
+
+    enabled = ui->enableBgMusicCheckBox->isChecked();
+    Config.EnableBgMusic = enabled;
+    Config.setValue("EnableBgMusic", enabled);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

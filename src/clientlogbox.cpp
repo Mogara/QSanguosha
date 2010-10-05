@@ -116,7 +116,8 @@ void ClientLogBox::appendLog(const QString &log_str){
     QRegExp rx("([#$]\\w+):(\\w+)->([+\\w]*):(.*):(\\w*):(\\w*)");
 
     if(!rx.exactMatch(log_str)){
-        append(tr("Log string is not well formatted"));
+        append(tr("Log string is not well formatted: %1, error string is %2")
+               .arg(log_str).arg(rx.errorString()));
         return;
     }
 

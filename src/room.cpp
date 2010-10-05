@@ -382,17 +382,27 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 
         throwCard(card_id);
 
+        CardStar card = Sanguosha->getCard(card_id);
+        if(!card->inherits("Nullification")){
+            Card *vcard = new Nullification(card->getSuit(), card->getNumber());
+            vcard->addSubcard(card_id);
+            vcard->setSkillName("kanpo");
+            card = vcard;
+        }
+
         LogMessage log;
-        log.type = "#Nullification";
-        log.from = player;
-        log.card_str = QString::number(card_id);
+        log.type = "#UseCard";
+        log.from = player;        
+        log.card_str = card->toString();
         sendLog(log);
 
         playCardEffect("nullification", player->getGeneral()->isMale());
 
-        CardStar card = Sanguosha->getCard(card_id);
         QVariant data = QVariant::fromValue(card);
         thread->trigger(CardResponsed, player, data);
+
+        if(card->isVirtualCard())
+            delete card;
 
         return !askForNullification("nullification", player, to);
     }
@@ -544,6 +554,8 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
 
     if(result.isEmpty())
         return askForCardShow(player, requestor);
+    else if(result == ".")
+        return player->getRandomHandCard();
 
     return result.toInt();
 }
@@ -1376,13 +1388,18 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         if(result.isEmpty())
             return askForDiscard(target, discard_num, optional, include_equip, suit);
 
-        if(result == ".")
-            return false;
+        if(result == "."){
+            if(optional)
+                return false;
 
-        QStringList card_strs = result.split("+");
-        foreach(QString card_str, card_strs){            
-            int card_id = card_str.toInt();
-            to_discard << card_id;
+            // time is up, and the server choose the cards to discard
+            to_discard = target->forceToDiscard(discard_num, include_equip);
+        }else{
+            QStringList card_strs = result.split("+");
+            foreach(QString card_str, card_strs){
+                int card_id = card_str.toInt();
+                to_discard << card_id;
+            }
         }
     }
 
@@ -1548,6 +1565,10 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
 
     if(result.isEmpty())
         return askForPindian(player, ask_str);
+    else if(result == "."){
+        int card_id = player->getRandomHandCard();
+        return Sanguosha->getCard(card_id);
+    }
 
     return Card::Parse(result);
 }

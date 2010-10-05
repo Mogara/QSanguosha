@@ -36,6 +36,8 @@ public:
     bool EnableAutoTarget;
     int NullificationCountDown;
     int OperationTimeout;
+    bool EnableEffects;
+    bool EnableBgMusic;
     float Volume;
 
     QBrush BackgroundBrush;

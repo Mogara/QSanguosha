@@ -1122,9 +1122,7 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
 void RoomScene::doTimeout(){
     switch(ClientInstance->getStatus()){
     case Client::Responsing:{
-            if(cancel_button->isEnabled())
-                cancel_button->click();
-
+            doCancelButton();
             break;
         }
 
@@ -1134,12 +1132,7 @@ void RoomScene::doTimeout(){
         }
 
     case Client::Discarding:{
-            if(cancel_button->isEnabled())
-                cancel_button->click();
-            else{
-                // discard cards randomly
-
-            }
+            doCancelButton();
 
             break;
         }
@@ -2011,6 +2004,9 @@ void RoomScene::chooseGongxinCard(){
 void RoomScene::onGameStart(){
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
+
+    if(!Config.EnableBgMusic)
+        return;
 
     bool play_music = false;
     if(memory->isAttached() || memory->attach()){

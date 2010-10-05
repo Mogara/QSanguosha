@@ -82,6 +82,23 @@ void ServerPlayer::drawCards(int n){
     room->drawCards(this, n);
 }
 
+QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){
+    QList<int> to_discard;
+
+    QString flags = "h";
+    if(include_equip)
+        flags.append("e");
+
+    QList<const Card *> all_cards = getCards(flags);
+    qShuffle(all_cards);
+
+    int i;
+    for(i=0; i<discard_num; i++)
+        to_discard << all_cards.at(i)->getId();
+
+    return to_discard;
+}
+
 int ServerPlayer::aliveCount() const{
     return room->alivePlayerCount();
 }
@@ -200,7 +217,8 @@ QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
     if(flags.contains("h"))
         cards << handcards;
 
-    cards << getEquips();
+    if(flags.contains("e"))
+        cards << getEquips();
 
     if(flags.contains("j")){
         QStack<const Card *> tricks = getJudgingArea();

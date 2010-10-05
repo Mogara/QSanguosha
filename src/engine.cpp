@@ -238,6 +238,9 @@ QList<int> Engine::getRandomCards() const{
 }
 
 void Engine::playEffect(const QString &filename){
+    if(!Config.EnableEffects)
+        return;
+
     audiere::OutputStreamPtr effect;
     if(playing.contains(filename))
         return;

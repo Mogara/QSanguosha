@@ -30,6 +30,7 @@ public:
     void throwAllHandCards();
     void throwAllCards();
     void drawCards(int n);
+    QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
     QList<const Card *> getHandcards() const;
     QList<const Card *> getCards(const QString &flags) const;
