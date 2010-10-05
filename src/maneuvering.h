@@ -32,6 +32,8 @@ public:
     Q_INVOKABLE Analeptic(Card::Suit suit, int number);
     virtual QString getSubtype() const;
 
+    static bool IsAvailable();
+
     virtual bool isAvailable() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;

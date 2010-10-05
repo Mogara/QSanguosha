@@ -511,10 +511,13 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
 
-    const Card *slash = NULL;
-    ServerPlayer *to_slash = NULL;
-    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "luanwu-slash"))
-        && (to_slash = room->askForPlayerChosen(effect.to, luanwu_targets))) {
+    const Card *slash = NULL;    
+    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "luanwu-slash"))){
+        ServerPlayer *to_slash;
+        if(luanwu_targets.length() == 1)
+            to_slash = luanwu_targets.first();
+        else
+            to_slash = room->askForPlayerChosen(effect.to, luanwu_targets);
         room->cardEffect(slash, effect.to, to_slash);
     }else
         room->loseHp(effect.to);
@@ -527,6 +530,10 @@ void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
 class Jiuchi: public ViewAsSkill{
 public:
     Jiuchi():ViewAsSkill("jiuchi"){
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Analeptic::IsAvailable();
     }
 
     virtual bool isEnabledAtResponse() const{

@@ -31,10 +31,16 @@ Server::Server(QObject *parent)
     port_edit->setText(QString::number(port));
     port_edit->setToolTip(tr("Change the port number is not necessary for most cases"));
 
-    QSpinBox *spinbox = new QSpinBox;
-    spinbox->setMinimum(2);
-    spinbox->setMaximum(8);
-    spinbox->setValue(Config.PlayerCount);
+    QSpinBox *player_count_spinbox = new QSpinBox;
+    player_count_spinbox->setMinimum(2);
+    player_count_spinbox->setMaximum(8);
+    player_count_spinbox->setValue(Config.PlayerCount);
+
+    QSpinBox *timeout_spinbox = new QSpinBox;
+    timeout_spinbox->setMinimum(5);
+    timeout_spinbox->setMaximum(30);
+    timeout_spinbox->setValue(Config.OperationTimeout);
+    timeout_spinbox->setSuffix(tr(" seconds"));
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -70,7 +76,8 @@ Server::Server(QObject *parent)
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Port"), port_edit);
-    layout->addRow(tr("Player count"), spinbox);
+    layout->addRow(tr("Player count"), player_count_spinbox);
+    layout->addRow(tr("Operation timeout"), timeout_spinbox);
     layout->addRow(box);
     layout->addRow(button_layout);
 
@@ -81,10 +88,12 @@ Server::Server(QObject *parent)
         return;
 
     Config.Port = port_edit->text().toInt();
-    Config.PlayerCount = spinbox->value();
+    Config.PlayerCount = player_count_spinbox->value();
+    Config.OperationTimeout = timeout_spinbox->value();
 
     Config.setValue("Port", Config.Port);
     Config.setValue("PlayerCount", Config.PlayerCount);
+    Config.setValue("OperationTimeout", Config.OperationTimeout);
 
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
     foreach(QAbstractButton *checkbox, checkboxes){

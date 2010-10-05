@@ -8,7 +8,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    :frequency(frequency)
+    :frequency(frequency), default_choice("no")
 {
     static QChar lord_symbol('$');
 
@@ -29,6 +29,10 @@ bool Skill::isLordSkill() const{
 
 QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
+}
+
+QString Skill::getDefaultChoice() const{
+    return default_choice;
 }
 
 void Skill::initMediaSource(){
@@ -124,7 +128,7 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
-    :Skill(name), view_as_skill(NULL), default_choice("no")
+    :Skill(name), view_as_skill(NULL)
 {
 
 }
@@ -135,10 +139,6 @@ const ViewAsSkill *TriggerSkill::getViewAsSkill() const{
 
 QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
     return events;
-}
-
-QString TriggerSkill::getDefaultChoice() const{
-    return default_choice;
 }
 
 int TriggerSkill::getPriority(ServerPlayer *target) const{    

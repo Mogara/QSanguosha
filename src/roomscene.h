@@ -16,6 +16,7 @@
 #include <QQueue>
 #include <QMainWindow>
 #include <QSharedMemory>
+#include <QProgressBar>
 
 class RoomScene : public QGraphicsScene{    
     Q_OBJECT
@@ -44,6 +45,7 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    virtual void timerEvent(QTimerEvent *event);
 
 private:
     QList<Photo*> photos;
@@ -56,6 +58,8 @@ private:
     QComboBox *role_combobox;
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
+    QProgressBar *progress_bar;
+    int timer_id;
     QMenu *known_cards_menu;
     Daqiao *daqiao;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;
@@ -110,6 +114,7 @@ private slots:
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
+    void doTimeout();
     void hideAvatars();
     void changeHp(const QString &who, int delta);
     void clearPile();

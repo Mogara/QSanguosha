@@ -185,6 +185,21 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     }
 
     memory = new QSharedMemory("QSanguosha", this);
+
+    {
+        progress_bar = new QProgressBar;
+        progress_bar->setOrientation(Qt::Vertical);
+        progress_bar->setMinimum(0);
+        progress_bar->setMaximum(100);
+        timer_id = 0;
+
+        QGraphicsProxyWidget *widget = addWidget(progress_bar);
+        widget->setParentItem(dashboard);
+        widget->setPos(avatar->pos());
+        widget->moveBy(-25, 0);
+
+        progress_bar->hide();
+    }
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -461,6 +476,19 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
 
         menu->popup(event->screenPos());
     }
+}
+
+void RoomScene::timerEvent(QTimerEvent *event){
+    int step = 100 / double(Config.OperationTimeout * 5);
+    int new_value = progress_bar->value() + step;
+    new_value = qMin(progress_bar->maximum(), new_value);
+    progress_bar->setValue(new_value);
+
+    if(new_value >= progress_bar->maximum()){
+        killTimer(event->timerId());
+        doTimeout();
+    }else
+        progress_bar->setValue(new_value);
 }
 
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
@@ -1091,6 +1119,68 @@ void RoomScene::unselectAllTargets(const QGraphicsItem *except){
     }
 }
 
+void RoomScene::doTimeout(){
+    switch(ClientInstance->getStatus()){
+    case Client::Responsing:{
+            if(cancel_button->isEnabled())
+                cancel_button->click();
+
+            break;
+        }
+
+    case Client::Playing:{
+            discard_button->click();
+            break;
+        }
+
+    case Client::Discarding:{
+            if(cancel_button->isEnabled())
+                cancel_button->click();
+            else{
+                // discard cards randomly
+
+            }
+
+            break;
+        }
+
+    case Client::AskForSkillInvoke:{
+            cancel_button->click();
+            break;
+        }
+
+    case Client::AskForChoices:{
+            ClientInstance->selectChoice(0);
+            break;
+        }
+
+    case Client::AskForAG:{
+            foreach(CardItem *item, amazing_grace){
+                if(item->isEnabled()){
+                    ClientInstance->chooseAG(item->getCard()->getId());
+                    break;
+                }
+            }
+
+            break;
+        }
+
+    case Client::AskForYiji:{
+            cancel_button->click();
+            break;
+        }
+
+    case Client::AskForGuanxing:
+    case Client::AskForGongxin:{
+            ok_button->click();
+            break;
+        }
+
+    default:
+        break;
+    }
+}
+
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
@@ -1148,6 +1238,22 @@ void RoomScene::updateStatus(Client::Status status){
             discard_skill->setIncludeEquip(ClientInstance->include_equip);
             discard_skill->setSuit(ClientInstance->discard_suit);
             dashboard->startPending(discard_skill);
+            break;
+        }
+
+    case Client::AskForSkillInvoke:{
+            ok_button->setEnabled(true);
+            cancel_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
+            break;
+        }
+
+    case Client::AskForChoices:{
+            ok_button->setEnabled(true);
+            cancel_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
             break;
         }
 
@@ -1213,6 +1319,16 @@ void RoomScene::updateStatus(Client::Status status){
             button->setEnabled(skill->isAvailable());
         else if(button->inherits("QCheckBox"))
             button->setEnabled(true);
+    }
+
+    // do timeout
+    if(status == Client::NotActive){
+        progress_bar->setValue(0);
+        killTimer(timer_id);
+        progress_bar->hide();
+    }else{
+        timer_id = startTimer(200);
+        progress_bar->show();
     }
 }
 
@@ -1280,6 +1396,18 @@ void RoomScene::doOkButton(){
                 dashboard->stopPending();
                 daqiao->hide();
             }
+            break;
+        }        
+
+    case Client::AskForSkillInvoke:{
+            ClientInstance->invokeSkill(true);
+            daqiao->hide();
+            break;
+        }
+
+    case Client::AskForChoices:{
+            ClientInstance->selectChoice(1);
+            daqiao->hide();
             break;
         }
 
@@ -1373,6 +1501,18 @@ void RoomScene::doCancelButton(){
             break;
         }
 
+    case Client::AskForSkillInvoke:{
+            ClientInstance->invokeSkill(false);
+            daqiao->hide();
+            break;
+        }
+
+    case Client::AskForChoices:{
+            ClientInstance->selectChoice(2);
+            daqiao->hide();
+            break;
+        }
+
     case Client::AskForYiji:{
             dashboard->stopPending();
             ClientInstance->replyYiji(NULL, NULL);
@@ -1451,8 +1591,11 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     item2player.clear();
     trust_button->setEnabled(false);
     chat_edit->setEnabled(false);
-    if(bgmusic)
+    if(bgmusic){
         bgmusic->stop();
+        bgmusic = NULL;
+    }
+    progress_bar->hide();
 
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
@@ -1664,9 +1807,16 @@ void RoomScene::chooseAmazingGrace(){
 }
 
 void RoomScene::showCard(const QString &player_name, int card_id){
-    Photo *photo = name2photo.value(player_name, NULL);
-    if(photo){
+    QString card_str = QString::number(card_id);
+
+    if(player_name == Config.UserName)
+        log_box->appendLog("$ShowCard", Self->getGeneralName(), QStringList(), card_str);
+    else{
+        Photo *photo = name2photo.value(player_name, NULL);
         photo->showCard(card_id);
+
+        log_box->appendLog("$ShowCard", photo->getPlayer()->getGeneralName(),
+                           QStringList(), card_str);
     }
 }
 
@@ -1890,6 +2040,7 @@ void RoomScene::onGameStart(){
     bgmusic = audiere::OpenSound(Device, bgmusic_path.toAscii(), true);
     if(bgmusic){
         bgmusic->setRepeat(true);
+        bgmusic->setVolume(Config.Volume);
         bgmusic->play();
     }
 }

@@ -46,6 +46,8 @@ void Settings::init(){
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableAutoTarget = value("EnableAutoTarget", false).toBool();
     NullificationCountDown = value("NullificationCountDown", 8).toInt();
+    OperationTimeout = value("OperationTimeout", 15).toInt();
+    Volume = value("Volume", 1.0f).toFloat();
 
     QString bg_path = value("BackgroundBrush", ":/background.png").toString();
     changeBackground(bg_path);

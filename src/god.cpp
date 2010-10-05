@@ -5,11 +5,10 @@
 #include "carditem.h"
 
 GongxinCard::GongxinCard(){
-
 }
 
 bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
+    return targets.isEmpty() && !to_select->isKongcheng();
 }
 
 void GongxinCard::use(const QList<const ClientPlayer *> &targets) const{
@@ -24,11 +23,14 @@ class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
         events << Death;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        // FIXME:
-
         return false;
     }
 };
@@ -103,7 +105,7 @@ public:
 class Gongxin: public ZeroCardViewAsSkill{
 public:
     Gongxin():ZeroCardViewAsSkill("gongxin"){
-
+        default_choice = "discard";
     }
 
     virtual const Card *viewAs() const{
@@ -247,6 +249,7 @@ class Qinyin: public TriggerSkill{
 public:
     Qinyin():TriggerSkill("qinyin"){
         events << CardDiscarded;
+        default_choice = "down";
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -254,11 +257,11 @@ public:
 
         if(player->getPhase() == Player::Discard && discard_num >= 2){
             Room *room = player->getRoom();
-            QString result = room->askForChoice(player, objectName(), "up+down+no");
-            if(result == "no"){
-                return false;
-            }
 
+            if(!room->askForSkillInvoke(player, objectName()))
+                return false;
+
+            QString result = room->askForChoice(player, objectName(), "up+down");
             QList<ServerPlayer *> all_players = room->getAllPlayers();
             if(result == "up"){
                 foreach(ServerPlayer *player, all_players){
@@ -459,10 +462,10 @@ GodPackage::GodPackage()
     t[":kuangfeng"] = tr(":kuangfeng");
     t[":dawu"] = tr(":dawu");
 
-    t[":qinyin:"] = tr(":qinyin:");
+    t["qinyin:yes"] = tr("qinyin:yes");
+    t[":qinyin:"] = tr(":qinyin:");   
     t["qinyin:up"] = tr("qinyin:up");
     t["qinyin:down"] = tr("qinyin:down");
-    t["qinyin:no"] = tr("qinyin:no");
     t["greatyeyan"] = tr("greatyeyan");
     t["mediumyeyan"] = tr("mediumyeyan");
     t["smallyeyan"] = tr("smallyeyan");

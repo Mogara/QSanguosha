@@ -2,20 +2,21 @@
 #include "card.h"
 #include "client.h"
 #include "ai.h"
+#include "settings.h"
 
 extern audiere::AudioDevicePtr Device;
 
 class StopCallback: public audiere::StopCallback{
 public:
-    ADR_METHOD(void) streamStopped(audiere::StopEvent *event){
+    virtual void __stdcall streamStopped(audiere::StopEvent *event){
         Sanguosha->removeFromPlaying(event->getOutputStream());
     }
 
-    ADR_METHOD(void) ref(){
+    virtual void __stdcall ref(){
 
     }
 
-    ADR_METHOD(void) unref(){
+    virtual void __stdcall unref(){
 
     }
 };
@@ -158,7 +159,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101004";
+    return "20101005";
 }
 
 int Engine::getCardCount() const{
@@ -172,7 +173,7 @@ QStringList Engine::getRandomLords() const{
     foreach(QString lord, lord_list){
         const General *general = generals.value(lord);
         if(!ban_package.contains(general->getPackage()))
-            lords << lord;        
+            lords << lord;
     }
 
     QStringList nonlord_list;
@@ -249,6 +250,7 @@ void Engine::playEffect(const QString &filename){
 
     if(effect){
         playing.insert(filename, effect);
+        effect->setVolume(Config.Volume);
         effect->play();
     }
 }

@@ -318,8 +318,13 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 
     sem->acquire();
 
-    if(result.isEmpty()){
-        return askForChoice(player, skill_name, choices);
+    if(result.isEmpty())
+        return askForChoice(player, skill_name, choices);    
+
+    if(result == "."){
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if(skill)
+            return skill->getDefaultChoice();
     }
 
     return result;
@@ -826,7 +831,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setProperty("avatar", avatar);
 
     player->invoke("checkVersion", Sanguosha->getVersion());
-    player->invoke("setPlayerCount", QString::number(player_count));
+    player->invoke("setup", QString("%1:%2").arg(player_count).arg(Config.OperationTimeout));
 
     // introduce the new joined player to existing players except himself
     broadcastInvoke("addPlayer", QString("%1:%2").arg(name).arg(avatar), player);

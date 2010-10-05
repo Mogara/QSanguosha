@@ -28,13 +28,15 @@ public:
     QString HostAddress;
     ushort Port;
     QString UserName;
-    QString UserAvatar;
+    QString UserAvatar;    
 
     bool FitInView;
     bool EnableHotKey;
     bool NeverNullifyMyTrick;
     bool EnableAutoTarget;
     int NullificationCountDown;
+    int OperationTimeout;
+    float Volume;
 
     QBrush BackgroundBrush;
 };

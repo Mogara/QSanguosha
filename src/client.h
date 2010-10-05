@@ -22,6 +22,8 @@ public:
         Responsing,
         Playing,
         Discarding,
+        AskForSkillInvoke,
+        AskForChoices,
         AskForAG,
         AskForYiji,
         AskForGuanxing,
@@ -37,6 +39,8 @@ public:
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
+    void invokeSkill(bool invoke);
+    void selectChoice(int choice);
     void responseCard(const Card *card);
     void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
@@ -50,7 +54,7 @@ public:
     typedef void (Client::*Callback)(const QString &);
 
     void checkVersion(const QString &server_version);
-    void setPlayerCount(const QString &count_str);
+    void setup(const QString &setup_str);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);
@@ -135,6 +139,8 @@ private:
     QHash<QString, Callback> callbacks;
     QList<ClientPlayer*> players;
     NullificationDialog *nullification_dialog;
+    QString first_choice;
+    QString second_choice;
 
 private slots:
     void processReply(char *reply);

@@ -126,13 +126,7 @@ QString Card::getFullName(bool include_suit) const{
 }
 
 QString Card::getLogName() const{
-    QString suit_char = getSuitString() + "_char";
-    suit_char = Sanguosha->translate(suit_char);
-
-    if(isRed()){
-        suit_char = QString("<font color='red'>%1</font>").arg(suit_char);
-    }
-
+    QString suit_char = QString("<img src=':/suit/%1.png' width='15' height='15' />").arg(getSuitString());
     return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(getNumberString());
 }
 
@@ -290,11 +284,33 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const Client
 void Card::use(const QList<const ClientPlayer *> &targets) const{    
 }
 
+static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
+    Room *room = a->getRoom();
+    int current = room->getCurrent()->getSeat();
+
+    int seat1 = a->getSeat();
+    if(seat1 < current)
+        seat1 += room->alivePlayerCount();
+
+    int seat2 = b->getSeat();
+    if(seat2 < current)
+        seat2 += room->alivePlayerCount();
+
+    return seat1 < seat2;
+}
+
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    foreach(ServerPlayer *target, targets){
-        room->cardEffect(this, source, target);
+    if(targets.length() == 1){
+        room->cardEffect(this, source, targets.first());
+    }else{
+        QList<ServerPlayer *> players = targets;
+        qSort(players.begin(), players.end(), CompareByActionOrder);
+
+        foreach(ServerPlayer *target, players){
+            room->cardEffect(this, source, target);
+        }
     }
 }
 

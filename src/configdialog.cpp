@@ -12,6 +12,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     QString bg_path = Config.value("BackgroundBrush").toString();
     if(!bg_path.startsWith(":"))
         ui->bgPathLineEdit->setText(bg_path);
+
+    ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
 }
 
 ConfigDialog::~ConfigDialog()
@@ -46,6 +48,10 @@ void ConfigDialog::saveConfig()
     int count_down = ui->nullificationSpinBox->value();
     Config.NullificationCountDown = count_down;
     Config.setValue("NullificationCountDown", count_down);
+
+    float volume = ui->volumeSlider->value() / 100.0;
+    Config.Volume = volume;
+    Config.setValue("Volumne", volume);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

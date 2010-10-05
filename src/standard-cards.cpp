@@ -183,9 +183,12 @@ public:
         return -1;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
+            if(result.to->hasSkill("kongcheng") && result.to->isKongcheng())
+                return false;
+
             Room *room = player->getRoom();
             const Card *card = room->askForCard(player, "slash", "blade-slash");
             if(card){
@@ -467,6 +470,19 @@ SavageAssault::SavageAssault(Suit suit, int number)
     :AOE(suit, number)
 {
     setObjectName("savage_assault");
+}
+
+bool SavageAssault::isAvailable() const{
+    if(isRed())
+        return true;
+
+    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    foreach(const ClientPlayer *player, players){
+        if(player != Self && player->isAlive() && !player->hasSkill("weimu"))
+            return true;
+    }
+
+    return false;
 }
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{

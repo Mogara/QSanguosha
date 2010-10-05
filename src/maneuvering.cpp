@@ -40,8 +40,12 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
-bool Analeptic::isAvailable() const{
+bool Analeptic::IsAvailable(){
     return ! ClientInstance->turn_tag.value("analeptic_used", false).toBool();
+}
+
+bool Analeptic::isAvailable() const{
+    return IsAvailable();
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -194,7 +198,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         return;
 
     int card_id = room->askForCardShow(effect.to, effect.from);
-    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id), effect.to);
+    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id));
 
     const Card *card = Sanguosha->getCard(card_id);
     bool discarded = room->askForDiscard(effect.from, 1, true, false, card->getSuit());

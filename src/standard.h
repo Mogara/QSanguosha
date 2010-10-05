@@ -103,6 +103,7 @@ class SavageAssault:public AOE{
 
 public:
     Q_INVOKABLE SavageAssault(Card::Suit suit, int number);
+    virtual bool isAvailable() const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

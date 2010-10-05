@@ -25,6 +25,7 @@ public:
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
+    QString getDefaultChoice() const;
 
     void initMediaSource();
     void playEffect(int index = -1) const;
@@ -34,6 +35,7 @@ public:
 
 protected:
     Frequency frequency;
+    QString default_choice;
 
 private:
     bool lord_skill;
@@ -80,7 +82,6 @@ public:
     TriggerSkill(const QString &name);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
-    QString getDefaultChoice() const;
 
     virtual int getPriority(ServerPlayer *target) const;
     virtual bool triggerable(const ServerPlayer *target) const;    
