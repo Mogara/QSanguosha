@@ -125,6 +125,7 @@ Client::Client(QObject *parent)
     callbacks["clearAG"] = &Client::clearAG;
 
     first_choice = second_choice = ".";
+    ask_dialog = NULL;
 
     request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
 }
@@ -161,7 +162,12 @@ void Client::setup(const QString &setup_str){
     int timeout = texts.at(2).toInt();
 
     Config.PlayerCount = player_count;
-    Config.OperationTimeout = timeout;
+    if(timeout == 0)
+        Config.OperationNoLimit = true;
+    else{
+        Config.OperationNoLimit = false;
+        Config.OperationTimeout = timeout;
+    }
 
     emit server_connected();
 }
@@ -655,6 +661,9 @@ void Client::askForCardChosen(const QString &ask_str){
     connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
     connect(dialog, SIGNAL(rejected()), this, SLOT(chooseCard()));
 
+    ask_dialog = dialog;
+    setStatus(ExecDialog);
+
     dialog->exec();
 }
 
@@ -679,19 +688,18 @@ void Client::playCardEffect(const QString &play_str){
 }
 
 void Client::chooseCard(int card_id){
-    QDialog *dialog = qobject_cast<QDialog *>(sender());
-
-    if(!dialog)
-        return;
+    Q_ASSERT(ask_dialog->inherits("PlayerCardDialog"));
 
     if(card_id == -2){
-        dialog->show();
+        request("chooseCard .");
     }else{
-        dialog->accept();
-        delete dialog;
+        delete ask_dialog;
+        ask_dialog = NULL;
 
         request(QString("chooseCard %1").arg(card_id));
     }
+
+    setStatus(NotActive);
 }
 
 void Client::choosePlayer(){
@@ -834,6 +842,11 @@ void Client::gameOver(const QString &result_str){
         players.at(i)->setRole(roles.at(i));
     }
 
+    if(winner == "."){
+        emit standoff();
+        return;
+    }
+
     bool victory = false;
     QList<bool> result_list;
     foreach(ClientPlayer *player, players){
@@ -862,7 +875,11 @@ void Client::gameOverWarn(const QString &){
 }
 
 void Client::askForSuit(const QString &){
+    delete ask_dialog;
+
     QDialog *dialog = new QDialog;
+    ask_dialog = dialog;
+
     QVBoxLayout *layout = new QVBoxLayout;
 
     QStringList suits;
@@ -882,9 +899,11 @@ void Client::askForSuit(const QString &){
 
     connect(dialog, SIGNAL(rejected()), this, SLOT(chooseSuit()));
 
-    dialog->setObjectName("no_suit");
+    dialog->setObjectName(".");
     dialog->setWindowTitle(tr("Please choose a suit"));
     dialog->setLayout(layout);
+
+    setStatus(ExecDialog);
     dialog->exec();
 }
 
@@ -905,6 +924,8 @@ void Client::setMark(const QString &mark_str){
 
 void Client::chooseSuit(){
     request("chooseSuit " + sender()->objectName());
+
+    setStatus(NotActive);
 }
 
 void Client::discardCards(const Card *card){
@@ -928,7 +949,8 @@ void Client::fillAG(const QString &cards_str){
 
 void Client::takeAG(const QString &take_str){
     QRegExp rx("(.+):(\\d+)");
-    rx.exactMatch(take_str);
+    if(!rx.exactMatch(take_str))
+        return;
 
     QStringList words = rx.capturedTexts();
     QString taker_name = words.at(1);

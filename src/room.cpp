@@ -427,6 +427,13 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         if(result.isEmpty())
             return askForCardChosen(player, who, flags, reason);
 
+        if(result == "."){
+            // randomly choose a card
+            QList<const Card *> cards = who->getCards(flags);
+            int r = qrand() % cards.length();
+            return cards.at(r)->getId();
+        }
+
         card_id = result.toInt();
     }
 
@@ -518,6 +525,9 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
+    if(card_ids.length() == 1)
+        return card_ids.first();
+
     int card_id;
 
     AI *ai = player->getAI();
@@ -689,7 +699,12 @@ void Room::broadcast(const QString &message, ServerPlayer *except){
 
 int Room::drawCard(){
     if(draw_pile->isEmpty()){
-        Q_ASSERT(!discard_pile->isEmpty());
+        if(discard_pile->isEmpty()){
+            // the standoff
+            gameOver(".");
+            return 0;
+        }
+
         qSwap(draw_pile, discard_pile);
 
         broadcastInvoke("clearPile");
@@ -843,7 +858,9 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setProperty("avatar", avatar);
 
     player->invoke("checkVersion", Sanguosha->getVersion());
-    player->invoke("setup", QString("%1:%2").arg(player_count).arg(Config.OperationTimeout));
+
+    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
+    player->invoke("setup", QString("%1:%2").arg(player_count).arg(timeout));
 
     // introduce the new joined player to existing players except himself
     broadcastInvoke("addPlayer", QString("%1:%2").arg(name).arg(avatar), player);
@@ -1339,22 +1356,25 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
     if(result.isEmpty())
         return askForSuit(player);
 
+    Card::Suit suit;
+    if(result == ".")
+        suit = Card::AllSuits[qrand() % 4];
+    if(result == "spade")
+        suit = Card::Spade;
+    else if(result == "club")
+        suit = Card::Club;
+    else if(result == "heart")
+        suit = Card::Heart;
+    else
+        suit = Card::Diamond;
+
     LogMessage log;
     log.type = "#ChooseSuit";
     log.from = player;
-    log.arg = result;
+    log.arg = Card::Suit2String(suit);
     sendLog(log);
 
-    if(result == "spade")
-        return Card::Spade;
-    else if(result == "club")
-        return Card::Club;
-    else if(result == "heart")
-        return Card::Heart;
-    else if(result == "diamond")
-        return Card::Diamond;
-    else
-        return Card::NoSuit;
+    return suit;
 }
 
 bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip, Card::Suit suit){

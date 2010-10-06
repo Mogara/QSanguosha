@@ -201,9 +201,9 @@ public:
     }
 };
 
-class Guicai:public ViewAsSkill{
+class Guicai:public OneCardViewAsSkill{
 public:
-    Guicai():ViewAsSkill("guicai"){
+    Guicai():OneCardViewAsSkill("guicai"){
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -214,16 +214,13 @@ public:
         return ClientInstance->card_pattern == "@guicai";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && !to_select->isEquipped();
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
+    virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new GuicaiCard;
-        card->addSubcard(cards.first()->getCard()->getId());
+        card->addSubcard(card_item->getCard()->getId());
 
         return card;
     }
@@ -303,26 +300,22 @@ public:
     }
 };
 
-class Qingguo:public ViewAsSkill{
+class Qingguo:public OneCardViewAsSkill{
 public:
-    Qingguo():ViewAsSkill("qingguo"){
+    Qingguo():OneCardViewAsSkill("qingguo"){
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->isBlack() && (!to_select->isEquipped());
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->isBlack() && !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-        else{
-            const Card *card = cards.first()->getCard();
-            Jink *jink = new Jink(card->getSuit(), card->getNumber());
-            jink->setSkillName(objectName());
-            jink->addSubcard(card->getId());
-            return jink;
-        }
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Jink *jink = new Jink(card->getSuit(), card->getNumber());
+        jink->setSkillName(objectName());
+        jink->addSubcard(card->getId());
+        return jink;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -421,11 +414,9 @@ public:
     }
 };
 
-class Wusheng:public ViewAsSkill{
+class Wusheng:public OneCardViewAsSkill{
 public:
-    Wusheng()
-        :ViewAsSkill("wusheng")
-    {
+    Wusheng():OneCardViewAsSkill("wusheng"){
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -436,34 +427,27 @@ public:
         return ClientInstance->card_pattern == "slash";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->isRed();
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->isRed();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-        else{
-            const Card *card = cards.first()->getCard();
-            Card *slash = new Slash(card->getSuit(), card->getNumber());
-            slash->addSubcard(card->getId());
-            slash->setSkillName(objectName());
-            return slash;
-        }
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Card *slash = new Slash(card->getSuit(), card->getNumber());
+        slash->addSubcard(card->getId());
+        slash->setSkillName(objectName());
+        return slash;
     }
 };
 
 // should be ViewAsSkill
-class Longdan:public ViewAsSkill{
+class Longdan:public OneCardViewAsSkill{
 public:
-    Longdan():ViewAsSkill("longdan"){
+    Longdan():OneCardViewAsSkill("longdan"){
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
+    virtual bool viewFilter(const CardItem *to_select) const{
         const Card *card = to_select->getCard();       
 
         switch(ClientInstance->getStatus()){
@@ -494,11 +478,8 @@ public:
         return pattern == "jink" || pattern == "slash";
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
-        const Card *card = cards.first()->getCard();
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
         if(card->inherits("Slash")){
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
             jink->addSubcard(card->getId());
@@ -564,6 +545,23 @@ public:
                 room->playSkillEffect(objectName());
                 room->doGuanxing(zhuge);
             }
+        }
+
+        return false;
+    }
+};
+
+class Kongcheng: public TriggerSkill{
+public:
+    Kongcheng():TriggerSkill("kongcheng"){
+        frequency = Compulsory;
+
+        events << CardLost;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(player->isKongcheng()){
+            player->getRoom()->playSkillEffect(objectName());
         }
 
         return false;
@@ -716,29 +714,22 @@ public:
     }
 };
 
-class Qixi: public ViewAsSkill{
+class Qixi: public OneCardViewAsSkill{
 public:
-    Qixi():ViewAsSkill("qixi"){
+    Qixi():OneCardViewAsSkill("qixi"){
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
+    virtual bool viewFilter(const CardItem *to_select) const{
         return to_select->getCard()->isBlack();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-        else{
-            const Card *first = cards.first()->getCard();
-            Dismantlement *dismantlement = new Dismantlement(first->getSuit(), first->getNumber());
-            dismantlement->addSubcard(first->getId());
-            dismantlement->setSkillName(objectName());
-            return dismantlement;
-        }
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *first = card_item->getCard();
+        Dismantlement *dismantlement = new Dismantlement(first->getSuit(), first->getNumber());
+        dismantlement->addSubcard(first->getId());
+        dismantlement->setSkillName(objectName());
+        return dismantlement;
     }
 };
 
@@ -753,24 +744,18 @@ public:
     }
 };
 
-class Guose: public ViewAsSkill{
+class Guose: public OneCardViewAsSkill{
 public:
-    Guose():ViewAsSkill("guose"){
+    Guose():OneCardViewAsSkill("guose"){
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
+    virtual bool viewFilter(const CardItem *to_select) const{
         return to_select->getCard()->getSuit() == Card::Diamond;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
-        const Card *first = cards.first()->getCard();
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *first = card_item->getCard();
         Indulgence *indulgence = new Indulgence(first->getSuit(), first->getNumber());
         indulgence->addSubcard(first->getId());
         indulgence->setSkillName(objectName());
@@ -935,9 +920,9 @@ public:
     }
 };
 
-class Lijian: public ViewAsSkill{
+class Lijian: public OneCardViewAsSkill{
 public:
-    Lijian():ViewAsSkill("lijian"){
+    Lijian():OneCardViewAsSkill("lijian"){
 
     }
 
@@ -945,16 +930,13 @@ public:
         return ! ClientInstance->turn_tag.value("lijian_used", false).toBool();
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty();
+    virtual bool viewFilter(const CardItem *) const{
+        return true;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
+    virtual const Card *viewAs(CardItem *card_item) const{
         LijianCard *lijian_card = new LijianCard;
-        lijian_card->addSubcards(cards);
+        lijian_card->addSubcard(card_item->getCard()->getId());
 
         return lijian_card;
     }
@@ -979,9 +961,9 @@ public:
     }
 };
 
-class Qingnang: public ViewAsSkill{
+class Qingnang: public OneCardViewAsSkill{
 public:
-    Qingnang():ViewAsSkill("qingnang"){
+    Qingnang():OneCardViewAsSkill("qingnang"){
 
     }
 
@@ -989,24 +971,21 @@ public:
         return !ClientInstance->turn_tag.value("qingnang_used", false).toBool();
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && !to_select->isEquipped();
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
+    virtual const Card *viewAs(CardItem *card_item) const{
         QingnangCard *qingnang_card = new QingnangCard;
-        qingnang_card->addSubcard(cards.first()->getCard()->getId());
+        qingnang_card->addSubcard(card_item->getCard()->getId());
 
         return qingnang_card;
     }
 };
 
-class Jijiu: public ViewAsSkill{
+class Jijiu: public OneCardViewAsSkill{
 public:
-    Jijiu():ViewAsSkill("jijiu"){
+    Jijiu():OneCardViewAsSkill("jijiu"){
 
     }
 
@@ -1018,20 +997,16 @@ public:
         return ClientInstance->card_pattern.contains("peach") && Self->getPhase() == Player::NotActive;
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->isRed();
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->isRed();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() == 1){
-            const Card *first = cards.first()->getCard();
-            Peach *peach = new Peach(first->getSuit(), first->getNumber());
-            peach->addSubcard(first->getId());
-            peach->setSkillName(objectName());
-            return peach;
-        }
-
-        return NULL;
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *first = card_item->getCard();
+        Peach *peach = new Peach(first->getSuit(), first->getNumber());
+        peach->addSubcard(first->getId());
+        peach->setSkillName(objectName());
+        return peach;
     }
 };
 
@@ -1083,7 +1058,7 @@ void StandardPackage::addGenerals(){
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
-    zhugeliang->addSkill(new Skill("kongcheng", Skill::Compulsory));
+    zhugeliang->addSkill(new Kongcheng);
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);

@@ -65,8 +65,22 @@ public:
     ZeroCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;    
+
     virtual const Card *viewAs() const = 0;
+};
+
+class OneCardViewAsSkill: public ViewAsSkill{
+    Q_OBJECT
+
+public:
+    OneCardViewAsSkill(const QString &name);
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+
+    virtual bool viewFilter(const CardItem *to_select) const = 0;
+    virtual const Card *viewAs(CardItem *card_item) const = 0;
 };
 
 class FilterSkill: public ViewAsSkill{

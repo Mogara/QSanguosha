@@ -122,6 +122,23 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<CardItem *> &, const CardItem *
     return false;
 }
 
+OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
+    :ViewAsSkill(name)
+{
+
+}
+
+bool OneCardViewAsSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    return selected.isEmpty() && viewFilter(to_select);
+}
+
+const Card *OneCardViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
+    if(cards.length() != 1)
+        return NULL;
+    else
+        return viewAs(cards.first());
+}
+
 FilterSkill::FilterSkill(const QString &name)
     :ViewAsSkill(name)
 {

@@ -36,8 +36,7 @@ public slots:
     void hideDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
-    void updateStatus(Client::Status status);
-    void gameOver(bool victory, const QList<bool> &result_list);
+    void updateStatus(Client::Status status);    
     void killPlayer(const QString &who);
 
 protected:
@@ -103,7 +102,10 @@ private:
     void updateTargetsEnablity(const Card *card);
 
     void callViewAsSkill();
-    void cancelViewAsSkill();    
+    void cancelViewAsSkill();
+
+    void freeze();
+    void addRestartButton(QDialog *dialog);
 
 private slots:
     void updateSkillButtons();
@@ -123,7 +125,9 @@ private slots:
     void viewDistance();
     void speak(const QString &who, const QString &text);
     void speak();
-    void onGameStart();    
+    void onGameStart();
+    void onGameOver(bool victory, const QList<bool> &result_list);
+    void onStandoff();
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);

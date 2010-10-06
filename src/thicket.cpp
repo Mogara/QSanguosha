@@ -85,30 +85,24 @@ public:
     }
 };
 
-class Duanliang: public ViewAsSkill{
+class Duanliang: public OneCardViewAsSkill{
 public:
-    Duanliang():ViewAsSkill("duanliang"){
+    Duanliang():OneCardViewAsSkill("duanliang"){
 
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
+    virtual bool viewFilter(const CardItem *to_select) const{
         const Card *card = to_select->getCard();
         return card->isBlack() && !card->inherits("TrickCard");
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
 
-        const Card *first = cards.first()->getCard();
+        SupplyShortage *shortage = new SupplyShortage(card->getSuit(), card->getNumber());
+        shortage->addSubcard(card->getId());
 
-        SupplyShortage *card = new SupplyShortage(first->getSuit(), first->getNumber());
-        card->addSubcard(first->getId());
-
-        return card;
+        return shortage;
     }
 };
 
@@ -381,7 +375,21 @@ public:
                     foreach(ServerPlayer *player, other_players)
                         least = qMin(player->getHandcardNum(), least);
                     room->setPlayerMark(lusu, "haoshi", least);
-                    room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
+                    bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
+                    if(!used){
+                        // force lusu to distribute his cards
+                        foreach(ServerPlayer *player, other_players){
+                            if(player->getHandcardNum() == least){
+                                QList<int> handcards = lusu->handCards();
+                                QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
+                                DummyCard *dummy_card = new DummyCard;
+                                foreach(int card_id, to_give)
+                                    dummy_card->addSubcard(card_id);
+                                room->moveCardTo(dummy_card, player, Player::Hand, false);
+                                delete dummy_card;
+                            }
+                        }
+                    }
                 }
 
                 return true;
@@ -527,9 +535,9 @@ void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
     ClientInstance->tag.insert("luanwu_used", true);
 }
 
-class Jiuchi: public ViewAsSkill{
+class Jiuchi: public OneCardViewAsSkill{
 public:
-    Jiuchi():ViewAsSkill("jiuchi"){
+    Jiuchi():OneCardViewAsSkill("jiuchi"){
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -540,18 +548,15 @@ public:
         return ClientInstance->card_pattern.contains("analeptic");
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Spade;
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Spade;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
-        const Card *first = cards.first()->getCard();
-        Analeptic *analeptic = new Analeptic(first->getSuit(), first->getNumber());
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        Analeptic *analeptic = new Analeptic(card->getSuit(), card->getNumber());
         analeptic->setSkillName(objectName());
-        analeptic->addSubcard(first->getId());
+        analeptic->addSubcard(card->getId());
 
         return analeptic;
     }

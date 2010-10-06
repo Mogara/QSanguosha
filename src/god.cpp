@@ -79,7 +79,7 @@ public:
             LogMessage log;
             log.type = "$TakeAG";
             log.from = shenlumeng;
-            log.card_str = QString::number(card_id);
+            log.card_str = card->toString();
             room->sendLog(log);
 
             Card::Suit suit = card->getSuit();

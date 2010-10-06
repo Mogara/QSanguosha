@@ -126,8 +126,16 @@ QString Card::getFullName(bool include_suit) const{
 }
 
 QString Card::getLogName() const{
-    QString suit_char = QString("<img src=':/suit/%1.png' width='15' height='15' />").arg(getSuitString());
-    return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(getNumberString());
+    QString suit_char;
+    QString number_string;
+
+    if(suit != Card::NoSuit)
+        suit_char = QString("<img src=':/suit/%1.png' width='15' height='15' />").arg(getSuitString());
+
+    if(number != 0)
+        number_string = getNumberString();
+
+    return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(number_string);
 }
 
 QString Card::getName() const{

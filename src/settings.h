@@ -36,6 +36,7 @@ public:
     bool EnableAutoTarget;
     int NullificationCountDown;
     int OperationTimeout;
+    bool OperationNoLimit;
     bool EnableEffects;
     bool EnableBgMusic;
     float Volume;

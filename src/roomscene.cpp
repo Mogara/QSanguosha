@@ -122,12 +122,13 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
-    connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(gameOver(bool,QList<bool>)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
+    connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
+    connect(ClientInstance, SIGNAL(standoff()), this, SLOT(onStandoff()));
 
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
     connect(ClientInstance, SIGNAL(n_cards_moved(int,QString,QString)), this, SLOT(moveNCards(int,QString,QString)));
@@ -1051,14 +1052,8 @@ void RoomScene::cancelViewAsSkill(){
     dashboard->stopPending();
     QAbstractButton *button = button2skill.key(skill, NULL);
 
-    if(button){
-        button->setEnabled(true);
-
-        ok_button->setEnabled(false);
-        cancel_button->setEnabled(false);
-
-        dashboard->enableCards();
-    }
+    if(button)
+        updateStatus(ClientInstance->getStatus());
 }
 
 void RoomScene::selectTarget(int order, bool multiple){
@@ -1132,6 +1127,12 @@ void RoomScene::doTimeout(){
         }
 
     case Client::Discarding:{
+            doCancelButton();
+
+            break;
+        }
+
+    case Client::ExecDialog:{
             doCancelButton();
 
             break;
@@ -1234,6 +1235,14 @@ void RoomScene::updateStatus(Client::Status status){
             break;
         }
 
+    case Client::ExecDialog:{
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
+            break;
+        }
+
     case Client::AskForSkillInvoke:{
             ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
@@ -1257,25 +1266,8 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            // auto choose the only item
-            CardItem *only_item = NULL;
-            bool only_one = true;
-            foreach(CardItem *item, amazing_grace){
-                if(item->isEnabled()){
-                    if(only_item){
-                        only_one = false;
-                        break;
-                    }else
-                        only_item = item;
-                }
-            }
-
-            if(only_one && only_item){
-                ClientInstance->chooseAG(only_item->getCard()->getId());
-            }else{
-                foreach(CardItem *item, amazing_grace)
-                    connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
-            }
+            foreach(CardItem *item, amazing_grace)
+                connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
 
             break;
         }
@@ -1314,10 +1306,16 @@ void RoomScene::updateStatus(Client::Status status){
             button->setEnabled(true);
     }
 
+    if(Config.OperationNoLimit)
+        return;
+
     // do timeout
     if(status == Client::NotActive){
         progress_bar->setValue(0);
-        killTimer(timer_id);
+        if(timer_id != 0){
+            killTimer(timer_id);
+            timer_id = 0;
+        }
         progress_bar->hide();
     }else{
         timer_id = startTimer(200);
@@ -1415,6 +1413,12 @@ void RoomScene::doOkButton(){
             return;
         }
 
+    case Client::ExecDialog:{
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("The OK button should be disabled when client is in executing dialog"));
+            return;
+        }
+
     case Client::AskForYiji:{
             const Card *card = dashboard->pendingCard();
             if(card){
@@ -1478,6 +1482,14 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::Responsing:{
+            if(!ClientInstance->card_pattern.startsWith("@")){
+                const ViewAsSkill *skill = dashboard->currentSkill();
+                if(skill){
+                    cancelViewAsSkill();
+                    break;
+                }
+            }
+
             if(ClientInstance->noTargetResponsing())
                 ClientInstance->responseCard(NULL);
             else
@@ -1491,6 +1503,11 @@ void RoomScene::doCancelButton(){
             dashboard->stopPending();
             ClientInstance->discardCards(NULL);
             daqiao->hide();
+            break;
+        }
+
+    case Client::ExecDialog:{
+            ClientInstance->ask_dialog->reject();
             break;
         }
 
@@ -1576,7 +1593,7 @@ void RoomScene::setPileNumber(int n){
     pile_number_item->setPlainText(QString::number(pile_number));
 }
 
-void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
+void RoomScene::freeze(){
     dashboard->setEnabled(false);
     avatar->setEnabled(false);
     foreach(Photo *photo, photos)
@@ -1589,6 +1606,29 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
         bgmusic = NULL;
     }
     progress_bar->hide();
+}
+
+void RoomScene::onStandoff(){
+    freeze();
+
+    QDialog *dialog = new QDialog(main_window);
+    dialog->setWindowTitle(tr("Standoff"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QTableWidget *table = new QTableWidget;
+    fillTable(table, ClientInstance->getPlayers());
+
+    layout->addWidget(table);
+    dialog->setLayout(layout);
+
+    addRestartButton(dialog);
+
+    dialog->exec();
+}
+
+void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
+    freeze();
 
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
@@ -1633,26 +1673,35 @@ void RoomScene::gameOver(bool victory, const QList<bool> &result_list){
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
-    QStringList labels;
-    labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
-    winner_table->setHorizontalHeaderLabels(labels);
-    loser_table->setHorizontalHeaderLabels(labels);
+    addRestartButton(dialog);
 
+    dialog->exec();
+}
+
+void RoomScene::addRestartButton(QDialog *dialog){
     dialog->resize(main_window->width()/2, dialog->height());
 
     QPushButton *restart_button = new QPushButton(tr("Restart Game"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(restart_button);
-    layout->addLayout(hlayout);
+
+    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dialog->layout());
+    if(layout)
+        layout->addLayout(hlayout);
 
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
-
-    dialog->exec();
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &players){
+    static QStringList labels;
+    if(labels.isEmpty())
+        labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
+    table->setHorizontalHeaderLabels(labels);
+
+    table->setSelectionBehavior(QTableWidget::SelectRows);
+
     int i;
     for(i=0; i<players.length(); i++){
         ClientPlayer *player = players.at(i);
@@ -1769,6 +1818,7 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             card_item->setEnabled(false);
 
             CardItem *item = new CardItem(card_item->getCard());
+            item->setPos(card_item->pos());
             addItem(item);
 
             QString name;

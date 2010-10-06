@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QButtonGroup>
+#include <QHBoxLayout>
 #include <QLabel>
 
 Server::Server(QObject *parent)
@@ -35,12 +36,18 @@ Server::Server(QObject *parent)
     player_count_spinbox->setMinimum(2);
     player_count_spinbox->setMaximum(8);
     player_count_spinbox->setValue(Config.PlayerCount);
+    player_count_spinbox->setSuffix(tr(" persons"));
 
     QSpinBox *timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
     timeout_spinbox->setMaximum(30);
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
+
+    QCheckBox *nolimit_checkbox = new QCheckBox(tr("No limit"));
+    nolimit_checkbox->setChecked(false);
+    connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
+    nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -56,30 +63,41 @@ Server::Server(QObject *parent)
 
     QGroupBox *box = new QGroupBox;
     box->setTitle(tr("Extension package selection"));
-    QVBoxLayout *vlayout = new QVBoxLayout;
+    QGridLayout *grid_layout = new QGridLayout;
     QButtonGroup *extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
-    QStringList extensions;
-    extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
-    foreach(QString extension, extensions){
+    static QStringList extensions;
+    if(extensions.isEmpty())
+        extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
+    int i;
+    for(i=0; i<extensions.length(); i++){
+        QString extension = extensions.at(i);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
         checkbox->setChecked(true);
 
-        vlayout->addWidget(checkbox);
         extension_group->addButton(checkbox);
+
+        int row = i / 2;
+        int column = i % 2;
+        grid_layout->addWidget(checkbox, row, column);
     }
 
-    box->setLayout(vlayout);
+    box->setLayout(grid_layout);
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Port"), port_edit);
     layout->addRow(tr("Player count"), player_count_spinbox);
-    layout->addRow(tr("Operation timeout"), timeout_spinbox);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(new QLabel(tr("Operation timeout")));
+    hlayout->addWidget(timeout_spinbox);
+    hlayout->addWidget(nolimit_checkbox);
+    layout->addRow(hlayout);
     layout->addRow(box);
-    layout->addRow(button_layout);
+    layout->addRow(button_layout);    
 
     dialog->setLayout(layout);
     dialog->exec();
@@ -90,10 +108,12 @@ Server::Server(QObject *parent)
     Config.Port = port_edit->text().toInt();
     Config.PlayerCount = player_count_spinbox->value();
     Config.OperationTimeout = timeout_spinbox->value();
+    Config.OperationNoLimit = nolimit_checkbox->isChecked();
 
     Config.setValue("Port", Config.Port);
     Config.setValue("PlayerCount", Config.PlayerCount);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
+    Config.setValue("OperationNoLimit", Config.OperationNoLimit);
 
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
     foreach(QAbstractButton *checkbox, checkboxes){

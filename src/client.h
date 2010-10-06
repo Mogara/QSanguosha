@@ -22,8 +22,9 @@ public:
         Responsing,
         Playing,
         Discarding,
+        ExecDialog,
         AskForSkillInvoke,
-        AskForChoices,
+        AskForChoices,        
         AskForAG,
         AskForYiji,
         AskForGuanxing,
@@ -117,6 +118,7 @@ public:
     Card::Suit discard_suit;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
+    QDialog *ask_dialog;
 
 public slots:    
     void itemChosen(const QString &item_name);
@@ -166,6 +168,7 @@ signals:
     void pile_cleared();
     void pile_num_set(int n);
     void game_over(bool victory, const QList<bool> &result_list);
+    void standoff();
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QString &log_str);
