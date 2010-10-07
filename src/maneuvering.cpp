@@ -142,6 +142,13 @@ public:
         }if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
+                LogMessage log;
+                log.type = "#VineDamage";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(damage.damage + 1);
+                player->getRoom()->sendLog(log);
+
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
             }
@@ -165,6 +172,12 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.damage > 1){
+            LogMessage log;
+            log.type = "#SilverLion";
+            log.from = player;
+            log.arg = QString::number(damage.damage);
+            player->getRoom()->sendLog(log);
+
             damage.damage = 1;
             data = QVariant::fromValue(damage);
         }
@@ -389,6 +402,23 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     t["fire-attack-card"] = tr("fire-attack-card");
+
+    t[":analeptic"] = tr(":analeptic");
+    t[":fire_slash"] = tr(":fire_slash");
+    t[":thunder_slash"] = tr(":thunder_slash");
+    t[":fire_attack"] = tr(":fire_attack");
+    t[":iron_chain"] = tr(":iron_chain");
+    t[":supply_shortage"] = tr(":supply_shortage");
+
+    t[":guding_blade"] = tr(":guding_blade");
+    t[":fan"] = tr(":fan");
+    t[":vine"] = tr(":vine");
+    t[":silver_lion"] = tr(":silver_lion");
+
+    t[":hualiu"] = tr(":+1 horse");    
+
+    t["#SilverLion"] = tr("#SilverLion");
+    t["#VineDamage"] = tr("#VineDamage");
 }
 
 ADD_PACKAGE(Maneuvering)

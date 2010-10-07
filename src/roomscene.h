@@ -48,6 +48,8 @@ protected:
 private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
+    Photo *focused;
+
     Dashboard *dashboard;
     Pixmap *pile;
     Pixmap *avatar;
@@ -60,7 +62,7 @@ private:
     int timer_id;
     QMenu *known_cards_menu;
     Daqiao *daqiao;
-    QMap<QGraphicsItem *, const ClientPlayer *> item2player;
+    QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
 
     int pile_number;
     QGraphicsTextItem *pile_number_item;
@@ -119,12 +121,17 @@ private slots:
     void doTimeout();
     void hideAvatars();
     void changeHp(const QString &who, int delta);
+    void moveFocus(const QString &who);
+
     void clearPile();
     void setPileNumber(int n);
+
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();
+
     void speak(const QString &who, const QString &text);
-    void speak();
+    void speak();    
+
     void onGameStart();
     void onGameOver(bool victory, const QList<bool> &result_list);
     void onStandoff();

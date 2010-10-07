@@ -82,9 +82,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(view);
 
-//    if(Config.TitleMusic)
-//        Config.TitleMusic->play();    
-
     restoreFromConfig();
 }
 
@@ -126,13 +123,18 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionStart_Server_triggered()
 {
+    ServerDialog *dialog = new ServerDialog(this);
+    if(!dialog->config())
+        return;
+
     Server *server = new Server(this);
-    if(!server->isListening())
-        return;    
+    if(! server->listen()){
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        return;
+    }
 
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
-    ui->actionStart_Server->setEnabled(false);
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if(start_scene){

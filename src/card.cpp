@@ -150,6 +150,11 @@ void Card::setSkillName(const QString &name){
     this->skill_name = name;
 }
 
+QString Card::getDescription() const{
+    QString desc = Sanguosha->translate(":" + objectName());
+    return tr("<b>[%1]</b> %2").arg(getName()).arg(desc);
+}
+
 QString Card::toString() const{
     if(!isVirtualCard())
         return QString::number(id);

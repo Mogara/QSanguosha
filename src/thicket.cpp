@@ -100,6 +100,7 @@ public:
         const Card *card = card_item->getCard();
 
         SupplyShortage *shortage = new SupplyShortage(card->getSuit(), card->getNumber());
+        shortage->setSkillName(objectName());
         shortage->addSubcard(card->getId());
 
         return shortage;
@@ -364,39 +365,43 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *lusu) const{
-        if(lusu->getPhase() == Player::Draw){
-            Room *room = lusu->getRoom();
-            if(room->askForSkillInvoke(lusu, objectName())){
-                lusu->drawCards(4);
+        if(lusu->getPhase() != Player::Draw)
+            return false;
 
-                if(lusu->getHandcardNum() > 5){
-                    QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
-                    int least = 1000;
-                    foreach(ServerPlayer *player, other_players)
-                        least = qMin(player->getHandcardNum(), least);
-                    room->setPlayerMark(lusu, "haoshi", least);
-                    bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
-                    if(!used){
-                        // force lusu to distribute his cards
-                        foreach(ServerPlayer *player, other_players){
-                            if(player->getHandcardNum() == least){
-                                QList<int> handcards = lusu->handCards();
-                                QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
-                                DummyCard *dummy_card = new DummyCard;
-                                foreach(int card_id, to_give)
-                                    dummy_card->addSubcard(card_id);
-                                room->moveCardTo(dummy_card, player, Player::Hand, false);
-                                delete dummy_card;
-                            }
-                        }
-                    }
+        Room *room = lusu->getRoom();
+        if(!room->askForSkillInvoke(lusu, objectName()))
+            return false;
+
+        lusu->drawCards(4);
+        if(lusu->getHandcardNum() <= 5)
+            return true;
+
+        QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
+        int least = 1000;
+        foreach(ServerPlayer *player, other_players)
+            least = qMin(player->getHandcardNum(), least);
+        room->setPlayerMark(lusu, "haoshi", least);
+        bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
+        if(!used){
+            // force lusu to distribute his cards
+            ServerPlayer *beggar = NULL;
+            foreach(ServerPlayer *player, other_players){
+                if(player->getHandcardNum() == least){
+                    beggar = player;
+                    break;
                 }
-
-                return true;
             }
+
+            QList<int> handcards = lusu->handCards();
+            QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
+            DummyCard *dummy_card = new DummyCard;
+            foreach(int card_id, to_give)
+                dummy_card->addSubcard(card_id);
+            room->moveCardTo(dummy_card, beggar, Player::Hand, false);
+            delete dummy_card;
         }
 
-        return false;
+        return true;
     }
 };
 

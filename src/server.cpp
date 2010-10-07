@@ -4,47 +4,38 @@
 #include "engine.h"
 
 #include <QInputDialog>
-#include <QNetworkInterface>
 #include <QMessageBox>
 #include <QFormLayout>
 #include <QComboBox>
-#include <QSpinBox>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <QCheckBox>
-#include <QButtonGroup>
 #include <QHBoxLayout>
 #include <QLabel>
 
-Server::Server(QObject *parent)
-    :QTcpServer(parent)
+ServerDialog::ServerDialog(QWidget *parent)
+    :QDialog(parent)
 {
-    quint16 port = Config.Port;
+    setWindowTitle(tr("Start server"));
 
-    connect(this, SIGNAL(newConnection()), SLOT(processNewConnection()));
-
-    QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(tr("Start server"));
-
-    QLineEdit *port_edit = new QLineEdit;
+    port_edit = new QLineEdit;
     port_edit->setValidator(new QIntValidator);
-    port_edit->setText(QString::number(port));
+    port_edit->setText(QString::number(Config.Port));
     port_edit->setToolTip(tr("Change the port number is not necessary for most cases"));
 
-    QSpinBox *player_count_spinbox = new QSpinBox;
+    player_count_spinbox = new QSpinBox;
     player_count_spinbox->setMinimum(2);
     player_count_spinbox->setMaximum(8);
     player_count_spinbox->setValue(Config.PlayerCount);
     player_count_spinbox->setSuffix(tr(" persons"));
 
-    QSpinBox *timeout_spinbox = new QSpinBox;
+    timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
     timeout_spinbox->setMaximum(30);
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
 
-    QCheckBox *nolimit_checkbox = new QCheckBox(tr("No limit"));
+    nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(false);
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
@@ -58,13 +49,13 @@ Server::Server(QObject *parent)
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
 
-    connect(ok_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
     QGroupBox *box = new QGroupBox;
     box->setTitle(tr("Extension package selection"));
     QGridLayout *grid_layout = new QGridLayout;
-    QButtonGroup *extension_group = new QButtonGroup;
+    extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
     static QStringList extensions;
@@ -97,13 +88,16 @@ Server::Server(QObject *parent)
     hlayout->addWidget(nolimit_checkbox);
     layout->addRow(hlayout);
     layout->addRow(box);
-    layout->addRow(button_layout);    
+    layout->addRow(button_layout);
 
-    dialog->setLayout(layout);
-    dialog->exec();
+    setLayout(layout);
+}
 
-    if(dialog->result() != QDialog::Accepted)
-        return;
+bool ServerDialog::config(){
+    exec();
+
+    if(result() != Accepted)
+        return false;
 
     Config.Port = port_edit->text().toInt();
     Config.PlayerCount = player_count_spinbox->value();
@@ -122,14 +116,25 @@ Server::Server(QObject *parent)
         }
     }
 
-    listen(QHostAddress::Any, Config.Port);
-    if(!isListening())
-        QMessageBox::warning(NULL, tr("Warning"), tr("Can not start server on address %1 !").arg(serverAddress().toString()));
+    return true;
+}
+
+Server::Server(QObject *parent)
+    :QObject(parent)
+{
+    server = new QTcpServer(this);
+
+    connect(server, SIGNAL(newConnection()), SLOT(processNewConnection()));
+}
+
+bool Server::listen(){
+    return server->listen(QHostAddress::Any, Config.Port);
 }
 
 void Server::processNewConnection(){
-    QTcpSocket *socket = nextPendingConnection();
+    QTcpSocket *socket = server->nextPendingConnection();
 
+    // remove the game over room first
     QMutableListIterator<Room *> itor(rooms);
     while(itor.hasNext()){
         Room *room = itor.next();
@@ -139,6 +144,7 @@ void Server::processNewConnection(){
         }
     }
 
+    // find the free room for the new connection
     Room *free_room = NULL;
     foreach(Room *room, rooms){
         if(!room->isFull()){
@@ -147,6 +153,7 @@ void Server::processNewConnection(){
         }
     }
 
+    // if no free room is found, create a new room for him
     if(free_room == NULL){
         free_room = new Room(this, Config.PlayerCount);
         rooms << free_room;

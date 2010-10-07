@@ -154,6 +154,12 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
     int card_id = drawCard();
     throwCard(card_id);
 
+    LogMessage log;
+    log.type = "$InitialJudge";
+    log.from = player;
+    log.card_str = QString::number(card_id);
+    sendLog(log);
+
     QList<ServerPlayer *> all_players = getAllPlayers();
     foreach(ServerPlayer *p, all_players){
         if(p->hasSkill("guicai")){
@@ -166,6 +172,10 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 QList<int> subcards = card->getSubcards();
                 Q_ASSERT(!subcards.isEmpty());
                 card_id = subcards.first();
+
+                log.type = "$ChangedJudge";
+                log.card_str = QString::number(card_id);
+                sendLog(log);
             }
         }
 
@@ -180,13 +190,15 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 Q_ASSERT(!subcards.isEmpty());
                 obtainCard(zhangjiao, card_id);
                 card_id = subcards.first();
+
+                log.type = "$ChangedJudge";
+                log.card_str = QString::number(card_id);
+                sendLog(log);
             }
         }
     }
 
-    LogMessage log;
     log.type = "$JudgeResult";
-    log.from = player;
     log.card_str = QString::number(card_id);
     sendLog(log);
 
@@ -283,10 +295,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
 
     player->invoke("askForSkillInvoke", skill_name);
 
-    reply_func = "invokeSkillCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("invokeSkillCommand", player);
 
     if(result.isEmpty())
         return askForSkillInvoke(player, skill_name); // recursive call;
@@ -312,11 +321,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 
     QString ask_str = QString("%1:%2").arg(skill_name).arg(choices);
     player->invoke("askForChoice", ask_str);
-
-    reply_func = "selectChoiceCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("selectChoiceCommand", player);
 
     if(result.isEmpty())
         return askForChoice(player, skill_name, choices);    
@@ -365,11 +370,7 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
                               .arg(to->objectName());
 
             player->invoke("askForNullification", ask_str);
-
-            reply_func = "replyNullificationCommand";
-            reply_player = player;
-
-            sem->acquire();
+            getResult("replyNullificationCommand", player, false);
 
             if(result.isEmpty())
                 goto trust;
@@ -418,11 +419,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         card_id = ai->askForCardChosen(who, flags, reason);
     }else{
         player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
-
-        reply_func = "chooseCardCommand";
-        reply_player = player;
-
-        sem->acquire();
+        getResult("chooseCardCommand", player);
 
         if(result.isEmpty())
             return askForCardChosen(player, who, flags, reason);
@@ -457,11 +454,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             card = ai->askForCard(pattern);
         else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
-
-            reply_func = "responseCardCommand";
-            reply_player = player;
-
-            sem->acquire();
+            getResult("responseCardCommand", player);
 
             if(result.isEmpty())
                 return askForCard(player, pattern, prompt);
@@ -499,11 +492,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
         answer = ai->askForUseCard(pattern, prompt);
     else{
         player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
-
-        reply_func = "useCardCommand";
-        reply_player = player;
-
-        sem->acquire();
+        getResult("useCardCommand", player);
 
         if(result.isEmpty())
             return askForUseCard(player, pattern, prompt);
@@ -535,11 +524,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
         card_id = ai->askForAG(card_ids);
     else{
         player->invoke("askForAG");
-
-        reply_func = "chooseAGCommand";
-        reply_player = player;
-
-        sem->acquire();
+        getResult("chooseAGCommand", player);
 
         if(result.isEmpty())
             return askForAG(player, card_ids);
@@ -556,11 +541,7 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
         return ai->askForCardShow(requestor);
 
     player->invoke("askForCardShow", requestor->getGeneralName());
-
-    reply_func = "responseCardCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("responseCardCommand", player);
 
     if(result.isEmpty())
         return askForCardShow(player, requestor);
@@ -621,11 +602,7 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
         peach = ai->askForSinglePeach(dying);
     else{
         player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
-
-        reply_func = "responseCardCommand";
-        reply_player = player;
-
-        sem->acquire();
+        getResult("responseCardCommand", player);
 
         if(result.isEmpty())
             return askForSinglePeach(player, dying, peaches);
@@ -1088,27 +1065,9 @@ void Room::damage(const DamageStruct &damage_data){
     // predamaged
     broken = thread->trigger(Predamaged, damage_data.to, data);
     if(broken)
-        return;
+        return;    
 
-    LogMessage log;
-
-    if(damage_data.from){
-        log.type = "#Damage";
-        log.from = damage_data.from;
-    }else{
-        log.type = "#NoSourceDamage";
-    }
-
-    log.to << damage_data.to;
-    log.arg = QString::number(damage_data.damage);
-
-    switch(damage_data.nature){
-    case DamageStruct::Normal: log.arg2 = "normal_nature"; break;
-    case DamageStruct::Fire: log.arg2 = "fire_nature"; break;
-    case DamageStruct::Thunder: log.arg2 = "thunder_nature"; break;
-    }
-
-    sendLog(log);
+    sendDamageLog(data.value<DamageStruct>());
 
     // damage
     if(damage_data.from)
@@ -1118,6 +1077,28 @@ void Room::damage(const DamageStruct &damage_data){
 
     // damaged
     thread->trigger(Damaged, damage_data.to, data);
+}
+
+void Room::sendDamageLog(const DamageStruct &data){
+    LogMessage log;
+
+    if(data.from){
+        log.type = "#Damage";
+        log.from = data.from;
+    }else{
+        log.type = "#DamageNoSource";
+    }
+
+    log.to << data.to;
+    log.arg = QString::number(data.damage);
+
+    switch(data.nature){
+    case DamageStruct::Normal: log.arg2 = "normal_nature"; break;
+    case DamageStruct::Fire: log.arg2 = "fire_nature"; break;
+    case DamageStruct::Thunder: log.arg2 = "thunder_nature"; break;
+    }
+
+    sendLog(log);
 }
 
 void Room::startGame(){
@@ -1248,8 +1229,10 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     if(move.from)
         move.from->removeCard(card, move.from_place);
     else{
-        if(move.to)
+        if(place == Player::DiscardedPile)
             discard_pile->removeOne(move.card_id);
+        else if(place == Player::DrawPile)
+            draw_pile->removeOne(move.card_id);
     }
 
     if(move.to){
@@ -1313,17 +1296,23 @@ void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer 
     broadcast(QString("%1 %2").arg(method).arg(arg), except);
 }
 
+void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus){
+    if(move_focus)
+        broadcastInvoke("moveFocus", reply_player->objectName(), reply_player);
+
+    this->reply_func = reply_func;
+    this->reply_player = reply_player;
+
+    sem->acquire();
+}
+
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     AI *ai = player->getAI();
     if(ai){
         ai->activate(card_use);
     }else{
         broadcastInvoke("activate", player->objectName());
-
-        reply_func = "useCardCommand";
-        reply_player = player;
-
-        sem->acquire();
+        getResult("useCardCommand", player);
 
         if(result.isEmpty())
             return activate(player, card_use);
@@ -1347,11 +1336,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
         return ai->askForSuit();
 
     player->invoke("askForSuit");
-
-    reply_func = "chooseSuitCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("chooseSuitCommand", player);
 
     if(result.isEmpty())
         return askForSuit(player);
@@ -1399,11 +1384,7 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         }
 
         target->invoke("askForDiscard", ask_str);
-
-        reply_func = "discardCardsCommand";
-        reply_player = target;
-
-        sem->acquire();
+        getResult("discardCardsCommand", target);
 
         if(result.isEmpty())
             return askForDiscard(target, discard_num, optional, include_equip, suit);
@@ -1422,6 +1403,9 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
             }
         }
     }
+
+    if(to_discard.isEmpty())
+        return false;
 
     foreach(int card_id, to_discard)
         throwCard(card_id);
@@ -1483,11 +1467,7 @@ void Room::doGuanxing(ServerPlayer *zhuge){
         cards_str << QString::number(card_id);
 
     zhuge->invoke("doGuanxing", cards_str.join("+"));
-
-    reply_func = "replyGuanxingCommand";
-    reply_player = zhuge;
-
-    sem->acquire();
+    getResult("replyGuanxingCommand", zhuge);
 
     if(result.isEmpty()){
         foreach(int card_id, cards)
@@ -1544,11 +1524,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         handcards_str << QString::number(handcard);
 
     shenlumeng->invoke("doGongxin", QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+")));
-
-    reply_func = "replyGongxinCommand";
-    reply_player = shenlumeng;
-
-    sem->acquire();
+    getResult("replyGongxinCommand", shenlumeng);
 
     if(result.isEmpty() || result == ".")
         return;
@@ -1577,11 +1553,7 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
         return ai->askForPindian();
 
     player->invoke("askForPindian", ask_str);
-
-    reply_func = "responseCardCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("responseCardCommand", player);
 
     if(result.isEmpty())
         return askForPindian(player, ask_str);
@@ -1640,10 +1612,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 
     player->invoke("askForPlayerChosen", options.join("+"));
 
-    reply_func = "choosePlayerCommand";
-    reply_player = player;
-
-    sem->acquire();
+    getResult("choosePlayerCommand", player);
 
     if(result.isEmpty())
         return askForPlayerChosen(player, targets);
@@ -1694,10 +1663,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
 
     guojia->invoke("askForYiji", card_str.join("+"));
 
-    reply_func = "replyYijiCommand";
-    reply_player = guojia;
-
-    sem->acquire();
+    getResult("replyYijiCommand", guojia);
 
     if(result.isEmpty() || result == ".")
         return false;

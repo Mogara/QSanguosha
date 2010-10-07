@@ -66,6 +66,10 @@ bool Player::isAlive() const{
     return alive;
 }
 
+bool Player::isDead() const{
+    return !alive;
+}
+
 void Player::setAlive(bool alive){
     if(this->alive && alive == false){
         this->alive = alive;

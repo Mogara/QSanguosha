@@ -66,6 +66,9 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 {
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-    QString pixmap_path = Sanguosha->getCard(card_id)->getPixmapPath();
+    const Card *card = Sanguosha->getCard(card_id);
+    QString pixmap_path = card->getPixmapPath();
     ui->cardLabel->setPixmap(pixmap_path);
+
+    ui->cardDescriptionBox->setText(card->getDescription());
 }

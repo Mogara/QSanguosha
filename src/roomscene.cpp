@@ -32,7 +32,7 @@ static const QPointF DrawPilePos(893, -235);
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
-    :main_window(main_window)
+    :focused(NULL), main_window(main_window)
 {
     ClientInstance->setParent(this);
     setBackgroundBrush(Config.BackgroundBrush);
@@ -127,6 +127,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
+    connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
+
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
     connect(ClientInstance, SIGNAL(standoff()), this, SLOT(onStandoff()));
@@ -738,8 +740,14 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     if(src && dest){
         if(src == dest)
             return;
+
         // both src and dest are player
-        QString type = "$MoveCard";
+        QString type;
+        if(dest_place == Player::Judging)
+            type = "$PasteCard";
+        else if(dest_place == Player::Hand)
+            type = "$MoveCard";
+
         QString from_general = src->getGeneralName();
         QStringList tos;
         tos << dest->getGeneralName();
@@ -790,7 +798,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             setPileNumber(pile_number);
         }
 
-    }else if(dest->objectName() == Config.UserName){
+    }else if(dest->objectName() == Self->objectName()){
         switch(dest_place){
         case Player::Equip:{
                 dashboard->installEquip(card_item);
@@ -1327,6 +1335,10 @@ void RoomScene::updateStatus(Client::Status status){
             button->setEnabled(true);
     }
 
+    if(status != Client::NotActive && focused){
+        focused->hideProcessBar();
+    }
+
     if(Config.OperationNoLimit)
         return;
 
@@ -1580,7 +1592,7 @@ void RoomScene::hideAvatars(){
 }
 
 void RoomScene::changeHp(const QString &who, int delta){
-    if(who == Config.UserName){
+    if(who == Self->objectName()){
         dashboard->update();
     }else{
         Photo *photo = name2photo.value(who, NULL);
@@ -1762,7 +1774,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &play
 void RoomScene::killPlayer(const QString &who){
     const General *general = NULL;
 
-    if(who == Config.UserName){
+    if(who == Self->objectName()){
         dashboard->update();
 
         general = Self->getGeneral();
@@ -1880,7 +1892,7 @@ void RoomScene::chooseAmazingGrace(){
 void RoomScene::showCard(const QString &player_name, int card_id){
     QString card_str = QString::number(card_id);
 
-    if(player_name == Config.UserName)
+    if(player_name == Self->objectName())
         log_box->appendLog("$ShowCard", Self->getGeneralName(), QStringList(), card_str);
     else{
         Photo *photo = name2photo.value(player_name, NULL);
@@ -2119,3 +2131,13 @@ void RoomScene::onGameStart(){
     }
 }
 
+void RoomScene::moveFocus(const QString &who){
+    Photo *photo = name2photo[who];
+    if(photo){
+        if(focused != photo && focused)
+            focused->hideProcessBar();
+
+        focused = photo;
+        focused->showProcessBar();
+    }
+}

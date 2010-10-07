@@ -87,7 +87,7 @@ void StartScene::switchToServer(Server *server){
             server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
         else if(item.startsWith("5."))
             server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
-        else
+        else if(!item.startsWith("169.254."))
             server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
 

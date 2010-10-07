@@ -84,7 +84,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QTextEdit" name="cardDescriptionBox">
    <property name="geometry">
     <rect>
      <x>520</x>

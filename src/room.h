@@ -56,6 +56,7 @@ public:
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void useCard(const CardUseStruct &card_use);
     void damage(const DamageStruct &data);
+    void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1);
@@ -77,6 +78,7 @@ public:
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     bool pindian(ServerPlayer *source, ServerPlayer *target);
+    void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
 
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;

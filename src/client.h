@@ -52,6 +52,7 @@ public:
     void replyGongxin(int card_id = -1);
     QList<ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);    
+    void prompt(const QString &prompt_str);
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -71,7 +72,6 @@ public:
     void playSkillEffect(const QString &play_str);
     void closeNullification(const QString &);
     void playCardEffect(const QString &play_str);
-    void prompt(const QString &prompt_str);
     void clearPile(const QString &);
     void setPileNumber(const QString &pile_num);
     void gameOver(const QString &result_str);
@@ -84,6 +84,7 @@ public:
     void log(const QString &log_str);
     void speak(const QString &speak_data);    
     void increaseSlashCount(const QString & = QString());
+    void moveFocus(const QString &focus);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -169,15 +170,17 @@ signals:
     void avatars_hiden();
     void pile_cleared();
     void pile_num_set(int n);
-    void game_over(bool victory, const QList<bool> &result_list);
-    void standoff();
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids);
     void gongxin(const QList<int> &card_ids);
     void words_spoken(const QString &who, const QString &text);
+    void focus_moved(const QString &focus);
+
     void game_started();
+    void game_over(bool victory, const QList<bool> &result_list);
+    void standoff();
 
     void cards_drawed(const QList<const Card *> &cards);
     void n_cards_drawed(ClientPlayer *player, int n);

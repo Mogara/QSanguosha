@@ -12,15 +12,15 @@ public:
     Jianxiong():MasochismSkill("jianxiong"){
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        Room *room = target->getRoom();
+    virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
+        Room *room = caocao->getRoom();
         const Card *card = damage.card;
-        if(!room->obtainable(card, target))
+        if(!room->obtainable(card, caocao))
             return;
 
-        if(room->askForSkillInvoke(target, "jianxiong")){
+        if(room->askForSkillInvoke(caocao, "jianxiong")){
             room->playSkillEffect(objectName());
-            room->obtainCard(target, card);            
+            caocao->obtainCard(card);
         }
     }
 };

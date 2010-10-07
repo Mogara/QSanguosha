@@ -89,6 +89,7 @@ public:
     CorrectStruct getCorrectStruct() const;
 
     bool isAlive() const;
+    bool isDead() const;
     void setAlive(bool alive);
 
     QString getFlags() const;

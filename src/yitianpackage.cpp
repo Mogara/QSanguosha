@@ -147,6 +147,9 @@ YitianPackage::YitianPackage()
     t[":conghui"] = tr(":conghui");
     t[":zaoyao"] = tr(":zaoyao");
 
+    t[":yitian_sword"] = tr(":yitian_sword");
+    t[":shit"] = tr(":shit");
+
     skills << new YitianSwordViewAsSkill;
 }
 

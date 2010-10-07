@@ -8,6 +8,7 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QComboBox>
+#include <QProgressBar>
 
 class ClientPlayer;
 
@@ -25,6 +26,8 @@ public:
     void addCardItem(CardItem *card_item);
     void hideAvatar();
     void showCard(int card_id);
+    void showProcessBar();
+    void hideProcessBar();
 
 public slots:
     void updateAvatar();
@@ -34,6 +37,7 @@ public slots:
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void timerEvent(QTimerEvent *);
 
 private:
     const ClientPlayer *player;
@@ -51,6 +55,8 @@ private:
     bool hide_avatar;
     QPixmap death_pixmap;
     Pixmap *back_icon;
+    QProgressBar *progress_bar;
+    int timer_id;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

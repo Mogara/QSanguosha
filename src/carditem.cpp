@@ -18,6 +18,8 @@ CardItem::CardItem(const Card *card)
     icon_pixmap.load(card->getIconPath());
     pixmap = pixmap.scaled(CardItemRect.width(), CardItemRect.height());
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
+
+    setToolTip(card->getDescription());
 }
 
 const Card *CardItem::getCard() const{

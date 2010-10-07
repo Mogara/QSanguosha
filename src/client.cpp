@@ -81,7 +81,6 @@ Client::Client(QObject *parent)
     callbacks["playSkillEffect"] = &Client::playSkillEffect;    
     callbacks["closeNullification"] = &Client::closeNullification;    
     callbacks["playCardEffect"] = &Client::playCardEffect;
-    callbacks["prompt"] = &Client::prompt;
     callbacks["clearPile"] = &Client::clearPile;
     callbacks["setPileNumber"] = &Client::setPileNumber;    
     callbacks["gameOver"] = &Client::gameOver;
@@ -94,6 +93,7 @@ Client::Client(QObject *parent)
     callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
+    callbacks["moveFocus"] = &Client::moveFocus;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -420,7 +420,7 @@ void Client::notifyRoleChange(const QString &new_role){
 }
 
 void Client::activate(const QString &focus_player){
-    if(focus_player == Config.UserName)
+    if(focus_player == Self->objectName())
         setStatus(Playing);
     else
         setStatus(NotActive);
@@ -1145,4 +1145,8 @@ void Client::speak(const QString &speak_data){
     QString text = QString::fromUtf8(data);
 
     emit words_spoken(who, text);
+}
+
+void Client::moveFocus(const QString &focus){
+    emit focus_moved(focus);
 }

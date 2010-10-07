@@ -55,6 +55,7 @@ public:
     QString getName() const;
     QString getSkillName() const;   
     void setSkillName(const QString &skill_name);
+    QString getDescription() const;
 
     bool isVirtualCard() const;
     virtual bool match(const QString &pattern) const;

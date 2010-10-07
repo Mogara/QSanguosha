@@ -48,6 +48,45 @@ Photo::Photo(int order)
     back_icon->setPos(86, 14);
     back_icon->hide();
     back_icon->setZValue(1.0);
+
+    progress_bar = new QProgressBar;
+    progress_bar->setOrientation(Qt::Vertical);
+    progress_bar->setMinimum(0);
+    progress_bar->setMaximum(100);
+    progress_bar->setValue(0);
+    progress_bar->hide();
+    timer_id = 0;
+
+    widget = new QGraphicsProxyWidget(this);
+    widget->setWidget(progress_bar);
+    widget->setPos(pixmap.width() - 10, 0);
+}
+
+void Photo::showProcessBar(){
+    progress_bar->setValue(0);
+    progress_bar->show();
+
+    if(!Config.OperationNoLimit)
+        timer_id = startTimer(500);
+}
+
+void Photo::hideProcessBar(){
+    progress_bar->hide();
+
+    if(timer_id != 0){
+        killTimer(timer_id);
+        timer_id = 0;
+    }
+}
+
+void Photo::timerEvent(QTimerEvent *event){
+    int step = 100 / double(Config.OperationTimeout * 5);
+    int new_value = progress_bar->value() + step;
+    new_value = qMin(progress_bar->maximum(), new_value);
+    progress_bar->setValue(new_value);
+
+    if(new_value == progress_bar->maximum())
+        killTimer(event->timerId());
 }
 
 void Photo::setPlayer(const ClientPlayer *player)

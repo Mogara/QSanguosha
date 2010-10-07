@@ -97,6 +97,9 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
         if(isBlack() && player->hasSkill("weimu"))
             continue;
 
+        if(player->isDead())
+            continue;
+
         room->cardEffect(this, source, player);
     }
 }
@@ -141,8 +144,6 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     const Card *card = room->getJudgeCard(effect.to);
     if(judge(card)){
         takeEffect(effect.to);
-        if(room->getCardOwner(this))
-            room->throwCard(this);
     }else if(movable){
         onNullified(effect.to);
     }
@@ -321,11 +322,15 @@ StandardPackage::StandardPackage()
     t["#DrawNCards"] = tr("#DrawNCards");
     t["#MoveNCards"] = tr("#MoveNCards");
 
+    t["$JudgeResult"] = tr("$JudgeResult");
+    t["$InitialJudge"] = tr("$InitialJudge");
+    t["$ChangedJudge"] = tr("$ChangedJudge");
+
     t["$TakeAG"] = tr("$TakeAG");
     t["$Uninstall"] = tr("$Uninstall");
-    t["$JudgeResult"] = tr("$JudgeResult");
     t["$PindianResult"] = tr("$PindianResult");
     t["$MoveCard"] = tr("$MoveCard");
+    t["$PasteCard"] = tr("$PasteCard");
     t["$DiscardCard"] = tr("$DiscardCard");
     t["$RecycleCard"] = tr("$RecycleCard");
     t["$ShowCard"] = tr("$ShowCard");

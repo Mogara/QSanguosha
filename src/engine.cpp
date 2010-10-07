@@ -8,15 +8,15 @@ extern audiere::AudioDevicePtr Device;
 
 class StopCallback: public audiere::StopCallback{
 public:
-    virtual void __stdcall streamStopped(audiere::StopEvent *event){
+    ADR_METHOD(void) streamStopped(audiere::StopEvent *event){
         Sanguosha->removeFromPlaying(event->getOutputStream());
     }
 
-    virtual void __stdcall ref(){
+    ADR_METHOD(void) ref(){
 
     }
 
-    virtual void __stdcall unref(){
+    ADR_METHOD(void) unref(){
 
     }
 };

@@ -780,6 +780,8 @@ Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
 }
 
 void Lightning::takeEffect(ServerPlayer *target) const{
+    target->getRoom()->throwCard(this);
+
     DamageStruct damage;
     damage.card = this;
     damage.damage = 3;
@@ -1088,4 +1090,37 @@ void StandardPackage::addCards(){
     t["#Slash"] = tr("#Slash");
     t["#Jink"] = tr("#Jink");
     t["#Peach"] = tr("#Peach");
+
+    // description for cards
+    t[":slash"] = tr(":slash");
+    t[":jink"] = tr(":jink");
+    t[":peach"] = tr(":peach");
+
+    t[":duel"] = tr(":duel");
+    t[":dismantlement"] = tr(":dismantlement");
+    t[":snatch"] = tr(":snatch");
+    t[":archery_attack"] = tr(":archery_attack");
+    t[":savage_assault"] = tr(":savage_assault");
+    t[":god_salvation"] = tr(":god_salvation");    
+    t[":ex_nihilo"] = tr(":ex_nihilo");
+    t[":amazing_grace"] = tr(":amazing_grace");
+    t[":collateral"] = tr(":collateral");
+    t[":indulgence"] = tr(":indulgence");
+    t[":lightning"] = tr(":lightning");
+    t[":nullification"] = tr(":nullification");
+
+    t[":crossbow"] = tr(":crossbow");
+    t[":double_sword"] = tr(":double_sword");
+    t[":ice_sword"] = tr(":ice_sword");
+    t[":qinggang_sword"] = tr(":qinggang_sword");
+    t[":blade"] = tr(":blade");
+    t[":spear"] = tr(":spear");
+    t[":axe"] = tr(":axe");
+    t[":halberd"] = tr(":halberd");
+    t[":kylin_bow"] = tr(":kylin_bow");
+    t[":eight_diagram"] = tr(":eight_diagram");
+    t[":renwang_shield"] = tr(":renwang_shield");
+
+    t[":chitu"] = t[":zixing"] = t[":dayuan"] = tr(":-1 horse");
+    t[":jueying"] = t[":zhuahuangfeidian"] = t[":dilu"] = tr(":+1 horse");    
 }
