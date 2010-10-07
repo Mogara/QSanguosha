@@ -35,14 +35,12 @@ SOURCES += src/main.cpp \
     src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
     src/magatamawidget.cpp \
-    src/discardskill.cpp \
     src/daqiao.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
     src/wind.cpp \
     src/thicket.cpp \
-    src/yijiviewasskill.cpp \
     src/distanceviewdialog.cpp \
     src/yitianpackage.cpp \
     src/firepackage.cpp \
@@ -50,7 +48,8 @@ SOURCES += src/main.cpp \
     src/configdialog.cpp \
     src/clientlogbox.cpp \
     src/ai.cpp \
-    src/standard-ai.cpp
+    src/standard-ai.cpp \
+    src/aux-skills.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -79,14 +78,12 @@ HEADERS += src/mainwindow.h \
     src/nullificationdialog.h \
     src/playercarddialog.h \
     src/magatamawidget.h \
-    src/discardskill.h \
     src/daqiao.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \
     src/wind.h \
     src/thicket.h \
-    src/yijiviewasskill.h \
     src/distanceviewdialog.h \
     src/yitianpackage.h \
     src/firepackage.h \
@@ -94,7 +91,8 @@ HEADERS += src/mainwindow.h \
     src/configdialog.h \
     src/clientlogbox.h \
     src/ai.h \
-    src/standard-ai.h
+    src/standard-ai.h \
+    src/aux-skills.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

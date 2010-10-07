@@ -5,8 +5,7 @@
 #include "dashboard.h"
 #include "card.h"
 #include "client.h"
-#include "discardskill.h"
-#include "yijiviewasskill.h"
+#include "aux-skills.h"
 #include "daqiao.h"
 #include "clientlogbox.h"
 #include "audiere.h"
@@ -74,6 +73,7 @@ private:
 
     DiscardSkill *discard_skill;
     YijiViewAsSkill *yiji_skill;
+    ChoosePlayerSkill *choose_skill;
 
     QList<const ClientPlayer *> selected_targets;
 

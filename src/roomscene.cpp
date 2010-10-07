@@ -104,6 +104,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
+    choose_skill = new ChoosePlayerSkill;
 
     known_cards_menu = new QMenu(main_window);
 
@@ -417,7 +418,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_Escape : {
             if(!discarded_queue.isEmpty() && discarded_queue.first()->rotation() == 0.0)
                 hideDiscards();
-            else{
+            else if(ClientInstance->getStatus() == Client::Playing){
                 dashboard->unselectAll();
                 enableTargets(NULL);
             }
@@ -1148,6 +1149,13 @@ void RoomScene::doTimeout(){
             break;
         }
 
+    case Client::AskForPlayerChoose:{
+            ClientInstance->choosePlayer(NULL);
+            dashboard->stopPending();
+            daqiao->hide();
+            break;
+        }
+
     case Client::AskForAG:{
             foreach(CardItem *item, amazing_grace){
                 if(item->isEnabled()){
@@ -1255,6 +1263,19 @@ void RoomScene::updateStatus(Client::Status status){
             ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
+
+            break;
+        }
+
+    case Client::AskForPlayerChoose:{
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
+
+            daqiao->setContent(tr("Please choose a player"));
+
+            choose_skill->setPlayerNames(ClientInstance->players_to_choose);
+            dashboard->startPending(choose_skill);
 
             break;
         }
@@ -1417,6 +1438,13 @@ void RoomScene::doOkButton(){
             QMessageBox::warning(main_window, tr("Warning"),
                                  tr("The OK button should be disabled when client is in executing dialog"));
             return;
+        }
+
+    case Client::AskForPlayerChoose:{
+            ClientInstance->choosePlayer(selected_targets.first());
+            daqiao->hide();
+
+            break;
         }
 
     case Client::AskForYiji:{

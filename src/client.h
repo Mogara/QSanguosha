@@ -26,6 +26,7 @@ public:
         AskForSkillInvoke,
         AskForChoices,        
         AskForAG,
+        AskForPlayerChoose,
         AskForYiji,
         AskForGuanxing,
         AskForGongxin
@@ -119,13 +120,14 @@ public:
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
     QDialog *ask_dialog;
+    QStringList players_to_choose;
 
 public slots:    
     void itemChosen(const QString &item_name);
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
-    void choosePlayer();
+    void choosePlayer(const ClientPlayer *player);
     void trust();
 
 #ifndef QT_NO_DEBUG

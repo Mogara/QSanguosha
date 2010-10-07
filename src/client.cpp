@@ -702,14 +702,12 @@ void Client::chooseCard(int card_id){
     setStatus(NotActive);
 }
 
-void Client::choosePlayer(){
-    if(sender()->inherits("QDialog")){
-        QDialog *dialog = qobject_cast<QDialog *>(sender());
-        dialog->show();
-    }else if(sender()->inherits("OptionButton")){
-        QString player_name = sender()->objectName();
-        request("choosePlayer " + player_name);
-    }
+void Client::choosePlayer(const ClientPlayer *player){
+    if(player == NULL)
+        player = findChild<const ClientPlayer *>(players_to_choose.first());
+
+    request("choosePlayer " + player->objectName());
+    setStatus(NotActive);
 }
 
 void Client::trust(){
@@ -1104,32 +1102,12 @@ void Client::askForYiji(const QString &card_list){
     setStatus(AskForYiji);
 }
 
-void Client::askForPlayerChosen(const QString &ask_str){
-    QStringList player_names = ask_str.split("+");
+void Client::askForPlayerChosen(const QString &players){
+    players_to_choose = players.split("+");
 
-    QList<const ClientPlayer *> players;
-    foreach(QString player_name, player_names)
-        players << findChild<const ClientPlayer *>(player_name);
+    Q_ASSERT(!players_to_choose.isEmpty());
 
-    QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(tr("Please choose a player"));
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    foreach(const ClientPlayer *player, players){
-        QString icon_path = player->getGeneral()->getPixmapPath("big");
-        QString caption = Sanguosha->translate(player->getGeneralName());
-        OptionButton *button = new OptionButton(icon_path, caption);
-        button->setObjectName(player->objectName());
-
-        connect(button, SIGNAL(double_clicked()), this, SLOT(choosePlayer()));
-        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
-        layout->addWidget(button);
-    }
-
-    connect(dialog, SIGNAL(rejected()), this, SLOT(choosePlayer()));
-
-    dialog->setLayout(layout);
-    dialog->exec();
+    setStatus(AskForPlayerChoose);
 }
 
 void Client::replyYiji(const Card *card, const ClientPlayer *to){

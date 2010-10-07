@@ -520,7 +520,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     const Card *slash = NULL;    
-    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "luanwu-slash"))){
+    if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash"))){
         ServerPlayer *to_slash;
         if(luanwu_targets.length() == 1)
             to_slash = luanwu_targets.first();
@@ -789,6 +789,7 @@ ThicketPackage::ThicketPackage()
     t["haoshi:yes"] = tr("haoshi:yes");
     t[":yinghun:"] = tr(":yinghun:");
 
+    t["@luanwu-slash"] = tr("@luanwu-slash");
     t["@roulin1-jink-1"] = tr("@roulin1-jink-1");
     t["@roulin1-jink-2"] = tr("@roulin1-jink-2");
     t["@roulin2-jink-1"] = tr("@roulin2-jink-1");
