@@ -497,7 +497,7 @@ void RoomScene::timerEvent(QTimerEvent *event){
 }
 
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
-    if(Self->getRole() != "role")
+    if(Self->getRole() != "lord")
         changeMessage(tr("Please wait for other players choosing their generals"));
 
     ChooseGeneralDialog *dialog = new ChooseGeneralDialog(generals, main_window);
@@ -1654,10 +1654,16 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     for(i=0; i<players.length(); i++){
         ClientPlayer *player = players.at(i);
         bool result = result_list.at(i);
+
         if(result)
-            winner_list << player;
+            winner_list << player;            
         else
             loser_list << player;
+
+        if(player != Self){
+            Photo *photo = name2photo.value(player->objectName());
+            photo->setEmotion(result ? "good" : "bad", true);
+        }
     }
 
     winner_table->setRowCount(winner_list.length());

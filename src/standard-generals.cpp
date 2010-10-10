@@ -174,8 +174,10 @@ public:
                     damage.from = xiahou;
                     damage.to = from;
 
+                    room->setEmotion(xiahou, Room::Good);
                     room->damage(damage);
-                }
+                }else
+                    room->setEmotion(xiahou, Room::Bad);
             }
         }
     }

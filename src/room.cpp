@@ -1626,6 +1626,11 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
     log.card_str.clear();
     sendLog(log);
 
+    if(success)
+        setEmotion(source, Good);
+    else
+        setEmotion(source, Bad);
+
     return success;
 }
 
@@ -1712,6 +1717,8 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
 
         moveCardTo(dummy_card, who, Player::Hand, false);
         delete dummy_card;
+
+        setEmotion(who, DrawCard);
 
         return true;
     }

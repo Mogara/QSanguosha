@@ -28,7 +28,7 @@ public:
     void showCard(int card_id);
     void showProcessBar();
     void hideProcessBar();
-    void setEmotion(const QString &emotion);
+    void setEmotion(const QString &emotion, bool permanent = false);
 
 public slots:
     void updateAvatar();

@@ -84,12 +84,13 @@ void Photo::hideProcessBar(){
     }
 }
 
-void Photo::setEmotion(const QString &emotion){
+void Photo::setEmotion(const QString &emotion, bool permanent){
     QString path = QString(":/emotion/%1.png").arg(emotion);
     emotion_item->setPixmap(QPixmap(path));
     emotion_item->show();
 
-    QTimer::singleShot(2000, this, SLOT(hideEmotion()));
+    if(!permanent)
+        QTimer::singleShot(2000, this, SLOT(hideEmotion()));
 }
 
 void Photo::hideEmotion(){

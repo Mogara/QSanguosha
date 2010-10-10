@@ -257,20 +257,29 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     int x = effect.from->getLostHp();
     Room *room = effect.from->getRoom();
 
+    bool good = false;
     if(x == 1){
         effect.to->drawCards(1);
         room->askForDiscard(effect.to, 1, false, true);
+        good = true;
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));
             room->askForDiscard(effect.to, x, false, true);
+            good = false;
         }else{
             effect.to->drawCards(x);
             room->askForDiscard(effect.to, 1, false, true);
+            good = true;
         }
     }
+
+    if(good)
+        room->setEmotion(effect.to, Room::Good);
+    else
+        room->setEmotion(effect.to, Room::Bad);
 }
 
 class YinghunViewAsSkill: public ZeroCardViewAsSkill{
@@ -399,6 +408,8 @@ public:
                 dummy_card->addSubcard(card_id);
             room->moveCardTo(dummy_card, beggar, Player::Hand, false);
             delete dummy_card;
+
+            room->setEmotion(beggar, Room::DrawCard);
         }
 
         return true;
@@ -655,6 +666,7 @@ public:
 
                 room->broadcastProperty(dongzhuo, "maxhp");
                 room->broadcastProperty(dongzhuo, "hp");
+                room->setEmotion(dongzhuo, Room::Bad);
             }
         }
 
