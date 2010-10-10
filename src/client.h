@@ -86,6 +86,7 @@ public:
     void speak(const QString &speak_data);    
     void increaseSlashCount(const QString & = QString());
     void moveFocus(const QString &focus);
+    void setEmotion(const QString &set_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -182,6 +183,7 @@ signals:
     void gongxin(const QList<int> &card_ids);
     void words_spoken(const QString &who, const QString &text);
     void focus_moved(const QString &focus);
+    void emotion_set(const QString &target, const QString &emotion);
 
     void game_started();
     void game_over(bool victory, const QList<bool> &result_list);

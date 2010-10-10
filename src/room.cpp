@@ -176,6 +176,8 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 log.type = "$ChangedJudge";
                 log.card_str = QString::number(card_id);
                 sendLog(log);
+
+                setEmotion(simayi, Normal);
             }
         }
 
@@ -194,6 +196,8 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 log.type = "$ChangedJudge";
                 log.card_str = QString::number(card_id);
                 sendLog(log);
+
+                setEmotion(zhangjiao, Normal);
             }
         }
     }
@@ -248,6 +252,10 @@ void Room::gameOver(const QString &winner){
 
 void Room::slashEffect(const SlashEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
+
+    setEmotion(effect.from, Killer);
+    setEmotion(effect.to, Victim);
+
     bool broken = thread->trigger(SlashEffect, effect.from, data);
     if(!broken)
         thread->trigger(SlashEffected, effect.to, data);
@@ -1004,13 +1012,17 @@ void Room::damage(ServerPlayer *victim, int damage){
     broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-damage));
 }
 
-void Room::recover(ServerPlayer *player, int recover){
+void Room::recover(ServerPlayer *player, int recover, bool set_emotion){
     if(player->getLostHp() == 0)
         return;
 
     int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
     setPlayerProperty(player, "hp", new_hp);
     broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
+
+    if(set_emotion){
+        setEmotion(player, Recover);
+    }
 }
 
 void Room::playCardEffect(const QString &card_name, bool is_male){
@@ -1303,6 +1315,23 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
     this->reply_player = reply_player;
 
     sem->acquire();
+}
+
+void Room::setEmotion(ServerPlayer *target, TargetType type){
+    QString emotion;
+    switch(type){
+    case Killer: emotion = "killer"; break;
+    case Victim: emotion = "victim"; break;
+    case DuelA: emotion = "duel-a"; break;
+    case DuelB: emotion = "duel-b"; break;
+    case Good: emotion = "good"; break;
+    case Bad: emotion = "bad"; break;
+    case Normal: emotion = "normal"; break;
+    case Recover: emotion = "recover"; break;
+    case DrawCard: emotion = "draw-card"; break;
+    }
+
+    broadcastInvoke("setEmotion", QString("%1:%2").arg(target->objectName()).arg(emotion), target);
 }
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){

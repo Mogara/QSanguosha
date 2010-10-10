@@ -41,5 +41,15 @@
         <file>kingdom/wu.png</file>
         <file>big-back.png</file>
         <file>small-back.png</file>
+        <file>emotion/bad.png</file>
+        <file>emotion/damage.png</file>
+        <file>emotion/draw-card.png</file>
+        <file>emotion/duel-a.png</file>
+        <file>emotion/duel-b.png</file>
+        <file>emotion/good.png</file>
+        <file>emotion/killer.png</file>
+        <file>emotion/normal.png</file>
+        <file>emotion/recover.png</file>
+        <file>emotion/victim.png</file>
     </qresource>
 </RCC>

@@ -29,7 +29,7 @@ public:
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllCards();
-    void drawCards(int n);
+    void drawCards(int n, bool set_emotion = true);
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
     QList<const Card *> getHandcards() const;

@@ -126,6 +126,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
+    connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
@@ -1542,13 +1543,12 @@ void RoomScene::hideAvatars(){
 }
 
 void RoomScene::changeHp(const QString &who, int delta){
-    if(who == Self->objectName()){
+    // update
+    Photo *photo = name2photo.value(who, NULL);
+    if(photo)
+        photo->update();
+    else
         dashboard->update();
-    }else{
-        Photo *photo = name2photo.value(who, NULL);
-        if(photo)
-            photo->update();
-    }
 
     if(delta < 0){
         if(delta <= -3){
@@ -1566,6 +1566,9 @@ void RoomScene::changeHp(const QString &who, int delta){
             Sanguosha->playEffect(male_damage_effect);
         else
             Sanguosha->playEffect(female_damage_effect);
+
+        if(photo)
+            photo->setEmotion("damage");
     }
 }
 
@@ -1793,13 +1796,13 @@ void RoomScene::clearAmazingGrace(){
         delete item;
     }
 
-    foreach(QGraphicsSimpleTextItem *item, taker_names){
+    foreach(QGraphicsPixmapItem *item, taker_avatars){
         removeItem(item);
         delete item;
     }
 
     amazing_grace.clear();
-    taker_names.clear();
+    taker_avatars.clear();
 }
 
 void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
@@ -1820,10 +1823,12 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
                 name = tr("Discarded Pile");
             }
 
-            QGraphicsSimpleTextItem *text_item = addSimpleText(name, Config.TinyFont);
-            text_item->setPos(card_item->pos() + QPointF(20, 70));
-            text_item->setZValue(card_item->zValue() + 1.0);
-            taker_names << text_item;
+            QString avatar_path = taker ? taker->getGeneral()->getPixmapPath("big") : ":/card-back.png";
+            QGraphicsPixmapItem *taker_avatar = addPixmap(QPixmap(avatar_path));
+            taker_avatar->setScale(0.5);
+            taker_avatar->setPos(card_item->pos() + QPointF(30, 70));
+            taker_avatar->setZValue(card_item->zValue() + 1.0);
+            taker_avatars << taker_avatar;
 
             break;
         }
@@ -2089,5 +2094,12 @@ void RoomScene::moveFocus(const QString &who){
 
         focused = photo;
         focused->showProcessBar();
+    }
+}
+
+void RoomScene::setEmotion(const QString &who, const QString &emotion){
+    Photo *photo = name2photo[who];
+    if(photo){
+        photo->setEmotion(emotion);
     }
 }

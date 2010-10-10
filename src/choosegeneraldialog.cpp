@@ -69,10 +69,14 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
     dialog_layout->addWidget(role_label);
 
     // progress bar
-    progress_bar = new QProgressBar;
-    progress_bar->setMinimum(0);
-    progress_bar->setMaximum(100);
-    dialog_layout->addWidget(progress_bar);
+    if(Config.OperationNoLimit){
+        progress_bar = NULL;
+    }else{
+        progress_bar = new QProgressBar;
+        progress_bar->setMinimum(0);
+        progress_bar->setMaximum(100);
+        dialog_layout->addWidget(progress_bar);
+    }
 
 #ifndef QT_NO_DEBUG
 
@@ -96,6 +100,9 @@ void ChooseGeneralDialog::start(){
 }
 
 void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
+    if(progress_bar == NULL)
+        return;
+
     static const int timeout = 15;
 
     int step = 100 / double(timeout * 5);

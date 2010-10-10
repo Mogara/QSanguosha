@@ -28,11 +28,13 @@ public:
     void showCard(int card_id);
     void showProcessBar();
     void hideProcessBar();
+    void setEmotion(const QString &emotion);
 
 public slots:
     void updateAvatar();
     void updateRoleCombobox(const QString &new_role);
     void refresh();
+    void hideEmotion();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -57,6 +59,7 @@ private:
     Pixmap *back_icon;
     QProgressBar *progress_bar;
     int timer_id;
+    QGraphicsPixmapItem *emotion_item;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };

@@ -220,7 +220,9 @@ public:
 
         Room *room = caochong->getRoom();
         room->setPlayerMark(caochong, objectName(), point);
-        room->askForUseCard(caochong, "@@chengxiang", "@chengxiang-card");
+
+        QString prompt = QString("@chengxiang-card:::%1").arg(point);
+        room->askForUseCard(caochong, "@@chengxiang", prompt);
     }
 };
 

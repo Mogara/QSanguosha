@@ -39,7 +39,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Draw: {
-            player->drawCards(2);
+            player->drawCards(2, false);
             break;
         }
 
@@ -70,7 +70,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     Room *room = player->getRoom();
 
     switch(event){
-    case GameStart: player->drawCards(4); break;
+    case GameStart: player->drawCards(4, false); break;
     case PhaseChange: onPhaseChange(player); break;
     case CardUsed: {
             if(data.canConvert<CardUseStruct>()){

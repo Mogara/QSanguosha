@@ -59,7 +59,7 @@ public:
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
-    void recover(ServerPlayer *player, int recover = 1);
+    void recover(ServerPlayer *player, int recover = 1, bool set_emotion = false);
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
@@ -77,8 +77,22 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
-    bool pindian(ServerPlayer *source, ServerPlayer *target);
+    bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
+
+    enum TargetType{
+        Killer,
+        Victim,
+        DuelA,
+        DuelB,
+        Good,
+        Bad,
+        Normal,
+        Recover,
+        DrawCard,
+    };
+
+    void setEmotion(ServerPlayer *target, TargetType type);
 
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;

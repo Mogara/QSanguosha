@@ -61,6 +61,9 @@ Photo::Photo(int order)
     widget = new QGraphicsProxyWidget(this);
     widget->setWidget(progress_bar);
     widget->setPos(pixmap.width() - 15, 0);
+
+    emotion_item = new QGraphicsPixmapItem(this);
+    emotion_item->moveBy(100, 0);
 }
 
 void Photo::showProcessBar(){
@@ -79,6 +82,18 @@ void Photo::hideProcessBar(){
         killTimer(timer_id);
         timer_id = 0;
     }
+}
+
+void Photo::setEmotion(const QString &emotion){
+    QString path = QString(":/emotion/%1.png").arg(emotion);
+    emotion_item->setPixmap(QPixmap(path));
+    emotion_item->show();
+
+    QTimer::singleShot(2000, this, SLOT(hideEmotion()));
+}
+
+void Photo::hideEmotion(){
+    emotion_item->hide();
 }
 
 void Photo::timerEvent(QTimerEvent *event){

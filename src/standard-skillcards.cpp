@@ -50,8 +50,8 @@ bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
 void JieyinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    room->recover(source, 1);
-    room->recover(targets.first(), 1);
+    room->recover(source, 1, true);
+    room->recover(targets.first(), 1, true);
 }
 
 void JieyinCard::use(const QList<const ClientPlayer *> &targets) const{
@@ -76,6 +76,9 @@ void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     const Card *card = Sanguosha->getCard(card_id);
     Room *room = effect.from->getRoom();
     room->moveCardTo(card, effect.from, Player::Hand, false);
+
+    room->setEmotion(effect.to, Room::Bad);
+    room->setEmotion(effect.from, Room::Good);
 }
 
 FanjianCard::FanjianCard(){

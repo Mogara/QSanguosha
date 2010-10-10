@@ -78,8 +78,11 @@ void ServerPlayer::throwAllCards(){
         room->throwCard(trick);
 }
 
-void ServerPlayer::drawCards(int n){
+void ServerPlayer::drawCards(int n, bool set_emotion){
     room->drawCards(this, n);
+
+    if(set_emotion)
+        room->setEmotion(this, Room::DrawCard);
 }
 
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){

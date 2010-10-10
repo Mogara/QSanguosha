@@ -394,6 +394,9 @@ public:
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
+
+                    room->setEmotion(player, Room::Good);
+
                     return true;
                 }
             }
@@ -648,6 +651,9 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *first = effect.to;
     ServerPlayer *second = effect.from;
     Room *room = first->getRoom();
+
+    room->setEmotion(first, Room::DuelA);
+    room->setEmotion(second, Room::DuelB);
 
     forever{
         if(second->hasSkill("wushuang")){

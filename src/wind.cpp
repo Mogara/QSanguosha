@@ -17,6 +17,8 @@ LeijiCard::LeijiCard(){
 
 void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
+    room->setEmotion(zhangjiao, Room::Normal);
+    room->setEmotion(target, Room::Bad);
 
     const Card *card = room->getJudgeCard(target);
     if(card->getSuit() == Card::Spade){

@@ -68,7 +68,7 @@ private:
     QGraphicsTextItem *pile_number_item;
 
     QList<CardItem *> amazing_grace;
-    QList<QGraphicsSimpleTextItem *> taker_names;
+    QList<QGraphicsPixmapItem *> taker_avatars;
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
@@ -122,6 +122,7 @@ private slots:
     void hideAvatars();
     void changeHp(const QString &who, int delta);
     void moveFocus(const QString &who);
+    void setEmotion(const QString &who, const QString &emotion);
 
     void clearPile();
     void setPileNumber(int n);

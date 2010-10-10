@@ -94,6 +94,7 @@ Client::Client(QObject *parent)
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
     callbacks["moveFocus"] = &Client::moveFocus;
+    callbacks["setEmotion"] = &Client::setEmotion;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -1170,4 +1171,12 @@ void Client::speak(const QString &speak_data){
 
 void Client::moveFocus(const QString &focus){
     emit focus_moved(focus);
+}
+
+void Client::setEmotion(const QString &set_str){
+    QStringList words = set_str.split(":");
+    QString target_name = words.at(0);
+    QString emotion = words.at(1);
+
+    emit emotion_set(target_name, emotion);
 }
