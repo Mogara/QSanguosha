@@ -159,7 +159,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101007";
+    return "20101009";
 }
 
 int Engine::getCardCount() const{

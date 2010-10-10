@@ -18,11 +18,6 @@ ServerDialog::ServerDialog(QWidget *parent)
 {
     setWindowTitle(tr("Start server"));
 
-    port_edit = new QLineEdit;
-    port_edit->setValidator(new QIntValidator);
-    port_edit->setText(QString::number(Config.Port));
-    port_edit->setToolTip(tr("Change the port number is not necessary for most cases"));
-
     player_count_spinbox = new QSpinBox;
     player_count_spinbox->setMinimum(2);
     player_count_spinbox->setMaximum(8);
@@ -79,7 +74,6 @@ ServerDialog::ServerDialog(QWidget *parent)
     box->setLayout(grid_layout);
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Port"), port_edit);
     layout->addRow(tr("Player count"), player_count_spinbox);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
@@ -99,12 +93,10 @@ bool ServerDialog::config(){
     if(result() != Accepted)
         return false;
 
-    Config.Port = port_edit->text().toInt();
     Config.PlayerCount = player_count_spinbox->value();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
 
-    Config.setValue("Port", Config.Port);
     Config.setValue("PlayerCount", Config.PlayerCount);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);

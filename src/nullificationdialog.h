@@ -22,7 +22,6 @@ private:
 private slots:
     void reply();
     void onReject();
-
 };
 
 #endif // NULLIFICATIONDIALOG_H

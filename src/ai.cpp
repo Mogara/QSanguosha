@@ -158,8 +158,8 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) const{
     return NULL;
 }
 
-SmartAI::SmartAI(ServerPlayer *player)
-    :TrustAI(player)
+SmartAI::SmartAI(ServerPlayer *player, bool always_invoke)
+    :TrustAI(player), always_invoke(always_invoke)
 {
 
 }
@@ -193,4 +193,8 @@ int SmartAI::askForCardShow(ServerPlayer *requestor) const{
     }
 
     return TrustAI::askForCardShow(requestor);
+}
+
+bool SmartAI::askForSkillInvoke(const QString &skill_name) const{
+    return always_invoke;
 }

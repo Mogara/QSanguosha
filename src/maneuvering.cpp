@@ -94,7 +94,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card->inherits("Slash") && damage.to->isKongcheng()){
+        if(damage.card && damage.card->inherits("Slash") && damage.to->isKongcheng()){
             damage.damage ++;
             data = QVariant::fromValue(damage);
         }

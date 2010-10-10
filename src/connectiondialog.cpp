@@ -15,16 +15,9 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-#ifdef CHINESE_SUPPORT
-    QRegExp pattern("[^-+@: =!#%*]+");
-#else
-    QRegExp pattern("[a-zA-Z_0-9]+");
-#endif
-
-    QRegExpValidator *validator = new QRegExpValidator(pattern, this);
-    ui->nameLineEdit->setValidator(validator);
-
     ui->nameLineEdit->setText(Config.UserName);
+    ui->nameLineEdit->setMaxLength(32);
+
     ui->hostLineEdit->setText(Config.HostAddress);
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
@@ -59,8 +52,9 @@ ConnectionDialog::~ConnectionDialog()
 void ConnectionDialog::on_connectButton_clicked()
 {
     QString username = ui->nameLineEdit->text();
-    if(username.length() < 3){
-        QMessageBox::warning(NULL, tr("Warning"), tr("The user name must has 3 letters at least!"));
+
+    if(username.isEmpty()){
+        QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
         return;
     }
 

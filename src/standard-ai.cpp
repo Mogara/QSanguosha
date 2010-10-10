@@ -31,8 +31,16 @@ bool XiahoudunAI::askForSkillInvoke(const QString &skill_name) const{
     return true;
 }
 
+LumengAI::LumengAI(ServerPlayer *player)
+    :SmartAI(player, true)
+{
+
+}
+
 void StandardPackage::addAIs(){
     addMetaObject<CaocaoAI>();
     addMetaObject<SimayiAI>();
+    addMetaObject<XiahoudunAI>();
+    addMetaObject<LumengAI>();
 }
 

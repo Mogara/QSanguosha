@@ -13,10 +13,21 @@ public:
 
 class Shit:public BasicCard{
     Q_OBJECT
+
 public:
     Q_INVOKABLE Shit(Card::Suit suit, int number);
     virtual QString getSubtype() const;
     virtual void onMove(const CardMoveStruct &move) const;
+};
+
+class ChengxiangCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChengxiangCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 #endif // YITIANPACKAGE_H

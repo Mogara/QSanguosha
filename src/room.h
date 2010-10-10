@@ -155,6 +155,8 @@ private:
 
     const Card *provided;
 
+    static QString generatePlayerName();
+
 private slots:
     void reportDisconnection();
     void processRequest(const QString &request);

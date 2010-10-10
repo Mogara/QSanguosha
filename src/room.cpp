@@ -483,15 +483,13 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 }
 
 bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
-    Q_ASSERT(pattern.startsWith("@@"));
-
     QString answer;
 
     AI *ai = player->getAI();
     if(ai)
         answer = ai->askForUseCard(pattern, prompt);
     else{
-        player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
+        player->invoke("askForUseCard", QString("%1:%2").arg(pattern).arg(prompt));
         getResult("useCardCommand", player);
 
         if(result.isEmpty())
@@ -823,15 +821,14 @@ void Room::processRequest(const QString &request){
 
 void Room::signupCommand(ServerPlayer *player, const QString &arg){
     QStringList words = arg.split(":");
-    QString name = words[0];
+    QString base64 = words[0];
     QString avatar = words[1];
 
-    if(findChild<ServerPlayer*>(name)){
-        player->invoke("duplicationError");
-        return;
-    }
+    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QString screen_name = QString::fromUtf8(data);
 
-    player->setObjectName(name);
+    player->setObjectName(generatePlayerName());
+    player->setScreenName(screen_name);
     player->setProperty("avatar", avatar);
 
     player->invoke("checkVersion", Sanguosha->getVersion());
@@ -840,7 +837,8 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->invoke("setup", QString("%1:%2").arg(player_count).arg(timeout));
 
     // introduce the new joined player to existing players except himself
-    broadcastInvoke("addPlayer", QString("%1:%2").arg(name).arg(avatar), player);
+    player->sendProperty("objectName");
+    broadcastInvoke("addPlayer", QString("%1:%2:%3").arg(player->objectName()).arg(base64).arg(avatar), player);
 
     // introduce all existing player to the new joined
     foreach(ServerPlayer *p, players){
@@ -848,9 +846,10 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
             continue;
 
         QString name = p->objectName();
+        QString base64 = p->screenName().toUtf8().toBase64();
         QString avatar = p->property("avatar").toString();
 
-        player->invoke("addPlayer", QString("%1:%2").arg(name).arg(avatar));
+        player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
     }
 
     signup_count ++;
@@ -1689,3 +1688,8 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
     }
 }
 
+QString Room::generatePlayerName(){
+    static int id = 0;
+    id ++;
+    return QString("sgs%1").arg(id);
+}

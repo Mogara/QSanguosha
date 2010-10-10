@@ -339,22 +339,28 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
-        if(result.success){
-            QStringList horses;
-            if(result.to->getDefensiveHorse())
-                horses << "dhorse";
-            if(result.to->getOffensiveHorse())
-                horses << "ohorse";
+        if(!result.success)
+            return false;
 
-            if(!horses.isEmpty()){
-                Room *room = player->getRoom();
-                QString horse_type = room->askForChoice(player, objectName(), horses.join("+") + "+no");
-                if(horse_type == "dhorse")
-                    room->throwCard(result.to->getDefensiveHorse());
-                else if(horse_type == "ohorse")
-                    room->throwCard(result.to->getOffensiveHorse());
-            }
-        }
+        QStringList horses;
+        if(result.to->getDefensiveHorse())
+            horses << "dhorse";
+        if(result.to->getOffensiveHorse())
+            horses << "ohorse";
+
+        if(horses.isEmpty())
+            return false;
+
+
+        Room *room = player->getRoom();
+        if(!room->askForSkillInvoke(player, objectName()))
+            return false;
+
+        QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+        if(horse_type == "dhorse")
+            room->throwCard(result.to->getDefensiveHorse());
+        else if(horse_type == "ohorse")
+            room->throwCard(result.to->getOffensiveHorse());
 
         return false;
     }

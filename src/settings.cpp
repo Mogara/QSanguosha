@@ -37,6 +37,9 @@ void Settings::init(){
     PlayerCount = value("PlayerCount", 2).toInt();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
+    if(UserName == "Admin" || UserName == "Administrator")
+        UserName = tr("Sanguosha-fans");
+
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     Port = value("Port", 9527u).toUInt();
     UserAvatar = value("UserAvatar", "zhangliao").toString();

@@ -30,4 +30,11 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name) const;
 };
 
+class LumengAI: public SmartAI{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LumengAI(ServerPlayer *player);
+};
+
 #endif // STANDARDAI_H

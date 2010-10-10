@@ -17,6 +17,14 @@ Player::Player(QObject *parent)
     correct.skill_dest = 0;
 }
 
+void Player::setScreenName(const QString &screen_name){
+    this->screen_name = screen_name;
+}
+
+QString Player::screenName() const{
+    return screen_name;
+}
+
 void Player::setHp(int hp){
     if(hp >= 0 && hp <= max_hp && this->hp != hp){
         this->hp = hp;

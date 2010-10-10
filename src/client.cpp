@@ -58,7 +58,7 @@ Client::Client(QObject *parent)
     ClientInstance = this;    
 
     Self = new ClientPlayer(this);
-    Self->setObjectName(Config.UserName);
+    Self->setScreenName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
     connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
@@ -111,6 +111,7 @@ Client::Client(QObject *parent)
     callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["askForCard"] = &Client::askForCard;
+    callbacks["askForUseCard"] = &Client::askForUseCard;
     callbacks["askForSkillInvoke"] = &Client::askForSkillInvoke;
     callbacks["askForChoice"] = &Client::askForChoice;
     callbacks["askForNullification"] = &Client::askForNullification;
@@ -126,8 +127,14 @@ Client::Client(QObject *parent)
 
     first_choice = second_choice = ".";
     ask_dialog = NULL;
+    use_card = false;
 
-    request(QString("signup %1:%2").arg(Config.UserName).arg(Config.UserAvatar));
+    signup();
+}
+
+void Client::signup(){
+    QString base64 = Config.UserName.toUtf8().toBase64();
+    request(QString("signup %1:%2").arg(base64).arg(Config.UserAvatar));
 }
 
 void Client::checkVersion(const QString &server_version){
@@ -250,18 +257,21 @@ void Client::raiseError(QAbstractSocket::SocketError socket_error){
 }
 
 void Client::addPlayer(const QString &player_info){
-    QStringList words = player_info.split(":");
-    if(words.length() >=2){
-        ClientPlayer *player = new ClientPlayer(this);
-        QString name = words[0];
-        QString avatar = words[1];
-        player->setObjectName(name);
-        player->setProperty("avatar", avatar);
+    QStringList texts = player_info.split(":");
+    QString name = texts.at(0);
+    QString base64 = texts.at(1);
+    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QString screen_name = QString::fromUtf8(data);
+    QString avatar = texts.at(2);
 
-        alive_count ++;
+    ClientPlayer *player = new ClientPlayer(this);
+    player->setObjectName(name);
+    player->setScreenName(screen_name);
+    player->setProperty("avatar", avatar);
 
-        emit player_added(player);
-    }
+    alive_count ++;
+
+    emit player_added(player);
 }
 
 void Client::removePlayer(const QString &player_name){
@@ -544,7 +554,16 @@ void Client::askForCard(const QString &request_str){
         refusable = false;
     else
         refusable = true;
+
+    if(request_str.startsWith("@"))
+        use_card = false;
+
     setStatus(Responsing);
+}
+
+void Client::askForUseCard(const QString &request_str){
+    use_card = true;
+    askForCard(request_str);
 }
 
 void Client::askForSkillInvoke(const QString &skill_name){
@@ -765,7 +784,7 @@ void Client::responseCard(const Card *card, const QList<const ClientPlayer *> &t
 }
 
 bool Client::noTargetResponsing() const{
-    return status == Responsing && !card_pattern.startsWith("@@");
+    return status == Responsing && !use_card;
 }
 
 void Client::prompt(const QString &prompt_str){
@@ -825,7 +844,7 @@ void Client::askForDiscard(const QString &discard_str){
 }
 
 void Client::gameOver(const QString &result_str){
-    QRegExp rx("(\\w+):(.+)");
+    QRegExp rx("([\\w\\.]+):(.+)");
     if(!rx.exactMatch(result_str))
         return;
 

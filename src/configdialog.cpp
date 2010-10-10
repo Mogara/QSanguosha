@@ -18,6 +18,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
 
+    ui->portLineEdit->setText(QString::number(Config.Port));
+    ui->portLineEdit->setValidator(new QIntValidator(1, 9999, ui->portLineEdit));
+
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 }
 
@@ -65,6 +68,13 @@ void ConfigDialog::saveConfig()
     enabled = ui->enableBgMusicCheckBox->isChecked();
     Config.EnableBgMusic = enabled;
     Config.setValue("EnableBgMusic", enabled);
+
+    bool ok;
+    int port = ui->portLineEdit->text().toInt(&ok);
+    if(ok){
+        Config.Port = port;
+        Config.setValue("Port", Config.Port);
+    }
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

@@ -174,6 +174,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     // chat edit
     chat_edit = new QLineEdit;
+    chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
     QGraphicsProxyWidget *chat_edit_widget = addWidget(chat_edit);
     chat_edit_widget->setPos(dashboard->pos());
     connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
@@ -490,6 +491,7 @@ void RoomScene::timerEvent(QTimerEvent *event){
 
     if(new_value >= progress_bar->maximum()){
         killTimer(event->timerId());
+        timer_id = 0;
         doTimeout();
     }else
         progress_bar->setValue(new_value);
@@ -515,6 +517,12 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
         mapper->setMapping(button, general->objectName());
         connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
         connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+
+        // special case
+
+        if(Self->getRole() == "lord" && general->objectName() == "shencaocao"){
+            button->setEnabled(false);
+        }
     }
 
     QLayout *layout = NULL;
@@ -743,9 +751,13 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
 
         // both src and dest are player
         QString type;
-        if(dest_place == Player::Judging)
-            type = "$PasteCard";
-        else if(dest_place == Player::Hand)
+        if(dest_place == Player::Judging){
+            const Card *trick = Sanguosha->getCard(move.card_id);
+            if(trick->objectName() == "lightning")
+                type = "$LightningMove";
+            else
+                type = "$PasteCard";
+        }else if(dest_place == Player::Hand)
             type = "$MoveCard";
 
         QString from_general = src->getGeneralName();
@@ -760,9 +772,11 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
             log_box->appendLog(type, from_general, QStringList(), card_str);
         }
     }else if(dest){
-        QString type = "$RecycleCard";
-        QString from_general = dest->getGeneralName();
-        log_box->appendLog(type, from_general, QStringList(), card_str);
+        if(src_place == Player::DiscardedPile){
+            QString type = "$RecycleCard";
+            QString from_general = dest->getGeneralName();
+            log_box->appendLog(type, from_general, QStringList(), card_str);
+        }
     }
 }
 
@@ -1343,8 +1357,8 @@ void RoomScene::updateStatus(Client::Status status){
         return;
 
     // do timeout
+    progress_bar->setValue(0);
     if(status == Client::NotActive){
-        progress_bar->setValue(0);
         if(timer_id != 0){
             killTimer(timer_id);
             timer_id = 0;
@@ -1751,7 +1765,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &play
         table->setItem(i, 0, item);
 
         item = new QTableWidgetItem;
-        item->setText(player->objectName());
+        item->setText(player->screenName());
         table->setItem(i, 1, item);
 
         item = new QTableWidgetItem;
@@ -2028,7 +2042,7 @@ void RoomScene::speak(const QString &who, const QString &text){
     if(from){
         title = from->getGeneralName();
         title = Sanguosha->translate(title);
-        title.append(QString("(%1)").arg(from->objectName()));
+        title.append(QString("(%1)").arg(from->screenName()));
     }
 
     title = QString("<b>%1</b>").arg(title);

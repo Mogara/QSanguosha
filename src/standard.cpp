@@ -320,7 +320,7 @@ StandardPackage::StandardPackage()
     t["#SkillNullify"] = tr("#SkillNullify");
     t["#ArmorNullify"] = tr("#ArmorNullify");
     t["#DrawNCards"] = tr("#DrawNCards");
-    t["#MoveNCards"] = tr("#MoveNCards");
+    t["#MoveNCards"] = tr("#MoveNCards");    
 
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$InitialJudge"] = tr("$InitialJudge");
@@ -331,6 +331,7 @@ StandardPackage::StandardPackage()
     t["$PindianResult"] = tr("$PindianResult");
     t["$MoveCard"] = tr("$MoveCard");
     t["$PasteCard"] = tr("$PasteCard");
+    t["$LightningMove"] = tr("$LightningMove");
     t["$DiscardCard"] = tr("$DiscardCard");
     t["$RecycleCard"] = tr("$RecycleCard");
     t["$ShowCard"] = tr("$ShowCard");

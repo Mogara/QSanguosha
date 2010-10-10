@@ -62,9 +62,13 @@ class SmartAI: public TrustAI{
     Q_OBJECT
 
 public:
-    SmartAI(ServerPlayer *player);
+    SmartAI(ServerPlayer *player, bool always_invoke = false);
 
     virtual int askForCardShow(ServerPlayer *requestor) const;
+    virtual bool askForSkillInvoke(const QString &skill_name) const;
+
+private:
+    bool always_invoke;
 };
 
 #endif // AI_H

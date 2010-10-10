@@ -191,7 +191,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -261,6 +261,43 @@
         </property>
         <property name="value">
          <number>8</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="advanced">
+    <attribute name="title">
+     <string>Advanced</string>
+    </attribute>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>165</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="portLabel">
+        <property name="text">
+         <string>Port</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="portLineEdit">
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="text">
+         <string>9527</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>

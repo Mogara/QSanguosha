@@ -17,6 +17,8 @@ class DelayedTrick;
 class Player : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int maxhp READ getMaxHP WRITE setMaxHP)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
@@ -55,6 +57,9 @@ public:
     };
 
     explicit Player(QObject *parent);
+
+    void setScreenName(const QString &screen_name);
+    QString screenName() const;
 
     // property setters/getters
     int getHp() const;
@@ -145,7 +150,8 @@ public:
     bool canSlash(const Player *other) const;
     int getCardCount(bool include_equip) const;
 
-private:
+private:    
+    QString screen_name;
     const General *general;
     int hp, max_hp, xueyi;
     QString role;

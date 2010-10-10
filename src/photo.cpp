@@ -55,11 +55,12 @@ Photo::Photo(int order)
     progress_bar->setMaximum(100);
     progress_bar->setValue(0);
     progress_bar->hide();
+    progress_bar->setMaximumWidth(10);
     timer_id = 0;
 
     widget = new QGraphicsProxyWidget(this);
     widget->setWidget(progress_bar);
-    widget->setPos(pixmap.width() - 10, 0);
+    widget->setPos(pixmap.width() - 15, 0);
 }
 
 void Photo::showProcessBar(){
@@ -71,6 +72,7 @@ void Photo::showProcessBar(){
 }
 
 void Photo::hideProcessBar(){
+    progress_bar->setValue(0);
     progress_bar->hide();
 
     if(timer_id != 0){
@@ -85,8 +87,10 @@ void Photo::timerEvent(QTimerEvent *event){
     new_value = qMin(progress_bar->maximum(), new_value);
     progress_bar->setValue(new_value);
 
-    if(new_value == progress_bar->maximum())
+    if(new_value == progress_bar->maximum()){
         killTimer(event->timerId());
+        timer_id = 0;
+    }
 }
 
 void Photo::setPlayer(const ClientPlayer *player)
@@ -258,10 +262,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QString title;
     QString general_name = player->getGeneralName();
     if(general_name.isEmpty())
-        title = player->objectName();
+        title = player->screenName();
     else{
         general_name = Sanguosha->translate(general_name);
-        title = QString("%1[%2]").arg(player->objectName()).arg(general_name);
+        title = QString("%1[%2]").arg(player->screenName()).arg(general_name);
     }
 
     painter->drawText(QRectF(0,0,132,19), title, QTextOption(Qt::AlignHCenter));

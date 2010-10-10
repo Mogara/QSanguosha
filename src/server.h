@@ -18,7 +18,6 @@ public:
     bool config();
 
 private:
-    QLineEdit *port_edit;
     QSpinBox *player_count_spinbox, *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
     QButtonGroup *extension_group;

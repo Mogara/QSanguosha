@@ -35,6 +35,7 @@ public:
     explicit Client(QObject *parent);
 
     void disconnectFromHost();
+    void signup();
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
@@ -99,6 +100,7 @@ public:
     void askForSinglePeach(const QString &ask_str);
     void askForCardShow(const QString &requestor);
     void askForCard(const QString &request_str);
+    void askForUseCard(const QString &request_str);
     void askForSkillInvoke(const QString &skill_name);
     void askForChoice(const QString &ask_str);
     void askForDiscard(const QString &discard_str);
@@ -146,6 +148,7 @@ private:
     NullificationDialog *nullification_dialog;
     QString first_choice;
     QString second_choice;
+    bool use_card;
 
 private slots:
     void processReply(char *reply);
