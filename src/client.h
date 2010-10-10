@@ -97,10 +97,12 @@ public:
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
 
-    void askForSinglePeach(const QString &ask_str);
-    void askForCardShow(const QString &requestor);
     void askForCard(const QString &request_str);
     void askForUseCard(const QString &request_str);
+    void askForCardOrUseCard(const QString &request_str);
+
+    void askForSinglePeach(const QString &ask_str);
+    void askForCardShow(const QString &requestor);
     void askForSkillInvoke(const QString &skill_name);
     void askForChoice(const QString &ask_str);
     void askForDiscard(const QString &discard_str);

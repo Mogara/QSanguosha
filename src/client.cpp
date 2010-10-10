@@ -528,7 +528,7 @@ void Client::updateFrequentFlags(int state){
         frequent_flags.remove(flag);
 }
 
-void Client::askForCard(const QString &request_str){
+void Client::askForCardOrUseCard(const QString &request_str){
     QStringList texts = request_str.split(":");
     QString pattern = texts.first();
 
@@ -555,15 +555,17 @@ void Client::askForCard(const QString &request_str){
     else
         refusable = true;
 
-    if(request_str.startsWith("@"))
-        use_card = false;
-
     setStatus(Responsing);
+}
+
+void Client::askForCard(const QString &request_str){
+    use_card = request_str.startsWith("@@");
+    askForCardOrUseCard(request_str);
 }
 
 void Client::askForUseCard(const QString &request_str){
     use_card = true;
-    askForCard(request_str);
+    askForCardOrUseCard(request_str);
 }
 
 void Client::askForSkillInvoke(const QString &skill_name){

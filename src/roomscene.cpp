@@ -2,9 +2,9 @@
 #include "settings.h"
 #include "carditem.h"
 #include "engine.h"
-#include "optionbutton.h"
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
+#include "choosegeneraldialog.h"
 
 extern audiere::AudioDevicePtr Device;
 
@@ -16,7 +16,6 @@ extern audiere::AudioDevicePtr Device;
 #include <QStatusBar>
 #include <QListWidget>
 #include <QHBoxLayout>
-#include <QSignalMapper>
 #include <QKeyEvent>
 #include <QCheckBox>
 #include <QGraphicsProxyWidget>
@@ -29,7 +28,6 @@ extern audiere::AudioDevicePtr Device;
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
-static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     :focused(NULL), main_window(main_window)
@@ -498,73 +496,11 @@ void RoomScene::timerEvent(QTimerEvent *event){
 }
 
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
-    if(photos.length()>1)
+    if(Self->getRole() != "role")
         changeMessage(tr("Please wait for other players choosing their generals"));
 
-    QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(tr("Choose general"));
-
-    QSignalMapper *mapper = new QSignalMapper(dialog);
-    QList<OptionButton *> buttons;
-    foreach(const General *general, generals){
-        QString icon_path = general->getPixmapPath("card");
-        QString caption = Sanguosha->translate(general->objectName());
-        OptionButton *button = new OptionButton(icon_path, caption);
-        button->setToolTip(general->getSkillDescription());
-        button->setIconSize(GeneralSize);
-        buttons << button;
-
-        mapper->setMapping(button, general->objectName());
-        connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
-        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
-
-        // special case
-
-        if(Self->getRole() == "lord" && general->objectName() == "shencaocao"){
-            button->setEnabled(false);
-        }
-    }
-
-    QLayout *layout = NULL;
-    const static int columns = 5;
-    if(generals.length() <= columns){
-        layout = new QHBoxLayout;
-        foreach(OptionButton *button, buttons)
-            layout->addWidget(button);
-    }else{
-        QGridLayout *grid_layout = new QGridLayout;
-        layout = grid_layout;
-
-        int i;
-        for(i=0; i<buttons.length(); i++){
-            int row = i / columns;
-            int column = i % columns;
-            grid_layout->addWidget(buttons.at(i), row, column);
-        }
-    }
-
-    mapper->setMapping(dialog, generals.first()->objectName());
-    connect(dialog, SIGNAL(rejected()), mapper, SLOT(map()));
-
-    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
-
-#ifndef QT_NO_DEBUG
-
-    QLineEdit *cheat_edit = new QLineEdit;
-    layout->addWidget(cheat_edit);
-
-    connect(cheat_edit, SIGNAL(returnPressed()), ClientInstance, SLOT(cheatChoose()));
-    connect(cheat_edit, SIGNAL(returnPressed()), dialog, SLOT(accept()));
-
-#endif
-
-    QVBoxLayout *dialog_layout = new QVBoxLayout;
-    dialog_layout->addLayout(layout);
-    QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-    dialog_layout->addWidget(role_label);
-
-    dialog->setLayout(dialog_layout);
-    dialog->exec();
+    ChooseGeneralDialog *dialog = new ChooseGeneralDialog(generals, main_window);
+    dialog->start();
 }
 
 void RoomScene::changeMessage(const QString &message){
