@@ -394,11 +394,11 @@ public:
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
-
                     room->setEmotion(player, Room::Good);
 
                     return true;
-                }
+                }else
+                    room->setEmotion(player, Room::Bad);
             }
         }
         return false;

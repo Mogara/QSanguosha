@@ -5,3 +5,5 @@ Makefile*
 object_script*
 *.pro.user
 sanguosha.qm
+.hg
+.hgignore
