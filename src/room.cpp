@@ -808,15 +808,16 @@ void Room::processRequest(const QString &request){
     if(reply_player && reply_player != player){
         QString should_be = reply_player->objectName();
         QString instead_of = player->objectName();
+
+        // just report error message and do not block the game
         emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
-        return;
     }
 
     command.append("Command");
 
     if(!reply_func.isEmpty() && reply_func != command){
+        // just report error message and do not block the game
         emit room_message(tr("Reply function should be %1 instead of %2").arg(reply_func).arg(command));
-        return;
     }
 
     Callback callback = callbacks.value(command, NULL);
@@ -1062,6 +1063,9 @@ void Room::directCardEffect(const CardEffectStruct &effect){
 
 void Room::damage(const DamageStruct &damage_data){
     if(damage_data.to == NULL)
+        return;
+
+    if(damage_data.to->isDead())
         return;
 
     QVariant data = QVariant::fromValue(damage_data);

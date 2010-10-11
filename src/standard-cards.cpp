@@ -290,6 +290,7 @@ public:
             return NULL;
 
         DummyCard *card = new DummyCard;
+        card->setSkillName(objectName());
         card->addSubcards(cards);
         return card;
     }
@@ -351,12 +352,16 @@ public:
         if(horses.isEmpty())
             return false;
 
-
         Room *room = player->getRoom();
         if(!room->askForSkillInvoke(player, objectName()))
             return false;
 
-        QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+        QString horse_type;
+        if(horses.length() == 2)
+            horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+        else
+            horse_type = horses.first();
+
         if(horse_type == "dhorse")
             room->throwCard(result.to->getDefensiveHorse());
         else if(horse_type == "ohorse")
@@ -1091,9 +1096,9 @@ void StandardPackage::addCards(){
     // weapon prompt
     t["double_sword:yes"] = tr("double_sword:yes");
     t["ice_sword:yes"] = tr("ice_sword:yes");
+    t["kylin_bow:yes"] = tr("kylin_bow:yes");
     t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
     t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
-    t["kylin_bow:no"] = tr("kylin_bow:no");
 
     skills << new SpearSkill << new AxeViewAsSkill;
 

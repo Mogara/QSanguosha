@@ -4,10 +4,9 @@
 #include "clientplayer.h"
 #include "card.h"
 #include "skill.h"
+#include "socket.h"
 
 class NullificationDialog;
-
-#include <QTcpSocket>
 
 class Client : public QObject
 {
@@ -142,7 +141,7 @@ public slots:
 #endif
 
 private:
-    QTcpSocket *socket;
+    ClientSocket *socket;
     Status status;
     QSet<QString> frequent_flags;
     int alive_count;
@@ -155,14 +154,11 @@ private:
 
 private slots:
     void processReply(char *reply);
-    void emitReplies();
-    void raiseError(QAbstractSocket::SocketError socket_error);
     void notifyRoleChange(const QString &new_role);
     void chooseSuit();
     void clearTurnTag();
 
 signals:
-    void reply_got(char *reply);
     void server_connected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);

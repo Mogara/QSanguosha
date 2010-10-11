@@ -63,11 +63,11 @@ Client::Client(QObject *parent)
     connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
 
-    socket = new QTcpSocket(this);
-    socket->connectToHost(Config.HostAddress, Config.Port);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(emitReplies()));
-    connect(this, SIGNAL(reply_got(char*)), this, SLOT(processReply(char*)));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
+    socket = new NativeClientSocket(QString("%1:%2").arg(Config.HostAddress).arg(Config.Port));
+    socket->setParent(this);
+    connect(socket, SIGNAL(reply_got(char*)), this, SLOT(processReply(char*)));
+    connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
+    socket->connectToHost();
 
     callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setup"] = &Client::setup;
@@ -138,6 +138,10 @@ void Client::signup(){
     request(QString("signup %1:%2").arg(base64).arg(Config.UserAvatar));
 }
 
+void Client::request(const QString &message){
+    socket->send(message);
+}
+
 void Client::checkVersion(const QString &server_version){
     QString client_version = Sanguosha->getVersion();
 
@@ -158,7 +162,7 @@ void Client::checkVersion(const QString &server_version){
 }
 
 void Client::setup(const QString &setup_str){
-    if(socket->state() != QAbstractSocket::ConnectedState)
+    if(!socket->isConnected())
         return;
 
     QRegExp rx("(\\d+):(\\d+)");
@@ -184,21 +188,7 @@ void Client::disconnectFromHost(){
     socket->disconnectFromHost();
 }
 
-void Client::request(const QString &message){
-    socket->write(message.toAscii());
-    socket->write("\n");
-}
-
 typedef char buffer_t[1024];
-
-void Client::emitReplies(){
-    while(socket->canReadLine()){
-        buffer_t reply;
-        socket->readLine(reply, sizeof(reply));
-
-        emit reply_got(reply);
-    }
-}
 
 void Client::processReply(char *reply){
     static char self_prefix = '.';
@@ -234,27 +224,6 @@ void Client::processReply(char *reply){
         else
             QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
     }
-}
-
-void Client::raiseError(QAbstractSocket::SocketError socket_error){
-    // translate error message
-    QString reason;
-    switch(socket_error){
-    case QAbstractSocket::ConnectionRefusedError:
-        reason = tr("Connection was refused or timeout"); break;
-    case QAbstractSocket::RemoteHostClosedError:
-        reason = tr("Remote host close this connection"); break;
-    case QAbstractSocket::HostNotFoundError:
-        reason = tr("Host not found"); break;
-    case QAbstractSocket::SocketAccessError:
-        reason = tr("Socket access error"); break;
-    case QAbstractSocket::NetworkError:
-        reason = tr("Server's' firewall blocked the connection or the network cable was plugged out"); break;
-        // FIXME
-    default: reason = tr("Unknow error"); break;
-    }
-
-    emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
 }
 
 void Client::addPlayer(const QString &player_info){
@@ -1020,6 +989,7 @@ void Client::askForCardShow(const QString &requestor){
 
     card_pattern = "."; // any card can be matched
     refusable = false;
+    use_card = false;
     setStatus(Responsing);
 }
 
@@ -1113,6 +1083,7 @@ void Client::askForPindian(const QString &ask_str){
     else
         emit prompt_changed(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
 
+    use_card = false;
     card_pattern = ".";    
     refusable = false;
 

@@ -34,7 +34,7 @@ void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlaye
 }
 
 HuangtianCard::HuangtianCard(){
-    target_fixed = true;
+
 }
 
 void HuangtianCard::use(const QList<const ClientPlayer *> &targets) const{
@@ -45,7 +45,16 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     ServerPlayer *zhangjiao = room->getLord();
     if(zhangjiao->hasSkill("huangtian")){
         zhangjiao->obtainCard(this);
+        room->setEmotion(zhangjiao, Room::Good);
     }
+}
+
+bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return to_select->hasSkill("huangtian");
+}
+
+bool HuangtianCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() <= 1;
 }
 
 class Guidao:public ViewAsSkill{

@@ -90,16 +90,26 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(got >= dying.peaches)
                 room->setPlayerProperty(player, "hp", got - dying.peaches + 1);
             else{
-                QVariant killer_name;
-                if(dying.damage && dying.damage->from)
-                    killer_name = dying.damage->from->objectName();
-
                 LogMessage log;
-                log.type = "#Death";
-                log.from = player;
+                log.to << player;
                 log.arg = player->getRole();
-                room->sendLog(log);
 
+                QVariant killer_name;
+                if(dying.damage && dying.damage->from){
+                    ServerPlayer *killer = dying.damage->from;
+                    killer_name = killer->objectName();
+
+                    if(killer == player)
+                        log.type = "#Suicide";
+                    else{
+                        log.type = "#Murder";
+                        log.from = killer;
+                    }
+                }else{
+                    log.type = "#Death";
+                }
+
+                room->sendLog(log);
                 room->getThread()->trigger(Death, player, killer_name);
             }
             break;

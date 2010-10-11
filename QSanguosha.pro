@@ -50,7 +50,8 @@ SOURCES += src/main.cpp \
     src/ai.cpp \
     src/standard-ai.cpp \
     src/aux-skills.cpp \
-    src/choosegeneraldialog.cpp
+    src/choosegeneraldialog.cpp \
+    src/socket.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -94,7 +95,8 @@ HEADERS += src/mainwindow.h \
     src/ai.h \
     src/standard-ai.h \
     src/aux-skills.h \
-    src/choosegeneraldialog.h
+    src/choosegeneraldialog.h \
+    src/socket.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

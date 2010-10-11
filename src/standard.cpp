@@ -310,6 +310,8 @@ StandardPackage::StandardPackage()
     // log translation
     t["#ChooseSuit"] = tr("#ChooseSuit");
     t["#Death"] = tr("#Death");
+    t["#Murder"] = tr("#Murder");
+    t["#Suicide"] = tr("#Suicide");
     t["#InvokeSkill"] = tr("#InvokeSkill");
     t["#Pindian"] = tr("#Pindian");
     t["#PindianSuccess"] = tr("#PindianSuccess");
