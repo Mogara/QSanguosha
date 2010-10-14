@@ -720,25 +720,35 @@ void Room::reportDisconnection(){
     // the 3 kinds of circumstances
     // 1. Just connected, with no object name : just remove it from player list
     // 2. Connected, with an object name : remove it, tell other clients and decrease signup_count
-    // 3. Game started, do not remove it just set its state as offline, and nullify the socket
+    // 3. Game is not started, but role is assigned, give it the default general and others same with fourth case
+    // 4. Game is started, do not remove it just set its state as offline, and nullify the socket
     // all above should set its socket to NULL
 
     player->setSocket(NULL);
-
 
     if(player->objectName().isEmpty()){
         // first case
         player->setParent(NULL);
         players.removeOne(player);
-    }else if(!game_started){
+    }else if(player->getRole().isEmpty()){
         // second case
-        player->setParent(NULL);
-        players.removeOne(player);
+        if(signup_count < player_count){
+            player->setParent(NULL);
+            players.removeOne(player);
 
-        broadcastInvoke("removePlayer", player->objectName());
-        signup_count --;
+            broadcastInvoke("removePlayer", player->objectName());
+            signup_count --;
+        }
     }else{
-        // third case
+        if(!game_started && player->getGeneral() == NULL){
+            // third case
+            QString default_general = player->property("default_general").toString();
+            if(default_general.isEmpty())
+                default_general = "lumeng";
+            chooseCommand(player, default_general);
+        }
+
+        // fourth case
         setPlayerProperty(player, "state", "offline");
 
         bool someone_is_online = false;
@@ -751,7 +761,6 @@ void Room::reportDisconnection(){
 
         if(!someone_is_online){
             game_finished = true;
-            // thread->end();
             return;
         }
 
@@ -914,6 +923,7 @@ void Room::assignRoles(){
             broadcastProperty(player, "role", "lord");
 
             QStringList lord_list = Sanguosha->getRandomLords();
+            player->setProperty("default_general", lord_list.first());
             player->invoke("getGenerals", lord_list.join("+"));
         }else
             player->sendProperty("role");
@@ -951,6 +961,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             for(j=0; j<choice_count; j++)
                 choices << general_list[(i-1)*choice_count + j];
 
+            players[i]->setProperty("default_general", choices.first());
             players[i]->invoke("getGenerals", choices.join("+"));
         }
     }else
@@ -1562,20 +1573,16 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         return;
 
     int card_id = result.toInt();
+    showCard(target, card_id);
+
     QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
     if(result == "discard")
         throwCard(card_id);
     else{
-        moveCardTo(card_id, NULL, Player::DrawPile, false);
+        moveCardTo(card_id, NULL, Player::DrawPile, true);
 
-        // quick-and-dirty
-        shenlumeng->invoke("moveCard", QString("%1:%2@hand->_@=").arg(card_id).arg(target->objectName()));
-
-        foreach(ServerPlayer *player, alive_players){
-            if(player != shenlumeng && player != target){
-                player->invoke("moveCardToDrawPile", target->objectName());
-            }
-        }
+        QString move_str = QString("%1:%2@hand->_@=").arg(card_id).arg(target->objectName());
+        broadcastInvoke("moveCard", move_str);
     }
 }
 
@@ -1592,9 +1599,8 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     else if(result == "."){
         int card_id = player->getRandomHandCard();
         return Sanguosha->getCard(card_id);
-    }
-
-    return Card::Parse(result);
+    }else
+        return Card::Parse(result);
 }
 
 bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
@@ -1639,6 +1645,9 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
 }
 
 ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
+    if(targets.length() == 1)
+        return targets.first();
+
     AI *ai = player->getAI();
     if(ai)
         return ai->askForPlayerChosen(targets);
@@ -1688,6 +1697,10 @@ void Room::sendLog(const LogMessage &log){
         return;
 
     broadcastInvoke("log", log.toString());
+}
+
+void Room::showCard(ServerPlayer *player, int card_id){
+    broadcastInvoke("showCard", QString("%1:%2").arg(player->objectName()).arg(card_id));
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){

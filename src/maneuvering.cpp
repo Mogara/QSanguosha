@@ -211,7 +211,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         return;
 
     int card_id = room->askForCardShow(effect.to, effect.from);
-    room->broadcastInvoke("showCard", QString("%1:%2").arg(effect.to->objectName()).arg(card_id));
+    room->showCard(effect.to, card_id);
 
     const Card *card = Sanguosha->getCard(card_id);
     bool discarded = room->askForDiscard(effect.from, 1, true, false, card->getSuit());

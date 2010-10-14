@@ -40,6 +40,7 @@ Photo::Photo(int order)
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
     widget->setWidget(role_combobox);
     widget->setPos(pixmap.width()/2, pixmap.height()-10);
+    role_combobox_widget = widget;
 
     order_item->setVisible(false);
 
@@ -72,6 +73,8 @@ void Photo::showProcessBar(){
 
     if(!Config.OperationNoLimit)
         timer_id = startTimer(500);
+
+    setScale(1.2);
 }
 
 void Photo::hideProcessBar(){
@@ -82,6 +85,8 @@ void Photo::hideProcessBar(){
         killTimer(timer_id);
         timer_id = 0;
     }
+
+    setScale(1.0);
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
@@ -93,20 +98,36 @@ void Photo::setEmotion(const QString &emotion, bool permanent){
         QTimer::singleShot(2000, this, SLOT(hideEmotion()));
 }
 
+void Photo::tremble(){
+    QPropertyAnimation *vibrate = new QPropertyAnimation(this, "x");
+    static qreal offset = 20;
+
+    vibrate->setKeyValueAt(0.5, x() - offset);
+    vibrate->setEndValue(x());
+
+    vibrate->setEasingCurve(QEasingCurve::OutInBounce);
+
+    vibrate->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void Photo::separateRoleCombobox(){
+    QGraphicsProxyWidget *widget = role_combobox_widget;
+    widget->setParentItem(NULL);
+    widget->setPos(mapToScene(widget->pos()));
+}
+
 void Photo::hideEmotion(){
     emotion_item->hide();
 }
 
-void Photo::timerEvent(QTimerEvent *event){
+void Photo::timerEvent(QTimerEvent *){
     int step = 100 / double(Config.OperationTimeout * 5);
     int new_value = progress_bar->value() + step;
     new_value = qMin(progress_bar->maximum(), new_value);
     progress_bar->setValue(new_value);
 
-    if(new_value == progress_bar->maximum()){
-        killTimer(event->timerId());
-        timer_id = 0;
-    }
+    if(new_value == progress_bar->maximum())
+        hideProcessBar();
 }
 
 void Photo::setPlayer(const ClientPlayer *player)

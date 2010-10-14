@@ -31,22 +31,23 @@ void QuhuCard::onEffect(const CardEffectStruct &effect) const{
 
     bool success = room->pindian(xunyu, tiger);
     if(success){
-
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach(ServerPlayer *player, players){
             if(tiger->inMyAttackRange(player))
                 wolves << player;
         }
 
+        if(wolves.isEmpty())
+            return;
+
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves);
 
-        if(wolf){
-            DamageStruct damage;
-            damage.from = tiger;
-            damage.to = wolf;
+        DamageStruct damage;
+        damage.from = tiger;
+        damage.to = wolf;
 
-            room->damage(damage);
-        }
+        room->damage(damage);
+
     }else{
         DamageStruct damage;
         damage.card = NULL;

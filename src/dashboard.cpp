@@ -380,7 +380,6 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         update();
         return card_item;
     }else{
-        qFatal("No such card %d in Dashboard", card_id);
         return NULL;
     }
 }

@@ -139,7 +139,6 @@ private slots:
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);
-    void moveCardToDrawPile(const QString &from);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);

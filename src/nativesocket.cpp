@@ -1,45 +1,38 @@
-#include "socket.h"
+#include "nativesocket.h"
 #include "settings.h"
 
 #include <QTcpSocket>
 #include <QRegExp>
 #include <QStringList>
 
-ServerSocket::ServerSocket(const QString &listen_str)
-    :listen_str(listen_str)
-{
 
+NativeServerSocket::NativeServerSocket()
+{
+    server = new QTcpServer(this);
 }
 
-ClientSocket::ClientSocket(const QString &host_str)
-    :host_str(host_str)
-{
-
+bool NativeServerSocket::listen(){
+    return server->listen(QHostAddress::Any, Config.Port);
 }
 
-NativeClientSocket::NativeClientSocket(const QString &host_str)
-    :ClientSocket(host_str), socket(NULL), port(0)
+NativeClientSocket::NativeClientSocket()
+    :socket(new QTcpSocket(this))
 {
-    QRegExp rx("(.*):(\\d+)");
-    if(!rx.exactMatch(host_str))
-        return;
+    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+}
 
-    QStringList texts = rx.capturedTexts();
-    address = texts.at(1);
-    QString port_str = texts.at(2);
-    port = port_str.toUShort();
-
-    socket = new QTcpSocket(this);
+NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
+    :socket(socket)
+{
+    socket->setParent(this);
+    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
 }
 
 void NativeClientSocket::connectToHost(){
-    if(socket){
-        socket->connectToHost(address, port);
-
-        socket->connectToHost(Config.HostAddress, Config.Port);
-        connect(socket, SIGNAL(readyRead()), this, SLOT(emitReplies()));
-        connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
-    }
+    socket->connectToHost(Config.HostAddress, Config.Port);
+    connect(socket, SIGNAL(readyRead()), this, SLOT(emitReplies()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 
 typedef char buffer_t[1024];
@@ -53,21 +46,22 @@ void NativeClientSocket::emitReplies(){
     }
 }
 
-void NativeClientSocket::disconnectFromHost(){
-    if(socket){
-        socket->disconnectFromHost();
-    }
+void NativeClientSocket::disconnectFromHost(){    
+    socket->disconnectFromHost();
 }
 
 void NativeClientSocket::send(const QString &message){
-    if(socket){
-        socket->write(message.toAscii());
-        socket->write("\n");
-    }
+    socket->write(message.toAscii());
+    socket->write("\n");
 }
 
 bool NativeClientSocket::isConnected() const{
-    return socket && socket->state() == QTcpSocket::ConnectedState;
+    return socket->state() == QTcpSocket::ConnectedState;
+}
+
+
+QString NativeClientSocket::peerName() const{
+    return socket->peerName();
 }
 
 void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error){

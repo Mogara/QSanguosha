@@ -18,7 +18,9 @@ void Shit::onMove(const CardMoveStruct &move) const{
     ServerPlayer *from = move.from;
     if(from && move.from_place == Player::Hand &&
        from->getRoom()->getCurrent() == move.from
-       && move.to_place == Player::DiscardedPile){
+       && move.to_place == Player::DiscardedPile
+       && from->isAlive()){
+
         DamageStruct damage;
         damage.from = damage.to = from;
         damage.card = this;
@@ -90,7 +92,7 @@ public:
     }
 
     virtual void onMove(const CardMoveStruct &move) const{
-        if(move.from_place == Player::Equip){
+        if(move.from_place == Player::Equip && move.from->isAlive()){
             Room *room = move.from->getRoom();
 
             bool invoke = room->askForSkillInvoke(move.from, objectName());
@@ -151,16 +153,13 @@ ChengxiangCard::ChengxiangCard()
 }
 
 bool ChengxiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *) const{
-    return targets.isEmpty();
+    return targets.length() < subcardsLength();
 }
 
 void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
     room->recover(effect.to);
-    effect.to->drawCards(subcardsLength());
-    effect.to->turnOver();
-    room->broadcastProperty(effect.to, "faceup");
 }
 
 class ChengxiangViewAsSkill: public ViewAsSkill{
@@ -178,6 +177,9 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.length() >= 3)
+            return false;
+
         int sum = 0;
         foreach(CardItem *item, selected){
             sum += item->getCard()->getNumber();

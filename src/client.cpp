@@ -5,6 +5,7 @@
 #include "playercarddialog.h"
 #include "standard.h"
 #include "optionbutton.h"
+#include "nativesocket.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
@@ -63,7 +64,7 @@ Client::Client(QObject *parent)
     connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
 
-    socket = new NativeClientSocket(QString("%1:%2").arg(Config.HostAddress).arg(Config.Port));
+    socket = new NativeClientSocket;
     socket->setParent(this);
     connect(socket, SIGNAL(reply_got(char*)), this, SLOT(processReply(char*)));
     connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
@@ -74,7 +75,6 @@ Client::Client(QObject *parent)
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
-    callbacks["duplicationError"] = &Client::duplicationError;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
     callbacks["startGame"] = &Client::startGame;
     callbacks["hpChange"] = &Client::hpChange;    
@@ -98,7 +98,6 @@ Client::Client(QObject *parent)
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
-    callbacks["moveCardToDrawPile"] = &Client::moveCardToDrawPile;
     callbacks["drawCards"] = &Client::drawCards;
     callbacks["drawNCards"] = &Client::drawNCards;
 
@@ -355,12 +354,6 @@ void Client::startInXs(const QString &left_seconds){
     }
 }
 
-void Client::duplicationError(const QString &){
-    QMessageBox::critical(NULL, tr("Error"), tr("Name %1 duplication, you've to be offline").arg(Config.UserName));
-    disconnectFromHost();
-    exit(1);
-}
-
 void Client::arrangeSeats(const QString &seats_str){    
     QStringList player_names = seats_str.split("+");    
     players.clear();
@@ -448,16 +441,6 @@ void Client::moveNCards(const QString &move_str){
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("moveNCards string is not well formatted!"));
     }
-}
-
-void Client::moveCardToDrawPile(const QString &from){
-    ClientPlayer *src = findChild<ClientPlayer *>(from);
-
-    Q_ASSERT(src);
-
-    src->handCardChange(-1);
-
-    emit card_moved_to_draw_pile(from);
 }
 
 void Client::startGame(const QString &){
@@ -1079,9 +1062,9 @@ void Client::askForPindian(const QString &ask_str){
     // QString to = words.at(1);
 
     if(from == Self->getGeneralName())
-        emit prompt_changed(tr("Please play a card for pindian"));
+        prompt(tr("Please play a card for pindian"));
     else
-        emit prompt_changed(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
+        prompt(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
 
     use_card = false;
     card_pattern = ".";    

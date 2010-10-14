@@ -77,6 +77,7 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
+    void showCard(ServerPlayer *player, int card_id);
     bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
 

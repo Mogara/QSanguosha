@@ -29,6 +29,8 @@ public:
     void showProcessBar();
     void hideProcessBar();
     void setEmotion(const QString &emotion, bool permanent = false);
+    void tremble();
+    void separateRoleCombobox();
 
 public slots:
     void updateAvatar();
@@ -50,6 +52,7 @@ private:
     QPixmap chain;
     QPixmap magatamas[6];
     QComboBox *role_combobox;
+    QGraphicsProxyWidget *role_combobox_widget;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QStack<QGraphicsPixmapItem *> judging_pixmaps;
     QStack<CardItem *> judging_area;

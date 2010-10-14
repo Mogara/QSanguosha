@@ -332,7 +332,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    QGraphicsItem* item = itemAt(event->scenePos().x(), event->scenePos().y());
+    QGraphicsItem* item = itemAt(event->scenePos().x(), event->scenePos().y());   
 
     if(item && item2player.contains(item) && item->isEnabled() && item->flags() & QGraphicsItem::ItemIsSelectable)
         item->setSelected(!item->isSelected());
@@ -546,6 +546,9 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
         if(src == Self){
             CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
+            if(card_item == NULL)
+                return NULL;
+
             card_item->setOpacity(1.0);
             card_item->setParentItem(NULL);
             card_item->setPos(dashboard->mapToScene(card_item->pos()));
@@ -634,40 +637,6 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
     log_box->appendLog(type, from_general, tos, QString(), n_str);
 }
 
-void RoomScene::moveCardToDrawPile(const QString &from){
-    Photo *src = name2photo.value(from, NULL);
-
-    Q_ASSERT(src != NULL);
-
-    pile_number ++;
-    setPileNumber(pile_number);
-
-    QParallelAnimationGroup *group = new QParallelAnimationGroup;
-
-    Pixmap *card_pixmap = new Pixmap(":/card-back.png");
-    addItem(card_pixmap);
-
-    QPropertyAnimation *ugoku = new QPropertyAnimation(card_pixmap, "pos");
-    ugoku->setStartValue(src->pos());
-    ugoku->setEndValue(DrawPilePos + dashboard->pos());
-    ugoku->setDuration(1000);
-
-    QPropertyAnimation *kieru = new QPropertyAnimation(card_pixmap, "opacity");
-    kieru->setStartValue(1.0);
-    kieru->setKeyValueAt(0.8, 1.0);
-    kieru->setEndValue(0.0);
-    kieru->setDuration(1000);
-
-    group->addAnimation(ugoku);
-    group->addAnimation(kieru);
-
-    connect(group, SIGNAL(finished()), card_pixmap, SLOT(deleteLater()));
-
-    group->start(QAbstractAnimation::DeleteWhenStopped);
-
-    src->update();
-}
-
 void RoomScene::moveCard(const CardMoveStructForClient &move){
     ClientPlayer *src = move.from;
     ClientPlayer *dest = move.to;
@@ -676,6 +645,9 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     int card_id = move.card_id;    
 
     CardItem *card_item = takeCardItem(src, src_place, card_id);
+    if(card_item == NULL)
+        return;
+
     if(card_item->scene() == NULL)
         addItem(card_item);
 
@@ -703,8 +675,14 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         log_box->appendLog(type, from_general, tos, card_str);
     }else if(src){
         // src throw card
-        if(src->getPhase() == Player::Discard){
-            QString type = "$DiscardCard";
+        if(dest_place == Player::DiscardedPile){
+            if(src->getPhase() == Player::Discard){
+                QString type = "$DiscardCard";
+                QString from_general = src->getGeneralName();
+                log_box->appendLog(type, from_general, QStringList(), card_str);
+            }
+        }else if(dest_place == Player::DrawPile){
+            QString type = "$PutCard";
             QString from_general = src->getGeneralName();
             log_box->appendLog(type, from_general, QStringList(), card_str);
         }
@@ -1567,8 +1545,10 @@ void RoomScene::changeHp(const QString &who, int delta){
         else
             Sanguosha->playEffect(female_damage_effect);
 
-        if(photo)
+        if(photo){
             photo->setEmotion("damage");
+            photo->tremble();
+        }
     }
 }
 
@@ -1739,6 +1719,7 @@ void RoomScene::killPlayer(const QString &who){
         general = Self->getGeneral();
     }else{
         Photo *photo = name2photo[who];
+        photo->setEnabled(false);
         photo->update();
 
         general = photo->getPlayer()->getGeneral();
@@ -2055,6 +2036,9 @@ void RoomScene::chooseGongxinCard(){
 void RoomScene::onGameStart(){
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
+
+    foreach(Photo *photo, photos)
+        photo->separateRoleCombobox();
 
     if(!Config.EnableBgMusic)
         return;

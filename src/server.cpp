@@ -154,8 +154,6 @@ void Server::processNewConnection(){
 
     free_room->addSocket(socket);
 
-    emit server_message(tr("%1 connected, port = %2")
-                        .arg(socket->peerAddress().toString())
-                        .arg(socket->peerPort()));
+    emit server_message(tr("%1 connected").arg(socket->peerName()));
 }
 

@@ -337,6 +337,7 @@ StandardPackage::StandardPackage()
     t["$DiscardCard"] = tr("$DiscardCard");
     t["$RecycleCard"] = tr("$RecycleCard");
     t["$ShowCard"] = tr("$ShowCard");
+    t["$PutCard"] = tr("$PutCard");
 
     addCards();
     addGenerals();
