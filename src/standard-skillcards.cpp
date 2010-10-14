@@ -92,6 +92,12 @@ void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     const Card *card = Sanguosha->getCard(card_id);
     Card::Suit suit = room->askForSuit(target);
 
+    LogMessage log;
+    log.type = "#ChooseSuit";
+    log.from = target;
+    log.arg = Card::Suit2String(suit);
+    room->sendLog(log);
+
     if(card->getSuit() != suit){
         DamageStruct damage;
         damage.card = this;

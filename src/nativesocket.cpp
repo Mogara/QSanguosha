@@ -9,11 +9,19 @@
 NativeServerSocket::NativeServerSocket()
 {
     server = new QTcpServer(this);
+    connect(server, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
 }
 
 bool NativeServerSocket::listen(){
     return server->listen(QHostAddress::Any, Config.Port);
 }
+
+void NativeServerSocket::processNewConnection(){
+    QTcpSocket *socket = server->nextPendingConnection();
+    emit new NativeClientSocket(socket);
+}
+
+// ---------------------------------
 
 NativeClientSocket::NativeClientSocket()
     :socket(new QTcpSocket(this))
@@ -61,7 +69,11 @@ bool NativeClientSocket::isConnected() const{
 
 
 QString NativeClientSocket::peerName() const{
-    return socket->peerName();
+    QString peer_name = socket->peerName();
+    if(peer_name.isEmpty())
+        peer_name = QString("%1:%2").arg(socket->peerAddress().toString()).arg(socket->peerPort());
+
+    return peer_name;
 }
 
 void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error){

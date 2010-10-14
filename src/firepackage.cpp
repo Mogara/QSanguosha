@@ -324,14 +324,17 @@ public:
         return TriggerSkill::triggerable(target) && !target->hasFlag("niepan_used");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        if(room->askForSkillInvoke(player, objectName())){
-            player->throwAllCards();
-            room->setPlayerProperty(player, "hp", 3);
-            player->drawCards(3);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
+        Room *room = pangtong->getRoom();
+        if(room->askForSkillInvoke(pangtong, objectName())){
+            pangtong->throwAllCards();
+            room->setPlayerProperty(pangtong, "hp", 3);
+            pangtong->drawCards(3);
 
-            room->setPlayerFlag(player, "niepan_used");
+            room->setPlayerFlag(pangtong, "niepan_used");
+
+            if(pangtong->isChained())
+                room->setPlayerProperty(pangtong, "chained", false);
 
             return true;
         }else

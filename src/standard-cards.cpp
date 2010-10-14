@@ -440,18 +440,13 @@ public:
                 int card_id = room->askForAG(player, card_ids);
                 card_ids.removeOne(card_id);
 
-                // these code is quick-and-dirty
-                player->addCard(Sanguosha->getCard(card_id), Player::Hand);
-                room->setCardMapping(card_id, player, Player::Hand);
-
-                LogMessage log;
-                log.type = "$TakeAG";
-                log.from = player;
-                log.card_str = QString::number(card_id);
-                room->sendLog(log);
-
-                room->broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
+                room->takeAG(player, card_id);
             }
+        }
+
+        // throw the rest cards
+        foreach(int card_id, card_ids){
+            room->takeAG(NULL, card_id);
         }
 
         room->broadcastInvoke("clearAG");
@@ -750,6 +745,9 @@ bool Dismantlement::targetFilter(const QList<const ClientPlayer *> &targets, con
 }
 
 void Dismantlement::onEffect(const CardEffectStruct &effect) const{
+    if(effect.to->isAllNude())
+        return;
+
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
     room->throwCard(card_id);

@@ -10,6 +10,9 @@ public:
     NativeServerSocket();
     virtual bool listen();
 
+private slots:
+    void processNewConnection();
+
 private:
     QTcpServer *server;
 };

@@ -68,29 +68,18 @@ public:
 
         while(!card_ids.isEmpty()){
             int card_id = room->askForAG(shenlumeng, card_ids);
+            card_ids.removeOne(card_id);
             room->takeAG(shenlumeng, card_id);
 
+            // throw the rest cards that matches the same suit
             const Card *card = Sanguosha->getCard(card_id);
-
-            // quick-and-dirty
-            shenlumeng->addCard(card, Player::Hand);
-            room->setCardMapping(card_id, shenlumeng, Player::Hand);
-
-            LogMessage log;
-            log.type = "$TakeAG";
-            log.from = shenlumeng;
-            log.card_str = card->toString();
-            room->sendLog(log);
-
             Card::Suit suit = card->getSuit();
-            card_ids.removeOne(card_id);
             QMutableListIterator<int> itor(card_ids);
             while(itor.hasNext()){
                 const Card *c = Sanguosha->getCard(itor.next());
                 if(c->getSuit() == suit){
                     itor.remove();
 
-                    room->setCardMapping(c->getId(), NULL, Player::DiscardedPile);
                     room->takeAG(NULL, c->getId());
                 }
             }

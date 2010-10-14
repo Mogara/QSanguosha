@@ -297,27 +297,23 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
 }
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
+    bool invoked;
     AI *ai = player->getAI();
     if(ai)
-        return ai->askForSkillInvoke(skill_name);
+        invoked = ai->askForSkillInvoke(skill_name);
+    else{
+        player->invoke("askForSkillInvoke", skill_name);
+        getResult("invokeSkillCommand", player);
 
-    player->invoke("askForSkillInvoke", skill_name);
+        if(result.isEmpty())
+            return askForSkillInvoke(player, skill_name); // recursive call;
 
-    getResult("invokeSkillCommand", player);
-
-    if(result.isEmpty())
-        return askForSkillInvoke(player, skill_name); // recursive call;
-
-    // result should be "yes" or "no"
-    bool invoked =  result == "yes";
-    if(invoked){
-        LogMessage log;
-        log.type = "#InvokeSkill";
-        log.from = player;
-        log.arg = skill_name;
-
-        sendLog(log);
+        // result should be "yes" or "no"
+        invoked =  result == "yes";
     }
+
+    if(invoked)
+        broadcastInvoke("skillInvoked", QString("%1:%2").arg(player->objectName()).arg(skill_name));
 
     return invoked;
 }
@@ -694,6 +690,10 @@ int Room::drawCard(){
         broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
 
         qShuffle(*draw_pile);
+
+        foreach(int card_id, *draw_pile){
+            setCardMapping(card_id, NULL, Player::DrawPile);
+        }
     }
     return draw_pile->takeFirst();
 }
@@ -1396,12 +1396,6 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
     else
         suit = Card::Diamond;
 
-    LogMessage log;
-    log.type = "#ChooseSuit";
-    log.from = player;
-    log.arg = Card::Suit2String(suit);
-    sendLog(log);
-
     return suit;
 }
 
@@ -1671,8 +1665,15 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id){
-    QString who = player ? player->objectName() : ".";
-    broadcastInvoke("takeAG", QString("%1:%2").arg(who).arg(card_id));
+    if(player){
+        player->addCard(Sanguosha->getCard(card_id), Player::Hand);
+        setCardMapping(card_id, player, Player::Hand);
+        broadcastInvoke("takeAG", QString("%1:%2").arg(player->objectName()).arg(card_id));
+    }else{
+        discard_pile->prepend(card_id);
+        setCardMapping(card_id, NULL, Player::DiscardedPile);
+        broadcastInvoke("takeAG", QString(".:%1").arg(card_id));
+    }
 }
 
 void Room::provide(const Card *card){

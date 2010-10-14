@@ -65,6 +65,11 @@ Photo::Photo(int order)
 
     emotion_item = new QGraphicsPixmapItem(this);
     emotion_item->moveBy(100, 0);
+
+    skill_name_item = new QGraphicsSimpleTextItem(this);
+    skill_name_item->setBrush(Qt::white);
+    skill_name_item->setFont(Config.SmallFont);
+    skill_name_item->moveBy(60, 30);
 }
 
 void Photo::showProcessBar(){
@@ -114,6 +119,17 @@ void Photo::separateRoleCombobox(){
     QGraphicsProxyWidget *widget = role_combobox_widget;
     widget->setParentItem(NULL);
     widget->setPos(mapToScene(widget->pos()));
+}
+
+void Photo::showSkillName(const QString &skill_name){
+    skill_name_item->setText(Sanguosha->translate(skill_name));
+    skill_name_item->show();
+
+    QTimer::singleShot(1500, this, SLOT(hideSkillName()));
+}
+
+void Photo::hideSkillName(){
+    skill_name_item->hide();
 }
 
 void Photo::hideEmotion(){

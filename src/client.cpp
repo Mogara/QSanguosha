@@ -95,6 +95,7 @@ Client::Client(QObject *parent)
     callbacks["detachSkill"] = &Client::detachSkill;
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
+    callbacks["skillInvoked"] = &Client::skillInvoked;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -1133,4 +1134,17 @@ void Client::setEmotion(const QString &set_str){
     QString emotion = words.at(1);
 
     emit emotion_set(target_name, emotion);
+}
+
+void Client::skillInvoked(const QString &invoke_str){
+    QRegExp rx("(\\w+):(\\w+)");
+
+    if(!rx.exactMatch(invoke_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    QString who = texts.at(1);
+    QString skill_name = texts.at(2);
+
+    emit skill_invoked(who, skill_name);
 }

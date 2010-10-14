@@ -9,15 +9,23 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
+
+    // tab 1
     QString bg_path = Config.value("BackgroundBrush").toString();
     if(!bg_path.startsWith(":"))
         ui->bgPathLineEdit->setText(bg_path);
 
-    ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
+    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
 
+    ui->volumeSlider->setValue(100 * Config.Volume);
+
+    // tab 2
+    ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
+
+    // tab 3
     ui->portLineEdit->setText(QString::number(Config.Port));
     ui->portLineEdit->setValidator(new QIntValidator(1, 9999, ui->portLineEdit));
 
@@ -91,6 +99,7 @@ void ConfigDialog::on_browseBgMusicButton_clicked()
 
 void ConfigDialog::on_resetBgMusicButton_clicked()
 {
-    ui->bgMusicPathLineEdit->clear();
-    Config.remove("BackgroundMusic");
+    QString default_music = "audio/background.mp3";
+    Config.setValue("BackgroundMusic", default_music);
+    ui->bgMusicPathLineEdit->setText(default_music);
 }

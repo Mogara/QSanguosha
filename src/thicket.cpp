@@ -27,7 +27,7 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
 
     effect.to->drawCards(x);
     effect.to->turnOver();
-    effect.to->getRoom()->setPlayerProperty(effect.to, "faceup", effect.to->faceUp());
+    effect.to->getRoom()->broadcastProperty(effect.to, "faceup");
 }
 
 class FangzhuViewAsSkill: public ZeroCardViewAsSkill{
@@ -177,9 +177,21 @@ public:
         if(damage.card->inherits("Slash") && damage.to->isAlive()
             && !zhurong->isKongcheng() && !damage.to->isKongcheng() && damage.to != zhurong){
             Room *room = zhurong->getRoom();
-            if(room->askForSkillInvoke(zhurong, objectName()) && room->pindian(zhurong, damage.to) && !damage.to->isNude()){
-                int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
-                room->obtainCard(zhurong, card_id);
+            if(room->askForSkillInvoke(zhurong, objectName())){
+                room->playSkillEffect(objectName(), 1);
+
+                bool success = room->pindian(zhurong, damage.to);
+                if(success)
+                    room->playSkillEffect(objectName(), 2);
+                else{
+                    room->playSkillEffect(objectName(), 3);
+                    return false;
+                }
+
+                if(!damage.to->isNude()){
+                    int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
+                    room->obtainCard(zhurong, card_id);
+                }
             }
         }
 
@@ -238,6 +250,7 @@ public:
                 foreach(ServerPlayer *p, players){
                     if(p->hasSkill(objectName())){
                         p->obtainCard(use.card);
+                        room->playSkillEffect(objectName());
                         break;
                     }
                 }

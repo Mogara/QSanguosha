@@ -5,11 +5,16 @@
 #include <QTcpSocket>
 #include <QTcpServer>
 
+class ClientSocket;
+
 class ServerSocket: public QObject{
     Q_OBJECT
 
 public:
     virtual bool listen() = 0;
+
+signals:
+    void new_connection(ClientSocket *connection);
 };
 
 class ClientSocket: public QObject{

@@ -127,6 +127,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
+    connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
@@ -1506,6 +1507,7 @@ void RoomScene::doCancelButton(){
 }
 
 void RoomScene::doDiscardButton(){
+    dashboard->stopPending();
     dashboard->unselectAll();
 
     if(ClientInstance->getStatus() == Client::Playing){
@@ -1793,6 +1795,13 @@ void RoomScene::clearAmazingGrace(){
 }
 
 void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
+    if(taker){
+        QString type = "$TakeAG";
+        QString from_general = taker->getGeneralName();
+        QString card_str = QString::number(card_id);
+        log_box->appendLog(type, from_general, QStringList(), card_str);
+    }
+
     foreach(CardItem *card_item, amazing_grace){
         if(card_item->getCard()->getId() == card_id){
             card_item->setEnabled(false);
@@ -2068,7 +2077,8 @@ void RoomScene::onGameStart(){
 
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/background.mp3").toString();
-    bgmusic = audiere::OpenSound(Device, bgmusic_path.toAscii(), true);
+    const char *filename = bgmusic_path.toLocal8Bit().data();
+    bgmusic = audiere::OpenSound(Device, filename, true);
     if(bgmusic){
         bgmusic->setRepeat(true);
         bgmusic->setVolume(Config.Volume);
@@ -2091,5 +2101,18 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion){
     Photo *photo = name2photo[who];
     if(photo){
         photo->setEmotion(emotion);
+    }
+}
+
+void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name){
+    QString type = "#InvokeSkill";
+    const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
+    QString from_general = player->getGeneralName();
+    QString arg = skill_name;
+    log_box->appendLog(type, from_general, QStringList(), QString(), arg);
+
+    if(player != Self){
+        Photo *photo = name2photo.value(who);
+        photo->showSkillName(skill_name);
     }
 }

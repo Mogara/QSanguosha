@@ -123,6 +123,7 @@ private slots:
     void changeHp(const QString &who, int delta);
     void moveFocus(const QString &who);
     void setEmotion(const QString &who, const QString &emotion);
+    void showSkillInvocation(const QString &who, const QString &skill_name);
 
     void clearPile();
     void setPileNumber(int n);

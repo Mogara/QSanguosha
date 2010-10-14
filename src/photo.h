@@ -15,6 +15,7 @@ class ClientPlayer;
 class Photo : public Pixmap
 {
     Q_OBJECT
+
 public:
     explicit Photo(int order);
     void setPlayer(const ClientPlayer *player);
@@ -31,12 +32,14 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void separateRoleCombobox();
+    void showSkillName(const QString &skill_name);
 
 public slots:
     void updateAvatar();
     void updateRoleCombobox(const QString &new_role);
     void refresh();
     void hideEmotion();
+    void hideSkillName();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -63,6 +66,7 @@ private:
     QProgressBar *progress_bar;
     int timer_id;
     QGraphicsPixmapItem *emotion_item;
+    QGraphicsSimpleTextItem *skill_name_item;
 
     void drawEquip(QPainter *painter, CardItem *equip, int order);
 };
