@@ -62,7 +62,6 @@ public:
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
     void directCardEffect(const CardEffectStruct &effect);
-    void setLegatee(ServerPlayer *legatee);
     const Card *getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);
     void skip(Player::Phase phase);
@@ -164,7 +163,6 @@ private:
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
-    ServerPlayer *legatee;
 
     QSet<Player::Phase> skip_set;
 

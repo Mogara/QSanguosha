@@ -8,14 +8,37 @@
 #include "client.h"
 #include "engine.h"
 
-class Xingshang: public GameStartSkill{
+class Xingshang: public TriggerSkill{
 public:
-    Xingshang():GameStartSkill("xingshang"){
-
+    Xingshang():TriggerSkill("xingshang"){
+        events << Death;
     }
 
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setLegatee(player);
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(player->hasSkill(objectName()))
+            return false;
+
+        if(player->isNude())
+            return false;
+
+        Room *room = player->getRoom();
+        ServerPlayer *caopi = NULL;
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        foreach(ServerPlayer *p, players){
+            if(p->hasSkill(objectName())){
+                caopi = p;
+                break;
+            }
+        }
+
+        if(caopi->isAlive())
+            player->leaveTo(caopi);
+
+        return false;
     }
 };
 

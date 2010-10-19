@@ -33,9 +33,7 @@ Room::Room(QObject *parent, int player_count)
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    thread(NULL), sem(NULL),
-    legatee(NULL),
-    provided(NULL)
+    thread(NULL), sem(NULL), provided(NULL)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
@@ -131,11 +129,6 @@ void Room::obit(ServerPlayer *victim, ServerPlayer *killer){
 }
 
 void Room::bury(ServerPlayer *player){
-    if(legatee && player != legatee && legatee->isAlive())
-        player->leaveTo(legatee);
-    else
-        player->leaveTo(NULL);
-
     int index = alive_players.indexOf(player);
     int i;
     for(i=index+1; i<alive_players.length(); i++){
@@ -145,10 +138,6 @@ void Room::bury(ServerPlayer *player){
     }
 
     alive_players.removeOne(player);
-}
-
-void Room::setLegatee(ServerPlayer *legatee){
-    this->legatee = legatee;
 }
 
 const Card *Room::getJudgeCard(ServerPlayer *player){
