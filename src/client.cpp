@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QLineEdit>
+#include <QLabel>
 
 bool CardMoveStructForClient::parse(const QString &str){
     static QMap<QString, Player::Place> place_map;
@@ -38,13 +39,13 @@ bool CardMoveStructForClient::parse(const QString &str){
     if(words.at(2) == "_")
         from = NULL;
     else
-        from = ClientInstance->findChild<ClientPlayer *>(words.at(2));
+        from = ClientInstance->getPlayer(words.at(2));
     from_place = place_map.value(words.at(3), Player::DiscardedPile);
 
     if(words.at(4) == "_")
         to = NULL;
     else
-        to = ClientInstance->findChild<ClientPlayer *>(words.at(4));
+        to = ClientInstance->getPlayer(words.at(4));
     to_place = place_map.value(words.at(5), Player::DiscardedPile);
 
     return true;
@@ -66,7 +67,7 @@ Client::Client(QObject *parent)
 
     socket = new NativeClientSocket;
     socket->setParent(this);
-    connect(socket, SIGNAL(reply_got(char*)), this, SLOT(processReply(char*)));
+    connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
     connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
     socket->connectToHost();
 
@@ -96,6 +97,7 @@ Client::Client(QObject *parent)
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
+    callbacks["acquireSkill"] = &Client::acquireSkill;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -109,6 +111,7 @@ Client::Client(QObject *parent)
     callbacks["doGongxin"] = &Client::doGongxin;
     callbacks["askForDiscard"] = &Client::askForDiscard;
     callbacks["askForSuit"] = &Client::askForSuit;
+    callbacks["askForKingdom"] = &Client::askForKingdom;
     callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
     callbacks["askForCardChosen"] = &Client::askForCardChosen;
     callbacks["askForCard"] = &Client::askForCard;
@@ -126,7 +129,6 @@ Client::Client(QObject *parent)
     callbacks["takeAG"] = &Client::takeAG;
     callbacks["clearAG"] = &Client::clearAG;
 
-    first_choice = second_choice = ".";
     ask_dialog = NULL;
     use_card = false;
 
@@ -165,13 +167,15 @@ void Client::setup(const QString &setup_str){
     if(!socket->isConnected())
         return;
 
-    QRegExp rx("(\\d+):(\\d+)");
+    QRegExp rx("(\\d+):(\\d+):([+\\w]*):([F]*)");
     if(!rx.exactMatch(setup_str))
         return;
 
     QStringList texts = rx.capturedTexts();
     int player_count = texts.at(1).toInt();
     int timeout = texts.at(2).toInt();
+    ban_packages = texts.at(3).split("+");
+    QString flags = texts.at(4);
 
     Config.PlayerCount = player_count;
     if(timeout == 0)
@@ -180,6 +184,8 @@ void Client::setup(const QString &setup_str){
         Config.OperationNoLimit = false;
         Config.OperationTimeout = timeout;
     }
+
+    Config.FreeChoose = flags.contains("F");
 
     emit server_connected();
 }
@@ -292,19 +298,12 @@ void Client::getGenerals(const QString &generals_str){
     emit generals_got(generals);
 }
 
-void Client::itemChosen(const QString &item_name){
+void Client::chooseItem(const QString &item_name){
     if(!item_name.isEmpty())
         request("choose " + item_name);
 }
 
 #ifndef QT_NO_DEBUG
-
-void Client::cheatChoose(){
-    QLineEdit *cheat_edit = qobject_cast<QLineEdit*>(sender());
-    if(cheat_edit){
-        itemChosen(cheat_edit->text());
-    }
-}
 
 void Client::requestCard(int card_id){
     request(QString("useCard @CheatCard=%1->.").arg(card_id));
@@ -334,14 +333,12 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
 }
 
 void Client::useCard(const Card *card){
-    if(!card){
+    if(card){
+        request(QString("useCard %1->.").arg(card->toString()));
+        card->use(QList<const ClientPlayer *>());
+    }else{
         request("useCard .");
-        setStatus(NotActive);
-        return;
     }
-
-    request(QString("useCard %1->.").arg(card->toString()));
-    card->use(QList<const ClientPlayer *>());
 
     setStatus(NotActive);
 }
@@ -432,8 +429,8 @@ void Client::moveNCards(const QString &move_str){
         QString from = texts.at(2);
         QString to = texts.at(3);
 
-        ClientPlayer *src = findChild<ClientPlayer *>(from);
-        ClientPlayer *dest = findChild<ClientPlayer *>(to);
+        ClientPlayer *src = getPlayer(from);
+        ClientPlayer *dest = getPlayer(to);
 
         src->handCardChange(-n);
         dest->handCardChange(n);
@@ -524,51 +521,88 @@ void Client::askForUseCard(const QString &request_str){
 
 void Client::askForSkillInvoke(const QString &skill_name){
     bool auto_invoke = frequent_flags.contains(skill_name);
-    if(auto_invoke)
-        invokeSkill(true);
-    else{
-        QString name = Sanguosha->translate(skill_name);
-        QString description = Sanguosha->translate(QString("%1:yes").arg(skill_name));
-        QString text = tr("Do you want to invoke skill [%1] ?, if you choose yes, then %2").arg(name).arg(description);
-        prompt(text);
-        setStatus(AskForSkillInvoke);
+    if(auto_invoke){
+        invokeSkill(QDialog::Accepted);
+        return;
     }
+
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(Sanguosha->translate(skill_name));
+
+    QString text = tr("Do you want to invoke skill [%1] ?").arg(dialog->windowTitle());
+
+    QLabel *label = new QLabel(text);
+
+    QCommandLinkButton *ok_button = new QCommandLinkButton(tr("OK"));
+    QString description = Sanguosha->translate(QString("%1:yes").arg(skill_name));
+    ok_button->setToolTip(description);
+
+    QCommandLinkButton *cancel_button = new QCommandLinkButton(tr("Cancel"));
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(ok_button);
+    hlayout->addWidget(cancel_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
+    layout->addLayout(hlayout);
+    dialog->setLayout(layout);
+
+    ask_dialog = dialog;
+
+    connect(ok_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    connect(dialog, SIGNAL(finished(int)), this, SLOT(invokeSkill(int)));
+
+    setStatus(ExecDialog);
+    dialog->exec();
 }
 
-void Client::selectChoice(int index){
-    QString choice;
-    switch(index){
-    case 1: choice = first_choice; break;
-    case 2: choice = second_choice; break;
-    default:
-        choice = "."; break;
-    }
-
-    request("selectChoice " + choice);
+void Client::selectChoice(){
+    QString option = sender()->objectName();
+    request("selectChoice " + option);
     setStatus(NotActive);
-
-    first_choice = second_choice = ".";
 }
 
 void Client::askForChoice(const QString &ask_str){
-    QRegExp rx("(\\w+):(\\w+)\\+(\\w+)");
+    QRegExp rx("(\\w+):(.+)");
 
     if(!rx.exactMatch(ask_str))
         return;
 
     QStringList words = rx.capturedTexts();
-    QString skill_name = words.at(1);    
-    first_choice = words.at(2);
-    second_choice = words.at(3);
+    QString skill_name = words.at(1);
+    QStringList options = words.at(2).split("+");
 
-    QString first = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(first_choice));
-    QString second = Sanguosha->translate(QString("%1:%2").arg(skill_name).arg(second_choice));
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(Sanguosha->translate(skill_name));
 
-    QString prompt_str = tr("Please select the options of skill [%1], if you click OK button, then %2."
-                            "if you click cancel button, then %3").arg(Sanguosha->translate(skill_name)).arg(first).arg(second);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(new QLabel(tr("Please choose:")));
 
-    prompt(prompt_str);
-    setStatus(AskForChoices);
+    foreach(QString option, options){
+        QCommandLinkButton *button = new QCommandLinkButton;
+        QString text = QString("%1:%2").arg(skill_name).arg(option);
+
+        button->setObjectName(option);
+        button->setText(Sanguosha->translate(text));
+
+        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+
+        layout->addWidget(button);
+    }
+
+    dialog->setObjectName(options.first());
+    connect(dialog, SIGNAL(rejected()), this, SLOT(selectChoice()));
+
+    dialog->setLayout(layout);
+
+    ask_dialog = dialog;
+    setStatus(ExecDialog);
+
+    dialog->exec();
 }
 
 void Client::playSkillEffect(const QString &play_str){
@@ -601,8 +635,8 @@ void Client::askForNullification(const QString &ask_str){
     QString source_name = texts.at(2);
     ClientPlayer *source = NULL;
     if(source_name != ".")
-        source = findChild<ClientPlayer *>(source_name);
-    ClientPlayer *target = findChild<ClientPlayer *>(texts.at(3));
+        source = getPlayer(source_name);
+    ClientPlayer *target = getPlayer(texts.at(3));
 
     if(Config.NeverNullifyMyTrick && source == Self){
         const TrickCard *trick_card = Sanguosha->findChild<const TrickCard *>(trick_name);
@@ -622,11 +656,13 @@ void Client::closeNullification(const QString &){
 }
 
 void Client::askForCardChosen(const QString &ask_str){
-    QRegExp pattern("(.+):([hej]+:(\\w+))");
-    pattern.indexIn(ask_str);
-    QStringList texts = pattern.capturedTexts();
+    QRegExp rx("(.+):([hej]+):(\\w+)");
+    if(!rx.exactMatch(ask_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
     QString player_name = texts.at(1);
-    ClientPlayer *player = findChild<ClientPlayer *>(player_name);
+    ClientPlayer *player = getPlayer(player_name);
     QString flags = texts.at(2);
     QString reason = texts.at(3);
 
@@ -706,7 +742,9 @@ int Client::alivePlayerCount() const{
     return alive_count;
 }
 
-void Client::invokeSkill(bool invoke){
+void Client::invokeSkill(int result){
+    bool invoke = result == QDialog::Accepted;
+
     if(invoke)
         request("invokeSkill yes");
     else
@@ -747,6 +785,26 @@ void Client::prompt(const QString &prompt_str){
     // translate the prompt string
 
     emit prompt_changed(prompt_str);
+}
+
+ClientPlayer *Client::getPlayer(const QString &name){
+    return findChild<ClientPlayer *>(name);
+}
+
+QMap<QString, bool> Client::getExtensions() const{
+    QMap<QString, bool> extensions;
+
+    QList<Package *> packages = Sanguosha->findChildren<Package *>();
+    foreach(Package *package, packages){
+        QString package_name = package->objectName();
+        extensions.insert(package_name, ! ban_packages.contains(package_name));
+    }
+
+    return extensions;
+}
+
+void Client::kick(const QString &to_kick){
+    request("kick " + to_kick);
 }
 
 void Client::clearPile(const QString &){
@@ -880,6 +938,43 @@ void Client::askForSuit(const QString &){
     dialog->exec();
 }
 
+void Client::askForKingdom(const QString &){
+    delete ask_dialog;
+
+    QDialog *dialog = new QDialog;
+    ask_dialog = dialog;
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QStringList kingdoms = Sanguosha->getKingdoms();
+
+    foreach(QString kingdom, kingdoms){
+        QCommandLinkButton *button = new QCommandLinkButton;
+        QPixmap kingdom_pixmap(QString(":/kingdom/%1.png").arg(kingdom));
+        QIcon kingdom_icon(kingdom_pixmap);
+
+        button->setIcon(kingdom_icon);
+        button->setIconSize(kingdom_pixmap.size());
+        button->setText(Sanguosha->translate(kingdom));
+        button->setObjectName(kingdom);
+
+        layout->addWidget(button);
+
+        connect(button, SIGNAL(clicked()), this, SLOT(chooseKingdom()));
+        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    }
+
+    dialog->setObjectName(".");
+    connect(dialog, SIGNAL(rejected()), this, SLOT(chooseKingdom()));
+
+    dialog->setObjectName(".");
+    dialog->setWindowTitle(tr("Please choose a kingdom"));
+    dialog->setLayout(layout);
+
+    setStatus(ExecDialog);
+    dialog->exec();
+}
+
 void Client::setMark(const QString &mark_str){
     QRegExp rx("(\\w+)\\.(\\w+)=(\\d+)");
 
@@ -897,6 +992,12 @@ void Client::setMark(const QString &mark_str){
 
 void Client::chooseSuit(){
     request("chooseSuit " + sender()->objectName());
+
+    setStatus(NotActive);
+}
+
+void Client::chooseKingdom(){
+    request("chooseKingdom " + sender()->objectName());
 
     setStatus(NotActive);
 }
@@ -929,17 +1030,15 @@ void Client::takeAG(const QString &take_str){
     QString taker_name = words.at(1);
     int card_id = words.at(2).toInt();
 
-    ClientPlayer *taker = NULL;
-    if(taker_name != ".")
-        taker = findChild<ClientPlayer *>(taker_name);
-
     const Card *card = Sanguosha->getCard(card_id);
-    if(taker)
+    if(taker_name != "."){
+        ClientPlayer *taker = getPlayer(taker_name);
         taker->addCard(card, Player::Hand);
-    else
+        emit ag_taken(taker, card_id);
+    }else{
         discarded_list.prepend(card);
-
-    emit ag_taken(taker, card_id);
+        emit ag_taken(NULL, card_id);
+    }
 }
 
 void Client::clearAG(const QString &){
@@ -951,7 +1050,7 @@ void Client::askForSinglePeach(const QString &ask_str){
     rx.exactMatch(ask_str);
 
     QStringList texts = rx.capturedTexts();
-    ClientPlayer *dying = findChild<ClientPlayer *>(texts.at(1));
+    ClientPlayer *dying = getPlayer(texts.at(1));
     int peaches = texts.at(2).toInt();
 
     if(dying == Self){
@@ -1004,7 +1103,7 @@ void Client::showCard(const QString &show_str){
     QString player_name = texts.at(1);
     int card_id = texts.at(2).toInt();
 
-    ClientPlayer *player = findChild<ClientPlayer *>(player_name);
+    ClientPlayer *player = getPlayer(player_name);
     if(player != Self)
         player->addKnownHandCard(Sanguosha->getCard(card_id));
 
@@ -1035,7 +1134,7 @@ void Client::doGongxin(const QString &gongxin_str){
         return;
 
     QStringList texts = rx.capturedTexts();
-    ClientPlayer *who = findChild<ClientPlayer *>(texts.at(1));
+    ClientPlayer *who = getPlayer(texts.at(1));
 
     QStringList cards = texts.at(2).split("+");
     QList<int> card_ids;
@@ -1147,4 +1246,19 @@ void Client::skillInvoked(const QString &invoke_str){
     QString skill_name = texts.at(2);
 
     emit skill_invoked(who, skill_name);
+}
+
+void Client::acquireSkill(const QString &acquire_str){
+    QRegExp rx("(\\w+):(\\w+)");
+
+    if(!rx.exactMatch(acquire_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    ClientPlayer *who = getPlayer(texts.at(1));
+    QString skill_name = texts.at(2);
+
+    who->acquireSkill(skill_name);
+
+    emit skill_acquired(who, skill_name);
 }

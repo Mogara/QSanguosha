@@ -38,8 +38,11 @@ void ServerPlayer::leaveTo(ServerPlayer *legatee){
         legatee->obtainCard(getDefensiveHorse());
         legatee->obtainCard(getOffensiveHorse());
 
-        foreach(const Card *card, handcards)
-            legatee->obtainCard(card);
+        DummyCard *all_cards = wholeHandCards();
+        if(all_cards){
+            room->moveCardTo(all_cards, legatee, Player::Hand, false);
+            delete all_cards;
+        }
 
         QStack<const Card *> tricks = getJudgingArea();
         foreach(const Card *trick, tricks)
@@ -110,15 +113,22 @@ int ServerPlayer::getHandcardNum() const{
     return handcards.length();
 }
 
-void ServerPlayer::setSocket(QTcpSocket *socket){    
+void ServerPlayer::setSocket(ClientSocket *socket){
     this->socket = socket;
 
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(readyRead()), this, SLOT(getRequest()));
+        connect(socket, SIGNAL(message_got(char*)), this, SLOT(getMessage(char*)));
 
         connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
     }
+}
+
+void ServerPlayer::getMessage(char *message){
+    QString request = message;
+    request.chop(1);
+
+    emit request_got(request);
 }
 
 void ServerPlayer::unicast(const QString &message){
@@ -127,8 +137,7 @@ void ServerPlayer::unicast(const QString &message){
 
 void ServerPlayer::castMessage(const QString &message){
     if(socket){
-        socket->write(message.toAscii());
-        socket->write("\n");
+        socket->send(message);
 
 #ifndef QT_NO_DEBUG
         qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
@@ -148,14 +157,6 @@ QString ServerPlayer::reportHeader() const{
 void ServerPlayer::sendProperty(const char *property_name){
     QString value = property(property_name).toString();
     unicast(QString(".%1 %2").arg(property_name).arg(value));
-}
-
-void ServerPlayer::getRequest(){
-    while(socket->canReadLine()){
-        QString request = socket->readLine(1024);
-        request.chop(1); // remove the ending '\n' character
-        emit request_got(request);
-    }
 }
 
 void ServerPlayer::removeCard(const Card *card, Place place){
@@ -233,6 +234,9 @@ QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
 }
 
 DummyCard *ServerPlayer::wholeHandCards() const{
+    if(isKongcheng())
+        return NULL;
+
     DummyCard *dummy_card = new DummyCard;
     foreach(const Card *card, handcards)
         dummy_card->addSubcard(card->getId());
@@ -258,6 +262,12 @@ bool ServerPlayer::hasNullification() const{
     }
 
     return false;
+}
+
+void ServerPlayer::kick(){
+    if(socket){
+        socket->disconnectFromHost();
+    }
 }
 
 void ServerPlayer::setAIByGeneral(){

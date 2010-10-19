@@ -10,6 +10,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QTimerEvent>
+#include <QPushButton>
+#include <QRadioButton>
 
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
@@ -39,7 +41,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
     }
 
     QLayout *layout = NULL;
-    const static int columns = 5;
+    const int columns = generals.length() > 10 ? 6 : 5;
     if(generals.length() <= columns){
         layout = new QHBoxLayout;
         foreach(OptionButton *button, buttons)
@@ -59,7 +61,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
     mapper->setMapping(this, generals.first()->objectName());
     connect(this, SIGNAL(rejected()), mapper, SLOT(map()));
 
-    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(itemChosen(QString)));
+    connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(chooseItem(QString)));
 
     QVBoxLayout *dialog_layout = new QVBoxLayout;
     dialog_layout->addLayout(layout);
@@ -68,26 +70,26 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
     QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
     dialog_layout->addWidget(role_label);
 
-    // progress bar
+    // progress bar & free choose button
+    QHBoxLayout *last_layout = new QHBoxLayout;
     if(Config.OperationNoLimit){
         progress_bar = NULL;
     }else{
         progress_bar = new QProgressBar;
         progress_bar->setMinimum(0);
         progress_bar->setMaximum(100);
-        dialog_layout->addWidget(progress_bar);
+        last_layout->addWidget(progress_bar);
     }
 
-#ifndef QT_NO_DEBUG
+    if(Config.FreeChoose){
+        QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
+        connect(free_choose_button, SIGNAL(clicked()), this, SLOT(freeChoose()));
+        last_layout->addWidget(free_choose_button);
+    }
 
-    QLineEdit *cheat_edit = new QLineEdit;
-    cheat_edit->setPlaceholderText(tr("Please input the general's pinyin ..."));
-    dialog_layout->addWidget(cheat_edit);
-
-    connect(cheat_edit, SIGNAL(returnPressed()), ClientInstance, SLOT(cheatChoose()));
-    connect(cheat_edit, SIGNAL(returnPressed()), this, SLOT(accept()));
-
-#endif
+    if(last_layout->count() != 0){
+        dialog_layout->addLayout(last_layout);
+    }
 
     setLayout(dialog_layout);
 }
@@ -97,6 +99,13 @@ void ChooseGeneralDialog::start(){
         startTimer(200);
 
     exec();
+}
+
+void ChooseGeneralDialog::freeChoose(){
+    FreeChooseDialog *dialog = new FreeChooseDialog(this);
+    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+
+    dialog->exec();
 }
 
 void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
@@ -116,4 +125,86 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
             reject();
     }else
         progress_bar->setValue(new_value);
+}
+
+FreeChooseDialog::FreeChooseDialog(ChooseGeneralDialog *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Free choose generals"));
+
+    QHBoxLayout *box_layout = new QHBoxLayout;
+    group = new QButtonGroup(this);
+
+    QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
+    QMap<QString, QList<const General*> > map;
+    foreach(const General *general, all_generals){
+        map[general->getKingdom()] << general;
+    }
+
+    QStringList kingdoms = Sanguosha->getKingdoms();
+
+    foreach(QString kingdom, kingdoms){
+        QList<const General *> generals = map[kingdom];
+
+        if(!generals.isEmpty()){
+            QGroupBox *box = createGroupBox(generals);
+            box_layout->addWidget(box);
+        }
+    }
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
+
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QHBoxLayout *button_layout = new QHBoxLayout;
+    button_layout->addStretch();
+    button_layout->addWidget(ok_button);
+    button_layout->addWidget(cancel_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addLayout(box_layout);
+    layout->addLayout(button_layout);
+
+    setLayout(layout);
+}
+
+void FreeChooseDialog::chooseGeneral(){
+    QAbstractButton *button = group->checkedButton();
+    if(button){
+        ClientInstance->chooseItem(button->objectName());
+        accept();
+    }
+}
+
+QGroupBox *FreeChooseDialog::createGroupBox(const QList<const General *> &generals){
+    QGroupBox *box = new QGroupBox;
+    QString kingdom = generals.first()->getKingdom();
+    box->setTitle(Sanguosha->translate(kingdom));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    QIcon lord_icon(":/roles/lord.png");
+
+    foreach(const General *general, generals){
+        QString general_name = general->objectName();
+
+        QString text = QString("%1[%2]")
+                       .arg(Sanguosha->translate(general_name))
+                       .arg(Sanguosha->translate(general->getPackage()));
+
+        QRadioButton *button = new QRadioButton(text);
+        button->setObjectName(general_name);
+        button->setToolTip(general->getSkillDescription());
+        if(general->isLord())
+            button->setIcon(lord_icon);
+
+        group->addButton(button);
+        layout->addWidget(button);
+    }
+
+    layout->addStretch();
+    box->setLayout(layout);
+
+    return box;
 }

@@ -454,32 +454,18 @@ public:
     }
 };
 
-class Xueyi: public TriggerSkill{
+class Xueyi: public PhaseChangeSkill{
 public:
-    Xueyi():TriggerSkill("xueyi$"){
+    Xueyi():PhaseChangeSkill("xueyi$"){
         frequency = Compulsory;
-        events << GameStart << Death;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneral()->getKingdom() == "qun";
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        ServerPlayer *yuanshao = room->getLord();
-
-        if(event == GameStart){
-            if(player->isLord()){
-
-                QList<ServerPlayer *> lieges = room->getLieges(yuanshao);
-                room->setPlayerProperty(yuanshao, "xueyi", lieges.length() * 2);
-            }
-        }else if(event == Death){
-            if(!player->isLord()){
-                int xueyi = yuanshao->getXueyi();
-                room->setPlayerProperty(yuanshao, "xueyi", xueyi - 2);
-            }
+    virtual bool onPhaseChange(ServerPlayer *yuanshao) const{
+        if(yuanshao->getPhase() == Player::Discard){
+            Room *room = yuanshao->getRoom();
+            int n = room->getLieges("qun", yuanshao).length();
+            int xueyi = n * 2;
+            yuanshao->setXueyi(xueyi);
         }
 
         return false;

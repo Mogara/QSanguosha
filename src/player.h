@@ -21,6 +21,7 @@ class Player : public QObject
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int maxhp READ getMaxHP WRITE setMaxHP)
+    Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString role READ getRole WRITE setRole)
@@ -63,20 +64,29 @@ public:
 
     // property setters/getters
     int getHp() const;
-    void setHp(int hp);
+    void setHp(int hp);    
     int getMaxHP() const;
-    void setMaxHP(int max_hp);
+    void setMaxHP(int max_hp);    
     int getLostHp() const;
-    int getMaxCards() const;
+    bool isWounded() const;
+
+    int getMaxCards() const;    
     int getXueyi() const;
     void setXueyi(int xueyi);
-    bool isWounded() const;   
+
+    QString getKingdom() const;
+    void setKingdom(const QString &kingdom);
+    QString getKingdomPath() const;
+
     void setRole(const QString &role);
     QString getRole() const;
+
     void setGeneralName(const QString &general_name);
     QString getGeneralName() const;
+
     void setState(const QString &state);
     QString getState() const;
+
     int getSeat() const;
     void setSeat(int seat);
     bool isFocus() const;
@@ -110,6 +120,8 @@ public:
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
+
+    void acquireSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
 
     void setEquip(const EquipCard *card);
@@ -154,12 +166,14 @@ private:
     QString screen_name;
     const General *general;
     int hp, max_hp, xueyi;
+    QString kingdom;
     QString role;
     QString state;
     int seat;
     bool alive;
     QSet<QString> flags;
     QMap<QString, int> marks;
+    QSet<QString> acquired_skills;
 
     struct CorrectStruct correct;
     int attack_range;
@@ -178,6 +192,7 @@ signals:
     void role_changed(const QString &new_role);
     void state_changed();
     void turn_started();
+    void kingdom_changed();
 };
 
 #endif // PLAYER_H

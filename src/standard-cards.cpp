@@ -418,40 +418,39 @@ public:
     }
 };
 
-class AmazingGrace:public GlobalEffect{
-public:
-    AmazingGrace(Suit suit, int number):GlobalEffect(suit, number){
-        setObjectName("amazing_grace");
+AmazingGrace::AmazingGrace(Suit suit, int number)
+    :GlobalEffect(suit, number)
+{
+    setObjectName("amazing_grace");
+}
+
+void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
+
+    QList<ServerPlayer *> players = room->getAllPlayers();
+    QList<int> card_ids = room->getNCards(players.length());
+    QStringList card_str;
+    foreach(int card_id, card_ids)
+        card_str << QString::number(card_id);
+    room->broadcastInvoke("fillAG", card_str.join("+"));
+
+    foreach(ServerPlayer *player, players){
+        bool can_take = room->cardEffect(this, source, player);
+        if(can_take){
+            int card_id = room->askForAG(player, card_ids);
+            card_ids.removeOne(card_id);
+
+            room->takeAG(player, card_id);
+        }
     }
 
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-        room->throwCard(this);
-
-        QList<ServerPlayer *> players = room->getAllPlayers();
-        QList<int> card_ids = room->getNCards(players.length());
-        QStringList card_str;
-        foreach(int card_id, card_ids)
-            card_str << QString::number(card_id);
-        room->broadcastInvoke("fillAG", card_str.join("+"));
-
-        foreach(ServerPlayer *player, players){
-            bool can_take = room->cardEffect(this, source, player);
-            if(can_take){
-                int card_id = room->askForAG(player, card_ids);
-                card_ids.removeOne(card_id);
-
-                room->takeAG(player, card_id);
-            }
-        }
-
-        // throw the rest cards
-        foreach(int card_id, card_ids){
-            room->takeAG(NULL, card_id);
-        }
-
-        room->broadcastInvoke("clearAG");
+    // throw the rest cards
+    foreach(int card_id, card_ids){
+        room->takeAG(NULL, card_id);
     }
-};
+
+    room->broadcastInvoke("clearAG");
+}
 
 GodSalvation::GodSalvation(Suit suit, int number)
     :GlobalEffect(suit, number)

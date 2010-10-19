@@ -51,5 +51,8 @@
         <file>emotion/normal.png</file>
         <file>emotion/recover.png</file>
         <file>emotion/victim.png</file>
+        <file>disabled.png</file>
+        <file>enabled.png</file>
+        <file>kingdom/god.png</file>
     </qresource>
 </RCC>

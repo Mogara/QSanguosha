@@ -68,7 +68,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneral()->getKingdom() == "wei" && !target->isLord();
+        return target->getKingdom() == "wei" && !target->isLord();
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -156,8 +156,11 @@ public:
             }
 
             if(menghuo != player){
+                Room *room = menghuo->getRoom();
+                room->playSkillEffect(objectName());
+
                 damage.from = menghuo;
-                menghuo->getRoom()->damage(damage);
+                room->damage(damage);
                 return true;
             }
         }
@@ -174,7 +177,8 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card->inherits("Slash") && damage.to->isAlive()
+
+        if(damage.card && damage.card->inherits("Slash") && damage.to->isAlive()
             && !zhurong->isKongcheng() && !damage.to->isKongcheng() && damage.to != zhurong){
             Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName())){
@@ -210,16 +214,26 @@ public:
             Room *room = menghuo->getRoom();
             if(room->askForSkillInvoke(menghuo, objectName())){
                 int x = menghuo->getLostHp(), i;
+
+                room->playSkillEffect(objectName(), 1);
+                bool has_heart = false;
+
                 for(i=0; i<x; i++){
                     int card_id = room->drawCard();
                     room->throwCard(card_id);
                     room->getThread()->delay(1);
 
                     const Card *card = Sanguosha->getCard(card_id);
-                    if(card->getSuit() == Card::Heart)
-                        room->recover(menghuo);
-                    else
+                    if(card->getSuit() == Card::Heart){
+                        room->recover(menghuo);                        
+                        room->playSkillEffect(objectName(), 2);
+                        has_heart = true;
+                    }else
                         room->obtainCard(menghuo, card_id);
+                }
+
+                if(!has_heart){
+                    room->playSkillEffect(objectName(), 3);
                 }
 
                 return true;
@@ -477,12 +491,25 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     DummyCard *card1 = a->wholeHandCards();
     DummyCard *card2 = b->wholeHandCards();
 
-    room->moveCardTo(card1, b, Player::Hand, false);    
-    room->getThread()->delay();
-    room->moveCardTo(card2, a, Player::Hand, false);
+    if(card1){
+        room->moveCardTo(card1, b, Player::Hand, false);
+        delete card1;
+    }
 
-    delete card1;
-    delete card2;
+    room->getThread()->delay();
+
+    if(card2){
+        room->moveCardTo(card2, a, Player::Hand, false);
+        delete card2;
+    }
+
+    LogMessage log;
+    log.type = "#Dimeng";
+    log.from = a;
+    log.to << b;
+    log.arg = QString::number(n1);
+    log.arg2 = QString::number(n2);
+    room->sendLog(log);
 }
 
 class Dimeng: public ZeroCardViewAsSkill{
@@ -706,6 +733,7 @@ public:
         if(dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
             const Card *card = room->getJudgeCard(player);
             if(card->getSuit() == Card::Spade){
+                room->playSkillEffect(objectName());
                 room->recover(dongzhuo);
             }
         }
@@ -827,6 +855,8 @@ ThicketPackage::ThicketPackage()
     t["@haoshi"] = tr("@haoshi");
     t["@fangzhu"] = tr("@fangzhu");
     t["@yinghun"] = tr("@yinghun");
+
+    t["#Dimeng"] = tr("#Dimeng");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

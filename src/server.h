@@ -3,7 +3,8 @@
 
 class Room;
 
-#include <QTcpServer>
+#include "socket.h"
+
 #include <QDialog>
 #include <QLineEdit>
 #include <QSpinBox>
@@ -20,6 +21,7 @@ public:
 private:
     QSpinBox *player_count_spinbox, *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
+    QCheckBox *free_choose_checkbox;
     QButtonGroup *extension_group;
 };
 
@@ -31,11 +33,11 @@ public:
     bool listen();
 
 private:
-    QTcpServer *server;
+    ServerSocket *server;
     QList<Room*> rooms;
 
 private slots:
-    void processNewConnection();
+    void processNewConnection(ClientSocket *socket);
 
 signals:
     void server_message(const QString &);

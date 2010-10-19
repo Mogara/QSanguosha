@@ -255,10 +255,11 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->throwCard(this);
 
     if(targets.isEmpty()){       
-        source->drawCards(1);
-        //room->playCardEffect("recast", source->getGeneral()->isMale());
         room->playCardEffect("recast@" + getPackage(), source->getGeneral()->isMale());
+        source->drawCards(1);
     }else{
+        room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
+
         foreach(ServerPlayer *target, targets){
             CardEffectStruct effect;
             effect.card = this;
@@ -267,8 +268,6 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
             room->cardEffect(effect);
         }
-        //room->playCardEffect("tiesuo", source->getGeneral()->isMale());
-        room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
     }
 }
 

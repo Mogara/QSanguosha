@@ -6,8 +6,6 @@ class TriggerSkill;
 #include "serverplayer.h"
 #include "roomthread.h"
 
-#include <QTcpSocket>
-
 struct LogMessage{
     LogMessage();
     QString toString() const;
@@ -28,7 +26,7 @@ public:
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
     explicit Room(QObject *parent, int player_count);
-    void addSocket(QTcpSocket *socket);
+    void addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
     void broadcast(const QString &message, ServerPlayer *except = NULL);
@@ -75,7 +73,7 @@ public:
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
-    QList<ServerPlayer *> getLieges(const ServerPlayer *lord) const;
+    QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id);
     bool pindian(ServerPlayer *source, ServerPlayer *target);    
@@ -114,6 +112,7 @@ public:
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
     Card::Suit askForSuit(ServerPlayer *player);
+    QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false, Card::Suit suit = Card::NoSuit);
@@ -133,6 +132,7 @@ public:
 
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player);
+    void kickCommand(ServerPlayer *player, const QString &arg);
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);

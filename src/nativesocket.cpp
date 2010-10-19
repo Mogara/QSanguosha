@@ -18,39 +18,44 @@ bool NativeServerSocket::listen(){
 
 void NativeServerSocket::processNewConnection(){
     QTcpSocket *socket = server->nextPendingConnection();
-    emit new NativeClientSocket(socket);
+    NativeClientSocket *connection = new NativeClientSocket(socket);
+    emit new_connection(connection);
 }
 
 // ---------------------------------
 
-NativeClientSocket::NativeClientSocket()
+NativeClientSocket::NativeClientSocket()    
     :socket(new QTcpSocket(this))
 {
-    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+    init();
 }
 
 NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
     :socket(socket)
 {
     socket->setParent(this);
-    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+    init();
 }
 
-void NativeClientSocket::connectToHost(){
-    socket->connectToHost(Config.HostAddress, Config.Port);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(emitReplies()));
+void NativeClientSocket::init(){
+    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(raiseError(QAbstractSocket::SocketError)));
 }
 
+void NativeClientSocket::connectToHost(){
+    socket->connectToHost(Config.HostAddress, Config.Port);
+}
+
 typedef char buffer_t[1024];
 
-void NativeClientSocket::emitReplies(){
+void NativeClientSocket::getMessage(){
     while(socket->canReadLine()){
-        buffer_t reply;
-        socket->readLine(reply, sizeof(reply));
+        buffer_t msg;
+        socket->readLine(msg, sizeof(msg));
 
-        emit reply_got(reply);
+        emit message_got(msg);
     }
 }
 

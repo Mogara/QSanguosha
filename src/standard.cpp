@@ -323,6 +323,8 @@ StandardPackage::StandardPackage()
     t["#ArmorNullify"] = tr("#ArmorNullify");
     t["#DrawNCards"] = tr("#DrawNCards");
     t["#MoveNCards"] = tr("#MoveNCards");    
+    t["#AskForPeaches"] = tr("#AskForPeaches");
+    t["#ChooseKingdom"] = tr("#ChooseKingdom");
 
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$InitialJudge"] = tr("$InitialJudge");

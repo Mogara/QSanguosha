@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "room.h"
 #include "engine.h"
+#include "nativesocket.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -35,6 +36,10 @@ ServerDialog::ServerDialog(QWidget *parent)
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
+    free_choose_checkbox = new QCheckBox(tr("Free choose generals"));
+    free_choose_checkbox->setToolTip(tr("Enable this will make the clients choose generals freely"));
+    free_choose_checkbox->setChecked(Config.FreeChoose);
+
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
 
@@ -56,13 +61,15 @@ ServerDialog::ServerDialog(QWidget *parent)
     static QStringList extensions;
     if(extensions.isEmpty())
         extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
+    QSet<QString> ban_packages = Config.BanPackages.toSet();
+
     int i;
     for(i=0; i<extensions.length(); i++){
         QString extension = extensions.at(i);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
-        checkbox->setChecked(true);
+        checkbox->setChecked(! ban_packages.contains(extension));
 
         extension_group->addButton(checkbox);
 
@@ -81,6 +88,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     hlayout->addWidget(timeout_spinbox);
     hlayout->addWidget(nolimit_checkbox);
     layout->addRow(hlayout);
+    layout->addRow(free_choose_checkbox);
     layout->addRow(box);
     layout->addRow(button_layout);
 
@@ -96,17 +104,25 @@ bool ServerDialog::config(){
     Config.PlayerCount = player_count_spinbox->value();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
+    Config.FreeChoose = free_choose_checkbox->isChecked();
 
     Config.setValue("PlayerCount", Config.PlayerCount);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
+    Config.setValue("FreeChoose", Config.FreeChoose);
 
+    QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
     foreach(QAbstractButton *checkbox, checkboxes){
         if(!checkbox->isChecked()){
-            Sanguosha->addBanPackage(checkbox->objectName());
+            QString package_name = checkbox->objectName();
+            Sanguosha->addBanPackage(package_name);
+            ban_packages.insert(package_name);
         }
     }
+
+    Config.BanPackages = ban_packages.toList();
+    Config.setValue("BanPackages", Config.BanPackages);
 
     return true;
 }
@@ -114,18 +130,17 @@ bool ServerDialog::config(){
 Server::Server(QObject *parent)
     :QObject(parent)
 {
-    server = new QTcpServer(this);
+    server = new NativeServerSocket();
+    server->setParent(this);
 
-    connect(server, SIGNAL(newConnection()), SLOT(processNewConnection()));
+    connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
 }
 
 bool Server::listen(){
-    return server->listen(QHostAddress::Any, Config.Port);
+    return server->listen();
 }
 
-void Server::processNewConnection(){
-    QTcpSocket *socket = server->nextPendingConnection();
-
+void Server::processNewConnection(ClientSocket *socket){
     // remove the game over room first
     QMutableListIterator<Room *> itor(rooms);
     while(itor.hasNext()){

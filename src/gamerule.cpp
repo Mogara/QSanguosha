@@ -70,7 +70,23 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     Room *room = player->getRoom();
 
     switch(event){
-    case GameStart: player->drawCards(4, false); break;
+    case GameStart: {
+            if(player->getKingdom() == "god"){
+                QString new_kingdom = room->askForKingdom(player);
+                if(new_kingdom != "god")
+                    room->setPlayerProperty(player, "kingdom", new_kingdom);
+
+                LogMessage log;
+                log.type = "#ChooseKingdom";
+                log.from = player;
+                log.arg = new_kingdom;
+                room->sendLog(log);
+            }
+
+            player->drawCards(4, false);
+            break;
+        }
+
     case PhaseChange: onPhaseChange(player); break;
     case CardUsed: {
             if(data.canConvert<CardUseStruct>()){

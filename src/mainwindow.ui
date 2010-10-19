@@ -43,6 +43,8 @@
     <addaction name="actionNever_Nullify_My_Trick"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
+    <addaction name="actionServerInformation"/>
+    <addaction name="actionKick"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -137,6 +139,9 @@
    </property>
   </action>
   <action name="actionView_distance">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>View distance</string>
    </property>
@@ -147,6 +152,22 @@
   <action name="actionAbout_audiere">
    <property name="text">
     <string>About audiere</string>
+   </property>
+  </action>
+  <action name="actionServerInformation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Server information</string>
+   </property>
+  </action>
+  <action name="actionKick">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Kick</string>
    </property>
   </action>
  </widget>

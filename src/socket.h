@@ -28,7 +28,7 @@ public:
     virtual QString peerName() const = 0;
 
 signals:
-    void reply_got(char *reply);
+    void message_got(char *msg);
     void error_message(const QString &msg);
     void disconnected();
 };

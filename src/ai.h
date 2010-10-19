@@ -18,6 +18,7 @@ public:
 
     virtual void activate(CardUseStruct &card_use) const = 0;
     virtual Card::Suit askForSuit() const = 0;
+    virtual QString askForKingdom() const = 0;
     virtual bool askForSkillInvoke(const QString &skill_name) const = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
     virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const = 0;
@@ -44,6 +45,7 @@ public:
 
     virtual void activate(CardUseStruct &card_use) const;
     virtual Card::Suit askForSuit() const;
+    virtual QString askForKingdom() const;
     virtual bool askForSkillInvoke(const QString &skill_name) const;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
     virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const;

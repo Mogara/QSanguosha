@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
+    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));   
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
@@ -160,7 +160,8 @@ void MainWindow::restartConnection(){
 }
 
 void MainWindow::networkError(const QString &error_msg){
-    QMessageBox::warning(this, tr("Network error"), error_msg);
+    if(isVisible())
+        QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
 void MainWindow::enterRoom(){
@@ -168,9 +169,17 @@ void MainWindow::enterRoom(){
     ui->actionStart_Server->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(Config.PlayerCount, this);
+
     ui->actionView_Discarded->setEnabled(true);
+    ui->actionView_distance->setEnabled(true);
+    ui->actionServerInformation->setEnabled(true);
+    ui->actionKick->setEnabled(true);
+
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
+    connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
+    connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
+
     connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
 
     gotoScene(room_scene);

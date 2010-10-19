@@ -30,8 +30,7 @@ public:
     void addSkill(Skill* skill);
     bool hasSkill(const QString &skill_name) const;
 
-    QString getPixmapPath(const QString &category) const;
-    QString getKingdomPath() const;
+    QString getPixmapPath(const QString &category) const;    
     QString getPackage() const;
     QString getSkillDescription() const;
 

@@ -29,7 +29,6 @@ public:
     virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
 };
 
 class ShensuCard: public SkillCard{

@@ -23,10 +23,12 @@ public:
     QString translate(const QString &to_translate) const;
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
+    QStringList getBanPackages() const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
+    QStringList getKingdoms() const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -35,6 +37,7 @@ public:
     int getCardCount() const;
     const Card *getCard(int index) const;
 
+    QStringList getLords() const;
     QStringList getRandomLords() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;

@@ -45,6 +45,10 @@ Card::Suit TrustAI::askForSuit() const{
     return Card::AllSuits[qrand() % 4];
 }
 
+QString TrustAI::askForKingdom() const{
+    return player->getKingdom();
+}
+
 bool TrustAI::askForSkillInvoke(const QString &skill_name) const{
     return false;
 }

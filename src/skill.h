@@ -108,6 +108,8 @@ protected:
 };
 
 class MasochismSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     MasochismSkill(const QString &name);
 
@@ -117,6 +119,8 @@ public:
 };
 
 class PhaseChangeSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     PhaseChangeSkill(const QString &name);
 
@@ -125,6 +129,8 @@ public:
 };
 
 class SlashBuffSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     SlashBuffSkill(const QString &name);
 
@@ -133,6 +139,8 @@ public:
 };
 
 class GameStartSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     GameStartSkill(const QString &name);
 
@@ -141,6 +149,8 @@ public:
 };
 
 class WeaponSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     WeaponSkill(const QString &name);
 
@@ -148,6 +158,8 @@ public:
 };
 
 class ArmorSkill: public TriggerSkill{
+    Q_OBJECT
+
 public:
     ArmorSkill(const QString &name);
 

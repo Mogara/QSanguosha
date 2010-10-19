@@ -88,6 +88,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class AmazingGrace:public GlobalEffect{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+};
+
 class AOE:public TrickCard{
     Q_OBJECT
 

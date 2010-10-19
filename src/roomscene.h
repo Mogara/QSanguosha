@@ -16,6 +16,7 @@
 #include <QMainWindow>
 #include <QSharedMemory>
 #include <QProgressBar>
+#include <QTextEdit>
 
 class RoomScene : public QGraphicsScene{    
     Q_OBJECT
@@ -37,6 +38,8 @@ public slots:
     void useSelectedCard();
     void updateStatus(Client::Status status);    
     void killPlayer(const QString &who);
+    void showServerInformation();
+    void kick();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -108,9 +111,11 @@ private:
 
     void freeze();
     void addRestartButton(QDialog *dialog);
+    void addSkillButton(const Skill *skill);
 
 private slots:
     void updateSkillButtons();
+    void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
     void updateTrustButton();

@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "skill.h"
 
 class GodPackage : public Package{
     Q_OBJECT
@@ -68,6 +69,13 @@ public:
     Q_INVOKABLE ShenfenCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class Feiying: public GameStartSkill{
+public:
+    Feiying();
+
+    virtual void onGameStart(ServerPlayer *player) const;
 };
 
 #endif // GOD_H

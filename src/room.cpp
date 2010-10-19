@@ -45,6 +45,7 @@ Room::Room(QObject *parent, int player_count)
     callbacks["responseCardCommand"] = &Room::commonCommand;
     callbacks["discardCardsCommand"] = &Room::commonCommand;
     callbacks["chooseSuitCommand"] = &Room::commonCommand;
+    callbacks["chooseKingdomCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["choosePlayerCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
@@ -554,6 +555,12 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
 }
 
 int Room::askForPeaches(ServerPlayer *dying, int peaches){
+    LogMessage log;
+    log.type = "#AskForPeaches";
+    log.from = dying;
+    log.arg = QString::number(peaches);
+    sendLog(log);
+
     QList<ServerPlayer *> players;
     if(current->hasSkill("wansha")){
         players << current;
@@ -582,7 +589,7 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
 
             // jiuyuan process
             if(dying->isLord() && dying->hasSkill("jiuyuan")
-                && player != dying  && player->getGeneral()->getKingdom() == "wu"){
+                && player != dying  && player->getKingdom() == "wu"){
                 playSkillEffect("jiuyuan");
 
                 got ++;
@@ -650,7 +657,7 @@ void Room::setPlayerCorrect(ServerPlayer *player, const QString &correct_str){
     broadcastProperty(player, "correct", correct_str);
 }
 
-void Room::addSocket(QTcpSocket *socket){
+void Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     players << player;
@@ -814,6 +821,11 @@ void Room::processRequest(const QString &request){
         return;
     }
 
+    if(command == "kick"){
+        kickCommand(player, args.at(1));
+        return;
+    }
+
     if(reply_player && reply_player != player){
         QString should_be = reply_player->objectName();
         QString instead_of = player->objectName();
@@ -852,7 +864,14 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->invoke("checkVersion", Sanguosha->getVersion());
 
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
-    player->invoke("setup", QString("%1:%2").arg(player_count).arg(timeout));
+    QString flags;
+    if(Config.FreeChoose)
+        flags.append("F");
+
+    player->invoke("setup", QString("%1:%2:%3:%4")
+                   .arg(player_count).arg(timeout)
+                   .arg(Sanguosha->getBanPackages().join("+"))
+                   .arg(flags));
 
     // introduce the new joined player to existing players except himself
     player->sendProperty("objectName");
@@ -1209,9 +1228,6 @@ void Room::throwCard(const Card *card){
 }
 
 void Room::throwCard(int card_id){
-    if(card_id == -1)
-        return;
-
     moveCardTo(card_id, NULL, Player::DiscardedPile, true);
 }
 
@@ -1386,7 +1402,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
 
     Card::Suit suit;
     if(result == ".")
-        suit = Card::AllSuits[qrand() % 4];
+        return Card::AllSuits[qrand() % 4];
     if(result == "spade")
         suit = Card::Spade;
     else if(result == "club")
@@ -1397,6 +1413,23 @@ Card::Suit Room::askForSuit(ServerPlayer *player){
         suit = Card::Diamond;
 
     return suit;
+}
+
+QString Room::askForKingdom(ServerPlayer *player){
+    AI *ai = player->getAI();
+    if(ai)
+        return ai->askForKingdom();
+
+    player->invoke("askForKingdom");
+    getResult("chooseKingdomCommand", player);
+
+    if(result.isEmpty())
+        return askForKingdom(player);
+
+    if(result == ".")
+        return "wei";
+    else
+        return result;
 }
 
 bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip, Card::Suit suit){
@@ -1664,6 +1697,17 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         return findChild<ServerPlayer *>(player_name);
 }
 
+void Room::kickCommand(ServerPlayer *player, const QString &arg){
+    if(player != getLord())
+        return;
+
+    ServerPlayer *to_kick = findChild<ServerPlayer *>(arg);
+    if(to_kick == NULL)
+        return;
+
+    to_kick->kick();
+}
+
 void Room::takeAG(ServerPlayer *player, int card_id){
     if(player){
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);
@@ -1682,11 +1726,10 @@ void Room::provide(const Card *card){
     provided = card;
 }
 
-QList<ServerPlayer *> Room::getLieges(const ServerPlayer *lord) const{
-    QString kingdom = lord->getGeneral()->getKingdom();
+QList<ServerPlayer *> Room::getLieges(const QString &kingdom, ServerPlayer *lord) const{
     QList<ServerPlayer *> lieges;
     foreach(ServerPlayer *player, alive_players){
-        if(player != lord && player->getGeneral()->getKingdom() == kingdom)
+        if(player != lord && player->getKingdom() == kingdom)
             lieges << player;
     }
 

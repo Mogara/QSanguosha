@@ -41,8 +41,8 @@ void HuangtianCard::use(const QList<const ClientPlayer *> &targets) const{
     ClientInstance->turn_tag.insert("huangtian_used", true);
 }
 
-void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
-    ServerPlayer *zhangjiao = room->getLord();
+void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasSkill("huangtian")){
         zhangjiao->obtainCard(this);
         room->setEmotion(zhangjiao, Room::Good);
@@ -51,10 +51,6 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
 
 bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     return to_select->hasSkill("huangtian");
-}
-
-bool HuangtianCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    return targets.length() <= 1;
 }
 
 class Guidao:public ViewAsSkill{
@@ -88,12 +84,13 @@ public:
 
 class HuangtianViewAsSkill: public ViewAsSkill{
 public:
-    HuangtianViewAsSkill():ViewAsSkill("huangtian"){
+    HuangtianViewAsSkill():ViewAsSkill("huangtianv"){
 
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("huangtian_used", false).toBool();
+        return ! ClientInstance->turn_tag.value("huangtian_used", false).toBool()
+                && Self->getKingdom() == "qun";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -120,20 +117,15 @@ public:
 
 class Huangtian: public GameStartSkill{
 public:
-    Huangtian():GameStartSkill("huangtian"){
+    Huangtian():GameStartSkill("huangtian$"){
 
     }
 
-    virtual void onGameStart(ServerPlayer *player) const{
-        if(!player->isLord())
-            return;
-
-        Room *room = player->getRoom();
-        QList<ServerPlayer *> players = room->getOtherPlayers(player);
-
+    virtual void onGameStart(ServerPlayer *zhangjiao) const{
+        Room *room = zhangjiao->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(zhangjiao);
         foreach(ServerPlayer *player, players){
-            if(player->getGeneral()->getKingdom() == "qun")
-                room->attachSkillToPlayer(player, "huangtian");
+            room->attachSkillToPlayer(player, "huangtianv");
         }
     }
 };
@@ -256,9 +248,9 @@ public:
                 room->skip(Player::Judge);
                 room->skip(Player::Draw);
             }
-
+        }else if(xiahouyuan->getPhase() == Player::Play){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
-                room->skip(Player::Play);
+                return true;
             }
         }
 
@@ -303,6 +295,8 @@ public:
         int num = effect.to->getHandcardNum();
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
             if(room->askForSkillInvoke(huangzhong, "liegong")){
+                room->playSkillEffect(objectName());
+
                 SlashResultStruct result;
                 result.fill(effect, true);
                 room->slashResult(result);
@@ -375,7 +369,7 @@ WindPackage::WindPackage()
     t["kuanggu"] = tr("kuanggu");
     t["guidao"] = tr("guidao");
     t["leiji"] = tr("leiji");
-    t["huangtian"] = tr("huangtian");
+    t["huangtian"] = t["huangtianv"] = tr("huangtian");
 
     t[":shensu"] = tr(":shensu");
     t[":jushou"] = tr(":jushou");

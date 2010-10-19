@@ -95,6 +95,10 @@ void Engine::addBanPackage(const QString &package_name){
     ban_package.insert(package_name);
 }
 
+QStringList Engine::getBanPackages() const{
+    return ban_package.toList();
+}
+
 QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
@@ -159,14 +163,22 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101014";
+    return "20101019";
+}
+
+QStringList Engine::getKingdoms() const{
+    static QStringList kingdoms;
+    if(kingdoms.isEmpty())
+        kingdoms << "wei" << "shu" << "wu" << "qun" << "god";
+
+    return kingdoms;
 }
 
 int Engine::getCardCount() const{
     return cards.length();
 }
 
-QStringList Engine::getRandomLords() const{
+QStringList Engine::getLords() const{
     QStringList lords;
 
     // add intrinsic lord
@@ -175,6 +187,12 @@ QStringList Engine::getRandomLords() const{
         if(!ban_package.contains(general->getPackage()))
             lords << lord;
     }
+
+    return lords;
+}
+
+QStringList Engine::getRandomLords() const{
+    QStringList lords = getLords();
 
     QStringList nonlord_list;
     foreach(QString nonlord, this->nonlord_list){

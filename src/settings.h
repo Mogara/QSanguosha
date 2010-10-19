@@ -23,12 +23,14 @@ public:
     // server side
     int CountDownSeconds;
     int PlayerCount;
+    QStringList BanPackages;
+    bool FreeChoose;
 
     // client side
     QString HostAddress;
     ushort Port;
     QString UserName;
-    QString UserAvatar;    
+    QString UserAvatar;
 
     bool FitInView;
     bool EnableHotKey;

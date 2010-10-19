@@ -99,6 +99,11 @@ void StartScene::switchToServer(Server *server){
     else
         server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
 
+    if(Config.FreeChoose)
+        server_log->append(tr("Free general choose is enabled"));
+    else
+        server_log->append(tr("Free general choose is not enabled"));
+
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
 
     update();

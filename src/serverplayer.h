@@ -6,6 +6,7 @@ struct CardMoveStruct;
 class AI;
 
 #include "player.h"
+#include "socket.h"
 
 #include <QMutex>
 
@@ -15,7 +16,7 @@ class ServerPlayer : public Player
 
 public:
     explicit ServerPlayer(Room *room);
-    void setSocket(QTcpSocket *socket);    
+    void setSocket(ClientSocket *socket);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
     void sendProperty(const char *property_name);
@@ -37,6 +38,7 @@ public:
     DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
+    void kick();
 
     void setAIByGeneral();
     void setAI(AI *ai);
@@ -48,13 +50,13 @@ public:
     virtual void addCard(const Card *card, Place place);
 
 private:
-    QTcpSocket *socket;
+    ClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
     AI *ai;
 
 private slots:
-    void getRequest();
+    void getMessage(char *message);
     void castMessage(const QString &message);
 
 signals:

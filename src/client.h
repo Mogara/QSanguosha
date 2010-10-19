@@ -21,9 +21,7 @@ public:
         Responsing,
         Playing,
         Discarding,
-        ExecDialog,
-        AskForSkillInvoke,
-        AskForChoices,        
+        ExecDialog,   
         AskForAG,
         AskForPlayerChoose,
         AskForYiji,
@@ -41,8 +39,6 @@ public:
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
-    void invokeSkill(bool invoke);
-    void selectChoice(int choice);
     void responseCard(const Card *card);
     void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
@@ -53,6 +49,9 @@ public:
     QList<ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);    
     void prompt(const QString &prompt_str);
+    ClientPlayer *getPlayer(const QString &name);
+    QMap<QString, bool> getExtensions() const;
+    void kick(const QString &to_kick);
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -86,6 +85,7 @@ public:
     void moveFocus(const QString &focus);
     void setEmotion(const QString &set_str);
     void skillInvoked(const QString &invoke_str);
+    void acquireSkill(const QString &acquire_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -106,6 +106,7 @@ public:
     void askForChoice(const QString &ask_str);
     void askForDiscard(const QString &discard_str);
     void askForSuit(const QString &);
+    void askForKingdom(const QString &);
     void askForNullification(const QString &ask_str);
     void askForCardChosen(const QString &ask_str);
     void askForPindian(const QString &ask_str);
@@ -126,8 +127,9 @@ public:
     QDialog *ask_dialog;
     QStringList players_to_choose;
 
-public slots:    
-    void itemChosen(const QString &item_name);
+public slots:
+    void chooseItem(const QString &_name);
+    void selectChoice();
     void updateFrequentFlags(int state);
     void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
@@ -135,7 +137,6 @@ public slots:
     void trust();
 
 #ifndef QT_NO_DEBUG
-    void cheatChoose();
     void requestCard(int card_id);
 #endif
 
@@ -147,15 +148,16 @@ private:
     QHash<QString, Callback> callbacks;
     QList<ClientPlayer*> players;
     NullificationDialog *nullification_dialog;
-    QString first_choice;
-    QString second_choice;
     bool use_card;
+    QStringList ban_packages;
 
 private slots:
     void processReply(char *reply);
     void notifyRoleChange(const QString &new_role);
     void chooseSuit();
+    void chooseKingdom();
     void clearTurnTag();
+    void invokeSkill(int result);
 
 signals:
     void server_connected();
@@ -180,6 +182,7 @@ signals:
     void focus_moved(const QString &focus);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
+    void skill_acquired(const ClientPlayer *player, const QString &skill_name);
 
     void game_started();
     void game_over(bool victory, const QList<bool> &result_list);

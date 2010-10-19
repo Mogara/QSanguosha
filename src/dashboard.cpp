@@ -82,6 +82,8 @@ void Dashboard::setPlayer(const Player *player){
     this->player = player;
 
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
+    connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+
     updateAvatar();
 }
 
@@ -89,7 +91,7 @@ void Dashboard::updateAvatar(){
     const General *general = player->getAvatarGeneral();
     avatar->setToolTip(general->getSkillDescription());
     avatar->changePixmap(general->getPixmapPath("big"));
-    kingdom->setPixmap(QPixmap(general->getKingdomPath()));
+    kingdom->setPixmap(QPixmap(player->getKingdomPath()));
 
     avatar->show();
     kingdom->show();

@@ -244,8 +244,8 @@ bool JijiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const
     return targets.isEmpty() && Self->canSlash(to_select);
 }
 
-void JijiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    QList<ServerPlayer *> lieges = room->getLieges(source);
+void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer *> &targets) const{
+    QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
     const Card *slash = NULL;
     foreach(ServerPlayer *liege, lieges){
         QString result = room->askForChoice(liege, "jijiang", "accept+ignore");
@@ -254,8 +254,8 @@ void JijiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 
         slash = room->askForCard(liege, "slash", "@jijiang-slash");
         if(slash){
-            source->invoke("increaseSlashCount");
-            room->cardEffect(slash, source, targets.first());
+            liubei->invoke("increaseSlashCount");
+            room->cardEffect(slash, liubei, targets.first());
             return;
         }
     }

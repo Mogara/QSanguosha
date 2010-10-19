@@ -25,6 +25,8 @@ extern audiere::AudioDevicePtr Device;
 #include <QLineEdit>
 #include <QInputDialog>
 #include <QLabel>
+#include <QFormLayout>
+#include <QListWidget>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -128,6 +130,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
+    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)),
+            this, SLOT(acquireSkill(const ClientPlayer*,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
@@ -484,7 +488,11 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
 }
 
 void RoomScene::timerEvent(QTimerEvent *event){
-    int step = 100 / double(Config.OperationTimeout * 5);
+    int timeout = Config.OperationTimeout;
+    if(ClientInstance->getStatus() == Client::AskForGuanxing)
+        timeout = 15;
+
+    int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;
     new_value = qMin(progress_bar->maximum(), new_value);
     progress_bar->setValue(new_value);
@@ -773,6 +781,73 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
     }
 }
 
+void RoomScene::addSkillButton(const Skill *skill){
+    QAbstractButton *button = NULL;
+    QString skill_name = Sanguosha->translate(skill->objectName());
+    if(skill->inherits("TriggerSkill")){
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        switch(trigger_skill->getFrequency()){
+        case TriggerSkill::Frequent:{
+                QCheckBox *checkbox = new QCheckBox(skill_name);
+
+                checkbox->setObjectName(skill->objectName());
+                checkbox->setChecked(false);
+                connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
+                checkbox->setChecked(true);
+
+                button = checkbox;
+                break;
+        }
+        case TriggerSkill::NotFrequent:{
+                const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
+                button = new QPushButton(skill_name);
+                if(view_as_skill){
+                    button2skill.insert(button, view_as_skill);
+                    connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+                }
+
+                break;
+        }
+
+        case TriggerSkill::Compulsory:{
+                button = new QPushButton(skill_name + tr(" [Compulsory]"));
+                button->setEnabled(false);
+                break;
+            }
+        }
+    }else if(skill->inherits("ViewAsSkill")){
+        button = new QPushButton(skill_name);
+        button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
+        connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+    }else{
+        button = new QPushButton(skill_name);
+        if(skill->getFrequency() == Skill::Compulsory){
+            button->setText(skill_name + tr(" [Compulsory]"));
+            button->setEnabled(false);
+        }
+    }
+
+    button->setObjectName(skill->objectName());
+    if(skill->isLordSkill())
+        button->setText(button->text() + tr(" [Lord Skill]"));
+
+    main_window->statusBar()->addPermanentWidget(button);
+    skill_buttons << button;
+    button->setToolTip(skill->getDescription());
+}
+
+void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
+    QString type = "#AcquireSkill";
+    QString from_general = player->getGeneralName();
+    QString arg = skill_name;
+
+    log_box->appendLog(type, from_general, QStringList(), QString(), arg);
+
+    if(player == Self){
+        addSkillButton(Sanguosha->getSkill(skill_name));
+    }
+}
+
 void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
@@ -786,59 +861,10 @@ void RoomScene::updateSkillButtons(){
         if(skill->objectName().startsWith("#"))
             continue;
 
-        QAbstractButton *button = NULL;
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        if(skill->inherits("TriggerSkill")){
-            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            switch(trigger_skill->getFrequency()){
-            case TriggerSkill::Frequent:{
-                    QCheckBox *checkbox = new QCheckBox(skill_name);
+        if(skill->isLordSkill() && Self->getRole() != "lord")
+            continue;
 
-                    checkbox->setObjectName(skill->objectName());
-                    checkbox->setChecked(false);
-                    connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
-                    checkbox->setChecked(true);
-
-                    button = checkbox;
-                    break;
-            }
-            case TriggerSkill::NotFrequent:{
-                    const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-                    button = new QPushButton(skill_name);
-                    if(view_as_skill){
-                        button2skill.insert(button, view_as_skill);
-                        connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-                    }
-
-                    break;
-            }
-
-            case TriggerSkill::Compulsory:{
-                    button = new QPushButton(skill_name + tr(" [Compulsory]"));
-                    button->setEnabled(false);
-                    break;
-                }
-            }
-        }else if(skill->inherits("ViewAsSkill")){
-            button = new QPushButton(skill_name);
-            button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
-            connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-        }else{
-            button = new QPushButton(skill_name);
-            if(skill->getFrequency() == Skill::Compulsory){
-                button->setText(skill_name + tr(" [Compulsory]"));
-                button->setEnabled(false);
-            }
-        }
-
-        button->setObjectName(skill->objectName());
-        if(skill->isLordSkill())
-            button->setText(button->text() + tr(" [Lord Skill]"));
-
-        button->setToolTip(skill->getDescription());
-
-        status_bar->addPermanentWidget(button);
-        skill_buttons << button;
+        this->addSkillButton(skill);
     }
 
     status_bar->addPermanentWidget(role_combobox);
@@ -852,16 +878,6 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
     role_combobox->setCurrentIndex(1);
-
-    if(new_role != "lord"){
-        foreach(QAbstractButton *button, skill_buttons){
-            const Skill *skill = Sanguosha->getSkill(button->objectName());
-
-            Q_ASSERT(skill != NULL);
-            if(skill->isLordSkill())
-                button->hide();
-        }
-    }
 }
 
 void RoomScene::clickSkillButton(int order){
@@ -1077,16 +1093,6 @@ void RoomScene::doTimeout(){
             break;
         }
 
-    case Client::AskForSkillInvoke:{
-            cancel_button->click();
-            break;
-        }
-
-    case Client::AskForChoices:{
-            ClientInstance->selectChoice(0);
-            break;
-        }
-
     case Client::AskForPlayerChoose:{
             ClientInstance->choosePlayer(NULL);
             dashboard->stopPending();
@@ -1131,9 +1137,8 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            // enable all photos for mark roles
-            foreach(Photo *photo, photos)
-                photo->setEnabled(true);
+            if(dashboard->currentSkill())
+                dashboard->stopPending();
 
             break;
         }
@@ -1183,22 +1188,6 @@ void RoomScene::updateStatus(Client::Status status){
 
     case Client::ExecDialog:{
             ok_button->setEnabled(false);
-            cancel_button->setEnabled(true);
-            discard_button->setEnabled(false);
-
-            break;
-        }
-
-    case Client::AskForSkillInvoke:{
-            ok_button->setEnabled(true);
-            cancel_button->setEnabled(true);
-            discard_button->setEnabled(false);
-
-            break;
-        }
-
-    case Client::AskForChoices:{
-            ok_button->setEnabled(true);
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
 
@@ -1353,18 +1342,6 @@ void RoomScene::doOkButton(){
             break;
         }        
 
-    case Client::AskForSkillInvoke:{
-            ClientInstance->invokeSkill(true);
-            daqiao->hide();
-            break;
-        }
-
-    case Client::AskForChoices:{
-            ClientInstance->selectChoice(1);
-            daqiao->hide();
-            break;
-        }
-
     case Client::NotActive: {
             QMessageBox::warning(main_window, tr("Warning"),
                                  tr("The OK button should be disabled when client is not active!"));
@@ -1481,18 +1458,6 @@ void RoomScene::doCancelButton(){
             break;
         }
 
-    case Client::AskForSkillInvoke:{
-            ClientInstance->invokeSkill(false);
-            daqiao->hide();
-            break;
-        }
-
-    case Client::AskForChoices:{
-            ClientInstance->selectChoice(2);
-            daqiao->hide();
-            break;
-        }
-
     case Client::AskForYiji:{
             dashboard->stopPending();
             ClientInstance->replyYiji(NULL, NULL);
@@ -1540,7 +1505,7 @@ void RoomScene::changeHp(const QString &who, int delta){
         static QString male_damage_effect("audio/male-damage.mp3");
         static QString female_damage_effect("audio/female-damage.mp3");
 
-        ClientPlayer *player = ClientInstance->findChild<ClientPlayer *>(who);
+        ClientPlayer *player = ClientInstance->getPlayer(who);
 
         if(player->getGeneral()->isMale())
             Sanguosha->playEffect(male_damage_effect);
@@ -1581,12 +1546,15 @@ void RoomScene::freeze(){
         bgmusic = NULL;
     }
     progress_bar->hide();
+
+    main_window->setStatusBar(NULL);
 }
 
 void RoomScene::onStandoff(){
     freeze();
 
     QDialog *dialog = new QDialog(main_window);
+    dialog->resize(600, 800);
     dialog->setWindowTitle(tr("Standoff"));
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -1606,6 +1574,7 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     freeze();
 
     QDialog *dialog = new QDialog(main_window);
+    dialog->resize(600, 800);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
 
     QGroupBox *winner_box = new QGroupBox(tr("Winner(s)"));
@@ -2114,5 +2083,74 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     if(player != Self){
         Photo *photo = name2photo.value(who);
         photo->showSkillName(skill_name);
+    }
+}
+
+#include <QRadioButton>
+
+void RoomScene::showServerInformation()
+{
+    QDialog *dialog = new QDialog(main_window);
+    dialog->setWindowTitle(tr("Server information"));
+
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Address"), new QLabel(Config.HostAddress));
+    layout->addRow(tr("Port"), new QLabel(QString::number(Config.Port)));
+    layout->addRow(tr("Player count"), new QLabel(QString::number(photos.length() + 1)));
+
+    QLabel *time_limit = new QLabel;
+    if(Config.OperationNoLimit)
+        time_limit->setText(tr("No limit"));
+    else
+        time_limit->setText(tr("%1 seconds").arg(Config.OperationTimeout));
+    layout->addRow(tr("Operation time"), time_limit);
+
+    QListWidget *list_widget = new QListWidget;
+    QIcon enabled_icon(":/enabled.png");
+    QIcon disabled_icon(":/disabled.png");
+
+    QMap<QString, bool> extensions = ClientInstance->getExtensions();
+    QMapIterator<QString, bool> itor(extensions);
+    while(itor.hasNext()){
+        itor.next();
+
+        QString package_name = Sanguosha->translate(itor.key());
+        bool checked = itor.value();
+
+        QCheckBox *checkbox = new QCheckBox(package_name);
+        checkbox->setChecked(checked);
+
+        new QListWidgetItem(checked ? enabled_icon : disabled_icon, package_name, list_widget);
+    }
+
+    layout->addRow(tr("Extension packages"), list_widget);
+
+    dialog->setLayout(layout);
+
+    dialog->show();
+}
+
+void RoomScene::kick(){
+    if(Self->getRole() != "lord"){
+        QMessageBox::warning(main_window, tr("Warning"), tr("Only the lord can kick!"));
+        return;
+    }
+
+    QStringList items;
+    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    if(players.isEmpty())
+        return;
+
+    foreach(ClientPlayer *player, players){
+        QString general_name = Sanguosha->translate(player->getGeneralName());
+        items << QString("%1[%2]").arg(player->screenName()).arg(general_name);
+    }
+
+    bool ok;
+    QString item = QInputDialog::getItem(main_window, tr("Kick"),
+                                         tr("Please select the player to kick"), items, 0, false, &ok);
+    if(ok){
+        int index = items.indexOf(item);
+        ClientInstance->kick(players.at(index)->objectName());
     }
 }

@@ -185,8 +185,10 @@ void Player::setGeneralName(const QString &general_name){
 
     if(this->general != new_general){
         this->general = new_general;
-        if(new_general)
+        if(new_general){
             setHp(getMaxHP());
+            setKingdom(general->getKingdom());
+        }
 
         emit general_changed();
     }
@@ -237,9 +239,13 @@ const General *Player::getGeneral() const{
 
 bool Player::hasSkill(const QString &skill_name) const{
     if(general)
-        return general->hasSkill(skill_name);
+        return general->hasSkill(skill_name) || acquired_skills.contains(skill_name);
     else
         return false;
+}
+
+void Player::acquireSkill(const QString &skill_name){
+    acquired_skills.insert(skill_name);
 }
 
 QString Player::getPhaseString() const{
@@ -367,6 +373,21 @@ int Player::getMaxCards() const{
 
 int Player::getXueyi() const{
     return xueyi;
+}
+
+QString Player::getKingdom() const{
+    return kingdom;
+}
+
+void Player::setKingdom(const QString &kingdom){
+    if(this->kingdom != kingdom){
+        this->kingdom = kingdom;
+        emit kingdom_changed();
+    }
+}
+
+QString Player::getKingdomPath() const{
+    return QString(":/kingdom/%1.png").arg(kingdom);
 }
 
 void Player::setXueyi(int xueyi){

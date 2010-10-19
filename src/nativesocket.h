@@ -32,11 +32,13 @@ public:
     virtual QString peerName() const;
 
 private slots:
-    void emitReplies();
+    void getMessage();
     void raiseError(QAbstractSocket::SocketError socket_error);
 
 private:
     QTcpSocket * const socket;
+
+    void init();
 };
 
 #endif // NATIVESOCKET_H

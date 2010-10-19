@@ -69,7 +69,7 @@ Photo::Photo(int order)
     skill_name_item = new QGraphicsSimpleTextItem(this);
     skill_name_item->setBrush(Qt::white);
     skill_name_item->setFont(Config.SmallFont);
-    skill_name_item->moveBy(60, 30);
+    skill_name_item->moveBy(10, 30);
 }
 
 void Photo::showProcessBar(){
@@ -136,14 +136,16 @@ void Photo::hideEmotion(){
     emotion_item->hide();
 }
 
-void Photo::timerEvent(QTimerEvent *){
+void Photo::timerEvent(QTimerEvent *event){
     int step = 100 / double(Config.OperationTimeout * 5);
     int new_value = progress_bar->value() + step;
     new_value = qMin(progress_bar->maximum(), new_value);
     progress_bar->setValue(new_value);
 
-    if(new_value == progress_bar->maximum())
-        hideProcessBar();
+    if(new_value == progress_bar->maximum()){
+        killTimer(event->timerId());
+        timer_id = 0;
+    }
 }
 
 void Photo::setPlayer(const ClientPlayer *player)
@@ -156,7 +158,8 @@ void Photo::setPlayer(const ClientPlayer *player)
         role_combobox->addItem(QIcon(":/roles/renegade.png"), tr("renegade"));
 
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
-        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));        
+        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     }else{
         role_combobox->clear();
@@ -192,7 +195,7 @@ void Photo::updateAvatar(){
         setToolTip(general->getSkillDescription());
         avatar.load(general->getPixmapPath("small"));
         avatar = avatar.scaled(QSize(128,58));
-        kingdom = QPixmap(general->getKingdomPath());
+        kingdom = QPixmap(player->getKingdomPath());
     }else{
         avatar = QPixmap();
         kingdom = QPixmap();
@@ -328,6 +331,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->drawPixmap(1, 13, avatar);
     painter->drawPixmap(0, 10, avatar_frame);
+
     painter->drawPixmap(0,  0, kingdom);
 
     if(!player->isAlive()){

@@ -1,5 +1,4 @@
 #include "god.h"
-#include "skill.h"
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
@@ -278,6 +277,8 @@ public:
         int i, x = damage.damage;
         for(i=0; i<x; i++){
             if(room->askForSkillInvoke(shencc, objectName())){
+                room->playSkillEffect(objectName());
+
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
@@ -297,15 +298,15 @@ public:
     }
 };
 
-class Feiying: public GameStartSkill{
-public:
-    Feiying():GameStartSkill("feiying"){
-        frequency = Compulsory;
-    }
+Feiying::Feiying()
+    :GameStartSkill("feiying")
+{
+    frequency = Compulsory;
+}
 
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setPlayerCorrect(player, "F");
-    }
+void Feiying::onGameStart(ServerPlayer *player) const
+{
+    player->getRoom()->setPlayerCorrect(player, "F");
 };
 
 class Baonu: public TriggerSkill{
@@ -405,10 +406,10 @@ GodPackage::GodPackage()
 {
     t["god"] = tr("god");
 
-    //General *shenguanyu = new General(this, "shenguanyu", "shu", 5);
+    //General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     //shenguanyu->addSkill(new Wuhun);
 
-    General *shenlumeng = new General(this, "shenlumeng", "wu", 3);
+    General *shenlumeng = new General(this, "shenlumeng", "god", 3);
     shenlumeng->addSkill(new Shelie);
     shenlumeng->addSkill(new Gongxin);
 
@@ -428,13 +429,13 @@ GodPackage::GodPackage()
     t["gongxin:discard"] = tr("gongxin:discard");
     t["gongxin:put"] = tr("gongxin:put");
 
-    General *shenzhouyu = new General(this, "shenzhouyu", "wu");
+    General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
     shenzhouyu->addSkill(new GreatYeyan);
     shenzhouyu->addSkill(new MediumYeyan);
     shenzhouyu->addSkill(new SmallYeyan);
 
-    //General *shenzhugeliang = new General(this, "shenzhugeliang", "shu", 3);
+    //General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
 
     t["shenzhouyu"] = tr("shenzhouyu");
     t["shenzhugeliang"] = tr("shenzhugeliang");
@@ -455,11 +456,11 @@ GodPackage::GodPackage()
     t["mediumyeyan"] = tr("mediumyeyan");
     t["smallyeyan"] = tr("smallyeyan");
 
-    General *shencaocao = new General(this, "shencaocao$", "wei", 3);
+    General *shencaocao = new General(this, "shencaocao$", "god", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 
-    //General *shenlubu = new General(this, "shenlubu", "qun", 5);
+    //General *shenlubu = new General(this, "shenlubu", "god", 5);
     //shenlubu->addSkill(new Baonu);
     //shenlubu->addSkill(new Shenfen);
 

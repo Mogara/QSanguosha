@@ -35,6 +35,8 @@ void Settings::init(){
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     PlayerCount = value("PlayerCount", 2).toInt();
+    BanPackages = value("BanPackages").toStringList();
+    FreeChoose = value("FreeChoose", false).toBool();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")

@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "client.h"
 #include "carditem.h"
+#include "god.h"
 
 Shit::Shit(Suit suit, int number):BasicCard(suit, number){
     setObjectName("shit");
@@ -258,6 +259,79 @@ public:
     }
 };
 
+class Guixin2: public PhaseChangeSkill{
+public:
+    Guixin2():PhaseChangeSkill("guixin2"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shencc) const{
+        if(shencc->getPhase() != Player::Finish)
+            return false;
+
+        Room *room = shencc->getRoom();
+        if(!room->askForSkillInvoke(shencc, objectName()))
+            return false;
+
+        QString choice = room->askForChoice(shencc, objectName(), "modify+obtain");
+
+        if(choice == "modify"){
+            ServerPlayer *to_modify = room->askForPlayerChosen(shencc, room->getOtherPlayers(shencc));
+            QString kingdom = room->askForKingdom(shencc);
+            QString old_kingdom = to_modify->getKingdom();
+            room->setPlayerProperty(to_modify, "kingdom", kingdom);
+
+            LogMessage log;
+            log.type = "#ChangeKingdom";
+            log.from = shencc;
+            log.to << to_modify;
+            log.arg = old_kingdom;
+            log.arg2 = kingdom;
+            room->sendLog(log);
+
+        }else if(choice == "obtain"){
+            QStringList lords = Sanguosha->getLords();
+            QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+            foreach(ServerPlayer *player, players){
+                lords.removeOne(player->objectName());
+            }
+
+            QStringList lord_skills;
+            foreach(QString lord, lords){
+                const General *general = Sanguosha->getGeneral(lord);
+                QList<const Skill *> skills = general->findChildren<const Skill *>();
+                foreach(const Skill *skill, skills){
+                    if(skill->isLordSkill() && !shencc->hasSkill(skill->objectName()))
+                        lord_skills << skill->objectName();
+                }
+            }
+
+            if(!lord_skills.isEmpty()){
+                QString skill_name = room->askForChoice(shencc, objectName(), lord_skills.join("+"));
+                shencc->acquireSkill(skill_name);
+                const Skill *skill = Sanguosha->getSkill(skill_name);
+                if(skill->inherits("TriggerSkill")){
+                    const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+                    room->getThread()->addTriggerSkill(trigger_skill);
+                }
+                QString acquire_str = QString("%1:%2").arg(shencc->objectName()).arg(skill_name);
+                room->broadcastInvoke("acquireSkill", acquire_str);
+
+                // special case, huangtian
+                if(skill_name == "huangtian"){
+                    const GameStartSkill *huangtian_skill = qobject_cast<const GameStartSkill *>(skill);
+                    huangtian_skill->onGameStart(shencc);
+                }
+            }
+        }
+
+        room->playSkillEffect("guixin", 2);
+
+        return false;
+    }
+};
+
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -272,26 +346,48 @@ YitianPackage::YitianPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 
+    t["#AcquireSkill"] = tr("#AcquireSkill");
+    t["#ChangeKingdom"] = tr("#ChangeKingdom");
+
     t["yitian"] = tr("yitian");
     t["shit"] = tr("shit");
     t["yitian_sword"] = tr("yitian_sword");
     t["moon_spear"] = tr("moon_spear");
 
     // generals
+    General *shencc = new General(this, "shencc$", "god", 3);
+    shencc->addSkill(new Guixin2);
+    shencc->addSkill(new Feiying);
+
     General *caochong = new General(this, "caochong", "wei", 3);
     caochong->addSkill(new Chengxiang);
     caochong->addSkill(new Conghui);
     caochong->addSkill(new Zaoyao);
 
     t["caochong"] = tr("caochong");
+    t["shencc"] = tr("shencc");
 
+    t["guixin2"] = tr("guixin2");
     t["chengxiang"] = tr("chengxiang");
     t["conghui"] = tr("conghui");
     t["zaoyao"] = tr("zaoyao");
 
+    t[":guixin2"] = tr(":guixin2");
     t[":chengxiang"] = tr(":chengxiang");
     t[":conghui"] = tr(":conghui");
     t[":zaoyao"] = tr(":zaoyao");
+
+    t["guixin2:yes"] = tr("guixin2:yes");
+    t["guixin2:modify"] = tr("guixin2:modify");
+    t["guixin2:obtain"] = tr("guixin2:obtain");
+
+    t["guixin2:hujia"] = tr("guixin2:hujia");
+    t["guixin2:jijiang"] = tr("guixin2:jijiang");
+    t["guixin2:jiuyuan"] = tr("guixin2:jiuyuan");
+    t["guixin2:huangtian"] = tr("guixin2:huangtian");
+    t["guixin2:xueyi"] = tr("guixin2:xueyi");
+    t["guixin2:baonue"] = tr("guixin2:baonue");
+    t["guixin2:songwei"] = tr("guixin2:songwei");
 
     t[":moon_spear"] = tr(":moon_spear");
     t[":yitian_sword"] = tr(":yitian_sword");

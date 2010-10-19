@@ -32,17 +32,13 @@ public:
         default_choice = "ignore";
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName()) && target->isAlive();
-    }
-
     virtual bool trigger(TriggerEvent, ServerPlayer *caocao, QVariant &data) const{
         QString pattern = data.toString();
         if(pattern != "jink")
             return false;
 
         Room *room = caocao->getRoom();
-        QList<ServerPlayer *> lieges = room->getLieges(caocao);
+        QList<ServerPlayer *> lieges = room->getLieges("wei", caocao);
         if(lieges.isEmpty())
             return false;
 
@@ -262,6 +258,9 @@ public:
                 DamageStruct damage = data.value<DamageStruct>();
 
                 const Card *reason = damage.card;
+                if(reason == NULL)
+                    return false;
+
                 if(reason->inherits("Slash") || reason->inherits("Duel")){
                     damage.damage ++;
                     data = QVariant::fromValue(damage);
@@ -396,7 +395,7 @@ public:
             return false;
 
         Room *room = liubei->getRoom();
-        QList<ServerPlayer *> lieges = room->getLieges(liubei);
+        QList<ServerPlayer *> lieges = room->getLieges("shu", liubei);
         if(lieges.isEmpty())
             return false;
 
