@@ -327,6 +327,8 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
         Room *room = pangtong->getRoom();
         if(room->askForSkillInvoke(pangtong, objectName())){
+            room->playSkillEffect(objectName());
+
             pangtong->throwAllCards();
             room->setPlayerProperty(pangtong, "hp", 3);
             pangtong->drawCards(3);
