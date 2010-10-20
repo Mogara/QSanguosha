@@ -81,7 +81,7 @@ void StartScene::switchToServer(Server *server){
     qSort(items);
 
     foreach(QString item, items){
-        if(item.startsWith("192.168."))
+        if(item.startsWith("192.168.") || item.startsWith("10."))
             server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if(item == "127.0.0.1")
             server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));

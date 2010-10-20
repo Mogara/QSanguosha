@@ -91,7 +91,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "wei" && !target->isLord();
+        return target->getKingdom() == "wei" && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -100,7 +100,13 @@ public:
         if(card->isBlack()){
             Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName())){
-                room->getLord()->drawCards(1);
+                QList<ServerPlayer *> players = room->getOtherPlayers(player);
+                foreach(ServerPlayer *p, players){
+                    if(p->hasSkill(objectName())){
+                        p->drawCards(1);
+                        break;
+                    }
+                }
             }
         }
 
@@ -724,7 +730,7 @@ public:
             }else{
                 dongzhuo->setMaxHP(dongzhuo->getMaxHP() - 1);
                 if(dongzhuo->getMaxHP() == 0){
-                    room->getThread()->trigger(Death, dongzhuo);
+                    room->killPlayer(dongzhuo);
                 }
 
                 room->broadcastProperty(dongzhuo, "maxhp");
@@ -744,16 +750,21 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(target->getGeneral()->getKingdom() != "qun")
-            return false;
-
-        return !target->isLord();
+        return target->getKingdom() == "qun" && !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        ServerPlayer *dongzhuo = room->getLord();
-        if(dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
+        ServerPlayer *dongzhuo = NULL;
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        foreach(ServerPlayer *p, players){
+            if(p->hasSkill(objectName())){
+                dongzhuo = p;
+                break;
+            }
+        }
+
+        if(dongzhuo && dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
             const Card *card = room->getJudgeCard(player);
             if(card->getSuit() == Card::Spade){
                 room->playSkillEffect(objectName());

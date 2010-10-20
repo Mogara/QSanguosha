@@ -105,8 +105,8 @@ Client::Client(QObject *parent)
     callbacks["drawNCards"] = &Client::drawNCards;
 
     // interactive methods
-    callbacks["getGenerals"] = &Client::getGenerals;
     callbacks["activate"] = &Client::activate;
+    callbacks["doChooseGeneral"] = &Client::doChooseGeneral;
     callbacks["doGuanxing"] = &Client::doGuanxing;
     callbacks["doGongxin"] = &Client::doGongxin;
     callbacks["askForDiscard"] = &Client::askForDiscard;
@@ -211,7 +211,7 @@ void Client::processReply(char *reply){
         // others
         buffer_t object_name, property, value;
         sscanf(reply, "#%s %s %s", object_name, property, value);
-        ClientPlayer *player = findChild<ClientPlayer*>(object_name);
+        ClientPlayer *player = getPlayer(object_name);
         if(player){
             bool declared = player->setProperty(property, value);
             if(!declared){
@@ -225,9 +225,9 @@ void Client::processReply(char *reply){
         buffer_t method_name, arg;
         sscanf(reply, "%s %s", method_name, arg);
         Callback callback = callbacks.value(method_name, NULL);
-        if(callback)
+        if(callback){
             (this->*callback)(arg);
-        else
+        }else
             QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
     }
 }
@@ -287,7 +287,7 @@ void Client::drawNCards(const QString &draw_str){
     }
 }
 
-void Client::getGenerals(const QString &generals_str){
+void Client::doChooseGeneral(const QString &generals_str){
     QStringList generals_list = generals_str.split("+");
     QList<const General *> generals;
     foreach(QString general_name, generals_list){
@@ -312,22 +312,23 @@ void Client::requestCard(int card_id){
 #endif
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
-    if(!card){
+    if(card == NULL){
         request("useCard .");
-        setStatus(NotActive);
-        return;
+    }else{
+        QStringList target_names;
+        foreach(const ClientPlayer *target, targets)
+            target_names << target->objectName();
+
+        if(target_names.isEmpty())
+            request(QString("useCard %1->.").arg(card->toString()));
+        else
+            request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
     }
 
-    QStringList target_names;
-    foreach(const ClientPlayer *target, targets)
-        target_names << target->objectName();
-
-    if(target_names.isEmpty())
-        request(QString("useCard %1->.").arg(card->toString()));
-    else
-        request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
-
-    card->use(targets);
+    if(status == Playing)
+        card->use(targets);
+    else if(status == Responsing)
+        card_pattern.clear();
 
     setStatus(NotActive);
 }
@@ -763,20 +764,6 @@ void Client::responseCard(const Card *card){
     setStatus(NotActive);
 }
 
-void Client::responseCard(const Card *card, const QList<const ClientPlayer *> &targets){
-    if(card == NULL){
-        request("useCard .");
-    }else{
-        QStringList target_names;
-        foreach(const ClientPlayer *target, targets)
-            target_names << target->objectName();
-        request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
-    }
-
-    card_pattern.clear();
-    setStatus(NotActive);
-}
-
 bool Client::noTargetResponsing() const{
     return status == Responsing && !use_card;
 }
@@ -1063,6 +1050,7 @@ void Client::askForSinglePeach(const QString &ask_str){
     }
 
     refusable = true;
+    use_card = false;
     setStatus(Responsing);
 }
 

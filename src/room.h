@@ -38,7 +38,7 @@ public:
     QList<ServerPlayer *> getAllPlayers();
     void nextPlayer();
     void output(const QString &message);
-    void obit(ServerPlayer *victim, ServerPlayer *killer);
+    void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
     void bury(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);

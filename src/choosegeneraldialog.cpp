@@ -87,6 +87,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
         last_layout->addWidget(free_choose_button);
     }
 
+    last_layout->addStretch();
+
     if(last_layout->count() != 0){
         dialog_layout->addLayout(last_layout);
     }
@@ -168,6 +170,8 @@ FreeChooseDialog::FreeChooseDialog(ChooseGeneralDialog *parent)
     layout->addLayout(button_layout);
 
     setLayout(layout);
+
+    group->buttons().first()->click();
 }
 
 void FreeChooseDialog::chooseGeneral(){

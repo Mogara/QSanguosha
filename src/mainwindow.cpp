@@ -231,7 +231,13 @@ void MainWindow::on_actionAbout_triggered()
 
     const char *date = __DATE__;
     const char *time = __TIME__;
-    content.append(tr("Compilation time: %1 %2").arg(date).arg(time));
+    content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
+
+    QString code_url = "http://gitorious.org/qsanguosha";
+    QString project_url = "http://code.google.com/p/q-sanguosha/";
+
+    content.append(tr("Source code: <a href='%1'>%1</a> <br/>").arg(code_url));
+    content.append(tr("Project home: <a href='%1'>%1</a> <br/>").arg(project_url));
 
     // FIXME: add acknowledgement
 

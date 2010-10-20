@@ -120,12 +120,33 @@ void Room::output(const QString &message){
     emit room_message(message);
 }
 
-void Room::obit(ServerPlayer *victim, ServerPlayer *killer){
+void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     victim->setAlive(false);
     broadcastProperty(victim, "alive");
 
     broadcastProperty(victim, "role");
     broadcastInvoke("killPlayer", victim->objectName());
+
+    LogMessage log;
+    log.to << victim;
+    log.arg = victim->getRole();
+    log.from = killer;
+
+    QVariant killer_name;
+    if(killer){
+        killer_name = killer->objectName();
+
+        if(killer == victim)
+            log.type = "#Suicide";
+        else
+            log.type = "#Murder";
+    }else{
+        log.type = "#Contingency";
+    }
+
+    sendLog(log);
+
+    thread->trigger(Death, victim, killer_name);
 }
 
 void Room::bury(ServerPlayer *player){
@@ -932,7 +953,7 @@ void Room::assignRoles(){
 
             QStringList lord_list = Sanguosha->getRandomLords();
             player->setProperty("default_general", lord_list.first());
-            player->invoke("getGenerals", lord_list.join("+"));
+            player->invoke("doChooseGeneral", lord_list.join("+"));
         }else
             player->sendProperty("role");
     }
@@ -970,7 +991,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
                 choices << general_list[(i-1)*choice_count + j];
 
             players[i]->setProperty("default_general", choices.first());
-            players[i]->invoke("getGenerals", choices.join("+"));
+            players[i]->invoke("doChooseGeneral", choices.join("+"));
         }
     }else
         player->sendProperty("general");

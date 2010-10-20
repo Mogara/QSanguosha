@@ -40,7 +40,6 @@ public:
     Status getStatus() const;
     int alivePlayerCount() const;
     void responseCard(const Card *card);
-    void responseCard(const Card *card, const QList<const ClientPlayer *> &targets);
     bool noTargetResponsing() const;
     void discardCards(const Card *card);
     void replyYiji(const Card *card, const ClientPlayer *to);
@@ -61,7 +60,7 @@ public:
     void removePlayer(const QString &player_name);
     void drawCards(const QString &cards_str);
     void drawNCards(const QString &draw_str);
-    void getGenerals(const QString &generals_str);
+    void doChooseGeneral(const QString &generals_str);
     void startInXs(const QString &);
     void arrangeSeats(const QString &seats);    
     void activate(const QString &focus_player);

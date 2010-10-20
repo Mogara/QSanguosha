@@ -293,7 +293,7 @@ public:
             QStringList lords = Sanguosha->getLords();
             QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
             foreach(ServerPlayer *player, players){
-                lords.removeOne(player->objectName());
+                lords.removeOne(player->getGeneralName());
             }
 
             QStringList lord_skills;

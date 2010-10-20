@@ -309,7 +309,7 @@ StandardPackage::StandardPackage()
 
     // log translation
     t["#ChooseSuit"] = tr("#ChooseSuit");
-    t["#Death"] = tr("#Death");
+    t["#Contingency"] = tr("#Contingency");
     t["#Murder"] = tr("#Murder");
     t["#Suicide"] = tr("#Suicide");
     t["#InvokeSkill"] = tr("#InvokeSkill");

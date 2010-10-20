@@ -29,7 +29,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
     case Player::Judge: {
             QStack<const DelayedTrick *> tricks = player->delayedTricks();
-            while(!tricks.isEmpty()){
+            while(!tricks.isEmpty() && player->isAlive()){
                 const DelayedTrick *trick = tricks.pop();
                 bool on_effect = room->cardEffect(trick, NULL, player);
                 if(!on_effect)
@@ -106,27 +106,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(got >= dying.peaches)
                 room->setPlayerProperty(player, "hp", got - dying.peaches + 1);
             else{
-                LogMessage log;
-                log.to << player;
-                log.arg = player->getRole();
+                ServerPlayer *killer = NULL;
+                if(dying.damage && dying.damage->from)
+                    killer = dying.damage->from;
 
-                QVariant killer_name;
-                if(dying.damage && dying.damage->from){
-                    ServerPlayer *killer = dying.damage->from;
-                    killer_name = killer->objectName();
-
-                    if(killer == player)
-                        log.type = "#Suicide";
-                    else{
-                        log.type = "#Murder";
-                        log.from = killer;
-                    }
-                }else{
-                    log.type = "#Death";
-                }
-
-                room->sendLog(log);
-                room->getThread()->trigger(Death, player, killer_name);
+                room->killPlayer(player, killer);
             }
             break;
         }
@@ -240,7 +224,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             ServerPlayer *killer = NULL;
             if(!killer_name.isEmpty())
                 killer = room->findChild<ServerPlayer *>(killer_name);
-            room->obit(player, killer);
 
             if(winner.isNull()){
                 room->bury(player);

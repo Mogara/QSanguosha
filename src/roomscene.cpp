@@ -1132,6 +1132,7 @@ void RoomScene::updateStatus(Client::Status status){
     case Client::NotActive:{
             daqiao->hide();
             dashboard->disableAllCards();
+            selected_targets.clear();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
@@ -1324,7 +1325,7 @@ void RoomScene::doOkButton(){
                 if(ClientInstance->noTargetResponsing())
                     ClientInstance->responseCard(card);
                 else
-                    ClientInstance->responseCard(card, selected_targets);
+                    ClientInstance->useCard(card, selected_targets);
                 daqiao->hide();
             }
 
@@ -1440,7 +1441,7 @@ void RoomScene::doCancelButton(){
             if(ClientInstance->noTargetResponsing())
                 ClientInstance->responseCard(NULL);
             else
-                ClientInstance->responseCard(NULL, QList<const ClientPlayer *>());
+                ClientInstance->useCard(NULL, QList<const ClientPlayer *>());
             daqiao->hide();
             dashboard->stopPending();
             break;
@@ -1554,7 +1555,7 @@ void RoomScene::onStandoff(){
     freeze();
 
     QDialog *dialog = new QDialog(main_window);
-    dialog->resize(600, 800);
+    dialog->resize(500, 600);
     dialog->setWindowTitle(tr("Standoff"));
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -1574,7 +1575,7 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     freeze();
 
     QDialog *dialog = new QDialog(main_window);
-    dialog->resize(600, 800);
+    dialog->resize(500, 600);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
 
     QGroupBox *winner_box = new QGroupBox(tr("Winner(s)"));
