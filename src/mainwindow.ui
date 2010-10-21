@@ -28,6 +28,7 @@
      <string>Game</string>
     </property>
     <addaction name="actionStart_Game"/>
+    <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
@@ -168,6 +169,11 @@
    </property>
    <property name="text">
     <string>Kick</string>
+   </property>
+  </action>
+  <action name="actionReplay">
+   <property name="text">
+    <string>Replay</string>
    </property>
   </action>
  </widget>

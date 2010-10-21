@@ -19,6 +19,7 @@ audiere::AudioDevicePtr Device;
 #include <QTime>
 #include <QProcess>
 #include <QCheckBox>
+#include <QFileDialog>
 
 class FitView : public QGraphicsView
 {
@@ -66,12 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
     StartScene *start_scene = new StartScene;    
 
     QList<QAction*> actions;
-    actions << ui->actionStart_Game
-            << ui->actionConfigure
+    actions << ui->actionStart_Game            
             << ui->actionStart_Server
+            << ui->actionReplay
+            << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionAbout << ui->actionExit;
+            << ui->actionAbout;
 
     foreach(QAction *action, actions){
         start_scene->addButton(action);
@@ -147,6 +149,23 @@ void MainWindow::startConnection(){
 
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+
+    client->signup();
+}
+
+void MainWindow::on_actionReplay_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select a reply file"), QString(),
+                                                    tr("Replay file (*.txt)"));
+
+    if(filename.isEmpty())
+        return;
+
+    Client *client = new Client(this, filename);
+
+    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+
+    client->signup();
 }
 
 void MainWindow::restartConnection(){
@@ -165,6 +184,12 @@ void MainWindow::networkError(const QString &error_msg){
 }
 
 void MainWindow::enterRoom(){
+    // add current ip to history
+    if(!Config.HistoryIPs.contains(Config.HostAddress)){
+        Config.HistoryIPs << Config.HostAddress;
+        Config.setValue("HistoryIPs", Config.HistoryIPs);
+    }
+
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
@@ -267,3 +292,4 @@ void MainWindow::on_actionAbout_audiere_triggered()
 
     QMessageBox::about(this, tr("About audiere"), content);
 }
+

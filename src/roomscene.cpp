@@ -27,6 +27,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QLabel>
 #include <QFormLayout>
 #include <QListWidget>
+#include <QFileDialog>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -1637,12 +1638,26 @@ void RoomScene::addRestartButton(QDialog *dialog){
     hlayout->addStretch();
     hlayout->addWidget(restart_button);
 
+    QPushButton *save_button = new QPushButton(tr("Save record"));
+    hlayout->addWidget(save_button);
+
     QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dialog->layout());
     if(layout)
         layout->addLayout(hlayout);
 
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
     connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+}
+
+void RoomScene::saveReplayRecord(){
+    QString filename = QFileDialog::getSaveFileName(main_window, tr("Save replay record"),
+                                                    QString(), tr("Replay file (*.txt)"));
+
+    if(filename.isEmpty())
+        return;
+
+    ClientInstance->save(filename);
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &players){

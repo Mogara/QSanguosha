@@ -19,6 +19,7 @@ private:
     Ui::ConnectionDialog *ui;
 
 private slots:
+    void on_clearHistoryButton_clicked();
     void on_avatarList_itemDoubleClicked(QListWidgetItem* item);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();

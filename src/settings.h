@@ -31,6 +31,7 @@ public:
     ushort Port;
     QString UserName;
     QString UserAvatar;
+    QStringList HistoryIPs;
 
     bool FitInView;
     bool EnableHotKey;

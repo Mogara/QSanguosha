@@ -51,7 +51,8 @@ SOURCES += src/main.cpp \
     src/standard-ai.cpp \
     src/aux-skills.cpp \
     src/choosegeneraldialog.cpp \
-    src/nativesocket.cpp
+    src/nativesocket.cpp \
+    src/recorder.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -97,7 +98,8 @@ HEADERS += src/mainwindow.h \
     src/aux-skills.h \
     src/choosegeneraldialog.h \
     src/socket.h \
-    src/nativesocket.h
+    src/nativesocket.h \
+    src/recorder.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

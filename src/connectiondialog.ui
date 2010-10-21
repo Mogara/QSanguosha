@@ -31,8 +31,8 @@
    <widget class="QLabel" name="avatarPixmap">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>120</y>
+      <x>80</x>
+      <y>130</y>
       <width>100</width>
       <height>100</height>
      </rect>
@@ -53,8 +53,8 @@
    <widget class="QPushButton" name="changeAvatarButton">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>240</y>
+      <x>80</x>
+      <y>250</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -67,7 +67,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>120</y>
+      <y>140</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -82,7 +82,7 @@
       <x>21</x>
       <y>21</y>
       <width>171</width>
-      <height>91</height>
+      <height>103</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -107,13 +107,7 @@
        <property name="text">
         <string>Host:</string>
        </property>
-       <property name="buddy">
-        <cstring>hostLineEdit</cstring>
-       </property>
       </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="hostLineEdit"/>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="portLabel">
@@ -127,6 +121,20 @@
      </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="portLineEdit"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="hostComboBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="clearHistoryButton">
+       <property name="text">
+        <string>Clear history</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -182,7 +190,6 @@
  </widget>
  <tabstops>
   <tabstop>nameLineEdit</tabstop>
-  <tabstop>hostLineEdit</tabstop>
   <tabstop>portLineEdit</tabstop>
   <tabstop>changeAvatarButton</tabstop>
   <tabstop>avatarList</tabstop>

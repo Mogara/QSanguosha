@@ -18,7 +18,9 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->nameLineEdit->setText(Config.UserName);
     ui->nameLineEdit->setMaxLength(32);
 
-    ui->hostLineEdit->setText(Config.HostAddress);
+    ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
+    ui->hostComboBox->addItems(Config.HistoryIPs);
+
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));
 
@@ -59,7 +61,7 @@ void ConnectionDialog::on_connectButton_clicked()
     }
 
     Config.setValue("UserName", Config.UserName = username);
-    Config.setValue("HostAddress", Config.HostAddress = ui->hostLineEdit->text());
+    Config.setValue("HostAddress", Config.HostAddress = ui->hostComboBox->lineEdit()->text());
     Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
 
     accept();
@@ -94,4 +96,13 @@ void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
 
         setFixedWidth(ShrinkWidth);
     }
+}
+
+void ConnectionDialog::on_clearHistoryButton_clicked()
+{
+    ui->hostComboBox->clear();
+    ui->hostComboBox->lineEdit()->clear();
+
+    Config.HistoryIPs.clear();
+    Config.remove("HistoryIPs");
 }

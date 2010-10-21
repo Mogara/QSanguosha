@@ -83,6 +83,9 @@ void ConfigDialog::saveConfig()
         Config.Port = port;
         Config.setValue("Port", Config.Port);
     }
+
+    Config.FitInView = ui->fitInViewCheckBox->isChecked();
+    Config.setValue("FitInView", Config.FitInView);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

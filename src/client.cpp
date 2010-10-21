@@ -6,6 +6,7 @@
 #include "standard.h"
 #include "optionbutton.h"
 #include "nativesocket.h"
+#include "recorder.h"
 
 #include <QMessageBox>
 #include <QCheckBox>
@@ -53,23 +54,11 @@ bool CardMoveStructForClient::parse(const QString &str){
 
 Client *ClientInstance = NULL;
 
-Client::Client(QObject *parent)
+Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), refusable(true), status(NotActive), alive_count(1),
     nullification_dialog(NULL)
 {
     ClientInstance = this;    
-
-    Self = new ClientPlayer(this);
-    Self->setScreenName(Config.UserName);
-    Self->setProperty("avatar", Config.UserAvatar);
-    connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
-    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
-
-    socket = new NativeClientSocket;
-    socket->setParent(this);
-    connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
-    connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
-    socket->connectToHost();
 
     callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setup"] = &Client::setup;
@@ -132,16 +121,46 @@ Client::Client(QObject *parent)
     ask_dialog = NULL;
     use_card = false;
 
-    signup();
+    Self = new ClientPlayer(this);
+    Self->setScreenName(Config.UserName);
+    Self->setProperty("avatar", Config.UserAvatar);
+    connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
+    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+
+    if(!filename.isEmpty()){
+        socket = NULL;
+        recorder = NULL;
+
+        replayer = new Replayer(this, filename);
+        // connect(replayer, SIGNAL(command_parsed(char*)), this, SLOT(processReply(char*)));
+        connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processCommand(QString)));
+
+    }else{
+        socket = new NativeClientSocket;
+        socket->setParent(this);
+        connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
+        connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
+        socket->connectToHost();
+
+        recorder = new Recorder(this);
+        connect(socket, SIGNAL(message_got(char*)), recorder, SLOT(record(char*)));
+
+        replayer = NULL;
+    }
 }
 
 void Client::signup(){
-    QString base64 = Config.UserName.toUtf8().toBase64();
-    request(QString("signup %1:%2").arg(base64).arg(Config.UserAvatar));
+    if(replayer)
+        replayer->start();
+    else{
+        QString base64 = Config.UserName.toUtf8().toBase64();
+        request(QString("signup %1:%2").arg(base64).arg(Config.UserAvatar));
+    }
 }
 
 void Client::request(const QString &message){
-    socket->send(message);
+    if(socket)
+        socket->send(message);
 }
 
 void Client::checkVersion(const QString &server_version){
@@ -164,7 +183,7 @@ void Client::checkVersion(const QString &server_version){
 }
 
 void Client::setup(const QString &setup_str){
-    if(!socket->isConnected())
+    if(socket && !socket->isConnected())
         return;
 
     QRegExp rx("(\\d+):(\\d+):([+\\w]*):([F]*)");
@@ -191,10 +210,15 @@ void Client::setup(const QString &setup_str){
 }
 
 void Client::disconnectFromHost(){
-    socket->disconnectFromHost();
+    if(socket)
+        socket->disconnectFromHost();
 }
 
 typedef char buffer_t[1024];
+
+void Client::processCommand(const QString &cmd){
+    processReply(cmd.toAscii().data());
+}
 
 void Client::processReply(char *reply){
     static char self_prefix = '.';
@@ -225,10 +249,15 @@ void Client::processReply(char *reply){
         buffer_t method_name, arg;
         sscanf(reply, "%s %s", method_name, arg);
         Callback callback = callbacks.value(method_name, NULL);
+
+        QString method = method_name;
+        if(replayer && (method.startsWith("askFor") || method.startsWith("do") || method == "activate"))
+            return;
+
         if(callback){
             (this->*callback)(arg);
         }else
-            QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named %1").arg(method_name));
+            QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(method_name));
     }
 }
 
@@ -792,6 +821,13 @@ QMap<QString, bool> Client::getExtensions() const{
 
 void Client::kick(const QString &to_kick){
     request("kick " + to_kick);
+}
+
+bool Client::save(const QString &filename){
+    if(recorder)
+        return recorder->save(filename);
+    else
+        return false;
 }
 
 void Client::clearPile(const QString &){

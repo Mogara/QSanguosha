@@ -45,6 +45,7 @@ void Settings::init(){
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     Port = value("Port", 9527u).toUInt();
     UserAvatar = value("UserAvatar", "zhangliao").toString();
+    HistoryIPs = value("HistoryIPs").toStringList();
 
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();

@@ -7,6 +7,8 @@
 #include "socket.h"
 
 class NullificationDialog;
+class Recorder;
+class Replayer;
 
 class Client : public QObject
 {
@@ -29,7 +31,7 @@ public:
         AskForGongxin
     };
 
-    explicit Client(QObject *parent);
+    explicit Client(QObject *parent, const QString &filename = QString());
 
     void disconnectFromHost();
     void signup();
@@ -51,6 +53,7 @@ public:
     ClientPlayer *getPlayer(const QString &name);
     QMap<QString, bool> getExtensions() const;
     void kick(const QString &to_kick);
+    bool save(const QString &filename);
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -149,8 +152,11 @@ private:
     NullificationDialog *nullification_dialog;
     bool use_card;
     QStringList ban_packages;
+    Recorder *recorder;
+    Replayer *replayer;
 
 private slots:
+    void processCommand(const QString &cmd);
     void processReply(char *reply);
     void notifyRoleChange(const QString &new_role);
     void chooseSuit();

@@ -32,6 +32,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionReplay_triggered();
     void on_actionAbout_audiere_triggered();
     void on_actionNever_Nullify_My_Trick_toggled(bool );
     void on_actionAbout_triggered();
