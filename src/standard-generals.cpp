@@ -18,7 +18,8 @@ public:
         if(!room->obtainable(card, caocao))
             return;
 
-        if(room->askForSkillInvoke(caocao, "jianxiong")){
+        QVariant data = QVariant::fromValue(card);
+        if(room->askForSkillInvoke(caocao, "jianxiong", data)){
             room->playSkillEffect(objectName());
             caocao->obtainCard(card);
         }
@@ -119,6 +120,12 @@ public:
         CardStar card = data.value<CardStar>();
         Room *room = guojia->getRoom();
         if(room->askForSkillInvoke(guojia, "tiandu")){
+            if(card->objectName() == "shit"){
+                QString result = room->askForChoice(guojia, objectName(), "yes+no");
+                if(result == "no")
+                    return false;
+            }
+
             guojia->obtainCard(card);
             room->playSkillEffect(objectName());
         }
@@ -1265,6 +1272,8 @@ void StandardPackage::addGenerals(){
     t[":jijiang:"] = tr(":jijiang:");
     t["jijiang:accept"] = tr("jijiang:accept");
     t["jijiang:ignore"] = tr("jijiang:ignore");
+    t["tiandu:yes"] = tr("tiandu:yes");
+    t["tiandu:no"] = tr("tiandu:no");
 
     t["@jijiang-slash"] = tr("@jijiang-slash");
     t["@hujia-jink"] = tr("@hujia-jink");

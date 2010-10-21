@@ -112,7 +112,7 @@ public:
     void activate(ServerPlayer *player, CardUseStruct &card_use);
     Card::Suit askForSuit(ServerPlayer *player);
     QString askForKingdom(ServerPlayer *player);
-    bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name);
+    bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false, Card::Suit suit = Card::NoSuit);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);

@@ -49,14 +49,13 @@ QString TrustAI::askForKingdom() const{
     return player->getKingdom();
 }
 
-bool TrustAI::askForSkillInvoke(const QString &skill_name) const{
+bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
     return false;
 }
 
 QString TrustAI::askForChoice(const QString &skill_name, const QString &){
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-    return trigger_skill->getDefaultChoice();
+    return skill->getDefaultChoice();
 }
 
 QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const{
@@ -199,6 +198,6 @@ int SmartAI::askForCardShow(ServerPlayer *requestor) const{
     return TrustAI::askForCardShow(requestor);
 }
 
-bool SmartAI::askForSkillInvoke(const QString &skill_name) const{
+bool SmartAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
     return always_invoke;
 }

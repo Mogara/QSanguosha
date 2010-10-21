@@ -32,6 +32,20 @@ void Shit::onMove(const CardMoveStruct &move) const{
     }
 }
 
+bool Shit::HasShit(const Card *card){
+    if(card->isVirtualCard()){
+        QList<int> card_ids = card->getSubcards();
+        foreach(int card_id, card_ids){
+            const Card *c = Sanguosha->getCard(card_id);
+            if(c->objectName() == "shit")
+                return true;
+        }
+
+        return false;
+    }else
+        return card->objectName() == "shit";
+}
+
 class YitianSwordSkill : public WeaponSkill{
 public:
     YitianSwordSkill():WeaponSkill("yitian_sword"){

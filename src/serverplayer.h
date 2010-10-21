@@ -25,7 +25,6 @@ public:
     Room *getRoom() const;
     void playCardEffect(const Card *card);
     int getRandomHandCard() const;
-    void leaveTo(ServerPlayer *legatee);
     void obtainCard(const Card *card);
     void throwAllEquips();
     void throwAllHandCards();

@@ -9,7 +9,7 @@ class CaocaoAI: public SmartAI{
 public:
     Q_INVOKABLE CaocaoAI(ServerPlayer *player);
 
-    virtual bool askForSkillInvoke(const QString &skill_name) const;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const;
 };
 
 class SimayiAI: public SmartAI{
@@ -18,7 +18,7 @@ class SimayiAI: public SmartAI{
 public:
     Q_INVOKABLE SimayiAI(ServerPlayer *player);
 
-    virtual bool askForSkillInvoke(const QString &skill_name) const;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const;
 };
 
 class XiahoudunAI: public SmartAI{
@@ -27,7 +27,7 @@ class XiahoudunAI: public SmartAI{
 public:
     Q_INVOKABLE XiahoudunAI(ServerPlayer *player);
 
-    virtual bool askForSkillInvoke(const QString &skill_name) const;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const;
 };
 
 class LumengAI: public SmartAI{

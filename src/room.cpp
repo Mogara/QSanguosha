@@ -307,11 +307,11 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
     to->invoke("prompt", prompt_str);
 }
 
-bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name){
+bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
     bool invoked;
     AI *ai = player->getAI();
     if(ai)
-        invoked = ai->askForSkillInvoke(skill_name);
+        invoked = ai->askForSkillInvoke(skill_name, data);
     else{
         player->invoke("askForSkillInvoke", skill_name);
         getResult("invokeSkillCommand", player);

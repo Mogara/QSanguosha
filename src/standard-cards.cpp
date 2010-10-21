@@ -46,6 +46,13 @@ void Slash::use(const QList<const ClientPlayer *> &targets) const{
     ClientInstance->increaseSlashCount();
 }
 
+void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    BasicCard::use(room, source, targets);
+
+    if(source->hasFlag("drank"))
+        room->setPlayerFlag(source, "-drank");
+}
+
 void Slash::onEffect(const CardEffectStruct &card_effect) const{
     Room *room = card_effect.from->getRoom();
 
@@ -56,8 +63,6 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 
     effect.to = card_effect.to;
     effect.drank = effect.from->hasFlag("drank");
-    if(effect.drank)
-        room->setPlayerFlag(effect.from, "-drank");
 
     room->slashEffect(effect);
 }

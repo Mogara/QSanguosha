@@ -31,31 +31,6 @@ int ServerPlayer::getRandomHandCard() const{
     return handcards.at(index)->getId();
 }
 
-void ServerPlayer::leaveTo(ServerPlayer *legatee){
-    if(legatee){
-        legatee->obtainCard(getWeapon());
-        legatee->obtainCard(getArmor());
-        legatee->obtainCard(getDefensiveHorse());
-        legatee->obtainCard(getOffensiveHorse());
-
-        DummyCard *all_cards = wholeHandCards();
-        if(all_cards){
-            room->moveCardTo(all_cards, legatee, Player::Hand, false);
-            delete all_cards;
-        }
-
-        QStack<const Card *> tricks = getJudgingArea();
-        foreach(const Card *trick, tricks)
-            room->throwCard(trick);
-    }else{
-        throwAllCards();
-    }
-
-    QStack<const Card *> tricks = getJudgingArea();
-    foreach(const Card *trick, tricks)
-        room->throwCard(trick);
-}
-
 void ServerPlayer::obtainCard(const Card *card){
     room->obtainCard(this, card);
 }

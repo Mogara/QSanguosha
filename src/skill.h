@@ -104,7 +104,6 @@ public:
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
-    QString default_choice;
 };
 
 class MasochismSkill: public TriggerSkill{

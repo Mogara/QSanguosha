@@ -1,5 +1,7 @@
 #include "standard-ai.h"
 #include "standard.h"
+#include "engine.h"
+#include "yitianpackage.h"
 
 CaocaoAI::CaocaoAI(ServerPlayer *player)
     :SmartAI(player)
@@ -7,8 +9,12 @@ CaocaoAI::CaocaoAI(ServerPlayer *player)
 
 }
 
-bool CaocaoAI::askForSkillInvoke(const QString &skill_name) const{
-    return true;
+bool CaocaoAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+    if(skill_name == "jianxiong"){
+        CardStar card = data.value<CardStar>();
+        return !Shit::HasShit(card);
+    }else
+        return SmartAI::askForSkillInvoke(skill_name, data);
 }
 
 SimayiAI::SimayiAI(ServerPlayer *player)
@@ -17,8 +23,11 @@ SimayiAI::SimayiAI(ServerPlayer *player)
 
 }
 
-bool SimayiAI::askForSkillInvoke(const QString &skill_name) const{
-    return true;
+bool SimayiAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+    if(skill_name == "fankui")
+        return true;
+    else
+        return SmartAI::askForSkillInvoke(skill_name, data);
 }
 
 XiahoudunAI::XiahoudunAI(ServerPlayer *player)
@@ -27,8 +36,11 @@ XiahoudunAI::XiahoudunAI(ServerPlayer *player)
 
 }
 
-bool XiahoudunAI::askForSkillInvoke(const QString &skill_name) const{
-    return true;
+bool XiahoudunAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+    if(skill_name == "ganglie")
+        return true;
+    else
+        return SmartAI::askForSkillInvoke(skill_name, data);
 }
 
 LumengAI::LumengAI(ServerPlayer *player)

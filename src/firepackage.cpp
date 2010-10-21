@@ -287,9 +287,10 @@ public:
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success && !result.to->isNude()){
             Room *room = pangde->getRoom();
-            room->askForSkillInvoke(pangde, objectName());
-            int to_throw = room->askForCardChosen(pangde, result.to, "he", objectName());
-            room->throwCard(to_throw);
+            if(room->askForSkillInvoke(pangde, objectName())){
+                int to_throw = room->askForCardChosen(pangde, result.to, "he", objectName());
+                room->throwCard(to_throw);
+            }
         }
 
         return false;

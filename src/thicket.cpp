@@ -35,8 +35,18 @@ public:
             }
         }
 
-        if(caopi->isAlive())
-            player->leaveTo(caopi);
+        if(caopi && caopi->isAlive()){
+            caopi->obtainCard(player->getWeapon());
+            caopi->obtainCard(player->getArmor());
+            caopi->obtainCard(player->getDefensiveHorse());
+            caopi->obtainCard(player->getOffensiveHorse());
+
+            DummyCard *all_cards = player->wholeHandCards();
+            if(all_cards){
+                room->moveCardTo(all_cards, caopi, Player::Hand, false);
+                delete all_cards;
+            }
+        }
 
         return false;
     }
@@ -723,6 +733,8 @@ public:
 
         if(trigger_this){
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
+
+            qDebug("benghuai option %s", qPrintable(result));
 
             room->playSkillEffect(objectName());
             if(result == "hp"){
