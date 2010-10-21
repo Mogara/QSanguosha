@@ -20,6 +20,7 @@ audiere::AudioDevicePtr Device;
 #include <QProcess>
 #include <QCheckBox>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 class FitView : public QGraphicsView
 {
@@ -155,7 +156,10 @@ void MainWindow::startConnection(){
 
 void MainWindow::on_actionReplay_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Select a reply file"), QString(),
+    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Select a reply file"),
+                                                    location,
                                                     tr("Replay file (*.txt)"));
 
     if(filename.isEmpty())
@@ -199,11 +203,13 @@ void MainWindow::enterRoom(){
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
     ui->actionKick->setEnabled(true);
+    ui->actionSaveRecord->setEnabled(true);
 
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
     connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
+    connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
 
@@ -267,14 +273,6 @@ void MainWindow::on_actionAbout_triggered()
     // FIXME: add acknowledgement
 
     QMessageBox::about(this, tr("About QSanguosha"), content);
-}
-
-void MainWindow::on_actionNever_Nullify_My_Trick_toggled(bool checked)
-{
-    if(Config.NeverNullifyMyTrick != checked){
-        Config.NeverNullifyMyTrick = checked;
-        Config.setValue("NeverNullifyMyTrick", checked);
-    }
 }
 
 void MainWindow::changeBackground(){

@@ -345,17 +345,22 @@
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="src/configdialog.ui" line="313"/>
+        <location filename="src/configdialog.ui" line="320"/>
+        <source>Never nullify my single target trick</source>
+        <translation>从不无懈自己的单体锦囊</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="329"/>
         <source>Advanced</source>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="src/configdialog.ui" line="328"/>
+        <location filename="src/configdialog.ui" line="344"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/configdialog.ui" line="338"/>
+        <location filename="src/configdialog.ui" line="354"/>
         <source>9527</source>
         <translation></translation>
     </message>
@@ -1210,7 +1215,7 @@
     </message>
     <message>
         <location filename="src/mainwindow.ui" line="155"/>
-        <location filename="src/mainwindow.cpp" line="293"/>
+        <location filename="src/mainwindow.cpp" line="295"/>
         <source>About audiere</source>
         <translation>关于 audiere</translation>
     </message>
@@ -1228,6 +1233,11 @@
         <location filename="src/mainwindow.ui" line="176"/>
         <source>Replay</source>
         <translation>战局重放</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="184"/>
+        <source>Save battle record</source>
+        <translation>保存战斗记录</translation>
     </message>
     <message>
         <location filename="src/mainwindow.ui" line="99"/>
@@ -1255,59 +1265,59 @@
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="244"/>
+        <location filename="src/mainwindow.cpp" line="246"/>
         <source>Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause</source>
         <translation>青青子衿 悠悠我心 但为君故 沉吟至今</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="248"/>
+        <location filename="src/mainwindow.cpp" line="250"/>
         <source>&quot;A Short Song&quot; by Cao Cao</source>
         <translation>曹操《短歌行》</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="255"/>
+        <location filename="src/mainwindow.cpp" line="257"/>
         <source>Current version: %1 &lt;br/&gt;</source>
         <translation>当前版本: %1 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="259"/>
+        <location filename="src/mainwindow.cpp" line="261"/>
         <source>Compilation time: %1 %2 &lt;br/&gt;</source>
         <oldsource>Compilation time: %1 %2</oldsource>
         <translation>编译时间: %1 %2 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="264"/>
+        <location filename="src/mainwindow.cpp" line="266"/>
         <source>Source code: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>源代码地址: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="265"/>
+        <location filename="src/mainwindow.cpp" line="267"/>
         <source>Project home: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>项目主页: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="269"/>
+        <location filename="src/mainwindow.cpp" line="271"/>
         <source>About QSanguosha</source>
         <translation>关于 QSanguosha</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="287"/>
+        <location filename="src/mainwindow.cpp" line="289"/>
         <source>Audiere is a high-level audio engine &lt;br/&gt;</source>
         <translation>Audiere 是一个高层音频引擎 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="289"/>
+        <location filename="src/mainwindow.cpp" line="291"/>
         <source>Official site: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="290"/>
+        <location filename="src/mainwindow.cpp" line="292"/>
         <source>Current version %1 &lt;br/&gt;</source>
         <oldsource>Current version %1</oldsource>
         <translation>当前版本 %1 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="291"/>
+        <location filename="src/mainwindow.cpp" line="293"/>
         <source>Device name: %1 &lt;br/&gt;</source>
         <translation>设备名: %1 &lt;br/&gt;</translation>
     </message>
@@ -1322,7 +1332,7 @@
         <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="251"/>
+        <location filename="src/mainwindow.cpp" line="253"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: moligaloo@gmail.com &lt;br/&gt;</source>
         <oldsource>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: moligaloo@gmail.com</oldsource>
         <translation>这是 &lt;b&gt;三国杀&lt;/b&gt; 的开源克隆，完全基于 C++ Qt GUI 框架&lt;br /&gt; 我的电子邮件：moligaloo@gmail.com &lt;br/&gt;</translation>

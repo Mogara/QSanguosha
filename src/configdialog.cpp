@@ -3,6 +3,7 @@
 #include "settings.h"
 
 #include <QFileDialog>
+#include <QDesktopServices>
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
@@ -19,11 +20,13 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
+    ui->fitInViewCheckBox->setChecked(Config.FitInView);
 
     ui->volumeSlider->setValue(100 * Config.Volume);
 
     // tab 2
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
+    ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
 
     // tab 3
     ui->portLineEdit->setText(QString::number(Config.Port));
@@ -39,10 +42,11 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::on_browseBgButton_clicked()
 {
+    QString location = QDesktopServices::storageLocation(QDesktopServices::PicturesLocation);
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background image"),
-                                                    ".",
-                                                   tr("Images (*.png *.bmp *.jpg)"));
+                                                    location,
+                                                    tr("Images (*.png *.bmp *.jpg)"));
 
     if(!filename.isEmpty()){
         ui->bgPathLineEdit->setText(filename);
@@ -86,13 +90,17 @@ void ConfigDialog::saveConfig()
 
     Config.FitInView = ui->fitInViewCheckBox->isChecked();
     Config.setValue("FitInView", Config.FitInView);
+
+    Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
+    Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
 {
+    QString location = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a background music"),
-                                                    ".",
+                                                    location,
                                                     tr("Audio files (*.wav *.mp3)"));
     if(!filename.isEmpty()){
         ui->bgMusicPathLineEdit->setText(filename);

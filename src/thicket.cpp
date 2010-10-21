@@ -254,16 +254,16 @@ public:
 
                     const Card *card = Sanguosha->getCard(card_id);
                     if(card->getSuit() == Card::Heart){
-                        room->recover(menghuo);                        
-                        room->playSkillEffect(objectName(), 2);
+                        room->recover(menghuo);
                         has_heart = true;
                     }else
                         room->obtainCard(menghuo, card_id);
                 }
 
-                if(!has_heart){
-                    room->playSkillEffect(objectName(), 3);
-                }
+                if(has_heart)
+                    room->playSkillEffect(objectName(), 2);
+                else
+                    room->playSkillEffect(objectName(), 3);                
 
                 return true;
             }

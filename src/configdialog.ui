@@ -253,7 +253,7 @@
        <rect>
         <x>10</x>
         <y>100</y>
-        <width>89</width>
+        <width>151</width>
         <height>16</height>
        </rect>
       </property>
@@ -306,6 +306,22 @@
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QCheckBox" name="neverNullifyMyTrickCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>239</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Never nullify my single target trick</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="advanced">

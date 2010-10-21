@@ -28,6 +28,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QFormLayout>
 #include <QListWidget>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -327,7 +328,6 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 
     setPileNumber(pile_number - n);
 
-    // log_box->appendLog(player, tr("%from drawed %arg cards"), QString::number(n));
     log_box->appendLog(
             "#DrawNCards",
             player->getGeneralName(),
@@ -464,14 +464,8 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     if(!item)
         return;
 
-    QGraphicsObject *item_obj = static_cast<QGraphicsObject *>(item);
-    Photo *photo = qobject_cast<Photo *>(item_obj);
-
-    if(!photo)
-        return;
-
-    const ClientPlayer *player = photo->getPlayer();
-    if(player){
+    const ClientPlayer *player = item2player.value(item, NULL);
+    if(player && player != Self){
         QList<const Card *> cards = player->getCards();
         QMenu *menu = known_cards_menu;
         menu->clear();
@@ -491,7 +485,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
 void RoomScene::timerEvent(QTimerEvent *event){
     int timeout = Config.OperationTimeout;
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
-        timeout = 15;
+        timeout = 20;
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;
@@ -506,9 +500,15 @@ void RoomScene::timerEvent(QTimerEvent *event){
         progress_bar->setValue(new_value);
 }
 
+#include <QApplication>
+
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
     if(Self->getRole() != "lord")
         changeMessage(tr("Please wait for other players choosing their generals"));
+
+    QApplication::alert(main_window);
+    if(!main_window->isActiveWindow())
+        Sanguosha->playEffect("audio/prelude.mp3");
 
     ChooseGeneralDialog *dialog = new ChooseGeneralDialog(generals, main_window);
     dialog->start();
@@ -1256,8 +1256,11 @@ void RoomScene::updateStatus(Client::Status status){
             button->setEnabled(true);
     }
 
-    if(status != Client::NotActive && focused){
-        focused->hideProcessBar();
+    if(status != Client::NotActive){
+        if(focused)
+            focused->hideProcessBar();
+
+        QApplication::alert(main_window);
     }
 
     if(Config.OperationNoLimit)
@@ -1651,8 +1654,12 @@ void RoomScene::addRestartButton(QDialog *dialog){
 }
 
 void RoomScene::saveReplayRecord(){
-    QString filename = QFileDialog::getSaveFileName(main_window, tr("Save replay record"),
-                                                    QString(), tr("Replay file (*.txt)"));
+    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+
+    QString filename = QFileDialog::getSaveFileName(main_window,
+                                                    tr("Save replay record"),
+                                                    location,
+                                                    tr("Replay file (*.txt)"));
 
     if(filename.isEmpty())
         return;

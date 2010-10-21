@@ -163,7 +163,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101019";
+    return "20101021";
 }
 
 QStringList Engine::getKingdoms() const{

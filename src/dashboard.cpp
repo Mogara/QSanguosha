@@ -58,6 +58,16 @@ Dashboard::Dashboard()
     back_icon->setZValue(1.0);
 
     equips << &weapon << &armor << &defensive_horse << &offensive_horse;
+
+    QGraphicsPixmapItem *handcard_pixmap = new QGraphicsPixmapItem(this);
+    handcard_pixmap->setPixmap(QPixmap(":/handcard.png"));
+    handcard_pixmap->setPos(841, 146);
+
+    handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
+    handcard_num->setFont(Config.TinyFont);
+    handcard_num->setBrush(Qt::white);
+
+    handcard_pixmap->hide();
 }
 
 void Dashboard::addCardItem(CardItem *card_item){
@@ -76,6 +86,9 @@ void Dashboard::addCardItem(CardItem *card_item){
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
 
     sortCards();
+
+    handcard_num->setText(QString::number(Self->getHandcardNum()));
+    handcard_num->parentItem()->show();
 }
 
 void Dashboard::setPlayer(const Player *player){
@@ -343,6 +356,12 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
                 card_item = item;
                 break;
             }
+        }
+
+        if(Self->isKongcheng())
+            handcard_num->parentItem()->hide();
+        else{
+            handcard_num->setText(QString::number(Self->getHandcardNum()));
         }
     }else if(place == Player::Equip){
         if(weapon && weapon->getCard()->getId() == card_id){
