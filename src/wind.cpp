@@ -82,9 +82,9 @@ public:
     }
 };
 
-class HuangtianViewAsSkill: public ViewAsSkill{
+class HuangtianViewAsSkill: public OneCardViewAsSkill{
 public:
-    HuangtianViewAsSkill():ViewAsSkill("huangtianv"){
+    HuangtianViewAsSkill():OneCardViewAsSkill("huangtianv"){
 
     }
 
@@ -93,23 +93,15 @@ public:
                 && Self->getKingdom() == "qun";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
-        if(to_select->isEnabled())
-            return false;
-
+    virtual bool viewFilter(const CardItem *to_select) const{
         const Card *card = to_select->getCard();
         return card->objectName() == "jink" || card->objectName() == "lightning";
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
 
+    virtual const Card *viewAs(CardItem *card_item) const{
         HuangtianCard *card = new HuangtianCard;
-        card->addSubcards(cards);
+        card->addSubcard(card_item->getCard()->getId());
 
         return card;
     }

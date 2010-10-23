@@ -286,9 +286,9 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
 
     QRect suit_rect(11, 83 + order*32, 20, 20);
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
-    const Card *card = equip->getCard();
+    const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
     painter->drawText(32, 83+20 + order*32, card->getNumberString());
-    painter->drawText(58, 83+20 + order*32, card->getName());
+    painter->drawText(58, 83+20 + order*32, card->label());
 
     painter->setPen(Qt::white);
     if(equip->isMarked()){
@@ -388,7 +388,8 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         for(i=0; i<judging_area.count(); i++){
             CardItem *item = judging_area.at(i);
             if(item->getCard()->getId() == card_id){
-                card_item = item;
+                card_item = item;                
+
                 judging_area.remove(i);
                 delayed_tricks.remove(i);
                 break;

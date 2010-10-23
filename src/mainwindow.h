@@ -32,6 +32,8 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionShow_Hide_Menu_triggered();
+    void on_actionFullscreen_triggered();
     void on_actionReplay_triggered();
     void on_actionAbout_audiere_triggered();
     void on_actionAbout_triggered();

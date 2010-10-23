@@ -40,10 +40,14 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="separator"/>
+    <addaction name="actionShow_Hide_Menu"/>
+    <addaction name="actionFullscreen"/>
+    <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
     <addaction name="actionServerInformation"/>
+    <addaction name="actionSurrender"/>
     <addaction name="actionKick"/>
     <addaction name="actionSaveRecord"/>
    </widget>
@@ -66,6 +70,10 @@
    </property>
   </action>
   <action name="actionConfigure">
+   <property name="icon">
+    <iconset resource="../resource/images/sanguosha.qrc">
+     <normaloff>:/settings.png</normaloff>:/settings.png</iconset>
+   </property>
    <property name="text">
     <string>Configure</string>
    </property>
@@ -184,8 +192,34 @@
     <string>Save battle record</string>
    </property>
   </action>
+  <action name="actionFullscreen">
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Return</string>
+   </property>
+  </action>
+  <action name="actionShow_Hide_Menu">
+   <property name="text">
+    <string>Show/Hide Menu</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+M</string>
+   </property>
+  </action>
+  <action name="actionSurrender">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Surrender</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../resource/images/sanguosha.qrc"/>
+ </resources>
  <connections/>
 </ui>

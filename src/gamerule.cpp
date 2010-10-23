@@ -118,6 +118,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case Predamaged:{
             if(data.canConvert<DamageStruct>()){
                 DamageStruct damage = data.value<DamageStruct>();
+                room->sendDamageLog(damage);
+
                 bool chained = player->isChained();
                 int new_hp = player->getHp() - damage.damage;
                 room->damage(player, damage.damage);

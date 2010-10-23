@@ -30,8 +30,7 @@ public:
     }
 
 protected:
-    void resizeEvent(QResizeEvent *event)
-    {
+    virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
@@ -84,8 +83,9 @@ MainWindow::MainWindow(QWidget *parent)
     FitView *view = new FitView(scene);
 
     setCentralWidget(view);
-
     restoreFromConfig();
+
+    addAction(ui->actionShow_Hide_Menu);
 }
 
 void MainWindow::restoreFromConfig(){
@@ -191,6 +191,7 @@ void MainWindow::enterRoom(){
     // add current ip to history
     if(!Config.HistoryIPs.contains(Config.HostAddress)){
         Config.HistoryIPs << Config.HostAddress;
+        Config.HistoryIPs.sort();
         Config.setValue("HistoryIPs", Config.HistoryIPs);
     }
 
@@ -203,12 +204,14 @@ void MainWindow::enterRoom(){
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
     ui->actionKick->setEnabled(true);
+    ui->actionSurrender->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
 
     connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
     connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
+    connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
@@ -264,10 +267,7 @@ void MainWindow::on_actionAbout_triggered()
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString code_url = "http://gitorious.org/qsanguosha";
-    QString project_url = "http://code.google.com/p/q-sanguosha/";
-
-    content.append(tr("Source code: <a href='%1'>%1</a> <br/>").arg(code_url));
+    QString project_url = "http://github.com/Moligaloo/QSanguosha";
     content.append(tr("Project home: <a href='%1'>%1</a> <br/>").arg(project_url));
 
     // FIXME: add acknowledgement
@@ -291,3 +291,16 @@ void MainWindow::on_actionAbout_audiere_triggered()
     QMessageBox::about(this, tr("About audiere"), content);
 }
 
+void MainWindow::on_actionFullscreen_triggered()
+{
+    if(isFullScreen())
+        showNormal();
+    else
+        showFullScreen();
+}
+
+void MainWindow::on_actionShow_Hide_Menu_triggered()
+{
+    QMenuBar *menu_bar = menuBar();
+    menu_bar->setVisible(! menu_bar->isVisible());
+}

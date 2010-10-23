@@ -21,7 +21,7 @@ public:
 private:
     QSpinBox *player_count_spinbox, *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
-    QCheckBox *free_choose_checkbox;
+    QCheckBox *free_choose_checkbox, *forbid_same_ip_checkbox;
     QButtonGroup *extension_group;
 };
 

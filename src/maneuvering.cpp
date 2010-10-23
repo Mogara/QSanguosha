@@ -260,14 +260,7 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     }else{
         room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
 
-        foreach(ServerPlayer *target, targets){
-            CardEffectStruct effect;
-            effect.card = this;
-            effect.from = source;
-            effect.to = target;
-
-            room->cardEffect(effect);
-        }
+        TrickCard::use(room, source, targets);
     }
 }
 

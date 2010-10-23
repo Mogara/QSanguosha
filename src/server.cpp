@@ -36,9 +36,19 @@ ServerDialog::ServerDialog(QWidget *parent)
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
+    QGroupBox *advanced_box = new QGroupBox;
+    advanced_box->setTitle(tr("Advanced"));
+    QVBoxLayout *advanced_box_layout = new QVBoxLayout;
+    advanced_box->setLayout(advanced_box_layout);
+
     free_choose_checkbox = new QCheckBox(tr("Free choose generals"));
     free_choose_checkbox->setToolTip(tr("Enable this will make the clients choose generals freely"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
+    advanced_box_layout->addWidget(free_choose_checkbox);
+
+    forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
+    forbid_same_ip_checkbox->setChecked(false);
+    advanced_box_layout->addWidget(forbid_same_ip_checkbox);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -52,9 +62,10 @@ ServerDialog::ServerDialog(QWidget *parent)
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
-    QGroupBox *box = new QGroupBox;
-    box->setTitle(tr("Extension package selection"));
+    QGroupBox *extension_box = new QGroupBox;
+    extension_box->setTitle(tr("Extension package selection"));
     QGridLayout *grid_layout = new QGridLayout;
+    extension_box->setLayout(grid_layout);
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
@@ -78,7 +89,7 @@ ServerDialog::ServerDialog(QWidget *parent)
         grid_layout->addWidget(checkbox, row, column);
     }
 
-    box->setLayout(grid_layout);
+
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Player count"), player_count_spinbox);
@@ -88,8 +99,8 @@ ServerDialog::ServerDialog(QWidget *parent)
     hlayout->addWidget(timeout_spinbox);
     hlayout->addWidget(nolimit_checkbox);
     layout->addRow(hlayout);
-    layout->addRow(free_choose_checkbox);
-    layout->addRow(box);
+    layout->addRow(advanced_box);
+    layout->addRow(extension_box);
     layout->addRow(button_layout);
 
     setLayout(layout);
@@ -105,11 +116,13 @@ bool ServerDialog::config(){
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
+    Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
 
     Config.setValue("PlayerCount", Config.PlayerCount);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
+    Config.setValue("ForbidSIMC", Config.ForbidSIMC);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();

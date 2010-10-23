@@ -232,6 +232,9 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
+        if(to_select->isEquipped())
+            return false;
+
         int value = Self->getMark("shuangxiong");
         if(value == 1)
             return to_select->getCard()->isBlack();

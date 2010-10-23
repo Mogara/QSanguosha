@@ -258,6 +258,7 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
             CardItem *item = itor.next();
             if(item->getCard()->getId() == card_id){
                 card_item = item;
+                card_item->setOpacity(1.0);
 
                 int index = judging_area.indexOf(item);
                 QGraphicsPixmapItem *pixmap_item = judging_pixmaps.at(index);
@@ -400,13 +401,13 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
     QRect suit_rect(2, 104 + order * 17, 13, 13);
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
 
-    const Card *card = equip->getCard();
+    const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
     painter->setPen(Qt::black);
     QFont bold_font;
     bold_font.setBold(true);
     painter->setFont(bold_font);
     painter->drawText(20, 115 + order * 17, card->getNumberString());
-    painter->drawText(35, 115 + order * 17, Sanguosha->translate(card->objectName()));
+    painter->drawText(35, 115 + order * 17, card->label());
 }
 
 QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){

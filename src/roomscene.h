@@ -40,6 +40,7 @@ public slots:
     void killPlayer(const QString &who);
     void showServerInformation();
     void kick();
+    void surrender();
     void saveReplayRecord();
 
 protected:

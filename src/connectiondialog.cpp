@@ -18,8 +18,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->nameLineEdit->setText(Config.UserName);
     ui->nameLineEdit->setMaxLength(32);
 
-    ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
     ui->hostComboBox->addItems(Config.HistoryIPs);
+    ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
 
     ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
     ui->portLineEdit->setText(QString::number(Config.Port));

@@ -588,6 +588,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     for(i=0; i<discarded_queue.length(); i++){
         if(discarded_queue.at(i)->getCard()->getId() == card_id){
             card_item = discarded_queue.takeAt(i);
+            card_item->setRotation(0.0);
         }
     }
 
@@ -1521,6 +1522,12 @@ void RoomScene::changeHp(const QString &who, int delta){
             photo->setEmotion("damage");
             photo->tremble();
         }
+    }else if(delta > 0){
+        QString type = "#Recover";
+        QString from_general = ClientInstance->getPlayer(who)->getGeneralName();
+        QString n = QString::number(delta);
+
+        log_box->appendLog(type, from_general, QStringList(), QString(), n);
     }
 }
 
@@ -2175,5 +2182,24 @@ void RoomScene::kick(){
     if(ok){
         int index = items.indexOf(item);
         ClientInstance->kick(players.at(index)->objectName());
+    }
+}
+
+void RoomScene::surrender(){
+    if(Self->getRole() != "lord"){
+        QMessageBox::warning(main_window, tr("Warning"), tr("Only lord can surrender!"));
+        return;
+    }
+
+    int alive_count = Self->aliveCount();
+    if(alive_count <= 2){
+        QMessageBox::warning(main_window, tr("Warning"), tr("When there are more than 2 players, the lord can surrender!"));
+        return;
+    }
+
+    QMessageBox::StandardButton button;
+    button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
+    if(button == QMessageBox::Ok){
+        ClientInstance->surrender();
     }
 }

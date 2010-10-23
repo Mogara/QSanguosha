@@ -52,6 +52,7 @@ public:
     void prompt(const QString &prompt_str);
     ClientPlayer *getPlayer(const QString &name);
     QMap<QString, bool> getExtensions() const;
+    void surrender();
     void kick(const QString &to_kick);
     bool save(const QString &filename);
 

@@ -100,12 +100,12 @@ void ClientLogBox::appendLog(
     log.replace("%to", to);
 
     if(!arg2.isEmpty()){
-        arg2 = Sanguosha->translate(arg2);
+        arg2 = QString("<b>%1</b>").arg(Sanguosha->translate(arg2));
         log.replace("%arg2", arg2);
     }
 
     if(!arg.isEmpty()){
-        arg = Sanguosha->translate(arg);
+        arg = QString("<b>%1</b>").arg(Sanguosha->translate(arg));
         log.replace("%arg", arg);
     }
 

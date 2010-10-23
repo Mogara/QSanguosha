@@ -25,6 +25,7 @@ public:
     int PlayerCount;
     QStringList BanPackages;
     bool FreeChoose;
+    bool ForbidSIMC;
 
     // client side
     QString HostAddress;

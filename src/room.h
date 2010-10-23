@@ -130,8 +130,9 @@ public:
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
     void speakCommand(ServerPlayer *player, const QString &arg);
-    void trustCommand(ServerPlayer *player);
+    void trustCommand(ServerPlayer *player, const QString &arg);
     void kickCommand(ServerPlayer *player, const QString &arg);
+    void surrenderCommand(ServerPlayer *player, const QString &);
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);

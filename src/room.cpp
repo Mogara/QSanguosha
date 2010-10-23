@@ -54,6 +54,11 @@ Room::Room(QObject *parent, int player_count)
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
+
+    callbacks["speakCommand"] = &Room::speakCommand;
+    callbacks["trustCommand"] = &Room::trustCommand;
+    callbacks["kickCommand"] = &Room::kickCommand;
+    callbacks["surrenderCommand"] = &Room::surrenderCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -255,10 +260,13 @@ void Room::gameOver(const QString &winner){
     foreach(ServerPlayer *player, players)
         all_roles << player->getRole();
 
-    broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
-    thread->end();
-
     game_finished = true;
+    broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
+
+    if(QThread::currentThread() == thread)
+        thread->end();
+    else
+        sem->release();
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
@@ -408,9 +416,16 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 
         LogMessage log;
         log.type = "#UseCard";
-        log.from = player;        
+        log.from = player;
         log.card_str = card->toString();
         sendLog(log);
+
+        LogMessage log2;
+        log2.type = "#NullificationDetails";
+        log2.from = from;
+        log2.to << to;
+        log2.arg = trick_name;
+        sendLog(log2);
 
         playCardEffect("nullification", player->getGeneral()->isMale());
 
@@ -480,18 +495,21 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     if(card){
-        LogMessage log;
-        log.card_str = card->toString();
-        log.from = player;
-        log.type = QString("#%1").arg(card->metaObject()->className());
-        sendLog(log);
-
-        player->playCardEffect(card);
         throwCard(card);
 
-        CardStar card_ptr = card;
-        QVariant card_star = QVariant::fromValue(card_ptr);
-        thread->trigger(CardResponsed, player, card_star);
+        if(!card->inherits("DummyCard")){
+            LogMessage log;
+            log.card_str = card->toString();
+            log.from = player;
+            log.type = QString("#%1").arg(card->metaObject()->className());
+            sendLog(log);
+
+            player->playCardEffect(card);
+
+            CardStar card_ptr = card;
+            QVariant card_star = QVariant::fromValue(card_ptr);
+            thread->trigger(CardResponsed, player, card_star);
+        }
     }
 
     return card;
@@ -572,7 +590,7 @@ int Room::askForPeaches(ServerPlayer *dying, int peaches){
     sendLog(log);
 
     QList<ServerPlayer *> players;
-    if(current->hasSkill("wansha")){
+    if(current->hasSkill("wansha") && current->isAlive()){
         players << current;
         if(dying != current)
             players << dying;
@@ -598,14 +616,18 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
             peaches --;
 
             // jiuyuan process
-            if(dying->isLord() && dying->hasSkill("jiuyuan")
-                && player != dying  && player->getKingdom() == "wu"){
-                playSkillEffect("jiuyuan");
+            if(dying->hasSkill("jiuyuan") && player != dying  && player->getKingdom() == "wu"){
+                bool can_invoke = true;
+                if(!dying->isLord())
+                    can_invoke = dying->hasSkill("guixin2");
 
-                got ++;
-                peaches --;
+                if(can_invoke){
+                    playSkillEffect("jiuyuan");
+
+                    got ++;
+                    peaches --;
+                }
             }
-
         }else
             break;
     }
@@ -615,6 +637,28 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
 
 bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
     const Card *peach = NULL;
+
+    if(player->hasSkill("jijiu")){
+        ServerPlayer *huatuo = player;
+        if(huatuo->isKongcheng()){
+            QList<const Card *> equips;
+            equips << huatuo->getWeapon() << huatuo->getArmor()
+                    << huatuo->getDefensiveHorse() << huatuo->getOffensiveHorse();
+            bool has_red = false;
+            foreach(const Card *equip, equips){
+                if(equip && equip->isRed()){
+                    has_red = true;
+                    break;
+                }
+            }
+
+            if(!has_red)
+                return false;
+        }
+    }else{
+        if(player->isKongcheng())
+            return false;
+    }
 
     AI *ai = player->getAI();
     if(ai)
@@ -791,7 +835,7 @@ void Room::reportDisconnection(){
     }
 }
 
-void Room::trustCommand(ServerPlayer *player){
+void Room::trustCommand(ServerPlayer *player, const QString &){
     if(player->getState() == "online"){
         player->setState("trust");
 
@@ -820,39 +864,24 @@ void Room::processRequest(const QString &request){
         return;
     }
 
-    // special case: speak
-    if(command == "speak"){
-        speakCommand(player, args.at(1));
-        return;
-    }
-
-    if(command == "trust"){
-        trustCommand(player);
-        return;
-    }
-
-    if(command == "kick"){
-        kickCommand(player, args.at(1));
-        return;
-    }
-
-    if(reply_player && reply_player != player){
-        QString should_be = reply_player->objectName();
-        QString instead_of = player->objectName();
-
-        // just report error message and do not block the game
-        emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
-    }
-
     command.append("Command");
-
-    if(!reply_func.isEmpty() && reply_func != command){
-        // just report error message and do not block the game
-        emit room_message(tr("Reply function should be %1 instead of %2").arg(reply_func).arg(command));
-    }
-
     Callback callback = callbacks.value(command, NULL);
     if(callback){
+        if(callback == &Room::commonCommand){
+            if(!reply_func.isEmpty() && reply_func != command){
+                // just report error message and do not block the game
+                emit room_message(tr("Reply function should be %1 instead of %2").arg(reply_func).arg(command));
+            }
+
+            if(reply_player && reply_player != player){
+                QString should_be = reply_player->objectName();
+                QString instead_of = player->objectName();
+
+                // just report error message and do not block the game
+                emit room_message(tr("Reply player should be %1 instead of %2").arg(should_be).arg(instead_of));
+            }
+        }
+
         (this->*callback)(player, args.at(1));
         emit room_message(player->reportHeader() + request);
     }else
@@ -913,7 +942,7 @@ void Room::assignRoles(){
 
         "ZF", // 2
         "ZFN", // 3
-        "ZCFN", // 4
+        "ZNFF", // 4
         "ZCFFN", // 5
         "ZCFFFN", // 6
         "ZCCFFFN", // 7
@@ -1018,6 +1047,22 @@ void Room::commonCommand(ServerPlayer *player, const QString &arg){
 void Room::useCard(const CardUseStruct &card_use){
     ServerPlayer *player = card_use.from;
 
+#ifdef QT_NO_DEBUG
+
+    CardStar card = card_use.card;
+    bool can_use = false;
+    if(card->subcardsLength() == 0 && card->isVirtualCard()){
+        can_use = true;
+    }else
+        can_use = getCardOwner(card) == player;
+
+    if(!can_use){
+        throwCard(card);
+        return;
+    }
+
+#endif
+
     LogMessage log;
     log.from = player;
     log.to = card_use.to;
@@ -1121,8 +1166,6 @@ void Room::damage(const DamageStruct &damage_data){
     broken = thread->trigger(Predamaged, damage_data.to, data);
     if(broken)
         return;    
-
-    sendDamageLog(data.value<DamageStruct>());
 
     // damage
     if(damage_data.from)
@@ -1356,6 +1399,9 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
     this->reply_player = reply_player;
 
     sem->acquire();
+
+    if(game_finished)
+        thread->end();
 }
 
 void Room::setEmotion(ServerPlayer *target, TargetType type){
@@ -1617,9 +1663,6 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         throwCard(card_id);
     else{
         moveCardTo(card_id, NULL, Player::DrawPile, true);
-
-        QString move_str = QString("%1:%2@hand->_@=").arg(card_id).arg(target->objectName());
-        broadcastInvoke("moveCard", move_str);
     }
 }
 
@@ -1670,6 +1713,7 @@ bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
     log.type = success ? "#PindianSuccess" : "#PindianFailure";
     log.from = source;
     log.to.clear();
+    log.to << target;
     log.card_str.clear();
     sendLog(log);
 
@@ -1716,6 +1760,27 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
         return;
 
     to_kick->kick();
+}
+
+void Room::surrenderCommand(ServerPlayer *player, const QString &){
+    if(!player->isLord())
+        return;
+
+    if(alivePlayerCount() <= 2)
+        return;
+
+    QStringList roles = aliveRoles(player);
+    bool can_surrender = true;
+    foreach(QString role, roles){
+        if(role == "loyalist" || role == "renegade"){
+            can_surrender = false;
+            break;
+        }
+    }
+
+    if(can_surrender){
+        gameOver("rebel");
+    }
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id){

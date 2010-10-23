@@ -137,8 +137,21 @@ public:
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
             if(room->askForSkillInvoke(effect.from, objectName())){
-                if(effect.to->isKongcheng() || !room->askForDiscard(effect.to, 1, true, false))
-                    effect.from->drawCards(1);
+                bool draw_card = false;
+
+                if(effect.to->isKongcheng())
+                    draw_card = true;
+                else{
+                    QString prompt = "double-sword-card:" + effect.from->getGeneralName();
+                    const Card *card = room->askForCard(effect.to, ".", prompt);
+                    if(card){
+                        room->throwCard(card);
+                    }else
+                        draw_card = true;
+                }
+
+                if(draw_card)
+                    effect.to->drawCards(1);
             }
         }
 
@@ -310,8 +323,25 @@ public:
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success){
-            Room *room = player->getRoom();            
-            if(room->askForCard(player, "@axe-card", "axe-card")){
+            Room *room = player->getRoom();
+            CardStar card = room->askForCard(player, "@axe-card", "axe-card");
+            if(card){
+                QList<int> card_ids = card->getSubcards();
+                foreach(int card_id, card_ids){
+                    LogMessage log;
+                    log.type = "$DiscardCard";
+                    log.from = player;
+                    log.card_str = QString::number(card_id);
+
+                    room->sendLog(log);
+                }
+
+                LogMessage log;
+                log.type = "#AxeSkill";
+                log.from = player;
+                log.to << result.to;
+                room->sendLog(log);
+
                 result.success = true;
                 data = QVariant::fromValue(result);
             }
@@ -1109,6 +1139,7 @@ void StandardPackage::addCards(){
     t["#Slash"] = tr("#Slash");
     t["#Jink"] = tr("#Jink");
     t["#Peach"] = tr("#Peach");
+    t["#AxeSkill"] = tr("#AxeSkill");
 
     // description for cards
     t[":slash"] = tr(":slash");

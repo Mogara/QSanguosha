@@ -169,7 +169,7 @@ void Client::checkVersion(const QString &server_version){
     if(server_version == client_version)
         return;
 
-    static QString link = "http://code.google.com/p/q-sanguosha/downloads/list";
+    static QString link = "http://github.com/Moligaloo/QSanguosha/downloads";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if(server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
@@ -753,6 +753,12 @@ void Client::choosePlayer(const ClientPlayer *player){
 
 void Client::trust(){
     request("trust .");
+
+    setStatus(NotActive);
+}
+
+void Client::surrender(){
+    request("surrender .");
 
     setStatus(NotActive);
 }

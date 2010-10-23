@@ -37,6 +37,7 @@ void Settings::init(){
     PlayerCount = value("PlayerCount", 2).toInt();
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
+    ForbidSIMC = value("ForbidSIMC", false).toBool();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")

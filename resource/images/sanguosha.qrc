@@ -54,5 +54,6 @@
         <file>disabled.png</file>
         <file>enabled.png</file>
         <file>kingdom/god.png</file>
+        <file>settings.png</file>
     </qresource>
 </RCC>

@@ -199,6 +199,10 @@ EquipCard::Location Weapon::location() const{
     return WeaponLocation;
 }
 
+QString Weapon::label() const{
+    return QString("%1(%2)").arg(getName()).arg(range);
+}
+
 void Weapon::onInstall(ServerPlayer *player) const{
     EquipCard::onInstall(player);
     Room *room = player->getRoom();
@@ -223,6 +227,10 @@ QString Armor::getSubtype() const{
 
 EquipCard::Location Armor::location() const{
     return ArmorLocation;
+}
+
+QString Armor::label() const{
+    return getName();
 }
 
 Horse::Horse(const QString &name, Suit suit, int number, int correct)
@@ -252,6 +260,17 @@ void Horse::onUninstall(ServerPlayer *player) const{
         room->setPlayerCorrect(player, "-P");
     else
         room->setPlayerCorrect(player, "-S");
+}
+
+QString Horse::label() const{
+    QString format;
+
+    if(correct > 0)
+        format = "%1(+%2)";
+    else
+        format = "%1(%2)";
+
+    return format.arg(getName()).arg(correct);
 }
 
 EquipCard::Location Horse::location() const{
@@ -318,6 +337,7 @@ StandardPackage::StandardPackage()
     t["#PindianFailure"] = tr("#PindianFailure");
     t["#Damage"] = tr("#Damage");
     t["#DamageNoSource"] = tr("#DamageNoSource");
+    t["#Recover"] = tr("#Recover");
     t["#DelayedTrick"] = tr("#DelayedTrick");
     t["#SkillNullify"] = tr("#SkillNullify");
     t["#ArmorNullify"] = tr("#ArmorNullify");
@@ -325,6 +345,7 @@ StandardPackage::StandardPackage()
     t["#MoveNCards"] = tr("#MoveNCards");    
     t["#AskForPeaches"] = tr("#AskForPeaches");
     t["#ChooseKingdom"] = tr("#ChooseKingdom");
+    t["#NullificationDetails"] = tr("#NullificationDetails");
 
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$InitialJudge"] = tr("$InitialJudge");
