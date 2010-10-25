@@ -15,13 +15,10 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(player->hasSkill(objectName()))
-            return false;
-
         if(player->isNude())
             return false;
 
@@ -35,7 +32,7 @@ public:
             }
         }
 
-        if(caopi && caopi->isAlive()){
+        if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName())){
             caopi->obtainCard(player->getWeapon());
             caopi->obtainCard(player->getArmor());
             caopi->obtainCard(player->getDefensiveHorse());
@@ -587,8 +584,9 @@ LuanwuCard::LuanwuCard(){
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
-    foreach(ServerPlayer *player, players){        
-        room->cardEffect(this, source, player);
+    foreach(ServerPlayer *player, players){
+        if(player->isAlive())
+            room->cardEffect(this, source, player);
     }
 }
 
@@ -892,6 +890,7 @@ ThicketPackage::ThicketPackage()
     t["songwei:yes"] = tr("songwei:yes");
     t["haoshi:yes"] = tr("haoshi:yes");
     t[":yinghun:"] = tr(":yinghun:");
+    t["xingshang:yes"] = tr("xingshang:yes");
 
     t["@luanwu-slash"] = tr("@luanwu-slash");
     t["@roulin1-jink-1"] = tr("@roulin1-jink-1");

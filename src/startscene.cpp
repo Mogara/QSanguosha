@@ -78,7 +78,7 @@ void StartScene::switchToServer(Server *server){
             items << address.toString();
     }
 
-    qSort(items);
+    items.sort();
 
     foreach(QString item, items){
         if(item.startsWith("192.168.") || item.startsWith("10."))

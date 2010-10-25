@@ -224,18 +224,17 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     winner = "lord";
             }
 
-            QString killer_name = data.toString();
-            ServerPlayer *killer = NULL;
-            if(!killer_name.isEmpty())
-                killer = room->findChild<ServerPlayer *>(killer_name);
-
             if(winner.isNull()){
-                room->bury(player);
-                if(killer){
+                QString killer_name = data.toString();
+                if(!killer_name.isEmpty()){
+                    ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+
                     if(player->getRole() == "rebel" && killer != player)
                         killer->drawCards(3);
-                    else if(player->getRole() == "loyalist" && killer->getRole() == "lord")
-                        killer->throwAllCards();
+                    else if(player->getRole() == "loyalist" && killer->getRole() == "lord"){
+                        killer->throwAllEquips();
+                        killer->throwAllHandCards();
+                    }
                 }
             }else{
                 player->throwAllCards();

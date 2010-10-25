@@ -35,9 +35,11 @@ public:
 private:
     ServerSocket *server;
     QList<Room*> rooms;
+    QSet<QString> addresses;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
+    void removeAddress();
 
 signals:
     void server_message(const QString &);

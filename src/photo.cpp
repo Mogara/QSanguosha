@@ -249,16 +249,12 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
             card_item = offensive_horse;
             offensive_horse = NULL;
         }
-
-        if(card_item)
-            card_item->setOpacity(1.0);
     }else if(place == Player::Judging){
         QMutableVectorIterator<CardItem *> itor(judging_area);
         while(itor.hasNext()){
             CardItem *item = itor.next();
             if(item->getCard()->getId() == card_id){
                 card_item = item;
-                card_item->setOpacity(1.0);
 
                 int index = judging_area.indexOf(item);
                 QGraphicsPixmapItem *pixmap_item = judging_pixmaps.at(index);

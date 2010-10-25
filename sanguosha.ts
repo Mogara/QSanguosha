@@ -1518,37 +1518,37 @@
 <context>
     <name>NativeClientSocket</name>
     <message>
-        <location filename="src/nativesocket.cpp" line="89"/>
+        <location filename="src/nativesocket.cpp" line="93"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="91"/>
+        <location filename="src/nativesocket.cpp" line="95"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="93"/>
+        <location filename="src/nativesocket.cpp" line="97"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="95"/>
+        <location filename="src/nativesocket.cpp" line="99"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="97"/>
+        <location filename="src/nativesocket.cpp" line="101"/>
         <source>Server&apos;s&apos; firewall blocked the connection or the network cable was plugged out</source>
         <translation>服务器的防火墙阻止了这次连接或者网络电缆被拔出</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="99"/>
+        <location filename="src/nativesocket.cpp" line="103"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/nativesocket.cpp" line="102"/>
+        <location filename="src/nativesocket.cpp" line="106"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -2031,7 +2031,12 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="185"/>
+        <location filename="src/server.cpp" line="161"/>
+        <source>Forbid the connection of address %1</source>
+        <translation>禁止了地址 %1 的连接</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="197"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
@@ -3994,47 +3999,52 @@
         <translation>请选择英魂技能的选项:</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="896"/>
+        <location filename="src/thicket.cpp" line="895"/>
+        <source>xingshang:yes</source>
+        <translation>你可以获得阵亡者的所有手牌和装备牌</translation>
+    </message>
+    <message>
+        <location filename="src/thicket.cpp" line="897"/>
         <source>@luanwu-slash</source>
         <translation>请打出一张杀以响应【乱武】</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="897"/>
+        <location filename="src/thicket.cpp" line="898"/>
         <source>@roulin1-jink-1</source>
         <translation>董卓拥有【肉林】技能，您必须出两张【闪】来闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="898"/>
+        <location filename="src/thicket.cpp" line="899"/>
         <source>@roulin1-jink-2</source>
         <translation>董卓拥有【肉林】技能，您还需要出一张【闪】来闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="899"/>
+        <location filename="src/thicket.cpp" line="900"/>
         <source>@roulin2-jink-1</source>
         <translation>你拥有【肉林】技能，女性出的【杀】您必须出两张【闪】才能闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="900"/>
+        <location filename="src/thicket.cpp" line="901"/>
         <source>@roulin2-jink-2</source>
         <translation>你拥有【肉林】技能，您还需出张【闪】才能闪避</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="901"/>
+        <location filename="src/thicket.cpp" line="902"/>
         <source>@haoshi</source>
         <translation>请选择好施的对象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="902"/>
+        <location filename="src/thicket.cpp" line="903"/>
         <source>@fangzhu</source>
         <translation>请指定要放逐的对象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="903"/>
+        <location filename="src/thicket.cpp" line="904"/>
         <source>@yinghun</source>
         <translation>请指定要英魂的对象</translation>
     </message>
     <message>
-        <location filename="src/thicket.cpp" line="905"/>
+        <location filename="src/thicket.cpp" line="906"/>
         <source>#Dimeng</source>
         <translation>%from (原来 %arg 手牌) 与 %to (原来 %arg2 手牌) 交换了手牌</translation>
     </message>

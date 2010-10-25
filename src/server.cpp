@@ -47,7 +47,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     advanced_box_layout->addWidget(free_choose_checkbox);
 
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
-    forbid_same_ip_checkbox->setChecked(false);
+    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
     advanced_box_layout->addWidget(forbid_same_ip_checkbox);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
@@ -88,8 +88,6 @@ ServerDialog::ServerDialog(QWidget *parent)
         int column = i % 2;
         grid_layout->addWidget(checkbox, row, column);
     }
-
-
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Player count"), player_count_spinbox);
@@ -154,6 +152,18 @@ bool Server::listen(){
 }
 
 void Server::processNewConnection(ClientSocket *socket){
+    if(Config.ForbidSIMC){
+        QString addr = socket->peerAddress();
+        if(addresses.contains(addr)){
+            socket->disconnectFromHost();
+            emit server_message(tr("Forbid the connection of address %1").arg(addr));
+            return;
+        }else{
+            addresses.insert(addr);
+            connect(socket, SIGNAL(disconnected()), this, SLOT(removeAddress()));
+        }
+    }
+
     // remove the game over room first
     QMutableListIterator<Room *> itor(rooms);
     while(itor.hasNext()){
@@ -185,3 +195,10 @@ void Server::processNewConnection(ClientSocket *socket){
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 }
 
+void Server::removeAddress(){
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+
+    if(socket){
+        addresses.remove(socket->peerAddress());
+    }
+}

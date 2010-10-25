@@ -30,6 +30,7 @@ public:
     virtual void send(const QString &message);
     virtual bool isConnected() const;
     virtual QString peerName() const;
+    virtual QString peerAddress() const;
 
 private slots:
     void getMessage();

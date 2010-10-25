@@ -1121,6 +1121,8 @@ QList<ClientPlayer*> Client::getPlayers() const{
 }
 
 void Client::clearTurnTag(){
+    Sanguosha->playEffect("audio/turn.mp3");
+
     turn_tag.clear();
 }
 

@@ -39,7 +39,6 @@ public:
     void nextPlayer();
     void output(const QString &message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
-    void bury(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);

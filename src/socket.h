@@ -26,6 +26,7 @@ public:
     virtual void send(const QString &message) = 0;
     virtual bool isConnected() const = 0;
     virtual QString peerName() const = 0;
+    virtual QString peerAddress() const = 0;
 
 signals:
     void message_got(char *msg);

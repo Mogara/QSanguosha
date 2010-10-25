@@ -132,6 +132,16 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     broadcastProperty(victim, "role");
     broadcastInvoke("killPlayer", victim->objectName());
 
+    int index = alive_players.indexOf(victim);
+    int i;
+    for(i=index+1; i<alive_players.length(); i++){
+        ServerPlayer *p = alive_players.at(i);
+        p->setSeat(p->getSeat() - 1);
+        broadcastProperty(p, "seat");
+    }
+
+    alive_players.removeOne(victim);
+
     LogMessage log;
     log.to << victim;
     log.arg = victim->getRole();
@@ -152,18 +162,6 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     sendLog(log);
 
     thread->trigger(Death, victim, killer_name);
-}
-
-void Room::bury(ServerPlayer *player){
-    int index = alive_players.indexOf(player);
-    int i;
-    for(i=index+1; i<alive_players.length(); i++){
-        ServerPlayer *p = alive_players.at(i);
-        p->setSeat(p->getSeat() - 1);
-        broadcastProperty(p, "seat");
-    }
-
-    alive_players.removeOne(player);
 }
 
 const Card *Room::getJudgeCard(ServerPlayer *player){

@@ -559,7 +559,6 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
             if(card_item == NULL)
                 return NULL;
 
-            card_item->setOpacity(1.0);
             card_item->setParentItem(NULL);
             card_item->setPos(dashboard->mapToScene(card_item->pos()));
             return card_item;
@@ -658,6 +657,8 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     CardItem *card_item = takeCardItem(src, src_place, card_id);
     if(card_item == NULL)
         return;
+
+    card_item->setOpacity(1.0);
 
     if(card_item->scene() == NULL)
         addItem(card_item);
@@ -1502,21 +1503,30 @@ void RoomScene::changeHp(const QString &who, int delta){
         dashboard->update();
 
     if(delta < 0){
-        if(delta <= -3){
-            static QString lightning_effect("audio/lightning.wav");
-            Sanguosha->playEffect(lightning_effect);
-            return;
+        QString damage_effect;
+        switch(delta){
+        case -1: {
+                ClientPlayer *player = ClientInstance->getPlayer(who);
+                if(player->getGeneral()->isMale())
+                    damage_effect = "audio/male-damage.mp3";
+                else
+                    damage_effect = "audio/female-damage.mp3";
+                break;
+            }
+
+        case -2:{
+                damage_effect = "audio/damage.mp3";
+                break;
+            }
+
+        case -3:
+        default:{
+                damage_effect = "audio/lightning.wav";
+                break;
+            }
         }
 
-        static QString male_damage_effect("audio/male-damage.mp3");
-        static QString female_damage_effect("audio/female-damage.mp3");
-
-        ClientPlayer *player = ClientInstance->getPlayer(who);
-
-        if(player->getGeneral()->isMale())
-            Sanguosha->playEffect(male_damage_effect);
-        else
-            Sanguosha->playEffect(female_damage_effect);
+        Sanguosha->playEffect(damage_effect);
 
         if(photo){
             photo->setEmotion("damage");

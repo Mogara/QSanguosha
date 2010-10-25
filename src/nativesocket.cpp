@@ -81,6 +81,10 @@ QString NativeClientSocket::peerName() const{
     return peer_name;
 }
 
+QString NativeClientSocket::peerAddress() const{
+    return socket->peerAddress().toString();
+}
+
 void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error){
     // translate error message
     QString reason;
