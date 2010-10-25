@@ -1055,7 +1055,16 @@ void Room::useCard(const CardUseStruct &card_use){
         can_use = getCardOwner(card) == player;
 
     if(!can_use){
-        throwCard(card);
+        if(card->isVirtualCard()){
+            QList<int> card_ids = card->getSubcards();
+            foreach(int card_id, card_ids){
+                broadcastInvoke("moveCard", QString("%1:%2@hand->_@_").arg(card_id).arg(player->objectName()));
+            }
+        }else{
+            int card_id = card->getId();
+            broadcastInvoke("moveCard", QString("%1:%2@hand->_@_").arg(card_id).arg(player->objectName()));
+        }
+
         return;
     }
 
