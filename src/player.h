@@ -45,10 +45,12 @@ class Player : public QObject
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
+    Q_ENUMS(Role)
 
 public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
     enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
+    enum Role {Lord, Loyalist, Rebel, Renegade};
 
     struct CorrectStruct{
         int equip_src;
@@ -79,7 +81,8 @@ public:
     QString getKingdomPath() const;
 
     void setRole(const QString &role);
-    QString getRole() const;
+    QString getRole() const;    
+    Role getRoleEnum() const;
 
     void setGeneralName(const QString &general_name);
     QString getGeneralName() const;

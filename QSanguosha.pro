@@ -52,7 +52,10 @@ SOURCES += src/main.cpp \
     src/aux-skills.cpp \
     src/choosegeneraldialog.cpp \
     src/nativesocket.cpp \
-    src/recorder.cpp
+    src/recorder.cpp \
+    src/scenario.cpp \
+    src/guandu-scenario.cpp \
+    src/detector.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -99,7 +102,10 @@ HEADERS += src/mainwindow.h \
     src/choosegeneraldialog.h \
     src/socket.h \
     src/nativesocket.h \
-    src/recorder.h
+    src/recorder.h \
+    src/scenario.h \
+    src/guandu-scenario.h \
+    src/detector.h
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \

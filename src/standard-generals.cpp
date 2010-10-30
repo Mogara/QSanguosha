@@ -165,7 +165,9 @@ public:
     virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = xiahou->getRoom();
-        if(from && room->askForSkillInvoke(xiahou, "ganglie")){
+        QVariant source = QVariant::fromValue(from);
+
+        if(from && room->askForSkillInvoke(xiahou, "ganglie", source)){
             room->playSkillEffect(objectName());
 
             const Card *card = room->getJudgeCard(xiahou);
@@ -266,6 +268,9 @@ public:
 
                 const Card *reason = damage.card;
                 if(reason == NULL)
+                    return false;
+
+                if(damage.chain)
                     return false;
 
                 if(reason->inherits("Slash") || reason->inherits("Duel")){
@@ -375,7 +380,10 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getRole() == "lord" && Slash::IsAvailable();
+        if(Self->hasSkill("guixin2"))
+            return Slash::IsAvailable();
+        else
+            return Self->getRoleEnum() == Player::Lord && Slash::IsAvailable();
     }
 
     virtual const Card *viewAs() const{

@@ -12,9 +12,21 @@ class ServerPlayer;
 
 class AI: public QObject{
     Q_OBJECT
+    Q_ENUMS(Relation)
 
 public:
     AI(ServerPlayer *player);
+
+    static AI *CreateAI(ServerPlayer *player);
+
+    enum Relation { Friend, Enemy, Neutrality };
+    Relation relationTo(const ServerPlayer *other) const;
+
+    bool isFriend(const ServerPlayer *other) const;
+    bool isEnemy(const ServerPlayer *other) const;
+
+    QList<ServerPlayer *> getEnemies() const;
+    QList<ServerPlayer *> getFriends() const;
 
     virtual void activate(CardUseStruct &card_use) const = 0;
     virtual Card::Suit askForSuit() const = 0;
@@ -34,7 +46,7 @@ public:
 
 protected:
     Room *room;
-    ServerPlayer *player;
+    ServerPlayer *self;
 };
 
 class TrustAI: public AI{

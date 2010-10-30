@@ -151,7 +151,7 @@ public:
                 }
 
                 if(draw_card)
-                    effect.to->drawCards(1);
+                    effect.from->drawCards(1);
             }
         }
 

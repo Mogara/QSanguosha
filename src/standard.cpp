@@ -92,10 +92,31 @@ QString AOE::getSubtype() const{
 void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
 
+    bool is_savage_assault = inherits("SavageAssault");
+
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(isBlack() && player->hasSkill("weimu"))
+        if(isBlack() && player->hasSkill("weimu")){
+            LogMessage log;
+            log.type = "#WeimuAvoid";
+            log.from = player;
+            room->sendLog(log);
+
             continue;
+        }
+
+        if(is_savage_assault){
+            if(player->hasSkill("huoshou") || player->hasSkill("juxiang")){
+                LogMessage log;
+                log.type = "#SkillNullify";
+                log.from = player;
+                log.arg = player->hasSkill("huoshou") ? "huoshou" : "juxiang";
+                log.arg2 = "savage_assault";
+                room->sendLog(log);
+
+                continue;
+            }
+        }
 
         if(player->isDead())
             continue;
@@ -346,6 +367,7 @@ StandardPackage::StandardPackage()
     t["#AskForPeaches"] = tr("#AskForPeaches");
     t["#ChooseKingdom"] = tr("#ChooseKingdom");
     t["#NullificationDetails"] = tr("#NullificationDetails");
+    t["#WeimuAvoid"] = tr("#WeimuAvoid");
 
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$InitialJudge"] = tr("$InitialJudge");

@@ -3,6 +3,7 @@
 #include "client.h"
 #include "ai.h"
 #include "settings.h"
+#include "scenario.h"
 
 extern audiere::AudioDevicePtr Device;
 
@@ -38,6 +39,8 @@ extern "C" {
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
+
+    Scenario *NewGuanduScenario();
 }
 
 Engine::Engine(QObject *parent)
@@ -51,7 +54,22 @@ Engine::Engine(QObject *parent)
     addPackage(NewGod());
     addPackage(NewYitian());
 
+    addScenario(NewGuanduScenario());
+
     Device->registerCallback(new StopCallback);
+}
+
+QStringList Engine::getScenarioNames() const{
+    return scenarios.keys();
+}
+
+void Engine::addScenario(const Scenario *scenario){
+    scenarios.insert(scenario->objectName(), scenario);    
+    translations.unite(scenario->getTranslation());
+}
+
+const Scenario *Engine::getScenario(const QString &name) const{
+    return scenarios.value(name, NULL);
 }
 
 void Engine::addPackage(Package *package){

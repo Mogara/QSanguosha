@@ -2,11 +2,79 @@
 #include "serverplayer.h"
 #include "engine.h"
 #include "standard.h"
+#include "settings.h"
 
 AI::AI(ServerPlayer *player)
-    :player(player)
+    :self(player)
 {
     room = player->getRoom();
+}
+
+AI *AI::CreateAI(ServerPlayer *player){
+    switch(Config.AILevel){
+    case 0: return new TrustAI(player);
+    case 1: return new SmartAI(player);
+    case 2:
+    default:
+        AI *ai = Sanguosha->cloneAI(player);
+        if(ai == NULL)
+            return new SmartAI(player);
+        else
+            return ai;
+    }
+}
+
+AI::Relation AI::relationTo(const ServerPlayer *other) const{
+    static QMap<Player::Role, int> group_map;
+    if(group_map.isEmpty()){
+        group_map.insert(Player::Lord, 1);
+        group_map.insert(Player::Loyalist, 1);
+        group_map.insert(Player::Rebel, -1);
+        group_map.insert(Player::Renegade, 0);
+    }
+
+    int self_group = group_map.value(self->getRoleEnum());
+    int other_group = group_map.value(other->getRoleEnum());
+
+    if(self_group == other_group)
+        return Friend;
+    else if(self_group + other_group == 0)
+        return Enemy;
+    else{
+        // FIXME: acording to the game process;
+
+        return Neutrality;
+    }
+}
+
+bool AI::isFriend(const ServerPlayer *other) const{
+    return relationTo(other) == Friend;
+}
+
+bool AI::isEnemy(const ServerPlayer *other) const{
+    return relationTo(other) == Enemy;
+}
+
+QList<ServerPlayer *> AI::getEnemies() const{
+    QList<ServerPlayer *> players = room->getOtherPlayers(self);
+    QList<ServerPlayer *> enemies;
+    foreach(ServerPlayer *p, players){
+        if(isEnemy(p))
+            enemies << p;
+    }
+
+    return enemies;
+}
+
+QList<ServerPlayer *> AI::getFriends() const{
+    QList<ServerPlayer *> players = room->getOtherPlayers(self);
+    QList<ServerPlayer *> friends;
+    foreach(ServerPlayer *p, players){
+        if(isFriend(p))
+            friends << p;
+    }
+
+    return friends;
 }
 
 TrustAI::TrustAI(ServerPlayer *player)
@@ -15,26 +83,26 @@ TrustAI::TrustAI(ServerPlayer *player)
 }
 
 void TrustAI::activate(CardUseStruct &card_use) const{
-    QList<const Card *> cards = player->getHandcards();
+    QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
         bool use_it = false;
 
         if(card->inherits("Peach"))
-            use_it = player->isWounded();
+            use_it = self->isWounded();
         else if(card->inherits("EquipCard")){
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             switch(equip->location()){
-            case EquipCard::WeaponLocation: use_it = !player->getWeapon(); break;
-            case EquipCard::ArmorLocation: use_it = !player->getArmor(); break;
-            case EquipCard::OffensiveHorseLocation: use_it = !player->getOffensiveHorse(); break;
-            case EquipCard::DefensiveHorseLocation: use_it = !player->getDefensiveHorse(); break;
+            case EquipCard::WeaponLocation: use_it = !self->getWeapon(); break;
+            case EquipCard::ArmorLocation: use_it = !self->getArmor(); break;
+            case EquipCard::OffensiveHorseLocation: use_it = !self->getOffensiveHorse(); break;
+            case EquipCard::DefensiveHorseLocation: use_it = !self->getDefensiveHorse(); break;
             }
         }else if(card->inherits("TrickCard"))
             use_it = card->targetFixed();
 
         if(use_it){
             card_use.card = card;
-            card_use.from = player;
+            card_use.from = self;
 
             return;
         }
@@ -46,7 +114,7 @@ Card::Suit TrustAI::askForSuit() const{
 }
 
 QString TrustAI::askForKingdom() const{
-    return player->getKingdom();
+    return self->getKingdom();
 }
 
 bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
@@ -64,14 +132,14 @@ QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_e
     if(optional)
         return to_discard;
     else
-        return player->forceToDiscard(discard_num, include_equip);
+        return self->forceToDiscard(discard_num, include_equip);
 }
 
 int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) const{
     const TrickCard *card = Sanguosha->findChild<const TrickCard *>(trick_name);
-    if(to == player && card->isAggressive()){
-        QList<const Card *> cards = player->getHandcards();
-        if(player->hasSkill("kanpo")){
+    if(to == self && card->isAggressive()){
+        QList<const Card *> cards = self->getHandcards();
+        if(self->hasSkill("kanpo")){
             foreach(const Card *card, cards){
                 if(card->isBlack() || card->objectName() == "nullification"){
                     return card->getId();
@@ -105,7 +173,7 @@ const Card *TrustAI::askForCard(const QString &pattern) const{
         }
     }
 
-    QList<const Card *> cards = player->getHandcards();
+    QList<const Card *> cards = self->getHandcards();
     if(id_rx.exactMatch(pattern)){
         int card_id = pattern.toInt();
         foreach(const Card *card, cards)
@@ -130,11 +198,11 @@ int TrustAI::askForAG(const QList<int> &card_ids) const{
 }
 
 int TrustAI::askForCardShow(ServerPlayer *) const{
-    return player->getRandomHandCard();
+    return self->getRandomHandCard();
 }
 
 const Card *TrustAI::askForPindian() const{
-    QList<const Card *> cards = player->getHandcards();
+    QList<const Card *> cards = self->getHandcards();
     const Card *highest = cards.first();
     foreach(const Card *card, cards){
         if(card->getNumber() > highest->getNumber())
@@ -150,8 +218,8 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets) 
 }
 
 const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) const{
-    if(dying == player){
-        QList<const Card *> cards = player->getHandcards();
+    if(dying == self){
+        QList<const Card *> cards = self->getHandcards();
         foreach(const Card *card, cards){
             if(card->inherits("Peach") || card->inherits("Analeptic"))
                 return card;
@@ -187,7 +255,7 @@ int SmartAI::askForCardShow(ServerPlayer *requestor) const{
         }
     }
 
-    cards = player->getHandcards();
+    cards = self->getHandcards();
     if(lack != Card::NoSuit){
         foreach(const Card *card, cards){
             if(card->getSuit() == lack)

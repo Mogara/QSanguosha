@@ -36,6 +36,7 @@ struct DamageStruct{
     const Card *card;
     int damage;
     Nature nature;
+    bool chain;
 };
 
 Q_DECLARE_METATYPE(DamageStruct);
@@ -103,6 +104,10 @@ Q_DECLARE_METATYPE(SlashResultStruct);
 typedef const Card *CardStar;
 
 Q_DECLARE_METATYPE(CardStar);
+
+typedef ServerPlayer *PlayerStar;
+
+Q_DECLARE_METATYPE(PlayerStar);
 
 struct DyingStruct{
     DyingStruct();

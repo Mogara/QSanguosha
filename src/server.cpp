@@ -13,11 +13,30 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QRadioButton>
 
 ServerDialog::ServerDialog(QWidget *parent)
     :QDialog(parent)
 {
     setWindowTitle(tr("Start server"));
+
+    QLayout *left = createLeft();
+    QLayout *right = createRight();
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addLayout(left);
+    hlayout->addLayout(right);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addLayout(hlayout);
+    layout->addLayout(createButtonLayout());
+
+    setLayout(layout);
+}
+
+QLayout *ServerDialog::createLeft(){
+    server_name_lineedit = new QLineEdit;
+    server_name_lineedit->setText(Config.ServerName);
 
     player_count_spinbox = new QSpinBox;
     player_count_spinbox->setMinimum(2);
@@ -36,36 +55,10 @@ ServerDialog::ServerDialog(QWidget *parent)
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
-    QGroupBox *advanced_box = new QGroupBox;
-    advanced_box->setTitle(tr("Advanced"));
-    QVBoxLayout *advanced_box_layout = new QVBoxLayout;
-    advanced_box->setLayout(advanced_box_layout);
-
-    free_choose_checkbox = new QCheckBox(tr("Free choose generals"));
-    free_choose_checkbox->setToolTip(tr("Enable this will make the clients choose generals freely"));
-    free_choose_checkbox->setChecked(Config.FreeChoose);
-    advanced_box_layout->addWidget(free_choose_checkbox);
-
-    forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
-    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
-    advanced_box_layout->addWidget(forbid_same_ip_checkbox);
-
-    QHBoxLayout *button_layout = new QHBoxLayout;
-    button_layout->addStretch();
-
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-
-    button_layout->addWidget(ok_button);
-    button_layout->addWidget(cancel_button);
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-
     QGroupBox *extension_box = new QGroupBox;
     extension_box->setTitle(tr("Extension package selection"));
-    QGridLayout *grid_layout = new QGridLayout;
-    extension_box->setLayout(grid_layout);
+    QGridLayout *extension_layout = new QGridLayout;
+    extension_box->setLayout(extension_layout);
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
@@ -86,22 +79,151 @@ ServerDialog::ServerDialog(QWidget *parent)
 
         int row = i / 2;
         int column = i % 2;
-        grid_layout->addWidget(checkbox, row, column);
+        extension_layout->addWidget(checkbox, row, column);
     }
 
-    QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Player count"), player_count_spinbox);
+    QGroupBox *scenario_box = new QGroupBox;
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(new QLabel(tr("Operation timeout")));
-    hlayout->addWidget(timeout_spinbox);
-    hlayout->addWidget(nolimit_checkbox);
-    layout->addRow(hlayout);
-    layout->addRow(advanced_box);
-    layout->addRow(extension_box);
-    layout->addRow(button_layout);
+    {
+        scenario_box->setTitle(tr("Scenario mode"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        scenario_box->setLayout(layout);
+        QCheckBox *scenario_checkbox = new QCheckBox(tr("Enable scenario mode"));
+        layout->addWidget(scenario_checkbox);
 
-    setLayout(layout);
+        scenario_combobox = new QComboBox;
+        QStringList names = Sanguosha->getScenarioNames();
+        foreach(QString name, names){
+            QVariant data = name;
+            QString text = Sanguosha->translate(name);
+            scenario_combobox->addItem(text, data);
+        }
+
+        layout->addWidget(scenario_combobox);
+
+        connect(scenario_checkbox, SIGNAL(toggled(bool)), scenario_combobox, SLOT(setEnabled(bool)));
+
+        int index = names.indexOf(Config.Scenario);
+        if(index == -1){
+            scenario_checkbox->setChecked(false);
+            scenario_combobox->setEnabled(false);
+        }else{
+            scenario_checkbox->setChecked(true);
+            scenario_combobox->setCurrentIndex(index);
+        }
+    }
+
+    QFormLayout *vlayout = new QFormLayout;
+    vlayout->addRow(tr("Server name"), server_name_lineedit);
+    vlayout->addRow(tr("Player count"), player_count_spinbox);
+    vlayout->addRow(tr("Operation timeout"), timeout_spinbox);
+    vlayout->addWidget(nolimit_checkbox);
+    vlayout->addRow(extension_box);
+    vlayout->addRow(scenario_box);
+
+    return vlayout;
+}
+
+QLayout *ServerDialog::createRight(){
+    QGroupBox *advanced_box = new QGroupBox;
+
+    {
+        advanced_box->setTitle(tr("Advanced"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        advanced_box->setLayout(layout);
+
+        free_choose_checkbox = new QCheckBox(tr("Free choose generals"));
+        free_choose_checkbox->setToolTip(tr("Enable this will make the clients choose generals freely"));
+        free_choose_checkbox->setChecked(Config.FreeChoose);
+        layout->addWidget(free_choose_checkbox);
+
+        forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
+        forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
+        layout->addWidget(forbid_same_ip_checkbox);
+    }
+
+    QGroupBox *ai_box = new QGroupBox;
+
+    {
+        ai_box->setTitle(tr("Artificial intelligence"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        ai_box->setLayout(layout);
+
+        ai_group = new QButtonGroup;
+
+        QRadioButton *stupid = new QRadioButton(tr("Stupid"));
+        QRadioButton *normal = new QRadioButton(tr("Normal"));
+        QRadioButton *smart = new QRadioButton(tr("Smart"));
+
+        ai_group->addButton(stupid, 0);
+        ai_group->addButton(normal, 1);
+        ai_group->addButton(smart, 2);
+
+        layout->addWidget(stupid);
+        layout->addWidget(normal);
+        layout->addWidget(smart);
+
+        QAbstractButton *checked = ai_group->button(Config.AILevel);
+        if(checked)
+            checked->setChecked(true);
+        else
+            smart->setChecked(true);
+    }
+
+    QGroupBox *connection_box = new QGroupBox;
+
+    {
+        connection_box->setTitle(tr("Connection method"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        connection_box->setLayout(layout);
+
+        QRadioButton *tcp = new QRadioButton(tr("Direct battle (Direct on TCP/IP)"));
+        QRadioButton *ipx = new QRadioButton(tr("Battle platform (Based on SPX/IPX)"));
+        QRadioButton *dcc = new QRadioButton(tr("IRC network (Based on subprotocol DCC)"));
+
+        // IPX & DCC is not supported now
+        ipx->setEnabled(false);
+        dcc->setEnabled(false);
+
+        connection_group = new QButtonGroup;
+        connection_group->addButton(tcp, 0);
+        connection_group->addButton(ipx, 1);
+        connection_group->addButton(dcc, 2);
+
+        layout->addWidget(tcp);
+        layout->addWidget(ipx);
+        layout->addWidget(dcc);
+
+        QAbstractButton *checked = connection_group->button(Config.ConnectionMethod);
+        if(checked)
+            checked->setChecked(true);
+        else
+            tcp->setChecked(true);
+    }
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(advanced_box);
+    vlayout->addWidget(ai_box);
+    vlayout->addWidget(connection_box);
+    vlayout->addStretch();
+
+    return vlayout;
+}
+
+QLayout *ServerDialog::createButtonLayout(){
+    QHBoxLayout *button_layout = new QHBoxLayout;
+    button_layout->addStretch();
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+
+    button_layout->addWidget(ok_button);
+    button_layout->addWidget(cancel_button);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+
+    return button_layout;
 }
 
 bool ServerDialog::config(){
@@ -110,17 +232,28 @@ bool ServerDialog::config(){
     if(result() != Accepted)
         return false;
 
+    Config.ServerName = server_name_lineedit->text();
     Config.PlayerCount = player_count_spinbox->value();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
+    Config.AILevel = ai_group->checkedId();
+    Config.ConnectionMethod = connection_group->checkedId();
+    if(scenario_combobox->isEnabled())
+        Config.Scenario = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
+    else
+        Config.Scenario.clear();
 
+    Config.setValue("ServerName", Config.ServerName);
     Config.setValue("PlayerCount", Config.PlayerCount);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("AILevel", Config.AILevel);
+    Config.setValue("ConnectionMethod", Config.ConnectionMethod);
+    Config.setValue("Scenario", Config.Scenario);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
@@ -149,6 +282,10 @@ Server::Server(QObject *parent)
 
 bool Server::listen(){
     return server->listen();
+}
+
+void Server::daemonize(){
+    server->daemonize();
 }
 
 void Server::processNewConnection(ClientSocket *socket){
@@ -185,7 +322,7 @@ void Server::processNewConnection(ClientSocket *socket){
 
     // if no free room is found, create a new room for him
     if(free_room == NULL){
-        free_room = new Room(this, Config.PlayerCount);
+        free_room = new Room(this, NULL);
         rooms << free_room;
         connect(free_room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }

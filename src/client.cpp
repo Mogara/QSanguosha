@@ -132,7 +132,6 @@ Client::Client(QObject *parent, const QString &filename)
         recorder = NULL;
 
         replayer = new Replayer(this, filename);
-        // connect(replayer, SIGNAL(command_parsed(char*)), this, SLOT(processReply(char*)));
         connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processCommand(QString)));
 
     }else{

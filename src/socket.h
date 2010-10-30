@@ -12,6 +12,7 @@ class ServerSocket: public QObject{
 
 public:
     virtual bool listen() = 0;
+    virtual void daemonize() = 0;
 
 signals:
     void new_connection(ClientSocket *connection);

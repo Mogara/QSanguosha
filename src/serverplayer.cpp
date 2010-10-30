@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "ai.h"
+#include "settings.h"
 
 #include <QHostAddress>
 
@@ -248,9 +249,7 @@ void ServerPlayer::kick(){
 void ServerPlayer::setAIByGeneral(){
     if(getGeneral()){
         delete ai;
-        ai = Sanguosha->cloneAI(this);
-        if(ai == NULL)
-            ai = new TrustAI(this);
+        ai = AI::CreateAI(this);
     }
 }
 

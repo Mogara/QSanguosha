@@ -38,10 +38,14 @@ void Settings::init(){
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
+    AILevel = value("AILevel", 2).toInt();
+    ConnectionMethod = value("ConnectionMethod", 0).toInt();
+    Scenario = value("Scenario").toString();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");
+    ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     Port = value("Port", 9527u).toUInt();

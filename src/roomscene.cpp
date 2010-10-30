@@ -1750,8 +1750,6 @@ void RoomScene::killPlayer(const QString &who){
 }
 
 void RoomScene::fillAmazingGrace(const QList<int> &card_ids){
-    amazing_grace.clear();
-
     static const int columns = 4;
     static const qreal ratio = 0.8;
 
@@ -1769,6 +1767,7 @@ void RoomScene::fillAmazingGrace(const QList<int> &card_ids){
         card_item->setPos(pos);
         card_item->setHomePos(pos);
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
+
         amazing_grace << card_item;
         addItem(card_item);
     }
@@ -1816,19 +1815,18 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             card_item->setEnabled(false);
 
             CardItem *item = new CardItem(card_item->getCard());
-            item->setPos(card_item->pos());
             addItem(item);
+            item->setPos(card_item->pos());
 
-            QString name;
+            QString avatar_path;
             if(taker){
                 putCardItem(taker, Player::Hand, item);
-                name = Sanguosha->translate(taker->getGeneralName());
+                avatar_path = taker->getGeneral()->getPixmapPath("big");
             }else{
                 putCardItem(NULL, Player::DiscardedPile, item);
-                name = tr("Discarded Pile");
+                avatar_path = ":/card-back.png";
             }
 
-            QString avatar_path = taker ? taker->getGeneral()->getPixmapPath("big") : ":/card-back.png";
             QGraphicsPixmapItem *taker_avatar = addPixmap(QPixmap(avatar_path));
             taker_avatar->setScale(0.5);
             taker_avatar->setPos(card_item->pos() + QPointF(30, 70));

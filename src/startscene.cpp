@@ -34,7 +34,12 @@ void StartScene::addButton(QAction *action){
 
 #include <QNetworkInterface>
 
+#include "audiere.h"
+extern audiere::AudioDevicePtr Device;
+
 void StartScene::switchToServer(Server *server){
+    Device = NULL;
+
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
     logo_shift->setEndValue(Config.Rect.topLeft());
@@ -103,6 +108,16 @@ void StartScene::switchToServer(Server *server){
         server_log->append(tr("Free general choose is enabled"));
     else
         server_log->append(tr("Free general choose is not enabled"));
+
+    QString level;
+    switch(Config.AILevel){
+    case 0: level = tr("stupid"); break;
+    case 1: level = tr("normal"); break;
+    case 2:
+    default:
+        level = tr("smart"); break;
+    }
+    server_log->append(tr("The computer AI level is %1").arg(level));
 
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
 

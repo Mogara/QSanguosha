@@ -2,12 +2,13 @@
 #include "ui_connectiondialog.h"
 #include "settings.h"
 #include "engine.h"
+#include "detector.h"
+
+#include <QMessageBox>
+#include <QTimer>
 
 static const int ShrinkWidth = 230;
 static const int ExpandWidth = 744;
-
-#include <QMessageBox>
-#include <QRegExpValidator>
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
@@ -105,4 +106,73 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
 
     Config.HistoryIPs.clear();
     Config.remove("HistoryIPs");
+}
+
+void ConnectionDialog::on_detectButton_clicked()
+{
+    DetectorDialog *detector_dialog = new DetectorDialog(this);
+    connect(detector_dialog, SIGNAL(address_chosen(QString)), ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+
+    detector_dialog->exec();
+}
+
+DetectorDialog::DetectorDialog(QDialog *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Detect available server's addresses"));
+
+    method_combobox = new QComboBox;
+    method_combobox->addItem(tr("LAN detect"));
+    method_combobox->addItem(tr("WAN detect"));
+    method_combobox->addItem(tr("Battle platform detect"));
+
+    detect_button = new QPushButton(tr("Start"));
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(new QLabel(tr("Detect type:")));
+    hlayout->addWidget(method_combobox);
+    hlayout->addWidget(detect_button);
+
+    list = new QListWidget;
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(list);
+    layout->addLayout(hlayout);
+
+    setLayout(layout);
+
+    detector = new UdpDetector;
+    connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
+    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
+
+    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
+}
+
+void DetectorDialog::startDetection(){
+    detect_button->setEnabled(false);
+    list->clear();
+    detector->detect();
+
+    QTimer::singleShot(2000, this, SLOT(stopDetection()));
+}
+
+void DetectorDialog::stopDetection(){
+    detect_button->setEnabled(true);
+    detector->stop();
+}
+
+void DetectorDialog::addServerAddress(const QString &server_name, const QString &address){
+    QString label = QString("%1 [%2]").arg(server_name).arg(address);
+    QListWidgetItem *item = new QListWidgetItem(label);
+    item->setData(Qt::UserRole, address);
+
+    list->addItem(item);
+}
+
+void DetectorDialog::chooseAddress(QListWidgetItem *item){
+    QString address = item->data(Qt::UserRole).toString();
+
+    accept();
+
+    emit address_chosen(address);
 }

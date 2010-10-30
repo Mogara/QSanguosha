@@ -3,18 +3,24 @@
 
 #include "socket.h"
 
+class QUdpSocket;
+
 class NativeServerSocket: public ServerSocket{
     Q_OBJECT
 
 public:
     NativeServerSocket();
+
     virtual bool listen();
+    virtual void daemonize();
 
 private slots:
     void processNewConnection();
+    void processNewDatagram();
 
 private:
     QTcpServer *server;
+    QUdpSocket *daemon;
 };
 
 

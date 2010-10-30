@@ -143,6 +143,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                         if(chained_player->isChained()){
                             DamageStruct chain_damage = damage;
                             chain_damage.to = chained_player;
+                            chain_damage.chain = true;
 
                             room->setPlayerProperty(chained_player, "chained", false);
                             room->damage(chain_damage);

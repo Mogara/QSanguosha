@@ -86,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent)
     restoreFromConfig();
 
     addAction(ui->actionShow_Hide_Menu);
+    addAction(ui->actionFullscreen);
 }
 
 void MainWindow::restoreFromConfig(){
@@ -135,6 +136,8 @@ void MainWindow::on_actionStart_Server_triggered()
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
+
+    server->daemonize();
 
     ui->actionStart_Game->disconnect();
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));

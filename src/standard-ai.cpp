@@ -37,8 +37,9 @@ XiahoudunAI::XiahoudunAI(ServerPlayer *player)
 }
 
 bool XiahoudunAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+    PlayerStar from = data.value<PlayerStar>();
     if(skill_name == "ganglie")
-        return true;
+        return ! isFriend(from);
     else
         return SmartAI::askForSkillInvoke(skill_name, data);
 }

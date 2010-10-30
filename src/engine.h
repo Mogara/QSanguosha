@@ -12,6 +12,7 @@
 #include <QMetaObject>
 
 class AI;
+class Scenario;
 
 class Engine: public QObject
 {
@@ -29,6 +30,10 @@ public:
     AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
     QStringList getKingdoms() const;
+
+    QStringList getScenarioNames() const;
+    void addScenario(const Scenario *scenario);
+    const Scenario *getScenario(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -53,6 +58,7 @@ private:
     QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
+    QHash<QString, const Scenario *> scenarios;
 
     QHash<QString, audiere::OutputStreamPtr> effects;
     QHash<QString, audiere::OutputStreamPtr> playing;

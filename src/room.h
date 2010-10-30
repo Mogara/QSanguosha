@@ -2,6 +2,7 @@
 #define ROOM_H
 
 class TriggerSkill;
+class Scenario;
 
 #include "serverplayer.h"
 #include "roomthread.h"
@@ -25,7 +26,7 @@ public:
     friend class RoomThread;
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
-    explicit Room(QObject *parent, int player_count);
+    explicit Room(QObject *parent, const Scenario *scenario);
     void addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
@@ -76,6 +77,9 @@ public:
     void showCard(ServerPlayer *player, int card_id);
     bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
+
+    void setTag(const QString &key, const QVariant &value);
+    QVariant getTag(const QString &key) const;
 
     enum TargetType{
         Killer,
@@ -167,6 +171,9 @@ private:
     QSet<Player::Phase> skip_set;
 
     const Card *provided;
+
+    QVariantMap scenario_tag;
+    const Scenario *scenario;
 
     static QString generatePlayerName();
 

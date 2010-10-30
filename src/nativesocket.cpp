@@ -4,16 +4,37 @@
 #include <QTcpSocket>
 #include <QRegExp>
 #include <QStringList>
-
+#include <QUdpSocket>
 
 NativeServerSocket::NativeServerSocket()
 {
     server = new QTcpServer(this);
+    daemon = NULL;
+
     connect(server, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
 }
 
 bool NativeServerSocket::listen(){
     return server->listen(QHostAddress::Any, Config.Port);
+}
+
+void NativeServerSocket::daemonize(){
+    daemon = new QUdpSocket(this);
+    daemon->bind(9527u, QUdpSocket::ShareAddress);
+
+    connect(daemon, SIGNAL(readyRead()), this, SLOT(processNewDatagram()));
+}
+
+void NativeServerSocket::processNewDatagram(){
+    while(daemon->hasPendingDatagrams()){
+        QHostAddress from;
+        char ask_str[256];
+
+        daemon->readDatagram(ask_str, sizeof(ask_str), &from);
+
+        QByteArray data = Config.ServerName.toUtf8();
+        daemon->writeDatagram(data, from, 9526u);
+    }
 }
 
 void NativeServerSocket::processNewConnection(){

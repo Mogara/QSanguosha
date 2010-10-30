@@ -192,7 +192,8 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    player->getRoom()->recover(player);
+    if(player->isAlive())
+        player->getRoom()->recover(player);
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)

@@ -23,6 +23,7 @@ protected:
 
 private:
     QProgressBar *progress_bar;
+    QDialog *free_chooser;
 
 private slots:
     void freeChoose();

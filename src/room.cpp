@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "standard.h"
 #include "ai.h"
+#include "scenario.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -28,12 +29,13 @@ QString LogMessage::toString() const{
             .arg(card_str).arg(arg).arg(arg2);
 }
 
-Room::Room(QObject *parent, int player_count)
-    :QObject(parent), player_count(player_count), current(NULL), reply_player(NULL),
+Room::Room(QObject *parent, const Scenario *scenario)
+    :QObject(parent), player_count(scenario ? scenario->getPlayerCount() : Config.PlayerCount),
+    current(NULL), reply_player(NULL),
     pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    thread(NULL), sem(NULL), provided(NULL)
+    thread(NULL), sem(NULL), provided(NULL), scenario(scenario)
 {
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
@@ -565,6 +567,10 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
 }
 
 int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
+    if(player->getHandcardNum() == 1){
+        return player->handCards().first();
+    }
+
     AI *ai = player->getAI();
     if(ai)
         return ai->askForCardShow(requestor);
@@ -1000,6 +1006,11 @@ void Room::assignRoles(){
 }
 
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
+    if(player->getGeneral()){
+        // the player has chosen player, should ignore it
+        return;
+    }
+
     player->setGeneralName(general_name);
 
     if(player->getRole() == "lord"){
@@ -1106,7 +1117,7 @@ void Room::damage(ServerPlayer *victim, int damage){
 }
 
 void Room::recover(ServerPlayer *player, int recover, bool set_emotion){
-    if(player->getLostHp() == 0)
+    if(player->getLostHp() == 0 || player->isDead())
         return;
 
     int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
@@ -1411,6 +1422,14 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
         thread->end();
 }
 
+void Room::setTag(const QString &key, const QVariant &value){
+    scenario_tag.insert(key, value);
+}
+
+QVariant Room::getTag(const QString &key) const{
+    return scenario_tag.value(key);
+}
+
 void Room::setEmotion(ServerPlayer *target, TargetType type){
     QString emotion;
     switch(type){
@@ -1674,6 +1693,10 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
 }
 
 const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
+    if(player->getHandcardNum() == 1){
+        return player->getHandcards().first();
+    }
+
     AI *ai = player->getAI();
     if(ai)
         return ai->askForPindian();

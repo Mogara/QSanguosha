@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>417</width>
+    <width>496</width>
     <height>408</height>
    </rect>
   </property>
@@ -20,8 +20,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
-     <width>391</width>
+     <y>10</y>
+     <width>471</width>
      <height>341</height>
     </rect>
    </property>
@@ -37,7 +37,7 @@
       <rect>
        <x>10</x>
        <y>140</y>
-       <width>361</width>
+       <width>441</width>
        <height>171</height>
       </rect>
      </property>
@@ -49,7 +49,7 @@
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>341</width>
+        <width>421</width>
         <height>71</height>
        </rect>
       </property>
@@ -109,7 +109,7 @@
        <rect>
         <x>10</x>
         <y>110</y>
-        <width>331</width>
+        <width>421</width>
         <height>18</height>
        </rect>
       </property>
@@ -141,7 +141,7 @@
        <rect>
         <x>10</x>
         <y>140</y>
-        <width>341</width>
+        <width>411</width>
         <height>21</height>
        </rect>
       </property>
@@ -177,7 +177,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>361</width>
+       <width>441</width>
        <height>121</height>
       </rect>
      </property>
@@ -189,7 +189,7 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>341</width>
+        <width>421</width>
         <height>73</height>
        </rect>
       </property>
@@ -328,44 +328,108 @@
     <attribute name="title">
      <string>Advanced</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QGroupBox" name="wanGroupBox">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>20</y>
-       <width>165</width>
-       <height>22</height>
+       <x>20</x>
+       <y>10</y>
+       <width>431</width>
+       <height>131</height>
       </rect>
      </property>
-     <layout class="QFormLayout" name="formLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="portLabel">
-        <property name="text">
-         <string>Port</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="portLineEdit">
-        <property name="inputMask">
-         <string/>
-        </property>
-        <property name="text">
-         <string>9527</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="title">
+      <string>WAN config (Base on IRC network)</string>
+     </property>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>411</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="hostLineEdit">
+         <property name="text">
+          <string>irc.freenode.net</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="hostLabel">
+         <property name="text">
+          <string>Host</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="portLineEdit">
+         <property name="text">
+          <string>6667</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="nickLineEdit">
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="placeholderText">
+          <string>the system will provide a random name if leave empty</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEdit_4">
+         <property name="text">
+          <string>#sgs</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="portLabel">
+         <property name="text">
+          <string>Port</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="nickLabel">
+         <property name="text">
+          <string>Nick</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="channelLabel">
+         <property name="text">
+          <string>Channel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <zorder>hostLabel</zorder>
+     <zorder>hostLineEdit</zorder>
+     <zorder>hostLabel</zorder>
     </widget>
    </widget>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>140</x>
      <y>370</y>
      <width>341</width>
      <height>32</height>

@@ -21,11 +21,15 @@ public:
     QFont TinyFont;
 
     // server side
+    QString ServerName;
     int CountDownSeconds;
     int PlayerCount;
     QStringList BanPackages;
     bool FreeChoose;
     bool ForbidSIMC;
+    int AILevel;
+    int ConnectionMethod;
+    QString Scenario;
 
     // client side
     QString HostAddress;

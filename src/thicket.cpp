@@ -143,28 +143,6 @@ public:
     }
 };
 
-class NullifySavageAssault: public TriggerSkill{
-public:
-    NullifySavageAssault():TriggerSkill("#nullify_savage_assault"){
-        events << CardEffected;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-         CardEffectStruct effect = data.value<CardEffectStruct>();
-         if(effect.card->inherits("SavageAssault")){
-             LogMessage log;
-             log.type = "#SkillNullify";
-             log.from = player;
-             log.arg = player->hasSkill("huoshou") ? "huoshou" : "juxiang";
-             log.arg2 = "savage_assault";
-             player->getRoom()->sendLog(log);
-
-             return true;
-         }else
-             return false;
-    }
-};
-
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
@@ -800,12 +778,10 @@ ThicketPackage::ThicketPackage()
     xuhuang->addSkill(new Duanliang);
 
     menghuo = new General(this, "menghuo", "shu");
-    menghuo->addSkill(new NullifySavageAssault);
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
-    zhurong->addSkill(new NullifySavageAssault);
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
 

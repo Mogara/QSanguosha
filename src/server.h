@@ -10,6 +10,8 @@ class Room;
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QButtonGroup>
+#include <QComboBox>
+#include <QLayoutItem>
 
 class ServerDialog: public QDialog{
     Q_OBJECT
@@ -19,9 +21,18 @@ public:
     bool config();
 
 private:
+    QLayout *createLeft();
+    QLayout *createRight();
+    QLayout *createButtonLayout();
+
+    QLineEdit *server_name_lineedit;
     QSpinBox *player_count_spinbox, *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
     QCheckBox *free_choose_checkbox, *forbid_same_ip_checkbox;
+    QComboBox *scenario_combobox;
+
+    QButtonGroup *ai_group;
+    QButtonGroup *connection_group;
     QButtonGroup *extension_group;
 };
 
@@ -31,6 +42,7 @@ class Server : public QObject{
 public:
     explicit Server(QObject *parent);
     bool listen();
+    void daemonize();
 
 private:
     ServerSocket *server;

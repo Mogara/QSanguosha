@@ -223,6 +223,18 @@ QString Player::getRole() const{
     return role;
 }
 
+Player::Role Player::getRoleEnum() const{
+    static QMap<QString, Role> role_map;
+    if(role_map.isEmpty()){
+        role_map.insert("lord", Lord);
+        role_map.insert("loyalist", Loyalist);
+        role_map.insert("rebel", Rebel);
+        role_map.insert("renegade", Renegade);
+    }
+
+    return role_map.value(role);
+}
+
 const General *Player::getAvatarGeneral() const{
     if(general)
         return general;

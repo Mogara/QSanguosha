@@ -14,7 +14,7 @@ void TriggerSkillSorter::sort(QList<const TriggerSkill *> &skills){
 }
 
 DamageStruct::DamageStruct()
-    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal)
+    :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false)
 {
 }
 

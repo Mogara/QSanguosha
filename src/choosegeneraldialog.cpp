@@ -16,7 +16,7 @@
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
 ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals, QWidget *parent)
-    :QDialog(parent)
+    :QDialog(parent), free_chooser(NULL)
 {
     setWindowTitle(tr("Choose general"));
 
@@ -35,7 +35,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
         connect(button, SIGNAL(double_clicked()), this, SLOT(accept()));
 
         // special case
-        if(Self->getRole() == "lord" && general->objectName() == "shencaocao"){
+        if(Self->getRoleEnum() == Player::Lord && general->objectName() == "shencaocao"){
             button->setEnabled(false);
         }
     }
@@ -107,6 +107,8 @@ void ChooseGeneralDialog::freeChoose(){
     FreeChooseDialog *dialog = new FreeChooseDialog(this);
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
 
+    free_chooser = dialog;
+
     dialog->exec();
 }
 
@@ -123,8 +125,11 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
 
     if(new_value >= progress_bar->maximum()){
         killTimer(event->timerId());
-        if(isVisible())
+        if(isVisible()){
             reject();
+            if(free_chooser)
+                free_chooser->reject();
+        }
     }else
         progress_bar->setValue(new_value);
 }
