@@ -153,6 +153,7 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
+    void constructTriggerTable();
     bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, ServerPlayer *target);
     void addTriggerSkill(const TriggerSkill *skill);
@@ -167,7 +168,6 @@ private:
     Room *room;
     jmp_buf env;
 
-    QMap<QString, const TriggerSkill *> trigger_skills;
     QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
 };
 

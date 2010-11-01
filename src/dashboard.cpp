@@ -42,6 +42,12 @@ Dashboard::Dashboard()
     avatar->setPos(837, 35);    
     avatar->setParentItem(this);
 
+    small_avatar = new Pixmap;
+    small_avatar->setPos(912, 35);
+    small_avatar->setScale(0.5);
+    small_avatar->setParentItem(this);
+    small_avatar->setOpacity(0.75);
+
     kingdom = new QGraphicsPixmapItem(this);
     kingdom->setPos(avatar->pos());
 
@@ -96,6 +102,7 @@ void Dashboard::setPlayer(const Player *player){
 
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+    connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
 
     updateAvatar();
 }
@@ -104,6 +111,13 @@ void Dashboard::updateAvatar(){
     const General *general = player->getAvatarGeneral();
     avatar->setToolTip(general->getSkillDescription());
     avatar->changePixmap(general->getPixmapPath("big"));
+
+    const General *general2 = player->getGeneral2();
+    if(general2){
+        small_avatar->setToolTip(general2->getSkillDescription());
+        small_avatar->changePixmap(general2->getPixmapPath("big"));
+    }
+
     kingdom->setPixmap(QPixmap(player->getKingdomPath()));
 
     avatar->show();

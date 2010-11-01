@@ -136,6 +136,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     }else{
         socket = new NativeClientSocket;
+
         socket->setParent(this);
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
@@ -181,30 +182,39 @@ void Client::checkVersion(const QString &server_version){
     disconnectFromHost();
 }
 
+ServerInfoStruct ServerInfo;
+
+bool ServerInfoStruct::parse(const QString &str){
+    QRegExp rx("(\\d+):(\\d+):([+\\w]*):([FS]*)");
+    if(!rx.exactMatch(str))
+        return false;
+
+    QStringList texts = rx.capturedTexts();
+
+    PlayerCount = texts.at(1).toInt();
+    OperationTimeout = texts.at(2).toInt();
+
+    QStringList ban_packages = texts.at(3).split("+");
+    QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
+    foreach(const Package *package, packages){
+        QString package_name = package->objectName();
+        Extensions.insert(package_name, ! ban_packages.contains(package_name));
+    }
+
+    QString flags = texts.at(4);
+
+    FreeChoose = flags.contains("F");
+    Enable2ndGeneral = flags.contains("S");
+
+    return true;
+}
+
+
 void Client::setup(const QString &setup_str){
     if(socket && !socket->isConnected())
         return;
 
-    QRegExp rx("(\\d+):(\\d+):([+\\w]*):([F]*)");
-    if(!rx.exactMatch(setup_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();
-    int player_count = texts.at(1).toInt();
-    int timeout = texts.at(2).toInt();
-    ban_packages = texts.at(3).split("+");
-    QString flags = texts.at(4);
-
-    Config.PlayerCount = player_count;
-    if(timeout == 0)
-        Config.OperationNoLimit = true;
-    else{
-        Config.OperationNoLimit = false;
-        Config.OperationTimeout = timeout;
-    }
-
-    Config.FreeChoose = flags.contains("F");
-
+    ServerInfo.parse(setup_str);
     emit server_connected();
 }
 
@@ -327,8 +337,12 @@ void Client::doChooseGeneral(const QString &generals_str){
 }
 
 void Client::chooseItem(const QString &item_name){
-    if(!item_name.isEmpty())
-        request("choose " + item_name);
+    if(!item_name.isEmpty()){
+        if(!Self->getGeneral())
+            request("choose " + item_name);
+        else
+            request("choose2 " + item_name);
+    }
 }
 
 #ifndef QT_NO_DEBUG
@@ -810,18 +824,6 @@ void Client::prompt(const QString &prompt_str){
 
 ClientPlayer *Client::getPlayer(const QString &name){
     return findChild<ClientPlayer *>(name);
-}
-
-QMap<QString, bool> Client::getExtensions() const{
-    QMap<QString, bool> extensions;
-
-    QList<Package *> packages = Sanguosha->findChildren<Package *>();
-    foreach(Package *package, packages){
-        QString package_name = package->objectName();
-        extensions.insert(package_name, ! ban_packages.contains(package_name));
-    }
-
-    return extensions;
 }
 
 void Client::kick(const QString &to_kick){

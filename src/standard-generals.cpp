@@ -197,7 +197,8 @@ public:
     virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = simayi->getRoom();
-        if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui")){
+        QVariant data = QVariant::fromValue(from);
+        if(from && !from->isNude() && room->askForSkillInvoke(simayi, "fankui", data)){
             int card_id = room->askForCardChosen(simayi, from, "he", "fankui");
             if(room->getCardPlace(card_id) == Player::Hand)
                 room->moveCardTo(Sanguosha->getCard(card_id), simayi, Player::Hand, false);

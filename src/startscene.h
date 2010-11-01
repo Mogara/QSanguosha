@@ -17,7 +17,11 @@ public:
     void switchToServer(Server *server);
 
 private:
+    void printProtocolTCP();
+    void printProtocolIRC();
+
     Pixmap *logo;
+    QTextEdit *server_log;
     QList<Button*> buttons;
 };
 

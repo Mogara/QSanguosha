@@ -10,6 +10,19 @@ class NullificationDialog;
 class Recorder;
 class Replayer;
 
+struct ServerInfoStruct{
+    bool parse(const QString &str);
+
+    QString Name;
+    int PlayerCount;
+    bool OperationTimeout;
+    QMap<QString, bool> Extensions;
+    bool FreeChoose;
+    bool Enable2ndGeneral;
+};
+
+extern ServerInfoStruct ServerInfo;
+
 class Client : public QObject
 {
     Q_OBJECT
@@ -51,7 +64,6 @@ public:
     void speakToServer(const QString &text);    
     void prompt(const QString &prompt_str);
     ClientPlayer *getPlayer(const QString &name);
-    QMap<QString, bool> getExtensions() const;
     void surrender();
     void kick(const QString &to_kick);
     bool save(const QString &filename);

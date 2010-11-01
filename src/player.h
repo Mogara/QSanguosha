@@ -26,6 +26,7 @@ class Player : public QObject
     Q_PROPERTY(bool wounded READ isWounded STORED false)    
     Q_PROPERTY(QString role READ getRole WRITE setRole)
     Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
+    Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name)
     Q_PROPERTY(QString state READ getState WRITE setState)
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
@@ -85,7 +86,11 @@ public:
     Role getRoleEnum() const;
 
     void setGeneralName(const QString &general_name);
-    QString getGeneralName() const;
+    QString getGeneralName() const;    
+
+    void setGeneral2Name(const QString &general_name);
+    QString getGeneral2Name() const;
+    const General *getGeneral2() const;
 
     void setState(const QString &state);
     QString getState() const;
@@ -167,7 +172,7 @@ public:
 
 private:    
     QString screen_name;
-    const General *general;
+    const General *general, *general2;
     int hp, max_hp, xueyi;
     QString kingdom;
     QString role;

@@ -77,6 +77,7 @@ public:
     void showCard(ServerPlayer *player, int card_id);
     bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
+    void acquireSkill(ServerPlayer *player, const Skill *skill);
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
@@ -139,6 +140,7 @@ public:
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
+    void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
 

@@ -28,7 +28,9 @@ private:
     QLineEdit *server_name_lineedit;
     QSpinBox *player_count_spinbox, *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
-    QCheckBox *free_choose_checkbox, *forbid_same_ip_checkbox;
+    QCheckBox *free_choose_checkbox;
+    QCheckBox *forbid_same_ip_checkbox;
+    QCheckBox *second_general_checkbox;
     QComboBox *scenario_combobox;
 
     QButtonGroup *ai_group;
@@ -52,6 +54,7 @@ private:
 private slots:
     void processNewConnection(ClientSocket *socket);
     void removeAddress();
+    void showSlaveSocketError(const QString &msg);
 
 signals:
     void server_message(const QString &);

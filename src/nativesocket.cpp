@@ -15,12 +15,12 @@ NativeServerSocket::NativeServerSocket()
 }
 
 bool NativeServerSocket::listen(){
-    return server->listen(QHostAddress::Any, Config.Port);
+    return server->listen(QHostAddress::Any, Config.ServerPort);
 }
 
 void NativeServerSocket::daemonize(){
     daemon = new QUdpSocket(this);
-    daemon->bind(9527u, QUdpSocket::ShareAddress);
+    daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);
 
     connect(daemon, SIGNAL(readyRead()), this, SLOT(processNewDatagram()));
 }
@@ -33,7 +33,7 @@ void NativeServerSocket::processNewDatagram(){
         daemon->readDatagram(ask_str, sizeof(ask_str), &from);
 
         QByteArray data = Config.ServerName.toUtf8();
-        daemon->writeDatagram(data, from, 9526u);
+        daemon->writeDatagram(data, from, Config.DetectorPort);
     }
 }
 
@@ -66,7 +66,7 @@ void NativeClientSocket::init(){
 }
 
 void NativeClientSocket::connectToHost(){
-    socket->connectToHost(Config.HostAddress, Config.Port);
+    socket->connectToHost(Config.HostAddress, Config.ServerPort);
 }
 
 typedef char buffer_t[1024];

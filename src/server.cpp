@@ -140,6 +140,10 @@ QLayout *ServerDialog::createRight(){
         forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
         forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
         layout->addWidget(forbid_same_ip_checkbox);
+
+        second_general_checkbox = new QCheckBox(tr("Enable second general"));
+        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+        layout->addWidget(second_general_checkbox);
     }
 
     QGroupBox *ai_box = new QGroupBox;
@@ -178,23 +182,19 @@ QLayout *ServerDialog::createRight(){
         connection_box->setLayout(layout);
 
         QRadioButton *tcp = new QRadioButton(tr("Direct battle (Direct on TCP/IP)"));
-        QRadioButton *ipx = new QRadioButton(tr("Battle platform (Based on SPX/IPX)"));
-        QRadioButton *dcc = new QRadioButton(tr("IRC network (Based on subprotocol DCC)"));
+        QRadioButton *irc = new QRadioButton(tr("IRC network (Based on subprotocol DCC)"));
 
-        // IPX & DCC is not supported now
-        ipx->setEnabled(false);
-        dcc->setEnabled(false);
+        // IRC/DCC is not supported now
+        irc->setEnabled(false);
 
         connection_group = new QButtonGroup;
         connection_group->addButton(tcp, 0);
-        connection_group->addButton(ipx, 1);
-        connection_group->addButton(dcc, 2);
+        connection_group->addButton(irc, 1);
 
         layout->addWidget(tcp);
-        layout->addWidget(ipx);
-        layout->addWidget(dcc);
+        layout->addWidget(irc);
 
-        QAbstractButton *checked = connection_group->button(Config.ConnectionMethod);
+        QAbstractButton *checked = connection_group->button(Config.Protocol);
         if(checked)
             checked->setChecked(true);
         else
@@ -238,8 +238,9 @@ bool ServerDialog::config(){
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
+    Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.AILevel = ai_group->checkedId();
-    Config.ConnectionMethod = connection_group->checkedId();
+    Config.Protocol = connection_group->checkedId();
     if(scenario_combobox->isEnabled())
         Config.Scenario = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
     else
@@ -251,8 +252,9 @@ bool ServerDialog::config(){
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("AILevel", Config.AILevel);
-    Config.setValue("ConnectionMethod", Config.ConnectionMethod);
+    Config.setValue("Protocol", Config.Protocol);
     Config.setValue("Scenario", Config.Scenario);
 
     QSet<QString> ban_packages;
@@ -274,7 +276,13 @@ bool ServerDialog::config(){
 Server::Server(QObject *parent)
     :QObject(parent)
 {
-    server = new NativeServerSocket();
+    switch(Config.Protocol){
+    case 0: server = new NativeServerSocket; break;
+    default:
+        server = NULL;
+        return;
+    }
+
     server->setParent(this);
 
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
@@ -327,9 +335,14 @@ void Server::processNewConnection(ClientSocket *socket){
         connect(free_room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }
 
-    free_room->addSocket(socket);
+    connect(socket, SIGNAL(error_message(QString)), this, SLOT(showSlaveSocketError(QString)));
+    free_room->addSocket(socket);    
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
+}
+
+void Server::showSlaveSocketError(const QString &msg){
+    emit server_message(tr("Slave socket error: %1").arg(msg));
 }
 
 void Server::removeAddress(){

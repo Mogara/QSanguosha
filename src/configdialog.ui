@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -332,7 +332,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>10</y>
+       <y>20</y>
        <width>431</width>
        <height>131</height>
       </rect>
@@ -340,7 +340,7 @@
      <property name="title">
       <string>WAN config (Base on IRC network)</string>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -351,7 +351,7 @@
       </property>
       <layout class="QFormLayout" name="formLayout_2">
        <item row="0" column="1">
-        <widget class="QLineEdit" name="hostLineEdit">
+        <widget class="QLineEdit" name="ircHostLineEdit">
          <property name="text">
           <string>irc.freenode.net</string>
          </property>
@@ -361,14 +361,14 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="hostLabel">
+        <widget class="QLabel" name="ircHostLabel">
          <property name="text">
           <string>Host</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="portLineEdit">
+        <widget class="QLineEdit" name="ircPortLineEdit">
          <property name="text">
           <string>6667</string>
          </property>
@@ -388,7 +388,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="lineEdit_4">
+        <widget class="QLineEdit" name="channelLineEdit">
          <property name="text">
           <string>#sgs</string>
          </property>
@@ -398,7 +398,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="portLabel">
+        <widget class="QLabel" name="ircPortLabel">
          <property name="text">
           <string>Port</string>
          </property>
@@ -420,9 +420,6 @@
        </item>
       </layout>
      </widget>
-     <zorder>hostLabel</zorder>
-     <zorder>hostLineEdit</zorder>
-     <zorder>hostLabel</zorder>
     </widget>
    </widget>
   </widget>

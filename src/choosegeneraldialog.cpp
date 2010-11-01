@@ -72,7 +72,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
 
     // progress bar & free choose button
     QHBoxLayout *last_layout = new QHBoxLayout;
-    if(Config.OperationNoLimit){
+    if(ServerInfo.OperationTimeout == 0){
         progress_bar = NULL;
     }else{
         progress_bar = new QProgressBar;
@@ -97,7 +97,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
 }
 
 void ChooseGeneralDialog::start(){
-    if(!Config.OperationNoLimit)
+    if(ServerInfo.OperationTimeout != 0)
         startTimer(200);
 
     exec();

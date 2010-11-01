@@ -247,13 +247,13 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    // shuffle them
-    qShuffle(all_generals);
-
     if(!ban_set.isEmpty()){
         QSet<QString> general_set = all_generals.toSet();
         all_generals = general_set.subtract(ban_set).toList();
     }
+
+    // shuffle them
+    qShuffle(all_generals);
 
     QStringList general_list = all_generals.mid(0, count);
     Q_ASSERT(general_list.count() == count);

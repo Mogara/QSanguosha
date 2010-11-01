@@ -27,16 +27,18 @@ public:
     QStringList BanPackages;
     bool FreeChoose;
     bool ForbidSIMC;
+    bool Enable2ndGeneral;
     int AILevel;
-    int ConnectionMethod;
+    int Protocol;
     QString Scenario;
+    ushort ServerPort;
 
     // client side
     QString HostAddress;
-    ushort Port;
     QString UserName;
     QString UserAvatar;
     QStringList HistoryIPs;
+    ushort DetectorPort;
 
     bool FitInView;
     bool EnableHotKey;

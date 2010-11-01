@@ -72,6 +72,9 @@ void CardUseStruct::parse(const QString &str, Room *room){
 RoomThread::RoomThread(Room *room)
     :QThread(room), room(room)
 {
+}
+
+void RoomThread::constructTriggerTable(){
     foreach(ServerPlayer *player, room->players){
         const General *general = player->getGeneral();
 
@@ -80,15 +83,22 @@ RoomThread::RoomThread(Room *room)
             if(skill->isLordSkill() && !player->isLord())
                 continue;
 
-            trigger_skills.insert(skill->objectName(), skill);
+            addTriggerSkill(skill);
         }
     }
-    GameRule *game_rule = new GameRule;
-    trigger_skills.insert(game_rule->objectName(), game_rule);
 
-    // construct trigger_table
-    foreach(const TriggerSkill *skill, trigger_skills)
-        addTriggerSkill(skill);
+    GameRule *game_rule = new GameRule;
+    addTriggerSkill(game_rule);
+
+    foreach(ServerPlayer *player, room->players){
+        const General *general2 = player->getGeneral2();
+        if(general2){
+            QList<const Skill *> skills = general2->findChildren<const Skill *>();
+
+            foreach(const Skill *skill, skills)
+                room->acquireSkill(player, skill);
+        }
+    }
 }
 
 static const int GameOver = 1;

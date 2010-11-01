@@ -1,7 +1,5 @@
 #include "detector.h"
-
-static const quint16 DaemonPort = 9527u;
-static const quint16 DetectPort = DaemonPort - 1;
+#include "settings.h"
 
 UdpDetector::UdpDetector()
 {
@@ -11,14 +9,14 @@ UdpDetector::UdpDetector()
 }
 
 void UdpDetector::detect(){
-    socket->bind(DetectPort, QUdpSocket::ShareAddress);
+    socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
 
     const char *ask_str = "whoIsServer";
 
     socket->writeDatagram(ask_str,
                           strlen(ask_str) + 1,
                           QHostAddress::Broadcast,
-                          DaemonPort);
+                          Config.ServerPort);
 }
 
 void UdpDetector::stop(){

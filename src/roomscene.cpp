@@ -29,6 +29,8 @@ extern audiere::AudioDevicePtr Device;
 #include <QListWidget>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QRadioButton>
+#include <QApplication>
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -186,7 +188,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
     const qreal photo_width = photos.first()->boundingRect().width();
-    const qreal start_x = (Config.Rect.width() - photo_width*photos.length())/2 + Config.Rect.x();
+    const qreal start_x = (main_window->width() - photo_width * photos.length()) / 2 - (main_window->width()/2);
 
     for(i=0;i<photos.length();i++){
         Photo *photo = photos[i];
@@ -483,7 +485,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
 }
 
 void RoomScene::timerEvent(QTimerEvent *event){
-    int timeout = Config.OperationTimeout;
+    int timeout = ServerInfo.OperationTimeout;
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
         timeout = 20;
 
@@ -500,7 +502,7 @@ void RoomScene::timerEvent(QTimerEvent *event){
         progress_bar->setValue(new_value);
 }
 
-#include <QApplication>
+
 
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
     if(Self->getRole() != "lord")
@@ -1265,7 +1267,7 @@ void RoomScene::updateStatus(Client::Status status){
         QApplication::alert(main_window);
     }
 
-    if(Config.OperationNoLimit)
+    if(ServerInfo.OperationTimeout == 0)
         return;
 
     // do timeout
@@ -1815,8 +1817,9 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             card_item->setEnabled(false);
 
             CardItem *item = new CardItem(card_item->getCard());
-            addItem(item);
+            addItem(item);            
             item->setPos(card_item->pos());
+            item->setEnabled(false);
 
             QString avatar_path;
             if(taker){
@@ -2124,8 +2127,6 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     }
 }
 
-#include <QRadioButton>
-
 void RoomScene::showServerInformation()
 {
     QDialog *dialog = new QDialog(main_window);
@@ -2133,21 +2134,22 @@ void RoomScene::showServerInformation()
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Address"), new QLabel(Config.HostAddress));
-    layout->addRow(tr("Port"), new QLabel(QString::number(Config.Port)));
-    layout->addRow(tr("Player count"), new QLabel(QString::number(photos.length() + 1)));
+    layout->addRow(tr("Port"), new QLabel(QString::number(Config.ServerPort)));
+    layout->addRow(tr("Player count"), new QLabel(QString::number(ServerInfo.PlayerCount)));
+    layout->addRow(tr("2nd general mode"), new QLabel(ServerInfo.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
 
     QLabel *time_limit = new QLabel;
-    if(Config.OperationNoLimit)
+    if(ServerInfo.OperationTimeout == 0)
         time_limit->setText(tr("No limit"));
     else
-        time_limit->setText(tr("%1 seconds").arg(Config.OperationTimeout));
+        time_limit->setText(tr("%1 seconds").arg(ServerInfo.OperationTimeout));
     layout->addRow(tr("Operation time"), time_limit);
 
     QListWidget *list_widget = new QListWidget;
     QIcon enabled_icon(":/enabled.png");
     QIcon disabled_icon(":/disabled.png");
 
-    QMap<QString, bool> extensions = ClientInstance->getExtensions();
+    QMap<QString, bool> extensions = ServerInfo.Extensions;
     QMapIterator<QString, bool> itor(extensions);
     while(itor.hasNext()){
         itor.next();

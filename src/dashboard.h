@@ -59,7 +59,7 @@ private:
     CardItem *selected;
     const Player *player;
     QPixmap magatamas[6];
-    Pixmap *avatar;
+    Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
 
     QComboBox *sort_combobox;

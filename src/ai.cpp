@@ -33,18 +33,20 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
         group_map.insert(Player::Renegade, 0);
     }
 
-    int self_group = group_map.value(self->getRoleEnum());
-    int other_group = group_map.value(other->getRoleEnum());
+    Player::Role self_role = self->getRoleEnum();
+    Player::Role other_role = other->getRoleEnum();
+
+    int self_group = group_map.value(self_role);
+    int other_group = group_map.value(other_role);
 
     if(self_group == other_group)
         return Friend;
     else if(self_group + other_group == 0)
         return Enemy;
-    else{
-        // FIXME: acording to the game process;
-
+    else if(room->getTag("GameProcess").toString() == "ZN")
+        return Enemy;
+    else
         return Neutrality;
-    }
 }
 
 bool AI::isFriend(const ServerPlayer *other) const{
@@ -82,42 +84,49 @@ TrustAI::TrustAI(ServerPlayer *player)
 {
 }
 
-void TrustAI::activate(CardUseStruct &card_use) const{
+void TrustAI::activate(CardUseStruct &card_use){
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
-        bool use_it = false;
+        if(card->targetFixed()){
+            if(useCard(card)){
+                card_use.card = card;
+                card_use.from = self;
 
-        if(card->inherits("Peach"))
-            use_it = self->isWounded();
-        else if(card->inherits("EquipCard")){
-            const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-            switch(equip->location()){
-            case EquipCard::WeaponLocation: use_it = !self->getWeapon(); break;
-            case EquipCard::ArmorLocation: use_it = !self->getArmor(); break;
-            case EquipCard::OffensiveHorseLocation: use_it = !self->getOffensiveHorse(); break;
-            case EquipCard::DefensiveHorseLocation: use_it = !self->getDefensiveHorse(); break;
+                return;
             }
-        }else if(card->inherits("TrickCard"))
-            use_it = card->targetFixed();
-
-        if(use_it){
-            card_use.card = card;
-            card_use.from = self;
-
-            return;
         }
     }
 }
 
-Card::Suit TrustAI::askForSuit() const{
+bool TrustAI::useCard(const Card *card){
+    if(card->inherits("Peach"))
+        return self->isWounded();
+    else if(card->inherits("EquipCard")){
+        const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+        switch(equip->location()){
+        case EquipCard::WeaponLocation: return !self->getWeapon();
+        case EquipCard::ArmorLocation: return !self->getArmor();
+        case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
+        case EquipCard::DefensiveHorseLocation: return !self->getDefensiveHorse();
+        default:
+            return true;
+        }
+
+    }else if(card->inherits("TrickCard"))
+        return true;
+    else
+        return false;
+}
+
+Card::Suit TrustAI::askForSuit(){
     return Card::AllSuits[qrand() % 4];
 }
 
-QString TrustAI::askForKingdom() const{
+QString TrustAI::askForKingdom(){
     return self->getKingdom();
 }
 
-bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data){
     return false;
 }
 
@@ -126,7 +135,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &){
     return skill->getDefaultChoice();
 }
 
-QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const{
+QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) {
     QList<int> to_discard;
 
     if(optional)
@@ -135,7 +144,7 @@ QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_e
         return self->forceToDiscard(discard_num, include_equip);
 }
 
-int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) const{
+int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) {
     const TrickCard *card = Sanguosha->findChild<const TrickCard *>(trick_name);
     if(to == self && card->isAggressive()){
         QList<const Card *> cards = self->getHandcards();
@@ -156,13 +165,13 @@ int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, 
     return -1;
 }
 
-int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &) const{
+int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &) {
     QList<const Card *> cards = who->getCards(flags);
     int r = qrand() % cards.length();
     return cards.at(r)->getId();
 }
 
-const Card *TrustAI::askForCard(const QString &pattern) const{
+const Card *TrustAI::askForCard(const QString &pattern) {
     static QRegExp id_rx("\\d+");
     if(pattern.contains("+")){
         QStringList subpatterns = pattern.split("+");
@@ -188,20 +197,20 @@ const Card *TrustAI::askForCard(const QString &pattern) const{
     return NULL;
 }
 
-QString TrustAI::askForUseCard(const QString &, const QString &) const{
+QString TrustAI::askForUseCard(const QString &, const QString &) {
     return ".";
 }
 
-int TrustAI::askForAG(const QList<int> &card_ids) const{
+int TrustAI::askForAG(const QList<int> &card_ids) {
     int r = qrand() % card_ids.length();
     return card_ids.at(r);
 }
 
-int TrustAI::askForCardShow(ServerPlayer *) const{
+int TrustAI::askForCardShow(ServerPlayer *) {
     return self->getRandomHandCard();
 }
 
-const Card *TrustAI::askForPindian() const{
+const Card *TrustAI::askForPindian() {
     QList<const Card *> cards = self->getHandcards();
     const Card *highest = cards.first();
     foreach(const Card *card, cards){
@@ -212,12 +221,12 @@ const Card *TrustAI::askForPindian() const{
     return highest;
 }
 
-ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets) const{
+ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets) {
     int r = qrand() % targets.length();
     return targets.at(r);
 }
 
-const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) const{
+const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
     if(dying == self){
         QList<const Card *> cards = self->getHandcards();
         foreach(const Card *card, cards){
@@ -235,7 +244,7 @@ SmartAI::SmartAI(ServerPlayer *player, bool always_invoke)
 
 }
 
-int SmartAI::askForCardShow(ServerPlayer *requestor) const{
+int SmartAI::askForCardShow(ServerPlayer *requestor) {
     QList<const Card *> cards = requestor->getHandcards();
     Card::Suit lack = Card::NoSuit;
     int i;
@@ -266,6 +275,30 @@ int SmartAI::askForCardShow(ServerPlayer *requestor) const{
     return TrustAI::askForCardShow(requestor);
 }
 
-bool SmartAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+bool SmartAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
     return always_invoke;
+}
+
+void SmartAI::activate(CardUseStruct &card_use) {
+    QList<const Card *> cards = self->getHandcards();
+    foreach(const Card *card, cards){
+        if(card->targetFixed()){
+            if(useCard(card)){
+                card_use.card = card;
+                card_use.from = self;
+
+                return;
+            }
+        }else{
+            useCard(card, card_use);
+        }
+    }
+}
+
+bool SmartAI::useCard(const Card *card){
+    return TrustAI::useCard(card);
+}
+
+void SmartAI::useCard(const Card *card, CardUseStruct &card_use){
+    // dummy;
 }

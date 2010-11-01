@@ -2,6 +2,10 @@
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QNetworkInterface>
+
+#include "audiere.h"
+extern audiere::AudioDevicePtr Device;
 
 StartScene::StartScene()
 {
@@ -32,11 +36,6 @@ void StartScene::addButton(QAction *action){
     buttons << button;
 }
 
-#include <QNetworkInterface>
-
-#include "audiere.h"
-extern audiere::AudioDevicePtr Device;
-
 void StartScene::switchToServer(Server *server){
     Device = NULL;
 
@@ -58,7 +57,7 @@ void StartScene::switchToServer(Server *server){
     }
     buttons.clear();
 
-    QTextEdit *server_log = new QTextEdit();
+    server_log = new QTextEdit();
 
     // make its background the same as background, looks transparent    
     QPalette palette;
@@ -75,6 +74,44 @@ void StartScene::switchToServer(Server *server){
 
     addWidget(server_log);
 
+    switch(Config.Protocol){
+    case 0: printProtocolTCP(); break;
+    case 1: printProtocolIRC(); break;
+    }
+
+    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));
+
+    if(Config.OperationNoLimit)
+        server_log->append(tr("There is no time limit"));
+    else
+        server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+
+    if(Config.FreeChoose)
+        server_log->append(tr("Free general choose is enabled"));
+    else
+        server_log->append(tr("Free general choose is not enabled"));
+
+    if(Config.Enable2ndGeneral)
+        server_log->append(tr("Secondary general is enabled"));
+    else
+        server_log->append(tr("Secondary general is not enabled"));
+
+    QString level;
+    switch(Config.AILevel){
+    case 0: level = tr("stupid"); break;
+    case 1: level = tr("normal"); break;
+    case 2:
+    default:
+        level = tr("smart"); break;
+    }
+    server_log->append(tr("The computer AI level is %1").arg(level));
+
+    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
+
+    update();
+}
+
+void StartScene::printProtocolTCP(){
     QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
     foreach(QHostAddress address, addresses){
@@ -96,30 +133,9 @@ void StartScene::switchToServer(Server *server){
             server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
 
-    server_log->append(tr("Binding port number is %1").arg(Config.Port));
-    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));
+    server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
+}
 
-    if(Config.OperationNoLimit)
-        server_log->append(tr("There is no time limit"));
-    else
-        server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+void StartScene::printProtocolIRC(){
 
-    if(Config.FreeChoose)
-        server_log->append(tr("Free general choose is enabled"));
-    else
-        server_log->append(tr("Free general choose is not enabled"));
-
-    QString level;
-    switch(Config.AILevel){
-    case 0: level = tr("stupid"); break;
-    case 1: level = tr("normal"); break;
-    case 2:
-    default:
-        level = tr("smart"); break;
-    }
-    server_log->append(tr("The computer AI level is %1").arg(level));
-
-    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
-
-    update();
 }

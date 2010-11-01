@@ -201,7 +201,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    RoomScene *room_scene = new RoomScene(Config.PlayerCount, this);
+    RoomScene *room_scene = new RoomScene(ServerInfo.PlayerCount, this);
 
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);

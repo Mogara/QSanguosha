@@ -5,7 +5,7 @@
 #include "standard.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL),
+    :QObject(parent), general(NULL), general2(NULL),
     hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
@@ -199,6 +199,26 @@ QString Player::getGeneralName() const{
         return general->objectName();
     else
         return "";
+}
+
+void Player::setGeneral2Name(const QString &general_name){
+    const General *new_general = Sanguosha->getGeneral(general_name);
+    if(general2 != new_general){
+        general2 = new_general;
+
+        emit general_changed();
+    }
+}
+
+QString Player::getGeneral2Name() const{
+    if(general2)
+        return general2->objectName();
+    else
+        return "";
+}
+
+const General *Player::getGeneral2() const{
+    return general2;
 }
 
 QString Player::getState() const{

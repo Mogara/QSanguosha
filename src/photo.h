@@ -48,7 +48,7 @@ protected:
 
 private:
     const ClientPlayer *player;
-    QPixmap avatar;
+    QPixmap avatar, small_avatar;
     QPixmap avatar_frame;
     QPixmap kingdom;
     QPixmap handcard;

@@ -9,7 +9,7 @@ CaocaoAI::CaocaoAI(ServerPlayer *player)
 
 }
 
-bool CaocaoAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+bool CaocaoAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
     if(skill_name == "jianxiong"){
         CardStar card = data.value<CardStar>();
         return !Shit::HasShit(card);
@@ -23,10 +23,14 @@ SimayiAI::SimayiAI(ServerPlayer *player)
 
 }
 
-bool SimayiAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
-    if(skill_name == "fankui")
-        return true;
-    else
+bool SimayiAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
+    if(skill_name == "fankui"){
+        PlayerStar from = data.value<PlayerStar>();
+        if(isFriend(from)){
+            return from->getHandcardNum() > from->getMaxCards();
+        }else
+            return true;
+    }else
         return SmartAI::askForSkillInvoke(skill_name, data);
 }
 
@@ -36,7 +40,7 @@ XiahoudunAI::XiahoudunAI(ServerPlayer *player)
 
 }
 
-bool XiahoudunAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) const{
+bool XiahoudunAI::askForSkillInvoke(const QString &skill_name, const QVariant &data){
     PlayerStar from = data.value<PlayerStar>();
     if(skill_name == "ganglie")
         return ! isFriend(from);

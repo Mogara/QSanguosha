@@ -322,19 +322,13 @@ public:
 
             if(!lord_skills.isEmpty()){
                 QString skill_name = room->askForChoice(shencc, objectName(), lord_skills.join("+"));
-                shencc->acquireSkill(skill_name);
-                const Skill *skill = Sanguosha->getSkill(skill_name);
-                if(skill->inherits("TriggerSkill")){
-                    const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-                    room->getThread()->addTriggerSkill(trigger_skill);
-                }
-                QString acquire_str = QString("%1:%2").arg(shencc->objectName()).arg(skill_name);
-                room->broadcastInvoke("acquireSkill", acquire_str);
 
-                // special case, huangtian
-                if(skill_name == "huangtian"){
-                    const GameStartSkill *huangtian_skill = qobject_cast<const GameStartSkill *>(skill);
-                    huangtian_skill->onGameStart(shencc);
+                const Skill *skill = Sanguosha->getSkill(skill_name);
+                room->acquireSkill(shencc, skill);
+
+                if(skill->inherits("GameStartSkill")){
+                    const GameStartSkill *game_start_skill = qobject_cast<const GameStartSkill *>(skill);
+                    game_start_skill->onGameStart(shencc);
                 }
             }
         }

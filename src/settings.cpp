@@ -38,9 +38,11 @@ void Settings::init(){
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
+    Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     AILevel = value("AILevel", 2).toInt();
-    ConnectionMethod = value("ConnectionMethod", 0).toInt();
+    Protocol = value("Protocol", 0).toInt();
     Scenario = value("Scenario").toString();
+    ServerPort = value("ServerPort", 9527u).toUInt();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
@@ -48,9 +50,9 @@ void Settings::init(){
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
     HostAddress = value("HostAddress", "127.0.0.1").toString();
-    Port = value("Port", 9527u).toUInt();
     UserAvatar = value("UserAvatar", "zhangliao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
+    DetectorPort = value("DetectorPort", 9526u).toUInt();
 
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();

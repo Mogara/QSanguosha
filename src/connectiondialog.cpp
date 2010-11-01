@@ -22,8 +22,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->hostComboBox->addItems(Config.HistoryIPs);
     ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
 
-    ui->portLineEdit->setValidator(new QIntValidator(0, USHRT_MAX, ui->portLineEdit));
-    ui->portLineEdit->setText(QString::number(Config.Port));
+    ui->protocolComboBox->setCurrentIndex(Config.Protocol);
 
     ui->connectButton->setFocus();
 
@@ -61,9 +60,13 @@ void ConnectionDialog::on_connectButton_clicked()
         return;
     }
 
-    Config.setValue("UserName", Config.UserName = username);
-    Config.setValue("HostAddress", Config.HostAddress = ui->hostComboBox->lineEdit()->text());
-    Config.setValue("Port", Config.Port = ui->portLineEdit->text().toUShort());
+    Config.UserName = username;
+    Config.HostAddress = ui->hostComboBox->lineEdit()->text();
+    Config.Protocol = ui->protocolComboBox->currentIndex();
+
+    Config.setValue("UserName", Config.UserName);
+    Config.setValue("HostAddress", Config.HostAddress);
+    Config.setValue("Protocol", Config.Protocol);
 
     accept();
 }
@@ -126,7 +129,7 @@ DetectorDialog::DetectorDialog(QDialog *parent)
     method_combobox->addItem(tr("WAN detect"));
     method_combobox->addItem(tr("Battle platform detect"));
 
-    detect_button = new QPushButton(tr("Start"));
+    detect_button = new QPushButton(tr("Refresh"));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -146,6 +149,8 @@ DetectorDialog::DetectorDialog(QDialog *parent)
     connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
 
     connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
+
+    detect_button->click();
 }
 
 void DetectorDialog::startDetection(){

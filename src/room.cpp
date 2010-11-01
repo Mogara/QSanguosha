@@ -56,6 +56,7 @@ Room::Room(QObject *parent, const Scenario *scenario)
 
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
+    callbacks["choose2Command"] = &Room::choose2Command;
 
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
@@ -910,6 +911,8 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     QString flags;
     if(Config.FreeChoose)
         flags.append("F");
+    if(Config.Enable2ndGeneral)
+        flags.append("S");
 
     player->invoke("setup", QString("%1:%2:%3:%4")
                    .arg(player_count).arg(timeout)
@@ -1005,6 +1008,16 @@ void Room::assignRoles(){
     broadcastInvoke("arrangeSeats", player_circle.join("+"));
 }
 
+void Room::choose2Command(ServerPlayer *player, const QString &general_name){
+    player->setGeneral2Name(general_name);
+    player->sendProperty("general2");
+
+    chosen_generals ++;
+    if(chosen_generals == player_count * 2){
+        startGame();
+    }
+}
+
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getGeneral()){
         // the player has chosen player, should ignore it
@@ -1013,14 +1026,17 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
     player->setGeneralName(general_name);
 
-    if(player->getRole() == "lord"){
+    static const int max_choice = 5;
+    const int total = Sanguosha->getGeneralCount();
+
+    if(player->getRoleEnum() == Player::Lord){
         broadcastProperty(player, "general");
 
-        static const int max_choice = 5;
-        const int total = Sanguosha->getGeneralCount();
-        const int choice_count = qMin(max_choice, (total-1) / (player_count-1));
-        QStringList general_list = Sanguosha->getRandomGenerals((player_count-1) * choice_count + 1);
-        general_list.removeOne(general_name);
+        const int max_available = (total-1) / (player_count-1);
+        const int choice_count = qMin(max_choice, max_available);
+        QSet<QString> the_lord;
+        the_lord << general_name;
+        QStringList general_list = Sanguosha->getRandomGenerals((player_count-1) * choice_count, the_lord);
 
         int i,j;
         for(i=1; i<player_count; i++){
@@ -1036,7 +1052,27 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
     chosen_generals ++;
     if(chosen_generals == player_count){
-        startGame();
+        if(Config.Enable2ndGeneral){
+            const int max_available = (total - player_count) / player_count;
+            const int choice_count = qMin(max_choice, max_available);
+
+            QSet<QString> exists;
+            foreach(ServerPlayer *player, players){
+                exists << player->getGeneralName();
+            }            
+            QStringList general_list = Sanguosha->getRandomGenerals(player_count * choice_count, exists);
+
+            int i,j;
+            for(i=0; i<player_count; i++){
+                QStringList choices;
+                for(j=0; j<choice_count; j++){
+                    int index = i*choice_count + j;
+                    choices << general_list[index];
+                }
+                players.at(i)->invoke("doChooseGeneral", choices.join("+"));
+            }
+        }else
+            startGame();
     }
 }
 
@@ -1220,8 +1256,13 @@ void Room::sendDamageLog(const DamageStruct &data){
 void Room::startGame(){
     // broadcast all generals except the lord
     int i;
-    for(i=1; i<players.count(); i++)
+    for(i=1; i<players.count(); i++){
         broadcastProperty(players.at(i), "general");
+    }
+
+    foreach(ServerPlayer *player, players){
+        broadcastProperty(player, "general2");
+    }
 
     alive_players = players;
 
@@ -1257,6 +1298,7 @@ void Room::startGame(){
 
     sem = new QSemaphore;
     thread = new RoomThread(this);
+    thread->constructTriggerTable();
     thread->start();
 }
 
@@ -1420,6 +1462,19 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
 
     if(game_finished)
         thread->end();
+}
+
+void Room::acquireSkill(ServerPlayer *player, const Skill *skill){
+    QString skill_name = skill->objectName();
+    player->acquireSkill(skill_name);
+
+    if(skill->inherits("TriggerSkill")){
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        thread->addTriggerSkill(trigger_skill);
+    }
+
+    QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
+    broadcastInvoke("acquireSkill", acquire_str);
 }
 
 void Room::setTag(const QString &key, const QVariant &value){

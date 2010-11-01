@@ -4,6 +4,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "standard.h"
+#include "client.h"
 
 #include <QPainter>
 #include <QMimeData>
@@ -76,7 +77,7 @@ void Photo::showProcessBar(){
     progress_bar->setValue(0);
     progress_bar->show();
 
-    if(!Config.OperationNoLimit)
+    if(ServerInfo.OperationTimeout != 0);
         timer_id = startTimer(500);
 
     setScale(1.2);
@@ -137,7 +138,7 @@ void Photo::hideEmotion(){
 }
 
 void Photo::timerEvent(QTimerEvent *event){
-    int step = 100 / double(Config.OperationTimeout * 5);
+    int step = 100 / double(ServerInfo.OperationTimeout * 5);
     int new_value = progress_bar->value() + step;
     new_value = qMin(progress_bar->maximum(), new_value);
     progress_bar->setValue(new_value);
@@ -184,7 +185,7 @@ void Photo::showCard(int card_id){
     QPointF card_pos(pos() + QPointF(0, 20));
     card_item->setPos(card_pos);
     card_item->setHomePos(card_pos);
-    card_item->setOpacity(0.8);
+    card_item->setEnabled(false);
 
     QTimer::singleShot(2000, card_item, SLOT(deleteLater()));
 }
@@ -196,6 +197,12 @@ void Photo::updateAvatar(){
         avatar.load(general->getPixmapPath("small"));
         avatar = avatar.scaled(QSize(128,58));
         kingdom = QPixmap(player->getKingdomPath());
+
+        const General *general2 = player->getGeneral2();
+        if(general2){
+            small_avatar.load(general2->getPixmapPath("big"));
+            small_avatar = small_avatar.scaled(small_avatar.size()/4);
+        }
     }else{
         avatar = QPixmap();
         kingdom = QPixmap();
@@ -311,6 +318,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(!player)
         return;
 
+    if(!player->getState().isEmpty()){
+        painter->drawText(100, 100, Sanguosha->translate(player->getState()));
+    }
+
     painter->setPen(Qt::white);
     QString title;
     QString general_name = player->getGeneralName();
@@ -328,6 +339,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->drawPixmap(1, 13, avatar);
     painter->drawPixmap(0, 10, avatar_frame);
+    painter->drawPixmap(90, 13, small_avatar);
 
     painter->drawPixmap(0,  0, kingdom);
 
@@ -369,9 +381,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawText(8, 95, QString::number(n));
     }
 
-    if(!player->getState().isEmpty()){
-        painter->drawText(100, 100, Sanguosha->translate(player->getState()));
-    }
+
 
     if(player->getPhase() != Player::NotActive){
         painter->drawRect(boundingRect());

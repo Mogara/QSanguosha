@@ -286,6 +286,10 @@ public:
         events << SlashResult;
     }
 
+    virtual int getPriority(ServerPlayer *) const{
+        return 2;
+    }
+
     virtual bool trigger(TriggerEvent, ServerPlayer *pangde, QVariant &data) const{
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success && !result.to->isNude()){

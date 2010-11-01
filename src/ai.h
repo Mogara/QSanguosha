@@ -12,37 +12,36 @@ class ServerPlayer;
 
 class AI: public QObject{
     Q_OBJECT
-    Q_ENUMS(Relation)
+    Q_ENUMS(Relation);
 
 public:
-    AI(ServerPlayer *player);
-
     static AI *CreateAI(ServerPlayer *player);
+
+    AI(ServerPlayer *player);
 
     enum Relation { Friend, Enemy, Neutrality };
     Relation relationTo(const ServerPlayer *other) const;
-
     bool isFriend(const ServerPlayer *other) const;
     bool isEnemy(const ServerPlayer *other) const;
 
     QList<ServerPlayer *> getEnemies() const;
     QList<ServerPlayer *> getFriends() const;
 
-    virtual void activate(CardUseStruct &card_use) const = 0;
-    virtual Card::Suit askForSuit() const = 0;
-    virtual QString askForKingdom() const = 0;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const = 0;
+    virtual void activate(CardUseStruct &card_use) = 0;
+    virtual Card::Suit askForSuit() = 0;
+    virtual QString askForKingdom() = 0;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const = 0;
-    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) const = 0;
-    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) const = 0;
-    virtual const Card *askForCard(const QString &pattern) const = 0;
-    virtual QString askForUseCard(const QString &pattern, const QString &prompt) const = 0;
-    virtual int askForAG(const QList<int> &card_ids) const = 0;
-    virtual int askForCardShow(ServerPlayer *requestor) const = 0;
-    virtual const Card *askForPindian() const = 0;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) const = 0;
-    virtual const Card *askForSinglePeach(ServerPlayer *dying) const = 0;
+    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) = 0;
+    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
+    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
+    virtual const Card *askForCard(const QString &pattern)  = 0;
+    virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
+    virtual int askForAG(const QList<int> &card_ids) = 0;
+    virtual int askForCardShow(ServerPlayer *requestor) = 0;
+    virtual const Card *askForPindian() = 0;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
+    virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
 
 protected:
     Room *room;
@@ -55,21 +54,23 @@ class TrustAI: public AI{
 public:
     TrustAI(ServerPlayer *player);
 
-    virtual void activate(CardUseStruct &card_use) const;
-    virtual Card::Suit askForSuit() const;
-    virtual QString askForKingdom() const;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const;
+    virtual void activate(CardUseStruct &card_use) ;
+    virtual Card::Suit askForSuit() ;
+    virtual QString askForKingdom() ;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) const;
-    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) const;
-    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) const;
-    virtual const Card *askForCard(const QString &pattern) const;
-    virtual QString askForUseCard(const QString &pattern, const QString &prompt) const;
-    virtual int askForAG(const QList<int> &card_ids) const;
-    virtual int askForCardShow(ServerPlayer *requestor) const;
-    virtual const Card *askForPindian() const;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) const;
-    virtual const Card *askForSinglePeach(ServerPlayer *dying) const;
+    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) ;
+    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
+    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
+    virtual const Card *askForCard(const QString &pattern) ;
+    virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
+    virtual int askForAG(const QList<int> &card_ids) ;
+    virtual int askForCardShow(ServerPlayer *requestor) ;
+    virtual const Card *askForPindian() ;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
+    virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
+
+    virtual bool useCard(const Card *card);
 };
 
 class SmartAI: public TrustAI{
@@ -78,8 +79,12 @@ class SmartAI: public TrustAI{
 public:
     SmartAI(ServerPlayer *player, bool always_invoke = false);
 
-    virtual int askForCardShow(ServerPlayer *requestor) const;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) const;
+    virtual int askForCardShow(ServerPlayer *requestor) ;
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
+
+    virtual void activate(CardUseStruct &card_use) ;
+    virtual bool useCard(const Card *card);
+    virtual void useCard(const Card *card, CardUseStruct &card_use);
 
 private:
     bool always_invoke;
