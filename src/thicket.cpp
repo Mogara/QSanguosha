@@ -235,7 +235,7 @@ public:
                 for(i=0; i<x; i++){
                     int card_id = room->drawCard();
                     room->throwCard(card_id);
-                    room->getThread()->delay(1);
+                    room->getThread()->delay();
 
                     const Card *card = Sanguosha->getCard(card_id);
                     if(card->getSuit() == Card::Heart){

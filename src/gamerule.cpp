@@ -120,7 +120,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 DamageStruct damage = data.value<DamageStruct>();
                 room->sendDamageLog(damage);
 
-                bool chained = player->isChained();
                 int new_hp = player->getHp() - damage.damage;
                 room->damage(player, damage.damage);
                 if(new_hp <= 0){
@@ -132,6 +131,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     room->getThread()->trigger(Dying, player, dying_data);
                 }
 
+                bool chained = player->isChained();
                 if(damage.nature != DamageStruct::Normal && chained){
                     room->setPlayerProperty(player, "chained", false);
 

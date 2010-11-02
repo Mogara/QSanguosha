@@ -185,23 +185,31 @@ void Client::checkVersion(const QString &server_version){
 ServerInfoStruct ServerInfo;
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(\\d+):(\\d+):([+\\w]*):([FS]*)");
+    QRegExp rx("(.*):(\\d+):(\\d+):([+\\w]*):(\\w*):([FS]*)");
     if(!rx.exactMatch(str))
         return false;
 
     QStringList texts = rx.capturedTexts();
 
-    PlayerCount = texts.at(1).toInt();
-    OperationTimeout = texts.at(2).toInt();
+    QString server_name = texts.at(1);
+    Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));
 
-    QStringList ban_packages = texts.at(3).split("+");
+    PlayerCount = texts.at(2).toInt();
+    OperationTimeout = texts.at(3).toInt();
+
+    QStringList ban_packages = texts.at(4).split("+");
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach(const Package *package, packages){
+        if(package->inherits("Scenario"))
+            continue;
+
         QString package_name = package->objectName();
         Extensions.insert(package_name, ! ban_packages.contains(package_name));
     }
 
-    QString flags = texts.at(4);
+    Scenario = texts.at(5);
+
+    QString flags = texts.at(6);
 
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");

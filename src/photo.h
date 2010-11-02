@@ -31,10 +31,10 @@ public:
     void hideProcessBar();
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
-    void separateRoleCombobox();
     void showSkillName(const QString &skill_name);
 
 public slots:
+    void separateRoleCombobox();
     void updateAvatar();
     void updateRoleCombobox(const QString &new_role);
     void refresh();

@@ -77,7 +77,13 @@ public:
     void showCard(ServerPlayer *player, int card_id);
     bool pindian(ServerPlayer *source, ServerPlayer *target);    
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
-    void acquireSkill(ServerPlayer *player, const Skill *skill);
+    void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
+    void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
+    void adjustSeats();
+    void swapPile();
+    int getCardFromPile(const QString card_name);
+    ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
+    void installEquip(ServerPlayer *player, const QString &equip_name);
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
@@ -174,7 +180,7 @@ private:
 
     const Card *provided;
 
-    QVariantMap scenario_tag;
+    QVariantMap tag;
     const Scenario *scenario;
 
     static QString generatePlayerName();

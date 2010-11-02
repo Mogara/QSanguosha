@@ -93,6 +93,12 @@ void MainWindow::restoreFromConfig(){
     resize(Config.value("WindowSize", QSize(1042, 719)).toSize());
     move(Config.value("WindowPosition", QPoint(20,20)).toPoint());
 
+    QFont font;
+    if(Config.AppFont != font)
+        QApplication::setFont(Config.AppFont);
+    if(Config.UIFont != font)
+        QApplication::setFont(Config.UIFont, "QTextEdit");
+
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);
 }

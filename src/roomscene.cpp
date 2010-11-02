@@ -278,6 +278,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     foreach(Photo *photo, photos){
         item2player.insert(photo, photo->getPlayer());
         connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
+
+        connect(group, SIGNAL(finished()), photo, SLOT(separateRoleCombobox()));
     }
 }
 
@@ -2056,9 +2058,6 @@ void RoomScene::onGameStart(){
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
 
-    foreach(Photo *photo, photos)
-        photo->separateRoleCombobox();
-
     if(!Config.EnableBgMusic)
         return;
 
@@ -2133,10 +2132,18 @@ void RoomScene::showServerInformation()
     dialog->setWindowTitle(tr("Server information"));
 
     QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Server name"), new QLabel(ServerInfo.Name));
     layout->addRow(tr("Address"), new QLabel(Config.HostAddress));
     layout->addRow(tr("Port"), new QLabel(QString::number(Config.ServerPort)));
     layout->addRow(tr("Player count"), new QLabel(QString::number(ServerInfo.PlayerCount)));
     layout->addRow(tr("2nd general mode"), new QLabel(ServerInfo.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
+
+    QString scenario_label;
+    if(Config.Scenario.isEmpty())
+        scenario_label = tr("Disabled");
+    else
+        scenario_label = Sanguosha->translate(Config.Scenario);
+    layout->addRow(tr("Scenario mode"), new QLabel(scenario_label));
 
     QLabel *time_limit = new QLabel;
     if(ServerInfo.OperationTimeout == 0)

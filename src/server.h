@@ -54,7 +54,6 @@ private:
 private slots:
     void processNewConnection(ClientSocket *socket);
     void removeAddress();
-    void showSlaveSocketError(const QString &msg);
 
 signals:
     void server_message(const QString &);

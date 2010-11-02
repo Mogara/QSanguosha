@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QFile>
 #include <QMessageBox>
+#include <QApplication>
 
 Settings Config("Donghua University", "Sanguosha");
 
@@ -32,6 +33,9 @@ void Settings::init(){
     BigFont.setPixelSize(56);
     SmallFont.setPixelSize(32);
     TinyFont.setPixelSize(18);
+
+    AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
+    UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     PlayerCount = value("PlayerCount", 2).toInt();

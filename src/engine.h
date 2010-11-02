@@ -32,7 +32,7 @@ public:
     QStringList getKingdoms() const;
 
     QStringList getScenarioNames() const;
-    void addScenario(const Scenario *scenario);
+    void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;

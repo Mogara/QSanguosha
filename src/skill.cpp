@@ -4,6 +4,7 @@
 #include "room.h"
 #include "client.h"
 #include "standard.h"
+#include "scenario.h"
 
 #include <QFile>
 
@@ -164,6 +165,20 @@ int TriggerSkill::getPriority(ServerPlayer *target) const{
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
     return target->isAlive() && target->hasSkill(objectName());
+}
+
+ScenarioRule::ScenarioRule(Scenario *scenario)
+    :TriggerSkill(scenario->objectName())
+{
+    setParent(this);
+}
+
+int ScenarioRule::getPriority(ServerPlayer *) const{
+    return 3;
+}
+
+bool ScenarioRule::triggerable(const ServerPlayer *target) const{
+    return true;
 }
 
 MasochismSkill::MasochismSkill(const QString &name)

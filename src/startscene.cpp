@@ -1,4 +1,5 @@
 #include "startscene.h"
+#include "engine.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -95,6 +96,11 @@ void StartScene::switchToServer(Server *server){
         server_log->append(tr("Secondary general is enabled"));
     else
         server_log->append(tr("Secondary general is not enabled"));
+
+    if(Config.Scenario.isEmpty())
+        server_log->append(tr("Scenario mode is not enabled"));
+    else
+        server_log->append(tr("Enabled scenario mode [%1] ").arg(Sanguosha->translate(Config.Scenario)));
 
     QString level;
     switch(Config.AILevel){

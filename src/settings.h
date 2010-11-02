@@ -20,6 +20,9 @@ public:
     QFont SmallFont;
     QFont TinyFont;
 
+    QFont AppFont;
+    QFont UIFont;
+
     // server side
     QString ServerName;
     int CountDownSeconds;

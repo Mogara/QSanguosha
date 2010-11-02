@@ -318,11 +318,10 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     if(!player)
         return;
 
-    if(!player->getState().isEmpty()){
-        painter->drawText(100, 100, Sanguosha->translate(player->getState()));
-    }
-
     painter->setPen(Qt::white);
+    if(!player->getState().isEmpty())
+        painter->drawText(100, 100, Sanguosha->translate(player->getState()));    
+
     QString title;
     QString general_name = player->getGeneralName();
     if(general_name.isEmpty())

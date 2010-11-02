@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
-    <height>408</height>
+    <width>494</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,13 +20,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>20</y>
      <width>471</width>
-     <height>341</height>
+     <height>441</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -264,6 +264,103 @@
      <zorder>fitInViewCheckBox</zorder>
      <zorder>layoutWidget</zorder>
     </widget>
+    <widget class="QGroupBox" name="fontSetupGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>320</y>
+       <width>441</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Font setup</string>
+     </property>
+     <widget class="QPushButton" name="changeAppFontButton">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>20</y>
+        <width>128</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set application font</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="appFontLabel">
+      <property name="geometry">
+       <rect>
+        <x>22</x>
+        <y>22</y>
+        <width>96</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Application font</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="appFontLineEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>124</x>
+        <y>23</y>
+        <width>161</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="textEditFontLineEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>50</y>
+        <width>161</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="setTextEditFontButton">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>50</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set text edit font</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="textEditFontLabel">
+      <property name="geometry">
+       <rect>
+        <x>22</x>
+        <y>53</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Text edit font</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QWidget" name="gameTab">
     <attribute name="title">
@@ -427,7 +524,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>370</y>
+     <y>460</y>
      <width>341</width>
      <height>32</height>
     </rect>

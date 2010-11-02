@@ -167,11 +167,8 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(normal);
         layout->addWidget(smart);
 
-        QAbstractButton *checked = ai_group->button(Config.AILevel);
-        if(checked)
-            checked->setChecked(true);
-        else
-            smart->setChecked(true);
+        smart->setChecked(true);
+        ai_box->setEnabled(false);
     }
 
     QGroupBox *connection_box = new QGroupBox;
@@ -330,19 +327,18 @@ void Server::processNewConnection(ClientSocket *socket){
 
     // if no free room is found, create a new room for him
     if(free_room == NULL){
-        free_room = new Room(this, NULL);
+        const Scenario *scenario = NULL;
+        if(!Config.Scenario.isEmpty())
+            scenario = Sanguosha->getScenario(Config.Scenario);
+
+        free_room = new Room(this, scenario);
         rooms << free_room;
         connect(free_room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }
 
-    connect(socket, SIGNAL(error_message(QString)), this, SLOT(showSlaveSocketError(QString)));
     free_room->addSocket(socket);    
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
-}
-
-void Server::showSlaveSocketError(const QString &msg){
-    emit server_message(tr("Slave socket error: %1").arg(msg));
 }
 
 void Server::removeAddress(){

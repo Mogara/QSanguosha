@@ -106,6 +106,18 @@ protected:
     QList<TriggerEvent> events;
 };
 
+class Scenario;
+
+class ScenarioRule: public TriggerSkill{
+    Q_OBJECT
+
+public:
+    ScenarioRule(Scenario *scenario);
+
+    virtual int getPriority(ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
+};
+
 class MasochismSkill: public TriggerSkill{
     Q_OBJECT
 

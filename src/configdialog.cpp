@@ -4,6 +4,7 @@
 
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QFontDialog>
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
@@ -29,6 +30,16 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
+
+    QFont font = Config.AppFont;
+    showFont(ui->appFontLineEdit, font);
+
+    font = Config.UIFont;
+    showFont(ui->textEditFontLineEdit, font);
+}
+
+void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
+    lineedit->setText(QString("%1 %2").arg(font.family()).arg(font.pointSize()));
 }
 
 ConfigDialog::~ConfigDialog()
@@ -102,4 +113,31 @@ void ConfigDialog::on_resetBgMusicButton_clicked()
     QString default_music = "audio/background.mp3";
     Config.setValue("BackgroundMusic", default_music);
     ui->bgMusicPathLineEdit->setText(default_music);
+}
+
+void ConfigDialog::on_changeAppFontButton_clicked()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok, Config.AppFont, this);
+    if(ok){
+        Config.AppFont = font;
+        showFont(ui->appFontLineEdit, font);
+
+        Config.setValue("AppFont", font);
+        QApplication::setFont(font);
+    }
+}
+
+
+void ConfigDialog::on_setTextEditFontButton_clicked()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok, Config.UIFont, this);
+    if(ok){
+        Config.UIFont = font;
+        showFont(ui->textEditFontLineEdit, font);
+
+        Config.setValue("UIFont", font);
+        QApplication::setFont(font, "QTextEdit");
+    }
 }

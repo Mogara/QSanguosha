@@ -63,9 +63,11 @@ QStringList Engine::getScenarioNames() const{
     return scenarios.keys();
 }
 
-void Engine::addScenario(const Scenario *scenario){
-    scenarios.insert(scenario->objectName(), scenario);    
-    translations.unite(scenario->getTranslation());
+void Engine::addScenario(Scenario *scenario){
+    scenario->setParent(this);
+    scenarios.insert(scenario->objectName(), scenario);
+
+    addPackage(scenario);
 }
 
 const Scenario *Engine::getScenario(const QString &name) const{
@@ -181,7 +183,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101025";
+    return "20101103";
 }
 
 QStringList Engine::getKingdoms() const{

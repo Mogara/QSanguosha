@@ -85,7 +85,7 @@ void RoomThread::constructTriggerTable(){
 
             addTriggerSkill(skill);
         }
-    }
+    }   
 
     GameRule *game_rule = new GameRule;
     addTriggerSkill(game_rule);
@@ -95,8 +95,10 @@ void RoomThread::constructTriggerTable(){
         if(general2){
             QList<const Skill *> skills = general2->findChildren<const Skill *>();
 
-            foreach(const Skill *skill, skills)
-                room->acquireSkill(player, skill);
+            foreach(const Skill *skill, skills){
+                if(!player->hasSkill(skill->objectName()))
+                    room->acquireSkill(player, skill);
+            }
         }
     }
 }
@@ -180,7 +182,7 @@ void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
 }
 
 void RoomThread::delay(unsigned long secs){
-    sleep(secs);
+    msleep(secs);
 }
 
 void RoomThread::end(){

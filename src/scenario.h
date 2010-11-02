@@ -3,8 +3,8 @@
 
 #include "package.h"
 
-class TriggerSkill;
 class Room;
+class ScenarioRule;
 
 #include <QMap>
 
@@ -15,11 +15,14 @@ class Scenario : public Package
 public:
     explicit Scenario(const QString &name);
     int getPlayerCount() const;
-    const TriggerSkill *getRule() const;
+    const ScenarioRule *getRule() const;
+
+    virtual void assign(QStringList &generals, QStringList &roles) const;
+    virtual void onTagSet(Room *room, const QString &key) const = 0;
 
 protected:
     QMap<QString, QString> role_map;
-    const TriggerSkill *rule;
+    const ScenarioRule *rule;
 };
 
 #define ADD_SCENARIO(name) extern "C" { Q_DECL_EXPORT Scenario *New##name##Scenario() { return new name##Scenario; } }
