@@ -15,7 +15,7 @@ struct ServerInfoStruct{
 
     QString Name;
     int PlayerCount;
-    bool OperationTimeout;
+    int OperationTimeout;
     QString Scenario;
     QMap<QString, bool> Extensions;
     bool FreeChoose;
