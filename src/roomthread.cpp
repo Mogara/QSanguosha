@@ -96,8 +96,12 @@ void RoomThread::constructTriggerTable(){
             QList<const Skill *> skills = general2->findChildren<const Skill *>();
 
             foreach(const Skill *skill, skills){
-                if(!player->hasSkill(skill->objectName()))
+                if(!player->hasSkill(skill->objectName())){
+                    if(player->getRoleEnum() != Player::Lord && skill->isLordSkill())
+                        continue;
+
                     room->acquireSkill(player, skill);
+                }
             }
         }
     }
@@ -121,6 +125,7 @@ void RoomThread::run(){
 
     forever{
         ServerPlayer *player = room->getCurrent();
+        room->resetSkipSet();
 
         foreach(Player::Phase phase, phases){
             if(!room->isSkipped(phase)){

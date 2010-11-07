@@ -208,11 +208,18 @@ GuicaiCard::GuicaiCard(){
     target_fixed = true;
 }
 
-LiuliCard::LiuliCard(){
+LiuliCard::LiuliCard()
+    :is_weapon(false)
+{
 }
 
 void LiuliCard::setSlashSource(const QString &slash_source){
     this->slash_source = slash_source;
+}
+
+void LiuliCard::setIsWeapon(bool is_weapon)
+{
+    this->is_weapon = is_weapon;
 }
 
 bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -225,8 +232,7 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     if(to_select->objectName() == slash_source)
         return false;
 
-    int card_id = subcards.first();
-    if(Self->getWeapon() && Self->getWeapon()->getId() == card_id)
+    if(is_weapon)
         return Self->distanceTo(to_select) <= 1;
     else
         return Self->inMyAttackRange(to_select);

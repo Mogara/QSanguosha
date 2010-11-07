@@ -4,6 +4,7 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QNetworkInterface>
+#include <QGraphicsDropShadowEffect>
 
 #include "audiere.h"
 extern audiere::AudioDevicePtr Device;
@@ -75,10 +76,36 @@ void StartScene::switchToServer(Server *server){
 
     addWidget(server_log);
 
-    switch(Config.Protocol){
-    case 0: printProtocolTCP(); break;
-    case 1: printProtocolIRC(); break;
+    printServerInfo();
+
+    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
+
+    update();
+}
+
+void StartScene::printServerInfo(){
+    QStringList items;
+    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
+    foreach(QHostAddress address, addresses){
+        quint32 ipv4 = address.toIPv4Address();
+        if(ipv4)
+            items << address.toString();
     }
+
+    items.sort();
+
+    foreach(QString item, items){
+        if(item.startsWith("192.168.") || item.startsWith("10."))
+            server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
+        else if(item == "127.0.0.1")
+            server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
+        else if(item.startsWith("5."))
+            server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
+        else if(!item.startsWith("169.254."))
+            server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
+    }
+
+    server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
 
     server_log->append(tr("Player count is %1").arg(Config.PlayerCount));
 
@@ -111,37 +138,4 @@ void StartScene::switchToServer(Server *server){
         level = tr("smart"); break;
     }
     server_log->append(tr("The computer AI level is %1").arg(level));
-
-    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
-
-    update();
-}
-
-void StartScene::printProtocolTCP(){
-    QStringList items;
-    QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach(QHostAddress address, addresses){
-        quint32 ipv4 = address.toIPv4Address();
-        if(ipv4)
-            items << address.toString();
-    }
-
-    items.sort();
-
-    foreach(QString item, items){
-        if(item.startsWith("192.168.") || item.startsWith("10."))
-            server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
-        else if(item == "127.0.0.1")
-            server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
-        else if(item.startsWith("5."))
-            server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
-        else if(!item.startsWith("169.254."))
-            server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
-    }
-
-    server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
-}
-
-void StartScene::printProtocolIRC(){
-
 }

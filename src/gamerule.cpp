@@ -238,7 +238,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     }
                 }
             }else{
-                player->throwAllCards();
                 room->gameOver(winner);
                 return true;
             }

@@ -2076,6 +2076,7 @@ void RoomScene::onGameStart(){
         void *data = memory->data();
         const char *username = Config.UserName.toAscii();
         memcpy(data, username, qstrlen(username));
+
         play_music = true;
 
         memory->unlock();
@@ -2137,6 +2138,7 @@ void RoomScene::showServerInformation()
     layout->addRow(tr("Port"), new QLabel(QString::number(Config.ServerPort)));
     layout->addRow(tr("Player count"), new QLabel(QString::number(ServerInfo.PlayerCount)));
     layout->addRow(tr("2nd general mode"), new QLabel(ServerInfo.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
+    layout->addRow(tr("Free choose"), new QLabel(ServerInfo.FreeChoose ? tr("Enabled") : tr("Disabled")));
 
     QString scenario_label;
     if(Config.Scenario.isEmpty())

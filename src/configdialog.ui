@@ -301,6 +301,9 @@
       <property name="text">
        <string>Application font</string>
       </property>
+      <property name="buddy">
+       <cstring>appFontLineEdit</cstring>
+      </property>
      </widget>
      <widget class="QLineEdit" name="appFontLineEdit">
       <property name="enabled">
@@ -359,6 +362,9 @@
       <property name="text">
        <string>Text edit font</string>
       </property>
+      <property name="buddy">
+       <cstring>textEditFontLineEdit</cstring>
+      </property>
      </widget>
     </widget>
    </widget>
@@ -383,6 +389,9 @@
        <widget class="QLabel" name="nullificationLabel">
         <property name="text">
          <string>Nullification count down</string>
+        </property>
+        <property name="buddy">
+         <cstring>nullificationSpinBox</cstring>
         </property>
        </widget>
       </item>
@@ -450,7 +459,7 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="ircHostLineEdit">
          <property name="text">
-          <string>irc.freenode.net</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -462,12 +471,15 @@
          <property name="text">
           <string>Host</string>
          </property>
+         <property name="buddy">
+          <cstring>ircHostLineEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="ircPortLineEdit">
          <property name="text">
-          <string>6667</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -475,19 +487,19 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="nickLineEdit">
+        <widget class="QLineEdit" name="ircNickLineEdit">
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="placeholderText">
-          <string>the system will provide a random name if leave empty</string>
+          <string/>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="channelLineEdit">
+        <widget class="QLineEdit" name="ircChannelLineEdit">
          <property name="text">
-          <string>#sgs</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -499,6 +511,9 @@
          <property name="text">
           <string>Port</string>
          </property>
+         <property name="buddy">
+          <cstring>ircPortLineEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="2" column="0">
@@ -506,12 +521,18 @@
          <property name="text">
           <string>Nick</string>
          </property>
+         <property name="buddy">
+          <cstring>ircNickLineEdit</cstring>
+         </property>
         </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="channelLabel">
          <property name="text">
           <string>Channel</string>
+         </property>
+         <property name="buddy">
+          <cstring>ircChannelLineEdit</cstring>
          </property>
         </widget>
        </item>

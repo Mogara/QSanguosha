@@ -31,10 +31,15 @@ public:
     bool FreeChoose;
     bool ForbidSIMC;
     bool Enable2ndGeneral;
+    bool AnnounceIP;
     int AILevel;
-    int Protocol;
     QString Scenario;
-    ushort ServerPort;
+    ushort ServerPort;    
+
+    QString IrcHost;
+    ushort IrcPort;
+    QString IrcNick;
+    QString IrcChannel;
 
     // client side
     QString HostAddress;

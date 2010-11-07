@@ -208,7 +208,10 @@ public:
 
                 if(!damage.to->isNude()){
                     int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
-                    room->obtainCard(zhurong, card_id);
+                    if(room->getCardPlace(card_id) == Player::Hand)
+                        room->moveCardTo(card_id, zhurong, Player::Hand, false);
+                    else
+                        room->obtainCard(zhurong, card_id);
                 }
             }
         }

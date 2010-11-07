@@ -36,6 +36,12 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     font = Config.UIFont;
     showFont(ui->textEditFontLineEdit, font);
+
+    // tab 3
+    ui->ircHostLineEdit->setText(Config.IrcHost);
+    ui->ircPortLineEdit->setText(QString::number(Config.IrcPort));
+    ui->ircNickLineEdit->setText(Config.IrcNick);
+    ui->ircChannelLineEdit->setText(Config.IrcChannel);
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
@@ -93,6 +99,8 @@ void ConfigDialog::saveConfig()
 
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
+
+    Config.IrcHost = ui->ircHostLineEdit->text();
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

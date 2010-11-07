@@ -176,8 +176,10 @@ int Player::distanceTo(const Player *other) const{
 }
 
 int Player::getGeneralMaxHP() const{
-    Q_ASSERT(general != NULL);
-    return general->getMaxHp();
+    int first = general->getMaxHp();
+    int second = general2 ? general2->getMaxHp() : 3;
+
+    return qMin(first + second - 3, 8);
 }
 
 void Player::setGeneralName(const QString &general_name){

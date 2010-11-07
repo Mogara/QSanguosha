@@ -498,7 +498,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(card){
         throwCard(card);
 
-        if(!card->inherits("DummyCard")){
+        if(!card->inherits("DummyCard") && pattern != "."){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
@@ -956,7 +956,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setScreenName(screen_name);
     player->setProperty("avatar", avatar);
 
-    player->invoke("checkVersion", Sanguosha->getVersion());
+    //player->invoke("checkVersion", Sanguosha->getVersion());
 
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     QString flags;
@@ -1726,11 +1726,11 @@ void Room::skip(Player::Phase phase){
 }
 
 bool Room::isSkipped(Player::Phase phase){
-    if(skip_set.contains(phase)){
-        skip_set.remove(phase);
-        return true;
-    }else
-        return false;
+    return skip_set.contains(phase);
+}
+
+void Room::resetSkipSet(){
+    skip_set.clear();
 }
 
 ServerPlayer *Room::getLord() const{

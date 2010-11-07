@@ -81,7 +81,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
         last_layout->addWidget(progress_bar);
     }
 
-    if(Config.FreeChoose){
+    if(ServerInfo.FreeChoose){
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
         connect(free_choose_button, SIGNAL(clicked()), this, SLOT(freeChoose()));
         last_layout->addWidget(free_choose_button);
@@ -134,7 +134,7 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
         progress_bar->setValue(new_value);
 }
 
-FreeChooseDialog::FreeChooseDialog(ChooseGeneralDialog *parent)
+FreeChooseDialog::FreeChooseDialog(QDialog *parent)
     :QDialog(parent)
 {
     setWindowTitle(tr("Free choose generals"));

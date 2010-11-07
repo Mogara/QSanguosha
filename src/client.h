@@ -48,7 +48,6 @@ public:
     explicit Client(QObject *parent, const QString &filename = QString());
 
     void disconnectFromHost();
-    void signup();
     void request(const QString &message);
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
     void useCard(const Card *card);
@@ -144,6 +143,7 @@ public:
     QStringList players_to_choose;
 
 public slots:
+    void signup();
     void chooseItem(const QString &_name);
     void selectChoice();
     void updateFrequentFlags(int state);

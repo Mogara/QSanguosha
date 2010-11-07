@@ -15,6 +15,14 @@
 #include <QLabel>
 #include <QRadioButton>
 
+static QLayout *HLay(QWidget *left, QWidget *right){
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(left);
+    layout->addWidget(right);
+
+    return layout;
+}
+
 ServerDialog::ServerDialog(QWidget *parent)
     :QDialog(parent)
 {
@@ -113,15 +121,15 @@ QLayout *ServerDialog::createLeft(){
         }
     }
 
-    QFormLayout *vlayout = new QFormLayout;
-    vlayout->addRow(tr("Server name"), server_name_lineedit);
-    vlayout->addRow(tr("Player count"), player_count_spinbox);
-    vlayout->addRow(tr("Operation timeout"), timeout_spinbox);
-    vlayout->addWidget(nolimit_checkbox);
-    vlayout->addRow(extension_box);
-    vlayout->addRow(scenario_box);
+    QFormLayout *form_layout = new QFormLayout;
+    form_layout->addRow(tr("Server name"), server_name_lineedit);
+    form_layout->addRow(tr("Player count"), player_count_spinbox);
+    form_layout->addRow(tr("Operation timeout"), timeout_spinbox);
+    form_layout->addWidget(nolimit_checkbox);
+    form_layout->addRow(extension_box);
+    form_layout->addRow(scenario_box);
 
-    return vlayout;
+    return form_layout;
 }
 
 QLayout *ServerDialog::createRight(){
@@ -142,8 +150,21 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(forbid_same_ip_checkbox);
 
         second_general_checkbox = new QCheckBox(tr("Enable second general"));
+        QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
+
+        connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
         second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-        layout->addWidget(second_general_checkbox);
+
+        layout->addLayout(HLay(second_general_checkbox, banpair_button));
+
+        announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
+        announce_ip_checkbox->setChecked(Config.AnnounceIP);
+        layout->addWidget(announce_ip_checkbox);
+
+        port_lineedit = new QLineEdit;
+        port_lineedit->setText(QString::number(Config.ServerPort));
+        port_lineedit->setValidator(new QIntValidator(1, 9999, port_lineedit));
+        layout->addLayout(HLay(new QLabel(tr("Port")), port_lineedit));
     }
 
     QGroupBox *ai_box = new QGroupBox;
@@ -171,37 +192,9 @@ QLayout *ServerDialog::createRight(){
         ai_box->setEnabled(false);
     }
 
-    QGroupBox *connection_box = new QGroupBox;
-
-    {
-        connection_box->setTitle(tr("Connection method"));
-        QVBoxLayout *layout = new QVBoxLayout;
-        connection_box->setLayout(layout);
-
-        QRadioButton *tcp = new QRadioButton(tr("Direct battle (Direct on TCP/IP)"));
-        QRadioButton *irc = new QRadioButton(tr("IRC network (Based on subprotocol DCC)"));
-
-        // IRC/DCC is not supported now
-        irc->setEnabled(false);
-
-        connection_group = new QButtonGroup;
-        connection_group->addButton(tcp, 0);
-        connection_group->addButton(irc, 1);
-
-        layout->addWidget(tcp);
-        layout->addWidget(irc);
-
-        QAbstractButton *checked = connection_group->button(Config.Protocol);
-        if(checked)
-            checked->setChecked(true);
-        else
-            tcp->setChecked(true);
-    }
-
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->addWidget(advanced_box);
     vlayout->addWidget(ai_box);
-    vlayout->addWidget(connection_box);
     vlayout->addStretch();
 
     return vlayout;
@@ -236,12 +229,13 @@ bool ServerDialog::config(){
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
+    Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.AILevel = ai_group->checkedId();
-    Config.Protocol = connection_group->checkedId();
     if(scenario_combobox->isEnabled())
         Config.Scenario = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
     else
         Config.Scenario.clear();
+    Config.ServerPort = port_lineedit->text().toInt();   
 
     Config.setValue("ServerName", Config.ServerName);
     Config.setValue("PlayerCount", Config.PlayerCount);
@@ -251,8 +245,9 @@ bool ServerDialog::config(){
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("AILevel", Config.AILevel);
-    Config.setValue("Protocol", Config.Protocol);
     Config.setValue("Scenario", Config.Scenario);
+    Config.setValue("ServerPort", Config.ServerPort);
+    Config.setValue("AnnounceIP", Config.AnnounceIP);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
@@ -273,13 +268,7 @@ bool ServerDialog::config(){
 Server::Server(QObject *parent)
     :QObject(parent)
 {
-    switch(Config.Protocol){
-    case 0: server = new NativeServerSocket; break;
-    default:
-        server = NULL;
-        return;
-    }
-
+    server = new NativeServerSocket;
     server->setParent(this);
 
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));

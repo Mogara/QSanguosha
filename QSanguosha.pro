@@ -106,15 +106,24 @@ HEADERS += src/mainwindow.h \
     src/scenario.h \
     src/guandu-scenario.h \
     src/detector.h
+
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
     src/cardoverview.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
+
 RESOURCES += resource/images/sanguosha.qrc
+INCLUDEPATH += include
+
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += audiere.lib
+    LIBS += audiere.lib static-libircclient.lib -lws2_32
 }
+
+unix {
+    LIBS += -laudiere
+}
+
 TRANSLATIONS += sanguosha.ts

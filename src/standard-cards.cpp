@@ -470,8 +470,8 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     room->broadcastInvoke("fillAG", card_str.join("+"));
 
     foreach(ServerPlayer *player, players){
-        bool can_take = room->cardEffect(this, source, player);
-        if(can_take){
+        bool nullified = room->askForNullification(objectName(), source, player);
+        if(!nullified){
             int card_id = room->askForAG(player, card_ids);
             card_ids.removeOne(card_id);
 

@@ -167,8 +167,21 @@ ChengxiangCard::ChengxiangCard()
 
 }
 
-bool ChengxiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *) const{
-    return targets.length() < subcardsLength();
+bool ChengxiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < subcardsLength() && to_select->isWounded();
+}
+
+bool ChengxiangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() <= subcardsLength();
+}
+
+void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    QList<ServerPlayer *> to = targets;
+
+    if(to.isEmpty())
+        to << source;
+
+    return SkillCard::use(room, source, to);
 }
 
 void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
@@ -264,7 +277,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *caochong) const{
-        if(caochong->getHandcardNum() > 13){
+        if(caochong->getPhase() == Player::Finish && caochong->getHandcardNum() > 13){
             caochong->throwAllCards();
             caochong->getRoom()->loseHp(caochong);
         }
@@ -339,6 +352,22 @@ public:
     }
 };
 
+class Plum: public DelayedTrick{
+public:
+    Plum(Suit suit, int number):DelayedTrick(suit, number){
+        setObjectName("plum");
+    }
+
+    virtual bool isAvailable() const{
+        return Self->containsTrick(objectName());
+    }
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+        room->recover(source, 2);
+
+        room->moveCardTo(this, source, Player::Judging);
+    }
+};
 
 YitianPackage::YitianPackage()
     :Package("yitian")

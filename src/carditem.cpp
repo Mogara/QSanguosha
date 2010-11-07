@@ -54,6 +54,9 @@ void CardItem::goBack(bool kieru){
         group->addAnimation(goback);
         group->addAnimation(disappear);
 
+        // prevent the cover face bug
+        setEnabled(false);
+
         group->start(QParallelAnimationGroup::DeleteWhenStopped);
     }else
         goback->start(QPropertyAnimation::DeleteWhenStopped);

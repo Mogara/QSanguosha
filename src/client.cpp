@@ -133,13 +133,13 @@ Client::Client(QObject *parent, const QString &filename)
 
         replayer = new Replayer(this, filename);
         connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processCommand(QString)));
-
     }else{
         socket = new NativeClientSocket;
 
         socket->setParent(this);
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
+        connect(socket, SIGNAL(connected()), this, SLOT(signup()));
         socket->connectToHost();
 
         recorder = new Recorder(this);
@@ -217,7 +217,6 @@ bool ServerInfoStruct::parse(const QString &str){
     return true;
 }
 
-
 void Client::setup(const QString &setup_str){
     if(socket && !socket->isConnected())
         return;
@@ -238,6 +237,9 @@ void Client::processCommand(const QString &cmd){
 }
 
 void Client::processReply(char *reply){
+    if(strlen(reply) <= 2)
+        return;
+
     static char self_prefix = '.';
     static char other_prefix = '#';
 
@@ -272,7 +274,8 @@ void Client::processReply(char *reply){
             return;
 
         if(callback){
-            (this->*callback)(arg);
+            QString arg_str = arg;
+            (this->*callback)(arg_str);
         }else
             QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(method_name));
     }

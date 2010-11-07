@@ -33,6 +33,9 @@ signals:
     void message_got(char *msg);
     void error_message(const QString &msg);
     void disconnected();
+    void connected();
 };
+
+typedef char buffer_t[1024];
 
 #endif // SOCKET_H

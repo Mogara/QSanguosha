@@ -17,8 +17,7 @@ public:
     void switchToServer(Server *server);
 
 private:
-    void printProtocolTCP();
-    void printProtocolIRC();
+    void printServerInfo();
 
     Pixmap *logo;
     QTextEdit *server_log;

@@ -7,6 +7,9 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QApplication>
+#include <QCryptographicHash>
+#include <QNetworkInterface>
+#include <QDateTime>
 
 Settings Config("Donghua University", "Sanguosha");
 
@@ -43,10 +46,36 @@ void Settings::init(){
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
+    AnnounceIP = value("AnnounceIP", false).toBool();
     AILevel = value("AILevel", 2).toInt();
-    Protocol = value("Protocol", 0).toInt();
     Scenario = value("Scenario").toString();
     ServerPort = value("ServerPort", 9527u).toUInt();
+
+    QString default_host;
+
+#ifndef QT_NO_DEBUG
+    default_host = "localhost";
+#else
+    default_host = "irc.freenode.net"
+#endif
+
+    IrcHost = value("IrcHost", default_host).toString();
+    IrcPort = value("IrcPort", 6667).toUInt();
+    IrcNick = value("IrcNick").toString();
+    if(IrcNick.isEmpty()){
+        QString mac = QNetworkInterface::allInterfaces().first().hardwareAddress();
+        QDateTime now = QDateTime::currentDateTime();
+        QString combined = mac + now.toString();
+        QCryptographicHash::Algorithm algorithm;
+        if(now.toTime_t() % 2 == 0)
+            algorithm = QCryptographicHash::Md5;
+        else
+            algorithm = QCryptographicHash::Sha1;
+
+        QString hash = QCryptographicHash::hash(combined.toAscii(), algorithm).toHex().toUpper().right(10);
+        IrcNick = QString("SGS-%1").arg(hash);
+    }
+    IrcChannel = value("IrcChannel", "#sgs").toString();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")

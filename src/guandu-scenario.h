@@ -13,6 +13,7 @@ public:
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void use(const QList<const ClientPlayer *> &targets) const;
 };
 
 class SmallTuxiCard: public TuxiCard{

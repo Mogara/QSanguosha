@@ -64,8 +64,6 @@ public:
     void directCardEffect(const CardEffectStruct &effect);
     const Card *getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);
-    void skip(Player::Phase phase);
-    bool isSkipped(Player::Phase phase);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
@@ -87,6 +85,10 @@ public:
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
+
+    void skip(Player::Phase phase);
+    bool isSkipped(Player::Phase phase);
+    void resetSkipSet();
 
     enum TargetType{
         Killer,

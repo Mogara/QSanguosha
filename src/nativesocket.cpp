@@ -63,18 +63,17 @@ void NativeClientSocket::init(){
     connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(raiseError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
 }
 
 void NativeClientSocket::connectToHost(){
     socket->connectToHost(Config.HostAddress, Config.ServerPort);
 }
 
-typedef char buffer_t[1024];
-
 void NativeClientSocket::getMessage(){
     while(socket->canReadLine()){
         buffer_t msg;
-        socket->readLine(msg, sizeof(msg));
+        socket->readLine(msg, sizeof(msg));        
 
         emit message_got(msg);
     }

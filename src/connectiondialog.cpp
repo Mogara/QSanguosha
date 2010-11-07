@@ -22,7 +22,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->hostComboBox->addItems(Config.HistoryIPs);
     ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
 
-    ui->protocolComboBox->setCurrentIndex(Config.Protocol);
+    ui->portLineEdit->setText(QString::number(Config.ServerPort));
+    ui->portLineEdit->setValidator(new QIntValidator(1, 9999, ui->portLineEdit));
 
     ui->connectButton->setFocus();
 
@@ -62,11 +63,15 @@ void ConnectionDialog::on_connectButton_clicked()
 
     Config.UserName = username;
     Config.HostAddress = ui->hostComboBox->lineEdit()->text();
-    Config.Protocol = ui->protocolComboBox->currentIndex();
+    bool ok;
+    int port = ui->portLineEdit->text().toInt(&ok);
+    if(port){
+        Config.ServerPort = port;
+        Config.setValue("ServerPort", Config.ServerPort);
+    }
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostAddress", Config.HostAddress);
-    Config.setValue("Protocol", Config.Protocol);
 
     accept();
 }
@@ -118,6 +123,8 @@ void ConnectionDialog::on_detectButton_clicked()
 
     detector_dialog->exec();
 }
+
+// -----------------------------------
 
 DetectorDialog::DetectorDialog(QDialog *parent)
     :QDialog(parent)

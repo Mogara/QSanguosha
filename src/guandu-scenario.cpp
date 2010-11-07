@@ -10,7 +10,7 @@ ZhanShuangxiongCard::ZhanShuangxiongCard(){
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty() && to_select->getGeneralName() == "shuangxiong";
+    return targets.isEmpty() && to_select->getGeneralName() == "shuangxiong" && !to_select->isKongcheng();
 }
 
 void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -27,6 +27,10 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     room->damage(damage);
 
     room->setTag("ZhanShuangxiong", true);
+}
+
+void ZhanShuangxiongCard::use(const QList<const ClientPlayer *> &) const{
+    ClientInstance->turn_tag.insert("zhanshuangxiong", true);
 }
 
 class GreatYiji: public MasochismSkill{
@@ -68,6 +72,10 @@ public:
 class ZhanShuangxiong: public ZeroCardViewAsSkill{
 public:
     ZhanShuangxiong():ZeroCardViewAsSkill("zhanshuangxiong"){
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !Self->isKongcheng() && !ClientInstance->turn_tag.value(objectName(), false).toBool();
     }
 
     virtual const Card *viewAs() const{
@@ -151,7 +159,7 @@ public:
     GuanduRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << PhaseChange << Damaged;
+        events << GameStart << PhaseChange << Damaged << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -230,6 +238,23 @@ public:
                         }
 
                         room->moveCardTo(card_id, to, Player::Judging, true);
+                    }
+                }
+
+                break;
+            }
+
+        case Death:{
+                if(player->getRoleEnum() == Player::Lord){
+                    QStringList roles = room->aliveRoles(player);
+                    if(roles.length() == 2){
+                        QString first = roles.at(0);
+                        QString second = roles.at(1);
+                        if(first == "renegade" && second == "renegade"){
+                            player->throwAllCards();
+                            room->gameOver("renegade");
+                            return true;
+                        }
                     }
                 }
 

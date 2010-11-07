@@ -7,6 +7,7 @@
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
 #include "audiere.h"
+#include "libircclient.h"
 
 audiere::AudioDevicePtr Device;
 
@@ -140,6 +141,7 @@ void MainWindow::on_actionStart_Server_triggered()
     Server *server = new Server(this);
     if(! server->listen()){
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+
         return;
     }
 
@@ -160,7 +162,7 @@ void MainWindow::startConnection(){
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
 
-    client->signup();
+    //client->signup();
 }
 
 void MainWindow::on_actionReplay_triggered()
@@ -312,4 +314,19 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
 {
     QMenuBar *menu_bar = menuBar();
     menu_bar->setVisible(! menu_bar->isVisible());
+}
+
+void MainWindow::on_actionAbout_libircclient_triggered()
+{
+    QString content = tr("libircclient is a small but powerful library, which implements client-server IRC protocol. <br/>");
+    QString address = "http://libircclient.sourceforge.net";
+    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+
+    char version[255];
+    unsigned int high, low;
+    irc_get_version(&high, &low);
+    sprintf(version, "%d.%02d", high, low);
+    content.append(tr("Current version %1 <br/>").arg(version));
+
+    QMessageBox::about(this, tr("About libircclient"), content);
 }

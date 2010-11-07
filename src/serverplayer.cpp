@@ -102,7 +102,8 @@ void ServerPlayer::setSocket(ClientSocket *socket){
 
 void ServerPlayer::getMessage(char *message){
     QString request = message;
-    request.chop(1);
+    if(request.endsWith("\n"))
+        request.chop(1);
 
     emit request_got(request);
 }

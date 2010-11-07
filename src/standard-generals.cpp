@@ -780,14 +780,10 @@ public:
     }
 };
 
-class LiuliViewAsSkill: public ViewAsSkill{
+class LiuliViewAsSkill: public OneCardViewAsSkill{
 public:
-    LiuliViewAsSkill():ViewAsSkill("liuli"){
+    LiuliViewAsSkill():OneCardViewAsSkill("liuli"){
 
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty();
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -798,21 +794,25 @@ public:
         return ClientInstance->card_pattern.startsWith("@@liuli");;
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;        
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return true;
+    }
 
+    virtual const Card *viewAs(CardItem *card_item) const{
         if(!ClientInstance->card_pattern.startsWith("@@liuli-"))
             return NULL;
 
         QString slash_source = ClientInstance->card_pattern;
         slash_source.remove("@@liuli-");
 
-        LiuliCard *card = new LiuliCard;
-        card->setSlashSource(slash_source);
-        card->addSubcards(cards);
+        LiuliCard *liuli_card = new LiuliCard;
+        liuli_card->setSlashSource(slash_source);
 
-        return card;
+        const Card *card = card_item->getCard();
+        liuli_card->addSubcard(card->getId());
+        liuli_card->setIsWeapon(Self->getWeapon() == card);
+
+        return liuli_card;
     }
 };
 

@@ -33,7 +33,7 @@ class FreeChooseDialog: public QDialog{
     Q_OBJECT
 
 public:
-    explicit FreeChooseDialog(ChooseGeneralDialog *parent);
+    explicit FreeChooseDialog(QDialog *parent);
 
 private:
     QButtonGroup *group;

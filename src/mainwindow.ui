@@ -58,6 +58,7 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_audiere"/>
+    <addaction name="actionAbout_libircclient"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuOptions"/>
@@ -214,6 +215,11 @@
    </property>
    <property name="text">
     <string>Surrender</string>
+   </property>
+  </action>
+  <action name="actionAbout_libircclient">
+   <property name="text">
+    <string>About libircclient</string>
    </property>
   </action>
  </widget>
