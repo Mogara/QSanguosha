@@ -272,14 +272,95 @@ Server::Server(QObject *parent)
     server->setParent(this);
 
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
+
+    session = NULL;
+}
+
+Server::~Server(){
+    if(session){
+        irc_disconnect(session);
+        irc_destroy_session(session);
+    }
 }
 
 bool Server::listen(){
     return server->listen();
 }
 
+static void server_connect(irc_session_t *session,
+                           const char *event,
+                           const char *origin,
+                           const char **params,
+                           unsigned int count)
+{
+    char channel[255];
+    qstrcpy(channel, Config.IrcChannel.toAscii().constData());
+
+    irc_cmd_join(session, channel, NULL);
+
+    Server *server = static_cast<Server *>(irc_get_ctx(session));
+    server->emitDetectableMessage();
+}
+
+static void dummy_callback(irc_session_t *session,
+                           irc_dcc_t id,
+                           int status,
+                           void *ctx,
+                           const char *data,
+                           unsigned int length)
+{
+
+}
+
+static void server_channel(irc_session_t *session,
+                           const char *event,
+                           const char *origin,
+                           const char **params,
+                           unsigned int count)
+{
+    const char *content = params[1];
+    if(qstrcmp(content, "whoIsServer") == 0){
+        char server_info[1024];
+        qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
+
+        irc_dcc_t dcc;
+        irc_dcc_chat(session, NULL, origin, dummy_callback, &dcc);
+        irc_cmd_msg(session, origin, server_info);
+    }
+}
+
 void Server::daemonize(){
     server->daemonize();
+
+    if(Config.AnnounceIP){
+        // winsock initialize
+        WORD wVersionRequested = MAKEWORD (1, 1);
+        WSADATA wsaData;
+
+        WSAStartup (wVersionRequested, &wsaData);
+
+        irc_callbacks_t callbacks;
+        memset(&callbacks, 0, sizeof(callbacks));
+        callbacks.event_connect = server_connect;
+        callbacks.event_channel = server_channel;
+        session = irc_create_session(&callbacks);
+
+        irc_set_ctx(session, this);
+
+        irc_option_set(session, LIBIRC_OPTION_STRIPNICKS);
+
+        char server[255], nick[255];
+
+        qstrcpy(server, Config.IrcHost.toAscii().constData());
+        qstrcpy(nick, Config.IrcNick.toAscii().constData());
+        ushort port = Config.IrcPort;
+
+        int result = irc_connect(session, server, port, NULL, nick, NULL, NULL);
+        if(result == 0){
+            IrcRunner *runner = new IrcRunner(this, session);
+            runner->start();
+        }
+    }
 }
 
 void Server::processNewConnection(ClientSocket *socket){
@@ -336,4 +417,8 @@ void Server::removeAddress(){
     if(socket){
         addresses.remove(socket->peerAddress());
     }
+}
+
+void Server::emitDetectableMessage(){
+    emit server_message(tr("Server can be detected at WAN"));
 }

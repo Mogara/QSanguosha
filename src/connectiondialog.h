@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
+#include <QButtonGroup>
+#include <QProgressBar>
 
 class Detector;
 
@@ -37,11 +39,13 @@ public:
 
 private:
     QListWidget *list;
-    QComboBox *method_combobox;
+    QButtonGroup *method_group;
     Detector *detector;
     QPushButton *detect_button;
+    QProgressBar *progress_bar;
 
 private slots:
+    void onIrcServerConnected();
     void startDetection();
     void stopDetection();
     void chooseAddress(QListWidgetItem *item);

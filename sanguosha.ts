@@ -479,12 +479,12 @@
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="60"/>
+        <location filename="src/connectiondialog.cpp" line="62"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="60"/>
+        <location filename="src/connectiondialog.cpp" line="62"/>
         <source>The user name can not be empty!</source>
         <translation>用户名不能为空!</translation>
     </message>
@@ -515,34 +515,34 @@
 <context>
     <name>DetectorDialog</name>
     <message>
-        <location filename="src/connectiondialog.cpp" line="132"/>
+        <location filename="src/connectiondialog.cpp" line="134"/>
         <source>Detect available server&apos;s addresses</source>
         <translation>探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="135"/>
+        <location filename="src/connectiondialog.cpp" line="136"/>
         <source>LAN detect</source>
         <translation>局域网探测</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="136"/>
+        <location filename="src/connectiondialog.cpp" line="137"/>
         <source>WAN detect</source>
         <translation>广域网探测</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="137"/>
-        <source>Battle platform detect</source>
-        <translation>对战平台探测</translation>
-    </message>
-    <message>
-        <location filename="src/connectiondialog.cpp" line="139"/>
+        <location filename="src/connectiondialog.cpp" line="145"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="143"/>
+        <location filename="src/connectiondialog.cpp" line="149"/>
         <source>Detect type:</source>
         <translation>探测类型:</translation>
+    </message>
+    <message>
+        <location filename="src/connectiondialog.cpp" line="161"/>
+        <source>Double click the item can copy the address to clipboard</source>
+        <translation>双击条目以复制地址到剪贴板</translation>
     </message>
 </context>
 <context>
@@ -2169,15 +2169,20 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="287"/>
+        <location filename="src/server.cpp" line="371"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="327"/>
+        <location filename="src/server.cpp" line="411"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="423"/>
+        <source>Server can be detected at WAN</source>
+        <translation>服务器已可在广域网上被探测</translation>
     </message>
 </context>
 <context>
@@ -2223,17 +2228,17 @@
         <translation>双将禁配表 ...</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="165"/>
+        <location filename="src/server.cpp" line="160"/>
         <source>Annouce my IP in WAN</source>
         <translation>在广域网上公布我的 IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="172"/>
+        <location filename="src/server.cpp" line="173"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="178"/>
+        <location filename="src/server.cpp" line="179"/>
         <source>Stupid</source>
         <translation>愚蠢</translation>
     </message>
@@ -2263,27 +2268,27 @@
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="179"/>
+        <location filename="src/server.cpp" line="180"/>
         <source>Normal</source>
         <translation>一般</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="180"/>
+        <location filename="src/server.cpp" line="181"/>
         <source>Smart</source>
         <translation>聪明</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="163"/>
+        <location filename="src/server.cpp" line="167"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="206"/>
+        <location filename="src/server.cpp" line="207"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="207"/>
+        <location filename="src/server.cpp" line="208"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -2324,13 +2329,13 @@
         <translation>不能载入字体文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/settings.cpp" line="81"/>
+        <location filename="src/settings.cpp" line="82"/>
         <source>Sanguosha-fans</source>
         <oldsource>Sanguosha-lover</oldsource>
         <translation>三国杀fans</translation>
     </message>
     <message>
-        <location filename="src/settings.cpp" line="82"/>
+        <location filename="src/settings.cpp" line="83"/>
         <source>%1&apos;s server</source>
         <translation>%1的服务器</translation>
     </message>

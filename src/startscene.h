@@ -10,7 +10,8 @@
 #include <QTextEdit>
 
 class StartScene: public QGraphicsScene{
-Q_OBJECT
+    Q_OBJECT
+
 public:
     StartScene();
     void addButton(QAction *action);

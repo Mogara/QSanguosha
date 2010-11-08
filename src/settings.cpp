@@ -56,7 +56,7 @@ void Settings::init(){
 #ifndef QT_NO_DEBUG
     default_host = "localhost";
 #else
-    default_host = "irc.freenode.net"
+    default_host = "irc.freenode.net";
 #endif
 
     IrcHost = value("IrcHost", default_host).toString();

@@ -55,7 +55,8 @@ SOURCES += src/main.cpp \
     src/recorder.cpp \
     src/scenario.cpp \
     src/guandu-scenario.cpp \
-    src/detector.cpp
+    src/detector.cpp \
+    src/clientstruct.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -105,7 +106,8 @@ HEADERS += src/mainwindow.h \
     src/recorder.h \
     src/scenario.h \
     src/guandu-scenario.h \
-    src/detector.h
+    src/detector.h \
+    src/clientstruct.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -123,7 +125,7 @@ win32{
 }
 
 unix {
-    LIBS += -laudiere
+    LIBS += -laudiere -lircclient
 }
 
 TRANSLATIONS += sanguosha.ts

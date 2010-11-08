@@ -30,6 +30,7 @@ public:
     AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
     QStringList getKingdoms() const;
+    QString getSetupString() const;
 
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);

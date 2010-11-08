@@ -5,24 +5,11 @@
 #include "card.h"
 #include "skill.h"
 #include "socket.h"
+#include "clientstruct.h"
 
 class NullificationDialog;
 class Recorder;
 class Replayer;
-
-struct ServerInfoStruct{
-    bool parse(const QString &str);
-
-    QString Name;
-    int PlayerCount;
-    int OperationTimeout;
-    QString Scenario;
-    QMap<QString, bool> Extensions;
-    bool FreeChoose;
-    bool Enable2ndGeneral;
-};
-
-extern ServerInfoStruct ServerInfo;
 
 class Client : public QObject
 {

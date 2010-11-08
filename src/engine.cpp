@@ -194,6 +194,32 @@ QStringList Engine::getKingdoms() const{
     return kingdoms;
 }
 
+QString Engine::getSetupString() const{
+    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
+    QString flags;
+    if(Config.FreeChoose)
+        flags.append("F");
+    if(Config.Enable2ndGeneral)
+        flags.append("S");
+
+    int player_count;
+    if(Config.Scenario.isEmpty())
+        player_count = Config.PlayerCount;
+    else
+        player_count = getScenario(Config.Scenario)->getPlayerCount();
+
+    QString server_name = Config.ServerName.toUtf8().toBase64();
+    QStringList setup_items;
+    setup_items << server_name
+            << QString::number(player_count)
+            << QString::number(timeout)
+            << Sanguosha->getBanPackages().join("+")
+            << Config.Scenario
+            << flags;
+
+    return setup_items.join(":");
+}
+
 int Engine::getCardCount() const{
     return cards.length();
 }

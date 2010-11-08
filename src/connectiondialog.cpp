@@ -6,6 +6,8 @@
 
 #include <QMessageBox>
 #include <QTimer>
+#include <QRadioButton>
+#include <QClipboard>
 
 static const int ShrinkWidth = 230;
 static const int ExpandWidth = 744;
@@ -131,46 +133,79 @@ DetectorDialog::DetectorDialog(QDialog *parent)
 {
     setWindowTitle(tr("Detect available server's addresses"));
 
-    method_combobox = new QComboBox;
-    method_combobox->addItem(tr("LAN detect"));
-    method_combobox->addItem(tr("WAN detect"));
-    method_combobox->addItem(tr("Battle platform detect"));
+    QRadioButton *lan_button = new QRadioButton(tr("LAN detect"));
+    QRadioButton *wan_button = new QRadioButton(tr("WAN detect"));
+
+    method_group = new QButtonGroup;
+    method_group->addButton(lan_button, 0);
+    method_group->addButton(wan_button, 1);
+
+    lan_button->setChecked(true);
 
     detect_button = new QPushButton(tr("Refresh"));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(new QLabel(tr("Detect type:")));
-    hlayout->addWidget(method_combobox);
+    hlayout->addWidget(lan_button);
+    hlayout->addWidget(wan_button);
     hlayout->addWidget(detect_button);
 
+    progress_bar = new QProgressBar;
+    progress_bar->setMinimum(0);
+    progress_bar->setMaximum(0);
+    progress_bar->hide();
+
     list = new QListWidget;
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(list);
+    QVBoxLayout *layout = new QVBoxLayout;    
+    layout->addWidget(new QLabel(tr("Double click the item can copy the address to clipboard")));
+    layout->addWidget(list);    
     layout->addLayout(hlayout);
+    layout->addWidget(progress_bar);
 
     setLayout(layout);
 
-    detector = new UdpDetector;
+    detector = NULL;
     connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
-    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
-
     connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
-
-    detect_button->click();
 }
 
 void DetectorDialog::startDetection(){
-    detect_button->setEnabled(false);
     list->clear();
-    detector->detect();
 
-    QTimer::singleShot(2000, this, SLOT(stopDetection()));
+    if(method_group->checkedId() == 0){
+        detector = new UdpDetector;
+        QTimer::singleShot(2000, this, SLOT(stopDetection()));
+    }else{
+        if(detector){
+            detector->detect();
+            IrcDetector::GetInstance()->clearMap();
+            return;
+        }
+
+        IrcDetector *irc_detector = IrcDetector::GetInstance();
+
+        progress_bar->show();
+        detector = irc_detector;
+
+        connect(irc_detector, SIGNAL(server_connected()), this, SLOT(onIrcServerConnected()));
+    }
+
+    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
+
+    detect_button->setEnabled(false);
+    detector->detect();    
+}
+
+void DetectorDialog::onIrcServerConnected(){
+    progress_bar->hide();
+    detect_button->setEnabled(true);
 }
 
 void DetectorDialog::stopDetection(){
     detect_button->setEnabled(true);
     detector->stop();
+    detector = NULL;
 }
 
 void DetectorDialog::addServerAddress(const QString &server_name, const QString &address){
@@ -185,6 +220,8 @@ void DetectorDialog::chooseAddress(QListWidgetItem *item){
     QString address = item->data(Qt::UserRole).toString();
 
     accept();
+
+    QApplication::clipboard()->setText(address);
 
     emit address_chosen(address);
 }

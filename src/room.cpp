@@ -956,25 +956,8 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
     player->setScreenName(screen_name);
     player->setProperty("avatar", avatar);
 
-    //player->invoke("checkVersion", Sanguosha->getVersion());
-
-    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
-    QString flags;
-    if(Config.FreeChoose)
-        flags.append("F");
-    if(Config.Enable2ndGeneral)
-        flags.append("S");
-
-    QString server_name = Config.ServerName.toUtf8().toBase64();
-    QStringList setup_items;
-    setup_items << server_name
-            << QString::number(player_count)
-            << QString::number(timeout)
-            << Sanguosha->getBanPackages().join("+")
-            << Config.Scenario
-            << flags;
-
-    player->invoke("setup", setup_items.join(":"));
+    player->invoke("checkVersion", Sanguosha->getVersion());
+    player->invoke("setup", Sanguosha->getSetupString());
 
     // introduce the new joined player to existing players except himself
     player->sendProperty("objectName");

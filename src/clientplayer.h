@@ -2,17 +2,10 @@
 #define CLIENTPLAYER_H
 
 #include "player.h"
+#include "clientstruct.h"
 
 class ClientPlayer;
 class Client;
-
-struct CardMoveStructForClient{
-    int card_id;
-    ClientPlayer *from, *to;
-    Player::Place from_place, to_place;
-
-    bool parse(const QString &str);
-};
 
 class ClientPlayer : public Player
 {

@@ -4,6 +4,7 @@
 class Room;
 
 #include "socket.h"
+#include "detector.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -44,13 +45,17 @@ class Server : public QObject{
 
 public:
     explicit Server(QObject *parent);
+    ~Server();
+
     bool listen();
     void daemonize();
+    void emitDetectableMessage();
 
 private:
     ServerSocket *server;
     QList<Room*> rooms;
     QSet<QString> addresses;
+    irc_session_t *session;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
