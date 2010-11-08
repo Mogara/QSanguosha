@@ -28,6 +28,7 @@
      <string>Game</string>
     </property>
     <addaction name="actionStart_Game"/>
+    <addaction name="actionStart_Server"/>
     <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
@@ -36,9 +37,9 @@
      <string>Tools</string>
     </property>
     <addaction name="actionConfigure"/>
-    <addaction name="actionStart_Server"/>
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
+    <addaction name="actionWAN_IP_detect"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Hide_Menu"/>
     <addaction name="actionFullscreen"/>
@@ -220,6 +221,11 @@
   <action name="actionAbout_libircclient">
    <property name="text">
     <string>About libircclient</string>
+   </property>
+  </action>
+  <action name="actionWAN_IP_detect">
+   <property name="text">
+    <string>WAN IP detect ...</string>
    </property>
   </action>
  </widget>

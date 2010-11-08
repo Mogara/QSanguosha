@@ -4,6 +4,7 @@
 #include "player.h"
 
 #include <QMap>
+#include <QWidget>
 
 struct ServerInfoStruct{
     bool parse(const QString &str);
@@ -18,6 +19,13 @@ struct ServerInfoStruct{
 };
 
 extern ServerInfoStruct ServerInfo;
+
+class ServerInfoWidget: public QWidget{
+    Q_OBJECT
+
+public:
+    ServerInfoWidget(const ServerInfoStruct &info, const QString &address);
+};
 
 struct CardMoveStructForClient{
     int card_id;

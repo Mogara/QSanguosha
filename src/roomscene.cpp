@@ -25,7 +25,6 @@ extern audiere::AudioDevicePtr Device;
 #include <QLineEdit>
 #include <QInputDialog>
 #include <QLabel>
-#include <QFormLayout>
 #include <QListWidget>
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -2132,48 +2131,9 @@ void RoomScene::showServerInformation()
     QDialog *dialog = new QDialog(main_window);
     dialog->setWindowTitle(tr("Server information"));
 
-    QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Server name"), new QLabel(ServerInfo.Name));
-    layout->addRow(tr("Address"), new QLabel(Config.HostAddress));
-    layout->addRow(tr("Port"), new QLabel(QString::number(Config.ServerPort)));
-    layout->addRow(tr("Player count"), new QLabel(QString::number(ServerInfo.PlayerCount)));
-    layout->addRow(tr("2nd general mode"), new QLabel(ServerInfo.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
-    layout->addRow(tr("Free choose"), new QLabel(ServerInfo.FreeChoose ? tr("Enabled") : tr("Disabled")));
-
-    QString scenario_label;
-    if(Config.Scenario.isEmpty())
-        scenario_label = tr("Disabled");
-    else
-        scenario_label = Sanguosha->translate(Config.Scenario);
-    layout->addRow(tr("Scenario mode"), new QLabel(scenario_label));
-
-    QLabel *time_limit = new QLabel;
-    if(ServerInfo.OperationTimeout == 0)
-        time_limit->setText(tr("No limit"));
-    else
-        time_limit->setText(tr("%1 seconds").arg(ServerInfo.OperationTimeout));
-    layout->addRow(tr("Operation time"), time_limit);
-
-    QListWidget *list_widget = new QListWidget;
-    QIcon enabled_icon(":/enabled.png");
-    QIcon disabled_icon(":/disabled.png");
-
-    QMap<QString, bool> extensions = ServerInfo.Extensions;
-    QMapIterator<QString, bool> itor(extensions);
-    while(itor.hasNext()){
-        itor.next();
-
-        QString package_name = Sanguosha->translate(itor.key());
-        bool checked = itor.value();
-
-        QCheckBox *checkbox = new QCheckBox(package_name);
-        checkbox->setChecked(checked);
-
-        new QListWidgetItem(checked ? enabled_icon : disabled_icon, package_name, list_widget);
-    }
-
-    layout->addRow(tr("Extension packages"), list_widget);
-
+    QHBoxLayout *layout = new QHBoxLayout;
+    QWidget *widget = new ServerInfoWidget(ServerInfo, Config.HostAddress);
+    layout->addWidget(widget);
     dialog->setLayout(layout);
 
     dialog->show();

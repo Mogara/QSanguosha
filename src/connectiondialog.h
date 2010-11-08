@@ -5,9 +5,8 @@
 #include <QListWidget>
 #include <QComboBox>
 #include <QButtonGroup>
-#include <QProgressBar>
 
-class Detector;
+class UdpDetector;
 
 namespace Ui {
     class ConnectionDialog;
@@ -31,21 +30,18 @@ private slots:
     void on_connectButton_clicked();
 };
 
-class DetectorDialog : public QDialog{
+class UdpDetectorDialog : public QDialog{
     Q_OBJECT
 
 public:
-    DetectorDialog(QDialog *parent);
+    UdpDetectorDialog(QDialog *parent);
 
 private:
     QListWidget *list;
-    QButtonGroup *method_group;
-    Detector *detector;
+    UdpDetector *detector;
     QPushButton *detect_button;
-    QProgressBar *progress_bar;
 
 private slots:
-    void onIrcServerConnected();
     void startDetection();
     void stopDetection();
     void chooseAddress(QListWidgetItem *item);

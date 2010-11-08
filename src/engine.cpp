@@ -43,8 +43,7 @@ extern "C" {
     Scenario *NewGuanduScenario();
 }
 
-Engine::Engine(QObject *parent)
-    :QObject(parent)
+Engine::Engine()
 {
     addPackage(NewStandard());
     addPackage(NewWind());

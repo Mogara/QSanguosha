@@ -3,6 +3,7 @@
 #include "room.h"
 #include "engine.h"
 #include "nativesocket.h"
+#include "ircdetector.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -325,7 +326,8 @@ static void server_channel(irc_session_t *session,
 
         irc_dcc_t dcc;
         irc_dcc_chat(session, NULL, origin, dummy_callback, &dcc);
-        irc_cmd_msg(session, origin, server_info);
+        //irc_cmd_msg(session, origin, server_info);
+        irc_cmd_notice(session, origin, server_info);
     }
 }
 

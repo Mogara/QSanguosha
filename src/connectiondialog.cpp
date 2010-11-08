@@ -7,7 +7,6 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QRadioButton>
-#include <QClipboard>
 
 static const int ShrinkWidth = 230;
 static const int ExpandWidth = 744;
@@ -120,95 +119,57 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
 
 void ConnectionDialog::on_detectButton_clicked()
 {
-    DetectorDialog *detector_dialog = new DetectorDialog(this);
-    connect(detector_dialog, SIGNAL(address_chosen(QString)), ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+    UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
+    connect(detector_dialog, SIGNAL(address_chosen(QString)),
+            ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
 
     detector_dialog->exec();
 }
 
 // -----------------------------------
 
-DetectorDialog::DetectorDialog(QDialog *parent)
+UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
     :QDialog(parent)
 {
-    setWindowTitle(tr("Detect available server's addresses"));
-
-    QRadioButton *lan_button = new QRadioButton(tr("LAN detect"));
-    QRadioButton *wan_button = new QRadioButton(tr("WAN detect"));
-
-    method_group = new QButtonGroup;
-    method_group->addButton(lan_button, 0);
-    method_group->addButton(wan_button, 1);
-
-    lan_button->setChecked(true);
-
+    setWindowTitle(tr("Detect available server's addresses at LAN"));
     detect_button = new QPushButton(tr("Refresh"));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
-    hlayout->addWidget(new QLabel(tr("Detect type:")));
-    hlayout->addWidget(lan_button);
-    hlayout->addWidget(wan_button);
     hlayout->addWidget(detect_button);
 
-    progress_bar = new QProgressBar;
-    progress_bar->setMinimum(0);
-    progress_bar->setMaximum(0);
-    progress_bar->hide();
-
     list = new QListWidget;
-    QVBoxLayout *layout = new QVBoxLayout;    
-    layout->addWidget(new QLabel(tr("Double click the item can copy the address to clipboard")));
+    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(list);    
     layout->addLayout(hlayout);
-    layout->addWidget(progress_bar);
 
     setLayout(layout);
 
     detector = NULL;
     connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
     connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
+
+    detect_button->click();
 }
 
-void DetectorDialog::startDetection(){
+void UdpDetectorDialog::startDetection(){
     list->clear();
-
-    if(method_group->checkedId() == 0){
-        detector = new UdpDetector;
-        QTimer::singleShot(2000, this, SLOT(stopDetection()));
-    }else{
-        if(detector){
-            detector->detect();
-            IrcDetector::GetInstance()->clearMap();
-            return;
-        }
-
-        IrcDetector *irc_detector = IrcDetector::GetInstance();
-
-        progress_bar->show();
-        detector = irc_detector;
-
-        connect(irc_detector, SIGNAL(server_connected()), this, SLOT(onIrcServerConnected()));
-    }
-
-    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
-
     detect_button->setEnabled(false);
+
+    detector = new UdpDetector;
+    connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
+    QTimer::singleShot(2000, this, SLOT(stopDetection()));
+
     detector->detect();    
 }
 
-void DetectorDialog::onIrcServerConnected(){
-    progress_bar->hide();
-    detect_button->setEnabled(true);
-}
-
-void DetectorDialog::stopDetection(){
+void UdpDetectorDialog::stopDetection(){
     detect_button->setEnabled(true);
     detector->stop();
     detector = NULL;
 }
 
-void DetectorDialog::addServerAddress(const QString &server_name, const QString &address){
+void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address){
     QString label = QString("%1 [%2]").arg(server_name).arg(address);
     QListWidgetItem *item = new QListWidgetItem(label);
     item->setData(Qt::UserRole, address);
@@ -216,12 +177,9 @@ void DetectorDialog::addServerAddress(const QString &server_name, const QString 
     list->addItem(item);
 }
 
-void DetectorDialog::chooseAddress(QListWidgetItem *item){
-    QString address = item->data(Qt::UserRole).toString();
-
+void UdpDetectorDialog::chooseAddress(QListWidgetItem *item){
     accept();
 
-    QApplication::clipboard()->setText(address);
-
+    QString address = item->data(Qt::UserRole).toString();
     emit address_chosen(address);
 }

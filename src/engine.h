@@ -19,7 +19,7 @@ class Engine: public QObject
     Q_OBJECT
 
 public:
-    explicit Engine(QObject *parent);
+    explicit Engine();
 
     QString translate(const QString &to_translate) const;
     void addPackage(Package *package);

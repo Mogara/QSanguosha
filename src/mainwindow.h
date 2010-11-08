@@ -32,6 +32,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionWAN_IP_detect_triggered();
     void on_actionAbout_libircclient_triggered();
     void on_actionShow_Hide_Menu_triggered();
     void on_actionFullscreen_triggered();

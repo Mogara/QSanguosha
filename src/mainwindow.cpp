@@ -9,7 +9,7 @@
 #include "audiere.h"
 #include "libircclient.h"
 
-audiere::AudioDevicePtr Device;
+extern audiere::AudioDevicePtr Device;
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -42,15 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-#ifdef Q_OS_WIN32
-    Device = audiere::OpenDevice("winmm");
-#else
-    Device = audiere::OpenDevice();
-#endif
-
-    Sanguosha = new Engine(this);    
-    Config.init();
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
@@ -87,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
     restoreFromConfig();
 
     addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);
+    addAction(ui->actionFullscreen);   
 }
 
 void MainWindow::restoreFromConfig(){
@@ -329,4 +320,11 @@ void MainWindow::on_actionAbout_libircclient_triggered()
     content.append(tr("Current version %1 <br/>").arg(version));
 
     QMessageBox::about(this, tr("About libircclient"), content);
+}
+
+void MainWindow::on_actionWAN_IP_detect_triggered()
+{
+    QStringList args;
+    args << "-detect";
+    QProcess::startDetached(QApplication::applicationFilePath(), args);
 }

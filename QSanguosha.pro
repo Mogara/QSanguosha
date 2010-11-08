@@ -56,7 +56,8 @@ SOURCES += src/main.cpp \
     src/scenario.cpp \
     src/guandu-scenario.cpp \
     src/detector.cpp \
-    src/clientstruct.cpp
+    src/clientstruct.cpp \
+    src/ircdetector.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -107,7 +108,8 @@ HEADERS += src/mainwindow.h \
     src/scenario.h \
     src/guandu-scenario.h \
     src/detector.h \
-    src/clientstruct.h
+    src/clientstruct.h \
+    src/ircdetector.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -125,7 +127,7 @@ win32{
 }
 
 unix {
-    LIBS += -laudiere -lircclient
+    LIBS += `audire-config --libs` -lircclient
 }
 
 TRANSLATIONS += sanguosha.ts

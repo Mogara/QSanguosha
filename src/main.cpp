@@ -4,6 +4,11 @@
 #include <QDir>
 
 #include "mainwindow.h"
+#include "ircdetector.h"
+#include "settings.h"
+#include "audiere.h"
+
+audiere::AudioDevicePtr Device;
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +25,23 @@ int main(int argc, char *argv[])
     a.installTranslator(&qt_translator);
     a.installTranslator(&translator);
 
-    MainWindow w;
-    w.show();
+#ifdef Q_OS_WIN32
+    Device = audiere::OpenDevice("winmm");
+#else
+    Device = audiere::OpenDevice();
+#endif
+
+    Sanguosha = new Engine;
+    Config.init();
+
+    QWidget *widget;
+    if(a.arguments().contains("-detect"))
+        widget = new IrcDetectorDialog;
+    else
+        widget = new MainWindow;
+
+    Sanguosha->setParent(widget);
+    widget->show();
+
     return a.exec();
 }

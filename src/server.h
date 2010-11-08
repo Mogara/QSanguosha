@@ -5,6 +5,7 @@ class Room;
 
 #include "socket.h"
 #include "detector.h"
+#include "libircclient.h"
 
 #include <QDialog>
 #include <QLineEdit>
