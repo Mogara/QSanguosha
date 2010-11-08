@@ -281,6 +281,8 @@ Server::~Server(){
     if(session){
         irc_disconnect(session);
         irc_destroy_session(session);
+
+        session = NULL;
     }
 }
 

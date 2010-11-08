@@ -1174,22 +1174,32 @@
 <context>
     <name>IrcDetectorDialog</name>
     <message>
-        <location filename="src/ircdetector.cpp" line="159"/>
+        <location filename="src/ircdetector.cpp" line="166"/>
         <source>Detect available server&apos;s addresses at WAN</source>
         <translation>在广域网上探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="172"/>
+        <location filename="src/ircdetector.cpp" line="170"/>
+        <source>Please click the start button to detect</source>
+        <translation>请点击开始按钮以进行探测</translation>
+    </message>
+    <message>
+        <location filename="src/ircdetector.cpp" line="179"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="193"/>
+        <location filename="src/ircdetector.cpp" line="200"/>
         <source>There will be 10+ seconds when connect to the remote host, please wait</source>
         <translation>大约有10多秒的连接时间，请稍等</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="213"/>
+        <location filename="src/ircdetector.cpp" line="215"/>
+        <source>Server connected, double click the item can copy the address to clipboard</source>
+        <translation>已连接，请双击以复制地址到剪贴板</translation>
+    </message>
+    <message>
+        <location filename="src/ircdetector.cpp" line="223"/>
         <source>Address %1 is copied to clipboard now</source>
         <translation>地址 %1 已被复制到剪贴板</translation>
     </message>
@@ -2096,18 +2106,18 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="373"/>
+        <location filename="src/server.cpp" line="375"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="413"/>
+        <location filename="src/server.cpp" line="415"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="425"/>
+        <location filename="src/server.cpp" line="427"/>
         <source>Server can be detected at WAN</source>
         <translation>服务器已可在广域网上被探测</translation>
     </message>

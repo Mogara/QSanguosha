@@ -16,6 +16,8 @@ class IrcDetector: public Detector{
 
 public:
     IrcDetector();
+    ~IrcDetector();
+
     virtual void detect();
     virtual void stop();
     void emitConnected();

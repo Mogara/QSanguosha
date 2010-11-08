@@ -91,6 +91,10 @@ IrcDetector::IrcDetector(){
     irc_option_set(session, LIBIRC_OPTION_STRIPNICKS);
 }
 
+IrcDetector::~IrcDetector(){
+    stop();
+}
+
 void IrcDetector::detect(){
     if(irc_is_connected(session)){
         emit server_connected();
@@ -116,7 +120,10 @@ void IrcDetector::detect(){
 }
 
 void IrcDetector::stop(){
-    irc_destroy_session(session);
+    if(session){
+        irc_destroy_session(session);
+        session = NULL;
+    }
 }
 
 void IrcDetector::setAddrMap(const char *nick, const char *addr){
@@ -160,7 +167,7 @@ IrcDetectorDialog::IrcDetectorDialog(){
 
     detector = NULL;
 
-    info_label = new QLabel;
+    info_label = new QLabel(tr("Please click the start button to detect"));
 
     list = new QListWidget;
 
@@ -194,7 +201,9 @@ void IrcDetectorDialog::startDetection(){
     progress_bar->show();
 
     detector = new IrcDetector;
+    detector->setParent(this);
 
+    connect(this, SIGNAL(rejected()), detector, SLOT(stop()));
     connect(detector, SIGNAL(server_connected()), this, SLOT(onServerConnected()));
     connect(detector, SIGNAL(detected(QString)), this, SLOT(addNick(QString)));
 
@@ -202,7 +211,8 @@ void IrcDetectorDialog::startDetection(){
 }
 
 void IrcDetectorDialog::onServerConnected(){
-    info_label->setText("Server connected, double click the item can copy the address to clipboard");;
+    progress_bar->hide();
+    info_label->setText(tr("Server connected, double click the item can copy the address to clipboard"));
 }
 
 void IrcDetectorDialog::chooseAddress(QListWidgetItem *item){   
