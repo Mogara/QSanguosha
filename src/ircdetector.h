@@ -11,6 +11,15 @@
 #include <QPushButton>
 #include <QLabel>
 
+struct ServerFullInfo: public ServerInfoStruct{
+    ServerFullInfo():lack(0){
+
+    }
+
+    QString address;
+    int lack;
+};
+
 class IrcDetector: public Detector{
     Q_OBJECT
 
@@ -20,25 +29,26 @@ public:
 
     virtual void detect();
     virtual void stop();
+
     void emitConnected();
+    void emitParted(const char *nick);
+    void askPerson(int count);
 
     void setAddrMap(const char *nick, const char *addr);
     void setInfoMap(const char *nick, const char *server_info);
-
-    QString getAddr(const QString &nick) const;
-    bool getInfo(const QString &nick, ServerInfoStruct &info) const;
+    const ServerFullInfo &getInfo(const QString &nick);
 
     void clearMap();
 
 private:
     irc_session_t *session;
-    QMap<QString, QString> nick2addr;
-    QMap<QString, ServerInfoStruct> nick2info;
+    QMap<QString, ServerFullInfo> nick2info;
 
 signals:
     void server_connected();
     void detected(const QString &nick);
     void parted(const QString &nick);
+    void person_asked(int);
 };
 
 class IrcRunner: public QThread{
@@ -66,12 +76,15 @@ private:
     QListWidget *list;
     QProgressBar *progress_bar;
     QPushButton *detect_button;
+    ServerInfoWidget *info_widget;
 
 private slots:
     void onServerConnected();
     void startDetection();
     void addNick(const QString &nick);
-    void chooseAddress(QListWidgetItem *item);
+    void removeNick(const QString &nick);
+    void copyAddress(QListWidgetItem *item);
+    void updateServerInfo();
 };
 
 #endif // WANDETECTOR_H

@@ -57,7 +57,8 @@ SOURCES += src/main.cpp \
     src/guandu-scenario.cpp \
     src/detector.cpp \
     src/clientstruct.cpp \
-    src/ircdetector.cpp
+    src/ircdetector.cpp \
+    src/banpairdialog.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -109,7 +110,8 @@ HEADERS += src/mainwindow.h \
     src/guandu-scenario.h \
     src/detector.h \
     src/clientstruct.h \
-    src/ircdetector.h
+    src/ircdetector.h \
+    src/banpairdialog.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

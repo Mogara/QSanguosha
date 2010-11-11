@@ -12,6 +12,7 @@
 #include <QTimerEvent>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QCheckBox>
 
 static QSize GeneralSize(200 * 0.8, 290 * 0.8);
 
@@ -105,7 +106,9 @@ void ChooseGeneralDialog::start(){
 
 void ChooseGeneralDialog::freeChoose(){
     FreeChooseDialog *dialog = new FreeChooseDialog(this);
+
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, SIGNAL(general_chosen(QString)), ClientInstance, SLOT(chooseItem(QString)));
 
     free_chooser = dialog;
 
@@ -134,13 +137,16 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
         progress_bar->setValue(new_value);
 }
 
-FreeChooseDialog::FreeChooseDialog(QDialog *parent)
-    :QDialog(parent)
+// -------------------------------------
+
+FreeChooseDialog::FreeChooseDialog(QDialog *parent, bool pair_choose)
+    :QDialog(parent), pair_choose(pair_choose)
 {
     setWindowTitle(tr("Free choose generals"));
 
     QHBoxLayout *box_layout = new QHBoxLayout;
     group = new QButtonGroup(this);
+    group->setExclusive(! pair_choose);
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
     QMap<QString, QList<const General*> > map;
@@ -176,15 +182,34 @@ FreeChooseDialog::FreeChooseDialog(QDialog *parent)
 
     setLayout(layout);
 
-    group->buttons().first()->click();
+    if(!pair_choose)
+        group->buttons().first()->click();
 }
 
 void FreeChooseDialog::chooseGeneral(){
-    QAbstractButton *button = group->checkedButton();
-    if(button){
-        ClientInstance->chooseItem(button->objectName());
-        accept();
+    if(pair_choose){
+        QList<QAbstractButton *> buttons = group->buttons();
+        QString first, second;
+        foreach(QAbstractButton *button, buttons){
+            if(!button->isChecked())
+                continue;
+
+            if(first.isEmpty())
+                first = button->objectName();
+            else{
+                second = button->objectName();
+                emit pair_chosen(first, second);
+                break;
+            }
+        }
+    }else{
+        QAbstractButton *button = group->checkedButton();
+        if(button){
+            emit general_chosen(button->objectName());
+        }
     }
+
+    accept();
 }
 
 QGroupBox *FreeChooseDialog::createGroupBox(const QList<const General *> &generals){
@@ -202,7 +227,11 @@ QGroupBox *FreeChooseDialog::createGroupBox(const QList<const General *> &genera
                        .arg(Sanguosha->translate(general_name))
                        .arg(Sanguosha->translate(general->getPackage()));
 
-        QRadioButton *button = new QRadioButton(text);
+        QAbstractButton *button;
+        if(pair_choose)
+            button = new QCheckBox(text);
+        else
+            button = new QRadioButton(text);
         button->setObjectName(general_name);
         button->setToolTip(general->getSkillDescription());
         if(general->isLord())
@@ -215,5 +244,29 @@ QGroupBox *FreeChooseDialog::createGroupBox(const QList<const General *> &genera
     layout->addStretch();
     box->setLayout(layout);
 
+    if(pair_choose){
+        connect(group, SIGNAL(buttonClicked(QAbstractButton*)),
+                this, SLOT(uncheckExtraButton(QAbstractButton*)));
+    }
+
     return box;
+}
+
+void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button){
+    QAbstractButton *first = NULL;
+    QList<QAbstractButton *> buttons = group->buttons();
+    foreach(QAbstractButton *button, buttons){
+        if(!button->isChecked())
+            continue;
+
+        if(button == click_button)
+            continue;
+
+        if(first == NULL)
+            first = button;
+        else{
+            first->setChecked(false);
+            break;
+        }
+    }
 }

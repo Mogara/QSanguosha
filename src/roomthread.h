@@ -169,6 +169,7 @@ private:
     jmp_buf env;
 
     QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
+    QMap<const TriggerSkill *, int> refcount;
 };
 
 #endif // ROOMTHREAD_H

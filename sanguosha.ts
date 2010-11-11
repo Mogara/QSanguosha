@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="zh_CN">
 <context>
+    <name>BanPairDialog</name>
+    <message>
+        <location filename="src/banpairdialog.cpp" line="58"/>
+        <source>Ban pair table</source>
+        <translation>双将禁配表</translation>
+    </message>
+    <message>
+        <location filename="src/banpairdialog.cpp" line="69"/>
+        <source>Add</source>
+        <translation>添加</translation>
+    </message>
+    <message>
+        <location filename="src/banpairdialog.cpp" line="70"/>
+        <source>Remove</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="src/banpairdialog.cpp" line="71"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+</context>
+<context>
     <name>Card</name>
     <message>
         <location filename="src/card.cpp" line="155"/>
@@ -835,17 +858,17 @@
 <context>
     <name>FreeChooseDialog</name>
     <message>
-        <location filename="src/choosegeneraldialog.cpp" line="140"/>
+        <location filename="src/choosegeneraldialog.cpp" line="142"/>
         <source>Free choose generals</source>
         <translation>自由选择武将</translation>
     </message>
     <message>
-        <location filename="src/choosegeneraldialog.cpp" line="162"/>
+        <location filename="src/choosegeneraldialog.cpp" line="164"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/choosegeneraldialog.cpp" line="165"/>
+        <location filename="src/choosegeneraldialog.cpp" line="167"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -1174,32 +1197,32 @@
 <context>
     <name>IrcDetectorDialog</name>
     <message>
-        <location filename="src/ircdetector.cpp" line="166"/>
+        <location filename="src/ircdetector.cpp" line="185"/>
         <source>Detect available server&apos;s addresses at WAN</source>
         <translation>在广域网上探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="170"/>
+        <location filename="src/ircdetector.cpp" line="189"/>
         <source>Please click the start button to detect</source>
         <translation>请点击开始按钮以进行探测</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="179"/>
+        <location filename="src/ircdetector.cpp" line="198"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="200"/>
+        <location filename="src/ircdetector.cpp" line="219"/>
         <source>There will be 10+ seconds when connect to the remote host, please wait</source>
         <translation>大约有10多秒的连接时间，请稍等</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="215"/>
+        <location filename="src/ircdetector.cpp" line="234"/>
         <source>Server connected, double click the item can copy the address to clipboard</source>
         <translation>已连接，请双击以复制地址到剪贴板</translation>
     </message>
     <message>
-        <location filename="src/ircdetector.cpp" line="223"/>
+        <location filename="src/ircdetector.cpp" line="242"/>
         <source>Address %1 is copied to clipboard now</source>
         <translation>地址 %1 已被复制到剪贴板</translation>
     </message>
@@ -2106,18 +2129,18 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="375"/>
+        <location filename="src/server.cpp" line="378"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="415"/>
+        <location filename="src/server.cpp" line="418"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="427"/>
+        <location filename="src/server.cpp" line="430"/>
         <source>Server can be detected at WAN</source>
         <translation>服务器已可在广域网上被探测</translation>
     </message>
@@ -2125,122 +2148,122 @@
 <context>
     <name>ServerDialog</name>
     <message>
-        <location filename="src/server.cpp" line="30"/>
+        <location filename="src/server.cpp" line="31"/>
         <source>Start server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="54"/>
+        <location filename="src/server.cpp" line="55"/>
         <source> persons</source>
         <translation> 人</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="60"/>
+        <location filename="src/server.cpp" line="61"/>
         <source> seconds</source>
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="62"/>
+        <location filename="src/server.cpp" line="63"/>
         <source>No limit</source>
         <translation>没有限制</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="97"/>
+        <location filename="src/server.cpp" line="98"/>
         <source>Scenario mode</source>
         <translation>剧情模式</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="100"/>
+        <location filename="src/server.cpp" line="101"/>
         <source>Enable scenario mode</source>
         <translation>启用剧情模式</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="153"/>
+        <location filename="src/server.cpp" line="154"/>
         <source>Enable second general</source>
         <translation>启用双将</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="154"/>
+        <location filename="src/server.cpp" line="155"/>
         <source>Ban pairs table ...</source>
         <translation>双将禁配表 ...</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="161"/>
+        <location filename="src/server.cpp" line="164"/>
         <source>Annouce my IP in WAN</source>
         <translation>在广域网上公布我的 IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="174"/>
+        <location filename="src/server.cpp" line="177"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="180"/>
+        <location filename="src/server.cpp" line="183"/>
         <source>Stupid</source>
         <translation>愚蠢</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="140"/>
+        <location filename="src/server.cpp" line="141"/>
         <source>Advanced</source>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="144"/>
+        <location filename="src/server.cpp" line="145"/>
         <source>Free choose generals</source>
         <translation>自由选择武将</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="145"/>
+        <location filename="src/server.cpp" line="146"/>
         <source>Enable this will make the clients choose generals freely</source>
         <translation>启用这个选项将使得客户端可以自由地选择任意武将</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="149"/>
+        <location filename="src/server.cpp" line="150"/>
         <source>Forbid same IP with multiple connection</source>
         <translation>禁止同一个IP建立多个连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="126"/>
+        <location filename="src/server.cpp" line="127"/>
         <source>Server name</source>
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="181"/>
+        <location filename="src/server.cpp" line="184"/>
         <source>Normal</source>
         <translation>一般</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="182"/>
+        <location filename="src/server.cpp" line="185"/>
         <source>Smart</source>
         <translation>聪明</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="168"/>
+        <location filename="src/server.cpp" line="171"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="208"/>
+        <location filename="src/server.cpp" line="211"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="209"/>
+        <location filename="src/server.cpp" line="212"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="68"/>
+        <location filename="src/server.cpp" line="69"/>
         <source>Extension package selection</source>
         <translation>扩展包选择</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="127"/>
+        <location filename="src/server.cpp" line="128"/>
         <source>Player count</source>
         <translation>玩家人数</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="128"/>
+        <location filename="src/server.cpp" line="129"/>
         <source>Operation timeout</source>
         <translation>操作时间</translation>
     </message>

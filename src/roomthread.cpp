@@ -173,6 +173,13 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
+    int count = refcount.value(skill, 0);
+    if(count != 0){
+        refcount[skill] ++;
+        return;
+    }else
+        refcount[skill] = 1;
+
     QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
         skill_table[event] << skill;
@@ -180,6 +187,13 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
 }
 
 void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
+    int count = refcount.value(skill, 0);
+    if(count > 1){
+        refcount[skill] --;
+        return;
+    }else
+        refcount.remove(skill);
+
     QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
         skill_table[event].removeOne(skill);

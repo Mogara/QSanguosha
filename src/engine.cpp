@@ -55,7 +55,8 @@ Engine::Engine()
 
     addScenario(NewGuanduScenario());
 
-    Device->registerCallback(new StopCallback);
+    if(Device)
+        Device->registerCallback(new StopCallback);
 }
 
 QStringList Engine::getScenarioNames() const{

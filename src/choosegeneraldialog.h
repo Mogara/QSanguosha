@@ -33,15 +33,20 @@ class FreeChooseDialog: public QDialog{
     Q_OBJECT
 
 public:
-    explicit FreeChooseDialog(QDialog *parent);
+    explicit FreeChooseDialog(QDialog *parent, bool pair_choose = false);
 
 private:
     QButtonGroup *group;
-
+    bool pair_choose;
     QGroupBox *createGroupBox(const QList<const General *> &generals);
 
 private slots:
     void chooseGeneral();
+    void uncheckExtraButton(QAbstractButton *button);
+
+signals:
+    void general_chosen(const QString &name);
+    void pair_chosen(const QString &first, const QString &second);
 };
 
 #endif // CHOOSEGENERALDIALOG_H

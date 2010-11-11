@@ -20,11 +20,27 @@ struct ServerInfoStruct{
 
 extern ServerInfoStruct ServerInfo;
 
+class QLabel;
+class QListWidget;
+
 class ServerInfoWidget: public QWidget{
     Q_OBJECT
 
 public:
-    ServerInfoWidget(const ServerInfoStruct &info, const QString &address);
+    ServerInfoWidget();
+    void fill(const ServerInfoStruct &info, const QString &address);
+    void clear();
+
+private:
+    QLabel *name_label;
+    QLabel *address_label;
+    QLabel *port_label;
+    QLabel *player_count_label;
+    QLabel *two_general_label;
+    QLabel *free_choose_label;
+    QLabel *scenario_label;
+    QLabel *time_limit_label;
+    QListWidget *list_widget;
 };
 
 struct CardMoveStructForClient{

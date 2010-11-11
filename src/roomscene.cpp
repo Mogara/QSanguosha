@@ -2132,7 +2132,8 @@ void RoomScene::showServerInformation()
     dialog->setWindowTitle(tr("Server information"));
 
     QHBoxLayout *layout = new QHBoxLayout;
-    QWidget *widget = new ServerInfoWidget(ServerInfo, Config.HostAddress);
+    ServerInfoWidget *widget = new ServerInfoWidget;
+    widget->fill(ServerInfo, Config.HostAddress);
     layout->addWidget(widget);
     dialog->setLayout(layout);
 

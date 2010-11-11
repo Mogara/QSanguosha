@@ -7,8 +7,9 @@
 #include "ircdetector.h"
 #include "settings.h"
 #include "audiere.h"
+#include "banpairdialog.h"
 
-audiere::AudioDevicePtr Device;
+audiere::AudioDevicePtr Device = NULL;
 
 int main(int argc, char *argv[])
 {
@@ -25,20 +26,23 @@ int main(int argc, char *argv[])
     a.installTranslator(&qt_translator);
     a.installTranslator(&translator);
 
-#ifdef Q_OS_WIN32
-    Device = audiere::OpenDevice("winmm");
-#else
-    Device = audiere::OpenDevice();
-#endif
-
-    Sanguosha = new Engine;
     Config.init();
 
     QWidget *widget;
-    if(a.arguments().contains("-detect"))
+    if(a.arguments().contains("-detect")){
+        Sanguosha = new Engine;
         widget = new IrcDetectorDialog;
-    else
+    }else{
+#ifdef Q_OS_WIN32
+        Device = audiere::OpenDevice("winmm");
+#else
+        Device = audiere::OpenDevice();
+#endif
+        Sanguosha = new Engine;
+
+        BanPair::loadBanPairs();
         widget = new MainWindow;
+    }
 
     Sanguosha->setParent(widget);
     widget->show();

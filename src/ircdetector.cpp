@@ -45,20 +45,17 @@ static void detector_dcc_callback(irc_session_t *session,
     detector->setAddrMap(nick, addr);
 }
 
-/*
-static void detector_privmsg(irc_session_t *session,
-                             const char *event,
-                             const char *origin,
-                             const char **params,
-                             unsigned int count)
+static void detector_join(irc_session_t *session,
+                          const char *event,
+                          const char *origin,
+                          const char **params,
+                          unsigned int count)
 {
-    const char *server_info = params[1];
     const char *nick = origin;
-
-    IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
-    detector->setInfoMap(nick, server_info);
+    if(Config.IrcNick != nick){
+        irc_cmd_notice(session, nick, "giveYourInfo");
+    }
 }
-*/
 
 static void detector_notice(irc_session_t *session,
                             const char *event,
@@ -66,11 +63,25 @@ static void detector_notice(irc_session_t *session,
                             const char **params,
                             unsigned int count)
 {
-    const char *server_info = params[1];
+    const char *notice = params[1];
     const char *nick = origin;
 
     IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
-    detector->setInfoMap(nick, server_info);
+    if(notice[0] == '@'){
+        int count = atoi(notice + 1);
+        detector->askPerson(count);
+    }else
+        detector->setInfoMap(nick, notice);
+}
+
+static void detector_part(irc_session_t *session,
+                          const char *event,
+                          const char *origin,
+                          const char **params,
+                          unsigned int count)
+{
+    IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
+    detector->emitParted(origin);
 }
 
 IrcDetector::IrcDetector(){
@@ -83,8 +94,10 @@ IrcDetector::IrcDetector(){
     memset(&callbacks, 0, sizeof(callbacks));
     callbacks.event_connect = detector_connect;
     callbacks.event_dcc_chat_req = detector_dcc_callback;
-    //callbacks.event_privmsg = detector_privmsg;
+    callbacks.event_join = detector_join;
     callbacks.event_notice = detector_notice;
+    callbacks.event_part = detector_part;
+    callbacks.event_quit = detector_part;
 
     session = irc_create_session(&callbacks);
     irc_set_ctx(session, this);
@@ -127,39 +140,41 @@ void IrcDetector::stop(){
 }
 
 void IrcDetector::setAddrMap(const char *nick, const char *addr){
-    nick2addr.insert(nick, addr);
+    nick2info[nick].address = addr;
 }
 
 void IrcDetector::setInfoMap(const char *nick, const char *server_info){
-    ServerInfoStruct info;
+    ServerFullInfo &info = nick2info[nick];
     if(info.parse(server_info)){
         nick2info.insert(nick, info);
 
-        if(nick2addr.contains(nick)){
+        if(!info.address.isEmpty()){
             emit detected(nick);
         }
     }
 }
 
-QString IrcDetector::getAddr(const QString &nick) const{
-    return nick2addr.value(nick);
-}
-
-bool IrcDetector::getInfo(const QString &nick, ServerInfoStruct &info) const{
-    if(nick2info.contains(nick)){
-        info = nick2info.value(nick);
-        return true;
-    }else
-        return false;
+const ServerFullInfo &IrcDetector::getInfo(const QString &nick){
+    return nick2info[nick];
 }
 
 void IrcDetector::clearMap(){
-    nick2addr.clear();
     nick2info.clear();
 }
 
 void IrcDetector::emitConnected(){
     emit server_connected();
+}
+
+void IrcDetector::emitParted(const char *nick){
+    if(nick2info.contains(nick)){
+        nick2info.remove(nick);
+        emit parted(nick);
+    }
+}
+
+void IrcDetector::askPerson(int count){
+    emit person_asked(count);
 }
 
 IrcDetectorDialog::IrcDetectorDialog(){
@@ -170,6 +185,11 @@ IrcDetectorDialog::IrcDetectorDialog(){
     info_label = new QLabel(tr("Please click the start button to detect"));
 
     list = new QListWidget;
+    info_widget = new ServerInfoWidget;
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(list);
+    hlayout->addWidget(info_widget);
 
     progress_bar = new QProgressBar;
     progress_bar->setMinimum(0);
@@ -178,21 +198,21 @@ IrcDetectorDialog::IrcDetectorDialog(){
 
     detect_button = new QPushButton(tr("Start"));
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(progress_bar);
-    hlayout->addWidget(detect_button);
-
+    QHBoxLayout *button_layout = new QHBoxLayout;
+    button_layout->addStretch();
+    button_layout->addWidget(progress_bar);
+    button_layout->addWidget(detect_button);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(info_label);
-    layout->addWidget(list);
     layout->addLayout(hlayout);
+    layout->addLayout(button_layout);
 
     setLayout(layout);
 
     connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
-    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseAddress(QListWidgetItem*)));
+    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(copyAddress(QListWidgetItem*)));
+    connect(list, SIGNAL(itemSelectionChanged()), this, SLOT(updateServerInfo()));
 }
 
 void IrcDetectorDialog::startDetection(){
@@ -205,7 +225,8 @@ void IrcDetectorDialog::startDetection(){
 
     connect(this, SIGNAL(rejected()), detector, SLOT(stop()));
     connect(detector, SIGNAL(server_connected()), this, SLOT(onServerConnected()));
-    connect(detector, SIGNAL(detected(QString)), this, SLOT(addNick(QString)));
+    connect(detector, SIGNAL(detected(QString)), this, SLOT(addNick(QString)));    
+    connect(detector, SIGNAL(parted(QString)), this, SLOT(removeNick(QString)));
 
     detector->detect();
 }
@@ -215,23 +236,44 @@ void IrcDetectorDialog::onServerConnected(){
     info_label->setText(tr("Server connected, double click the item can copy the address to clipboard"));
 }
 
-void IrcDetectorDialog::chooseAddress(QListWidgetItem *item){   
+void IrcDetectorDialog::copyAddress(QListWidgetItem *item){
     QString nick = item->data(Qt::UserRole).toString();
-    QString address = detector->getAddr(nick);
+    const ServerFullInfo &info = detector->getInfo(nick);
+    QString address = info.address;
     QApplication::clipboard()->setText(address);
 
     info_label->setText(tr("Address %1 is copied to clipboard now").arg(address));
 }
 
+void IrcDetectorDialog::updateServerInfo(){
+    QListWidgetItem *item = list->currentItem();
+    if(item){
+        QString nick = item->data(Qt::UserRole).toString();
+        const ServerFullInfo &info = detector->getInfo(nick);
+        info_widget->fill(info, info.address);
+    }else
+        info_widget->clear();
+}
+
 void IrcDetectorDialog::addNick(const QString &nick){
-    ServerInfoStruct info;
-    if(detector->getInfo(nick, info)){
-        QString address = detector->getAddr(nick);
+    const ServerFullInfo &info = detector->getInfo(nick);
 
-        QString label = QString("%1 [%2]").arg(info.Name).arg(address);
-        QListWidgetItem *item = new QListWidgetItem(label);
-        item->setData(Qt::UserRole, nick);
+    QString address = info.address;
+    QString label = QString("%1 [%2]").arg(info.Name).arg(address);
+    QListWidgetItem *item = new QListWidgetItem(label);
+    item->setData(Qt::UserRole, nick);
 
-        list->addItem(item);
+    list->addItem(item);
+}
+
+void IrcDetectorDialog::removeNick(const QString &nick){
+    int i, n = list->count();
+    for(i=0; i<n; i++){
+        QListWidgetItem *item = list->item(i);
+        QString item_nick = item->data(Qt::UserRole).toString();
+        if(item_nick == nick){
+            list->takeItem(i);
+            break;
+        }
     }
 }

@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "nativesocket.h"
 #include "ircdetector.h"
+#include "banpairdialog.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -15,6 +16,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QRadioButton>
+#include <QApplication>
 
 static QLayout *HLay(QWidget *left, QWidget *right){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -152,6 +154,8 @@ QLayout *ServerDialog::createRight(){
 
         second_general_checkbox = new QCheckBox(tr("Enable second general"));
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
+        BanPairDialog *banpair_dialog = new BanPairDialog(this);
+        connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
 
         connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
         second_general_checkbox->setChecked(Config.Enable2ndGeneral);
@@ -273,6 +277,7 @@ Server::Server(QObject *parent)
     server->setParent(this);
 
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
     session = NULL;
 }
@@ -315,21 +320,39 @@ static void dummy_callback(irc_session_t *session,
 
 }
 
+static void give_info(irc_session_t *session, const char *nick)
+{
+    char server_info[1024];
+    qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
+
+    irc_dcc_t dcc;
+    irc_dcc_chat(session, NULL, nick, dummy_callback, &dcc);
+    irc_cmd_notice(session, nick, server_info);
+}
+
 static void server_channel(irc_session_t *session,
                            const char *event,
                            const char *origin,
                            const char **params,
                            unsigned int count)
 {
+    const char *nick = origin;
     const char *content = params[1];
     if(qstrcmp(content, "whoIsServer") == 0){
-        char server_info[1024];
-        qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
+        give_info(session, nick);
+    }
+}
 
-        irc_dcc_t dcc;
-        irc_dcc_chat(session, NULL, origin, dummy_callback, &dcc);
-        //irc_cmd_msg(session, origin, server_info);
-        irc_cmd_notice(session, origin, server_info);
+static void server_notice(irc_session_t *session,
+                          const char *event,
+                          const char *origin,
+                          const char **params,
+                          unsigned int count)
+{
+    const char *nick = origin;
+    const char *notice = params[1];
+    if(qstrcmp(notice, "giveYourInfo") == 0){
+        give_info(session, nick);
     }
 }
 
@@ -344,9 +367,10 @@ void Server::daemonize(){
         WSAStartup (wVersionRequested, &wsaData);
 
         irc_callbacks_t callbacks;
-        memset(&callbacks, 0, sizeof(callbacks));
+        memset(&callbacks, 0, sizeof(callbacks));        
         callbacks.event_connect = server_connect;
         callbacks.event_channel = server_channel;
+        callbacks.event_notice = server_notice;
         session = irc_create_session(&callbacks);
 
         irc_set_ctx(session, this);

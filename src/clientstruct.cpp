@@ -43,33 +43,56 @@ bool ServerInfoStruct::parse(const QString &str){
     return true;
 }
 
-ServerInfoWidget::ServerInfoWidget(const ServerInfoStruct &info, const QString &address)
+ServerInfoWidget::ServerInfoWidget()
 {
+    name_label = new QLabel;
+    address_label = new QLabel;
+    port_label = new QLabel;
+    player_count_label = new QLabel;
+    two_general_label = new QLabel;
+    free_choose_label = new QLabel;
+    scenario_label = new QLabel;
+    time_limit_label = new QLabel;
+    list_widget = new QListWidget;
+
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Server name"), new QLabel(info.Name));
-    layout->addRow(tr("Address"), new QLabel(address));
-    layout->addRow(tr("Port"), new QLabel(QString::number(Config.ServerPort)));
-    layout->addRow(tr("Player count"), new QLabel(QString::number(info.PlayerCount)));
-    layout->addRow(tr("2nd general mode"), new QLabel(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
-    layout->addRow(tr("Free choose"), new QLabel(info.FreeChoose ? tr("Enabled") : tr("Disabled")));
+    layout->addRow(tr("Server name"), name_label);
+    layout->addRow(tr("Address"), address_label);
+    layout->addRow(tr("Port"), port_label);
+    layout->addRow(tr("Player count"), player_count_label);
+    layout->addRow(tr("2nd general mode"), two_general_label);
+    layout->addRow(tr("Free choose"), free_choose_label);
+    layout->addRow(tr("Scenario mode"), scenario_label);
+    layout->addRow(tr("Operation time"), time_limit_label);
+    layout->addRow(tr("Extension packages"), list_widget);
 
-    QString scenario_label;
+    setLayout(layout);
+}
+
+void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address){
+    name_label->setText(info.Name);
+    address_label->setText(address);
+    port_label->setText(QString::number(Config.ServerPort));
+    player_count_label->setText(QString::number(info.PlayerCount));
+    two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
+    free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
+
+    QString scenario_text;
     if(Config.Scenario.isEmpty())
-        scenario_label = tr("Disabled");
+        scenario_text = tr("Disabled");
     else
-        scenario_label = Sanguosha->translate(Config.Scenario);
-    layout->addRow(tr("Scenario mode"), new QLabel(scenario_label));
+        scenario_text = Sanguosha->translate(Config.Scenario);
+    scenario_label->setText(scenario_text);
 
-    QLabel *time_limit = new QLabel;
     if(info.OperationTimeout == 0)
-        time_limit->setText(tr("No limit"));
+        time_limit_label->setText(tr("No limit"));
     else
-        time_limit->setText(tr("%1 seconds").arg(info.OperationTimeout));
-    layout->addRow(tr("Operation time"), time_limit);
+        time_limit_label->setText(tr("%1 seconds").arg(info.OperationTimeout));
 
-    QListWidget *list_widget = new QListWidget;
-    QIcon enabled_icon(":/enabled.png");
-    QIcon disabled_icon(":/disabled.png");
+    list_widget->clear();
+
+    static QIcon enabled_icon(":/enabled.png");
+    static QIcon disabled_icon(":/disabled.png");
 
     QMap<QString, bool> extensions = info.Extensions;
     QMapIterator<QString, bool> itor(extensions);
@@ -84,11 +107,20 @@ ServerInfoWidget::ServerInfoWidget(const ServerInfoStruct &info, const QString &
 
         new QListWidgetItem(checked ? enabled_icon : disabled_icon, package_name, list_widget);
     }
-
-    layout->addRow(tr("Extension packages"), list_widget);
-
-    setLayout(layout);
 }
+
+void ServerInfoWidget::clear(){
+    name_label->clear();
+    address_label->clear();
+    port_label->clear();
+    player_count_label->clear();
+    two_general_label->clear();
+    free_choose_label->clear();
+    scenario_label->clear();
+    time_limit_label->clear();
+    list_widget->clear();
+}
+
 
 bool CardMoveStructForClient::parse(const QString &str){
     static QMap<QString, Player::Place> place_map;
