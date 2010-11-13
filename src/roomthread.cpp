@@ -1,6 +1,7 @@
 #include "roomthread.h"
 #include "room.h"
 #include "gamerule.h"
+#include "engine.h"
 
 bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
     int x = a->getPriority(target);
@@ -184,6 +185,12 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
     foreach(TriggerEvent event, events){
         skill_table[event] << skill;
     }
+}
+
+void RoomThread::removeTriggerSkill(const QString &skill_name){
+    const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+    if(skill)
+        removeTriggerSkill(skill);
 }
 
 void RoomThread::removeTriggerSkill(const TriggerSkill *skill){

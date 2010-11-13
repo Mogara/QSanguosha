@@ -360,3 +360,10 @@ const Skill *Engine::getSkill(const QString &skill_name) const{
     return skills.value(skill_name, NULL);
 }
 
+const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
+    const Skill *skill = getSkill(skill_name);
+    if(skill)
+        return qobject_cast<const TriggerSkill *>(skill);
+    else
+        return NULL;
+}

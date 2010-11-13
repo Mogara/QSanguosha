@@ -229,6 +229,7 @@ void IrcDetectorDialog::startDetection(){
     connect(detector, SIGNAL(server_connected()), this, SLOT(onServerConnected()));
     connect(detector, SIGNAL(detected(QString)), this, SLOT(addNick(QString)));    
     connect(detector, SIGNAL(parted(QString)), this, SLOT(removeNick(QString)));
+    connect(detector, SIGNAL(person_asked(QString,int)), this, SLOT(updateLack(QString,int)));
 
     detector->detect();
 }
@@ -284,8 +285,10 @@ void IrcDetectorDialog::removeNick(const QString &nick){
 }
 
 void IrcDetectorDialog::updateLack(const QString &nick, int lack){
-    QListWidgetItem *item = list->currentItem();
+    QListWidgetItem *item = list->currentItem();    
     if(item){
-        info_widget->updateLack(lack);
+        QString item_nick = item->data(Qt::UserRole).toString();
+        if(item_nick == nick)
+            info_widget->updateLack(lack);
     }
 }

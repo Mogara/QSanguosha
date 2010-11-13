@@ -5,6 +5,7 @@
 #include "nativesocket.h"
 #include "ircdetector.h"
 #include "banpairdialog.h"
+#include "scenario.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -279,7 +280,12 @@ Server::Server(QObject *parent)
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
+    current = NULL;
     session = NULL;
+
+    scenario = NULL;
+    if(!Config.Scenario.isEmpty())
+        scenario = Sanguosha->getScenario(Config.Scenario);
 }
 
 Server::~Server(){
@@ -348,6 +354,18 @@ static void server_notice(irc_session_t *session,
     }
 }
 
+static void server_leave(irc_session_t *session,
+                         const char *event,
+                         const char *origin,
+                         const char **params,
+                         unsigned int count)
+{
+    void *ctx = irc_get_ctx(session);
+    Server *server = static_cast<Server *>(ctx);
+
+    server->removeNick(origin);
+}
+
 void Server::daemonize(){
     server->daemonize();
 
@@ -363,6 +381,8 @@ void Server::daemonize(){
         callbacks.event_connect = server_connect;
         callbacks.event_channel = server_channel;
         callbacks.event_notice = server_notice;
+        callbacks.event_part = server_leave;
+        callbacks.event_quit = server_leave;
         session = irc_create_session(&callbacks);
 
         irc_set_ctx(session, this);
@@ -381,6 +401,9 @@ void Server::daemonize(){
             runner->start();
         }
     }
+
+    current = new Room(this, scenario);
+    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
 }
 
 void Server::processNewConnection(ClientSocket *socket){
@@ -390,53 +413,21 @@ void Server::processNewConnection(ClientSocket *socket){
             socket->disconnectFromHost();
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
-        }else{
-            addresses.insert(addr);
-            connect(socket, SIGNAL(disconnected()), this, SLOT(removeAddress()));
-        }
+        }else
+            addresses.insert(addr);        
     }
 
-    // remove the game over room first
-    QMutableListIterator<Room *> itor(rooms);
-    while(itor.hasNext()){
-        Room *room = itor.next();
-        if(room->isFinished()){
-            delete room;
-            itor.remove();
-        }
+    if(current->isFull()){
+        current = new Room(this, scenario);
+        connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }
 
-    // find the free room for the new connection
-    Room *free_room = NULL;
-    foreach(Room *room, rooms){
-        if(!room->isFull()){
-            free_room = room;
-            break;
-        }
-    }
-
-    // if no free room is found, create a new room for him
-    if(free_room == NULL){
-        const Scenario *scenario = NULL;
-        if(!Config.Scenario.isEmpty())
-            scenario = Sanguosha->getScenario(Config.Scenario);
-
-        free_room = new Room(this, scenario);
-        rooms << free_room;
-        connect(free_room, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
-    }
-
-    free_room->addSocket(socket);    
+    current->addSocket(socket);
+    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
-}
 
-void Server::removeAddress(){
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
-
-    if(socket){
-        addresses.remove(socket->peerAddress());
-    }
+    tellLack();
 }
 
 void Server::emitDetectableMessage(){
@@ -451,9 +442,44 @@ void Server::giveInfo(const char *nick)
     irc_dcc_t dcc;
     irc_dcc_chat(session, NULL, nick, dummy_callback, &dcc);
     irc_cmd_notice(session, nick, server_info);
+
+    nicks << nick;
     tellLack(nick);
 }
 
-void Server::tellLack(const char *nick){
+void Server::removeNick(const char *nick){
+    nicks.remove(nick);
+}
 
+void Server::tellLack(const char *nick){
+    int lack = current->getLack();
+    if(lack == 0){
+        if(scenario)
+            lack = scenario->getPlayerCount();
+        else
+            lack = Config.PlayerCount;
+    }
+
+    char lack_str[100];
+    sprintf(lack_str, "@%d", lack);
+
+    if(nick)
+        irc_cmd_notice(session, nick, lack_str);
+    else{
+        char nick_buff[100];
+        foreach(QString nickname, nicks){
+            strcpy(nick_buff, nickname.toAscii().constData());
+
+            irc_cmd_notice(session, nick_buff, lack_str);
+        }
+    }
+}
+
+void Server::cleanup(){
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+
+    if(Config.ForbidSIMC)
+        addresses.remove(socket->peerAddress());
+
+    tellLack();
 }

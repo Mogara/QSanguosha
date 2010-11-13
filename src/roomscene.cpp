@@ -56,15 +56,17 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         addItem(photo);
     }   
 
-    // create dashboard
-    dashboard = new Dashboard;
-    addItem(dashboard);
-    dashboard->setPos(Config.Rect.x(), Config.Rect.bottom() - dashboard->boundingRect().height());
-    dashboard->setPlayer(Self);
-    connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
-    connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
-    connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
-    connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
+    {
+        // create dashboard
+        dashboard = new Dashboard;
+        addItem(dashboard);
+
+        dashboard->setPlayer(Self);
+        connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
+        connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
+        connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
+        connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
+    }
 
     // add role combobox
     role_combobox = new QComboBox;
@@ -78,7 +80,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     trust_button = new QPushButton(tr("Trust"));
     trust_button->setEnabled(false);    
     QGraphicsProxyWidget *trust_widget = addWidget(trust_button);
-    trust_widget->setPos(dashboard->pos());
+    trust_widget->setParentItem(dashboard);
     trust_widget->moveBy(0, -30);
 
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
@@ -183,18 +185,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     chat_edit = new QLineEdit;
     chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
     QGraphicsProxyWidget *chat_edit_widget = addWidget(chat_edit);
-    chat_edit_widget->setPos(dashboard->pos());
+    chat_edit_widget->setParentItem(dashboard);
     connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
-
-    const qreal photo_width = photos.first()->boundingRect().width();
-    const qreal start_x = (main_window->width() - photo_width * photos.length()) / 2 - (main_window->width()/2);
-
-    for(i=0;i<photos.length();i++){
-        Photo *photo = photos[i];
-        qreal x = i * photo_width + start_x;
-        qreal y =  Config.Rect.y();
-        photo->setPos(x, y);
-    }
 
     memory = new QSharedMemory("QSanguosha", this);
 
@@ -211,6 +203,32 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         widget->moveBy(-25, 0);
 
         progress_bar->hide();
+    }
+
+    adjustItems();
+}
+
+void RoomScene::adjustItems(){
+    {
+        // dashboard
+        qreal x = Config.Rect.x();
+        qreal main_height = main_window->centralWidget()->height();
+        qreal y = main_height/2 - dashboard->boundingRect().height();
+        dashboard->setPos(x, y);
+    }
+
+    {
+        // photos
+        const qreal photo_width = photos.first()->boundingRect().width();
+        const qreal start_x = (main_window->width() - photo_width * photos.length()) / 2 - (main_window->width()/2);
+
+        int i;
+        for(i=0;i<photos.length();i++){
+            Photo *photo = photos[i];
+            qreal x = i * photo_width + start_x;
+            qreal y =  Config.Rect.y();
+            photo->setPos(x, y);
+        }
     }
 }
 

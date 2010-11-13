@@ -35,6 +35,11 @@ protected:
         QGraphicsView::resizeEvent(event);
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
+
+        if(scene()->inherits("RoomScene")){
+            RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
+            room_scene->adjustItems();
+        }
     }
 };
 

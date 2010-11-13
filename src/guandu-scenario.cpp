@@ -294,8 +294,7 @@ void GuanduScenario::onTagSet(Room *room, const QString &key) const{
     if(zhanshuangxiong && burnwuchao){
         ServerPlayer *guojia = room->findPlayer("guojia");
         if(guojia && !guojia->hasSkill("greatyiji")){
-            const TriggerSkill *yiji = qobject_cast<const TriggerSkill *>(Sanguosha->getSkill("yiji"));
-            room->getThread()->removeTriggerSkill(yiji);
+            room->getThread()->removeTriggerSkill("yiji");
 
             room->acquireSkill(guojia, "greatyiji");
             room->acquireSkill(guojia, "damagebeforeplay", false);

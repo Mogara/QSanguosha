@@ -41,6 +41,8 @@ private:
     QButtonGroup *extension_group;
 };
 
+class Scenario;
+
 class Server : public QObject{
     Q_OBJECT
 
@@ -52,17 +54,19 @@ public:
     void daemonize();
     void emitDetectableMessage();
     void giveInfo(const char *nick);
-    void tellLack(const char *nick);
+    void removeNick(const char *nick);
+    void tellLack(const char *nick = NULL);
 
 private:
     ServerSocket *server;
-    QList<Room*> rooms;
-    QSet<QString> addresses;
+    Room *current;
+    QSet<QString> addresses, nicks;
     irc_session_t *session;
+    const Scenario *scenario;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
-    void removeAddress();
+    void cleanup();
 
 signals:
     void server_message(const QString &);

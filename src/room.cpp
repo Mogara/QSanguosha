@@ -734,6 +734,10 @@ bool Room::isFinished() const{
     return game_finished;
 }
 
+int Room::getLack() const{
+    return player_count - players.length();
+}
+
 void Room::broadcast(const QString &message, ServerPlayer *except){
     foreach(ServerPlayer *player, players){
         if(player != except){

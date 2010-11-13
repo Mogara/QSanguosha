@@ -33,7 +33,21 @@ DujiangCard::DujiangCard(){
 
 void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
+
+    LogMessage log;
+    log.type = "#InvokeSkill";
+    log.from = source;
+    log.arg = "dujiang";
+    room->sendLog(log);
+
+    // transfiguration
     room->setPlayerProperty(source, "general", "shenlumeng");
+    room->getThread()->removeTriggerSkill("keji");
+    room->acquireSkill(source, "shelie", false);
+
+    source->setMaxHP(3);
+    room->broadcastProperty(source, "maxhp");
+    room->broadcastProperty(source, "hp");
 }
 
 class DujiangViewAsSkill: public ViewAsSkill{
@@ -68,15 +82,14 @@ public:
 class Dujiang: public PhaseChangeSkill{
 public:
     Dujiang():PhaseChangeSkill("dujiang"){
-
+        view_as_skill = new DujiangViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
         if(!PhaseChangeSkill::triggerable(target))
             return false;
 
-        if(target->getGeneralName() == "shenlumeng")
-            return false;
+        return target->getGeneralName() != "shenlumeng";
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -127,6 +140,9 @@ public:
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
                     room->acquireSkill(huatuo, "guagu");
+
+                    ServerPlayer *lumeng = room->findPlayer("lumeng");
+                    room->acquireSkill(lumeng, "dujiang");
                 }
 
                 break;
@@ -150,7 +166,9 @@ FanchengScenario::FanchengScenario()
 
     rule = new FanchengRule(this);
 
-    skills << new Guagu;
+    skills << new Guagu << new Dujiang;
+
+    addMetaObject<DujiangCard>();
 
     t["fancheng"] = tr("fancheng");
     t["guagu"] = tr("guagu");
