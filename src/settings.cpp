@@ -75,7 +75,7 @@ void Settings::init(){
         QString hash = QCryptographicHash::hash(combined.toAscii(), algorithm).toHex().toUpper().right(10);
         IrcNick = QString("SGS-%1").arg(hash);
     }
-    IrcChannel = value("IrcChannel", "#sgs").toString();
+    IrcChannel = value("IrcChannel", "#qsanguosha").toString();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
@@ -95,6 +95,7 @@ void Settings::init(){
     OperationTimeout = value("OperationTimeout", 15).toInt();
     OperationNoLimit = value("OperationNoLimit", false).toBool();
     EnableEffects = value("EnableEffects", true).toBool();
+    EnableLastWord = value("EnableLastWord", true).toBool();
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 

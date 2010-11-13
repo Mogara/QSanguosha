@@ -287,6 +287,7 @@ public:
     void setNature(DamageStruct::Nature nature);
 
     static bool IsAvailable();
+    static bool IsAvailableWithCrossbow();
 
     virtual QString getSubtype() const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;

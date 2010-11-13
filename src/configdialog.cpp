@@ -20,7 +20,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
-    ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
+    ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
+    ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);    
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
 
     ui->volumeSlider->setValue(100 * Config.Volume);
@@ -89,6 +90,10 @@ void ConfigDialog::saveConfig()
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;
     Config.setValue("EnableEffects", enabled);
+
+    enabled = ui->enableLastWordCheckBox->isChecked();
+    Config.EnableLastWord = enabled;
+    Config.setValue("EnabledLastWord", enabled);
 
     enabled = ui->enableBgMusicCheckBox->isChecked();
     Config.EnableBgMusic = enabled;

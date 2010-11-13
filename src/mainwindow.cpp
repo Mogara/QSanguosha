@@ -175,7 +175,6 @@ void MainWindow::on_actionReplay_triggered()
 }
 
 void MainWindow::restartConnection(){
-    ClientInstance->disconnectFromHost();
     ClientInstance = NULL;
 
     delete Self;
@@ -280,6 +279,11 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::changeBackground(){
     if(scene)
         scene->setBackgroundBrush(Config.BackgroundBrush);
+
+    if(scene->inherits("RoomScene")){
+        RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
+        room_scene->changeTextEditBackground();
+    }
 }
 
 void MainWindow::on_actionAbout_audiere_triggered()

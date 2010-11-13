@@ -320,16 +320,6 @@ static void dummy_callback(irc_session_t *session,
 
 }
 
-static void give_info(irc_session_t *session, const char *nick)
-{
-    char server_info[1024];
-    qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
-
-    irc_dcc_t dcc;
-    irc_dcc_chat(session, NULL, nick, dummy_callback, &dcc);
-    irc_cmd_notice(session, nick, server_info);
-}
-
 static void server_channel(irc_session_t *session,
                            const char *event,
                            const char *origin,
@@ -339,7 +329,8 @@ static void server_channel(irc_session_t *session,
     const char *nick = origin;
     const char *content = params[1];
     if(qstrcmp(content, "whoIsServer") == 0){
-        give_info(session, nick);
+        Server *server = static_cast<Server *>(irc_get_ctx(session));
+        server->giveInfo(nick);
     }
 }
 
@@ -352,7 +343,8 @@ static void server_notice(irc_session_t *session,
     const char *nick = origin;
     const char *notice = params[1];
     if(qstrcmp(notice, "giveYourInfo") == 0){
-        give_info(session, nick);
+        Server *server = static_cast<Server *>(irc_get_ctx(session));
+        server->giveInfo(nick);
     }
 }
 
@@ -449,4 +441,19 @@ void Server::removeAddress(){
 
 void Server::emitDetectableMessage(){
     emit server_message(tr("Server can be detected at WAN"));
+}
+
+void Server::giveInfo(const char *nick)
+{
+    char server_info[1024];
+    qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
+
+    irc_dcc_t dcc;
+    irc_dcc_chat(session, NULL, nick, dummy_callback, &dcc);
+    irc_cmd_notice(session, nick, server_info);
+    tellLack(nick);
+}
+
+void Server::tellLack(const char *nick){
+
 }

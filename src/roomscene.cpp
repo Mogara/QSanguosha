@@ -214,6 +214,14 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     }
 }
 
+void RoomScene::changeTextEditBackground(){
+    QPalette palette;
+    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
+
+    log_box->setPalette(palette);
+    chat_box->setPalette(palette);
+}
+
 void RoomScene::addPlayer(ClientPlayer *player){
     int i;
     for(i=0; i<photos.length(); i++){
@@ -1559,6 +1567,7 @@ void RoomScene::setPileNumber(int n){
 }
 
 void RoomScene::freeze(){
+    ClientInstance->disconnectFromHost();
     dashboard->setEnabled(false);
     avatar->setEnabled(false);
     foreach(Photo *photo, photos)
@@ -1749,7 +1758,8 @@ void RoomScene::killPlayer(const QString &who){
         }
     }
 
-    general->lastWord();
+    if(Config.EnableLastWord)
+        general->lastWord();
 }
 
 void RoomScene::fillAmazingGrace(const QList<int> &card_ids){

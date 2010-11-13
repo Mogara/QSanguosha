@@ -162,10 +162,6 @@ public:
         events << GameStart << PhaseChange << Damaged << Death;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
 
@@ -183,15 +179,13 @@ public:
                     room->installEquip(liubei, "double_sword");
 
                     ServerPlayer *guanyu = room->findPlayer("guanyu");
-                    if(guanyu){
-                        room->installEquip(guanyu, "blade");
-                        room->installEquip(guanyu, "chitu");
-                        room->acquireSkill(guanyu, "zhanshuangxiong");
-                    }
+                    room->installEquip(guanyu, "blade");
+                    room->installEquip(guanyu, "chitu");
+                    room->acquireSkill(guanyu, "zhanshuangxiong");
+
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    if(zhangliao)
-                        room->acquireSkill(zhangliao, "smalltuxi");
+                    room->acquireSkill(zhangliao, "smalltuxi");
                 }
 
                 break;
@@ -272,10 +266,10 @@ public:
 GuanduScenario::GuanduScenario()
     :Scenario("guandu")
 {
-    role_map["yuanshao"] = "lord";
-    role_map["shuangxiong"] = role_map["zhenji"] = "loyalist";
-    role_map["caocao"] = role_map["zhangliao"] = role_map["guojia"] = "rebel";
-    role_map["liubei"] = role_map["guanyu"] = "renegade";
+    lord = "yuanshao";
+    loyalists << "shuangxiong" << "zhenji";
+    rebels << "caocao" << "zhangliao" << "guojia";
+    renegades << "liubei" << "guanyu";
 
     rule = new GuanduRule(this);
 

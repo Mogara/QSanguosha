@@ -155,8 +155,10 @@ void Client::setup(const QString &setup_str){
 }
 
 void Client::disconnectFromHost(){
-    if(socket)
+    if(socket){
         socket->disconnectFromHost();
+        socket = NULL;
+    }
 }
 
 typedef char buffer_t[1024];

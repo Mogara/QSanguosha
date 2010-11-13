@@ -23,6 +23,7 @@ class RoomScene : public QGraphicsScene{
 
 public:
     RoomScene(int player_count, QMainWindow *main_window);
+    void changeTextEditBackground();
 
 public slots:
     void addPlayer(ClientPlayer *player);

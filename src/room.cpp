@@ -1341,8 +1341,11 @@ void Room::startGame(){
     thread = new RoomThread(this);
     thread->constructTriggerTable();
 
-    if(scenario)
-        thread->addTriggerSkill(scenario->getRule());
+    if(scenario){
+        const ScenarioRule *rule = scenario->getRule();
+        if(rule)
+            thread->addTriggerSkill(rule);
+    }
 
     thread->start();
 }

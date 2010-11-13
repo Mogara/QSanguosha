@@ -51,6 +51,8 @@ public:
     bool listen();
     void daemonize();
     void emitDetectableMessage();
+    void giveInfo(const char *nick);
+    void tellLack(const char *nick);
 
 private:
     ServerSocket *server;

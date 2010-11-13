@@ -7,7 +7,7 @@ Scenario::Scenario(const QString &name)
 }
 
 int Scenario::getPlayerCount() const{
-    return role_map.size();
+    return 1 + loyalists.length() + rebels.length() + renegades.length();
 }
 
 const ScenarioRule *Scenario::getRule() const{
@@ -15,11 +15,17 @@ const ScenarioRule *Scenario::getRule() const{
 }
 
 void Scenario::assign(QStringList &generals, QStringList &roles) const{
-    generals = role_map.keys();
-
+    generals << lord << loyalists << rebels << renegades;
     qShuffle(generals);
 
     foreach(QString general, generals){
-        roles << role_map.value(general);
+        if(general == lord)
+            roles << "lord";
+        else if(loyalists.contains(general))
+            roles << "loyalist";
+        else if(rebels.contains(general))
+            roles << "rebel";
+        else
+            roles << "renegade";
     }
 }

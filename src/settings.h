@@ -56,6 +56,7 @@ public:
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;
+    bool EnableLastWord;
     bool EnableBgMusic;
     float Volume;
 

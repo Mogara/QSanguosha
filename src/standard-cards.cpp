@@ -23,7 +23,14 @@ bool Slash::IsAvailable(){
     if(Self->hasFlag("tianyi_failed"))
         return false;
 
-    if(Self->hasSkill("paoxiao") || Self->hasWeapon("crossbow"))
+    if(Self->hasWeapon("crossbow"))
+        return true;
+    else
+        return IsAvailableWithCrossbow();
+}
+
+bool Slash::IsAvailableWithCrossbow(){
+    if(Self->hasSkill("paoxiao"))
         return true;
     else{
         int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
@@ -210,6 +217,10 @@ public:
             Room *room = player->getRoom();
             const Card *card = room->askForCard(player, "slash", "blade-slash");
             if(card){
+                // if player is drank, unset his flag
+                if(player->hasFlag("drank"))
+                    room->setPlayerFlag(player, "-drank");
+
                 CardEffectStruct effect;
                 effect.card = card;
                 effect.from = player;

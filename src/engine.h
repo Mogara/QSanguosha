@@ -48,6 +48,7 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
+    void playAudio(const QString &audio, const QString &suffix = QString());
     void playEffect(const QString &filename);
     void playSkillEffect(const QString &skill_name, int index);
     void playCardEffect(const QString &card_name, bool is_male);

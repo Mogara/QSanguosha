@@ -445,7 +445,15 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->isRed();
+        const Card *card = to_select->getCard();
+
+        if(!card->isRed())
+            return false;
+
+        if(card == Self->getWeapon() && card->objectName() == "crossbow"){
+            return Slash::IsAvailableWithCrossbow();
+        }else
+            return true;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{

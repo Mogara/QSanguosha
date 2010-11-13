@@ -41,6 +41,7 @@ extern "C" {
     Package *NewYitian();
 
     Scenario *NewGuanduScenario();
+    Scenario *NewFanchengScenario();
 }
 
 Engine::Engine()
@@ -54,6 +55,7 @@ Engine::Engine()
     addPackage(NewYitian());
 
     addScenario(NewGuanduScenario());
+    addScenario(NewFanchengScenario());
 
     if(Device)
         Device->registerCallback(new StopCallback);
@@ -299,6 +301,10 @@ QList<int> Engine::getRandomCards() const{
     qShuffle(list);
 
     return list;
+}
+
+void Engine::playAudio(const QString &audio, const QString &suffix){
+    playEffect(QString("audio/%1.%2").arg(audio).arg(suffix.isEmpty() ? "wav" : suffix));
 }
 
 void Engine::playEffect(const QString &filename){

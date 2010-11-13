@@ -69,7 +69,7 @@ static void detector_notice(irc_session_t *session,
     IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
     if(notice[0] == '@'){
         int count = atoi(notice + 1);
-        detector->askPerson(count);
+        detector->askPerson(nick, count);
     }else
         detector->setInfoMap(nick, notice);
 }
@@ -173,8 +173,10 @@ void IrcDetector::emitParted(const char *nick){
     }
 }
 
-void IrcDetector::askPerson(int count){
-    emit person_asked(count);
+void IrcDetector::askPerson(const char *nick, int count){
+    nick2info[nick].lack = count;
+
+    emit person_asked(nick, count);
 }
 
 IrcDetectorDialog::IrcDetectorDialog(){
@@ -185,7 +187,7 @@ IrcDetectorDialog::IrcDetectorDialog(){
     info_label = new QLabel(tr("Please click the start button to detect"));
 
     list = new QListWidget;
-    info_widget = new ServerInfoWidget;
+    info_widget = new ServerInfoWidget(true);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(list);
@@ -251,6 +253,9 @@ void IrcDetectorDialog::updateServerInfo(){
         QString nick = item->data(Qt::UserRole).toString();
         const ServerFullInfo &info = detector->getInfo(nick);
         info_widget->fill(info, info.address);
+        if(info.lack != 0){
+            info_widget->updateLack(info.lack);
+        }
     }else
         info_widget->clear();
 }
@@ -275,5 +280,12 @@ void IrcDetectorDialog::removeNick(const QString &nick){
             list->takeItem(i);
             break;
         }
+    }
+}
+
+void IrcDetectorDialog::updateLack(const QString &nick, int lack){
+    QListWidgetItem *item = list->currentItem();
+    if(item){
+        info_widget->updateLack(lack);
     }
 }

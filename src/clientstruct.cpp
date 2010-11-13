@@ -43,7 +43,7 @@ bool ServerInfoStruct::parse(const QString &str){
     return true;
 }
 
-ServerInfoWidget::ServerInfoWidget()
+ServerInfoWidget::ServerInfoWidget(bool show_lack)
 {
     name_label = new QLabel;
     address_label = new QLabel;
@@ -65,6 +65,12 @@ ServerInfoWidget::ServerInfoWidget()
     layout->addRow(tr("Scenario mode"), scenario_label);
     layout->addRow(tr("Operation time"), time_limit_label);
     layout->addRow(tr("Extension packages"), list_widget);
+
+    if(show_lack){
+        lack_label = new QLabel;
+        layout->addRow(tr("Lack"), lack_label);
+    }else
+        lack_label = NULL;
 
     setLayout(layout);
 }
@@ -106,6 +112,13 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
         checkbox->setChecked(checked);
 
         new QListWidgetItem(checked ? enabled_icon : disabled_icon, package_name, list_widget);
+    }
+}
+
+void ServerInfoWidget::updateLack(int count){
+    if(lack_label){
+        QString path = QString(":/number/%1.png").arg(count);
+        lack_label->setPixmap(QPixmap(path));
     }
 }
 

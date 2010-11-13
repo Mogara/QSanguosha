@@ -32,7 +32,7 @@ public:
 
     void emitConnected();
     void emitParted(const char *nick);
-    void askPerson(int count);
+    void askPerson(const char *nick, int count);
 
     void setAddrMap(const char *nick, const char *addr);
     void setInfoMap(const char *nick, const char *server_info);
@@ -48,7 +48,7 @@ signals:
     void server_connected();
     void detected(const QString &nick);
     void parted(const QString &nick);
-    void person_asked(int);
+    void person_asked(const QString &nick, int);
 };
 
 class IrcRunner: public QThread{
@@ -82,9 +82,10 @@ private slots:
     void onServerConnected();
     void startDetection();
     void addNick(const QString &nick);
-    void removeNick(const QString &nick);
+    void removeNick(const QString &nick);   
     void copyAddress(QListWidgetItem *item);
     void updateServerInfo();
+    void updateLack(const QString &nick, int lack);
 };
 
 #endif // WANDETECTOR_H

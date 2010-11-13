@@ -27,8 +27,9 @@ class ServerInfoWidget: public QWidget{
     Q_OBJECT
 
 public:
-    ServerInfoWidget();
+    ServerInfoWidget(bool show_lack = false);
     void fill(const ServerInfoStruct &info, const QString &address);
+    void updateLack(int count);
     void clear();
 
 private:
@@ -40,6 +41,7 @@ private:
     QLabel *free_choose_label;
     QLabel *scenario_label;
     QLabel *time_limit_label;
+    QLabel *lack_label;
     QListWidget *list_widget;
 };
 

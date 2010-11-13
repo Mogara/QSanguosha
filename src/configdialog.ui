@@ -125,6 +125,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="enableLastWordCheckBox">
+         <property name="text">
+          <string>Enable last word</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="enableBgMusicCheckBox">
          <property name="text">
           <string>Enable background music</string>

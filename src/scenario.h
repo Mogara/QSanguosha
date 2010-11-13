@@ -21,7 +21,8 @@ public:
     virtual void onTagSet(Room *room, const QString &key) const = 0;
 
 protected:
-    QMap<QString, QString> role_map;
+    QString lord;
+    QStringList loyalists, rebels, renegades;
     const ScenarioRule *rule;
 };
 
