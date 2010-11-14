@@ -11,7 +11,8 @@
 
 Dashboard::Dashboard()
     :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), view_as_skill(NULL)
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+    view_as_skill(NULL), filter(NULL)
 {
     int i;
     for(i=0; i<5; i++){
@@ -76,9 +77,18 @@ Dashboard::Dashboard()
     handcard_pixmap->hide();
 }
 
+void Dashboard::setFilter(const FilterSkill *filter){
+    this->filter = filter;
+}
+
 void Dashboard::addCardItem(CardItem *card_item){
+    if(filter && filter->viewFilter(card_item)){
+        const Card *real_card = filter->viewAs(card_item);
+        card_item->setRealCard(real_card);
+    }
+
     if(ClientInstance->getStatus() == Client::Playing)
-        card_item->setEnabled(card_item->getCard()->isAvailable());
+        card_item->setEnabled(card_item->getRealCard()->isAvailable());
     else
         card_item->setEnabled(false);
 
@@ -143,7 +153,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     QList<CardItem*> matches;
 
     foreach(CardItem *card_item, card_items){
-        if(card_item->isEnabled() && card_item->getCard()->match(pattern))
+        if(card_item->isEnabled() && card_item->getRealCard()->match(pattern))
             matches << card_item;
     }
 
@@ -167,7 +177,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
         to_select->select();
         selected = to_select;
 
-        emit card_selected(selected->getCard());
+        emit card_selected(selected->getRealCard());
     }
 }
 
@@ -175,7 +185,7 @@ const Card *Dashboard::getSelected() const{
     if(view_as_skill)
         return pending_card;
     else if(selected)
-        return selected->getCard();
+        return selected->getRealCard();
     else
         return NULL;
 }
@@ -457,7 +467,7 @@ void Dashboard::disableAllCards(){
 
 void Dashboard::enableCards(){    
     foreach(CardItem *card_item, card_items)
-        card_item->setEnabled(card_item->getCard()->isAvailable());
+        card_item->setEnabled(card_item->getRealCard()->isAvailable());
 }
 
 void Dashboard::enableCards(const QString &pattern){
@@ -467,7 +477,7 @@ void Dashboard::enableCards(const QString &pattern){
         QStringList subpatterns = pattern.split("+");
 
         foreach(CardItem *card_item, card_items){
-            const Card *card = card_item->getCard();
+            const Card *card = card_item->getRealCard();
             bool enabled = false;
             foreach(QString subpattern, subpatterns){
                 if(card->match(subpattern)){
@@ -484,7 +494,7 @@ void Dashboard::enableCards(const QString &pattern){
             card_item->setEnabled(card_item->getCard()->getId() == id);
     }else{
         foreach(CardItem *card_item, card_items)
-            card_item->setEnabled(card_item->getCard()->match(pattern));
+            card_item->setEnabled(card_item->getRealCard()->match(pattern));
     }
 }
 
@@ -544,7 +554,7 @@ void Dashboard::onCardItemClicked(){
             card_item->goBack();
             selected = card_item;
 
-            emit card_selected(selected->getCard());
+            emit card_selected(selected->getRealCard());
         }
     }
 }

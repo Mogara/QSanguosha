@@ -591,9 +591,11 @@ void Client::askForChoice(const QString &ask_str){
 }
 
 void Client::playSkillEffect(const QString &play_str){
-    QRegExp pattern("(\\w+):([-\\w]+)");
-    pattern.indexIn(play_str);
-    QStringList words = pattern.capturedTexts();
+    QRegExp rx("(#?\\w+):([-\\w]+)");
+    if(!rx.exactMatch(play_str))
+        return;
+
+    QStringList words = rx.capturedTexts();
     QString skill_name = words.at(1);
     int index = words.at(2).toInt();
 

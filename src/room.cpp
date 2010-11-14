@@ -413,7 +413,9 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
             vcard->addSubcard(card_id);
             vcard->setSkillName("kanpo");
             card = vcard;
-        }
+            playSkillEffect("kanpo");
+        }else
+            playCardEffect("nullification", player->getGeneral()->isMale());
 
         LogMessage log;
         log.type = "#UseCard";
@@ -427,8 +429,6 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         log2.to << to;
         log2.arg = trick_name;
         sendLog(log2);
-
-        playCardEffect("nullification", player->getGeneral()->isMale());
 
         QVariant data = QVariant::fromValue(card);
         thread->trigger(CardResponsed, player, data);

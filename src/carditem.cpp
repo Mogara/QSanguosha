@@ -10,7 +10,7 @@
 static QRectF CardItemRect(0, 0, 150*0.8, 210*0.8);
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card)
+    :Pixmap(card->getPixmapPath(), false), card(card), real_card(card)
 {
     Q_ASSERT(card != NULL);
 
@@ -24,6 +24,14 @@ CardItem::CardItem(const Card *card)
 
 const Card *CardItem::getCard() const{
     return card;
+}
+
+void CardItem::setRealCard(const Card *real_card){
+    this->real_card = real_card;
+}
+
+const Card *CardItem::getRealCard() const{
+    return real_card;
 }
 
 void CardItem::setHomePos(QPointF home_pos){

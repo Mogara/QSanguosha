@@ -26,7 +26,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -401,12 +401,39 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 }
 
+WushenSlash::WushenSlash(Card::Suit suit, int number)
+    :Slash(suit, number)
+{
+
+}
+
+class Wushen: public FilterSkill{
+public:
+    Wushen():FilterSkill("wushen"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->getSuit() == Card::Heart;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        WushenSlash *slash = new WushenSlash(card->getSuit(), card->getNumber());
+        slash->addSubcard(card_item->getCard()->getId());
+        slash->setSkillName(objectName());
+
+        return slash;
+    }
+};
+
 GodPackage::GodPackage()
     :Package("god")
 {
     t["god"] = tr("god");
 
-    //General *shenguanyu = new General(this, "shenguanyu", "god", 5);
+    General *shenguanyu = new General(this, "shenguanyu", "god", 5);
+    shenguanyu->addSkill(new Wushen);
     //shenguanyu->addSkill(new Wuhun);
 
     General *shenlumeng = new General(this, "shenlumeng", "god", 3);
@@ -416,6 +443,7 @@ GodPackage::GodPackage()
     t["shenguanyu"] = tr("shenguanyu");
     t["shenlumeng"] = tr("shenlumeng");
 
+    t["wushen"] = tr("wushen");
     t["wuhun"] = tr("wuhun");
     t["shelie"] = tr("shelie");
     t["gongxin"] = tr("gongxin");
@@ -487,6 +515,7 @@ GodPackage::GodPackage()
     addMetaObject<GreatYeyanCard>();
     addMetaObject<MediumYeyanCard>();
     addMetaObject<SmallYeyanCard>();
+    addMetaObject<WushenSlash>();
 }
 
 ADD_PACKAGE(God)

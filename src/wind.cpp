@@ -322,6 +322,25 @@ public:
     }
 };
 
+class Hongyan: public FilterSkill{
+public:
+    Hongyan():FilterSkill("hongyan"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->getSuit() == Card::Spade;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        const QMetaObject *meta = card->metaObject();
+        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, Card::Heart), Q_ARG(int, card->getNumber()));
+        Card *real_card = qobject_cast<Card *>(card_obj);
+        return real_card;
+    }
+};
+
 
 WindPackage::WindPackage()
     :Package("wind")

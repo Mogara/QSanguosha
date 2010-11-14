@@ -84,13 +84,21 @@ bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const Clien
         slash_targets = 3;
     }
 
-    if(Self->hasFlag("tianyi_success"))
+    bool distance_limit = true;
+
+    if(Self->hasFlag("tianyi_success")){
+        distance_limit = false;
         slash_targets ++;
+    }
 
     if(targets.length() >= slash_targets)
         return false;
 
-    return Self->canSlash(to_select);
+    if(inherits("WushenSlash")){
+        distance_limit = false;
+    }
+
+    return Self->canSlash(to_select, distance_limit);
 }
 
 Jink::Jink(Suit suit, int number):BasicCard(suit, number){

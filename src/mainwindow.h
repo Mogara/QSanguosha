@@ -6,13 +6,15 @@
 #include "configdialog.h"
 
 #include <QMainWindow>
-#include <QGraphicsScene>
 #include <QSettings>
 #include <QComboBox>
 
 namespace Ui {
     class MainWindow;
 }
+
+class QGraphicsScene;
+class QSystemTrayIcon;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -28,10 +30,12 @@ private:
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
+    QSystemTrayIcon *systray;
 
     void restoreFromConfig();
 
 private slots:
+    void on_actionMinimize_to_system_tray_triggered();
     void on_actionWAN_IP_detect_triggered();
     void on_actionAbout_libircclient_triggered();
     void on_actionShow_Hide_Menu_triggered();

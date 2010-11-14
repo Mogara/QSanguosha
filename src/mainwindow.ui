@@ -41,9 +41,6 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionWAN_IP_detect"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_Hide_Menu"/>
-    <addaction name="actionFullscreen"/>
-    <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
@@ -61,7 +58,16 @@
     <addaction name="actionAbout_audiere"/>
     <addaction name="actionAbout_libircclient"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionShow_Hide_Menu"/>
+    <addaction name="actionFullscreen"/>
+    <addaction name="actionMinimize_to_system_tray"/>
+   </widget>
    <addaction name="menuGame"/>
+   <addaction name="menuView"/>
    <addaction name="menuOptions"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -226,6 +232,14 @@
   <action name="actionWAN_IP_detect">
    <property name="text">
     <string>WAN IP detect ...</string>
+   </property>
+  </action>
+  <action name="actionMinimize_to_system_tray">
+   <property name="text">
+    <string>Minimize to system tray</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
    </property>
   </action>
  </widget>

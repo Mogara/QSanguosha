@@ -46,6 +46,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     setFixedHeight(height());
     setFixedWidth(ShrinkWidth);
+
+    connect(ui->detectWANButton, SIGNAL(clicked()), this, SIGNAL(wan_detect()));
 }
 
 ConnectionDialog::~ConnectionDialog()
@@ -117,7 +119,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
     Config.remove("HistoryIPs");
 }
 
-void ConnectionDialog::on_detectButton_clicked()
+void ConnectionDialog::on_detectLANButton_clicked()
 {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
     connect(detector_dialog, SIGNAL(address_chosen(QString)),

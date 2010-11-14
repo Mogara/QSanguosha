@@ -279,6 +279,10 @@ GuanduScenario::GuanduScenario()
     t["zhanshuangxiong"] = tr("zhanshuangxiong");
     t["greatyiji"] = tr("greatyiji");
 
+    t[":smalltuxi"] = tr(":smalltuxi");
+    t[":zhanshuangxiong"] = tr(":zhanshuangxiong");
+    t[":greatyiji"] = tr(":greatyiji");
+
     skills << new SmallTuxi
             << new ZhanShuangxiong
             << new GreatYiji

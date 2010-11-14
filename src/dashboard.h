@@ -28,6 +28,7 @@ public:
     void unselectAll();
     void sort(int order);
     void hideAvatar();
+    void setFilter(const FilterSkill *filter);
 
     void disableAllCards();
     void enableCards();
@@ -77,6 +78,7 @@ private:
     QList<CardItem *> pendings;
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
+    const FilterSkill *filter;
 
     void adjustCards();
     void adjustCards(const QList<CardItem *> &list, int y);    

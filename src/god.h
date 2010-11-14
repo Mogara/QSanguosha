@@ -4,6 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "skill.h"
+#include "standard.h"
 
 class GodPackage : public Package{
     Q_OBJECT
@@ -69,6 +70,13 @@ public:
     Q_INVOKABLE ShenfenCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class WushenSlash: public Slash{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WushenSlash(Card::Suit suit, int number);
 };
 
 class Feiying: public GameStartSkill{

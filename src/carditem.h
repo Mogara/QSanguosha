@@ -13,6 +13,9 @@ class CardItem : public Pixmap
 public:
     CardItem(const Card *card);
 
+    void setRealCard(const Card *real_card);
+    const Card *getRealCard() const;
+
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     void goBack(bool kieru = false);
@@ -34,7 +37,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
 
 private:
-    const Card *card;
+    const Card *card, *real_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
 

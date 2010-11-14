@@ -847,6 +847,13 @@ void RoomScene::addSkillButton(const Skill *skill){
                 break;
             }
         }
+    }else if(skill->inherits("FilterSkill")){
+        const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
+        if(filter){
+            dashboard->setFilter(filter);
+            button = new QPushButton(skill_name + tr(" [Compulsory]"));
+            button->setEnabled(false);
+        }
     }else if(skill->inherits("ViewAsSkill")){
         button = new QPushButton(skill_name);
         button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));

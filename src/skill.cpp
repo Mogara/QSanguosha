@@ -141,8 +141,9 @@ const Card *OneCardViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    :ViewAsSkill(name)
+    :OneCardViewAsSkill(name)
 {
+    frequency = Compulsory;
 }
 
 TriggerSkill::TriggerSkill(const QString &name)

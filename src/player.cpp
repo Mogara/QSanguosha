@@ -160,6 +160,9 @@ int Player::distanceTo(const Player *other) const{
     if(this == other)
         return 0;
 
+    if(hasSkill("changqu") && other->getRoleEnum() == Player::Lord)
+        return 1;
+
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
     int distance = qMin(left, right);
@@ -512,17 +515,17 @@ int Player::getMark(const QString &mark) const{
     return marks.value(mark, 0);
 }
 
-bool Player::canSlash(const Player *other) const{
+bool Player::canSlash(const Player *other, bool distance_limit) const{
     if(other->hasSkill("kongcheng") && other->isKongcheng())
         return false;
 
     if(other == this)
         return false;
 
-    if(hasFlag("tianyi_success"))
-        return true;
-    else
+    if(distance_limit)
         return distanceTo(other) <= getAttackRange();
+    else
+        return true;
 }
 
 int Player::getCardCount(bool include_equip) const{

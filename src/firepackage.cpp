@@ -46,7 +46,9 @@ void QuhuCard::onEffect(const CardEffectStruct &effect) const{
         damage.from = tiger;
         damage.to = wolf;
 
-        room->damage(damage);
+        room->playSkillEffect("#tunlang");
+
+        room->damage(damage);        
 
     }else{
         DamageStruct damage;
@@ -390,6 +392,7 @@ public:
 
         Room *room = wolong->getRoom();
         if(room->askForSkillInvoke(wolong, objectName())){
+            room->playSkillEffect(objectName());
             const Card *card = room->getJudgeCard(wolong);
             if(card->isRed()){
                 Jink *jink = new Jink(Card::NoSuit, 0);
@@ -490,6 +493,7 @@ FirePackage::FirePackage()
     xunyu = new General(this, "xunyu", "wei", 3);
     xunyu->addSkill(new Quhu);
     xunyu->addSkill(new Jieming);
+    xunyu->addSkill(new Skill("#tunlang"));
 
     dianwei = new General(this, "dianwei", "wei");
     dianwei->addSkill(new Qiangxi);

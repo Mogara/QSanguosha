@@ -713,8 +713,6 @@ public:
         if(trigger_this){
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
-            qDebug("benghuai option %s", qPrintable(result));
-
             room->playSkillEffect(objectName());
             if(result == "hp"){
                 room->loseHp(dongzhuo);

@@ -23,11 +23,14 @@ private:
     Ui::ConnectionDialog *ui;
 
 private slots:
-    void on_detectButton_clicked();
+    void on_detectLANButton_clicked();
     void on_clearHistoryButton_clicked();
     void on_avatarList_itemDoubleClicked(QListWidgetItem* item);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();
+
+signals:
+    void wan_detect();
 };
 
 class UdpDetectorDialog : public QDialog{

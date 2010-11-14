@@ -154,6 +154,8 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(forbid_same_ip_checkbox);
 
         second_general_checkbox = new QCheckBox(tr("Enable second general"));
+
+        /*
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
         BanPairDialog *banpair_dialog = new BanPairDialog(this);
         connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
@@ -162,6 +164,9 @@ QLayout *ServerDialog::createRight(){
         second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
+        */
+
+        layout->addWidget(second_general_checkbox);
 
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);

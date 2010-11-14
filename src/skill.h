@@ -83,8 +83,9 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const = 0;
 };
 
-class FilterSkill: public ViewAsSkill{
+class FilterSkill: public OneCardViewAsSkill{
     Q_OBJECT
+
 public:
     FilterSkill(const QString &name);
 };

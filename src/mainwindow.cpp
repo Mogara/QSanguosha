@@ -22,6 +22,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QSystemTrayIcon>
 
 class FitView : public QGraphicsView
 {
@@ -54,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
+    connect(connection_dialog, SIGNAL(wan_detect()), ui->actionWAN_IP_detect, SIGNAL(triggered()));
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
@@ -84,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);   
+    addAction(ui->actionMinimize_to_system_tray);
+
+    systray = NULL;
 }
 
 void MainWindow::restoreFromConfig(){
@@ -100,9 +105,15 @@ void MainWindow::restoreFromConfig(){
     ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);
 }
 
-void MainWindow::closeEvent(QCloseEvent *){
+void MainWindow::closeEvent(QCloseEvent *event){
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
+
+    if(systray){
+        systray->showMessage(windowTitle(), tr("Game is minimized"));
+        hide();
+        event->ignore();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -124,8 +135,10 @@ void MainWindow::on_actionExit_triggered()
                                    tr("Sanguosha"),
                                    tr("Are you sure to exit?"),
                                    QMessageBox::Ok | QMessageBox::Cancel);
-    if(result == QMessageBox::Ok)
+    if(result == QMessageBox::Ok){
+        systray = NULL;
         close();
+    }
 }
 
 void MainWindow::on_actionStart_Server_triggered()
@@ -336,4 +349,29 @@ void MainWindow::on_actionWAN_IP_detect_triggered()
     QStringList args;
     args << "-detect";
     QProcess::startDetached(QApplication::applicationFilePath(), args);
+}
+
+void MainWindow::on_actionMinimize_to_system_tray_triggered()
+{
+    if(systray == NULL){
+        QIcon icon(":/magatamas/5.png");
+        systray = new QSystemTrayIcon(icon, this);
+
+        QAction *appear = new QAction(tr("Show main window"), this);
+        connect(appear, SIGNAL(triggered()), this, SLOT(show()));
+
+        QMenu *menu = new QMenu;
+        menu->addAction(appear);
+        menu->addMenu(ui->menuGame);
+        menu->addMenu(ui->menuView);
+        menu->addMenu(ui->menuOptions);
+        menu->addMenu(ui->menuHelp);
+
+        systray->setContextMenu(menu);
+
+        systray->show();
+        systray->showMessage(windowTitle(), tr("Game is minimized"));
+
+        hide();
+    }
 }

@@ -94,7 +94,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash") && damage.to->isKongcheng()){
+        if(damage.card && damage.card->inherits("Slash") &&
+            damage.to->isKongcheng() && !damage.chain)
+        {
             damage.damage ++;
             data = QVariant::fromValue(damage);
         }
@@ -202,8 +204,17 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     setObjectName("fire_attack");
 }
 
-bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.isEmpty() && !to_select->isKongcheng();
+bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
+    if(!targets.isEmpty())
+        return false;
+
+    if(to_select->isKongcheng())
+        return false;
+
+    if(to_select == Self)
+        return Self->getHandcardNum() >= 2;
+    else
+        return true;
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const{

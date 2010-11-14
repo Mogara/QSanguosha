@@ -5,6 +5,7 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
+#include "standard.h"
 
 class Guagu: public TriggerSkill{
 public:
@@ -48,6 +49,8 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     source->setMaxHP(3);
     room->broadcastProperty(source, "maxhp");
     room->broadcastProperty(source, "hp");
+
+    room->setTag("Dujiang", true);
 }
 
 class DujiangViewAsSkill: public ViewAsSkill{
@@ -114,6 +117,137 @@ public:
             room->askForUseCard(target, "@dujiang-card", "@@dujiang");
         }
 
+        return false;  
+    }
+};
+
+FloodCard::FloodCard(){
+    target_fixed = true;
+}
+
+void FloodCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->tag.insert("flood_used", true);
+}
+
+void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->throwCard(this);
+    room->setTag("Flood", true);
+
+    QList<ServerPlayer *> players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *player, players){
+        if(player->getRoleEnum() == Player::Rebel){
+            room->cardEffect(this, source, player);
+        }
+    }
+}
+
+void FloodCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->throwAllEquips();
+
+    Room *room = effect.to->getRoom();
+    if(!room->askForDiscard(effect.to, 2, true)){
+        DamageStruct damage;
+        damage.from = effect.from;
+        damage.to = effect.to;
+
+        room->damage(damage);
+    }
+}
+
+class Flood: public ViewAsSkill{
+public:
+    Flood():ViewAsSkill("flood"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return !ClientInstance->tag.value("flood_used", false).toBool();
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.length() < 3 && !to_select->isEquipped() && to_select->getCard()->isBlack();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 3)
+            return NULL;
+
+        FloodCard *card = new FloodCard;
+        card->addSubcards(cards);
+
+        return card;
+    }
+};
+
+TaichenCard::TaichenCard(){
+    target_fixed = true;
+}
+
+void TaichenCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("taichen_used", true);
+}
+
+void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->loseHp(source);
+
+    if(source->isAlive()){
+        Duel *duel = new Duel(Card::NoSuit, 0);
+
+        CardEffectStruct effect;
+        effect.card = duel;
+        effect.from = source;
+        effect.to = room->getLord();
+
+        room->directCardEffect(effect);
+    }
+}
+
+class Taichen: public ZeroCardViewAsSkill{
+public:
+    Taichen():ZeroCardViewAsSkill("taichen"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->turn_tag.value("taichen_used", false).toBool();
+    }
+
+    virtual const Card *viewAs() const{
+        return new TaichenCard;
+    }
+};
+
+class Xiansheng: public PhaseChangeSkill{
+public:
+    Xiansheng():PhaseChangeSkill("xiansheng"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getGeneralName() == "guanyu" && target->getHp() <= 2;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *guanyu) const{
+        if(guanyu->getPhase() == Player::Start){
+            Room *room = guanyu->getRoom();
+
+            if(room->askForSkillInvoke(guanyu, "xiansheng")){
+                guanyu->throwAllEquips();
+                guanyu->throwAllHandCards();
+
+                room->setPlayerProperty(guanyu, "general", "shenguanyu");
+
+                guanyu->setMaxHP(6);
+                guanyu->setHp(6);
+
+                room->broadcastProperty(guanyu, "maxhp");
+                room->broadcastProperty(guanyu, "hp");
+
+                room->drawCards(guanyu, 3);
+            }
+        }
+
         return false;
     }
 };
@@ -123,7 +257,7 @@ public:
     FanchengRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart;
+        events << GameStart << Death;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -134,15 +268,32 @@ public:
                 if(player->isLord()){
                     room->installEquip(player, "chitu");
                     room->installEquip(player, "blade");
+                    room->acquireSkill(player, "flood");
+                    room->acquireSkill(player, "xiansheng");
 
                     ServerPlayer *pangde = room->findPlayer("pangde");
-                    room->installEquip(pangde, "eight_diagram");
+                    room->acquireSkill(pangde, "taichen");
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
+                    room->installEquip(huatuo, "kylin_bow");
                     room->acquireSkill(huatuo, "guagu");
 
                     ServerPlayer *lumeng = room->findPlayer("lumeng");
                     room->acquireSkill(lumeng, "dujiang");
+
+                    ServerPlayer *caoren = room->findPlayer("caoren");
+                    room->installEquip(caoren, "renwang_shield");
+                }
+
+                break;
+            }
+
+        case Death:{
+                QString killer_name = data.toString();
+                if(player->getGeneralName() == "pangde" &&
+                   killer_name == room->getLord()->objectName())
+                {
+                    data = QString();
                 }
 
                 break;
@@ -166,19 +317,50 @@ FanchengScenario::FanchengScenario()
 
     rule = new FanchengRule(this);
 
-    skills << new Guagu << new Dujiang;
+    skills << new Guagu
+            << new Dujiang
+            << new Flood
+            << new Taichen
+            << new Xiansheng
+            << new Skill("changqu", Skill::Compulsory);
 
     addMetaObject<DujiangCard>();
+    addMetaObject<FloodCard>();
+    addMetaObject<TaichenCard>();
 
     t["fancheng"] = tr("fancheng");
+
     t["guagu"] = tr("guagu");
     t["dujiang"] = tr("dujiang");
+    t["flood"] = tr("flood");
+    t["taichen"] = tr("taichen");
+    t["changqu"] = tr("changqu");
+    t["xiansheng"] = tr("xiansheng");
+
+    t[":guagu"] = tr(":guagu");
+    t[":dujiang"] = tr(":dujiang");
+    t[":flood"] = tr(":flood");
+    t[":taichen"] = tr(":taichen");
+    t[":changqu"] = tr(":changqu");
+    t[":xiansheng"] = tr(":xiansheng");
 
     t["@@dujiang"] = tr("@@dujiang");
 }
 
 void FanchengScenario::onTagSet(Room *room, const QString &key) const{
+    if(key == "Flood"){
+        ServerPlayer *xuhuang = room->findPlayer("xuhuang");
+        if(xuhuang)
+            room->acquireSkill(xuhuang, "changqu");
 
+        ServerPlayer *caoren = room->findPlayer("caoren");
+        if(caoren)
+            room->setPlayerProperty(caoren, "xueyi", -1);
+    }else if(key == "Dujiang"){
+        ServerPlayer *caoren = room->findPlayer("caoren");
+        if(caoren)
+            room->setPlayerProperty(caoren, "xueyi", 0);
+    }
 }
 
 ADD_SCENARIO(Fancheng);
