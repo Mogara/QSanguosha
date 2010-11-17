@@ -376,10 +376,12 @@ void Server::daemonize(){
 
     if(Config.AnnounceIP){
         // winsock initialize
+#ifdef Q_OS_WIN32
         WORD wVersionRequested = MAKEWORD (1, 1);
         WSADATA wsaData;
 
         WSAStartup (wVersionRequested, &wsaData);
+#endif
 
         irc_callbacks_t callbacks;
         memset(&callbacks, 0, sizeof(callbacks));        

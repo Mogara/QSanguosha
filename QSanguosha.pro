@@ -131,7 +131,7 @@ win32{
 }
 
 unix {
-    LIBS += `audire-config --libs` -lircclient
+    LIBS += `audiere-config --libs` -lircclient
 }
 
 TRANSLATIONS += sanguosha.ts

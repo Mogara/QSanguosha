@@ -13,7 +13,6 @@ extern audiere::AudioDevicePtr Device;
 #include <QSequentialAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
 #include <QMessageBox>
-#include <QStatusBar>
 #include <QListWidget>
 #include <QHBoxLayout>
 #include <QKeyEvent>
@@ -30,6 +29,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QDesktopServices>
 #include <QRadioButton>
 #include <QApplication>
+
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -204,6 +204,11 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
         progress_bar->hide();
     }
+
+    skill_dock = new QDockWidget(main_window);
+    skill_dock->setTitleBarWidget(new QWidget);
+    skill_dock->titleBarWidget()->hide();
+    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
 
     adjustItems();
 }
@@ -529,25 +534,13 @@ void RoomScene::timerEvent(QTimerEvent *event){
         progress_bar->setValue(new_value);
 }
 
-
-
 void RoomScene::chooseGeneral(const QList<const General *> &generals){
-    if(Self->getRole() != "lord")
-        changeMessage(tr("Please wait for other players choosing their generals"));
-
     QApplication::alert(main_window);
     if(!main_window->isActiveWindow())
         Sanguosha->playEffect("audio/prelude.mp3");
 
     ChooseGeneralDialog *dialog = new ChooseGeneralDialog(generals, main_window);
     dialog->start();
-}
-
-void RoomScene::changeMessage(const QString &message){
-    if(message.isNull())
-        main_window->statusBar()->clearMessage();
-    else
-        main_window->statusBar()->showMessage(message);
 }
 
 void RoomScene::viewDiscards(){
@@ -870,9 +863,25 @@ void RoomScene::addSkillButton(const Skill *skill){
     if(skill->isLordSkill())
         button->setText(button->text() + tr(" [Lord Skill]"));
 
-    main_window->statusBar()->addPermanentWidget(button);
+    button->setMinimumHeight(30);
+    addWidgetToSkillDock(button);
+
     skill_buttons << button;
     button->setToolTip(skill->getDescription());
+}
+
+void RoomScene::addWidgetToSkillDock(QWidget *widget){
+    QWidget *container = skill_dock->widget();
+    if(container == NULL){
+        container = new QWidget;
+        QHBoxLayout *layout = new QHBoxLayout;
+        container->setLayout(layout);
+        layout->addStretch();
+
+        skill_dock->setWidget(container);
+    }
+
+    container->layout()->addWidget(widget);
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
@@ -890,10 +899,10 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
-    main_window->setStatusBar(NULL);
+
     skill_buttons.clear();
     button2skill.clear();
-    QStatusBar *status_bar = main_window->statusBar();
+    skill_dock->setWidget(NULL);
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
@@ -903,10 +912,11 @@ void RoomScene::updateSkillButtons(){
         if(skill->isLordSkill() && Self->getRole() != "lord")
             continue;
 
-        this->addSkillButton(skill);
+        addSkillButton(skill);
     }
 
-    status_bar->addPermanentWidget(role_combobox);
+    role_combobox->setMinimumHeight(30);
+    addWidgetToSkillDock(role_combobox);
 
     // disable all skill buttons
     foreach(QAbstractButton *button, skill_buttons)
@@ -938,12 +948,9 @@ void RoomScene::enableTargets(const Card *card){
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
-        changeMessage();
         ok_button->setEnabled(false);
         return;
     }
-
-    changeMessage(tr("You choosed card [%1]").arg(card->getName()));
 
     if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
@@ -1003,7 +1010,6 @@ void RoomScene::updateSelectedTargets(){
         ok_button->setEnabled(card->targetsFeasible(selected_targets));
     }else{
         selected_targets.clear();
-        changeMessage();
     }
 }
 
@@ -1011,15 +1017,11 @@ void RoomScene::useSelectedCard(){
     const Card *card = dashboard->getSelected();
     if(card)
         useCard(card);
-    else
-        changeMessage(tr("You didn't choose any card to use yet!"));
 }
 
 void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets))
         ClientInstance->useCard(card, selected_targets);
-    else
-        changeMessage(tr("Not enough targets"));
 
     enableTargets(NULL);
 }
@@ -1027,17 +1029,13 @@ void RoomScene::useCard(const Card *card){
 void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
-    if(card == NULL){
-        changeMessage(tr("Not enough cards to call skill"));
-        return;
-    }
+    if(card == NULL)
+        return;    
 
     if(card->isAvailable()){
         // use card
         dashboard->stopPending();
         useCard(card);
-    }else{
-        changeMessage(tr("Card [%1] can not be used right now").arg(card->getName()));
     }
 }
 

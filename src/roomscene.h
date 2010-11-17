@@ -17,6 +17,7 @@
 #include <QSharedMemory>
 #include <QProgressBar>
 #include <QTextEdit>
+#include <QDockWidget>
 
 class RoomScene : public QGraphicsScene{    
     Q_OBJECT
@@ -31,8 +32,7 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
-    void chooseGeneral(const QList<const General*> &generals);
-    void changeMessage(const QString &message = QString());    
+    void chooseGeneral(const QList<const General*> &generals);   
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
     void viewDiscards();
     void hideDiscards();
@@ -70,6 +70,7 @@ private:
     QMenu *known_cards_menu;
     Daqiao *daqiao;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
+    QDockWidget *skill_dock;
 
     int pile_number;
     QGraphicsTextItem *pile_number_item;
@@ -116,6 +117,7 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     void addSkillButton(const Skill *skill);
+    void addWidgetToSkillDock(QWidget *widget);
 
 private slots:
     void updateSkillButtons();

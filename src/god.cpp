@@ -313,6 +313,7 @@ class Baonu: public TriggerSkill{
 public:
     Baonu():TriggerSkill("baonu"){
         events << GameStart<< Damage << Damaged;
+        frequency = Compulsory;
     }
 
     virtual int getPriority(ServerPlayer *target) const{
@@ -339,6 +340,7 @@ class Wumo: public TriggerSkill{
 public:
     Wumo():TriggerSkill("wumo"){
         events << CardUsed;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -366,6 +368,7 @@ public:
     }
 };
 
+
 ShenfenCard::ShenfenCard(){
     target_fixed = true;
 }
@@ -383,10 +386,8 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     foreach(ServerPlayer *player, players){
         DamageStruct damage;
         damage.card = this;
-        damage.damage = 1;
         damage.from = source;
         damage.to = player;
-        damage.nature = DamageStruct::Normal;
 
         room->damage(damage);
     }
@@ -448,6 +449,7 @@ GodPackage::GodPackage()
     t["shelie"] = tr("shelie");
     t["gongxin"] = tr("gongxin");
 
+    t[":wushen"] = tr(":wushen");
     t[":wuhun"] = tr(":wuhun");
     t[":shelie"] = tr(":shelie");
     t[":gongxin"] = tr(":gongxin");

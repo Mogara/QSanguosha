@@ -85,10 +85,13 @@ static void detector_part(irc_session_t *session,
 }
 
 IrcDetector::IrcDetector(){
+
+#ifdef Q_OS_WIN32
     WORD wVersionRequested = MAKEWORD (1, 1);
     WSADATA wsaData;
 
     WSAStartup (wVersionRequested, &wsaData);
+#endif
 
     irc_callbacks_t callbacks;
     memset(&callbacks, 0, sizeof(callbacks));
