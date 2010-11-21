@@ -29,8 +29,13 @@ public:
     SkillCard *cloneSkillCard(const QString &name) const;
     AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
+    QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QString getSetupString() const;
+
+    QMap<QString, QString> getAvailableModes() const;
+    QString getModeName(const QString &mode) const;
+    int getPlayerCount(const QString &mode) const;
 
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
@@ -62,6 +67,7 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QHash<QString, const Scenario *> scenarios;
+    QMap<QString, QString> modes;
 
     QHash<QString, audiere::OutputStreamPtr> effects;
     QHash<QString, audiere::OutputStreamPtr> playing;

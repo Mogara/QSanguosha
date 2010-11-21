@@ -48,20 +48,65 @@ ServerDialog::ServerDialog(QWidget *parent)
 }
 
 QLayout *ServerDialog::createLeft(){
-    server_name_lineedit = new QLineEdit;
-    server_name_lineedit->setText(Config.ServerName);
+    server_name_edit = new QLineEdit;
+    server_name_edit->setText(Config.ServerName);
 
-    player_count_spinbox = new QSpinBox;
-    player_count_spinbox->setMinimum(2);
-    player_count_spinbox->setMaximum(10);
-    player_count_spinbox->setValue(Config.PlayerCount);
-    player_count_spinbox->setSuffix(tr(" persons"));
+    player_count_edit = new QLineEdit;
+    player_count_edit->setReadOnly(true);
 
-    double_renegade_checkbox = new QCheckBox(tr("Double renegade"));
-    double_renegade_checkbox->setToolTip(tr("Double renegade can be enabled only at 6-player and 8-player game"));
-    double_renegade_checkbox->setEnabled(Config.PlayerCount == 6 || Config.PlayerCount == 8);
-    double_renegade_checkbox->setChecked(Config.DoubleRenegade);
-    connect(player_count_spinbox, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleRenegadeCheckBox(int)));
+    QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
+    mode_group = new QButtonGroup;
+    {
+        QVBoxLayout *layout = new QVBoxLayout;
+
+        QMap<QString, QString> modes = Sanguosha->getAvailableModes();
+        QMapIterator<QString, QString> itor(modes);
+        while(itor.hasNext()){
+            itor.next();
+
+            QRadioButton *button = new QRadioButton(itor.value());
+            button->setObjectName(itor.key());
+
+            layout->addWidget(button);
+            mode_group->addButton(button);
+
+            if(itor.key() == Config.GameMode)
+                button->setChecked(true);
+        }
+
+        // add scenario modes
+        QRadioButton *scenario_button = new QRadioButton(tr("Scenario mode"));
+        scenario_button->setObjectName("scenario");
+
+        layout->addWidget(scenario_button);
+        mode_group->addButton(scenario_button);
+
+        scenario_combobox = new QComboBox;
+        QStringList names = Sanguosha->getScenarioNames();
+        foreach(QString name, names){
+            QVariant data = name;
+            QString text = Sanguosha->translate(name);
+            scenario_combobox->addItem(text, data);
+        }
+        layout->addWidget(scenario_combobox);
+        connect(scenario_button, SIGNAL(toggled(bool)), scenario_combobox, SLOT(setEnabled(bool)));
+
+        mode_box->setLayout(layout);
+
+        if(mode_group->checkedButton() == NULL){
+            int index = names.indexOf(Config.GameMode);
+            if(index != -1){
+                scenario_button->setChecked(true);
+                scenario_combobox->setCurrentIndex(index);
+            }
+        }else
+            scenario_combobox->setEnabled(false);
+
+        connect(mode_group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onGameModeChanged()));
+        connect(scenario_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(onGameModeChanged()));
+
+        onGameModeChanged();
+    }
 
     timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
@@ -74,80 +119,53 @@ QLayout *ServerDialog::createLeft(){
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
-    QGroupBox *extension_box = new QGroupBox;
-    extension_box->setTitle(tr("Extension package selection"));
-    QGridLayout *extension_layout = new QGridLayout;
-    extension_box->setLayout(extension_layout);
-    extension_group = new QButtonGroup;
-    extension_group->setExclusive(false);
-
-    static QStringList extensions;
-    if(extensions.isEmpty())
-        extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
-    QSet<QString> ban_packages = Config.BanPackages.toSet();
-
-    int i;
-    for(i=0; i<extensions.length(); i++){
-        QString extension = extensions.at(i);
-        QCheckBox *checkbox = new QCheckBox;
-        checkbox->setObjectName(extension);
-        checkbox->setText(Sanguosha->translate(extension));
-        checkbox->setChecked(! ban_packages.contains(extension));
-
-        extension_group->addButton(checkbox);
-
-        int row = i / 2;
-        int column = i % 2;
-        extension_layout->addWidget(checkbox, row, column);
-    }
-
-    QGroupBox *scenario_box = new QGroupBox;
-
-    {
-        scenario_box->setTitle(tr("Scenario mode"));
-        QVBoxLayout *layout = new QVBoxLayout;
-        scenario_box->setLayout(layout);
-        QCheckBox *scenario_checkbox = new QCheckBox(tr("Enable scenario mode"));
-        layout->addWidget(scenario_checkbox);
-
-        scenario_combobox = new QComboBox;
-        QStringList names = Sanguosha->getScenarioNames();
-        foreach(QString name, names){
-            QVariant data = name;
-            QString text = Sanguosha->translate(name);
-            scenario_combobox->addItem(text, data);
-        }
-
-        layout->addWidget(scenario_combobox);
-
-        connect(scenario_checkbox, SIGNAL(toggled(bool)), scenario_combobox, SLOT(setEnabled(bool)));
-
-        int index = names.indexOf(Config.Scenario);
-        if(index == -1){
-            scenario_checkbox->setChecked(false);
-            scenario_combobox->setEnabled(false);
-        }else{
-            scenario_checkbox->setChecked(true);
-            scenario_combobox->setCurrentIndex(index);
-        }
-    }
-
     QFormLayout *form_layout = new QFormLayout;
-    form_layout->addRow(tr("Server name"), server_name_lineedit);
-    form_layout->addRow(tr("Player count"), HLay(player_count_spinbox, double_renegade_checkbox));
-    form_layout->addRow(tr("Operation timeout"), timeout_spinbox);
-    form_layout->addWidget(nolimit_checkbox);
-    form_layout->addRow(extension_box);
-    form_layout->addRow(scenario_box);
+    form_layout->addRow(tr("Server name"), server_name_edit);
+    form_layout->addRow(tr("Operation timeout"), HLay(timeout_spinbox, nolimit_checkbox));
+    form_layout->addRow(tr("Player count"), player_count_edit);
+    form_layout->addRow(mode_box);
 
     return form_layout;
 }
 
-void ServerDialog::updateDoubleRenegadeCheckBox(int count){
-    double_renegade_checkbox->setEnabled(count == 6 || count == 8);
+void ServerDialog::onGameModeChanged(){
+    if(scenario_combobox->isEnabled())
+        Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
+    else
+        Config.GameMode = mode_group->checkedButton()->objectName();
+
+    int count = Sanguosha->getPlayerCount(Config.GameMode);
+    player_count_edit->setText(QString::number(count));
 }
 
 QLayout *ServerDialog::createRight(){
+    QGroupBox *extension_box = new QGroupBox;
+    {
+        extension_box->setTitle(tr("Extension package selection"));
+        QGridLayout *extension_layout = new QGridLayout;
+        extension_box->setLayout(extension_layout);
+        extension_group = new QButtonGroup;
+        extension_group->setExclusive(false);
+
+        QStringList extensions = Sanguosha->getExtensions();
+        QSet<QString> ban_packages = Config.BanPackages.toSet();
+
+        int i;
+        for(i=0; i<extensions.length(); i++){
+            QString extension = extensions.at(i);
+            QCheckBox *checkbox = new QCheckBox;
+            checkbox->setObjectName(extension);
+            checkbox->setText(Sanguosha->translate(extension));
+            checkbox->setChecked(! ban_packages.contains(extension));
+
+            extension_group->addButton(checkbox);
+
+            int row = i / 2;
+            int column = i % 2;
+            extension_layout->addWidget(checkbox, row, column);
+        }
+    }
+
     QGroupBox *advanced_box = new QGroupBox;
 
     {
@@ -195,10 +213,10 @@ QLayout *ServerDialog::createRight(){
 
         connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
 
-        port_lineedit = new QLineEdit;
-        port_lineedit->setText(QString::number(Config.ServerPort));
-        port_lineedit->setValidator(new QIntValidator(1, 9999, port_lineedit));
-        layout->addLayout(HLay(new QLabel(tr("Port")), port_lineedit));
+        port_edit = new QLineEdit;
+        port_edit->setText(QString::number(Config.ServerPort));
+        port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
+        layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
     }
 
     QGroupBox *ai_box = new QGroupBox;
@@ -227,6 +245,7 @@ QLayout *ServerDialog::createRight(){
     }
 
     QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(extension_box);
     vlayout->addWidget(advanced_box);
     vlayout->addWidget(ai_box);
     vlayout->addStretch();
@@ -290,9 +309,7 @@ bool ServerDialog::config(){
     if(result() != Accepted)
         return false;
 
-    Config.ServerName = server_name_lineedit->text();
-    Config.PlayerCount = player_count_spinbox->value();
-    Config.DoubleRenegade = double_renegade_checkbox->isChecked() && double_renegade_checkbox->isEnabled();
+    Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
@@ -301,22 +318,16 @@ bool ServerDialog::config(){
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.AILevel = ai_group->checkedId();
-    if(scenario_combobox->isEnabled())
-        Config.Scenario = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
-    else
-        Config.Scenario.clear();
-    Config.ServerPort = port_lineedit->text().toInt();   
+    Config.ServerPort = port_edit->text().toInt();
 
     Config.setValue("ServerName", Config.ServerName);
-    Config.setValue("PlayerCount", Config.PlayerCount);
-    Config.setValue("DoubleRenegade", Config.DoubleRenegade);
+    Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("AILevel", Config.AILevel);
-    Config.setValue("Scenario", Config.Scenario);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);
@@ -348,10 +359,6 @@ Server::Server(QObject *parent)
 
     current = NULL;
     session = NULL;
-
-    scenario = NULL;
-    if(!Config.Scenario.isEmpty())
-        scenario = Sanguosha->getScenario(Config.Scenario);
 }
 
 Server::~Server(){
@@ -487,7 +494,7 @@ void Server::daemonize(){
         }
     }
 
-    current = new Room(this, scenario);
+    current = new Room(this, Config.GameMode);
     connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
 }
 
@@ -503,7 +510,7 @@ void Server::processNewConnection(ClientSocket *socket){
     }
 
     if(current->isFull()){
-        current = new Room(this, scenario);
+        current = new Room(this, Config.GameMode);
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }
 
@@ -537,10 +544,7 @@ void Server::removeNick(const char *nick){
 void Server::tellLack(const char *nick){
     int lack = current->getLack();
     if(lack == 0){
-        if(scenario)
-            lack = scenario->getPlayerCount();
-        else
-            lack = Config.PlayerCount;
+        lack = Sanguosha->getPlayerCount(Config.GameMode);
     }
 
     char lack_str[100];

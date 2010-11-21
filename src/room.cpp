@@ -29,14 +29,15 @@ QString LogMessage::toString() const{
             .arg(card_str).arg(arg).arg(arg2);
 }
 
-Room::Room(QObject *parent, const Scenario *scenario)
-    :QObject(parent), player_count(scenario ? scenario->getPlayerCount() : Config.PlayerCount),
-    current(NULL), reply_player(NULL),
-    pile1(Sanguosha->getRandomCards()),
+Room::Room(QObject *parent, const QString &mode)
+    :QObject(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    thread(NULL), sem(NULL), provided(NULL), scenario(scenario)
+    thread(NULL), sem(NULL), provided(NULL)
 {
+    player_count = Sanguosha->getPlayerCount(mode);
+    scenario = Sanguosha->getScenario(mode);
+
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
     callbacks["invokeSkillCommand"] = &Room::commonCommand;
@@ -1017,7 +1018,7 @@ void Room::assignRoles(){
         "ZCCCFFFFNN" // 10
     };
 
-    const char **table = Config.DoubleRenegade ? table2 : table1;
+    const char **table = mode.endsWith("d") ? table2 : table1;
 
     int n = players.count(), i;
 

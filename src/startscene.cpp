@@ -106,8 +106,8 @@ void StartScene::printServerInfo(){
     }
 
     server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
-    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));   
-    server_log->append(tr("Double renegade is %1").arg(Config.DoubleRenegade ? tr("Enabled") : tr("Disabled")));
+    server_log->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
+    server_log->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
 
     if(Config.OperationNoLimit)
         server_log->append(tr("There is no time limit"));
@@ -116,11 +116,6 @@ void StartScene::printServerInfo(){
 
     server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
     server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
-
-    if(Config.Scenario.isEmpty())
-        server_log->append(tr("Scenario mode is not enabled"));
-    else
-        server_log->append(tr("Enabled scenario mode [%1] ").arg(Sanguosha->translate(Config.Scenario)));
 
     QString level;
     switch(Config.AILevel){

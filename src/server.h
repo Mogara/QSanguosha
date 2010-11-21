@@ -27,9 +27,9 @@ private:
     QLayout *createRight();
     QLayout *createButtonLayout();
 
-    QLineEdit *server_name_lineedit;
-    QSpinBox *player_count_spinbox, *timeout_spinbox;
-    QCheckBox *double_renegade_checkbox;
+    QLineEdit *server_name_edit;
+    QLineEdit *player_count_edit;
+    QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *forbid_same_ip_checkbox;
@@ -37,16 +37,17 @@ private:
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
     QLineEdit *address_edit;
-    QLineEdit *port_lineedit;    
+    QLineEdit *port_edit;
 
     QButtonGroup *ai_group;
     QButtonGroup *extension_group;
+    QButtonGroup *mode_group;
 
 private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void onHttpDone(bool error);
-    void updateDoubleRenegadeCheckBox(int player_count);
+    void onGameModeChanged();
 };
 
 class Scenario;
@@ -71,7 +72,6 @@ private:
     Room *current;
     QSet<QString> addresses, nicks;
     irc_session_t *session;
-    const Scenario *scenario;
 
 private slots:
     void processNewConnection(ClientSocket *socket);

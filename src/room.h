@@ -26,7 +26,7 @@ public:
     friend class RoomThread;
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
-    explicit Room(QObject *parent, const Scenario *scenario);
+    explicit Room(QObject *parent, const QString &mode);
     void addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
@@ -157,8 +157,9 @@ protected:
     virtual void timerEvent(QTimerEvent *);
 
 private:
+    QString mode;
     QList<ServerPlayer*> players, alive_players;
-    const int player_count;
+    int player_count;
     ServerPlayer *current;
     ServerPlayer *reply_player;
     QList<int> pile1, pile2;

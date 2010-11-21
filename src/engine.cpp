@@ -59,6 +59,19 @@ Engine::Engine()
 
     if(Device)
         Device->registerCallback(new StopCallback);
+
+    // available game modes
+    modes["02p"] = tr("2 players");
+    modes["03p"] = tr("3 players");
+    modes["04p"] = tr("4 players");
+    modes["05p"] = tr("5 players");
+    modes["06p"] = tr("6 players");
+    modes["06pd"] = tr("6 players (2 renegades)");
+    modes["07p"] = tr("7 players");
+    modes["08p"] = tr("8 players");
+    modes["08pd"] = tr("8 players (2 renegades)");
+    modes["09p"] = tr("9 players");
+    modes["10p"] = tr("10 players");
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -188,6 +201,14 @@ QString Engine::getVersion() const{
     return "20101115";
 }
 
+QStringList Engine::getExtensions() const{
+    static QStringList extensions;
+    if(extensions.isEmpty())
+        extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
+
+    return extensions;
+}
+
 QStringList Engine::getKingdoms() const{
     static QStringList kingdoms;
     if(kingdoms.isEmpty())
@@ -203,25 +224,48 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
-    if(Config.DoubleRenegade)
-        flags.append("D");
-
-    int player_count;
-    if(Config.Scenario.isEmpty())
-        player_count = Config.PlayerCount;
-    else
-        player_count = getScenario(Config.Scenario)->getPlayerCount();
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
     setup_items << server_name
-            << QString::number(player_count)
+            << Config.GameMode
             << QString::number(timeout)
             << Sanguosha->getBanPackages().join("+")
-            << Config.Scenario
             << flags;
 
     return setup_items.join(":");
+}
+
+QMap<QString, QString> Engine::getAvailableModes() const{
+    return modes;
+}
+
+QString Engine::getModeName(const QString &mode) const{
+    if(modes.contains(mode))
+        return modes.value(mode);
+    else{
+        const Scenario *scenario = scenarios.value(mode, NULL);
+        if(scenario)
+            return translate(scenario->objectName());
+    }
+
+    return QString();
+}
+
+int Engine::getPlayerCount(const QString &mode) const{
+    if(modes.contains(mode)){
+        QRegExp rx("(\\d+)");
+        int index = rx.indexIn(mode);
+        if(index != -1)
+            return rx.capturedTexts().first().toInt();
+    }else{
+        // scenario mode
+        const Scenario *scenario = scenarios.value(mode, NULL);
+        if(scenario)
+            return scenario->getPlayerCount();
+    }
+
+    return -1;
 }
 
 int Engine::getCardCount() const{

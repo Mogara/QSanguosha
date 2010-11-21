@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(\\d+):(\\d+):([+\\w]*):(\\w*):([FSD]*)");
+    QRegExp rx("(.*):(\\w+):(\\d+):([+\\w]*):([FS]*)");
     if(!rx.exactMatch(str))
         return false;
 
@@ -20,7 +20,7 @@ bool ServerInfoStruct::parse(const QString &str){
     QString server_name = texts.at(1);
     Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));
 
-    PlayerCount = texts.at(2).toInt();
+    GameMode = texts.at(2);
     OperationTimeout = texts.at(3).toInt();
 
     QStringList ban_packages = texts.at(4).split("+");
@@ -33,13 +33,10 @@ bool ServerInfoStruct::parse(const QString &str){
         Extensions.insert(package_name, ! ban_packages.contains(package_name));
     }
 
-    Scenario = texts.at(5);
-
-    QString flags = texts.at(6);
+    QString flags = texts.at(5);
 
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
-    DoubleRenegade = flags.contains("D");
 
     return true;
 }
@@ -49,23 +46,22 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     name_label = new QLabel;
     address_label = new QLabel;
     port_label = new QLabel;
+    game_mode_label = new QLabel;
     player_count_label = new QLabel;
-    double_renegade_label = new QLabel;
     two_general_label = new QLabel;
     free_choose_label = new QLabel;
-    scenario_label = new QLabel;
     time_limit_label = new QLabel;
+
     list_widget = new QListWidget;
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Server name"), name_label);
     layout->addRow(tr("Address"), address_label);
     layout->addRow(tr("Port"), port_label);
+    layout->addRow(tr("Game mode"), game_mode_label);
     layout->addRow(tr("Player count"), player_count_label);
-    layout->addRow(tr("Double renegade"), double_renegade_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
     layout->addRow(tr("Free choose"), free_choose_label);
-    layout->addRow(tr("Scenario mode"), scenario_label);
     layout->addRow(tr("Operation time"), time_limit_label);
     layout->addRow(tr("Extension packages"), list_widget);
 
@@ -81,18 +77,12 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
 void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address){
     name_label->setText(info.Name);
     address_label->setText(address);
+    game_mode_label->setText(Sanguosha->getModeName(info.GameMode));
+    int player_count = Sanguosha->getPlayerCount(info.GameMode);
+    player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
-    player_count_label->setText(QString::number(info.PlayerCount));
-    double_renegade_label->setText(info.DoubleRenegade ? tr("Enabled") : tr("Disabled"));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
-
-    QString scenario_text;
-    if(info.Scenario.isEmpty())
-        scenario_text = tr("Disabled");
-    else
-        scenario_text = Sanguosha->translate(info.Scenario);
-    scenario_label->setText(scenario_text);
 
     if(info.OperationTimeout == 0)
         time_limit_label->setText(tr("No limit"));
@@ -130,10 +120,10 @@ void ServerInfoWidget::clear(){
     name_label->clear();
     address_label->clear();
     port_label->clear();
+    game_mode_label->clear();
     player_count_label->clear();
     two_general_label->clear();
     free_choose_label->clear();
-    scenario_label->clear();
     time_limit_label->clear();
     list_widget->clear();
 }

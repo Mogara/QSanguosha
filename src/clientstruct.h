@@ -10,13 +10,11 @@ struct ServerInfoStruct{
     bool parse(const QString &str);
 
     QString Name;
-    int PlayerCount;
+    QString GameMode;
     int OperationTimeout;
-    QString Scenario;
     QMap<QString, bool> Extensions;
     bool FreeChoose;
     bool Enable2ndGeneral;
-    bool DoubleRenegade;
 };
 
 extern ServerInfoStruct ServerInfo;
@@ -37,11 +35,10 @@ private:
     QLabel *name_label;
     QLabel *address_label;
     QLabel *port_label;
+    QLabel *game_mode_label;
     QLabel *player_count_label;
-    QLabel *double_renegade_label;
     QLabel *two_general_label;
     QLabel *free_choose_label;
-    QLabel *scenario_label;
     QLabel *time_limit_label;
     QLabel *lack_label;
     QListWidget *list_widget;
