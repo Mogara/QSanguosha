@@ -58,6 +58,7 @@ Photo::Photo(int order)
     progress_bar->setValue(0);
     progress_bar->hide();
     progress_bar->setMaximumWidth(10);
+    progress_bar->setMaximumHeight(pixmap.height());
     timer_id = 0;
 
     widget = new QGraphicsProxyWidget(this);

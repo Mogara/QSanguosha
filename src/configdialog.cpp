@@ -105,7 +105,15 @@ void ConfigDialog::saveConfig()
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 
-    Config.IrcHost = ui->ircHostLineEdit->text();
+    // IRC part
+
+    Config.IrcHost = ui->ircHostLineEdit->text();   
+    Config.IrcChannel = ui->ircChannelLineEdit->text();
+    Config.IrcPort = ui->ircPortLineEdit->text().toUInt();
+
+    Config.setValue("IrcHost", Config.IrcHost);
+    Config.setValue("IrcChannel", Config.IrcChannel);
+    Config.setValue("IrcPort", Config.IrcPort);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

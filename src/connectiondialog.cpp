@@ -8,8 +8,8 @@
 #include <QTimer>
 #include <QRadioButton>
 
-static const int ShrinkWidth = 230;
-static const int ExpandWidth = 744;
+static const int ShrinkWidth = 280;
+static const int ExpandWidth = 826;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),

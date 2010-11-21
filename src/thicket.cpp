@@ -209,7 +209,7 @@ public:
                 if(!damage.to->isNude()){
                     int card_id = room->askForCardChosen(zhurong, damage.to, "he", objectName());
                     if(room->getCardPlace(card_id) == Player::Hand)
-                        room->moveCardTo(card_id, zhurong, Player::Hand, false);
+                        room->moveCardTo(Sanguosha->getCard(card_id), zhurong, Player::Hand, false);
                     else
                         room->obtainCard(zhurong, card_id);
                 }
@@ -623,7 +623,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getCard()->getSuit() == Card::Spade;
+        return !to_select->isEquipped() && to_select->getRealCard()->getSuit() == Card::Spade;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{

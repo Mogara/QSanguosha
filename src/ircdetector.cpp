@@ -34,17 +34,6 @@ static void detector_connect(irc_session_t *session,
     detector->emitConnected();
 }
 
-static void detector_dcc_callback(irc_session_t *session,
-                                  const char *nick,
-                                  const char *addr,
-                                  irc_dcc_t dccid)
-{
-    irc_dcc_decline(session, dccid);
-
-    IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
-    detector->setAddrMap(nick, addr);
-}
-
 static void detector_join(irc_session_t *session,
                           const char *event,
                           const char *origin,
@@ -70,6 +59,9 @@ static void detector_notice(irc_session_t *session,
     if(notice[0] == '@'){
         int count = atoi(notice + 1);
         detector->askPerson(nick, count);
+    }else if(notice[0] == '#'){
+        const char *addr = notice + 1;
+        detector->setAddrMap(nick, addr);
     }else
         detector->setInfoMap(nick, notice);
 }
@@ -96,7 +88,6 @@ IrcDetector::IrcDetector(){
     irc_callbacks_t callbacks;
     memset(&callbacks, 0, sizeof(callbacks));
     callbacks.event_connect = detector_connect;
-    callbacks.event_dcc_chat_req = detector_dcc_callback;
     callbacks.event_join = detector_join;
     callbacks.event_notice = detector_notice;
     callbacks.event_part = detector_part;

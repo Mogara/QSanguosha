@@ -201,6 +201,7 @@ signals:
     void state_changed();
     void turn_started();
     void kingdom_changed();
+    void mark_changed(const QString &mark);
 };
 
 #endif // PLAYER_H

@@ -27,14 +27,16 @@ public:
     QString ServerName;
     int CountDownSeconds;
     int PlayerCount;
+    bool DoubleRenegade;
     QStringList BanPackages;
     bool FreeChoose;
     bool ForbidSIMC;
     bool Enable2ndGeneral;
     bool AnnounceIP;
+    QString Address;
     int AILevel;
     QString Scenario;
-    ushort ServerPort;    
+    ushort ServerPort;
 
     QString IrcHost;
     ushort IrcPort;

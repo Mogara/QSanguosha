@@ -5,7 +5,6 @@
 #include <QMessageBox>
 #include <QRadioButton>
 
-
 GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GeneralOverview)

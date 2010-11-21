@@ -203,6 +203,8 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
+    if(Config.DoubleRenegade)
+        flags.append("D");
 
     int player_count;
     if(Config.Scenario.isEmpty())

@@ -511,6 +511,9 @@ GodPackage::GodPackage()
     t[":wuqian"] = tr(":wuqian");
     t[":shenfen"] = tr(":shenfen");
 
+    t["#GetMark"] = tr("#GetMark");
+    t["#LoseMark"] = tr("#LoseMark");
+
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
     addMetaObject<ShenfenCard>();

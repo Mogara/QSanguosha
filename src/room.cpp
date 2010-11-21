@@ -987,7 +987,7 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::assignRoles(){
-    static const char *role_assign_table[] = {
+    static const char *table1[] = {
         "",
         "",
 
@@ -998,12 +998,31 @@ void Room::assignRoles(){
         "ZCFFFN", // 6
         "ZCCFFFN", // 7
         "ZCCFFFFN", // 8
+        "ZCCCFFFFN", // 9
+        "ZCCCFFFFNN" // 10
     };
+
+    static const char *table2[] = {
+        "",
+        "",
+
+        "ZF", // 2
+        "ZFN", // 3
+        "ZNFF", // 4
+        "ZCFFN", // 5
+        "ZCFFNN", // 6
+        "ZCCFFFN", // 7
+        "ZCCFFFNN", // 8
+        "ZCCCFFFFN", // 9
+        "ZCCCFFFFNN" // 10
+    };
+
+    const char **table = Config.DoubleRenegade ? table2 : table1;
 
     int n = players.count(), i;
 
     char roles[100];
-    qstrcpy(roles, role_assign_table[n]);
+    qstrcpy(roles, table[n]);
 
     for(i=0; i<n; i++){
         int r1 = qrand() % n;

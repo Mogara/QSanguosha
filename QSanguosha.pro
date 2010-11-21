@@ -59,7 +59,8 @@ SOURCES += src/main.cpp \
     src/clientstruct.cpp \
     src/ircdetector.cpp \
     src/banpairdialog.cpp \
-    src/fancheng-scenario.cpp
+    src/fancheng-scenario.cpp \
+    src/scenario-overview.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -113,7 +114,8 @@ HEADERS += src/mainwindow.h \
     src/clientstruct.h \
     src/ircdetector.h \
     src/banpairdialog.h \
-    src/fancheng-scenario.h
+    src/fancheng-scenario.h \
+    src/scenario-overview.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

@@ -29,16 +29,24 @@ private:
 
     QLineEdit *server_name_lineedit;
     QSpinBox *player_count_spinbox, *timeout_spinbox;
+    QCheckBox *double_renegade_checkbox;
     QCheckBox *nolimit_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *second_general_checkbox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
-    QLineEdit *port_lineedit;
+    QLineEdit *address_edit;
+    QLineEdit *port_lineedit;    
 
     QButtonGroup *ai_group;
     QButtonGroup *extension_group;
+
+private slots:
+    void onOkButtonClicked();
+    void onDetectButtonClicked();
+    void onHttpDone(bool error);
+    void updateDoubleRenegadeCheckBox(int player_count);
 };
 
 class Scenario;
@@ -53,6 +61,7 @@ public:
     bool listen();
     void daemonize();
     void emitDetectableMessage();
+    void emitServerMessage(const QString &msg);
     void giveInfo(const char *nick);
     void removeNick(const char *nick);
     void tellLack(const char *nick = NULL);

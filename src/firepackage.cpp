@@ -40,13 +40,12 @@ void QuhuCard::onEffect(const CardEffectStruct &effect) const{
         if(wolves.isEmpty())
             return;
 
+        room->playSkillEffect("#tunlang");
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves);
 
         DamageStruct damage;
         damage.from = tiger;
         damage.to = wolf;
-
-        room->playSkillEffect("#tunlang");
 
         room->damage(damage);        
 

@@ -85,6 +85,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
 
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+    connect(Self, SIGNAL(mark_changed(QString)), this, SLOT(updateMark(QString)));
 
     // add other buttons
     ok_button = new QPushButton(tr("OK"));
@@ -124,7 +125,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
-    connect(ClientInstance, SIGNAL(message_changed(QString)), this, SLOT(changeMessage(QString)));
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(pile_num_set(int)), this, SLOT(setPileNumber(int)));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
@@ -208,7 +208,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
     skill_dock->titleBarWidget()->hide();
-    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
+    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);    
 
     adjustItems();
 }
@@ -875,6 +875,10 @@ void RoomScene::addWidgetToSkillDock(QWidget *widget){
     if(container == NULL){
         container = new QWidget;
         QHBoxLayout *layout = new QHBoxLayout;
+        QMargins margins = layout->contentsMargins();
+        margins.setTop(0);
+        margins.setBottom(5);
+        layout->setContentsMargins(margins);
         container->setLayout(layout);
         layout->addStretch();
 
@@ -927,6 +931,8 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setItemText(1, Sanguosha->translate(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
     role_combobox->setCurrentIndex(1);
+
+
 }
 
 void RoomScene::clickSkillButton(int order){
@@ -1348,6 +1354,10 @@ void RoomScene::updateTrustButton(){
         trust_button->setText(tr("Cancel trust"));
     else
         trust_button->setText(tr("Trust"));
+}
+
+void RoomScene::updateMark(const QString &mark){
+
 }
 
 void RoomScene::doOkButton(){

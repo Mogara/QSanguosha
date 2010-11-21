@@ -507,7 +507,8 @@ void Player::setMark(const QString &mark, int value){
     if(marks[mark] != value){
         marks[mark] = value;
 
-        emit state_changed();
+        if(mark.startsWith("@"))
+            emit mark_changed(mark);
     }
 }
 

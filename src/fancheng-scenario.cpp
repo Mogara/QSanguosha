@@ -252,6 +252,46 @@ public:
     }
 };
 
+ZhiyuanCard::ZhiyuanCard(){
+
+}
+
+bool ZhiyuanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && to_select != Self && to_select->getRoleEnum() == Player::Rebel;
+}
+
+void ZhiyuanCard::use(const QList<const ClientPlayer *> &) const{
+    int count = ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt();
+    count ++;
+    ClientInstance->turn_tag.insert("zhiyuan_count", count);
+}
+
+void ZhiyuanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    targets.first()->obtainCard(this);
+}
+
+class Zhiyuan: public OneCardViewAsSkill{
+public:
+    Zhiyuan():OneCardViewAsSkill("zhiyuan"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt() < 2;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->inherits("BasicCard");
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ZhiyuanCard *card = new ZhiyuanCard;
+        card->addSubcard(card_item->getCard()->getId());
+
+        return card;
+    }
+};
+
 class FanchengRule: public ScenarioRule{
 public:
     FanchengRule(Scenario *scenario)
@@ -275,7 +315,7 @@ public:
                     room->acquireSkill(pangde, "taichen");
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
-                    room->installEquip(huatuo, "kylin_bow");
+                    room->installEquip(huatuo, "hualiu");
                     room->acquireSkill(huatuo, "guagu");
 
                     ServerPlayer *lumeng = room->findPlayer("lumeng");
@@ -283,6 +323,7 @@ public:
 
                     ServerPlayer *caoren = room->findPlayer("caoren");
                     room->installEquip(caoren, "renwang_shield");
+                    room->acquireSkill(caoren, "zhiyuan");
                 }
 
                 break;
@@ -322,11 +363,13 @@ FanchengScenario::FanchengScenario()
             << new Flood
             << new Taichen
             << new Xiansheng
-            << new Skill("changqu", Skill::Compulsory);
+            << new Skill("changqu", Skill::Compulsory)
+            << new Zhiyuan;
 
     addMetaObject<DujiangCard>();
     addMetaObject<FloodCard>();
     addMetaObject<TaichenCard>();
+    addMetaObject<ZhiyuanCard>();
 
     t["fancheng"] = tr("fancheng");
 
@@ -336,6 +379,7 @@ FanchengScenario::FanchengScenario()
     t["taichen"] = tr("taichen");
     t["changqu"] = tr("changqu");
     t["xiansheng"] = tr("xiansheng");
+    t["zhiyuan"] = tr("zhiyuan");
 
     t[":guagu"] = tr(":guagu");
     t[":dujiang"] = tr(":dujiang");
@@ -343,6 +387,7 @@ FanchengScenario::FanchengScenario()
     t[":taichen"] = tr(":taichen");
     t[":changqu"] = tr(":changqu");
     t[":xiansheng"] = tr(":xiansheng");
+    t[":zhiyuan"] = tr(":zhiyuan");
 
     t["@@dujiang"] = tr("@@dujiang");
 }

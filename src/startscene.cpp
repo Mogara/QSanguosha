@@ -106,23 +106,16 @@ void StartScene::printServerInfo(){
     }
 
     server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
-
-    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));
+    server_log->append(tr("Player count is %1").arg(Config.PlayerCount));   
+    server_log->append(tr("Double renegade is %1").arg(Config.DoubleRenegade ? tr("Enabled") : tr("Disabled")));
 
     if(Config.OperationNoLimit)
         server_log->append(tr("There is no time limit"));
     else
-        server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+        server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));    
 
-    if(Config.FreeChoose)
-        server_log->append(tr("Free general choose is enabled"));
-    else
-        server_log->append(tr("Free general choose is not enabled"));
-
-    if(Config.Enable2ndGeneral)
-        server_log->append(tr("Secondary general is enabled"));
-    else
-        server_log->append(tr("Secondary general is not enabled"));
+    server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
+    server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
 
     if(Config.Scenario.isEmpty())
         server_log->append(tr("Scenario mode is not enabled"));

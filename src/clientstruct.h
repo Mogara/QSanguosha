@@ -16,6 +16,7 @@ struct ServerInfoStruct{
     QMap<QString, bool> Extensions;
     bool FreeChoose;
     bool Enable2ndGeneral;
+    bool DoubleRenegade;
 };
 
 extern ServerInfoStruct ServerInfo;
@@ -37,6 +38,7 @@ private:
     QLabel *address_label;
     QLabel *port_label;
     QLabel *player_count_label;
+    QLabel *double_renegade_label;
     QLabel *two_general_label;
     QLabel *free_choose_label;
     QLabel *scenario_label;

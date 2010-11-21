@@ -18,6 +18,7 @@
 #include <QLabel>
 #include <QRadioButton>
 #include <QApplication>
+#include <QHttp>
 
 static QLayout *HLay(QWidget *left, QWidget *right){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -52,9 +53,15 @@ QLayout *ServerDialog::createLeft(){
 
     player_count_spinbox = new QSpinBox;
     player_count_spinbox->setMinimum(2);
-    player_count_spinbox->setMaximum(8);
+    player_count_spinbox->setMaximum(10);
     player_count_spinbox->setValue(Config.PlayerCount);
     player_count_spinbox->setSuffix(tr(" persons"));
+
+    double_renegade_checkbox = new QCheckBox(tr("Double renegade"));
+    double_renegade_checkbox->setToolTip(tr("Double renegade can be enabled only at 6-player and 8-player game"));
+    double_renegade_checkbox->setEnabled(Config.PlayerCount == 6 || Config.PlayerCount == 8);
+    double_renegade_checkbox->setChecked(Config.DoubleRenegade);
+    connect(player_count_spinbox, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleRenegadeCheckBox(int)));
 
     timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
@@ -127,13 +134,17 @@ QLayout *ServerDialog::createLeft(){
 
     QFormLayout *form_layout = new QFormLayout;
     form_layout->addRow(tr("Server name"), server_name_lineedit);
-    form_layout->addRow(tr("Player count"), player_count_spinbox);
+    form_layout->addRow(tr("Player count"), HLay(player_count_spinbox, double_renegade_checkbox));
     form_layout->addRow(tr("Operation timeout"), timeout_spinbox);
     form_layout->addWidget(nolimit_checkbox);
     form_layout->addRow(extension_box);
     form_layout->addRow(scenario_box);
 
     return form_layout;
+}
+
+void ServerDialog::updateDoubleRenegadeCheckBox(int count){
+    double_renegade_checkbox->setEnabled(count == 6 || count == 8);
 }
 
 QLayout *ServerDialog::createRight(){
@@ -171,6 +182,18 @@ QLayout *ServerDialog::createRight(){
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);
         layout->addWidget(announce_ip_checkbox);
+
+        address_edit = new QLineEdit;
+        address_edit->setText(Config.Address);
+        address_edit->setPlaceholderText(tr("Public IP or domain"));
+        address_edit->setEnabled(announce_ip_checkbox->isChecked());
+        layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
+
+        QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
+        connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+        layout->addWidget(detect_button);
+
+        connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
 
         port_lineedit = new QLineEdit;
         port_lineedit->setText(QString::number(Config.ServerPort));
@@ -221,10 +244,44 @@ QLayout *ServerDialog::createButtonLayout(){
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
     return button_layout;
+}
+
+void ServerDialog::onDetectButtonClicked(){
+    QString host = "www.net.cn";
+    QString path = "/static/customercare/yourIP.asp";
+    QHttp *http = new QHttp(this);
+    http->setHost(host);
+
+    connect(http, SIGNAL(done(bool)), this, SLOT(onHttpDone(bool)));
+    http->get(path);
+}
+
+void ServerDialog::onHttpDone(bool error){
+    QHttp *http = qobject_cast<QHttp *>(sender());
+
+    if(error){
+        QMessageBox::warning(this, tr("Warning"), http->errorString());
+    }else{
+        QRegExp rx("(\\d+\\.\\d+\\.\\d+\\.\\d+)");
+        int index = rx.indexIn(http->readAll());
+        if(index != -1){
+            QString addr = rx.capturedTexts().at(0);
+            address_edit->setText(addr);
+        }
+
+        delete http;
+    }
+}
+
+void ServerDialog::onOkButtonClicked(){
+    if(announce_ip_checkbox->isChecked() && address_edit->text().isEmpty()){
+        QMessageBox::warning(this, tr("Warning"), tr("Please fill address when you want to annouce your server's IP"));
+    }else
+        accept();
 }
 
 bool ServerDialog::config(){
@@ -235,12 +292,14 @@ bool ServerDialog::config(){
 
     Config.ServerName = server_name_lineedit->text();
     Config.PlayerCount = player_count_spinbox->value();
+    Config.DoubleRenegade = double_renegade_checkbox->isChecked() && double_renegade_checkbox->isEnabled();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
+    Config.Address = address_edit->text();
     Config.AILevel = ai_group->checkedId();
     if(scenario_combobox->isEnabled())
         Config.Scenario = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
@@ -250,6 +309,7 @@ bool ServerDialog::config(){
 
     Config.setValue("ServerName", Config.ServerName);
     Config.setValue("PlayerCount", Config.PlayerCount);
+    Config.setValue("DoubleRenegade", Config.DoubleRenegade);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
@@ -259,6 +319,7 @@ bool ServerDialog::config(){
     Config.setValue("Scenario", Config.Scenario);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
+    Config.setValue("Address", Config.Address);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
@@ -321,16 +382,6 @@ static void server_connect(irc_session_t *session,
     server->emitDetectableMessage();
 }
 
-static void dummy_callback(irc_session_t *session,
-                           irc_dcc_t id,
-                           int status,
-                           void *ctx,
-                           const char *data,
-                           unsigned int length)
-{
-
-}
-
 static void server_channel(irc_session_t *session,
                            const char *event,
                            const char *origin,
@@ -371,6 +422,32 @@ static void server_leave(irc_session_t *session,
     server->removeNick(origin);
 }
 
+static void server_numeric(irc_session_t *session,
+                           unsigned int event,
+                           const char *origin,
+                           const char **params,
+                           unsigned int count)
+{
+    if(event > 400){
+        Server *server = static_cast<Server *>(irc_get_ctx(session));
+        QStringList content;
+        unsigned int i;
+        for(i=0; i<count; i++)
+            content << params[i];
+
+        QString msg = QString("origin = %1, content = %2").arg(origin).arg(content.join(","));
+        server->emitServerMessage(msg);
+    }
+}
+
+void Server::emitDetectableMessage(){
+    emit server_message(tr("Server can be detected at WAN"));
+}
+
+void Server::emitServerMessage(const QString &msg){
+    emit server_message(msg);
+}
+
 void Server::daemonize(){
     server->daemonize();
 
@@ -390,6 +467,7 @@ void Server::daemonize(){
         callbacks.event_notice = server_notice;
         callbacks.event_part = server_leave;
         callbacks.event_quit = server_leave;
+        callbacks.event_numeric = server_numeric;
         session = irc_create_session(&callbacks);
 
         irc_set_ctx(session, this);
@@ -437,18 +515,16 @@ void Server::processNewConnection(ClientSocket *socket){
     tellLack();
 }
 
-void Server::emitDetectableMessage(){
-    emit server_message(tr("Server can be detected at WAN"));
-}
-
 void Server::giveInfo(const char *nick)
 {
+    char address[255];
+    qstrcpy(address, "#");
+    strcat(address, Config.Address.toAscii().constData());
+    irc_cmd_notice(session, nick, address);
+
     char server_info[1024];
     qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
-
-    irc_dcc_t dcc;
-    irc_dcc_chat(session, NULL, nick, dummy_callback, &dcc);
-    irc_cmd_notice(session, nick, server_info);
+    irc_cmd_notice(session, nick, server_info);    
 
     nicks << nick;
     tellLack(nick);

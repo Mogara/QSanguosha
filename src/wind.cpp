@@ -68,7 +68,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getCard()->isBlack();
+        return selected.isEmpty() && to_select->getRealCard()->isBlack();
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
@@ -338,6 +338,66 @@ public:
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, Card::Heart), Q_ARG(int, card->getNumber()));
         Card *real_card = qobject_cast<Card *>(card_obj);
         return real_card;
+    }
+};
+
+TianxiangCard::TianxiangCard()
+{
+    target_fixed = true;
+}
+
+class TianxiangViewAsSkill: public OneCardViewAsSkill{
+public:
+    TianxiangViewAsSkill():OneCardViewAsSkill("tianxiang"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@tianxiang";
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped() && to_select->getRealCard()->getSuit() == Card::Heart;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        TianxiangCard *card = new TianxiangCard;
+        card->addSubcard(card_item->getCard()->getId());
+
+        return card;
+    }
+};
+
+class Tianxiang: public TriggerSkill{
+public:
+    Tianxiang():TriggerSkill("tianxiang"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *xiaoqiao, QVariant &data) const{
+        if(!xiaoqiao->isKongcheng()){
+            DamageStruct damage = data.value<DamageStruct>();
+            Room *room = xiaoqiao->getRoom();
+
+            if(room->askForCard(xiaoqiao, "@tianxiang", "@@tianxiang-card")){
+                QList<ServerPlayer *> targets = room->getAllPlayers();
+                ServerPlayer *target = room->askForPlayerChosen(xiaoqiao, targets);
+                damage.to = target;
+
+                room->damage(damage);
+                if(target->isAlive()){
+                    target->drawCards(target->getLostHp());
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 

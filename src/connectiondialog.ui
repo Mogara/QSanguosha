@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>744</width>
-    <height>341</height>
+    <width>826</width>
+    <height>355</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>0</y>
-     <width>221</width>
+     <y>10</y>
+     <width>271</width>
      <height>301</height>
     </rect>
    </property>
@@ -33,7 +33,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>204</width>
+      <width>241</width>
       <height>281</height>
      </rect>
     </property>
@@ -75,24 +75,24 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="portLabel">
        <property name="text">
         <string>Port</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="portLineEdit"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="avatarLabel">
        <property name="text">
         <string>Avatar:</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLabel" name="avatarPixmap">
        <property name="minimumSize">
         <size>
@@ -108,24 +108,24 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QPushButton" name="changeAvatarButton">
        <property name="text">
         <string>Change avatar</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QPushButton" name="detectLANButton">
-       <property name="text">
-        <string>Detect LAN ...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
+     <item row="4" column="1">
       <widget class="QPushButton" name="detectWANButton">
        <property name="text">
         <string>Detect WAN ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QPushButton" name="detectLANButton">
+       <property name="text">
+        <string>Detect LAN ...</string>
        </property>
       </widget>
      </item>
@@ -135,10 +135,10 @@
   <widget class="QListWidget" name="avatarList">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>290</x>
      <y>10</y>
-     <width>491</width>
-     <height>311</height>
+     <width>531</width>
+     <height>331</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -157,8 +157,8 @@
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>310</y>
+     <x>210</x>
+     <y>320</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -170,8 +170,8 @@
   <widget class="QPushButton" name="connectButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>310</y>
+     <x>120</x>
+     <y>320</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -182,7 +182,6 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>nameLineEdit</tabstop>
   <tabstop>avatarList</tabstop>
  </tabstops>
  <resources/>

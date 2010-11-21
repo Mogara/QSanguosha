@@ -42,11 +42,13 @@ void Settings::init(){
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     PlayerCount = value("PlayerCount", 2).toInt();
+    DoubleRenegade = value("DoubleRenegade", false).toBool();
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     AnnounceIP = value("AnnounceIP", false).toBool();
+    Address = value("Address", QString()).toString();
     AILevel = value("AILevel", 2).toInt();
     Scenario = value("Scenario").toString();
     ServerPort = value("ServerPort", 9527u).toUInt();
@@ -73,9 +75,9 @@ void Settings::init(){
             algorithm = QCryptographicHash::Sha1;
 
         QString hash = QCryptographicHash::hash(combined.toAscii(), algorithm).toHex().toUpper().right(10);
-        IrcNick = QString("SGS-%1").arg(hash);
+        IrcNick = QString("SGS_%1").arg(hash);
     }
-    IrcChannel = value("IrcChannel", "#qsanguosha").toString();
+    IrcChannel = value("IrcChannel", "#sanguosha").toString();
 
     UserName = value("UserName", getenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")

@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(\\d+):(\\d+):([+\\w]*):(\\w*):([FS]*)");
+    QRegExp rx("(.*):(\\d+):(\\d+):([+\\w]*):(\\w*):([FSD]*)");
     if(!rx.exactMatch(str))
         return false;
 
@@ -39,6 +39,7 @@ bool ServerInfoStruct::parse(const QString &str){
 
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
+    DoubleRenegade = flags.contains("D");
 
     return true;
 }
@@ -49,6 +50,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     address_label = new QLabel;
     port_label = new QLabel;
     player_count_label = new QLabel;
+    double_renegade_label = new QLabel;
     two_general_label = new QLabel;
     free_choose_label = new QLabel;
     scenario_label = new QLabel;
@@ -60,6 +62,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Address"), address_label);
     layout->addRow(tr("Port"), port_label);
     layout->addRow(tr("Player count"), player_count_label);
+    layout->addRow(tr("Double renegade"), double_renegade_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
     layout->addRow(tr("Free choose"), free_choose_label);
     layout->addRow(tr("Scenario mode"), scenario_label);
@@ -80,14 +83,15 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     address_label->setText(address);
     port_label->setText(QString::number(Config.ServerPort));
     player_count_label->setText(QString::number(info.PlayerCount));
+    double_renegade_label->setText(info.DoubleRenegade ? tr("Enabled") : tr("Disabled"));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
 
     QString scenario_text;
-    if(Config.Scenario.isEmpty())
+    if(info.Scenario.isEmpty())
         scenario_text = tr("Disabled");
     else
-        scenario_text = Sanguosha->translate(Config.Scenario);
+        scenario_text = Sanguosha->translate(info.Scenario);
     scenario_label->setText(scenario_text);
 
     if(info.OperationTimeout == 0)

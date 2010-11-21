@@ -746,7 +746,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->isBlack();
+        return to_select->getRealCard()->isBlack();
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{

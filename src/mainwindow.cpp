@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include "audiere.h"
 #include "libircclient.h"
+#include "scenario-overview.h"
 
 extern audiere::AudioDevicePtr Device;
 
@@ -72,11 +73,10 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionAbout;
+            << ui->actionScenario_Overview;
 
-    foreach(QAction *action, actions){
-        start_scene->addButton(action);
-    }
+    foreach(QAction *action, actions)
+        start_scene->addButton(action);    
 
     scene = start_scene;
     FitView *view = new FitView(scene);
@@ -374,4 +374,49 @@ void MainWindow::on_actionMinimize_to_system_tray_triggered()
 
         hide();
     }
+}
+
+void MainWindow::on_actionRole_assign_table_triggered()
+{
+    QString content;
+
+    QStringList headers;
+    headers << tr("Count") << tr("Lord") << tr("Loyalist") << tr("Rebel") << tr("Renegade");
+    foreach(QString header, headers)
+        content += QString("<th>%1</th>").arg(header);
+
+    content = QString("<tr>%1</tr>").arg(content);
+
+    QStringList rows;
+    rows << "2 1 0 1 0" << "3 1 0 1 1" << "4 1 0 2 1"
+            << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
+            << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
+            << "9 1 3 4 1" << "10 1 3 4 2";
+
+    foreach(QString row, rows){
+        QStringList cells = row.split(" ");
+        QString header = cells.takeFirst();
+        if(header.endsWith("d")){
+            header.chop(1);
+            header += tr(" (double renegade)");
+        }
+
+        QString row_content;
+        row_content = QString("<td>%1</td>").arg(header);
+        foreach(QString cell, cells){
+            row_content += QString("<td>%1</td>").arg(cell);
+        }
+
+        content += QString("<tr>%1</tr>").arg(row_content);
+    }
+
+    content = QString("<table border='1'>%1</table").arg(content);
+
+    QMessageBox::information(this, tr("Role assign table"), content);
+}
+
+void MainWindow::on_actionScenario_Overview_triggered()
+{
+    ScenarioOverview *dialog = new ScenarioOverview(this);
+    dialog->show();
 }

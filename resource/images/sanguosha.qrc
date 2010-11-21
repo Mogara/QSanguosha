@@ -56,5 +56,6 @@
         <file>kingdom/god.png</file>
         <file>settings.png</file>
         <file>number/8.png</file>
+        <file>number/9.png</file>
     </qresource>
 </RCC>
