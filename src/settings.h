@@ -26,8 +26,7 @@ public:
     // server side
     QString ServerName;
     int CountDownSeconds;
-    int PlayerCount;
-    bool DoubleRenegade;
+    QString GameMode;
     QStringList BanPackages;
     bool FreeChoose;
     bool ForbidSIMC;
@@ -35,7 +34,6 @@ public:
     bool AnnounceIP;
     QString Address;
     int AILevel;
-    QString Scenario;
     ushort ServerPort;
 
     QString IrcHost;

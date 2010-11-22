@@ -395,7 +395,6 @@ public:
             const Card *card = room->getJudgeCard(wolong);
             if(card->isRed()){
                 Jink *jink = new Jink(Card::NoSuit, 0);
-                jink->setSkillName(objectName());
                 room->provide(jink);
                 room->setEmotion(wolong, Room::Good);
                 return true;

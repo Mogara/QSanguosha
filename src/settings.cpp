@@ -41,8 +41,7 @@ void Settings::init(){
     UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
-    PlayerCount = value("PlayerCount", 2).toInt();
-    DoubleRenegade = value("DoubleRenegade", false).toBool();
+    GameMode = value("GameMode", "02p").toString();
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
@@ -50,7 +49,6 @@ void Settings::init(){
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
     AILevel = value("AILevel", 2).toInt();
-    Scenario = value("Scenario").toString();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
     QString default_host;
