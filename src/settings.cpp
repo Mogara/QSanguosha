@@ -46,6 +46,7 @@ void Settings::init(){
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
+    MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
     AILevel = value("AILevel", 2).toInt();

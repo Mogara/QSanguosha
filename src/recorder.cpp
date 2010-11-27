@@ -1,4 +1,5 @@
 #include "recorder.h"
+#include "client.h"
 
 #include <stdlib.h>
 
@@ -17,7 +18,7 @@ void Recorder::record(char *line)
     data.append(QString("%1 %2").arg(elapsed).arg(line));
 }
 
-bool Recorder::save(const QString &filename){
+bool Recorder::save(const QString &filename) const{
     QFile file(filename);
     if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
         return file.write(data) != -1;
@@ -31,8 +32,6 @@ Replayer::Replayer(QObject *parent, const QString &filename)
 
 }
 
-#include "client.h"
-
 void Replayer::run(){
     QFile file(filename);
 
@@ -42,7 +41,8 @@ void Replayer::run(){
     typedef char buffer_t[1024];
 
     int last = 0;
-    static int minimum_delay = 2500;
+    QStringList nondelays;
+    nondelays << "addPlayer" << "removePlayer" << "speak";
 
     while(!file.atEnd()){
         buffer_t line;
@@ -50,18 +50,30 @@ void Replayer::run(){
         file.readLine(line, sizeof(buffer_t));
 
         char *space = strchr(line, ' ');
-        if(space){
-            *space = '\0';
+        if(space == NULL)
+            continue;
 
-            int elapsed = atoi(line);
-            int delay = elapsed - last;
-            delay = qMin(delay, minimum_delay);
-            msleep(delay);
-            last = elapsed;
+        *space = '\0';
+        QString cmd = space + 1;
 
-            QString cmd = space + 1;
-            emit command_parsed(cmd);
+        int elapsed = atoi(line);
+        int delay = qMin(elapsed - last, 2500);
+        last = elapsed;
+
+        bool delayed = true;
+        foreach(QString nondelay, nondelays){
+            if(cmd.startsWith(nondelay)){
+                delayed = false;
+                break;
+            }
         }
+
+        if(cmd.startsWith("startInXs"))
+            continue;
+
+        if(delayed)
+            msleep(delay);
+        emit command_parsed(cmd);
     }
 
     file.close();

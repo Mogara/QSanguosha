@@ -6,7 +6,7 @@
 
 DiscardSkill::DiscardSkill()
     :ViewAsSkill("discard"), card(new DummyCard),
-    num(0), include_equip(false), suit(Card::NoSuit)
+    num(0), include_equip(false)
 {
     card->setParent(this);
 }
@@ -19,18 +19,11 @@ void DiscardSkill::setIncludeEquip(bool include_equip){
     this->include_equip = include_equip;
 }
 
-void DiscardSkill::setSuit(Card::Suit suit){
-    this->suit = suit;
-}
-
 bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
     if(selected.length() >= num)
         return false;
 
     if(!include_equip && to_select->isEquipped())
-        return false;
-
-    if(suit != Card::NoSuit && to_select->getCard()->getSuit() != suit)
         return false;
 
     return true;

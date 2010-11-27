@@ -21,15 +21,73 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << Death;
+        events << Damage;
         frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
+        return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.to->hasSkill(objectName())){
+            Room *room = player->getRoom();
+            room->setPlayerMarkDelta(player, "@nightmare", damage.damage);
+        }
+
+        return false;
+    }
+};
+
+class WuhunRevenge: public TriggerSkill{
+public:
+    WuhunRevenge():TriggerSkill("#wuhun"){
+        events << Death;
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill("wuhun");
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *shenguanyu, QVariant &) const{
+        Room *room = shenguanyu->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(shenguanyu);
+        players << shenguanyu;
+
+        int max = 0;
+        foreach(ServerPlayer *player, players){
+            int value = player->getMark("@nightmare");
+            if(value > max)
+                max = value;
+        }
+
+        if(max == 0)
+            return false;
+
+        QList<ServerPlayer *> foes;
+        foreach(ServerPlayer *player, players){
+            if(player->getMark("@nightmare") == max)
+                foes << player;
+        }
+
+        if(foes.isEmpty())
+            return false;
+
+        ServerPlayer *foe;
+        if(foes.length() == 1)
+            foe = foes.first();
+        else
+            foe = room->askForPlayerChosen(shenguanyu, foes);
+
+        const Card *card = room->getJudgeCard(foe);
+        if(!card->inherits("Peach") && !card->inherits("GodSalvation") && foe != shenguanyu)
+            room->killPlayer(foe);
+
         return false;
     }
 };
@@ -171,7 +229,7 @@ void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
 class GreatYeyan: public ViewAsSkill{
 public:
     GreatYeyan(): ViewAsSkill("greatyeyan"){
-
+        frequency = Limited;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -221,7 +279,7 @@ public:
 class SmallYeyan: public ZeroCardViewAsSkill{
 public:
     SmallYeyan():ZeroCardViewAsSkill("smallyeyan"){
-
+        frequency = Limited;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -309,36 +367,36 @@ void Feiying::onGameStart(ServerPlayer *player) const
     player->getRoom()->setPlayerCorrect(player, "F");
 };
 
+class BaonuStart: public GameStartSkill{
+public:
+    BaonuStart():GameStartSkill("#baonu"){
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        room->setPlayerMarkDelta(player, "@wrath", +2);
+    }
+};
+
 class Baonu: public TriggerSkill{
 public:
     Baonu():TriggerSkill("baonu"){
-        events << GameStart<< Damage << Damaged;
+        events << Damage << Damaged;
         frequency = Compulsory;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
-        return -1;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == GameStart){
-            player->setMark("anger", 2);
-        }else{
-            if(player->isAlive()){
-                DamageStruct damage = data.value<DamageStruct>();
-                int value = player->getMark("anger");
-                value += damage.damage;
-                player->getRoom()->setPlayerMark(player, "anger", value);
-            }
-        }
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        Room *room = player->getRoom();
+        room->setPlayerMarkDelta(player, "@wrath", damage.damage);
 
         return false;
     }
 };
 
-class Wumo: public TriggerSkill{
+class Wumou: public TriggerSkill{
 public:
-    Wumo():TriggerSkill("wumo"){
+    Wumou():TriggerSkill("wumou"){
         events << CardUsed;
         frequency = Compulsory;
     }
@@ -360,7 +418,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("baonu") >= 6;
+        return Self->getMark("@wrath") >= 6;
     }
 
     virtual const Card *viewAs() const{
@@ -374,15 +432,9 @@ ShenfenCard::ShenfenCard(){
 }
 
 void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    source->turnOver();
-    room->broadcastProperty(source, "faceup");
-
-    int value = source->getMark("baonu");
-    value -= 6;
-    room->setPlayerMark(source, "baonu", value);
+    room->setPlayerMarkDelta(source, "@wrath", -6);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
-
     foreach(ServerPlayer *player, players){
         DamageStruct damage;
         damage.card = this;
@@ -397,10 +449,38 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 
     foreach(ServerPlayer *player, players){
-        int discard_num = qMin(player->getHandcardNum(), 4);
-        room->askForDiscard(player, discard_num);
+        if(player->getHandcardNum() <= 4)
+            player->throwAllHandCards();
+        else
+            room->askForDiscard(player, 4);
     }
+
+    source->turnOver();
+    room->broadcastProperty(source, "faceup");
 }
+
+WuqianCard::WuqianCard(){
+
+}
+
+void WuqianCard::onEffect(const CardEffectStruct &effect) const{
+
+}
+
+class Wuqian: public ZeroCardViewAsSkill{
+public:
+    Wuqian():ZeroCardViewAsSkill("wuqian"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("@wrath") >= 2;
+    }
+
+    virtual const Card *viewAs() const{
+        return new WuqianCard;
+    }
+};
 
 WushenSlash::WushenSlash(Card::Suit suit, int number)
     :Slash(suit, number)
@@ -428,6 +508,138 @@ public:
     }
 };
 
+class QixingStart: public GameStartSkill{
+public:
+    QixingStart():GameStartSkill("#qixing"){
+
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        // FIXME:
+    }
+};
+
+class Qixing: public PhaseChangeSkill{
+public:
+    Qixing():PhaseChangeSkill("qixing"){
+        frequency = Frequent;
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getMark("@star") > 0;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Draw){
+
+        }
+
+        return false;
+    }
+};
+
+KuangfengCard::KuangfengCard(){
+
+}
+
+bool KuangfengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty();
+}
+
+void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->setPlayerMarkDelta(effect.to, "@gale", +1);
+}
+
+class KuangfengViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    KuangfengViewAsSkill():ZeroCardViewAsSkill("kuangfeng"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("@star") > 0;
+    }
+
+    virtual const Card *viewAs() const{
+        return new KuangfengCard;
+    }
+};
+
+class Kuangfeng: public TriggerSkill{
+public:
+    Kuangfeng():TriggerSkill("kuangfeng"){
+        view_as_skill = new KuangfengViewAsSkill;
+
+        events << Predamaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@gale") > 0;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature == DamageStruct::Fire){
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
+DawuCard::DawuCard(){
+
+}
+
+bool DawuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < Self->getMark("@star");
+}
+
+void DawuCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->setPlayerMarkDelta(effect.to, "@fog", +1);
+}
+
+class DawuViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    DawuViewAsSkill():ZeroCardViewAsSkill("dawu"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("@star") > 0;
+    }
+
+    virtual const Card *viewAs() const{
+        return new DawuCard;
+    }
+};
+
+class Dawu: public TriggerSkill{
+public:
+    Dawu():TriggerSkill("dawu"){
+        view_as_skill = new DawuViewAsSkill;
+
+        events << Predamaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@dawu") > 0;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature != DamageStruct::Thunder)
+            return true;
+        else
+            return false;
+    }
+};
+
 GodPackage::GodPackage()
     :Package("god")
 {
@@ -435,7 +647,8 @@ GodPackage::GodPackage()
 
     General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     shenguanyu->addSkill(new Wushen);
-    //shenguanyu->addSkill(new Wuhun);
+    shenguanyu->addSkill(new Wuhun);
+    shenguanyu->addSkill(new WuhunRevenge);
 
     General *shenlumeng = new General(this, "shenlumeng", "god", 3);
     shenlumeng->addSkill(new Shelie);
@@ -465,7 +678,11 @@ GodPackage::GodPackage()
     shenzhouyu->addSkill(new MediumYeyan);
     shenzhouyu->addSkill(new SmallYeyan);
 
-    //General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
+    General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
+    shenzhugeliang->addSkill(new Qixing);
+    shenzhugeliang->addSkill(new QixingStart);
+    shenzhugeliang->addSkill(new Kuangfeng);
+    shenzhugeliang->addSkill(new Dawu);
 
     t["shenzhouyu"] = tr("shenzhouyu");
     t["shenzhugeliang"] = tr("shenzhugeliang");
@@ -490,9 +707,12 @@ GodPackage::GodPackage()
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 
-    //General *shenlubu = new General(this, "shenlubu", "god", 5);
-    //shenlubu->addSkill(new Baonu);
-    //shenlubu->addSkill(new Shenfen);
+    General *shenlubu = new General(this, "shenlubu", "god", 5);
+    shenlubu->addSkill(new Baonu);
+    shenlubu->addSkill(new BaonuStart);
+    shenlubu->addSkill(new Wumou);
+    shenlubu->addSkill(new Wuqian);
+    shenlubu->addSkill(new Shenfen);
 
     t["shencaocao"] = tr("shencaocao");
     t["shenlubu"] = tr("shenlubu");
@@ -514,6 +734,13 @@ GodPackage::GodPackage()
     t["#GetMark"] = tr("#GetMark");
     t["#LoseMark"] = tr("#LoseMark");
 
+    // marks
+    t["@nightmare"] = tr("@nightmare");
+    t["@wrath"] = tr("@wrath");
+    t["@star"] = tr("@star");
+    t["@fog"] = tr("@fog");
+    t["@gale"] = tr("@gale");
+
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
     addMetaObject<ShenfenCard>();
@@ -521,6 +748,8 @@ GodPackage::GodPackage()
     addMetaObject<MediumYeyanCard>();
     addMetaObject<SmallYeyanCard>();
     addMetaObject<WushenSlash>();
+    addMetaObject<KuangfengCard>();
+    addMetaObject<DawuCard>();
 }
 
 ADD_PACKAGE(God)

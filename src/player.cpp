@@ -3,6 +3,7 @@
 #include "room.h"
 #include "client.h"
 #include "standard.h"
+#include "settings.h"
 
 Player::Player(QObject *parent)
     :QObject(parent), general(NULL), general2(NULL),
@@ -182,7 +183,15 @@ int Player::getGeneralMaxHP() const{
     int first = general->getMaxHp();
     int second = general2 ? general2->getMaxHp() : 3;
 
-    return qMin(first + second - 3, 8);
+    int max_hp;
+    switch(Config.MaxHpScheme){
+    case 1: max_hp = qMin(first, second); break;
+    case 0:
+    default:
+        max_hp = first + second - 3; break;
+    }
+
+    return qMin(max_hp, 8);
 }
 
 void Player::setGeneralName(const QString &general_name){

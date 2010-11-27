@@ -2,6 +2,7 @@
 #define ROOM_H
 
 class TriggerSkill;
+class ProhibitSkill;
 class Scenario;
 
 #include "serverplayer.h"
@@ -53,6 +54,7 @@ public:
     void setPlayerCorrect(ServerPlayer *player, const QString &correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
+    void setPlayerMarkDelta(ServerPlayer *player, const QString &mark, int delta);
     void useCard(const CardUseStruct &card_use);
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
@@ -83,6 +85,9 @@ public:
     int getCardFromPile(const QString card_name);
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
+
+    void addProhibitSkill(const ProhibitSkill *skill);
+    bool isProhibited(Player *from, Player *to, const Card *card) const;
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
@@ -127,7 +132,7 @@ public:
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
-    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false, Card::Suit suit = Card::NoSuit);
+    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
@@ -186,6 +191,8 @@ private:
 
     QVariantMap tag;
     const Scenario *scenario;
+
+    QList<const ProhibitSkill *> prohibit_skills;
 
     static QString generatePlayerName();
 

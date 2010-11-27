@@ -19,7 +19,8 @@ public:
     enum Frequency{
         Frequent,
         NotFrequent,
-        Compulsory
+        Compulsory,
+        Limited
     };
 
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
@@ -158,6 +159,16 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
+};
+
+class ProhibitSkill: public GameStartSkill{
+    Q_OBJECT
+
+public:
+    ProhibitSkill(const QString &name);
+
+    virtual void onGameStart(ServerPlayer *player) const;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 
 class WeaponSkill: public TriggerSkill{

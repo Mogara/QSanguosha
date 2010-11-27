@@ -2,6 +2,8 @@
 #define SERVER_H
 
 class Room;
+class QGroupBox;
+class QLabel;
 
 #include "socket.h"
 #include "detector.h"
@@ -27,15 +29,19 @@ private:
     QLayout *createRight();
     QLayout *createButtonLayout();
 
+    QGroupBox *createGameModeBox();
+
     QLineEdit *server_name_edit;
-    QLineEdit *player_count_edit;
     QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *second_general_checkbox;
+    QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
+    QComboBox *challenge_combobox;
+    QLabel *challenge_label;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
 
@@ -47,7 +53,7 @@ private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void onHttpDone(bool error);
-    void onGameModeChanged();
+    void updateChallengeLabel(int index);
 };
 
 class Scenario;

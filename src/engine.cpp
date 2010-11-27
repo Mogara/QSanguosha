@@ -4,6 +4,7 @@
 #include "ai.h"
 #include "settings.h"
 #include "scenario.h"
+#include "challengemode.h"
 
 extern audiere::AudioDevicePtr Device;
 
@@ -70,8 +71,12 @@ Engine::Engine()
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
+    modes["08boss"] = tr("8 players (boss mode)");
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
+
+    challenge_mode_set = new ChallengeModeSet(this);
+    addPackage(challenge_mode_set);
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -87,6 +92,14 @@ void Engine::addScenario(Scenario *scenario){
 
 const Scenario *Engine::getScenario(const QString &name) const{
     return scenarios.value(name, NULL);
+}
+
+const ChallengeModeSet *Engine::getChallengeModeSet() const{
+    return challenge_mode_set;
+}
+
+const ChallengeMode *Engine::getChallengeMode(const QString &name) const{
+    return challenge_mode_set->getMode(name);
 }
 
 void Engine::addPackage(Package *package){
@@ -136,6 +149,25 @@ QStringList Engine::getBanPackages() const{
 
 QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
+}
+
+QString Engine::getRoleString(const QString &role) const{
+    if(ServerInfo.GameMode == "08boss"){
+        if(role == "lord")
+            return tr("boss");
+        else if(role == "renegade")
+            return tr("guardian");
+        else if(role == "loyalist")
+            return tr("citizen");
+        else
+            return tr("hero");
+    }else if(ServerInfo.GameMode == "06_3v3"){
+        if(role == "lord" || role == "renegade")
+            return tr("marshal");
+        else
+            return tr("vanguard");
+    }else
+        return translate(role);
 }
 
 const General *Engine::getGeneral(const QString &name) const{
@@ -243,11 +275,10 @@ QMap<QString, QString> Engine::getAvailableModes() const{
 QString Engine::getModeName(const QString &mode) const{
     if(modes.contains(mode))
         return modes.value(mode);
-    else{
-        const Scenario *scenario = scenarios.value(mode, NULL);
-        if(scenario)
-            return translate(scenario->objectName());
-    }
+    else if(mode.startsWith("@"))
+        return tr("%1 [Challenge mode]").arg(translate(mode));
+    else
+        return tr("%1 [Scenario mode]").arg(translate(mode));
 
     return QString();
 }
@@ -258,6 +289,11 @@ int Engine::getPlayerCount(const QString &mode) const{
         int index = rx.indexIn(mode);
         if(index != -1)
             return rx.capturedTexts().first().toInt();
+    }else if(mode.startsWith("@")){
+        // challenge mode
+        const ChallengeMode *cmode = challenge_mode_set->getMode(mode);
+        if(cmode)
+            return cmode->getGenerals().length() * 2;
     }else{
         // scenario mode
         const Scenario *scenario = scenarios.value(mode, NULL);

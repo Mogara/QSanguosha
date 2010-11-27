@@ -56,7 +56,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 class DujiangViewAsSkill: public ViewAsSkill{
 public:
     DujiangViewAsSkill():ViewAsSkill("dujiang"){
-
+        frequency = Limited;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -157,7 +157,7 @@ void FloodCard::onEffect(const CardEffectStruct &effect) const{
 class Flood: public ViewAsSkill{
 public:
     Flood():ViewAsSkill("flood"){
-
+        frequency = Limited;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -220,7 +220,7 @@ public:
 class Xiansheng: public PhaseChangeSkill{
 public:
     Xiansheng():PhaseChangeSkill("xiansheng"){
-
+        frequency = Limited;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

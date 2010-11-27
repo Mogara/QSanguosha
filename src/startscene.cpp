@@ -26,9 +26,15 @@ StartScene::StartScene()
     email_text->setBrush(Qt::white);
     email_text->setPos(Config.Rect.width()/2 - email_text->boundingRect().width(),
                        Config.Rect.height()/2 - email_text->boundingRect().height());
+
+//    logo = new Pixmap("start.jpg");
+//    logo->shift();
+//    addItem(logo);
 }
 
 void StartScene::addButton(QAction *action){
+    //return;
+
     qreal menu_height = Config.BigFont.pixelSize();
     Button *button = new Button(action->text());
     connect(button, SIGNAL(clicked()), action, SLOT(trigger()));

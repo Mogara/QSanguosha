@@ -6,6 +6,7 @@
 #include "ircdetector.h"
 #include "banpairdialog.h"
 #include "scenario.h"
+#include "challengemode.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -19,6 +20,7 @@
 #include <QRadioButton>
 #include <QApplication>
 #include <QHttp>
+#include <QAction>
 
 static QLayout *HLay(QWidget *left, QWidget *right){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -51,63 +53,6 @@ QLayout *ServerDialog::createLeft(){
     server_name_edit = new QLineEdit;
     server_name_edit->setText(Config.ServerName);
 
-    player_count_edit = new QLineEdit;
-    player_count_edit->setReadOnly(true);
-
-    QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
-    mode_group = new QButtonGroup;
-    {
-        QVBoxLayout *layout = new QVBoxLayout;
-
-        QMap<QString, QString> modes = Sanguosha->getAvailableModes();
-        QMapIterator<QString, QString> itor(modes);
-        while(itor.hasNext()){
-            itor.next();
-
-            QRadioButton *button = new QRadioButton(itor.value());
-            button->setObjectName(itor.key());
-
-            layout->addWidget(button);
-            mode_group->addButton(button);
-
-            if(itor.key() == Config.GameMode)
-                button->setChecked(true);
-        }
-
-        // add scenario modes
-        QRadioButton *scenario_button = new QRadioButton(tr("Scenario mode"));
-        scenario_button->setObjectName("scenario");
-
-        layout->addWidget(scenario_button);
-        mode_group->addButton(scenario_button);
-
-        scenario_combobox = new QComboBox;
-        QStringList names = Sanguosha->getScenarioNames();
-        foreach(QString name, names){
-            QVariant data = name;
-            QString text = Sanguosha->translate(name);
-            scenario_combobox->addItem(text, data);
-        }
-        layout->addWidget(scenario_combobox);
-        connect(scenario_button, SIGNAL(toggled(bool)), scenario_combobox, SLOT(setEnabled(bool)));
-
-        mode_box->setLayout(layout);
-
-        if(mode_group->checkedButton() == NULL){
-            int index = names.indexOf(Config.GameMode);
-            if(index != -1){
-                scenario_button->setChecked(true);
-                scenario_combobox->setCurrentIndex(index);
-            }
-        }else
-            scenario_combobox->setEnabled(false);
-
-        connect(mode_group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onGameModeChanged()));
-        connect(scenario_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(onGameModeChanged()));
-
-        onGameModeChanged();
-    }
-
     timeout_spinbox = new QSpinBox;
     timeout_spinbox->setMinimum(5);
     timeout_spinbox->setMaximum(30);
@@ -122,20 +67,118 @@ QLayout *ServerDialog::createLeft(){
     QFormLayout *form_layout = new QFormLayout;
     form_layout->addRow(tr("Server name"), server_name_edit);
     form_layout->addRow(tr("Operation timeout"), HLay(timeout_spinbox, nolimit_checkbox));
-    form_layout->addRow(tr("Player count"), player_count_edit);
-    form_layout->addRow(mode_box);
+    form_layout->addRow(createGameModeBox());
 
     return form_layout;
 }
 
-void ServerDialog::onGameModeChanged(){
-    if(scenario_combobox->isEnabled())
-        Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
-    else
-        Config.GameMode = mode_group->checkedButton()->objectName();
+QGroupBox *ServerDialog::createGameModeBox(){
+    QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
+    mode_group = new QButtonGroup;
 
-    int count = Sanguosha->getPlayerCount(Config.GameMode);
-    player_count_edit->setText(QString::number(count));
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    {
+        // normal modes
+        QMap<QString, QString> modes = Sanguosha->getAvailableModes();
+        QMapIterator<QString, QString> itor(modes);
+        while(itor.hasNext()){
+            itor.next();
+
+            QRadioButton *button = new QRadioButton(itor.value());
+            button->setObjectName(itor.key());
+
+            layout->addWidget(button);
+            mode_group->addButton(button);
+
+            if(itor.key() == Config.GameMode)
+                button->setChecked(true);
+        }
+    }
+
+    {
+        // add scenario modes
+        QRadioButton *scenario_button = new QRadioButton(tr("Scenario mode"));
+        scenario_button->setObjectName("scenario");
+
+        layout->addWidget(scenario_button);
+        mode_group->addButton(scenario_button);
+
+        scenario_combobox = new QComboBox;
+        QStringList names = Sanguosha->getScenarioNames();
+        foreach(QString name, names){
+            QString scenario_name = Sanguosha->translate(name);
+            const Scenario *scenario = Sanguosha->getScenario(name);
+            int count = scenario->getPlayerCount();
+            QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
+            scenario_combobox->addItem(text, name);
+        }
+        layout->addWidget(scenario_combobox);
+
+        if(mode_group->checkedButton() == NULL){
+            int index = names.indexOf(Config.GameMode);
+            if(index != -1){
+                scenario_button->setChecked(true);
+                scenario_combobox->setCurrentIndex(index);
+            }
+        }
+    }
+
+    {
+        // add challenge modes
+        QRadioButton *challenge_button = new QRadioButton(tr("Challenge mode"));
+        challenge_button->setObjectName("challenge");
+
+        layout->addWidget(challenge_button);
+        mode_group->addButton(challenge_button);
+
+        challenge_combobox = new QComboBox;
+        layout->addWidget(challenge_combobox);
+
+        const ChallengeModeSet *set = Sanguosha->getChallengeModeSet();
+        QList<const ChallengeMode *> modes = set->allModes();
+        QStringList names;
+        foreach(const ChallengeMode *mode, modes)
+            names << mode->objectName();
+
+        foreach(QString name, names){
+            QString text = Sanguosha->translate(name);
+            challenge_combobox->addItem(text, name);
+        }
+
+        challenge_label = new QLabel;
+        layout->addWidget(challenge_label);
+
+        connect(challenge_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateChallengeLabel(int)));
+
+        if(mode_group->checkedButton() == NULL){
+            int index = names.indexOf(Config.GameMode);
+            if(index != -1){
+                challenge_button->setChecked(true);
+                challenge_combobox->setCurrentIndex(index);
+                updateChallengeLabel(index);
+            }
+        }else
+            updateChallengeLabel(0);
+    }
+
+    mode_box->setLayout(layout);
+
+    return mode_box;
+}
+
+void ServerDialog::updateChallengeLabel(int index){
+    QString name = challenge_combobox->itemData(index).toString();
+    const ChallengeMode *mode = Sanguosha->getChallengeMode(name);
+
+    if(mode){
+        QStringList generals = mode->getGenerals();
+        int i;
+        for(i=0; i<generals.size(); i++)
+            generals[i] = Sanguosha->translate(generals.at(i));
+        QString general_str = generals.join("+");
+        challenge_label->setText(tr("Defence: %1").arg(general_str));
+    }
 }
 
 QLayout *ServerDialog::createRight(){
@@ -182,7 +225,21 @@ QLayout *ServerDialog::createRight(){
         forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
         layout->addWidget(forbid_same_ip_checkbox);
 
-        second_general_checkbox = new QCheckBox(tr("Enable second general"));
+        second_general_checkbox = new QCheckBox(tr("Enable second general"));        
+        layout->addWidget(second_general_checkbox);
+
+        max_hp_scheme_combobox = new QComboBox;
+        max_hp_scheme_combobox->addItem(tr("Sum - 3"));
+        max_hp_scheme_combobox->addItem(tr("Minimum"));
+        max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
+        max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
+        connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));
+
+        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+
+
+        layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
+
 
         /*
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
@@ -190,12 +247,10 @@ QLayout *ServerDialog::createRight(){
         connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
 
         connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
-        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+
 
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
         */
-
-        layout->addWidget(second_general_checkbox);
 
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);
@@ -315,10 +370,20 @@ bool ServerDialog::config(){
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
+    Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.AILevel = ai_group->checkedId();
     Config.ServerPort = port_edit->text().toInt();
+
+    // game mode
+    QString objname = mode_group->checkedButton()->objectName();
+    if(objname == "scenario")
+        Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
+    else if(objname == "challenge")
+        Config.GameMode = challenge_combobox->itemData(challenge_combobox->currentIndex()).toString();
+    else
+        Config.GameMode = objname;
 
     Config.setValue("ServerName", Config.ServerName);
     Config.setValue("GameMode", Config.GameMode);
@@ -327,6 +392,7 @@ bool ServerDialog::config(){
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
+    Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("AILevel", Config.AILevel);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);

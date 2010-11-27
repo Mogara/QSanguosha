@@ -162,6 +162,7 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(mark_changed(QString)), this, SLOT(updateMarks(QString)));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     }else{
         role_combobox->clear();
@@ -222,9 +223,52 @@ void Photo::refresh(){
 void Photo::updateRoleCombobox(const QString &new_role){
     role_combobox->clear();
     QIcon icon(QString(":/roles/%1.png").arg(new_role));
-    QString caption = Sanguosha->translate(new_role);
+    QString caption = Sanguosha->getRoleString(new_role);
     role_combobox->addItem(icon, caption);
     role_combobox->setEnabled(false);
+}
+
+void Photo::updateMarks(const QString &mark){
+    QGraphicsPixmapItem *item;
+    QGraphicsSimpleTextItem *text;
+    if(!mark_items.contains(mark)){
+        QPixmap mark_pixmap(QString("marks/%1.png").arg(mark));
+
+        item = new QGraphicsPixmapItem(mark_pixmap, this);
+        text = new QGraphicsSimpleTextItem(this);
+        text->setParentItem(this);
+        QFont font;
+        font.setPixelSize(Config.SmallFont.pixelSize());
+        text->setFont(font);
+
+        mark_items.insert(mark, item);
+        mark_texts.insert(mark, text);
+
+        // set mark position
+        qreal x = pixmap.width() - 25;
+        qreal y = (mark_items.size()-1) * pixmap.width();
+        item->setPos(x, y);
+        text->setPos(x, y);
+    }else{
+        item = mark_items.value(mark);
+        text = mark_texts.value(mark);
+    }
+
+    int value = player->getMark(mark);
+    if(value == 0){
+        item->hide();
+        text->hide();
+    }else if(value == 1){
+        item->show();
+        text->hide();
+    }else{
+        text->setText(QString::number(value));
+
+        item->show();
+        text->show();
+    }
+
+    update();
 }
 
 const ClientPlayer *Photo::getPlayer() const{
@@ -380,8 +424,6 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawPixmap(0, 72, handcard);
         painter->drawText(8, 95, QString::number(n));
     }
-
-
 
     if(player->getPhase() != Player::NotActive){
         painter->drawRect(boundingRect());

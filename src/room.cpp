@@ -413,10 +413,9 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
             Card *vcard = new Nullification(card->getSuit(), card->getNumber());
             vcard->addSubcard(card_id);
             vcard->setSkillName("kanpo");
-            card = vcard;
-            playSkillEffect("kanpo");
-        }else
-            playCardEffect("nullification", player->getGeneral()->isMale());
+            card = vcard;            
+        }
+        player->playCardEffect(card);
 
         LogMessage log;
         log.type = "#UseCard";
@@ -499,7 +498,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(card){
         throwCard(card);
 
-        if(!card->inherits("DummyCard") && pattern != "."){
+        if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
@@ -585,7 +584,13 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     else if(result == ".")
         return player->getRandomHandCard();
 
-    return result.toInt();
+    const Card *card = Card::Parse(result);
+    if(card->isVirtualCard()){
+        int card_id = card->getSubcards().first();
+        delete card;
+        return card_id;
+    }else
+        return card->getId();
 }
 
 int Room::askForPeaches(ServerPlayer *dying, int peaches){
@@ -712,6 +717,19 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
     broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
 }
 
+void Room::setPlayerMarkDelta(ServerPlayer *player, const QString &mark, int delta){
+    int old = player->getMark(mark);
+    int value = old + delta;
+
+    LogMessage log;
+    log.type = delta > 0 ? "#GetMark" : "@LoseMark";
+    log.from = player;
+    log.arg = mark;
+    log.arg2 = QString::number(abs(delta));
+    sendLog(log);
+    setPlayerMark(player, mark, value);
+}
+
 void Room::setPlayerCorrect(ServerPlayer *player, const QString &correct_str){
     player->setCorrect(correct_str);
     broadcastProperty(player, "correct", correct_str);
@@ -786,6 +804,23 @@ void Room::installEquip(ServerPlayer *player, const QString &equip_name){
     moveCardTo(card_id, player, Player::Equip, true);
 
     thread->delay(800);
+}
+
+void Room::addProhibitSkill(const ProhibitSkill *skill){
+    if(!prohibit_skills.contains(skill)){
+        prohibit_skills << skill;
+
+        broadcastInvoke("addProhibitSkill", skill->objectName());
+    }
+}
+
+bool Room::isProhibited(Player *from, Player *to, const Card *card) const{
+    foreach(const ProhibitSkill *skill, prohibit_skills){
+        if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
+            return true;
+    }
+
+    return false;
 }
 
 int Room::drawCard(){
@@ -1651,12 +1686,12 @@ QString Room::askForKingdom(ServerPlayer *player){
         return result;
 }
 
-bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip, Card::Suit suit){
+bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
     QList<int> to_discard;
 
     AI *ai = target->getAI();
     if(ai)
-       to_discard = ai->askForDiscard(discard_num, optional, include_equip, suit);
+       to_discard = ai->askForDiscard(discard_num, optional, include_equip);
     else{
         QString ask_str = QString::number(discard_num);
         if(optional)
@@ -1664,19 +1699,11 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         if(include_equip)
             ask_str.append("e");
 
-        switch(suit){
-        case Card::Spade: ask_str.append("S"); break;
-        case Card::Club: ask_str.append("C"); break;
-        case Card::Heart: ask_str.append("H"); break;
-        case Card::Diamond: ask_str.append("D"); break;
-        default: break;
-        }
-
         target->invoke("askForDiscard", ask_str);
         getResult("discardCardsCommand", target);
 
         if(result.isEmpty())
-            return askForDiscard(target, discard_num, optional, include_equip, suit);
+            return askForDiscard(target, discard_num, optional, include_equip);
 
         if(result == "."){
             if(optional)
@@ -1846,8 +1873,15 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     else if(result == "."){
         int card_id = player->getRandomHandCard();
         return Sanguosha->getCard(card_id);
-    }else
-        return Card::Parse(result);
+    }else{
+        const Card *card = Card::Parse(result);
+        if(card->isVirtualCard()){
+            const Card *real_card = Sanguosha->getCard(card->getSubcards().first());
+            delete card;
+            return real_card;
+        }else
+            return card;
+    }
 }
 
 bool Room::pindian(ServerPlayer *source, ServerPlayer *target){

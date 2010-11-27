@@ -53,7 +53,8 @@ public:
     ClientPlayer *getPlayer(const QString &name);
     void surrender();
     void kick(const QString &to_kick);
-    bool save(const QString &filename);
+    bool save(const QString &filename) const;
+    bool isProhibited(const Player *to, const Card *card) const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -88,6 +89,7 @@ public:
     void setEmotion(const QString &set_str);
     void skillInvoked(const QString &invoke_str);
     void acquireSkill(const QString &acquire_str);
+    void addProhibitSkill(const QString &skill_name);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -123,7 +125,6 @@ public:
     bool refusable;
     bool include_equip;
     int discard_num;
-    Card::Suit discard_suit;
     QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
     QDialog *ask_dialog;
@@ -155,6 +156,7 @@ private:
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
+    QList<const ProhibitSkill *> prohibit_skills;
 
 private slots:
     void processCommand(const QString &cmd);

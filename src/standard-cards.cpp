@@ -617,9 +617,6 @@ bool Collateral::targetsFeasible(const QList<const ClientPlayer *> &targets) con
 
 bool Collateral::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(targets.isEmpty()){
-        if(to_select->hasSkill("weimu") && isBlack())
-            return false;
-
         return to_select->getWeapon() && to_select != Self;
     }else if(targets.length() == 1){
         const ClientPlayer *first = targets.first();
@@ -691,9 +688,6 @@ bool Duel::targetFilter(const QList<const ClientPlayer *> &targets, const Client
     if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
         return false;
 
-    if(to_select->hasSkill("weimu") && isBlack())
-        return false;
-
     if(to_select == Self)
         return false;
 
@@ -745,12 +739,6 @@ bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const Clie
     if(!targets.isEmpty())
         return false;
 
-    if(to_select->hasSkill("qianxun"))
-        return false;
-
-    if(to_select->hasSkill("weimu") && isBlack())
-        return false;
-
     if(to_select->isAllNude())
         return false;
 
@@ -785,9 +773,6 @@ bool Dismantlement::targetFilter(const QList<const ClientPlayer *> &targets, con
     if(!targets.isEmpty())
         return false;
 
-    if(to_select->hasSkill("weimu") && isBlack())
-        return false;
-
     if(to_select->isAllNude())
         return false;
 
@@ -816,12 +801,6 @@ Indulgence::Indulgence(Suit suit, int number)
 bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
 {
     if(!targets.isEmpty())
-        return false;
-
-    if(to_select->hasSkill("qianxun"))
-        return false;
-
-    if(isBlack() && to_select->hasSkill("weimu"))
         return false;
 
     if(to_select->containsTrick(objectName()))

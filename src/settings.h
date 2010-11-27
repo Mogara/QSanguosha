@@ -31,6 +31,7 @@ public:
     bool FreeChoose;
     bool ForbidSIMC;
     bool Enable2ndGeneral;
+    int MaxHpScheme;
     bool AnnounceIP;
     QString Address;
     int AILevel;

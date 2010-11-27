@@ -7,13 +7,13 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QRadioButton>
+#include <QBoxLayout>
 
-static const int ShrinkWidth = 280;
+static const int ShrinkWidth = 285;
 static const int ExpandWidth = 826;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ConnectionDialog)
+    QDialog(parent), ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
 

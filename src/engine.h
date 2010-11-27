@@ -13,6 +13,8 @@
 
 class AI;
 class Scenario;
+class ChallengeModeSet;
+class ChallengeMode;
 
 class Engine: public QObject
 {
@@ -22,6 +24,8 @@ public:
     explicit Engine();
 
     QString translate(const QString &to_translate) const;
+    QString getRoleString(const QString &role) const;
+
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
@@ -31,7 +35,7 @@ public:
     QString getVersion() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
-    QString getSetupString() const;
+    QString getSetupString() const;    
 
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
@@ -40,6 +44,9 @@ public:
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
+
+    const ChallengeModeSet *getChallengeModeSet() const;
+    const ChallengeMode *getChallengeMode(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -65,9 +72,11 @@ private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
-    QHash<QString, const Skill *> skills;
-    QHash<QString, const Scenario *> scenarios;
+    QHash<QString, const Skill *> skills;    
     QMap<QString, QString> modes;
+
+    QHash<QString, const Scenario *> scenarios;
+    ChallengeModeSet *challenge_mode_set;
 
     QHash<QString, audiere::OutputStreamPtr> effects;
     QHash<QString, audiere::OutputStreamPtr> playing;

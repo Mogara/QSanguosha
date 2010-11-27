@@ -1,6 +1,7 @@
 #include "roomthread.h"
 #include "room.h"
 #include "gamerule.h"
+#include "bossmode.h"
 #include "engine.h"
 
 bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
@@ -88,7 +89,11 @@ void RoomThread::constructTriggerTable(){
         }
     }   
 
-    GameRule *game_rule = new GameRule;
+    GameRule *game_rule;
+    if(room->mode == "08boss")
+        game_rule = new BossMode(this);
+    else
+        game_rule = new GameRule(this);
     addTriggerSkill(game_rule);
 
     foreach(ServerPlayer *player, room->players){

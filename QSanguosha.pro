@@ -60,7 +60,9 @@ SOURCES += src/main.cpp \
     src/ircdetector.cpp \
     src/banpairdialog.cpp \
     src/fancheng-scenario.cpp \
-    src/scenario-overview.cpp
+    src/scenario-overview.cpp \
+    src/bossmode.cpp \
+    src/challengemode.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -115,7 +117,9 @@ HEADERS += src/mainwindow.h \
     src/ircdetector.h \
     src/banpairdialog.h \
     src/fancheng-scenario.h \
-    src/scenario-overview.h
+    src/scenario-overview.h \
+    src/bossmode.h \
+    src/challengemode.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

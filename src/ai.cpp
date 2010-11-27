@@ -135,7 +135,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &){
     return skill->getDefaultChoice();
 }
 
-QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) {
+QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip) {
     QList<int> to_discard;
 
     if(optional)
@@ -173,6 +173,7 @@ int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QSt
 
 const Card *TrustAI::askForCard(const QString &pattern) {
     static QRegExp id_rx("\\d+");
+
     if(pattern.contains("+")){
         QStringList subpatterns = pattern.split("+");
         foreach(QString subpattern, subpatterns){

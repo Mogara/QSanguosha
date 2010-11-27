@@ -147,6 +147,7 @@ class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
         events << Predamage;
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -547,7 +548,7 @@ public:
 class Luanwu: public ZeroCardViewAsSkill{
 public:
     Luanwu():ZeroCardViewAsSkill("luanwu"){
-
+        frequency = Limited;
     }
 
     virtual const Card *viewAs() const{
@@ -608,6 +609,17 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
 void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
     ClientInstance->tag.insert("luanwu_used", true);
 }
+
+class Weimu: public ProhibitSkill{
+public:
+    Weimu():ProhibitSkill("weimu"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        return card->inherits("TrickCard") && card->isBlack();
+    }
+};
 
 class Jiuchi: public OneCardViewAsSkill{
 public:
@@ -795,7 +807,7 @@ ThicketPackage::ThicketPackage()
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
-    jiaxu->addSkill(new Skill("weimu", Skill::Compulsory));
+    jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new Luanwu);
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
