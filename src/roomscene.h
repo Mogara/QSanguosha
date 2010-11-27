@@ -8,7 +8,7 @@
 #include "aux-skills.h"
 #include "daqiao.h"
 #include "clientlogbox.h"
-#include "audiere.h"
+#include "irrKlang.h"
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -97,7 +97,7 @@ private:
     QLineEdit *chat_edit;
 
     QSharedMemory *memory;
-    audiere::OutputStreamPtr bgmusic;
+    irrklang::ISoundSource *bgmusic;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);

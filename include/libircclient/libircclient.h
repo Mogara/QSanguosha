@@ -45,6 +45,7 @@
 
 #if !defined (WIN32)
 	#include <sys/select.h>	/* fd_set */
+    #include <stddef.h>
 #else
 	#include <winsock2.h>
 	#include <ws2tcpip.h>

@@ -6,9 +6,6 @@
 #include <QNetworkInterface>
 #include <QGraphicsDropShadowEffect>
 
-#include "audiere.h"
-extern audiere::AudioDevicePtr Device;
-
 StartScene::StartScene()
 {
     setBackgroundBrush(Config.BackgroundBrush);
@@ -44,8 +41,11 @@ void StartScene::addButton(QAction *action){
     buttons << button;
 }
 
+extern irrklang::ISoundEngine *SoundEngine;
+
 void StartScene::switchToServer(Server *server){
-    Device = NULL;
+    if(SoundEngine)
+        SoundEngine->drop();
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");

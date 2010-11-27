@@ -5,7 +5,7 @@
 #include "general.h"
 #include "skill.h"
 #include "package.h"
-#include "audiere.h"
+#include "irrKlang.h"
 
 #include <QHash>
 #include <QStringList>
@@ -61,12 +61,10 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
-    void playAudio(const QString &audio, const QString &suffix = QString());
     void playEffect(const QString &filename);
     void playSkillEffect(const QString &skill_name, int index);
     void playCardEffect(const QString &card_name, bool is_male);
     void playCardEffect(const QString &card_name, const QString &package, bool is_male);
-    void removeFromPlaying(audiere::OutputStreamPtr stream);
 
 private:
     QHash<QString, QString> translations;
@@ -77,10 +75,6 @@ private:
 
     QHash<QString, const Scenario *> scenarios;
     ChallengeModeSet *challenge_mode_set;
-
-    QHash<QString, audiere::OutputStreamPtr> effects;
-    QHash<QString, audiere::OutputStreamPtr> playing;
-    QMutex mutex;
 
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;

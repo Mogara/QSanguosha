@@ -129,15 +129,16 @@ FORMS += src/mainwindow.ui \
     src/configdialog.ui
 
 RESOURCES += resource/images/sanguosha.qrc
-INCLUDEPATH += include
+INCLUDEPATH += include/libircclient
+INCLUDEPATH += include/irrKlang
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += audiere.lib static-libircclient.lib -lws2_32
+    LIBS += static-libircclient.lib -lws2_32 irrKlang.lib
 }
 
 unix {
-    LIBS += `audiere-config --libs` -lircclient
+    LIBS += -lircclient
 }
 
 TRANSLATIONS += sanguosha.ts

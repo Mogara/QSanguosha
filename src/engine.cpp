@@ -5,23 +5,9 @@
 #include "settings.h"
 #include "scenario.h"
 #include "challengemode.h"
+#include "irrKlang.h"
 
-extern audiere::AudioDevicePtr Device;
-
-class StopCallback: public audiere::StopCallback{
-public:
-    ADR_METHOD(void) streamStopped(audiere::StopEvent *event){
-        Sanguosha->removeFromPlaying(event->getOutputStream());
-    }
-
-    ADR_METHOD(void) ref(){
-
-    }
-
-    ADR_METHOD(void) unref(){
-
-    }
-};
+typedef irrklang::ISound SoundType;
 
 #include <QFile>
 #include <QStringList>
@@ -45,6 +31,8 @@ extern "C" {
     Scenario *NewFanchengScenario();
 }
 
+extern irrklang::ISoundEngine *SoundEngine;
+
 Engine::Engine()
 {
     addPackage(NewStandard());
@@ -57,9 +45,6 @@ Engine::Engine()
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
-
-    if(Device)
-        Device->registerCallback(new StopCallback);
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -385,29 +370,14 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
-void Engine::playAudio(const QString &audio, const QString &suffix){
-    playEffect(QString("audio/%1.%2").arg(audio).arg(suffix.isEmpty() ? "wav" : suffix));
-}
-
 void Engine::playEffect(const QString &filename){
     if(!Config.EnableEffects)
         return;
 
-    audiere::OutputStreamPtr effect;
-    if(playing.contains(filename))
+    if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))
         return;
 
-    effect = effects.value(filename, NULL);
-    if(effect == NULL){
-        effect = audiere::OpenSound(Device, filename.toAscii());
-        effects.insert(filename, effect);
-    }
-
-    if(effect){
-        playing.insert(filename, effect);
-        effect->setVolume(Config.Volume);
-        effect->play();
-    }
+    SoundEngine->play2D(filename.toAscii());
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index){
@@ -426,16 +396,6 @@ void Engine::playCardEffect(const QString &card_name, const QString &package, bo
     QString gender = is_male ? "male" : "female";
     QString path = QString("%1/cards/effect/%2/%3.mp3").arg(package).arg(gender).arg(card_name);
     playEffect(path);
-}
-
-void Engine::removeFromPlaying(audiere::OutputStreamPtr stream){
-    mutex.lock();
-
-    QString key = playing.key(stream);
-    if(!key.isEmpty())
-        playing.remove(key);    
-
-    mutex.unlock();
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const{

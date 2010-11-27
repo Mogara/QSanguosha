@@ -3,9 +3,6 @@
 #include "skill.h"
 #include "package.h"
 #include "client.h"
-#include "audiere.h"
-
-extern audiere::AudioDevicePtr Device;
 
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
     :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male)
@@ -86,7 +83,5 @@ void General::playEffect(const QString &skill_name) const
 
 void General::lastWord() const{
     QString filename = QString("%1/generals/death/%2.wav").arg(getPackage()).arg(objectName());
-    audiere::SoundEffect *effect = audiere::OpenSoundEffect(Device, filename.toAscii(), audiere::SINGLE);
-    if(effect)
-        effect->play();
+    Sanguosha->playEffect(filename);
 }

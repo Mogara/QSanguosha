@@ -6,8 +6,6 @@
 #include "distanceviewdialog.h"
 #include "choosegeneraldialog.h"
 
-extern audiere::AudioDevicePtr Device;
-
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QSequentialAnimationGroup>
@@ -30,6 +28,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QRadioButton>
 #include <QApplication>
 
+extern irrklang::ISoundEngine *SoundEngine;
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -1607,8 +1606,8 @@ void RoomScene::freeze(){
     trust_button->setEnabled(false);
     chat_edit->setEnabled(false);
     if(bgmusic){
-        bgmusic->stop();
-        bgmusic = NULL;
+       bgmusic->drop();
+       bgmusic = NULL;
     }
     progress_bar->hide();
 
@@ -2128,11 +2127,11 @@ void RoomScene::onGameStart(){
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/background.mp3").toString();
     const char *filename = bgmusic_path.toLocal8Bit().data();
-    bgmusic = audiere::OpenSound(Device, filename, true);
+    bgmusic = SoundEngine->addSoundSourceFromFile(filename);
+
     if(bgmusic){
-        bgmusic->setRepeat(true);
-        bgmusic->setVolume(Config.Volume);
-        bgmusic->play();
+        bgmusic->setDefaultVolume(Config.Volume);
+        SoundEngine->play2D(bgmusic, true);
     }
 }
 

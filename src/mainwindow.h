@@ -35,6 +35,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionAbout_irrKlang_triggered();
     void on_actionScenario_Overview_triggered();
     void on_actionRole_assign_table_triggered();
     void on_actionMinimize_to_system_tray_triggered();
@@ -43,7 +44,6 @@ private slots:
     void on_actionShow_Hide_Menu_triggered();
     void on_actionFullscreen_triggered();
     void on_actionReplay_triggered();
-    void on_actionAbout_audiere_triggered();
     void on_actionAbout_triggered();
     void on_actionEnable_Hotkey_toggled(bool );
     void on_actionCard_Overview_triggered();

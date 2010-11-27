@@ -56,7 +56,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
-    <addaction name="actionAbout_audiere"/>
+    <addaction name="actionAbout_irrKlang"/>
     <addaction name="actionAbout_libircclient"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
@@ -252,6 +252,11 @@
   <action name="actionScenario_Overview">
    <property name="text">
     <string>Scenario overview</string>
+   </property>
+  </action>
+  <action name="actionAbout_irrKlang">
+   <property name="text">
+    <string>About irrKlang</string>
    </property>
   </action>
  </widget>
