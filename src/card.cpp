@@ -67,8 +67,7 @@ Card::Suit Card::getSuit() const{
 }
 
 bool Card::match(const QString &pattern) const{
-    return pattern == "." || objectName() == pattern ||
-            getType() == pattern || getSubtype() == pattern;
+    return objectName() == pattern || getType() == pattern || getSubtype() == pattern;
 }
 
 bool Card::CompareBySuitNumber(const Card *a, const Card *b){

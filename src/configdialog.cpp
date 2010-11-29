@@ -1,6 +1,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
+#include "irrKlang.h"
 
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -77,6 +78,8 @@ void ConfigDialog::on_resetBgButton_clicked()
     emit bg_changed();
 }
 
+extern irrklang::ISoundEngine *SoundEngine;
+
 void ConfigDialog::saveConfig()
 {
     int count_down = ui->nullificationSpinBox->value();
@@ -86,6 +89,8 @@ void ConfigDialog::saveConfig()
     float volume = ui->volumeSlider->value() / 100.0;
     Config.Volume = volume;
     Config.setValue("Volume", volume);
+
+    SoundEngine->setSoundVolume(Config.Volume);
 
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;

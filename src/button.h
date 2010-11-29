@@ -2,7 +2,6 @@
 #define BUTTON_H
 
 #include "settings.h"
-#include "audiere.h"
 
 #include <QGraphicsObject>
 #include <QFont>
@@ -26,7 +25,6 @@ protected:
 private:
     QString label;
     qreal width, height;
-    audiere::SoundEffectPtr down_effect, hover_effect;
 
 signals:
     void clicked();

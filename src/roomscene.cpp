@@ -6,8 +6,6 @@
 #include "distanceviewdialog.h"
 #include "choosegeneraldialog.h"
 
-extern audiere::AudioDevicePtr Device;
-
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QSequentialAnimationGroup>
@@ -30,6 +28,7 @@ extern audiere::AudioDevicePtr Device;
 #include <QRadioButton>
 #include <QApplication>
 
+extern irrklang::ISoundEngine *SoundEngine;
 
 static const QPointF DiscardedPos(-494, -115);
 static const QPointF DrawPilePos(893, -235);
@@ -839,6 +838,9 @@ void RoomScene::addSkillButton(const Skill *skill){
                 button->setEnabled(false);
                 break;
             }
+
+        default:
+            break;
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
@@ -862,6 +864,8 @@ void RoomScene::addSkillButton(const Skill *skill){
     button->setObjectName(skill->objectName());
     if(skill->isLordSkill())
         button->setText(button->text() + tr(" [Lord Skill]"));
+    if(skill->getFrequency() == Skill::Limited)
+        button->setText(button->text() + tr(" [Limited]"));
 
     button->setMinimumHeight(30);
     addWidgetToSkillDock(button);
@@ -928,11 +932,9 @@ void RoomScene::updateSkillButtons(){
 }
 
 void RoomScene::updateRoleComboBox(const QString &new_role){
-    role_combobox->setItemText(1, Sanguosha->translate(new_role));
+    role_combobox->setItemText(1, Sanguosha->getRoleString(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
     role_combobox->setCurrentIndex(1);
-
-
 }
 
 void RoomScene::clickSkillButton(int order){
@@ -987,13 +989,9 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if(item->isSelected())
             continue;
 
-        if(card->targetFilter(selected_targets, player)){
-            item->setEnabled(true);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        }else{
-            item->setEnabled(false);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
-        }
+        bool enabled = !ClientInstance->isProhibited(player, card) && card->targetFilter(selected_targets, player);
+        item->setEnabled(enabled);
+        item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
 }
 
@@ -1225,7 +1223,6 @@ void RoomScene::updateStatus(Client::Status status){
 
             discard_skill->setNum(ClientInstance->discard_num);
             discard_skill->setIncludeEquip(ClientInstance->include_equip);
-            discard_skill->setSuit(ClientInstance->discard_suit);
             dashboard->startPending(discard_skill);
             break;
         }
@@ -1609,8 +1606,8 @@ void RoomScene::freeze(){
     trust_button->setEnabled(false);
     chat_edit->setEnabled(false);
     if(bgmusic){
-        bgmusic->stop();
-        bgmusic = NULL;
+       bgmusic->drop();
+       bgmusic = NULL;
     }
     progress_bar->hide();
 
@@ -2130,11 +2127,11 @@ void RoomScene::onGameStart(){
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/background.mp3").toString();
     const char *filename = bgmusic_path.toLocal8Bit().data();
-    bgmusic = audiere::OpenSound(Device, filename, true);
+    bgmusic = SoundEngine->addSoundSourceFromFile(filename);
+
     if(bgmusic){
-        bgmusic->setRepeat(true);
-        bgmusic->setVolume(Config.Volume);
-        bgmusic->play();
+        bgmusic->setDefaultVolume(Config.Volume);
+        SoundEngine->play2D(bgmusic, true);
     }
 }
 

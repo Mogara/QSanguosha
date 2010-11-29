@@ -82,7 +82,12 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
         last_layout->addWidget(progress_bar);
     }
 
-    if(ServerInfo.FreeChoose){
+    bool free_choose = ServerInfo.FreeChoose;
+    if(ServerInfo.GameMode == "08boss"){
+        free_choose = Self->getRole() == "lord" || Self->getRole() == "renegade";
+    }
+
+    if(free_choose){
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
         connect(free_choose_button, SIGNAL(clicked()), this, SLOT(freeChoose()));
         last_layout->addWidget(free_choose_button);

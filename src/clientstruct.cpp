@@ -11,9 +11,14 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(\\w+):(\\d+):([+\\w]*):([FS]*)");
-    if(!rx.exactMatch(str))
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FS]*)");
+    if(!rx.exactMatch(str)){
+        // older version, just take the player count
+        int count = str.split(":").at(1).toInt();
+        GameMode = QString("%1p").arg(count, 2, 10, QChar('0'));
+
         return false;
+    }
 
     QStringList texts = rx.capturedTexts();
 
@@ -26,7 +31,7 @@ bool ServerInfoStruct::parse(const QString &str){
     QStringList ban_packages = texts.at(4).split("+");
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach(const Package *package, packages){
-        if(package->inherits("Scenario"))
+        if(package->inherits("Scenario") || package->inherits("ChallengeModeSet"))
             continue;
 
         QString package_name = package->objectName();

@@ -7,7 +7,7 @@ class GameRule : public TriggerSkill{
     Q_OBJECT
 
 public:
-    GameRule();
+    GameRule(QObject *parent);
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual int getPriority(ServerPlayer *target) const;

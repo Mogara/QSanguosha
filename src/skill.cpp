@@ -239,6 +239,16 @@ bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) con
     return false;
 }
 
+ProhibitSkill::ProhibitSkill(const QString &name)
+    :GameStartSkill(name)
+{
+    frequency = Compulsory;
+}
+
+void ProhibitSkill::onGameStart(ServerPlayer *player) const{
+    player->getRoom()->addProhibitSkill(this);
+}
+
 WeaponSkill::WeaponSkill(const QString &name)
     :TriggerSkill(name)
 {

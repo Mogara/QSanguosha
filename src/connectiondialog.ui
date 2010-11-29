@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>355</height>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,114 +22,173 @@
      <x>10</x>
      <y>10</y>
      <width>271</width>
-     <height>301</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="title">
     <string>Connection setup</string>
    </property>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QLabel" name="nameLabel">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>17</y>
+      <width>30</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Name:</string>
+    </property>
+    <property name="buddy">
+     <cstring>nameLineEdit</cstring>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="nameLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>20</y>
+      <width>211</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="hostLabel">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>43</y>
+      <width>30</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Host:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="hostComboBox">
+    <property name="geometry">
+     <rect>
+      <x>49</x>
+      <y>43</y>
+      <width>211</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="editable">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clearHistoryButton">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>100</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear history</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="portLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>24</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Port</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="portLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>100</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avatarLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>241</width>
-      <height>281</height>
+      <y>130</y>
+      <width>42</width>
+      <height>16</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
-     <item row="1" column="0">
-      <widget class="QLabel" name="nameLabel">
-       <property name="text">
-        <string>Name:</string>
-       </property>
-       <property name="buddy">
-        <cstring>nameLineEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="nameLineEdit"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="hostLabel">
-       <property name="text">
-        <string>Host:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="hostComboBox">
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="clearHistoryButton">
-       <property name="text">
-        <string>Clear history</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="portLabel">
-       <property name="text">
-        <string>Port</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="portLineEdit"/>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="avatarLabel">
-       <property name="text">
-        <string>Avatar:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLabel" name="avatarPixmap">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QPushButton" name="changeAvatarButton">
-       <property name="text">
-        <string>Change avatar</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QPushButton" name="detectWANButton">
-       <property name="text">
-        <string>Detect WAN ...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QPushButton" name="detectLANButton">
-       <property name="text">
-        <string>Detect LAN ...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="text">
+     <string>Avatar:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avatarPixmap">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>130</y>
+      <width>100</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>100</width>
+      <height>100</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="changeAvatarButton">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>130</y>
+      <width>86</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Change avatar</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="detectWANButton">
+    <property name="geometry">
+     <rect>
+      <x>141</x>
+      <y>70</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Detect WAN ...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="detectLANButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>121</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Detect LAN ...</string>
+    </property>
    </widget>
   </widget>
   <widget class="QListWidget" name="avatarList">
@@ -138,7 +197,7 @@
      <x>290</x>
      <y>10</y>
      <width>531</width>
-     <height>331</height>
+     <height>281</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -157,8 +216,8 @@
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>320</y>
+     <x>200</x>
+     <y>270</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -171,7 +230,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>320</y>
+     <y>270</y>
      <width>75</width>
      <height>23</height>
     </rect>

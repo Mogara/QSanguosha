@@ -51,6 +51,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["acquireSkill"] = &Client::acquireSkill;
+    callbacks["addProhibitSkill"] = &Client::addProhibitSkill;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -774,11 +775,20 @@ void Client::kick(const QString &to_kick){
     request("kick " + to_kick);
 }
 
-bool Client::save(const QString &filename){
+bool Client::save(const QString &filename) const{
     if(recorder)
         return recorder->save(filename);
     else
         return false;
+}
+
+bool Client::isProhibited(const Player *to, const Card *card) const{
+    foreach(const ProhibitSkill *skill, prohibit_skills){
+        if(to->hasSkill(skill->objectName()) && skill->isProhibited(Self, to, card))
+            return true;
+    }
+
+    return false;
 }
 
 void Client::clearPile(const QString &){
@@ -792,7 +802,7 @@ void Client::setPileNumber(const QString &pile_num){
 }
 
 void Client::askForDiscard(const QString &discard_str){
-    QRegExp rx("(\\d+)([oe]*)([SCHD]?)");
+    QRegExp rx("(\\d+)([oe]*)");
     if(!rx.exactMatch(discard_str)){
         QMessageBox::warning(NULL, tr("Warning"), tr("Discarding string is not well formatted!"));
         return;
@@ -805,23 +815,8 @@ void Client::askForDiscard(const QString &discard_str){
     refusable = flag_str.contains("o");
     include_equip = flag_str.contains("e");
 
-    QString suit = texts.at(3);    
-    if(suit.isEmpty())
-        discard_suit = Card::NoSuit;
-    else if(suit == "S")
-        discard_suit = Card::Spade;
-    else if(suit == "C")
-        discard_suit = Card::Club;
-    else if(suit == "H")
-        discard_suit = Card::Heart;
-    else if(suit == "D")
-        discard_suit = Card::Diamond;
-
     QString prompt;
-    if(discard_suit != Card::NoSuit){
-        QString suit_string = Sanguosha->translate(Card::Suit2String(discard_suit));
-        prompt = tr("Please discard a handcard with the same suit of %1").arg(suit_string);
-    }else if(include_equip)
+    if(include_equip)
         prompt = tr("Please discard %1 card(s), include equip").arg(discard_num);
     else
         prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
@@ -856,10 +851,7 @@ void Client::gameOver(const QString &result_str){
     QList<bool> result_list;
     foreach(ClientPlayer *player, players){
         QString role = player->getRole();
-        bool result = (role == winner);
-        if(winner == "lord" && role == "loyalist")
-            result = true;
-
+        bool result = winner.contains(role);
         result_list << result;
 
         if(player == Self)
@@ -950,7 +942,7 @@ void Client::askForKingdom(const QString &){
 }
 
 void Client::setMark(const QString &mark_str){
-    QRegExp rx("(\\w+)\\.(\\w+)=(\\d+)");
+    QRegExp rx("(\\w+)\\.(@?\\w+)=(\\d+)");
 
     if(!rx.exactMatch(mark_str))
         return;
@@ -960,7 +952,7 @@ void Client::setMark(const QString &mark_str){
     QString mark = texts.at(2);
     int value = texts.at(3).toInt();
 
-    ClientPlayer *player = findChild<ClientPlayer*>(who);
+    ClientPlayer *player = getPlayer(who);
     player->setMark(mark, value);
 }
 
@@ -1238,4 +1230,12 @@ void Client::acquireSkill(const QString &acquire_str){
     who->acquireSkill(skill_name);
 
     emit skill_acquired(who, skill_name);
+}
+
+void Client::addProhibitSkill(const QString &skill_name){
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const ProhibitSkill *prohibit_skill = qobject_cast<const ProhibitSkill *>(skill);
+    if(prohibit_skill){
+        prohibit_skills << prohibit_skill;
+    }
 }

@@ -32,7 +32,7 @@ public:
     virtual QString askForKingdom() = 0;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) = 0;
+    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) = 0;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
     virtual const Card *askForCard(const QString &pattern)  = 0;
@@ -59,7 +59,7 @@ public:
     virtual QString askForKingdom() ;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip, Card::Suit suit) ;
+    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) ;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
     virtual const Card *askForCard(const QString &pattern) ;

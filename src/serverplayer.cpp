@@ -5,8 +5,6 @@
 #include "ai.h"
 #include "settings.h"
 
-#include <QHostAddress>
-
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room), ai(NULL)
 {

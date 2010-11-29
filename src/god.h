@@ -72,6 +72,15 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class WuqianCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WuqianCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class WushenSlash: public Slash{
     Q_OBJECT
 
@@ -84,6 +93,26 @@ public:
     Feiying();
 
     virtual void onGameStart(ServerPlayer *player) const;
+};
+
+class KuangfengCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KuangfengCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class DawuCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DawuCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 #endif // GOD_H

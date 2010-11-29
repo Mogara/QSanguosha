@@ -3,9 +3,11 @@
 #include "room.h"
 #include "standard.h"
 
-GameRule::GameRule()
+GameRule::GameRule(QObject *parent)
     :TriggerSkill("game_rule")
 {
+    setParent(parent);
+
     events << GameStart << PhaseChange << CardUsed << Predamaged
             << CardEffected << Death << Dying
             << SlashResult << SlashEffected << SlashProceed;
@@ -22,11 +24,7 @@ int GameRule::getPriority(ServerPlayer *) const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
-    case Player::Start: {
-            if(player->hasFlag("drank"))
-                room->setPlayerFlag(player, "-drank");
-            break;
-        }
+    case Player::Start: break;
     case Player::Judge: {
             QStack<const DelayedTrick *> tricks = player->delayedTricks();
             while(!tricks.isEmpty() && player->isAlive()){
@@ -61,7 +59,11 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                 room->askForDiscard(player, discard_num);
             break;
         }
-    case Player::Finish: break;
+    case Player::Finish: {
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
+            break;
+        }
     case Player::NotActive: return;
     }
 }
@@ -215,14 +217,25 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             QString winner;
             QStringList alive_roles = room->aliveRoles(player);
 
-            if(player->getRole() == "lord"){
-                if(alive_roles.length() == 1 && alive_roles.first() == "renegade")
-                    winner = "renegade";
-                else
-                    winner = "rebel";
-            }else if(player->getRole() == "rebel" || player->getRole() == "renegade"){
-                if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade"))
-                    winner = "lord";
+            switch(player->getRoleEnum()){
+            case Player::Lord:{
+                    if(alive_roles.length() == 1 && alive_roles.first() == "renegade")
+                        winner = "renegade";
+                    else
+                        winner = "rebel";
+                    break;
+                }
+
+            case Player::Rebel:
+            case Player::Renegade:
+                {
+                    if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade"))
+                        winner = "lord+loyalist";
+                    break;
+                }
+
+            default:
+                break;
             }
 
             if(winner.isNull()){

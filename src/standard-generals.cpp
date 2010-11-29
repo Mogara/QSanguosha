@@ -716,6 +716,17 @@ public:
     }
 };
 
+class Qianxun: public ProhibitSkill{
+public:
+    Qianxun():ProhibitSkill("qianxun"){
+
+    }
+
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
+        return card->inherits("Snatch") || card->inherits("Indulgence");
+    }
+};
+
 
 class Lianying: public TriggerSkill{
 public:
@@ -1102,7 +1113,7 @@ void StandardPackage::addGenerals(){
     lumeng->addSkill(new Keji);
 
     luxun = new General(this, "luxun", "wu", 3);
-    luxun->addSkill(new Skill("qianxun", Skill::Compulsory));
+    luxun->addSkill(new Qianxun);
     luxun->addSkill(new Lianying);
 
     ganning = new General(this, "ganning", "wu");

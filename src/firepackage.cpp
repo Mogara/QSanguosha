@@ -327,6 +327,7 @@ class Niepan: public TriggerSkill{
 public:
     Niepan():TriggerSkill("niepan"){
         events << Dying;
+        frequency = Limited;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

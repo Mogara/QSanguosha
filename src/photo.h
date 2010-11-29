@@ -37,6 +37,7 @@ public slots:
     void separateRoleCombobox();
     void updateAvatar();
     void updateRoleCombobox(const QString &new_role);
+    void updateMarks(const QString &mark);
     void refresh();
     void hideEmotion();
     void hideSkillName();
@@ -57,8 +58,13 @@ private:
     QComboBox *role_combobox;
     QGraphicsProxyWidget *role_combobox_widget;
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
-    QStack<QGraphicsPixmapItem *> judging_pixmaps;
+
+    QStack<QGraphicsPixmapItem *> judging_pixmaps;    
     QStack<CardItem *> judging_area;
+
+    QMap<QString, QGraphicsPixmapItem *> mark_items;
+    QMap<QString, QGraphicsSimpleTextItem *> mark_texts;
+
     QGraphicsPixmapItem *order_item;
     bool hide_avatar;
     QPixmap death_pixmap;

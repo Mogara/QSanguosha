@@ -6,10 +6,10 @@
 #include "mainwindow.h"
 #include "ircdetector.h"
 #include "settings.h"
-#include "audiere.h"
 #include "banpairdialog.h"
+#include "irrKlang.h"
 
-audiere::AudioDevicePtr Device = NULL;
+irrklang::ISoundEngine *SoundEngine;
 
 int main(int argc, char *argv[])
 {
@@ -33,11 +33,7 @@ int main(int argc, char *argv[])
         Sanguosha = new Engine;
         widget = new IrcDetectorDialog;
     }else{
-#ifdef Q_OS_WIN32
-        Device = audiere::OpenDevice("winmm");
-#else
-        Device = audiere::OpenDevice();
-#endif
+        SoundEngine = irrklang::createIrrKlangDevice();
         Sanguosha = new Engine;
 
         BanPair::loadBanPairs();

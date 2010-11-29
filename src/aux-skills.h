@@ -11,7 +11,6 @@ public:
 
     void setNum(int num);
     void setIncludeEquip(bool include_equip);
-    void setSuit(Card::Suit suit);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const;
@@ -20,7 +19,6 @@ private:
     DummyCard *card;
     int num;
     bool include_equip;
-    Card::Suit suit;
 };
 
 class YijiViewAsSkill : public ViewAsSkill{

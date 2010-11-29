@@ -6,11 +6,8 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
-#include "audiere.h"
 #include "libircclient.h"
 #include "scenario-overview.h"
-
-extern audiere::AudioDevicePtr Device;
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -305,17 +302,6 @@ void MainWindow::changeBackground(){
     }
 }
 
-void MainWindow::on_actionAbout_audiere_triggered()
-{
-    QString content = tr("Audiere is a high-level audio engine <br/>");
-    QString address = "http://audiere.sourceforge.net/";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-    content.append(tr("Current version %1 <br/>").arg(audiere::GetVersion()));
-    content.append(tr("Device name: %1 <br/>").arg(Device->getName()));
-
-    QMessageBox::about(this, tr("About audiere"), content);
-}
-
 void MainWindow::on_actionFullscreen_triggered()
 {
     if(isFullScreen())
@@ -343,6 +329,16 @@ void MainWindow::on_actionAbout_libircclient_triggered()
     content.append(tr("Current version %1 <br/>").arg(version));
 
     QMessageBox::about(this, tr("About libircclient"), content);
+}
+
+void MainWindow::on_actionAbout_irrKlang_triggered()
+{
+    QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
+    QString address = "http://www.ambiera.com/irrklang/";
+    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
+
+    QMessageBox::about(this, tr("About irrKlang"), content);
 }
 
 void MainWindow::on_actionWAN_IP_detect_triggered()

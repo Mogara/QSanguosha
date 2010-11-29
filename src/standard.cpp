@@ -130,10 +130,7 @@ QString SingleTargetTrick::getSubtype() const{
 }
 
 bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(isBlack() && to_select->hasSkill("weimu"))
-        return false;
-    else
-        return true;
+    return true;
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
@@ -178,9 +175,6 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
         foreach(ServerPlayer *player, players){            
             if(player->containsTrick(objectName()))
-                continue;
-
-            if(player->hasSkill("weimu") && isBlack())
                 continue;
 
             room->moveCardTo(this, player, Player::Judging, true);

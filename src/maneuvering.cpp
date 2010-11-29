@@ -226,9 +226,10 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     room->showCard(effect.to, card_id);
 
     const Card *card = Sanguosha->getCard(card_id);
-    bool discarded = room->askForDiscard(effect.from, 1, true, false, card->getSuit());
-
-    if(discarded){
+    QString suit_str = card->getSuitString();
+    QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+    QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
+    if(room->askForCard(effect.from, pattern, prompt)){
         DamageStruct damage;
         damage.card = this;
         damage.from = effect.from;
@@ -250,9 +251,6 @@ QString IronChain::getSubtype() const{
 }
 
 bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(isBlack() && to_select->hasSkill("weimu"))
-        return false;
-
     if(targets.length() > 2)
         return false;
 
@@ -294,9 +292,6 @@ bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, co
         return false;
 
     if(to_select == Self)
-        return false;
-
-    if(isBlack() && to_select->hasSkill("weimu"))
         return false;
 
     if(to_select->containsTrick(objectName()))
@@ -423,6 +418,8 @@ ManeuveringPackage::ManeuveringPackage()
 
     t["#SilverLion"] = tr("#SilverLion");
     t["#VineDamage"] = tr("#VineDamage");
+
+    t["@fire-attack"] = tr("@fire-attack");
 }
 
 ADD_PACKAGE(Maneuvering)

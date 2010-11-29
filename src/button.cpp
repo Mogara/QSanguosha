@@ -1,9 +1,10 @@
 #include "button.h"
-
-extern audiere::AudioDevicePtr Device;
+#include "irrKlang.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+
+extern irrklang::ISoundEngine *SoundEngine;
 
 Button::Button(const QString &label)
     :label(label){
@@ -16,15 +17,12 @@ Button::Button(const QString &label)
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
-
-    hover_effect = audiere::OpenSoundEffect(Device, "audio/button-hover.wav", audiere::MULTIPLE);
-    down_effect = audiere::OpenSoundEffect(Device, "audio/button-down.wav", audiere::MULTIPLE);
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    hover_effect->play();
+    SoundEngine->play2D("audio/button-hover.wav");
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -32,7 +30,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    down_effect->play();
+    SoundEngine->play2D("audio/button-down.wav");
 
     emit clicked();
 }
