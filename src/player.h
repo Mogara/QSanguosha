@@ -79,7 +79,8 @@ public:
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
-    QString getKingdomPath() const;
+    QString getKingdomIcon() const;
+    QString getKingdomFrame() const;
 
     void setRole(const QString &role);
     QString getRole() const;    
@@ -197,11 +198,13 @@ private:
 
 signals:
     void general_changed();
+    void general2_changed();
     void role_changed(const QString &new_role);
     void state_changed();
     void turn_started();
     void kingdom_changed();
     void mark_changed(const QString &mark);
+    void phase_changed();
 };
 
 #endif // PLAYER_H

@@ -38,9 +38,8 @@ PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &fl
 }
 
 QWidget *PlayerCardDialog::createAvatar(){
-    const General *general = player->getAvatarGeneral();    
-    QString general_name = Sanguosha->translate(general->objectName());
-    QGroupBox *box = new QGroupBox(QString("%1 [%2]").arg(player->objectName()).arg(general_name));
+    const General *general = player->getAvatarGeneral();
+    QGroupBox *box = new QGroupBox(player->screenName());
 
     QLabel *avatar = new QLabel(box);
     avatar->setPixmap(QPixmap(general->getPixmapPath("big")));

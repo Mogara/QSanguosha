@@ -13,7 +13,6 @@ class Settings : public QSettings{
 public:
     explicit Settings(const QString &organization, const QString &application);
     void init();
-    void changeBackground(const QString &new_bg);
 
     const QRectF Rect;
     QFont BigFont;
@@ -61,7 +60,7 @@ public:
     bool EnableBgMusic;
     float Volume;
 
-    QBrush BackgroundBrush;
+    QString BackgroundBrush;
 };
 
 extern Settings Config;

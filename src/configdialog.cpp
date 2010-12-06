@@ -65,7 +65,9 @@ void ConfigDialog::on_browseBgButton_clicked()
 
     if(!filename.isEmpty()){
         ui->bgPathLineEdit->setText(filename);
-        Config.changeBackground(filename);
+
+        Config.BackgroundBrush = filename;
+        Config.setValue("BackgroundBrush", filename);
 
         emit bg_changed();
     }
@@ -74,7 +76,11 @@ void ConfigDialog::on_browseBgButton_clicked()
 void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
-    Config.changeBackground(":/background.png");
+
+    QString filename = ":/background.png";
+    Config.BackgroundBrush = filename;
+    Config.setValue("BackgroundBrush", filename);
+
     emit bg_changed();
 }
 
@@ -136,7 +142,7 @@ void ConfigDialog::on_browseBgMusicButton_clicked()
 
 void ConfigDialog::on_resetBgMusicButton_clicked()
 {
-    QString default_music = "audio/background.mp3";
+    QString default_music = "audio/system/background.mp3";
     Config.setValue("BackgroundMusic", default_music);
     ui->bgMusicPathLineEdit->setText(default_music);
 }

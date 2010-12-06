@@ -5,16 +5,18 @@
 #include "pixmap.h"
 
 #include <QSize>
-#include <QPropertyAnimation>
+
+class FilterSkill;
 
 class CardItem : public Pixmap
 {
     Q_OBJECT
+
 public:
     CardItem(const Card *card);
 
-    void setRealCard(const Card *real_card);
-    const Card *getRealCard() const;
+    void filter(const FilterSkill *filter_skill);
+    const Card *getFilteredCard() const;
 
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
@@ -27,7 +29,9 @@ public:
     bool isPending() const;
     bool isEquipped() const;
 
-    virtual QRectF boundingRect() const;
+    static const int NormalY = 36;
+    static const int PendingY = NormalY - 40;
+    static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -37,7 +41,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
 
 private:
-    const Card *card, *real_card;
+    const Card *card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
 

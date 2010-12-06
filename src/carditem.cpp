@@ -1,22 +1,21 @@
 #include "carditem.h"
 #include "engine.h"
+#include "skill.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
-
-static QRectF CardItemRect(0, 0, 150*0.8, 210*0.8);
+#include <QPropertyAnimation>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), real_card(card)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card)
 {
     Q_ASSERT(card != NULL);
 
     suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
     icon_pixmap.load(card->getIconPath());
-    pixmap = pixmap.scaled(CardItemRect.width(), CardItemRect.height());
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 
     setToolTip(card->getDescription());
@@ -26,12 +25,14 @@ const Card *CardItem::getCard() const{
     return card;
 }
 
-void CardItem::setRealCard(const Card *real_card){
-    this->real_card = real_card;
+void CardItem::filter(const FilterSkill *filter_skill){
+    if(filter_skill && filter_skill->viewFilter(this)){
+        filtered_card = filter_skill->viewAs(this);
+    }
 }
 
-const Card *CardItem::getRealCard() const{
-    return real_card;
+const Card *CardItem::getFilteredCard() const{
+    return filtered_card;
 }
 
 void CardItem::setHomePos(QPointF home_pos){
@@ -79,21 +80,30 @@ const QPixmap &CardItem::getIconPixmap() const{
 }
 
 void CardItem::select(){
-    home_pos.setY(10);
-    setY(10);
+    home_pos.setY(PendingY);
+    setY(PendingY);
 }
 
 void CardItem::unselect(){
-    home_pos.setY(45);
-    setY(45);
+    home_pos.setY(NormalY);
+    setY(NormalY);
 }
 
 bool CardItem::isPending() const{
-    return home_pos.y() == 10;
+    return home_pos.y() == PendingY;
 }
 
 bool CardItem::isEquipped() const{
     return opacity() == 0.0;
+}
+
+CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
+    foreach(CardItem *item, items){
+        if(item->getCard()->getId() == card_id)
+            return item;
+    }
+
+    return NULL;
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -129,10 +139,9 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
-    static QRect suit_rect(8,8,18,18);
     static QFont card_number_font("Times", 20, QFont::Bold);
 
-    painter->drawPixmap(suit_rect, suit_pixmap);
+    painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
 
     painter->setFont(card_number_font);
     if(card->isRed())
@@ -140,10 +149,6 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     else
         painter->setPen(Qt::black);
     painter->drawText(8, 50, card->getNumberString());
-}
-
-QRectF CardItem::boundingRect() const{
-    return CardItemRect;
 }
 
 GuanxingCardItem::GuanxingCardItem(const Card *card)

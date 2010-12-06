@@ -2,6 +2,7 @@
 #define CHALLENGEMODE_H
 
 #include "package.h"
+#include "gamerule.h"
 
 class ChallengeMode : public QObject{
     Q_OBJECT
@@ -28,6 +29,13 @@ private:
     QHash<QString, const ChallengeMode *> modes;
 };
 
+class ChallengeModeRule: public GameRule{
+    Q_OBJECT
 
+public:
+    ChallengeModeRule(QObject *parent);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+};
 
 #endif // CHALLENGEMODE_H

@@ -40,16 +40,13 @@ void Skill::initMediaSource(){
     sources.clear();
 
     if(parent()){
-        const General *general = qobject_cast<const General *>(parent());
-        QString package_name = general->parent()->objectName();
-
-        QString effect_file = QString("%1/generals/effect/%2.wav").arg(package_name).arg(objectName());
+        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
         if(QFile::exists(effect_file))
             sources << effect_file;
         else{
             int i=1;
             forever{
-                QString effect_file = QString("%1/generals/effect/%2%3.wav").arg(package_name).arg(objectName()).arg(i);
+                QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
                 if(QFile::exists(effect_file))
                     sources << effect_file;
                 else
@@ -67,7 +64,16 @@ void Skill::playEffect(int index) const{
         else
             index--;
 
-        Sanguosha->playEffect(sources.at(index));
+        // check length
+        QString filename;
+        if(index >= 0 && index < sources.length())
+            filename = sources.at(index);
+        else
+            filename = sources.first();
+
+        Sanguosha->playEffect(filename);
+        if(ClientInstance)
+            ClientInstance->setLines(filename);
     }
 }
 
@@ -209,6 +215,18 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 
 bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
     return onPhaseChange(player);
+}
+
+DrawCardsSkill::DrawCardsSkill(const QString &name)
+    :TriggerSkill(name)
+{
+    events << DrawNCards;
+}
+
+bool DrawCardsSkill::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    int n = data.toInt();
+    data = getDrawNum(player, n);
+    return false;
 }
 
 SlashBuffSkill::SlashBuffSkill(const QString &name)

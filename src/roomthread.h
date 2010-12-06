@@ -6,6 +6,7 @@ class TriggerSkill;
 class ServerPlayer;
 class Card;
 class Slash;
+class GameRule;
 
 #include "player.h"
 
@@ -121,6 +122,7 @@ Q_DECLARE_METATYPE(DyingStruct);
 enum TriggerEvent{
     GameStart,
     PhaseChange,
+    DrawNCards,
     JudgeOnEffect,
 
     Predamage,
@@ -153,7 +155,7 @@ class RoomThread : public QThread{
 
 public:
     explicit RoomThread(Room *room);
-    void constructTriggerTable();
+    void constructTriggerTable(const GameRule *rule);
     bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, ServerPlayer *target);
     void addTriggerSkill(const TriggerSkill *skill);

@@ -10,6 +10,7 @@
 class NullificationDialog;
 class Recorder;
 class Replayer;
+class QTextDocument;
 
 class Client : public QObject
 {
@@ -55,6 +56,8 @@ public:
     void kick(const QString &to_kick);
     bool save(const QString &filename) const;
     bool isProhibited(const Player *to, const Card *card) const;
+    void setLines(const QString &skill_name);
+    QTextDocument *getLinesDoc() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -90,6 +93,7 @@ public:
     void skillInvoked(const QString &invoke_str);
     void acquireSkill(const QString &acquire_str);
     void addProhibitSkill(const QString &skill_name);
+    void animate(const QString &animate_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -157,6 +161,11 @@ private:
     Recorder *recorder;
     Replayer *replayer;
     QList<const ProhibitSkill *> prohibit_skills;
+    QTextDocument *lines_doc;
+    int pile_num;
+    QString skill_line;
+
+    void updatePileNum();
 
 private slots:
     void processCommand(const QString &cmd);
@@ -180,7 +189,6 @@ signals:
     void status_changed(Client::Status new_status);
     void avatars_hiden();
     void pile_cleared();
-    void pile_num_set(int n);
     void player_killed(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QString &log_str);
@@ -191,6 +199,7 @@ signals:
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
+    void animated(const QString &name, const QStringList &args);
 
     void game_started();
     void game_over(bool victory, const QList<bool> &result_list);

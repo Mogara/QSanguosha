@@ -1,4 +1,5 @@
 #include "magatamawidget.h"
+#include "player.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -12,11 +13,7 @@ MagatamaWidget::MagatamaWidget(int hp, Qt::Orientation orientation)
     else
         layout = new QHBoxLayout;
 
-    QPixmap pixmap;
-    if(hp>=5)
-        pixmap.load(":/magatamas/5.png");
-    else
-        pixmap.load(QString(":/magatamas/%1.png").arg(hp));
+    QPixmap pixmap = *GetMagatama(qMin(5, hp));
 
     int i;
     for(i=0; i<hp; i++){
@@ -27,4 +24,26 @@ MagatamaWidget::MagatamaWidget(int hp, Qt::Orientation orientation)
     }
 
     setLayout(layout);
+}
+
+QPixmap *MagatamaWidget::GetMagatama(int index){
+    static QPixmap magatamas[6];
+    if(magatamas[0].isNull()){
+        int i;
+        for(i=0; i<=5; i++)
+            magatamas[i].load(QString(":/magatamas/%1.png").arg(i));
+    }
+
+    return &magatamas[index];
+}
+
+QPixmap *MagatamaWidget::GetSmallMagatama(int index){
+    static QPixmap magatamas[6];
+    if(magatamas[0].isNull()){
+        int i;
+        for(i=0; i<=5; i++)
+            magatamas[i].load(QString(":/magatamas/small-%1.png").arg(i));
+    }
+
+    return &magatamas[index];
 }

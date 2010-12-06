@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    scene = NULL;
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
@@ -61,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    StartScene *start_scene = new StartScene;    
+    StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
     actions << ui->actionStart_Game            
@@ -75,11 +76,12 @@ MainWindow::MainWindow(QWidget *parent)
     foreach(QAction *action, actions)
         start_scene->addButton(action);    
 
-    scene = start_scene;
     FitView *view = new FitView(scene);
 
     setCentralWidget(view);
     restoreFromConfig();
+
+    gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);   
@@ -123,6 +125,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
     view->setScene(scene);
     delete this->scene;
     this->scene = scene;
+
+    changeBackground();
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -174,6 +178,10 @@ void MainWindow::startConnection(){
 void MainWindow::on_actionReplay_triggered()
 {
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString last_dir = Config.value("LastReplayDir").toString();
+    if(!last_dir.isEmpty())
+        location = last_dir;
+
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a reply file"),
                                                     location,
@@ -181,6 +189,10 @@ void MainWindow::on_actionReplay_triggered()
 
     if(filename.isEmpty())
         return;
+
+    QFileInfo file_info(filename);
+    last_dir = file_info.absoluteDir().path();
+    Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
 
@@ -293,12 +305,31 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 void MainWindow::changeBackground(){
-    if(scene)
-        scene->setBackgroundBrush(Config.BackgroundBrush);
+    if(scene){
+        QPixmap pixmap(Config.BackgroundBrush);
+        QBrush brush(pixmap);
+
+        if(pixmap.width() > 100 && pixmap.height() > 100){
+            qreal dx = -width()/2.0;
+            qreal dy = -height()/2.0;
+            qreal sx = width() / qreal(pixmap.width());
+            qreal sy = height() / qreal(pixmap.height());
+
+            QTransform transform;
+            transform.translate(dx, dy);
+            transform.scale(sx, sy);
+            brush.setTransform(transform);
+        }
+
+        scene->setBackgroundBrush(brush);
+    }
 
     if(scene->inherits("RoomScene")){
         RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
         room_scene->changeTextEditBackground();
+    }else if(scene->inherits("StartScene")){
+        StartScene *start_scene = qobject_cast<StartScene *>(scene);
+        start_scene->setServerLogBackground();
     }
 }
 
@@ -334,6 +365,8 @@ void MainWindow::on_actionAbout_libircclient_triggered()
 void MainWindow::on_actionAbout_irrKlang_triggered()
 {
     QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
+    content.append("<p align='center'> <img src=':/irrklang.png' /> </p> <br/>");
+
     QString address = "http://www.ambiera.com/irrklang/";
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
     content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));

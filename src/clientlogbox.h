@@ -10,6 +10,7 @@ class ClientLogBox : public QTextEdit{
 
 public:
     explicit ClientLogBox(QWidget *parent = 0);
+    QTextDocument *getLineDoc() const;
     void appendLog(
             const QString &type,
             const QString &from_general,
@@ -21,6 +22,9 @@ public:
 
 public slots:
     void appendLog(const QString &log_str);
+
+private:
+    QTextDocument *line_doc;
 };
 
 #endif // CLIENTLOGBOX_H

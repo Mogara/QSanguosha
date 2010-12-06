@@ -180,8 +180,11 @@ int Player::distanceTo(const Player *other) const{
 }
 
 int Player::getGeneralMaxHP() const{
+    if(general2 == NULL)
+        return general->getMaxHp();
+
     int first = general->getMaxHp();
-    int second = general2 ? general2->getMaxHp() : 3;
+    int second = general2->getMaxHp();
 
     int max_hp;
     switch(Config.MaxHpScheme){
@@ -220,7 +223,7 @@ void Player::setGeneral2Name(const QString &general_name){
     if(general2 != new_general){
         general2 = new_general;
 
-        emit general_changed();
+        emit general2_changed();
     }
 }
 
@@ -394,6 +397,8 @@ void Player::setPhase(Phase phase){
         if(phase == Player::Start){
             emit turn_started();
         }
+
+        emit phase_changed();
     }
 }
 
@@ -432,8 +437,12 @@ void Player::setKingdom(const QString &kingdom){
     }
 }
 
-QString Player::getKingdomPath() const{
-    return QString(":/kingdom/%1.png").arg(kingdom);
+QString Player::getKingdomIcon() const{
+    return QString("image/kingdom/icon/%1.png").arg(kingdom);
+}
+
+QString Player::getKingdomFrame() const{
+    return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
 void Player::setXueyi(int xueyi){

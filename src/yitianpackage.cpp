@@ -125,43 +125,6 @@ public:
     }
 };
 
-class MoonSpearSkill: public WeaponSkill{
-public:
-    MoonSpearSkill():WeaponSkill("moon_spear"){
-        events << CardFinished << CardResponsed;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(player->getPhase() != Player::NotActive)
-            return false;
-
-
-        CardStar card = NULL;
-        if(event == CardFinished){
-            CardUseStruct card_use = data.value<CardUseStruct>();
-            card = card_use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
-
-        if(card == NULL || !card->isBlack())
-            return false;
-
-        Room *room = player->getRoom();
-        room->askForUseCard(player, "slash", "@moon-spear-slash");
-
-        return false;
-    }
-};
-
-class MoonSpear: public Weapon{
-public:
-    MoonSpear(Suit suit = Card::Diamond, int number = 12)
-        :Weapon(suit, number, 3){
-        setObjectName("moon_spear");
-        skill = new MoonSpearSkill;
-    }
-};
-
 ChengxiangCard::ChengxiangCard()
 {
 
@@ -346,7 +309,7 @@ public:
             }
         }
 
-        room->playSkillEffect("guixin", 2);
+        room->playSkillEffect("guixin");
 
         return false;
     }
@@ -369,6 +332,129 @@ public:
     }
 };
 
+class Songluo: public TriggerSkill{
+public:
+    Songluo():TriggerSkill("songluo"){
+        events << CardUsed << CardResponsed;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardStar card = NULL;
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+        }else if(event == CardResponsed)
+            card = data.value<CardStar>();
+
+        if(card && card->isBlack() && card->inherits("BasicCard")){
+            Room *room = player->getRoom();
+            QList<ServerPlayer *> players = room->getAllPlayers();
+
+            // find Cao Zhi
+            ServerPlayer *caozhi = NULL;
+            foreach(ServerPlayer *player, players){
+                if(player->hasSkill(objectName())){
+                    caozhi = player;
+                    break;
+                }
+            }
+
+            if(caozhi && room->askForSkillInvoke(caozhi, objectName(), data)){
+                player->drawCards(1);
+            }
+        }
+
+        return false;
+    }
+};
+
+JuejiCard::JuejiCard(){
+}
+
+bool JuejiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < 3 && to_select != Self;
+}
+
+void JuejiCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->setPlayerMarkDelta(effect.to, "@jueji", +1);
+}
+
+class JuejiViewAsSkill: public ViewAsSkill{
+public:
+    JuejiViewAsSkill():ViewAsSkill("jueji"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(selected.isEmpty())
+            return true;
+        else if(selected.length() == 1){
+            const Card *first = selected.first()->getFilteredCard();
+            return first->sameColorWith(to_select->getFilteredCard());
+        }
+
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() == 2){
+            JuejiCard *card = new JuejiCard;
+            card->addSubcards(cards);
+            return card;
+        }else
+            return NULL;
+    }
+};
+
+class Jueji: public DrawCardsSkill{
+public:
+    Jueji():DrawCardsSkill("jueji"){
+        view_as_skill = new JuejiViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@jueji") > 0;
+    }
+
+    virtual int getDrawNum(ServerPlayer *player, int n) const{
+        Room *room = player->getRoom();
+        room->setPlayerMarkDelta(player, "@jueji", -1);
+
+        // find zhanghe
+        ServerPlayer *zhanghe = room->findPlayerBySkillName(objectName());
+        if(zhanghe){
+            zhanghe->drawCards(1);
+        }
+
+        return n - 1;
+    }
+};
+
+class JuejiClear: public PhaseChangeSkill{
+public:
+    JuejiClear():PhaseChangeSkill("#jueji-clear"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhanghe) const{
+        if(zhanghe->getPhase() == Player::Start){
+            Room *room = zhanghe->getRoom();
+            QList<ServerPlayer *> players = room->getOtherPlayers(zhanghe);
+            foreach(ServerPlayer *player, players){
+                if(player->getMark("@jueji") > 0){
+                    room->setPlayerMarkDelta(player, "@jueji", -1);
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -377,8 +463,7 @@ YitianPackage::YitianPackage()
     cards << new Shit(Card::Club, 1)
             << new Shit(Card::Heart, 1)
             << new Shit(Card::Diamond, 1)
-            << new YitianSword
-            << new MoonSpear;
+            << new YitianSword;
 
     foreach(Card *card, cards)
         card->setParent(this);
@@ -389,7 +474,6 @@ YitianPackage::YitianPackage()
     t["yitian"] = tr("yitian");
     t["shit"] = tr("shit");
     t["yitian_sword"] = tr("yitian_sword");
-    t["moon_spear"] = tr("moon_spear");
 
     // generals
     General *shencc = new General(this, "shencc$", "god", 3);
@@ -401,18 +485,31 @@ YitianPackage::YitianPackage()
     caochong->addSkill(new Conghui);
     caochong->addSkill(new Zaoyao);
 
-    t["caochong"] = tr("caochong");
+    //General *caozhi = new General(this, "caozhi", "wei", 3);
+    //caozhi->addSkill(new Songluo);
+
+    //General *zhanghe = new General(this, "zhangjunyi", "wei");
+    //zhanghe->addSkill(new Jueji);
+    //zhanghe->addSkill(new JuejiClear);
+
     t["shencc"] = tr("shencc");
+    t["caochong"] = tr("caochong");
+    t["caozhi"] = tr("caozhi");
+    t["zhangjunyi"] = tr("zhangjunyi");
 
     t["guixin2"] = tr("guixin2");
     t["chengxiang"] = tr("chengxiang");
     t["conghui"] = tr("conghui");
     t["zaoyao"] = tr("zaoyao");
+    t["songluo"] = tr("songluo");
+    t["jueji"] = tr("jueji");
 
     t[":guixin2"] = tr(":guixin2");
     t[":chengxiang"] = tr(":chengxiang");
     t[":conghui"] = tr(":conghui");
     t[":zaoyao"] = tr(":zaoyao");
+    t[":songluo"] = tr(":songluo");
+    t[":jueji"] = tr(":jueji");
 
     t["guixin2:yes"] = tr("guixin2:yes");
     t["guixin2:modify"] = tr("guixin2:modify");
@@ -432,11 +529,11 @@ YitianPackage::YitianPackage()
     t["yitian_sword:yes"] = tr("yitian_sword:yes");
 
     t["@chengxiang-card"] = tr("@chengxiang-card");
-    t["@moon-spear-slash"] = tr("@moon-spear-slash");
 
     skills << new YitianSwordViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
+    addMetaObject<JuejiCard>();
 }
 
 ADD_PACKAGE(Yitian);

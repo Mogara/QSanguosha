@@ -576,6 +576,20 @@ FirePackage::FirePackage()
     addMetaObject<JiemingCard>();
     addMetaObject<QiangxiCard>();
     addMetaObject<TianyiCard>();
+
+    t["$#tunlang"]=tr("$#tunlang");
+    t["$bazhen1"]=tr("$bazhen1");
+    t["$huoji1"]=tr("$huoji1");
+    t["$huoji2"]=tr("$huoji2");
+    t["$jieming1"]=tr("$jieming1");
+    t["$jieming2"]=tr("$jieming2");
+    t["$kanpo"]=tr("$kanpo");
+    t["$lianhuan"]=tr("$lianhuan");
+    t["$luanji1"]=tr("$luanji1");
+    t["$luanji2"]=tr("$luanji2");
+    t["$niepan"]=tr("$niepan");
+    t["$qiangxi"]=tr("$qiangxi");
+    t["$quhu"]=tr("$quhu");
 }
 
 ADD_PACKAGE(Fire);

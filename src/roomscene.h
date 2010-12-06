@@ -58,22 +58,23 @@ private:
     Photo *focused;
 
     Dashboard *dashboard;
-    Pixmap *pile;
     Pixmap *avatar;
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
-    QProgressBar *progress_bar;
-    int timer_id;
     QMenu *known_cards_menu;
     Daqiao *daqiao;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
+    QComboBox *sort_combobox;
 
-    int pile_number;
-    QGraphicsTextItem *pile_number_item;
+    QProgressBar *progress_bar;
+    int timer_id;
+    int tick;
+
+    QList<QGraphicsPixmapItem *> role_items;
 
     QList<CardItem *> amazing_grace;
     QList<QGraphicsPixmapItem *> taker_avatars;
@@ -117,7 +118,13 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     void addSkillButton(const Skill *skill);
-    void addWidgetToSkillDock(QWidget *widget);
+    void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
+    void removeWidgetFromSkillDock(QWidget *widget);
+    QList<QPointF> getPhotoPositions() const;
+
+    // animation related functions
+    QGraphicsObject *getAnimationObject(const QString &name) const;
+    void moveAndDisappear(QGraphicsObject *item, const QPointF &from, const QPointF &to) const;
 
 private slots:
     void updateSkillButtons();
@@ -136,9 +143,10 @@ private slots:
     void moveFocus(const QString &who);
     void setEmotion(const QString &who, const QString &emotion);
     void showSkillInvocation(const QString &who, const QString &skill_name);
+    void doAnimation(const QString &name, const QStringList &args);
+    void adjustDashboard();
 
     void clearPile();
-    void setPileNumber(int n);
 
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();

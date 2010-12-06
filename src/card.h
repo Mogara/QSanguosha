@@ -45,10 +45,10 @@ public:
     int getNumber() const;
     QString getNumberString() const;
     Suit getSuit() const;
+    bool sameColorWith(const Card *other) const;
     QString getPixmapPath() const;
     QString getIconPath() const;
-    QString getPackage() const;
-    QString getEffectPath(bool is_male) const;
+    QString getPackage() const;    
     QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
@@ -56,6 +56,7 @@ public:
     QString getSkillName() const;   
     void setSkillName(const QString &skill_name);
     QString getDescription() const;
+    QString getEffectPath() const;
 
     bool isVirtualCard() const;
     virtual bool match(const QString &pattern) const;
@@ -71,6 +72,7 @@ public:
     virtual QString getSubtype() const = 0;
     virtual int getTypeId() const = 0;
     virtual QString toString() const;
+    virtual QString getEffectPath(bool is_male) const;
 
     // card target selection
     bool targetFixed() const;

@@ -31,6 +31,7 @@ class Analeptic: public BasicCard{
 public:
     Q_INVOKABLE Analeptic(Card::Suit suit, int number);
     virtual QString getSubtype() const;
+    virtual QString getEffectPath(bool is_male) const;
 
     static bool IsAvailable();
 
@@ -77,6 +78,8 @@ public:
     Q_INVOKABLE IronChain(Card::Suit suit, int number);
 
     virtual QString getSubtype() const;
+    virtual QString getEffectPath(bool is_male) const;
+
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
 

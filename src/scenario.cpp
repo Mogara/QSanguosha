@@ -14,6 +14,20 @@ const ScenarioRule *Scenario::getRule() const{
     return rule;
 }
 
+void Scenario::getRoles(char *roles) const{
+    qstrcpy(roles, "Z");
+
+    int i;
+    for(i=0; i<loyalists.length(); i++)
+        strcat(roles, "C");
+
+    for(i=0; i<rebels.length(); i++)
+        strcat(roles, "N");
+
+    for(i=0; i<rebels.length(); i++)
+        strcat(roles, "F");
+}
+
 void Scenario::assign(QStringList &generals, QStringList &roles) const{
     generals << lord << loyalists << rebels << renegades;
     qShuffle(generals);

@@ -2,25 +2,23 @@
     <qresource prefix="/">
         <file>logo.png</file>
         <file>photo-back.png</file>
-        <file>avatar-frame.png</file>
-        <file>pile.png</file>
+        <file>background.png</file>
+        <file>handcard.png</file>
+        <file>card-back.png</file>
         <file>suit/club.png</file>
         <file>suit/diamond.png</file>
         <file>suit/heart.png</file>
         <file>suit/spade.png</file>
+        <file>magatamas/0.png</file>
         <file>magatamas/1.png</file>
         <file>magatamas/2.png</file>
         <file>magatamas/3.png</file>
         <file>magatamas/4.png</file>
         <file>magatamas/5.png</file>
-        <file>dashboard.png</file>
-        <file>background.png</file>
         <file>roles/lord.png</file>
         <file>roles/loyalist.png</file>
         <file>roles/rebel.png</file>
         <file>roles/renegade.png</file>
-        <file>handcard.png</file>
-        <file>card-back.png</file>
         <file>number/1.png</file>
         <file>number/2.png</file>
         <file>number/3.png</file>
@@ -28,6 +26,8 @@
         <file>number/5.png</file>
         <file>number/6.png</file>
         <file>number/7.png</file>
+        <file>number/8.png</file>
+        <file>number/9.png</file>
         <file>shencc.png</file>
         <file>daqiao.png</file>
         <file>death/lord.png</file>
@@ -35,10 +35,6 @@
         <file>death/rebel.png</file>
         <file>death/renegade.png</file>
         <file>chain.png</file>
-        <file>kingdom/qun.png</file>
-        <file>kingdom/shu.png</file>
-        <file>kingdom/wei.png</file>
-        <file>kingdom/wu.png</file>
         <file>big-back.png</file>
         <file>small-back.png</file>
         <file>emotion/bad.png</file>
@@ -53,9 +49,41 @@
         <file>emotion/victim.png</file>
         <file>disabled.png</file>
         <file>enabled.png</file>
-        <file>kingdom/god.png</file>
         <file>settings.png</file>
-        <file>number/8.png</file>
-        <file>number/9.png</file>
+        <file>irrklang.png</file>
+        <file>dashboard-avatar.png</file>
+        <file>dashboard-equip.png</file>
+        <file>dashboard-hand.png</file>
+        <file>phase/discard.png</file>
+        <file>phase/draw.png</file>
+        <file>phase/finish.png</file>
+        <file>phase/judge.png</file>
+        <file>phase/play.png</file>
+        <file>phase/response.png</file>
+        <file>phase/sos.png</file>
+        <file>phase/start.png</file>
+        <file>wait-frame.png</file>
+        <file>frame/bad.png</file>
+        <file>frame/good.png</file>
+        <file>frame/nothing.png</file>
+        <file>frame/playing.png</file>
+        <file>frame/responsing.png</file>
+        <file>frame/self-playing.png</file>
+        <file>frame/self-responsing.png</file>
+        <file>frame/self-sos.png</file>
+        <file>frame/sos.png</file>
+        <file>magatamas/small-0.png</file>
+        <file>magatamas/small-1.png</file>
+        <file>magatamas/small-2.png</file>
+        <file>magatamas/small-3.png</file>
+        <file>magatamas/small-4.png</file>
+        <file>magatamas/small-5.png</file>
+        <file>animation/nullification.png</file>
+        <file>animation/peach.png</file>
+        <file>state.png</file>
+        <file>roles/small-lord.png</file>
+        <file>roles/small-loyalist.png</file>
+        <file>roles/small-rebel.png</file>
+        <file>roles/small-renegade.png</file>
     </qresource>
 </RCC>

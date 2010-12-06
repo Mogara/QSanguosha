@@ -42,13 +42,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class TianxiangCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE TianxiangCard();
-};
-
 class WindPackage: public Package{
     Q_OBJECT
 

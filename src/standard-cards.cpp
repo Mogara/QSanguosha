@@ -124,6 +124,10 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
+QString Peach::getEffectPath(bool is_male) const{
+    return Card::getEffectPath();
+}
+
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->recover(source, 1);

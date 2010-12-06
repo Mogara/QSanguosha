@@ -54,7 +54,7 @@ void CardOverview::addCard(int i, const Card *card){
     ui->tableWidget->setItem(i, 2, new QTableWidgetItem(point));
     ui->tableWidget->setItem(i, 3, new QTableWidgetItem(type));
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
-    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));
+    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));    
 }
 
 CardOverview::~CardOverview()
@@ -67,7 +67,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getCard(card_id);
-    QString pixmap_path = card->getPixmapPath();
+    QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
     ui->cardLabel->setPixmap(pixmap_path);
 
     ui->cardDescriptionBox->setText(card->getDescription());

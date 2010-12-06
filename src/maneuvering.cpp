@@ -40,6 +40,10 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
+QString Analeptic::getEffectPath(bool is_male) const{
+    return Card::getEffectPath();
+}
+
 bool Analeptic::IsAvailable(){
     return ! ClientInstance->turn_tag.value("analeptic_used", false).toBool();
 }
@@ -250,6 +254,10 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
+QString IronChain::getEffectPath(bool is_male) const{
+    return QString();
+}
+
 bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(targets.length() > 2)
         return false;
@@ -265,10 +273,10 @@ void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->throwCard(this);
 
     if(targets.isEmpty()){       
-        room->playCardEffect("recast@" + getPackage(), source->getGeneral()->isMale());
+        room->playCardEffect("@recast", source->getGeneral()->isMale());
         source->drawCards(1);
     }else{
-        room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
+        room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
 
         TrickCard::use(room, source, targets);
     }

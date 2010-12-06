@@ -15,6 +15,7 @@ class StartScene: public QGraphicsScene{
 public:
     StartScene();
     void addButton(QAction *action);
+    void setServerLogBackground();
     void switchToServer(Server *server);
 
 private:

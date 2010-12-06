@@ -54,3 +54,35 @@ void ChallengeModeSet::addMode(const QString &name, const QString &general_str){
     mode->setParent(this);
 }
 
+ChallengeModeRule::ChallengeModeRule(QObject *parent)
+    :GameRule(parent)
+{
+    setObjectName("challenge_mode");
+}
+
+bool ChallengeModeRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    if(event == Death){
+        static const QString attack = "rebel+renegade";
+        static const QString defense = "lord+loyalist";
+
+        Room *room = player->getRoom();
+        QStringList alive_roles = room->aliveRoles(player);
+        QString victim_role = player->getRole();
+        if(attack.contains(victim_role)){
+            if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade")){
+                room->gameOver(defense);
+                return true;
+            }
+        }else{
+            if(!alive_roles.contains("lord") && !alive_roles.contains("loyalist")){
+                room->gameOver(attack);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return GameRule::trigger(event, player, data);
+}
+

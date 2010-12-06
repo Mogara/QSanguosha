@@ -22,7 +22,7 @@ Button::Button(const QString &label)
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    SoundEngine->play2D("audio/button-hover.wav");
+    SoundEngine->play2D("audio/system/button-hover.ogg");
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -30,7 +30,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    SoundEngine->play2D("audio/button-down.wav");
+    SoundEngine->play2D("audio/system/button-down.ogg");
 
     emit clicked();
 }

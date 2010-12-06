@@ -23,15 +23,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        ServerPlayer *caopi = NULL;
-        QList<ServerPlayer *> players = room->getOtherPlayers(player);
-        foreach(ServerPlayer *p, players){
-            if(p->hasSkill(objectName())){
-                caopi = p;
-                break;
-            }
-        }
-
+        ServerPlayer *caopi = room->findPlayerBySkillName(objectName());
         if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName())){
             caopi->obtainCard(player->getWeapon());
             caopi->obtainCard(player->getArmor());
@@ -151,27 +143,15 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("SavageAssault")){
-            ServerPlayer *menghuo = player;
-            if(!player->hasSkill(objectName())){
-                // finding menghuo
-                Room *room = player->getRoom();
-                QList<ServerPlayer *> players = room->getOtherPlayers(player);
-                foreach(ServerPlayer *p, players){
-                    if(p->hasSkill(objectName())){
-                        menghuo = p;
-                        break;
-                    }
-                }
-            }
-
-            if(menghuo != player){
-                Room *room = menghuo->getRoom();
+            Room *room = player->getRoom();
+            ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
+            if(menghuo){
                 room->playSkillEffect(objectName());
 
                 damage.from = menghuo;
@@ -413,9 +393,75 @@ public:
     }
 };
 
-class Haoshi: public PhaseChangeSkill{
+class HaoshiGive: public PhaseChangeSkill{
 public:
-    Haoshi():PhaseChangeSkill("haoshi"){
+    HaoshiGive():PhaseChangeSkill("#haoshi-give"){
+
+    }
+
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *lusu) const{
+        if(lusu->getPhase() == Player::Draw && lusu->hasFlag("haoshi")){
+            lusu->setFlags("-haoshi");
+
+            if(lusu->getHandcardNum() <= 5)
+                return false;
+
+            Room *room = lusu->getRoom();
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
+            int least = 1000;
+            foreach(ServerPlayer *player, other_players)
+                least = qMin(player->getHandcardNum(), least);
+            room->setPlayerMark(lusu, "haoshi", least);
+            bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
+            if(!used){
+                // force lusu to give his half cards
+                ServerPlayer *beggar = NULL;
+                foreach(ServerPlayer *player, other_players){
+                    if(player->getHandcardNum() == least){
+                        beggar = player;
+                        break;
+                    }
+                }
+
+                QList<int> handcards = lusu->handCards();
+                QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
+                DummyCard *dummy_card = new DummyCard;
+                foreach(int card_id, to_give)
+                    dummy_card->addSubcard(card_id);
+                room->moveCardTo(dummy_card, beggar, Player::Hand, false);
+                delete dummy_card;
+
+                room->setEmotion(beggar, Room::DrawCard);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Haoshi: public DrawCardsSkill{
+public:
+    Haoshi():DrawCardsSkill("#haoshi"){
+
+    }
+
+    virtual int getDrawNum(ServerPlayer *lusu, int n) const{
+        Room *room = lusu->getRoom();
+        if(room->askForSkillInvoke(lusu, "haoshi")){
+            lusu->setFlags("haoshi");
+            return n + 2;
+        }else
+            return n;
+    }
+};
+
+/*class Haoshi: public PhaseChangeSkill{
+public:
+    Haoshi():PhaseChangeSkill("#haoshi"){
     }
 
     virtual bool onPhaseChange(ServerPlayer *lusu) const{
@@ -430,37 +476,12 @@ public:
         if(lusu->getHandcardNum() <= 5)
             return true;
 
-        QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
-        int least = 1000;
-        foreach(ServerPlayer *player, other_players)
-            least = qMin(player->getHandcardNum(), least);
-        room->setPlayerMark(lusu, "haoshi", least);
-        bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
-        if(!used){
-            // force lusu to distribute his cards
-            ServerPlayer *beggar = NULL;
-            foreach(ServerPlayer *player, other_players){
-                if(player->getHandcardNum() == least){
-                    beggar = player;
-                    break;
-                }
-            }
 
-            QList<int> handcards = lusu->handCards();
-            QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
-            DummyCard *dummy_card = new DummyCard;
-            foreach(int card_id, to_give)
-                dummy_card->addSubcard(card_id);
-            room->moveCardTo(dummy_card, beggar, Player::Hand, false);
-            delete dummy_card;
-
-            room->setEmotion(beggar, Room::DrawCard);
-        }
 
         return true;
     }
 };
-
+*/
 DimengCard::DimengCard(){
 
 }
@@ -635,7 +656,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped() && to_select->getRealCard()->getSuit() == Card::Spade;
+        return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Spade;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -803,6 +824,8 @@ ThicketPackage::ThicketPackage()
 
     lusu = new General(this, "lusu", "wu", 3);
     lusu->addSkill(new Haoshi);
+    lusu->addSkill(new HaoshiViewAsSkill);
+    lusu->addSkill(new HaoshiGive);
     lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
@@ -898,7 +921,18 @@ ThicketPackage::ThicketPackage()
     addMetaObject<FangzhuCard>();
     addMetaObject<HaoshiCard>();
 
-    skills << new HaoshiViewAsSkill;
+    //lines
+    t["$baonue"]=tr("$baonue");
+    t["$benghuai"]=tr("$benghuai");
+    t["$huoshou"]=tr("$huoshou");
+    t["$jiuchi"]=tr("$jiuchi");
+    t["$juxiang"]=tr("$juxiang");
+    t["$lieren1"]=tr("$lieren1");
+    t["$lieren2"]=tr("$lieren2");
+    t["$lieren3"]=tr("$lieren3");
+    t["$zaiqi1"]=tr("$zaiqi1");
+    t["$zaiqi2"]=tr("$zaiqi2");
+    t["$zaiqi3"]=tr("$zaiqi3");
 }
 
 ADD_PACKAGE(Thicket)

@@ -65,25 +65,6 @@
     </property>
    </column>
   </widget>
-  <widget class="QLabel" name="cardLabel">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>20</y>
-     <width>211</width>
-     <height>281</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>../cards/amazing_grace.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QTextEdit" name="cardDescriptionBox">
    <property name="geometry">
     <rect>
@@ -92,6 +73,19 @@
      <width>211</width>
      <height>141</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="cardLabel">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>10</y>
+     <width>211</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

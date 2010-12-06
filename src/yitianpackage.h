@@ -34,4 +34,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class JuejiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JuejiCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // YITIANPACKAGE_H

@@ -141,6 +141,16 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
 };
 
+class DrawCardsSkill: public TriggerSkill{
+    Q_OBJECT
+
+public:
+    DrawCardsSkill(const QString &name);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
+};
+
 class SlashBuffSkill: public TriggerSkill{
     Q_OBJECT
 

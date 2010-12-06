@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "client.h"
 #include "standard.h"
+#include "magatamawidget.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -10,65 +11,92 @@
 #include <QGraphicsSceneMouseEvent>
 
 Dashboard::Dashboard()
-    :Pixmap(":/dashboard.png"),  selected(NULL), player(NULL), avatar(NULL),
+    :left_pixmap(":/dashboard-equip.png"), right_pixmap(":/dashboard-avatar.png"),
+    selected(NULL), player(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     view_as_skill(NULL), filter(NULL)
 {
+    createLeft();
+    createMiddle();
+    createRight();
+
+    int left_width = left_pixmap.width();
+    int middle_width = middle->rect().width();
+    int right_width = right->rect().width();
+    min_width = left_width + middle_width + right_width;
+
+    setMiddleWidth(middle_width);
+
+    sort_type = 0;
+}
+
+void Dashboard::createLeft(){
+    left = new QGraphicsRectItem(QRectF(left_pixmap.rect()), this);
+
+    equips << &weapon << &armor << &defensive_horse << &offensive_horse;
+
     int i;
-    for(i=0; i<5; i++){
-        magatamas[i].load(QString(":/magatamas/%1.png").arg(i+1));
+    for(i=0; i<4; i++){
+        QRectF rect(8, 40 + 32 *i, 117, 25);
+        equip_rects[i] = new QGraphicsRectItem(rect, left);
+        equip_rects[i]->setPen(Qt::NoPen);
     }
-    magatamas[5] = magatamas[4];
+}
 
-    sort_combobox = new QComboBox;
-    sort_combobox->addItem(tr("No sort"));
-    sort_combobox->addItem(tr("Sort by suit"));
-    sort_combobox->addItem(tr("Sort by type"));
-    sort_combobox->addItem(tr("Sort by availability"));
-    QGraphicsProxyWidget *sort_widget = new QGraphicsProxyWidget;
-    sort_widget->setWidget(sort_combobox);
-    connect(sort_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(sortCards()));
+void Dashboard::createMiddle(){
+    middle = new QGraphicsRectItem(this);
 
-    sort_widget->setParentItem(this);
-    sort_widget->setPos(0, 28);
+    QPixmap middle_pixmap(":/dashboard-hand.png");
+    QBrush middle_brush(middle_pixmap);
+    middle->setBrush(middle_brush);
+    middle->setRect(0, 0, middle_pixmap.width(), middle_pixmap.height());
 
-    button_layout  = new QGraphicsLinearLayout(Qt::Horizontal);
+    trusting_item = new QGraphicsRectItem(this);
+    trusting_item->setRect(middle->rect());
+    QBrush trusting_brush(QColor(0x26, 0x1A, 0x42));
+    trusting_item->setBrush(trusting_brush);
+    trusting_item->setOpacity(0.36);
+    trusting_item->setZValue(2.0);
 
-    QGraphicsWidget *form = new QGraphicsWidget(this);
-    form->setLayout(button_layout);
-    form->setPos(sort_widget->pos());
-    form->moveBy(sort_widget->boundingRect().width(), -10);
+    trusting_text = new QGraphicsSimpleTextItem(tr("Trusting ..."), this);
+    trusting_text->setFont(Config.BigFont);
+    trusting_text->setBrush(Qt::white);
+    trusting_text->setZValue(2.1);
+
+    trusting_item->hide();
+    trusting_text->hide();
+}
+
+void Dashboard::createRight(){
+    right = new QGraphicsRectItem(QRectF(right_pixmap.rect()), this);
 
     avatar = new Pixmap;
-    avatar->setPos(837, 35);    
-    avatar->setParentItem(this);
+    avatar->setPos(22, 64);
+    avatar->setParentItem(right);
 
     small_avatar = new Pixmap;
-    small_avatar->setPos(912, 35);
-    small_avatar->setScale(0.5);
-    small_avatar->setParentItem(this);
+    small_avatar->setPos(21, 63);
+    small_avatar->setParentItem(right);
     small_avatar->setOpacity(0.75);
 
-    kingdom = new QGraphicsPixmapItem(this);
-    kingdom->setPos(avatar->pos());
+    kingdom = new QGraphicsPixmapItem(right);
+    kingdom->setPos(91, 54);
 
     chain_icon = new Pixmap(":/chain.png");
-    chain_icon->setParentItem(this);
-    chain_icon->setPos(avatar->pos());
+    chain_icon->setParentItem(right);
+    chain_icon->setPos(small_avatar->pos());
     chain_icon->hide();
     chain_icon->setZValue(1.0);
 
     back_icon = new Pixmap(":/big-back.png");
-    back_icon->setParentItem(this);
-    back_icon->setPos(922, 104);
-    back_icon->hide();
+    back_icon->setParentItem(right);
+    back_icon->setPos(59, 105);
     back_icon->setZValue(1.0);
+    back_icon->hide();
 
-    equips << &weapon << &armor << &defensive_horse << &offensive_horse;
-
-    QGraphicsPixmapItem *handcard_pixmap = new QGraphicsPixmapItem(this);
+    QGraphicsPixmapItem *handcard_pixmap = new QGraphicsPixmapItem(right);
     handcard_pixmap->setPixmap(QPixmap(":/handcard.png"));
-    handcard_pixmap->setPos(841, 146);
+    handcard_pixmap->setPos(25, 127);
 
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
     handcard_num->setFont(Config.TinyFont);
@@ -81,14 +109,16 @@ void Dashboard::setFilter(const FilterSkill *filter){
     this->filter = filter;
 }
 
+void Dashboard::setTrust(bool trust){
+    trusting_item->setVisible(trust);
+    trusting_text->setVisible(trust);
+}
+
 void Dashboard::addCardItem(CardItem *card_item){
-    if(filter && filter->viewFilter(card_item)){
-        const Card *real_card = filter->viewAs(card_item);
-        card_item->setRealCard(real_card);
-    }
+    card_item->filter(filter);
 
     if(ClientInstance->getStatus() == Client::Playing)
-        card_item->setEnabled(card_item->getRealCard()->isAvailable());
+        card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
     else
         card_item->setEnabled(false);
 
@@ -101,7 +131,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
 
-    sortCards();
+    sortCards(sort_type);
 
     handcard_num->setText(QString::number(Self->getHandcardNum()));
     handcard_num->parentItem()->show();
@@ -122,16 +152,20 @@ void Dashboard::updateAvatar(){
     avatar->setToolTip(general->getSkillDescription());
     avatar->changePixmap(general->getPixmapPath("big"));
 
-    const General *general2 = player->getGeneral2();
-    if(general2){
-        small_avatar->setToolTip(general2->getSkillDescription());
-        small_avatar->changePixmap(general2->getPixmapPath("big"));
-    }
-
-    kingdom->setPixmap(QPixmap(player->getKingdomPath()));
+    kingdom->setPixmap(QPixmap(player->getKingdomIcon()));
 
     avatar->show();
     kingdom->show();
+
+    update();
+}
+
+void Dashboard::updateSmallAvatar(){
+    const General *general2 = player->getGeneral2();
+    if(general2){
+        small_avatar->setToolTip(general2->getSkillDescription());
+        small_avatar->changePixmap(general2->getPixmapPath("tiny"));
+    }
 
     update();
 }
@@ -153,7 +187,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     QList<CardItem*> matches;
 
     foreach(CardItem *card_item, card_items){
-        if(card_item->isEnabled() && card_item->getRealCard()->match(pattern))
+        if(card_item->isEnabled() && card_item->getFilteredCard()->match(pattern))
             matches << card_item;
     }
 
@@ -177,7 +211,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
         to_select->select();
         selected = to_select;
 
-        emit card_selected(selected->getRealCard());
+        emit card_selected(selected->getFilteredCard());
     }
 }
 
@@ -185,7 +219,7 @@ const Card *Dashboard::getSelected() const{
     if(view_as_skill)
         return pending_card;
     else if(selected)
-        return selected->getRealCard();
+        return selected->getFilteredCard();
     else
         return NULL;
 }
@@ -197,10 +231,6 @@ void Dashboard::unselectAll(){
         card_item->unselect();
         card_item->goBack();
     }
-}
-
-void Dashboard::sort(int order){
-    sort_combobox->setCurrentIndex(order);
 }
 
 void Dashboard::hideAvatar(){
@@ -219,12 +249,117 @@ void Dashboard::installDelayedTrick(CardItem *card){
     update();
 }
 
+QRectF Dashboard::boundingRect() const{
+    qreal width = left->boundingRect().width() + middle->rect().width() + right->boundingRect().width();
+    qreal height = middle->rect().height();
+    return QRectF(0, 0, width, height);
+}
+
+void Dashboard::setMiddleWidth(int middle_width){
+    int left_width = left_pixmap.width();
+    qreal middle_height = middle->rect().height();
+
+    middle->setRect(0, 0, middle_width, middle_height);
+    middle->setX(left_width);
+    right->setX(left_width + middle_width);
+
+    trusting_item->setRect(middle->rect());
+    trusting_item->setX(left_width);
+    trusting_text->setPos(middle_width/2, middle_height/2);
+}
+
+void Dashboard::setWidth(int width){
+    if(width == 0){
+        setMiddleWidth(middle->brush().texture().width());
+
+        prepareGeometryChange();
+        adjustCards();
+
+    }else if(width > min_width){
+        qreal left_width = left->boundingRect().width();
+        qreal right_width = right->boundingRect().width();
+        qreal middle_width = width - left_width - right_width;
+
+        setMiddleWidth(middle_width);
+
+        prepareGeometryChange();
+        adjustCards();
+    }
+}
+
+void Dashboard::addWidget(QWidget *widget, int x, bool from_left){
+    const int y = -25;
+    QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
+    proxy_widget->setWidget(widget);
+
+    if(from_left)
+        proxy_widget->setParentItem(left);
+    else
+        proxy_widget->setParentItem(right);
+
+    proxy_widget->setPos(x, y);
+}
+
+QPushButton *Dashboard::addButton(const QString &label, int x, bool from_left){
+    QPushButton *button = new QPushButton(label);
+    button->setEnabled(false);
+    button->setMaximumWidth(55);
+
+    addWidget(button, x, from_left);
+
+    return button;
+}
+
+QProgressBar *Dashboard::addProgressBar(){
+    QProgressBar *progress_bar = new QProgressBar;
+    progress_bar->setOrientation(Qt::Vertical);
+    progress_bar->setMinimum(0);
+    progress_bar->setMaximum(100);
+    progress_bar->setFixedSize(12, 124);
+
+    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(right);
+    widget->setWidget(progress_bar);
+    widget->setParentItem(right);
+    widget->setPos(3, 39);
+
+    progress_bar->hide();
+
+    return progress_bar;
+}
+
+void Dashboard::drawHp(QPainter *painter) const{
+    int hp = Self->getHp();
+    int max_hp = Self->getMaxHP();
+    QPixmap *magatama, *zero_magatama;
+    int index = Self->isWounded() ? qMin(hp, 5) : 5;
+    if(max_hp > 6){
+        magatama = MagatamaWidget::GetSmallMagatama(index);
+        zero_magatama = MagatamaWidget::GetSmallMagatama(0);
+    }else{
+        magatama = MagatamaWidget::GetMagatama(index);
+        zero_magatama = MagatamaWidget::GetMagatama(0);
+    }
+
+    qreal total_width = magatama->width() * max_hp;
+    qreal skip = (121 - total_width)/ (max_hp + 1);
+    qreal start_x = left_pixmap.width() + middle->rect().width();
+
+    int i;
+    for(i=0; i<hp; i++)
+        painter->drawPixmap(start_x + skip *(i+1) + i * magatama->width(), 5, *magatama);
+    for(i=hp; i<max_hp; i++)
+        painter->drawPixmap(start_x + skip *(i+1) + i * magatama->width(), 5, *zero_magatama);
+}
+
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    Pixmap::paint(painter, option, widget);
+    // draw the left side and right side
+    painter->drawPixmap(left->pos(), left_pixmap);
+    painter->drawPixmap(right->pos(), right_pixmap);
 
     // draw player's name
     painter->setPen(Qt::white);
-    painter->drawText(QRectF(847, 15, 121, 17), Config.UserName, QTextOption(Qt::AlignHCenter));
+    QRectF name_rect(24 + right->x(), 42 + right->y(), 90, 12);
+    painter->drawText(name_rect, Config.UserName, QTextOption(Qt::AlignHCenter));
 
     if(!player)
         return;
@@ -237,32 +372,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         return;
     }
 
-    // draw player's hp
-    int hp = player->getHp();
-    int hp_index = qMin(hp, 6);
-    QPixmap *magatama;
-    if(player->isWounded())
-        magatama = &magatamas[hp_index - 1];
-    else
-        magatama = &magatamas[4]; // the green magatama which denote full blood state
-    int i;
-
-    int basic_hp = qMin(hp, 5);
-    for(i=0; i<basic_hp; i++)
-        painter->drawPixmap(985, 24 + i*(magatama->height()+4), *magatama);
-
-    // draw extra hp (i.e. Dongzhuo, Shen Lubu, Shen Guanyu)
-    int extra_hp = hp - basic_hp;
-    for(i=0; i<extra_hp; i++)
-        painter->drawPixmap(946 - i * 40, 184, *magatama);
-
-    if(Self->hasSkill("benghuai") && Self->getMaxHP() > 0){
-        QString hp_str = QString("%1/%2").arg(Self->getHp()).arg(Self->getMaxHP());
-        painter->drawText(792, 180, hp_str);
-    }
-
     // draw player's equip area
-    painter->setFont(Config.TinyFont);
+    painter->setPen(Qt::white);
 
     drawEquip(painter, weapon, 0);
     drawEquip(painter, armor, 1);
@@ -270,32 +381,27 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     drawEquip(painter, offensive_horse, 3);
 
     // draw player's judging area
+    int i;
     for(i=0; i<delayed_tricks.count(); i++){
-        QPoint pos(178 + i * 52, 5);
+        QPoint pos(3 + i * 27, 10);
         painter->drawPixmap(pos, delayed_tricks.at(i));
     }
+
+    drawHp(painter);
 
     chain_icon->setVisible(player->isChained());
     back_icon->setVisible(!player->faceUp());
 }
 
-void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    static QSizeF equip_size(157, 30);
-    static QRectF weapon_rect(QPointF(11, 78), equip_size);
-    static QRectF armor_rect(QPointF(11, 112), equip_size);
-    static QRectF defensive_horse_rect(QPointF(11, 143), equip_size);
-    static QRectF offensive_horse_rect(QPointF(11, 177), equip_size);
-
-    QPointF pos(event->pos());
+void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *){
     CardItem *to_select = NULL;
-    if(weapon_rect.contains(pos))
-        to_select = weapon;
-    else if(armor_rect.contains(pos))
-        to_select = armor;
-    else if(defensive_horse_rect.contains(pos))
-        to_select = defensive_horse;
-    else if(offensive_horse_rect.contains(pos))
-        to_select = offensive_horse;   
+    int i;
+    for(i=0; i<4; i++){
+        if(equip_rects[i]->isUnderMouse()){
+            to_select = *equips.at(i);
+            break;
+        }
+    }
 
     if(to_select && to_select->isMarkable()){
         to_select->mark(!to_select->isMarked());
@@ -308,41 +414,57 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     if(!equip)
         return;
 
-    QRect suit_rect(11, 83 + order*32, 20, 20);
+    static const int width = 117;
+    static const int height = 25;
+    static const int start_x = 8;
+    static const int start_y = 40;
+
+    int y = start_y + order * 32;
+
+    // draw the suit of equip
+    QRect suit_rect(10, y + 3, 15, 15);
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
+
+    // draw the name of equip
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
-    painter->drawText(32, 83+20 + order*32, card->getNumberString());
-    painter->drawText(58, 83+20 + order*32, card->label());
+    QString text = QString("%1 %2").arg(card->getNumberString()).arg(card->label());
+    painter->drawText(28, y + 20, text);
 
     painter->setPen(Qt::white);
     if(equip->isMarked()){
-        painter->drawRect(11, 78 + order * 34, 157, 30);
+        painter->drawRect(start_x, y , width, height);
     }
 }
 
 void Dashboard::adjustCards(){
-    adjustCards(card_items, 45);
+    adjustCards(card_items, CardItem::NormalY);
 
     if(view_as_skill)
-        adjustCards(pendings, -200);
+        adjustCards(pendings, CardItem::PendingY);
 }
 
 void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
     if(list.isEmpty())
         return;
 
+    int max_width = middle->rect().width();
+    int start_x = left->boundingRect().width();
+
+    if(list.length() == 1){
+        list.first()->setHomePos(QPointF(start_x, y));
+        list.first()->goBack();
+        return;
+    }
+
     int n = list.size();
     int card_width = list.first()->boundingRect().width();
-    int card_skip;
-    if(n > 5)
-        card_skip = (530 - n * card_width)/n + card_width;
-    else
-        card_skip = card_width;
+    int total_width = qMin(card_width * n, max_width);
+    int card_skip = (total_width - n * card_width ) / (n-1) + card_width;
 
     int i;
     for(i=0; i<n; i++){
-        list[i]->setZValue(0.1 * i);
-        QPointF home_pos(180 + i*card_skip, y);
+        list[i]->setZValue(0.0001 * i);
+        QPointF home_pos(start_x + i * card_skip, y);
         list[i]->setHomePos(home_pos);
         list[i]->goBack();
     }
@@ -352,13 +474,17 @@ void Dashboard::installEquip(CardItem *equip){
     equip->setHomePos(mapToScene(QPointF(34, 37)));
     equip->goBack(true);
 
+    int index = -1;
     const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
     switch(equip_card->location()){
-    case EquipCard::WeaponLocation: weapon = equip; break;
-    case EquipCard::ArmorLocation: armor = equip; break;
-    case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
-    case EquipCard::OffensiveHorseLocation: offensive_horse = equip; break;
+    case EquipCard::WeaponLocation: weapon = equip; index = 0; break;
+    case EquipCard::ArmorLocation: armor = equip; index = 1; break;
+    case EquipCard::DefensiveHorseLocation: defensive_horse = equip; index = 2; break;
+    case EquipCard::OffensiveHorseLocation: offensive_horse = equip; index = 3; break;
     }
+
+    if(index >= 0)
+        equip_rects[index]->setToolTip(equip_card->getDescription());
 
     update();
 }
@@ -367,20 +493,11 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
     CardItem *card_item = NULL;
 
     if(place == Player::Hand){
-        int i;
-
-        for(i=0; i<card_items.length(); i++){
-            CardItem *item = card_items.at(i);
-            if(item->getCard()->getId() == card_id){
-                if(item == selected)
-                    selected = NULL;
-                card_items.removeAt(i);
-                adjustCards();
-
-                card_item = item;
-                break;
-            }
-        }
+        card_item = CardItem::FindItem(card_items, card_id);
+        if(card_item == selected)
+            selected = NULL;
+        card_items.removeOne(card_item);
+        adjustCards();
 
         if(Self->isKongcheng())
             handcard_num->parentItem()->hide();
@@ -388,25 +505,18 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             handcard_num->setText(QString::number(Self->getHandcardNum()));
         }
     }else if(place == Player::Equip){
-        if(weapon && weapon->getCard()->getId() == card_id){
-            card_item = weapon;
-            weapon = NULL;
+        foreach(CardItem **equip_ptr, equips){
+            CardItem *equip = *equip_ptr;
+            if(equip && equip->getCard()->getId() == card_id){
+                card_item = equip;
+                *equip_ptr = NULL;
+
+                int index = equips.indexOf(equip_ptr);
+                equip_rects[index]->setToolTip(QString());
+                break;
+            }
         }
 
-        if(armor && armor->getCard()->getId() == card_id){
-            card_item = armor;
-            armor = NULL;
-        }
-
-        if(defensive_horse && defensive_horse->getCard()->getId() == card_id){
-            card_item = defensive_horse;
-            defensive_horse = NULL;
-        }
-
-        if(offensive_horse && offensive_horse->getCard()->getId() == card_id){
-            card_item = offensive_horse;
-            offensive_horse = NULL;
-        }
     }else if(place == Player::Judging){
         int i;
         for(i=0; i<judging_area.count(); i++){
@@ -447,8 +557,9 @@ static bool CompareByAvailability(const CardItem *a, const CardItem *b){
         return CompareBySuitNumber(a, b);
 }
 
-void Dashboard::sortCards(){
-    int sort_type = sort_combobox->currentIndex();
+void Dashboard::sortCards(int sort_type){
+    this->sort_type = sort_type;
+
     switch(sort_type){
     case 0: break;
     case 1: qSort(card_items.begin(), card_items.end(), CompareBySuitNumber); break;
@@ -467,7 +578,7 @@ void Dashboard::disableAllCards(){
 
 void Dashboard::enableCards(){    
     foreach(CardItem *card_item, card_items)
-        card_item->setEnabled(card_item->getRealCard()->isAvailable());
+        card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
 }
 
 void Dashboard::enableCards(const QString &pattern){
@@ -478,7 +589,7 @@ void Dashboard::enableCards(const QString &pattern){
         QStringList subpatterns = pattern.split("+");
 
         foreach(CardItem *card_item, card_items){
-            const Card *card = card_item->getRealCard();
+            const Card *card = card_item->getFilteredCard();
             bool enabled = false;
             foreach(QString subpattern, subpatterns){
                 if(card->match(subpattern)){
@@ -499,12 +610,12 @@ void Dashboard::enableCards(const QString &pattern){
     }else if(suit_rx.exactMatch(pattern)){
         QChar end = pattern.at(1).toLower();
         foreach(CardItem *card_item, card_items){
-            bool enabled = card_item->getRealCard()->getSuitString().startsWith(end);
+            bool enabled = card_item->getFilteredCard()->getSuitString().startsWith(end);
             card_item->setEnabled(enabled);
         }
     }else{
         foreach(CardItem *card_item, card_items){
-            card_item->setEnabled(card_item->getRealCard()->match(pattern));
+            card_item->setEnabled(card_item->getFilteredCard()->match(pattern));
         }
     }
 }
@@ -565,7 +676,7 @@ void Dashboard::onCardItemClicked(){
             card_item->goBack();
             selected = card_item;
 
-            emit card_selected(selected->getRealCard());
+            emit card_selected(selected->getFilteredCard());
         }
     }
 }
@@ -620,22 +731,4 @@ const ViewAsSkill *Dashboard::currentSkill() const{
 
 const Card *Dashboard::pendingCard() const{
     return pending_card;
-}
-
-void Dashboard::addSkillButton(QPushButton *button){
-    QGraphicsScene *the_scene = scene();
-    if(the_scene){
-        QGraphicsWidget *widget = the_scene->addWidget(button);
-        button_layout->addItem(widget);
-
-        button2widget.insert(button, widget);
-    }
-}
-
-void Dashboard::removeSkillButton(QPushButton *button){
-    QGraphicsWidget *widget = button2widget.value(button, NULL);
-    if(widget){
-        button_layout->removeItem(widget);
-        button2widget.remove(button);
-    }
 }

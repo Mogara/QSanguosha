@@ -66,6 +66,10 @@ Card::Suit Card::getSuit() const{
     return suit;
 }
 
+bool Card::sameColorWith(const Card *other) const{
+    return isBlack() == other->isBlack();
+}
+
 bool Card::match(const QString &pattern) const{
     return objectName() == pattern || getType() == pattern || getSubtype() == pattern;
 }
@@ -87,16 +91,12 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 QString Card::getPixmapPath() const{
-    return QString("%1/cards/card/%2.png").arg(parent()->objectName()).arg(objectName());
+    //return QString("%1/cards/card/%2.png").arg(parent()->objectName()).arg(objectName());
+    return QString("image/card/%1.jpg").arg(objectName());
 }
 
 QString Card::getIconPath() const{
-    if(parent())
-        return QString("%1/cards/icon/%2.png").arg(parent()->objectName()).arg(objectName());
-    else{
-        const Card *card = Sanguosha->findChild<const Card *>(objectName());
-        return card->getIconPath();
-    }
+    return QString("image/icon/%1.png").arg(objectName());
 }
 
 QString Card::getPackage() const{
@@ -108,7 +108,11 @@ QString Card::getPackage() const{
 
 QString Card::getEffectPath(bool is_male) const{
     QString gender = is_male ? "male" : "female";
-    return QString("%1/cards/effect/%2/%3.mp3").arg(getPackage()).arg(gender).arg(objectName());
+    return QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
+}
+
+QString Card::getEffectPath() const{
+    return QString("audio/card/common/%1.ogg").arg(objectName());
 }
 
 QIcon Card::getSuitIcon() const{

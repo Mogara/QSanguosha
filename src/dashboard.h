@@ -11,6 +11,7 @@
 #include <QStack>
 #include <QGraphicsLinearLayout>
 #include <QLineEdit>
+#include <QProgressBar>
 
 class Dashboard : public Pixmap
 {
@@ -18,6 +19,13 @@ class Dashboard : public Pixmap
 
 public:
     Dashboard();
+    virtual QRectF boundingRect() const;
+    void setWidth(int width);
+    void addWidget(QWidget *widget, int x, bool from_left);
+    QPushButton *addButton(const QString &label, int x, bool from_left);
+    QProgressBar *addProgressBar();
+
+    void setTrust(bool trust);
     void addCardItem(CardItem *card_item);
     CardItem *takeCardItem(int card_id, Player::Place place);
     void setPlayer(const Player *player);
@@ -26,7 +34,6 @@ public:
     void useSelected();
     const Card *getSelected() const;
     void unselectAll();
-    void sort(int order);
     void hideAvatar();
     void setFilter(const FilterSkill *filter);
 
@@ -44,35 +51,46 @@ public:
     const ViewAsSkill *currentSkill() const;    
     const Card *pendingCard() const;
 
-    void addSkillButton(QPushButton *button);
-    void removeSkillButton(QPushButton *button);
-
 public slots:
     void updateAvatar();
+    void updateSmallAvatar();
     void refresh();
+    void sortCards(int sort_type);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    QPixmap left_pixmap, right_pixmap;
+    QGraphicsRectItem *left, *middle, *right;
+    int min_width;
+
     QList<CardItem*> card_items;
     CardItem *selected;
     const Player *player;
-    QPixmap magatamas[6];
     Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
 
-    QComboBox *sort_combobox;
+    int sort_type;
     QGraphicsSimpleTextItem *handcard_num;
-    CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
-    QList<CardItem **> equips;
     QStack<CardItem *> judging_area;
     QStack<QPixmap> delayed_tricks;
-    QGraphicsLinearLayout *button_layout;
     QPixmap death_pixmap;
     Pixmap *chain_icon, *back_icon;
-    QMap<QPushButton *, QGraphicsWidget *> button2widget;
+
+    QGraphicsRectItem *equip_rects[4];
+    CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
+    QList<CardItem **> equips;
+
+    QGraphicsRectItem *trusting_item;
+    QGraphicsSimpleTextItem *trusting_text;
+
+    // for parts creation
+    void createLeft();
+    void createRight();
+    void createMiddle();
+    void setMiddleWidth(int middle_width);
 
     // for pendings
     QList<CardItem *> pendings;
@@ -84,9 +102,9 @@ private:
     void adjustCards(const QList<CardItem *> &list, int y);    
     void drawEquip(QPainter *painter, const CardItem *equip, int order);    
     void setSelectedItem(CardItem *card_item);
+    void drawHp(QPainter *painter) const;
 
 private slots:
-    void sortCards();
     void onCardItemClicked();
     void onCardItemThrown();
     void onMarkChanged();

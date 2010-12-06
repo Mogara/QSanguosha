@@ -26,6 +26,7 @@ extern "C" {
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
+    Package *NewNostalgia();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
@@ -42,6 +43,7 @@ Engine::Engine()
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
+    addPackage(NewNostalgia());
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
@@ -221,7 +223,8 @@ QString Engine::getVersion() const{
 QStringList Engine::getExtensions() const{
     static QStringList extensions;
     if(extensions.isEmpty())
-        extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
+        extensions << "wind" << "fire" << "thicket"
+                << "maneuvering" << "god" << "yitian" << "nostalgia";
 
     return extensions;
 }
@@ -287,6 +290,54 @@ int Engine::getPlayerCount(const QString &mode) const{
     }
 
     return -1;
+}
+
+void Engine::getRoles(const QString &mode, char *roles) const{
+    int n = getPlayerCount(mode);
+
+    if(modes.contains(mode)){
+        static const char *table1[] = {
+            "",
+            "",
+
+            "ZF", // 2
+            "ZFN", // 3
+            "ZNFF", // 4
+            "ZCFFN", // 5
+            "ZCFFFN", // 6
+            "ZCCFFFN", // 7
+            "ZCCFFFFN", // 8
+            "ZCCCFFFFN", // 9
+            "ZCCCFFFFNN" // 10
+        };
+
+        static const char *table2[] = {
+            "",
+            "",
+
+            "ZF", // 2
+            "ZFN", // 3
+            "ZNFF", // 4
+            "ZCFFN", // 5
+            "ZCFFNN", // 6
+            "ZCCFFFN", // 7
+            "ZCCFFFNN", // 8
+            "ZCCCFFFFN", // 9
+            "ZCCCFFFFNN" // 10
+        };
+
+        const char **table = mode.endsWith("d") ? table2 : table1;
+        qstrcpy(roles, table[n]);
+    }else if(mode.startsWith("@")){
+        if(n == 8)
+            qstrcpy(roles, "ZCCCNFFF");
+        else if(n == 6)
+            qstrcpy(roles, "ZCCNFF");
+    }else{
+        const Scenario *scenario = getScenario(mode);
+        if(scenario)
+            scenario->getRoles(roles);
+    }
 }
 
 int Engine::getCardCount() const{
@@ -370,8 +421,15 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
-void Engine::playEffect(const QString &filename){
+void Engine::playAudio(const QString &name) const{
+    playEffect(QString("audio/system/%1.ogg").arg(name));
+}
+
+void Engine::playEffect(const QString &filename) const{
     if(!Config.EnableEffects)
+        return;
+
+    if(filename.isNull())
         return;
 
     if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))
@@ -380,21 +438,23 @@ void Engine::playEffect(const QString &filename){
     SoundEngine->play2D(filename.toAscii());
 }
 
-void Engine::playSkillEffect(const QString &skill_name, int index){
+void Engine::playSkillEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
         skill->playEffect(index);
 }
 
-void Engine::playCardEffect(const QString &card_name, bool is_male){
-    const Card *card = findChild<const Card *>(card_name);
-    if(card)
-        playEffect(card->getEffectPath(is_male));
-}
+void Engine::playCardEffect(const QString &card_name, bool is_male) const{
+    QString path;
+    if(card_name.startsWith("@")){
+        QString gender = is_male ? "male" : "female";
+        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
+    }else{
+        const Card *card = findChild<const Card *>(card_name);
+        if(card)
+            path = card->getEffectPath(is_male);
+    }
 
-void Engine::playCardEffect(const QString &card_name, const QString &package, bool is_male){
-    QString gender = is_male ? "male" : "female";
-    QString path = QString("%1/cards/effect/%2/%3.mp3").arg(package).arg(gender).arg(card_name);
     playEffect(path);
 }
 

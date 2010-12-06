@@ -4,6 +4,8 @@
 #include "standard.h"
 #include "ai.h"
 #include "scenario.h"
+#include "gamerule.h"
+#include "bossmode.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -225,9 +227,26 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
     sendLog(log);
 
     // judge delay
-    thread->delay();   
+    thread->delay();
 
     CardStar card = Sanguosha->getCard(card_id);
+
+    // hongyan special case
+    if(player->hasSkill("hongyan") && card->getSuit() == Card::Spade){
+        LogMessage log;
+        log.type = "$HongyanJudge";
+        log.from = player;
+        const QMetaObject *meta = card->metaObject();
+        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, Card::Heart), Q_ARG(int, card->getNumber()));
+        if(card_obj){
+            Card *filtered = qobject_cast<Card *>(card_obj);
+            filtered->setSkillName(objectName());
+            card = filtered;
+        }
+
+        sendLog(log);
+    }
+
     QVariant card_data = QVariant::fromValue(card);
     thread->trigger(JudgeOnEffect, player, card_data);
 
@@ -429,6 +448,8 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         log2.to << to;
         log2.arg = trick_name;
         sendLog(log2);
+
+        broadcastInvoke("animate", QString("nullification:%1:%2").arg(player->objectName()).arg(to->objectName()));
 
         QVariant data = QVariant::fromValue(card);
         thread->trigger(CardResponsed, player, data);
@@ -691,7 +712,9 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
         return false;
 
     throwCard(peach);
-    playCardEffect("peach", player->getGeneral()->isMale());
+    player->playCardEffect(peach);
+
+    broadcastInvoke("animate", QString("peach:%1:%2").arg(player->objectName()).arg(dying->objectName()));
 
     LogMessage log;
     log.type = "#Peach";
@@ -787,6 +810,16 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     const QList<ServerPlayer *> &list = include_dead ? players : alive_players;
     foreach(ServerPlayer *player, list){
         if(player->getGeneralName() == general_name)
+            return player;
+    }
+
+    return NULL;
+}
+
+ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name, bool include_dead) const{
+    const QList<ServerPlayer *> &list = include_dead ? players : alive_players;
+    foreach(ServerPlayer *player, list){
+        if(player->hasSkill(skill_name))
             return player;
     }
 
@@ -1023,42 +1056,10 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::assignRoles(){
-    static const char *table1[] = {
-        "",
-        "",
-
-        "ZF", // 2
-        "ZFN", // 3
-        "ZNFF", // 4
-        "ZCFFN", // 5
-        "ZCFFFN", // 6
-        "ZCCFFFN", // 7
-        "ZCCFFFFN", // 8
-        "ZCCCFFFFN", // 9
-        "ZCCCFFFFNN" // 10
-    };
-
-    static const char *table2[] = {
-        "",
-        "",
-
-        "ZF", // 2
-        "ZFN", // 3
-        "ZNFF", // 4
-        "ZCFFN", // 5
-        "ZCFFNN", // 6
-        "ZCCFFFN", // 7
-        "ZCCFFFNN", // 8
-        "ZCCCFFFFN", // 9
-        "ZCCCFFFFNN" // 10
-    };
-
-    const char **table = mode.endsWith("d") ? table2 : table1;
-
     int n = players.count(), i;
 
     char roles[100];
-    qstrcpy(roles, table[n]);
+    Sanguosha->getRoles(mode, roles);
 
     for(i=0; i<n; i++){
         int r1 = qrand() % n;
@@ -1359,7 +1360,7 @@ void Room::startGame(){
             broadcastProperty(players.at(i), "general");
     }
 
-    if(Config.Enable2ndGeneral){
+    if(Config.Enable2ndGeneral || mode == "08boss"){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
@@ -1398,7 +1399,14 @@ void Room::startGame(){
 
     sem = new QSemaphore;
     thread = new RoomThread(this);
-    thread->constructTriggerTable();
+
+    GameRule *game_rule;
+    if(mode == "08boss")
+        game_rule = new BossMode(this);
+    else
+        game_rule = new GameRule(this);
+
+    thread->constructTriggerTable(game_rule);
 
     if(scenario){
         const ScenarioRule *rule = scenario->getRule();

@@ -8,13 +8,13 @@
 ClientLogBox::ClientLogBox(QWidget *parent) :
     QTextEdit(parent)
 {
-    QPalette palette;
-    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
+    setReadOnly(true);
 
-    setPalette(palette);
-    setReadOnly(true);    
+    line_doc = new QTextDocument(this);
+}
 
-    resize(300, 200);
+QTextDocument *ClientLogBox::getLineDoc() const{
+    return line_doc;
 }
 
 void ClientLogBox::appendLog(
@@ -54,6 +54,7 @@ void ClientLogBox::appendLog(
         log.replace("%card", log_name);
 
         append(log);
+        line_doc->setHtml(log);
 
         return;
     }
@@ -110,6 +111,7 @@ void ClientLogBox::appendLog(
     }
 
     append(log);
+    line_doc->setHtml(log);
 }
 
 void ClientLogBox::appendLog(const QString &log_str){

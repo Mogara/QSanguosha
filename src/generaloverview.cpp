@@ -9,7 +9,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GeneralOverview)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);    
 
     button_group = new QButtonGroup;
     button_layout = new QHBoxLayout;

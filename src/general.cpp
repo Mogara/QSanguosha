@@ -40,7 +40,13 @@ bool General::isLord() const{
 }
 
 QString General::getPixmapPath(const QString &category) const{
-    return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
+   //return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
+
+    QString suffix = "png";
+    if(category == "card")
+        suffix = "jpg";
+
+    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
 }
 
 void General::addSkill(Skill *skill){    
@@ -82,6 +88,6 @@ void General::playEffect(const QString &skill_name) const
 }
 
 void General::lastWord() const{
-    QString filename = QString("%1/generals/death/%2.wav").arg(getPackage()).arg(objectName());
+    QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 }

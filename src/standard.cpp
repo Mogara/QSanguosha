@@ -38,6 +38,10 @@ int EquipCard::getTypeId() const{
     return 2;
 }
 
+QString EquipCard::getEffectPath(bool is_male) const{
+    return "audio/card/common/equip.ogg";
+}
+
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     const EquipCard *equipped = NULL;
     switch(location()){
@@ -259,6 +263,10 @@ QString Horse::getSubtype() const{
         return "defensive_horse";
     else
         return "offensive_horse";
+}
+
+QString Horse::getEffectPath(bool) const{
+    return "audio/card/common/horse.ogg";
 }
 
 void Horse::onInstall(ServerPlayer *player) const{

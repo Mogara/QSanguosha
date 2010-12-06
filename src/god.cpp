@@ -750,6 +750,9 @@ GodPackage::GodPackage()
     addMetaObject<WushenSlash>();
     addMetaObject<KuangfengCard>();
     addMetaObject<DawuCard>();
+    addMetaObject<WuqianCard>();
+
+    t["$guixin"]=tr("$guixin");
 }
 
 ADD_PACKAGE(God)

@@ -37,7 +37,11 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Draw: {
-            player->drawCards(2, false);
+            QVariant num = 2;
+            room->getThread()->trigger(DrawNCards, player, num);
+            int n = num.toInt();
+            if(n > 0)
+                player->drawCards(n, false);
             break;
         }
 
@@ -118,38 +122,37 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case Predamaged:{
-            if(data.canConvert<DamageStruct>()){
-                DamageStruct damage = data.value<DamageStruct>();
-                room->sendDamageLog(damage);
+            DamageStruct damage = data.value<DamageStruct>();
+            room->sendDamageLog(damage);
 
-                int new_hp = player->getHp() - damage.damage;
-                room->damage(player, damage.damage);
-                if(new_hp <= 0){
-                    DyingStruct dying;
-                    dying.damage = &damage;
-                    dying.peaches = 1 - new_hp;
+            bool chained = player->isChained();
 
-                    QVariant dying_data = QVariant::fromValue(dying);
-                    room->getThread()->trigger(Dying, player, dying_data);
-                }
+            int new_hp = player->getHp() - damage.damage;
+            room->damage(player, damage.damage);
+            if(new_hp <= 0){
+                DyingStruct dying;
+                dying.damage = &damage;
+                dying.peaches = 1 - new_hp;
 
-                bool chained = player->isChained();
-                if(damage.nature != DamageStruct::Normal && chained){
-                    room->setPlayerProperty(player, "chained", false);
+                QVariant dying_data = QVariant::fromValue(dying);
+                room->getThread()->trigger(Dying, player, dying_data);
+            }
 
-                    // iron chain effect
-                    QList<ServerPlayer *> chained_players = room->getAllPlayers();
-                    chained_players.removeOne(player);
+            if(chained && damage.nature != DamageStruct::Normal){
+                room->setPlayerProperty(player, "chained", false);
 
-                    foreach(ServerPlayer *chained_player, chained_players){
-                        if(chained_player->isChained()){
-                            DamageStruct chain_damage = damage;
-                            chain_damage.to = chained_player;
-                            chain_damage.chain = true;
+                // iron chain effect
+                QList<ServerPlayer *> chained_players = room->getAllPlayers();
+                chained_players.removeOne(player);
 
-                            room->setPlayerProperty(chained_player, "chained", false);
-                            room->damage(chain_damage);
-                        }
+                foreach(ServerPlayer *chained_player, chained_players){
+                    if(chained_player->isChained()){
+                        DamageStruct chain_damage = damage;
+                        chain_damage.to = chained_player;
+                        chain_damage.chain = true;
+
+                        room->setPlayerProperty(chained_player, "chained", false);
+                        room->damage(chain_damage);
                     }
                 }
             }

@@ -78,7 +78,7 @@ void Settings::init(){
     }
     IrcChannel = value("IrcChannel", "#sanguosha").toString();
 
-    UserName = value("UserName", getenv("USERNAME")).toString();
+    UserName = value("UserName", qgetenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
@@ -100,16 +100,5 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    QString bg_path = value("BackgroundBrush", ":/background.png").toString();
-    changeBackground(bg_path);
-}
-
-void Settings::changeBackground(const QString &new_bg){
-    QPixmap bgbrush(new_bg);
-    BackgroundBrush = QBrush(bgbrush);
-    QTransform transform;
-    transform.translate(Rect.x(), Rect.y());
-    BackgroundBrush.setTransform(transform);
-
-    setValue("BackgroundBrush", new_bg);
+    BackgroundBrush = value("BackgroundBrush", ":/background.png").toString();
 }

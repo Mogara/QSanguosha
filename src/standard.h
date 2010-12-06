@@ -58,6 +58,7 @@ public:
 
     virtual QString getType() const;
     virtual int getTypeId() const;
+    virtual QString getEffectPath(bool is_male) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 
     // should be pure virtual
@@ -265,6 +266,7 @@ class Horse:public EquipCard{
 public:
     Horse(const QString &name, Suit suit, int number, int correct);
     virtual QString getSubtype() const;
+    virtual QString getEffectPath(bool is_male) const;
 
     virtual Location location() const;
     virtual void onInstall(ServerPlayer *player) const;
@@ -317,6 +319,7 @@ class Peach: public BasicCard{
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
     virtual QString getSubtype() const;
+    virtual QString getEffectPath(bool is_male) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual bool isAvailable() const;
 };

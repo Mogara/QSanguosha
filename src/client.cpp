@@ -15,6 +15,7 @@
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QLabel>
+#include <QTextDocument>
 
 Client *ClientInstance = NULL;
 
@@ -52,6 +53,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["addProhibitSkill"] = &Client::addProhibitSkill;
+    callbacks["animate"] = &Client::animate;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -112,6 +114,8 @@ Client::Client(QObject *parent, const QString &filename)
 
         replayer = NULL;
     }
+
+    lines_doc = new QTextDocument;
 }
 
 void Client::signup(){
@@ -252,6 +256,9 @@ void Client::drawCards(const QString &cards_str){
         Self->addCard(card, Player::Hand);
     }
 
+    pile_num -= cards.length();
+    updatePileNum();
+
     emit cards_drawed(cards);
 }
 
@@ -263,6 +270,9 @@ void Client::drawNCards(const QString &draw_str){
     int n = texts.at(2).toInt();
 
     if(player && n>0){
+        pile_num -= n;
+        updatePileNum();
+
         player->handCardChange(n);
         emit n_cards_drawed(player, n);
     }
@@ -285,6 +295,8 @@ void Client::chooseItem(const QString &item_name){
             request("choose " + item_name);
         else
             request("choose2 " + item_name);
+
+        Sanguosha->playAudio("choose-item");
     }
 }
 
@@ -391,15 +403,23 @@ void Client::moveCard(const QString &move_str){
         if(move.from)
             move.from->removeCard(card, move.from_place);
         else{
-            if(move.from_place == Player::DiscardedPile)
+            if(move.from_place == Player::DrawPile)
+                pile_num --;
+            else if(move.from_place == Player::DiscardedPile)
                 ClientInstance->discarded_list.removeOne(card);
+
+            updatePileNum();
         }
 
         if(move.to)
             move.to->addCard(card, move.to_place);
         else{
-            if(move.to_place == Player::DiscardedPile)
+            if(move.to_place == Player::DrawPile)
+                pile_num ++;
+            else if(move.to_place == Player::DiscardedPile)
                 ClientInstance->discarded_list.prepend(card);
+
+            updatePileNum();
         }
         emit card_moved(move);
     }else{
@@ -512,6 +532,7 @@ void Client::askForSkillInvoke(const QString &skill_name){
         return;
     }
 
+
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(Sanguosha->translate(skill_name));
 
@@ -542,6 +563,7 @@ void Client::askForSkillInvoke(const QString &skill_name){
     connect(dialog, SIGNAL(finished(int)), this, SLOT(invokeSkill(int)));
 
     setStatus(ExecDialog);
+    Sanguosha->playAudio("pop-up");
     dialog->exec();
 }
 
@@ -588,6 +610,7 @@ void Client::askForChoice(const QString &ask_str){
     ask_dialog = dialog;
     setStatus(ExecDialog);
 
+    Sanguosha->playAudio("pop-up");
     dialog->exec();
 }
 
@@ -667,8 +690,8 @@ void Client::askForCardChosen(const QString &ask_str){
 }
 
 void Client::playCardEffect(const QString &play_str){
-    static QRegExp rx1("(\\w+):([MF])");
-    static QRegExp rx2("(\\w+)@(\\w+):([MF])");
+    static QRegExp rx1("(@?\\w+):([MF])");
+    static QRegExp rx2("(\\w+)@(\\w+):([MF])"); // old version
 
     if(rx1.exactMatch(play_str)){
         QStringList texts = rx1.capturedTexts();
@@ -678,11 +701,10 @@ void Client::playCardEffect(const QString &play_str){
         Sanguosha->playCardEffect(card_name, is_male);
     }else if(rx2.exactMatch(play_str)){
         QStringList texts = rx2.capturedTexts();
-        QString card_name = texts.at(1);
-        QString package_name = texts.at(2);
+        QString card_name = texts.at(1);        
         bool is_male = texts.at(3) == "M";
 
-        Sanguosha->playCardEffect(card_name, package_name, is_male);
+        Sanguosha->playCardEffect("@" + card_name, is_male);
     }
 }
 
@@ -711,6 +733,11 @@ void Client::choosePlayer(const ClientPlayer *player){
 
 void Client::trust(){
     request("trust .");
+
+    if(Self->getState() == "trust")
+        Sanguosha->playAudio("untrust");
+    else
+        Sanguosha->playAudio("trust");
 
     setStatus(NotActive);
 }
@@ -791,14 +818,41 @@ bool Client::isProhibited(const Player *to, const Card *card) const{
     return false;
 }
 
+void Client::setLines(const QString &filename){
+    QRegExp rx(".+/(\\w+\\d?).ogg");
+    if(rx.exactMatch(filename)){
+        QString skill_name = rx.capturedTexts().at(1);
+        QString lines = Sanguosha->translate("$" + skill_name);
+        QChar last_char = skill_name[skill_name.length()-1];
+        if(last_char.isDigit())
+            skill_name.chop(1);
+        lines = QString("<b>%1</b>: %2").arg(Sanguosha->translate(skill_name)).arg(lines);
+
+        skill_line = lines;
+
+        updatePileNum();
+    }
+}
+
+QTextDocument *Client::getLinesDoc() const{
+    return lines_doc;
+}
+
 void Client::clearPile(const QString &){
     discarded_list.clear();
 
     emit pile_cleared();
 }
 
-void Client::setPileNumber(const QString &pile_num){
-    emit pile_num_set(pile_num.toInt());
+void Client::setPileNumber(const QString &pile_str){
+    pile_num = pile_str.toInt();
+
+    updatePileNum();
+}
+
+void Client::updatePileNum(){
+    lines_doc->setHtml(tr("Draw pile: %1, discard pile: %2 <br/> %3")
+                       .arg(pile_num).arg(discarded_list.length()).arg(skill_line));
 }
 
 void Client::askForDiscard(const QString &discard_str){
@@ -826,14 +880,10 @@ void Client::askForDiscard(const QString &discard_str){
     setStatus(Discarding);    
 }
 
-void Client::gameOver(const QString &result_str){
-    QRegExp rx("([\\w\\.]+):(.+)");
-    if(!rx.exactMatch(result_str))
-        return;
-
-    QStringList texts = rx.capturedTexts();
-    QString winner = texts.at(1);
-    QStringList roles = texts.at(2).split("+");
+void Client::gameOver(const QString &result_str){    
+    QStringList texts = result_str.split(":");
+    QString winner = texts.at(0);
+    QStringList roles = texts.at(1).split("+");
 
     Q_ASSERT(roles.length() == players.length());
 
@@ -916,7 +966,7 @@ void Client::askForKingdom(const QString &){
 
     foreach(QString kingdom, kingdoms){
         QCommandLinkButton *button = new QCommandLinkButton;
-        QPixmap kingdom_pixmap(QString(":/kingdom/%1.png").arg(kingdom));
+        QPixmap kingdom_pixmap(QString("image/kingdom/icon/%1.png").arg(kingdom));
         QIcon kingdom_icon(kingdom_pixmap);
 
         button->setIcon(kingdom_icon);
@@ -1058,7 +1108,7 @@ QList<ClientPlayer*> Client::getPlayers() const{
 }
 
 void Client::clearTurnTag(){
-    Sanguosha->playEffect("audio/turn.mp3");
+    Sanguosha->playAudio("your-turn");
 
     turn_tag.clear();
 }
@@ -1238,4 +1288,11 @@ void Client::addProhibitSkill(const QString &skill_name){
     if(prohibit_skill){
         prohibit_skills << prohibit_skill;
     }
+}
+
+void Client::animate(const QString &animate_str){
+    QStringList args = animate_str.split(":");
+    QString name = args.takeFirst();
+
+    emit animated(name, args);
 }

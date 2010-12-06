@@ -62,7 +62,8 @@ SOURCES += src/main.cpp \
     src/fancheng-scenario.cpp \
     src/scenario-overview.cpp \
     src/bossmode.cpp \
-    src/challengemode.cpp
+    src/challengemode.cpp \
+    src/nostalgia.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -119,7 +120,8 @@ HEADERS += src/mainwindow.h \
     src/fancheng-scenario.h \
     src/scenario-overview.h \
     src/bossmode.h \
-    src/challengemode.h
+    src/challengemode.h \
+    src/nostalgia.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

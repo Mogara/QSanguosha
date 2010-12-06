@@ -40,6 +40,7 @@ public:
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
     int getPlayerCount(const QString &mode) const;
+    void getRoles(const QString &mode, char *roles) const;
 
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
@@ -61,10 +62,10 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
 
-    void playEffect(const QString &filename);
-    void playSkillEffect(const QString &skill_name, int index);
-    void playCardEffect(const QString &card_name, bool is_male);
-    void playCardEffect(const QString &card_name, const QString &package, bool is_male);
+    void playAudio(const QString &name) const;
+    void playEffect(const QString &filename) const;
+    void playSkillEffect(const QString &skill_name, int index) const;
+    void playCardEffect(const QString &card_name, bool is_male) const;
 
 private:
     QHash<QString, QString> translations;

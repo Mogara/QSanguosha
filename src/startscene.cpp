@@ -8,8 +8,6 @@
 
 StartScene::StartScene()
 {
-    setBackgroundBrush(Config.BackgroundBrush);
-
     // game logo
     logo = new Pixmap(":/logo.png");
     logo->shift();
@@ -23,6 +21,8 @@ StartScene::StartScene()
     email_text->setBrush(Qt::white);
     email_text->setPos(Config.Rect.width()/2 - email_text->boundingRect().width(),
                        Config.Rect.height()/2 - email_text->boundingRect().height());
+
+    server_log = NULL;
 
 //    logo = new Pixmap("start.jpg");
 //    logo->shift();
@@ -39,6 +39,15 @@ void StartScene::addButton(QAction *action){
 
     addItem(button);
     buttons << button;
+}
+
+void StartScene::setServerLogBackground(){
+    if(server_log){
+        // make its background the same as background, looks transparent
+        QPalette palette;
+        palette.setBrush(QPalette::Base, backgroundBrush());
+        server_log->setPalette(palette);
+    }
 }
 
 extern irrklang::ISoundEngine *SoundEngine;
@@ -66,19 +75,13 @@ void StartScene::switchToServer(Server *server){
     buttons.clear();
 
     server_log = new QTextEdit();
-
-    // make its background the same as background, looks transparent    
-    QPalette palette;
-    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
-
     server_log->setReadOnly(true);
-    server_log->setPalette(palette);
     server_log->resize(700, 420);
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
-
     server_log->setFont(QFont("Verdana", 12));
     server_log->setTextColor(QColor("white"));
+    setServerLogBackground();
 
     addWidget(server_log);
 

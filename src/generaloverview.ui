@@ -76,31 +76,6 @@
     <string>OK</string>
    </property>
   </widget>
-  <widget class="QLabel" name="generalPhoto">
-   <property name="geometry">
-    <rect>
-     <x>479</x>
-     <y>10</y>
-     <width>221</width>
-     <height>290</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>200</width>
-     <height>290</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>../standard/generals/card/caocao.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="skillLabel">
    <property name="geometry">
     <rect>
@@ -164,6 +139,19 @@
    </property>
    <property name="title">
     <string>Skills</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="generalPhoto">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>10</y>
+     <width>221</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
