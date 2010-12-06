@@ -78,7 +78,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     trust_button = dashboard->addButton(tr("Trust"), 7, true);
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-    connect(Self, SIGNAL(mark_changed(QString)), this, SLOT(updateMark(QString)));
 
     QPushButton *expand_button = new QPushButton(tr("Expand to window width"));
     dashboard->addWidget(expand_button, 70, true);
@@ -1374,10 +1373,6 @@ void RoomScene::updateTrustButton(){
         trust_button->setText(tr("Trust"));
 
     dashboard->setTrust(trusting);
-}
-
-void RoomScene::updateMark(const QString &mark){
-
 }
 
 void RoomScene::doOkButton(){

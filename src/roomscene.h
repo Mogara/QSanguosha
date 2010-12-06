@@ -132,7 +132,6 @@ private slots:
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
     void updateTrustButton();
-    void updateMark(const QString &mark);
     void doSkillButton();
     void doOkButton();
     void doCancelButton();

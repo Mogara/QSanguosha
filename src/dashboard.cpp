@@ -103,6 +103,10 @@ void Dashboard::createRight(){
     handcard_num->setBrush(Qt::white);
 
     handcard_pixmap->hide();
+
+    mark_item = new QGraphicsTextItem(right);
+    mark_item->setPos(-128, 0);
+    mark_item->setDefaultTextColor(Qt::white);
 }
 
 void Dashboard::setFilter(const FilterSkill *filter){
@@ -137,12 +141,14 @@ void Dashboard::addCardItem(CardItem *card_item){
     handcard_num->parentItem()->show();
 }
 
-void Dashboard::setPlayer(const Player *player){
+void Dashboard::setPlayer(const ClientPlayer *player){
     this->player = player;
 
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+
+    mark_item->setDocument(player->getMarkDoc());
 
     updateAvatar();
 }

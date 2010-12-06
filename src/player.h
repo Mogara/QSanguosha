@@ -162,7 +162,7 @@ public:
 
     void addMark(const QString &mark);
     void removeMark(const QString &mark);
-    void setMark(const QString &mark, int value);
+    virtual void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
 
     void setChained(bool chained);
@@ -170,6 +170,9 @@ public:
 
     bool canSlash(const Player *other, bool distance_limit = true) const;
     int getCardCount(bool include_equip) const;
+
+protected:
+    QMap<QString, int> marks;
 
 private:    
     QString screen_name;
@@ -181,7 +184,6 @@ private:
     int seat;
     bool alive;
     QSet<QString> flags;
-    QMap<QString, int> marks;
     QSet<QString> acquired_skills;
 
     struct CorrectStruct correct;
@@ -203,7 +205,6 @@ signals:
     void state_changed();
     void turn_started();
     void kingdom_changed();
-    void mark_changed(const QString &mark);
     void phase_changed();
 };
 

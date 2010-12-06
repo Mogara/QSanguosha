@@ -28,7 +28,7 @@ public:
     void setTrust(bool trust);
     void addCardItem(CardItem *card_item);
     CardItem *takeCardItem(int card_id, Player::Place place);
-    void setPlayer(const Player *player);
+    void setPlayer(const ClientPlayer *player);
     Pixmap *getAvatar();
     void selectCard(const QString &pattern, bool forward = true);
     void useSelected();
@@ -71,6 +71,7 @@ private:
     const Player *player;
     Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
+    QGraphicsTextItem *mark_item;
 
     int sort_type;
     QGraphicsSimpleTextItem *handcard_num;

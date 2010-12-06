@@ -47,7 +47,6 @@ public slots:
     void updateAvatar();
     void updateSmallAvatar();
     void updateRoleCombobox(const QString &new_role);
-    void updateMarks(const QString &mark);
     void updatePhase();
     void refresh();
     void hideEmotion();
@@ -67,6 +66,7 @@ private:
     QPixmap chain;
     QComboBox *role_combobox;
     QGraphicsProxyWidget *role_combobox_widget;
+    QGraphicsTextItem *mark_item;
 
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;
     QList<CardItem **> equips;

@@ -87,6 +87,10 @@ Photo::Photo(int order)
 
     kingdom_item = new QGraphicsPixmapItem(this);
     kingdom_item->setPos(-12, -6);
+
+    mark_item = new QGraphicsTextItem(this);
+    mark_item->setPos(2, 100);
+    mark_item->setDefaultTextColor(Qt::white);
 }
 
 void Photo::showProcessBar(){
@@ -174,9 +178,10 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(mark_changed(QString)), this, SLOT(updateMarks(QString)));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
+
+        mark_item->setDocument(player->getMarkDoc());
     }else{
         role_combobox->clear();
         role_combobox->addItem(tr("Unknown"));
@@ -250,49 +255,6 @@ void Photo::updateRoleCombobox(const QString &new_role){
     QString caption = Sanguosha->getRoleString(new_role);
     role_combobox->addItem(icon, caption);
     role_combobox->setEnabled(false);
-}
-
-void Photo::updateMarks(const QString &mark){
-    QGraphicsPixmapItem *item;
-    QGraphicsSimpleTextItem *text;
-    if(!mark_items.contains(mark)){
-        QPixmap mark_pixmap(QString("marks/%1.png").arg(mark));
-
-        item = new QGraphicsPixmapItem(mark_pixmap, this);
-        text = new QGraphicsSimpleTextItem(this);
-        text->setParentItem(this);
-        QFont font;
-        font.setPixelSize(Config.SmallFont.pixelSize());
-        text->setFont(font);
-
-        mark_items.insert(mark, item);
-        mark_texts.insert(mark, text);
-
-        // set mark position
-        qreal x = pixmap.width() - 25;
-        qreal y = (mark_items.size()-1) * pixmap.width();
-        item->setPos(x, y);
-        text->setPos(x, y);
-    }else{
-        item = mark_items.value(mark);
-        text = mark_texts.value(mark);
-    }
-
-    int value = player->getMark(mark);
-    if(value == 0){
-        item->hide();
-        text->hide();
-    }else if(value == 1){
-        item->show();
-        text->hide();
-    }else{
-        text->setText(QString::number(value));
-
-        item->show();
-        text->show();
-    }
-
-    update();
 }
 
 const ClientPlayer *Photo::getPlayer() const{
