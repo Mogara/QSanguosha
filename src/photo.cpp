@@ -269,7 +269,7 @@ void Photo::speak(const QString &content)
 CardItem *Photo::takeCardItem(int card_id, Player::Place place){
     CardItem *card_item = NULL;
 
-    if(place == Player::Hand){
+    if(place == Player::Hand || place == Player::Special){
         card_item = new CardItem(Sanguosha->getCard(card_id));
         card_item->setPos(pos());
         card_item->shift();

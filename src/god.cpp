@@ -657,6 +657,26 @@ public:
         room->askForUseCard(shenzhuge, "@qixing!", "@qixing-exchange:::" + QString::number(n));
     }
 
+    static void DiscardStar(ServerPlayer *shenzhuge, int n){
+        Room *room = shenzhuge->getRoom();
+        QList<int> &stars = shenzhuge->getPile("stars");
+
+        QStringList card_str;
+        foreach(int star, stars)
+            card_str << QString::number(star);
+        shenzhuge->invoke("fillAG", card_str.join("+"));
+
+        int i;
+        for(i=0; i<n; i++){
+            int card_id = room->askForAG(shenzhuge, stars);
+
+            stars.removeOne(card_id);
+            room->throwCard(card_id);           
+        }
+
+        shenzhuge->invoke("clearAG");
+    }
+
     virtual bool onPhaseChange(ServerPlayer *shenzhuge) const{
         if(shenzhuge->getPhase() == Player::Draw){
             Exchange(shenzhuge);
@@ -698,6 +718,8 @@ bool KuangfengCard::targetFilter(const QList<const ClientPlayer *> &targets, con
 }
 
 void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
+    QixingExchange::DiscardStar(effect.from, 1);
+
     effect.from->loseMark("@star");
     effect.to->gainMark("@gale");
 }
@@ -787,9 +809,14 @@ bool DawuCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     return targets.length() < Self->getMark("@star");
 }
 
-void DawuCard::onEffect(const CardEffectStruct &effect) const{
-    effect.from->loseMark("@star");
-    effect.to->gainMark("@fog");
+void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    int n = targets.length();
+    QixingExchange::DiscardStar(source, n);
+
+    source->loseMark("@star", n);
+    foreach(ServerPlayer *target, targets){
+        target->gainMark("@fog");
+    }
 }
 
 class DawuViewAsSkill: public ZeroCardViewAsSkill{

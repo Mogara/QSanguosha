@@ -589,8 +589,12 @@ void RoomScene::hideDiscards(){
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
     if(src){
         // from players
-
         if(src == Self){
+            if(src_place == Player::Special && !amazing_grace.isEmpty()){
+                takeAmazingGrace(NULL, card_id);
+                return NULL;
+            }
+
             CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
             if(card_item == NULL)
                 return NULL;
@@ -686,7 +690,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     ClientPlayer *dest = move.to;
     Player::Place src_place = move.from_place;
     Player::Place dest_place = move.to_place;
-    int card_id = move.card_id;    
+    int card_id = move.card_id;
 
     CardItem *card_item = takeCardItem(src, src_place, card_id);
     if(card_item == NULL)
