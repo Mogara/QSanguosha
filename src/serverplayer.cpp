@@ -62,6 +62,11 @@ void ServerPlayer::drawCards(int n, bool set_emotion){
         room->setEmotion(this, Room::DrawCard);
 }
 
+// a convenient way to ask player
+bool ServerPlayer::askForSkillInvoke(const QString &skill_name){
+    return room->askForSkillInvoke(this, skill_name);
+}
+
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){
     QList<int> to_discard;
 
@@ -223,10 +228,15 @@ bool ServerPlayer::isLord() const{
     return room->getLord() == this;
 }
 
-bool ServerPlayer::hasNullification() const{
+bool ServerPlayer::hasNullification() const{    
     if(hasSkill("kanpo")){
         foreach(const Card *card, handcards){
             if(card->isBlack() || card->objectName() == "nullification")
+                return true;
+        }
+    }else if(hasSkill("wushen")){
+        foreach(const Card *card, handcards){
+            if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
                 return true;
         }
     }else{
@@ -243,6 +253,34 @@ void ServerPlayer::kick(){
     if(socket){
         socket->disconnectFromHost();
     }
+}
+
+void ServerPlayer::gainMark(const QString &mark, int n){
+    int value = getMark(mark) + n;
+
+    LogMessage log;
+    log.type = "#GetMark";
+    log.from = this;
+    log.arg = mark;
+    log.arg2 = QString::number(n);
+
+    room->sendLog(log);
+
+    room->setPlayerMark(this, mark, value);
+}
+
+void ServerPlayer::loseMark(const QString &mark, int n){
+    int value = getMark(mark) - n;
+
+    LogMessage log;
+    log.type = "#LoseMark";
+    log.from = this;
+    log.arg = mark;
+    log.arg2 = QString::number(n);
+
+    room->sendLog(log);
+
+    room->setPlayerMark(this, mark, value);
 }
 
 void ServerPlayer::setAIByGeneral(){

@@ -232,7 +232,7 @@ public:
         if(guanyu->getPhase() == Player::Start){
             Room *room = guanyu->getRoom();
 
-            if(room->askForSkillInvoke(guanyu, "xiansheng")){
+            if(guanyu->askForSkillInvoke("xiansheng")){
                 guanyu->throwAllEquips();
                 guanyu->throwAllHandCards();
 

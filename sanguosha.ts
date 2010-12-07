@@ -250,12 +250,12 @@
         <translation>%1 要求您展示一张手牌</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1184"/>
+        <location filename="src/client.cpp" line="1185"/>
         <source>Please play a card for pindian</source>
         <translation>请打出一张卡牌以用于拼点</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1186"/>
+        <location filename="src/client.cpp" line="1187"/>
         <source>%1 ask for you to play a card to pindian</source>
         <translation>%1 要求你打出一张卡牌已用于拼点</translation>
     </message>
@@ -930,7 +930,7 @@
     <message>
         <location filename="src/firepackage.cpp" line="537"/>
         <source>niepan</source>
-        <translation>涅盘</translation>
+        <translation>涅槃</translation>
     </message>
     <message>
         <location filename="src/firepackage.cpp" line="538"/>
@@ -968,195 +968,170 @@
         <translation>血裔</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="546"/>
-        <source>qinyin</source>
-        <translation>琴音</translation>
-    </message>
-    <message>
-        <location filename="src/firepackage.cpp" line="547"/>
-        <source>yeyan</source>
-        <translation>业炎</translation>
-    </message>
-    <message>
         <location filename="src/firepackage.cpp" line="548"/>
-        <source>qixing</source>
-        <translation>七星</translation>
+        <source>:qiangxi</source>
+        <oldsource>qixing</oldsource>
+        <translation>出牌阶段，你可以自减1点体力或弃一张武器牌，然后对你攻击范围内的一名角色造成1点伤害。每回合限用一次</translation>
     </message>
     <message>
         <location filename="src/firepackage.cpp" line="549"/>
-        <source>kuangfeng</source>
-        <translation>狂风</translation>
+        <source>:lianhuan</source>
+        <oldsource>kuangfeng</oldsource>
+        <translation>出牌阶段，你可以将你任意一张梅花手牌当【铁索连环】使用或重铸</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="550"/>
-        <source>dawu</source>
-        <translation>大雾</translation>
-    </message>
-    <message>
-        <location filename="src/firepackage.cpp" line="552"/>
+        <location filename="src/firepackage.cpp" line="546"/>
         <source>:quhu</source>
         <translation>出牌阶段，你可以与一名体力比你多的角色拼点，若你赢，目标角色对其攻击范围内，你指定的另一名角色（不能是被驱虎的角色本身）造成1点伤害。若你没赢，他/她对你造成1点伤害。每回合限用一次</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="553"/>
+        <location filename="src/firepackage.cpp" line="547"/>
         <source>:jieming</source>
         <translation>你每受到1点伤害，可令任意一名角色将手牌补至其体力上限的张数（不能超过5张）。 
 ★若荀彧发动“节命”时，指定的目标角色手牌数多于或等于其体力上限，则不补牌
 ★当你一次受到1点以上的伤害时，可依次令不同的目标角色补牌</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="554"/>
-        <source>:qiangxi</source>
-        <translation>出牌阶段，你可以自减1点体力或弃一张武器牌，然后对你攻击范围内的一名角色造成1点伤害。每回合限用一次
-★若同时用到当前装备的武器攻击范围时，不能弃掉这张武器牌
-★若仅剩1点体力时发动此技能，且进入濒死状态无人救回，则典韦死亡后，目标角色受到1点伤害</translation>
-    </message>
-    <message>
-        <location filename="src/firepackage.cpp" line="555"/>
-        <source>:lianhuan</source>
-        <translation>出牌阶段，你可以将你任意一张梅花手牌当【铁索连环】使用或重铸</translation>
-    </message>
-    <message>
-        <location filename="src/firepackage.cpp" line="556"/>
+        <location filename="src/firepackage.cpp" line="550"/>
         <source>:niepan</source>
         <translation>限定技，当你处于濒死状态时，你可以丢弃你所有的牌和你判定区里的牌，并重置你的武将牌，然后摸三张牌且体力回复至3点
 ★庞统做主公时，发动涅槃后也只将体力回复至3点</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="557"/>
+        <location filename="src/firepackage.cpp" line="551"/>
         <source>:bazhen</source>
         <translation>锁定技，当你没装备防具时，始终视为你装备着【八卦阵】
 ★装备任何防具都会失去“八阵”的效果</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="558"/>
+        <location filename="src/firepackage.cpp" line="552"/>
         <source>:huoji</source>
         <translation>出牌阶段，你可以将你的任意一张红色手牌当【火攻】使用</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="559"/>
+        <location filename="src/firepackage.cpp" line="553"/>
         <source>:kanpo</source>
         <translation>你可以将你的任意一张黑色手牌当【无懈可击】使用</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="560"/>
+        <location filename="src/firepackage.cpp" line="554"/>
         <source>:tianyi</source>
         <translation>出牌阶段,你可以和一名角色拼点.若你赢,你获得以下技能直到回合结束:攻击范围无限;可额外使用一张【杀】;使用【杀】时可额外指定一个目标.若你没赢,你不能使用【杀】直到回合结束.每回合限一次
 ★双方各以牌面向下的方式出一张牌后同时亮出，牌面上的点数大的一方赢。若点数相同则算太史慈没赢</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="561"/>
+        <location filename="src/firepackage.cpp" line="555"/>
         <source>:mengjin</source>
         <translation>当你使用的【杀】被【闪】抵消时，你可以弃掉对方的一张牌
 ★猛进的效果可以弃掉对方的手牌或装备区里的牌，但不能是判定区里的牌</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="562"/>
+        <location filename="src/firepackage.cpp" line="556"/>
         <source>:luanji</source>
         <translation>出牌阶段，你可以将任意两张相同花色的手牌当【万箭齐发】使用</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="563"/>
+        <location filename="src/firepackage.cpp" line="557"/>
         <source>:xueyi</source>
         <translation>主公技，锁定技，场上每有一名其他群雄角色存活，你的手牌上限便+2</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="564"/>
+        <location filename="src/firepackage.cpp" line="558"/>
         <source>:shuangxiong</source>
         <translation>摸牌阶段，可以选择放弃摸牌并进行一次判定：获得此判定牌并且此回合可以将任意一张与该判定牌不同颜色的手牌当【决斗】使用</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="567"/>
+        <location filename="src/firepackage.cpp" line="561"/>
         <source>jieming:yes</source>
         <translation>您可令任意一名角色将手牌补至其体力上限的张数（不能超过5张）</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="568"/>
+        <location filename="src/firepackage.cpp" line="562"/>
         <source>shuangxiong:yes</source>
         <translation>选择放弃摸牌并进行一次判定：获得此判定牌并且此回合可以将任意一张与该判定牌不同颜色的手牌当【决斗】使用</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="569"/>
+        <location filename="src/firepackage.cpp" line="563"/>
         <source>mengjin:yes</source>
         <translation>你可以弃掉对方的一张牌</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="570"/>
+        <location filename="src/firepackage.cpp" line="564"/>
         <source>niepan:yes</source>
         <translation>丢弃你所有的牌和你判定区里的牌，然后摸三张牌且体力回复至3点（一局游戏仅可使用一次）</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="571"/>
+        <location filename="src/firepackage.cpp" line="565"/>
         <source>bazhen:yes</source>
         <translation>发动自带的八卦阵</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="573"/>
+        <location filename="src/firepackage.cpp" line="567"/>
         <source>@jieming</source>
         <translation>请指定【节命】的目标</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="580"/>
+        <location filename="src/firepackage.cpp" line="574"/>
         <source>$#tunlang</source>
         <translation>驱虎吞狼，坐收渔利</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="581"/>
+        <location filename="src/firepackage.cpp" line="575"/>
         <source>$bazhen1</source>
         <translation>此阵可挡精兵十万</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="582"/>
+        <location filename="src/firepackage.cpp" line="576"/>
         <source>$huoji1</source>
         <translation>欲破敌军，宜用火攻</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="583"/>
+        <location filename="src/firepackage.cpp" line="577"/>
         <source>$huoji2</source>
         <translation>且备硫磺焰硝，待命引火</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="584"/>
+        <location filename="src/firepackage.cpp" line="578"/>
         <source>$jieming1</source>
         <translation>为守汉节，不惜吾命</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="585"/>
+        <location filename="src/firepackage.cpp" line="579"/>
         <source>$jieming2</source>
         <translation>秉忠贞之志，守谦退之节</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="586"/>
+        <location filename="src/firepackage.cpp" line="580"/>
         <source>$kanpo</source>
         <translation>哼,此小计耳</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="587"/>
+        <location filename="src/firepackage.cpp" line="581"/>
         <source>$lianhuan</source>
         <translation>舟船成排，潮水何惧</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="588"/>
+        <location filename="src/firepackage.cpp" line="582"/>
         <source>$luanji1</source>
         <translation>弓箭手出列！</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="589"/>
+        <location filename="src/firepackage.cpp" line="583"/>
         <source>$luanji2</source>
         <translation>放箭！</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="590"/>
+        <location filename="src/firepackage.cpp" line="584"/>
         <source>$niepan</source>
         <translation>凤凰涅盘，浴火重生！</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="591"/>
+        <location filename="src/firepackage.cpp" line="585"/>
         <source>$qiangxi</source>
         <translation>五步之内，汝命休矣！</translation>
     </message>
     <message>
-        <location filename="src/firepackage.cpp" line="592"/>
+        <location filename="src/firepackage.cpp" line="586"/>
         <source>$quhu</source>
         <translation>主公莫忧，吾有一计</translation>
     </message>
@@ -1250,128 +1225,153 @@
 <context>
     <name>GodPackage</name>
     <message>
-        <location filename="src/god.cpp" line="661"/>
+        <location filename="src/god.cpp" line="849"/>
         <source>god</source>
         <translation>神</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="672"/>
+        <location filename="src/god.cpp" line="860"/>
         <source>shenguanyu</source>
         <translation>神关羽</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="673"/>
+        <location filename="src/god.cpp" line="861"/>
         <source>shenlumeng</source>
         <translation>神吕蒙</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="675"/>
+        <location filename="src/god.cpp" line="863"/>
         <source>wushen</source>
         <translation>武神</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="676"/>
+        <location filename="src/god.cpp" line="864"/>
         <source>wuhun</source>
         <translation>武魂</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="677"/>
+        <location filename="src/god.cpp" line="865"/>
         <source>shelie</source>
         <translation>涉猎</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="678"/>
+        <location filename="src/god.cpp" line="866"/>
         <source>gongxin</source>
         <translation>攻心</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="680"/>
+        <location filename="src/god.cpp" line="868"/>
         <source>:wushen</source>
         <translation>锁定技，你的每一张红桃手牌都视为【杀】，你使用红桃【杀】时无距离限制</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="681"/>
+        <location filename="src/god.cpp" line="869"/>
         <source>:wuhun</source>
         <translation>锁定技，任意角色每对你造成1点伤害，将获得一个梦魇标记。当你死亡时，你可以让持有最多该标记的角色判定：除非结果为【桃】或【桃园结义】，否则该角色立即死亡</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="682"/>
+        <location filename="src/god.cpp" line="870"/>
         <source>:shelie</source>
         <translation>摸牌阶段，你可以选择执行以下行动来取代摸牌：从牌堆顶亮出五张牌，拿走不同花色的牌各一张，然后弃掉其余的</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="683"/>
+        <location filename="src/god.cpp" line="871"/>
         <source>:gongxin</source>
         <translation>出牌阶段，你可以观看一次任意一名角色的手牌，并可以展示其中一张红桃牌，然后弃掉它或将它置于牌堆顶</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="685"/>
+        <location filename="src/god.cpp" line="873"/>
         <source>shelie:yes</source>
         <translation>选择执行以下行动来取代摸牌：从牌堆顶亮出五张牌，拿走不同花色的牌各一张，然后弃掉其余的</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="686"/>
+        <location filename="src/god.cpp" line="874"/>
         <source>:gongxin:</source>
         <translation>请问如何处理这张红桃牌:</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="687"/>
+        <location filename="src/god.cpp" line="875"/>
         <source>gongxin:discard</source>
         <translation>扔掉</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="688"/>
+        <location filename="src/god.cpp" line="876"/>
         <source>gongxin:put</source>
         <translation>放置在牌堆顶</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="702"/>
+        <location filename="src/god.cpp" line="892"/>
         <source>shenzhouyu</source>
         <translation>神周瑜</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="703"/>
+        <location filename="src/god.cpp" line="893"/>
         <source>shenzhugeliang</source>
         <translation>神诸葛亮</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="705"/>
+        <location filename="src/god.cpp" line="895"/>
+        <source>qinyin</source>
+        <translation>琴音</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="896"/>
+        <source>yeyan</source>
+        <translation>业炎</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="897"/>
+        <source>qixing</source>
+        <translation>七星</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="898"/>
+        <source>kuangfeng</source>
+        <translation>狂风</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="899"/>
+        <source>dawu</source>
+        <translation>大雾</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="901"/>
         <source>:qinyin</source>
         <translation>弃牌阶段，当你弃掉了两张或更多的手牌，可令所有角色各回复1点体力或各失去1点体力
 ★失去体力意味着相关的武将技能不能发动。例如遗计，反馈等等……失去体力不等于受到伤害
 ★发动琴音时只能选择其中的1项执行，所有人回复1点体力或所有人失去一点体力（包括周瑜自己）</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="706"/>
+        <location filename="src/god.cpp" line="902"/>
         <source>:greatyeyan</source>
         <oldsource>:great_yeyan</oldsource>
         <translation>出牌阶段，你可选择1名角色，弃掉4张不同花色的手牌并失去3点体力，对其造成3点火焰伤害。整局游戏只能发动一次，中业炎和小业炎也不能再发动</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="707"/>
+        <location filename="src/god.cpp" line="903"/>
         <source>:mediumyeyan</source>
         <oldsource>:medium_yeyan</oldsource>
         <translation>出牌阶段，你可以选择1~2名角色，先弃掉4张不同花色的手牌并失去3点体力，然后对第一名角色造成2点火焰伤害，对第二名角色（若有）造成1点火焰伤害，整局游戏只能使用一次，发动后，大业炎和小业炎也将不能发动</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="708"/>
+        <location filename="src/god.cpp" line="904"/>
         <source>:smallyeyan</source>
         <oldsource>:small_yeyan</oldsource>
         <translation>出牌阶段，你可以选择1~3名角色，对他们每人造成1点火焰伤害，整局游戏只能发动一次，发动后，大业炎和中业炎将不能再发动</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="709"/>
+        <location filename="src/god.cpp" line="905"/>
         <source>:qixing</source>
         <translation>游戏开始前，共发你11张牌，选4张作为手牌，其余的面朝下置于一旁（移出游戏），称之为“星”。每当你于摸牌阶段摸牌后，可用任意数量的手牌等量交换这些“星”
 ★“星”不属于游戏中的牌，所以“星”不能被锦囊和武将技能影响</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="710"/>
+        <location filename="src/god.cpp" line="906"/>
         <source>:kuangfeng</source>
         <translation>回合结束阶段，你可以弃掉1枚“星”指定一名角色：直到你的下回合开始，该角色每次受到的火焰伤害+1</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="711"/>
+        <location filename="src/god.cpp" line="907"/>
         <source>:dawu</source>
         <translation>回合结束阶段，你可以弃掉X枚“星”指定X名角色：直到你的下回合开始，防止他们受到的除雷电伤害外的一切伤害
 ★“星”不属于游戏中的牌，所以“星”不能被锦囊和武将技能影响
@@ -1379,163 +1379,193 @@
 ★大雾不能防止失去体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="713"/>
+        <location filename="src/god.cpp" line="909"/>
         <source>qinyin:yes</source>
         <translation>所有角色各回复1点体力或各失去1点体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="714"/>
+        <location filename="src/god.cpp" line="910"/>
         <source>:qinyin:</source>
         <translation>请选择琴音技能的选项:</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="715"/>
+        <location filename="src/god.cpp" line="911"/>
         <source>qinyin:up</source>
         <translation>令所有角色各回复1点体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="716"/>
+        <location filename="src/god.cpp" line="912"/>
         <source>qinyin:down</source>
         <translation>所有角色各失去1点体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="717"/>
+        <location filename="src/god.cpp" line="913"/>
         <source>greatyeyan</source>
         <oldsource>great_yeyan</oldsource>
         <translation>大业炎</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="718"/>
+        <location filename="src/god.cpp" line="914"/>
         <source>mediumyeyan</source>
         <oldsource>medium_yeyan</oldsource>
         <translation>中业炎</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="719"/>
+        <location filename="src/god.cpp" line="915"/>
         <source>smallyeyan</source>
         <oldsource>small_yeyan</oldsource>
         <translation>小业炎</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="732"/>
+        <location filename="src/god.cpp" line="928"/>
         <source>shencaocao</source>
         <translation>神曹操</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="733"/>
+        <location filename="src/god.cpp" line="929"/>
         <source>shenlubu</source>
         <translation>神吕布</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="735"/>
+        <location filename="src/god.cpp" line="931"/>
         <source>guixin</source>
         <translation>归心</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="736"/>
+        <location filename="src/god.cpp" line="932"/>
         <source>feiying</source>
         <translation>飞影</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="737"/>
+        <location filename="src/god.cpp" line="933"/>
         <source>kuangbao</source>
         <translation>狂暴</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="738"/>
+        <location filename="src/god.cpp" line="934"/>
         <source>wumou</source>
         <translation>无谋</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="739"/>
+        <location filename="src/god.cpp" line="935"/>
         <source>wuqian</source>
         <translation>无前</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="740"/>
+        <location filename="src/god.cpp" line="936"/>
         <source>shenfen</source>
         <translation>神愤</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="742"/>
+        <location filename="src/god.cpp" line="938"/>
         <source>:guixin</source>
         <translation>你每受到1点伤害，可分别从每名其他角色处（手牌、装备区和判定区）获得一张牌，若如此做，将你的武将牌翻面</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="743"/>
+        <location filename="src/god.cpp" line="939"/>
         <source>:feiying</source>
         <translation>锁定技，当其他角色计算与你的距离时，始终+1</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="744"/>
+        <location filename="src/god.cpp" line="940"/>
         <source>:kuangbao</source>
         <oldsource>:baonu</oldsource>
         <translation>游戏开始时你获得2个暴怒标记，游戏中你每受到或造成1点伤害，获得1个暴怒标记</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="745"/>
+        <location filename="src/god.cpp" line="941"/>
         <source>:wumou</source>
         <translation>锁定技，你每使用非延时类一张锦囊前(在它结算前)，必须弃掉1个暴怒标记，或者失去1点体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="746"/>
+        <location filename="src/god.cpp" line="942"/>
         <source>:wuqian</source>
         <translation>出牌阶段你可以弃两个暴怒标记并指定一名角色，这名角色的防具无效且你获得“无双”的技能，直到回合结束</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="747"/>
+        <location filename="src/god.cpp" line="943"/>
         <source>:shenfen</source>
         <translation>出牌阶段，弃六个暴怒标记，你对每名其他角色各造成一点伤害，其他角色先弃掉各自装备区里所有的牌，再各弃四张手牌，然后将你的武将牌反面，每回合限一次</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="749"/>
+        <location filename="src/god.cpp" line="945"/>
         <source>wumou:discard</source>
         <translation>弃掉一个“暴怒”标记</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="750"/>
+        <location filename="src/god.cpp" line="946"/>
         <source>womou:losehp</source>
         <translation>失去一点体力</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="752"/>
+        <location filename="src/god.cpp" line="948"/>
         <source>#GetMark</source>
         <translation>%from 得到了 %arg2 枚 %arg 标记</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="753"/>
+        <location filename="src/god.cpp" line="949"/>
         <source>#LoseMark</source>
         <translation>%from 失去了 %arg2 枚 %arg 标记</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="756"/>
+        <location filename="src/god.cpp" line="952"/>
         <source>@nightmare</source>
         <translation>梦魇</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="757"/>
+        <location filename="src/god.cpp" line="953"/>
         <source>@wrath</source>
         <translation>暴怒</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="758"/>
+        <location filename="src/god.cpp" line="954"/>
         <source>@star</source>
         <translation>七星</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="759"/>
+        <location filename="src/god.cpp" line="955"/>
         <source>@fog</source>
         <translation>大雾</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="760"/>
+        <location filename="src/god.cpp" line="956"/>
         <source>@gale</source>
         <translation>狂风</translation>
     </message>
     <message>
-        <location filename="src/god.cpp" line="773"/>
+        <location filename="src/god.cpp" line="958"/>
+        <source>@qixing-exchange</source>
+        <translation>请选择 %arg 张用以交换的手牌</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="959"/>
+        <source>@@kuangfeng-card</source>
+        <translation>请选择一名角色，直到你的下回合开始，该角色每次受到的火焰伤害+1</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="960"/>
+        <source>@@dawu-card</source>
+        <translation>你可以弃掉X枚“星”指定X名角色：直到你的下回合开始，防止他们受到的除雷电伤害外的一切伤害</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="974"/>
         <source>$guixin</source>
         <translation>山不厌高，海不厌深，周公吐哺，天下归心</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="976"/>
+        <source>#FogProtect</source>
+        <translation>%from 受到大雾保护，防止了 %arg 点伤害(%arg2)</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="977"/>
+        <source>#GalePower</source>
+        <translation>由于狂风的影响，%from 的伤害从 %arg 点火焰伤害增加到 %arg2 点火焰伤害</translation>
+    </message>
+    <message>
+        <location filename="src/god.cpp" line="978"/>
+        <source>#QixingExchange</source>
+        <translation>%from 使用了【七星】，交换了 %arg 张手牌</translation>
     </message>
 </context>
 <context>
@@ -2331,22 +2361,22 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="908"/>
+        <location filename="src/room.cpp" line="895"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1010"/>
+        <location filename="src/room.cpp" line="997"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1002"/>
+        <location filename="src/room.cpp" line="989"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1648"/>
+        <location filename="src/room.cpp" line="1635"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2388,27 +2418,26 @@
         <translation>聊天请在此输入 ...</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="841"/>
-        <location filename="src/roomscene.cpp" line="853"/>
-        <location filename="src/roomscene.cpp" line="863"/>
+        <location filename="src/roomscene.cpp" line="846"/>
+        <location filename="src/roomscene.cpp" line="858"/>
+        <location filename="src/roomscene.cpp" line="868"/>
         <source> [Compulsory]</source>
         <translation> [锁定技]</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="870"/>
+        <location filename="src/roomscene.cpp" line="875"/>
         <source> [Lord Skill]</source>
         <translation> [主公技]</translation>
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="642"/>
-        <location filename="src/roomscene.cpp" line="1412"/>
         <location filename="src/roomscene.cpp" line="1417"/>
-        <location filename="src/roomscene.cpp" line="1423"/>
-        <location filename="src/roomscene.cpp" line="1940"/>
-        <location filename="src/roomscene.cpp" line="1946"/>
-        <location filename="src/roomscene.cpp" line="2308"/>
-        <location filename="src/roomscene.cpp" line="2333"/>
-        <location filename="src/roomscene.cpp" line="2339"/>
+        <location filename="src/roomscene.cpp" line="1427"/>
+        <location filename="src/roomscene.cpp" line="1944"/>
+        <location filename="src/roomscene.cpp" line="1950"/>
+        <location filename="src/roomscene.cpp" line="2312"/>
+        <location filename="src/roomscene.cpp" line="2337"/>
+        <location filename="src/roomscene.cpp" line="2343"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2434,14 +2463,14 @@
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="78"/>
-        <location filename="src/roomscene.cpp" line="1373"/>
+        <location filename="src/roomscene.cpp" line="1378"/>
         <source>Trust</source>
         <translation>托管</translation>
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="82"/>
-        <location filename="src/roomscene.cpp" line="2279"/>
-        <location filename="src/roomscene.cpp" line="2285"/>
+        <location filename="src/roomscene.cpp" line="2283"/>
+        <location filename="src/roomscene.cpp" line="2289"/>
         <source>Expand to window width</source>
         <translation>延长至窗口宽度</translation>
     </message>
@@ -2461,163 +2490,158 @@
         <translation>不能找到卡牌移动的目标!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="872"/>
+        <location filename="src/roomscene.cpp" line="877"/>
         <source> [Limited]</source>
         <translation>【限定技】</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1261"/>
+        <location filename="src/roomscene.cpp" line="1266"/>
         <source>Please choose a player</source>
         <translation>请选择一名玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1371"/>
+        <location filename="src/roomscene.cpp" line="1376"/>
         <source>Cancel trust</source>
         <translation>取消托管</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1413"/>
+        <location filename="src/roomscene.cpp" line="1418"/>
         <source>The OK button should be disabled when client is not active!</source>
         <translation>确定按钮在客户端非活动状态下是不能被禁用的!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1418"/>
-        <source>The OK button should be disabled when client is in asking for amazing grace status</source>
-        <translation>确定按钮在客户端五谷拿牌状态下是不能被禁用的</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="1424"/>
+        <location filename="src/roomscene.cpp" line="1428"/>
         <source>The OK button should be disabled when client is in executing dialog</source>
         <translation>确定按钮在客户端在执行对话框状态下是不能被禁用的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1640"/>
+        <location filename="src/roomscene.cpp" line="1644"/>
         <source>Standoff</source>
         <translation>平局</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1662"/>
+        <location filename="src/roomscene.cpp" line="1666"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1662"/>
+        <location filename="src/roomscene.cpp" line="1666"/>
         <source>Failure</source>
         <translation>败北</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1664"/>
+        <location filename="src/roomscene.cpp" line="1668"/>
         <source>Winner(s)</source>
         <translation>胜利者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1665"/>
+        <location filename="src/roomscene.cpp" line="1669"/>
         <source>Loser(s)</source>
         <translation>失败者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1723"/>
+        <location filename="src/roomscene.cpp" line="1727"/>
         <source>Save record</source>
         <translation>保存记录</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1742"/>
+        <location filename="src/roomscene.cpp" line="1746"/>
         <source>Save replay record</source>
         <translation>保存重放记录</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1744"/>
+        <location filename="src/roomscene.cpp" line="1748"/>
         <source>Replay file (*.txt)</source>
         <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1759"/>
+        <location filename="src/roomscene.cpp" line="1763"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1759"/>
+        <location filename="src/roomscene.cpp" line="1763"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1759"/>
-        <location filename="src/roomscene.cpp" line="1778"/>
+        <location filename="src/roomscene.cpp" line="1763"/>
+        <location filename="src/roomscene.cpp" line="1782"/>
         <source>Alive</source>
         <translation>存活</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1759"/>
+        <location filename="src/roomscene.cpp" line="1763"/>
         <source>Role</source>
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2282"/>
+        <location filename="src/roomscene.cpp" line="2286"/>
         <source>Reset to default width</source>
         <translation>重置回默认宽度</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2295"/>
+        <location filename="src/roomscene.cpp" line="2299"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2308"/>
+        <location filename="src/roomscene.cpp" line="2312"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2323"/>
+        <location filename="src/roomscene.cpp" line="2327"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2324"/>
+        <location filename="src/roomscene.cpp" line="2328"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2333"/>
+        <location filename="src/roomscene.cpp" line="2337"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2339"/>
+        <location filename="src/roomscene.cpp" line="2343"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2344"/>
+        <location filename="src/roomscene.cpp" line="2348"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2344"/>
+        <location filename="src/roomscene.cpp" line="2348"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1718"/>
+        <location filename="src/roomscene.cpp" line="1722"/>
         <source>Restart Game</source>
         <translation>重新开始</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1780"/>
+        <location filename="src/roomscene.cpp" line="1784"/>
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1940"/>
+        <location filename="src/roomscene.cpp" line="1944"/>
         <source>No such skill named %1</source>
         <translation>没有名为 %1 的技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1946"/>
+        <location filename="src/roomscene.cpp" line="1950"/>
         <source>The skill %1 must be view as skill!</source>
         <translation>技能 %1 必须为视作技!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2067"/>
+        <location filename="src/roomscene.cpp" line="2071"/>
         <source>[%1] said: %2</source>
         <translation>[%1] 说: %2</translation>
     </message>
@@ -2906,7 +2930,7 @@
 <context>
     <name>ServerPlayer</name>
     <message>
-        <location filename="src/serverplayer.cpp" line="129"/>
+        <location filename="src/serverplayer.cpp" line="134"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>
@@ -4396,7 +4420,7 @@
     <message>
         <location filename="src/standard-generals.cpp" line="1331"/>
         <source>$guanxing2</source>
-        <translation>观今夜之天象,知天下之大事</translation>
+        <translation>观今夜天象,知天下大事</translation>
     </message>
     <message>
         <location filename="src/standard-generals.cpp" line="1332"/>
@@ -5218,7 +5242,7 @@
     <message>
         <location filename="src/thicket.cpp" line="929"/>
         <source>$juxiang</source>
-        <translation>万象奔腾，随我心意</translation>
+        <translation>万象奔腾，随吾心意</translation>
     </message>
     <message>
         <location filename="src/thicket.cpp" line="930"/>
@@ -5510,11 +5534,6 @@
         <translation>早夭</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="504"/>
-        <source>songluo</source>
-        <translation>诵洛</translation>
-    </message>
-    <message>
         <location filename="src/yitianpackage.cpp" line="505"/>
         <source>jueji</source>
         <translation>绝汲</translation>
@@ -5542,9 +5561,14 @@
         <translation>锁定技，回合结束时，若你的手牌大于13张，则你必须弃掉所有手牌并流失1点体力</translation>
     </message>
     <message>
+        <location filename="src/yitianpackage.cpp" line="504"/>
+        <source>ganzhen</source>
+        <translation>感甄</translation>
+    </message>
+    <message>
         <location filename="src/yitianpackage.cpp" line="511"/>
-        <source>:songluo</source>
-        <translation>任何时候，有角色使用或打出一张黑色的基本牌，你可以让角色立即摸一张牌</translation>
+        <source>:ganzhen</source>
+        <translation>你的回合外，有人使用或打出一张黑桃或草花的基本牌时，你可以让该角色立即摸一张牌</translation>
     </message>
     <message>
         <location filename="src/yitianpackage.cpp" line="512"/>

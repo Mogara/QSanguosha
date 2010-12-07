@@ -992,7 +992,7 @@ void Client::askForKingdom(const QString &){
 }
 
 void Client::setMark(const QString &mark_str){
-    QRegExp rx("(\\w+)\\.(@?\\w+)=(\\d+)");
+    QRegExp rx("(\\w+)\\.(@?[\\w-]+)=(\\d+)");
 
     if(!rx.exactMatch(mark_str))
         return;
@@ -1093,7 +1093,8 @@ void Client::askForCardShow(const QString &requestor){
     setStatus(Responsing);
 }
 
-void Client::askForAG(const QString &){
+void Client::askForAG(const QString &ask_str){
+    refusable = ask_str == "?";
     setStatus(AskForAG);
 }
 

@@ -112,9 +112,14 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
 QList<int> ClientPlayer::nullifications() const{
     QList<int> card_ids;
 
-    if(Self->hasSkill("kanpo")){
+    if(hasSkill("kanpo")){
         foreach(const Card *card, known_cards){
             if(card->isBlack() || card->objectName() == "nullification")
+                card_ids << card->getId();
+        }
+    }else if(hasSkill("wushen")){
+        foreach(const Card *card, known_cards){
+            if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
                 card_ids << card->getId();
         }
     }else{

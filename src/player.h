@@ -172,6 +172,8 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true) const;
     int getCardCount(bool include_equip) const;
 
+    QList<int> &getPile(const QString &pile_name);
+
 protected:
     QMap<QString, int> marks;
 
@@ -186,6 +188,7 @@ private:
     bool alive;
     QSet<QString> flags;
     QSet<QString> acquired_skills;
+    QMap<QString, QList<int> > piles;
 
     struct CorrectStruct correct;
     int attack_range;

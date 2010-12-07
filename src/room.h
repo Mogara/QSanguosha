@@ -54,7 +54,6 @@ public:
     void setPlayerCorrect(ServerPlayer *player, const QString &correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
-    void setPlayerMarkDelta(ServerPlayer *player, const QString &mark, int delta);
     void useCard(const CardUseStruct &card_use);
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
@@ -138,7 +137,7 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
-    int askForAG(ServerPlayer *player, const QList<int> &card_ids);
+    int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    

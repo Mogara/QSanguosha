@@ -117,4 +117,13 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class QixingCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QixingCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // GOD_H

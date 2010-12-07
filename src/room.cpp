@@ -566,7 +566,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
+int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable){
     if(card_ids.length() == 1)
         return card_ids.first();
 
@@ -574,13 +574,13 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids){
 
     AI *ai = player->getAI();
     if(ai)
-        card_id = ai->askForAG(card_ids);
+        card_id = ai->askForAG(card_ids, refusable);
     else{
-        player->invoke("askForAG");
+        player->invoke("askForAG", refusable ? "?" : ".");
         getResult("chooseAGCommand", player);
 
         if(result.isEmpty())
-            return askForAG(player, card_ids);
+            return askForAG(player, card_ids, refusable);
 
         card_id = result.toInt();
     }
@@ -738,19 +738,6 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
     player->setMark(mark, value);
     broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
-}
-
-void Room::setPlayerMarkDelta(ServerPlayer *player, const QString &mark, int delta){
-    int old = player->getMark(mark);
-    int value = old + delta;
-
-    LogMessage log;
-    log.type = delta > 0 ? "#GetMark" : "#LoseMark";
-    log.from = player;
-    log.arg = mark;
-    log.arg2 = QString::number(abs(delta));
-    sendLog(log);
-    setPlayerMark(player, mark, value);
 }
 
 void Room::setPlayerCorrect(ServerPlayer *player, const QString &correct_str){

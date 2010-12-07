@@ -144,6 +144,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     daqiao->shift();
     daqiao->moveBy(-100, 0);
     daqiao->hide();
+    daqiao->setZValue(10);
     addItem(daqiao);
 
     connect(ClientInstance, SIGNAL(prompt_changed(QString)), daqiao, SLOT(setContent(QString)));
@@ -782,6 +783,11 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
                 break;
             }
 
+        case Player::Special:{
+                card_item->setHomePos(avatar->scenePos());
+                card_item->goBack(true);
+            }
+
         default:
             ;
             // FIXME
@@ -1212,7 +1218,7 @@ void RoomScene::updateStatus(Client::Status status){
             ok_button->setEnabled(false);
 
             if(ClientInstance->card_pattern.endsWith("!")){
-                QRegExp rx("@@(\\w+)!");
+                QRegExp rx("@@?(\\w+)!");
                 if(rx.exactMatch(ClientInstance->card_pattern)){
                     QString skill_name = rx.capturedTexts().at(1);
                     const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -1269,7 +1275,7 @@ void RoomScene::updateStatus(Client::Status status){
     case Client::AskForAG:{
             dashboard->disableAllCards();
 
-            ok_button->setEnabled(false);
+            ok_button->setEnabled(ClientInstance->refusable);
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
@@ -1414,8 +1420,7 @@ void RoomScene::doOkButton(){
             return;
         }
     case Client::AskForAG:{
-            QMessageBox::warning(main_window, tr("Warning"),
-                                 tr("The OK button should be disabled when client is in asking for amazing grace status"));
+            ClientInstance->chooseAG(-1);
             return;
         }
 

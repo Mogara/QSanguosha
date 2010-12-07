@@ -110,7 +110,7 @@ public:
         if(move.from_place == Player::Equip && move.from->isAlive()){
             Room *room = move.from->getRoom();
 
-            bool invoke = room->askForSkillInvoke(move.from, objectName());
+            bool invoke = move.from->askForSkillInvoke(objectName());
             if(!invoke)
                 return;
 
@@ -332,9 +332,9 @@ public:
     }
 };
 
-class Songluo: public TriggerSkill{
+class Ganzhen: public TriggerSkill{
 public:
-    Songluo():TriggerSkill("songluo"){
+    Ganzhen():TriggerSkill("ganzhen"){
         events << CardUsed << CardResponsed;
     }
 
@@ -380,7 +380,7 @@ bool JuejiCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
 }
 
 void JuejiCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerMarkDelta(effect.to, "@jueji", +1);
+    effect.to->gainMark("@jueji");
 }
 
 class JuejiViewAsSkill: public ViewAsSkill{
@@ -422,7 +422,7 @@ public:
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         Room *room = player->getRoom();
-        room->setPlayerMarkDelta(player, "@jueji", -1);
+        player->loseMark("@jueji");
 
         // find zhanghe
         ServerPlayer *zhanghe = room->findPlayerBySkillName(objectName());
@@ -446,7 +446,7 @@ public:
             QList<ServerPlayer *> players = room->getOtherPlayers(zhanghe);
             foreach(ServerPlayer *player, players){
                 if(player->getMark("@jueji") > 0){
-                    room->setPlayerMarkDelta(player, "@jueji", -1);
+                    player->loseMark("@jueji");
                 }
             }
         }
@@ -486,7 +486,7 @@ YitianPackage::YitianPackage()
     caochong->addSkill(new Zaoyao);
 
     //General *caozhi = new General(this, "caozhi", "wei", 3);
-    //caozhi->addSkill(new Songluo);
+    //caozhi->addSkill(new Ganzhen);
 
     //General *zhanghe = new General(this, "zhangjunyi", "wei");
     //zhanghe->addSkill(new Jueji);
@@ -501,14 +501,14 @@ YitianPackage::YitianPackage()
     t["chengxiang"] = tr("chengxiang");
     t["conghui"] = tr("conghui");
     t["zaoyao"] = tr("zaoyao");
-    t["songluo"] = tr("songluo");
+    t["ganzhen"] = tr("ganzhen");
     t["jueji"] = tr("jueji");
 
     t[":guixin2"] = tr(":guixin2");
     t[":chengxiang"] = tr(":chengxiang");
     t[":conghui"] = tr(":conghui");
     t[":zaoyao"] = tr(":zaoyao");
-    t[":songluo"] = tr(":songluo");
+    t[":ganzhen"] = tr(":ganzhen");
     t[":jueji"] = tr(":jueji");
 
     t["guixin2:yes"] = tr("guixin2:yes");

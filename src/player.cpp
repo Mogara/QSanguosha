@@ -567,3 +567,7 @@ int Player::getCardCount(bool include_equip) const{
 
     return count;
 }
+
+QList<int> &Player::getPile(const QString &pile_name){
+    return piles[pile_name];
+}

@@ -202,7 +202,10 @@ QString TrustAI::askForUseCard(const QString &, const QString &) {
     return ".";
 }
 
-int TrustAI::askForAG(const QList<int> &card_ids) {
+int TrustAI::askForAG(const QList<int> &card_ids, bool refsuable){
+    if(refsuable)
+        return -1;
+
     int r = qrand() % card_ids.length();
     return card_ids.at(r);
 }

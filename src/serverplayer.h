@@ -30,6 +30,7 @@ public:
     void throwAllHandCards();
     void throwAllCards();
     void drawCards(int n, bool set_emotion = true);
+    bool askForSkillInvoke(const QString &skill_name);
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
     QList<const Card *> getHandcards() const;
@@ -38,6 +39,9 @@ public:
     bool isLord() const;
     bool hasNullification() const;
     void kick();
+
+    void gainMark(const QString &mark, int n = 1);
+    void loseMark(const QString &mark, int n = 1);
 
     void setAIByGeneral();
     void setAI(AI *ai);

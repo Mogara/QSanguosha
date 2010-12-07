@@ -265,7 +265,7 @@ public:
         if(target->getPhase() == Player::Start){
             room->setPlayerMark(target, "shuangxiong", 0);
         }else if(target->getPhase() == Player::Draw){
-            if(room->askForSkillInvoke(target, objectName())){
+            if(target->askForSkillInvoke(objectName())){
                 const Card *card = room->getJudgeCard(target);
                 target->obtainCard(card);
                 if(card->isRed())
@@ -295,7 +295,7 @@ public:
         SlashResultStruct result = data.value<SlashResultStruct>();
         if(!result.success && !result.to->isNude()){
             Room *room = pangde->getRoom();
-            if(room->askForSkillInvoke(pangde, objectName())){
+            if(pangde->askForSkillInvoke(objectName())){
                 int to_throw = room->askForCardChosen(pangde, result.to, "he", objectName());
                 room->throwCard(to_throw);
             }
@@ -336,7 +336,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
         Room *room = pangtong->getRoom();
-        if(room->askForSkillInvoke(pangtong, objectName())){
+        if(pangtong->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
 
             pangtong->throwAllCards();
@@ -391,7 +391,7 @@ public:
             return false;
 
         Room *room = wolong->getRoom();
-        if(room->askForSkillInvoke(wolong, objectName())){
+        if(wolong->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());
             const Card *card = room->getJudgeCard(wolong);
             if(card->isRed()){
@@ -542,12 +542,6 @@ FirePackage::FirePackage()
     t["mengjin"] = tr("mengjin");
     t["luanji"] = tr("luanji");
     t["xueyi"] = tr("xueyi");
-
-    t["qinyin"] = tr("qinyin");
-    t["yeyan"] = tr("yeyan");
-    t["qixing"] = tr("qixing");
-    t["kuangfeng"] = tr("kuangfeng");
-    t["dawu"] = tr("dawu");
 
     t[":quhu"] = tr(":quhu");
     t[":jieming"] = tr(":jieming");

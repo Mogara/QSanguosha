@@ -155,7 +155,7 @@ public:
         Room *room = player->getRoom();
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
-            if(room->askForSkillInvoke(effect.from, objectName())){
+            if(effect.from->askForSkillInvoke(objectName())){
                 bool draw_card = false;
 
                 if(effect.to->isKongcheng())
@@ -411,7 +411,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        if(!room->askForSkillInvoke(player, objectName()))
+        if(!player->askForSkillInvoke(objectName()))
             return false;
 
         QString horse_type;
@@ -877,7 +877,7 @@ public:
         if(result.success){
             Room *room = player->getRoom();
 
-            if(!result.to->isNude() && room->askForSkillInvoke(player, "ice_sword")){
+            if(!result.to->isNude() && player->askForSkillInvoke("ice_sword")){
                 int card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
                 room->throwCard(card_id);
 
