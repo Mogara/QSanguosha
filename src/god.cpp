@@ -367,9 +367,9 @@ void Feiying::onGameStart(ServerPlayer *player) const
     player->getRoom()->setPlayerCorrect(player, "F");
 };
 
-class BaonuStart: public GameStartSkill{
+class KuangbaoStart: public GameStartSkill{
 public:
-    BaonuStart():GameStartSkill("#baonu"){
+    KuangbaoStart():GameStartSkill("#kuangbao"){
     }
 
     virtual void onGameStart(ServerPlayer *player) const{
@@ -378,9 +378,9 @@ public:
     }
 };
 
-class Baonu: public TriggerSkill{
+class Kuangbao: public TriggerSkill{
 public:
-    Baonu():TriggerSkill("baonu"){
+    Kuangbao():TriggerSkill("kuangbao"){
         events << Damage << Damaged;
         frequency = Compulsory;
     }
@@ -394,18 +394,33 @@ public:
     }
 };
 
-class Wumou: public TriggerSkill{
+class Wumou:public TriggerSkill{
 public:
     Wumou():TriggerSkill("wumou"){
-        events << CardUsed;
         frequency = Compulsory;
+        events << CardUsed << CardResponsed;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("TrickCard") && !use.card->inherits("DelayedTrick")){
+        CardStar card = NULL;
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+
+            // special case
+            if(use.card->inherits("IronChain") && use.to.isEmpty())
+                return false;
+
+        }else if(event == CardResponsed)
+            card = data.value<CardStar>();
+
+        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = player->getRoom();
-            room->loseHp(player);
+            int num = player->getMark("@wrath");
+            if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
+                room->setPlayerMarkDelta(player, "@wrath", -1);
+            }else
+                room->loseHp(player);
         }
 
         return false;
@@ -418,7 +433,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 6;
+        return Self->getMark("@wrath") >= 6 && !ClientInstance->turn_tag.value("shenfen_used", false).toBool();
     }
 
     virtual const Card *viewAs() const{
@@ -431,14 +446,14 @@ ShenfenCard::ShenfenCard(){
     target_fixed = true;
 }
 
-void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->setPlayerMarkDelta(source, "@wrath", -6);
+void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlayer *> &) const{
+    room->setPlayerMarkDelta(shenlubu, "@wrath", -6);
 
-    QList<ServerPlayer *> players = room->getOtherPlayers(source);
+    QList<ServerPlayer *> players = room->getOtherPlayers(shenlubu);
     foreach(ServerPlayer *player, players){
         DamageStruct damage;
         damage.card = this;
-        damage.from = source;
+        damage.from = shenlubu;
         damage.to = player;
 
         room->damage(damage);
@@ -455,21 +470,35 @@ void ShenfenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
             room->askForDiscard(player, 4);
     }
 
-    source->turnOver();
-    room->broadcastProperty(source, "faceup");
+    shenlubu->turnOver();
+    room->broadcastProperty(shenlubu, "faceup");
+}
+
+void ShenfenCard::use(const QList<const ClientPlayer *> &targets) const{
+    ClientInstance->turn_tag.insert("shenfen_used", true);
 }
 
 WuqianCard::WuqianCard(){
 
 }
 
-void WuqianCard::onEffect(const CardEffectStruct &effect) const{
-
+bool WuqianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty();
 }
 
-class Wuqian: public ZeroCardViewAsSkill{
+void WuqianCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+
+    room->setPlayerMarkDelta(effect.from, "@wrath", -2);
+    room->acquireSkill(effect.from, "wushuang", false);
+    effect.from->setFlags("wuqian_used");
+
+    effect.to->setFlags("armor_nullified");
+}
+
+class WuqianViewAsSkill: public ZeroCardViewAsSkill{
 public:
-    Wuqian():ZeroCardViewAsSkill("wuqian"){
+    WuqianViewAsSkill():ZeroCardViewAsSkill("wuqian"){
 
     }
 
@@ -479,6 +508,33 @@ public:
 
     virtual const Card *viewAs() const{
         return new WuqianCard;
+    }
+};
+
+class Wuqian: public PhaseChangeSkill{
+public:
+    Wuqian():PhaseChangeSkill("wuqian"){
+        view_as_skill = new WuqianViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shenlubu) const{
+        if(shenlubu->getPhase() == Player::Finish){
+            Room *room = shenlubu->getRoom();
+            if(shenlubu->hasFlag("wuqian_used")){
+                shenlubu->setFlags("-wuqian_used");
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *player, players){
+                    if(player->hasFlag("armor_nullified"))
+                        player->setFlags("-armor_nullified");
+                }
+
+                const General *general2 = shenlubu->getGeneral2();
+                if(general2 == NULL || !general2->hasSkill("wushuang"))
+                    shenlubu->loseSkill("wushuang");
+            }
+        }
+
+        return false;
     }
 };
 
@@ -708,8 +764,8 @@ GodPackage::GodPackage()
     shencaocao->addSkill(new Feiying);
 
     General *shenlubu = new General(this, "shenlubu", "god", 5);
-    shenlubu->addSkill(new Baonu);
-    shenlubu->addSkill(new BaonuStart);
+    shenlubu->addSkill(new Kuangbao);
+    shenlubu->addSkill(new KuangbaoStart);
     shenlubu->addSkill(new Wumou);
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);
@@ -719,17 +775,20 @@ GodPackage::GodPackage()
 
     t["guixin"] = tr("guixin");
     t["feiying"] = tr("feiying");
-    t["baonu"] = tr("baonu");
+    t["kuangbao"] = tr("kuangbao");
     t["wumou"] = tr("wumou");
     t["wuqian"] = tr("wuqian");
     t["shenfen"] = tr("shenfen");
 
     t[":guixin"] = tr(":guixin");
     t[":feiying"] = tr(":feiying");
-    t[":baonu"] = tr(":baonu");
+    t[":kuangbao"] = tr(":kuangbao");
     t[":wumou"] = tr(":wumou");
     t[":wuqian"] = tr(":wuqian");
     t[":shenfen"] = tr(":shenfen");
+
+    t["wumou:discard"] = tr("wumou:discard");
+    t["wumou:losehp"] = tr("womou:losehp");
 
     t["#GetMark"] = tr("#GetMark");
     t["#LoseMark"] = tr("#LoseMark");

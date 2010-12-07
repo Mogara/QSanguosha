@@ -131,6 +131,7 @@ public:
     const General *getGeneral() const;
 
     void acquireSkill(const QString &skill_name);
+    void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
 
     void setEquip(const EquipCard *card);

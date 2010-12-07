@@ -297,6 +297,10 @@ void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
 }
 
+void Player::loseSkill(const QString &skill_name){
+    acquired_skills.remove(skill_name);
+}
+
 QString Player::getPhaseString() const{
     switch(phase){
     case Start: return "start";

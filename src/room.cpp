@@ -745,7 +745,7 @@ void Room::setPlayerMarkDelta(ServerPlayer *player, const QString &mark, int del
     int value = old + delta;
 
     LogMessage log;
-    log.type = delta > 0 ? "#GetMark" : "@LoseMark";
+    log.type = delta > 0 ? "#GetMark" : "#LoseMark";
     log.from = player;
     log.arg = mark;
     log.arg2 = QString::number(abs(delta));
