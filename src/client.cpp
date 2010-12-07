@@ -115,7 +115,7 @@ Client::Client(QObject *parent, const QString &filename)
         replayer = NULL;
     }
 
-    lines_doc = new QTextDocument;
+    lines_doc = new QTextDocument(this);
 }
 
 void Client::signup(){

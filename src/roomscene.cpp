@@ -590,9 +590,15 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     if(src){
         // from players
         if(src == Self){
-            if(src_place == Player::Special && !amazing_grace.isEmpty()){
-                takeAmazingGrace(NULL, card_id);
-                return NULL;
+            if(src_place == Player::Special){
+                if(amazing_grace.isEmpty()){
+                    CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+                    card_item->setPos(avatar->scenePos());
+                    return card_item;
+                }else{
+                    takeAmazingGrace(NULL, card_id);
+                    return NULL;
+                }
             }
 
             CardItem *card_item = dashboard->takeCardItem(card_id, src_place);
