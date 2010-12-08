@@ -5,47 +5,6 @@
 #include "carditem.h"
 #include "god.h"
 
-Shit::Shit(Suit suit, int number):BasicCard(suit, number){
-    setObjectName("shit");
-
-    target_fixed = true;
-}
-
-QString Shit::getSubtype() const{
-    return "disgusting_card";
-}
-
-void Shit::onMove(const CardMoveStruct &move) const{
-    ServerPlayer *from = move.from;
-    if(from && move.from_place == Player::Hand &&
-       from->getRoom()->getCurrent() == move.from
-       && move.to_place == Player::DiscardedPile
-       && from->isAlive()){
-
-        DamageStruct damage;
-        damage.from = damage.to = from;
-        damage.card = this;
-        damage.damage = 1;
-        damage.nature = DamageStruct::Normal;
-
-        from->getRoom()->damage(damage);
-    }
-}
-
-bool Shit::HasShit(const Card *card){
-    if(card->isVirtualCard()){
-        QList<int> card_ids = card->getSubcards();
-        foreach(int card_id, card_ids){
-            const Card *c = Sanguosha->getCard(card_id);
-            if(c->objectName() == "shit")
-                return true;
-        }
-
-        return false;
-    }else
-        return card->objectName() == "shit";
-}
-
 class YitianSwordSkill : public WeaponSkill{
 public:
     YitianSwordSkill():WeaponSkill("yitian_sword"){
@@ -458,21 +417,13 @@ public:
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
-    QList<Card *> cards;
 
-    cards << new Shit(Card::Club, 1)
-            << new Shit(Card::Heart, 1)
-            << new Shit(Card::Diamond, 1)
-            << new YitianSword;
-
-    foreach(Card *card, cards)
-        card->setParent(this);
+    (new YitianSword)->setParent(this);
 
     t["#AcquireSkill"] = tr("#AcquireSkill");
     t["#ChangeKingdom"] = tr("#ChangeKingdom");
 
     t["yitian"] = tr("yitian");
-    t["shit"] = tr("shit");
     t["yitian_sword"] = tr("yitian_sword");
 
     // generals
@@ -523,9 +474,7 @@ YitianPackage::YitianPackage()
     t["guixin2:baonue"] = tr("guixin2:baonue");
     t["guixin2:songwei"] = tr("guixin2:songwei");
 
-    t[":moon_spear"] = tr(":moon_spear");
     t[":yitian_sword"] = tr(":yitian_sword");
-    t[":shit"] = tr(":shit");
     t["yitian_sword:yes"] = tr("yitian_sword:yes");
 
     t["@chengxiang-card"] = tr("@chengxiang-card");

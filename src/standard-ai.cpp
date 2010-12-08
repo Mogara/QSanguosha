@@ -1,7 +1,7 @@
 #include "standard-ai.h"
 #include "standard.h"
 #include "engine.h"
-#include "yitianpackage.h"
+#include "joypackage.h"
 
 CaocaoAI::CaocaoAI(ServerPlayer *player)
     :SmartAI(player)

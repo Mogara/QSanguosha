@@ -151,6 +151,8 @@ NostalgiaPackage::NostalgiaPackage()
     moon_spear->setParent(this);
 
     t["moon_spear"] = tr("moon_spear");
+    t[":moon_spear"] = tr(":moon_spear");
+
     t["@moon-spear-slash"] = tr("@moon-spear-slash");
     t["@@tianxiang-card"] = tr("@@tianxiang-card");
 

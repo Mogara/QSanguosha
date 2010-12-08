@@ -27,6 +27,7 @@ extern "C" {
     Package *NewGod();
     Package *NewYitian();
     Package *NewNostalgia();
+    Package *NewJoy();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
@@ -44,6 +45,7 @@ Engine::Engine()
     addPackage(NewGod());
     addPackage(NewYitian());
     addPackage(NewNostalgia());
+    addPackage(NewJoy());
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
@@ -221,10 +223,17 @@ QString Engine::getVersion() const{
 }
 
 QStringList Engine::getExtensions() const{
-    static QStringList extensions;
-    if(extensions.isEmpty())
-        extensions << "wind" << "fire" << "thicket"
-                << "maneuvering" << "god" << "yitian" << "nostalgia";
+    QStringList extensions;
+    QList<const Package *> packages = findChildren<const Package *>();
+    foreach(const Package *package, packages){
+        if(package->inherits("Scenario"))
+            continue;
+
+        extensions << package->objectName();
+    }
+
+    extensions.removeOne("standard");
+    extensions.removeOne("challenge_modes");
 
     return extensions;
 }

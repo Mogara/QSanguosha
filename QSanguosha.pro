@@ -62,7 +62,8 @@ SOURCES += src/main.cpp \
     src/scenario-overview.cpp \
     src/bossmode.cpp \
     src/challengemode.cpp \
-    src/nostalgia.cpp
+    src/nostalgia.cpp \
+    src/joypackage.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -119,7 +120,8 @@ HEADERS += src/mainwindow.h \
     src/scenario-overview.h \
     src/bossmode.h \
     src/challengemode.h \
-    src/nostalgia.h
+    src/nostalgia.h \
+    src/joypackage.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
