@@ -15,6 +15,10 @@ LeijiCard::LeijiCard(){
 
 }
 
+bool LeijiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty();
+}
+
 void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     room->setEmotion(zhangjiao, Room::Normal);

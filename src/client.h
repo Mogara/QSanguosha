@@ -50,7 +50,6 @@ public:
     void replyGongxin(int card_id = -1);
     QList<ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);    
-    void prompt(const QString &prompt_str);
     ClientPlayer *getPlayer(const QString &name);
     void surrender();
     void kick(const QString &to_kick);
@@ -58,6 +57,7 @@ public:
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     QTextDocument *getLinesDoc() const;
+    QTextDocument *getPromptDoc() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -94,6 +94,7 @@ public:
     void acquireSkill(const QString &acquire_str);
     void addProhibitSkill(const QString &skill_name);
     void animate(const QString &animate_str);
+    void setPrompt(const QString &prompt_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -161,11 +162,12 @@ private:
     Recorder *recorder;
     Replayer *replayer;
     QList<const ProhibitSkill *> prohibit_skills;
-    QTextDocument *lines_doc;
+    QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_line;
 
     void updatePileNum();
+    void setPromptList(const QStringList &text);
 
 private slots:
     void processCommand(const QString &cmd);
@@ -183,7 +185,6 @@ signals:
     void player_removed(const QString &player_name);    
     void generals_got(const QList<const General *> &generals);
     void message_changed(const QString &message);
-    void prompt_changed(const QString &prompt_str);
     void seats_arranged(const QList<const ClientPlayer*> &seats);    
     void hp_changed(const QString &who, int delta);    
     void status_changed(Client::Status new_status);

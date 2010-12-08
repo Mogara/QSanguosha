@@ -35,7 +35,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    thread(NULL), sem(NULL), provided(NULL)
+    special_card(-1), thread(NULL), sem(NULL), provided(NULL)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -172,7 +172,7 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
 
 const Card *Room::getJudgeCard(ServerPlayer *player){
     int card_id = drawCard();
-    throwCard(card_id);
+    moveCardTo(card_id, NULL, Player::Special, true);
 
     LogMessage log;
     log.type = "$InitialJudge";
@@ -187,11 +187,12 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(simayi->isKongcheng())
                 continue;
 
-            const Card *card = askForCard(simayi, "@guicai", "@guicai-card");
+            const Card *card = askForCard(simayi, "@guicai", "@guicai-card", false);
             if(card){
                 QList<int> subcards = card->getSubcards();
-                Q_ASSERT(!subcards.isEmpty());
                 card_id = subcards.first();
+
+                moveCardTo(card_id, NULL, Player::Special, true);
 
                 log.type = "$ChangedJudge";
                 log.card_str = QString::number(card_id);
@@ -206,12 +207,13 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(zhangjiao->isNude())
                 continue;
 
-            const Card *card = askForCard(zhangjiao, "@guidao", "@guidao-card");
-            if(card){
+            const Card *card = askForCard(zhangjiao, "@guidao", "@guidao-card", false);
+            if(card){                
                 QList<int> subcards = card->getSubcards();
-                Q_ASSERT(!subcards.isEmpty());
                 obtainCard(zhangjiao, card_id);
                 card_id = subcards.first();
+
+                moveCardTo(card_id, NULL, Player::Special, true);
 
                 log.type = "$ChangedJudge";
                 log.card_str = QString::number(card_id);
@@ -228,6 +230,8 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
 
     // judge delay
     thread->delay();
+
+    throwCard(card_id);
 
     CardStar card = Sanguosha->getCard(card_id);
 
@@ -492,7 +496,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -517,7 +521,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     if(card){
-        throwCard(card);
+        if(throw_it)
+            throwCard(card);
 
         if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
@@ -1490,6 +1495,8 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
             discard_pile->removeOne(move.card_id);
         else if(move.from_place == Player::DrawPile)
             draw_pile->removeOne(move.card_id);
+        else if(move.from_place == Player::Special)
+            special_card = -1;
     }
 
     if(move.to){
@@ -1499,7 +1506,10 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
             discard_pile->prepend(move.card_id);
         else if(move.to_place == Player::DrawPile)
             draw_pile->prepend(move.card_id);
+        else if(move.to_place == Player::Special)
+            special_card = card_id;
     }
+
     setCardMapping(move.card_id, move.to, move.to_place);
 
     QString public_move = move.toString();

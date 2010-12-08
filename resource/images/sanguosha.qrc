@@ -29,7 +29,6 @@
         <file>number/8.png</file>
         <file>number/9.png</file>
         <file>shencc.png</file>
-        <file>daqiao.png</file>
         <file>death/lord.png</file>
         <file>death/loyalist.png</file>
         <file>death/rebel.png</file>
@@ -85,5 +84,6 @@
         <file>roles/small-loyalist.png</file>
         <file>roles/small-rebel.png</file>
         <file>roles/small-renegade.png</file>
+        <file>prompt_box.png</file>
     </qresource>
 </RCC>

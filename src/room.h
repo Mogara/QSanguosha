@@ -135,7 +135,7 @@ public:
     bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it = true);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
@@ -174,6 +174,7 @@ private:
     bool game_started;
     bool game_finished;
     int signup_count;
+    int special_card;
 
     RoomThread *thread;
     QSemaphore *sem;

@@ -34,7 +34,7 @@ static const QPointF DiscardedPos(-6, -2);
 static const QPointF DrawPilePos(-102, -2);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
-    :focused(NULL), main_window(main_window)
+    :focused(NULL), special_card(NULL), main_window(main_window)
 {
     ClientInstance->setParent(this);
 
@@ -140,15 +140,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
-    daqiao = new Daqiao;
-    daqiao->shift();
-    daqiao->moveBy(-100, 0);
-    daqiao->hide();
-    daqiao->setZValue(10);
-    addItem(daqiao);
-
-    connect(ClientInstance, SIGNAL(prompt_changed(QString)), daqiao, SLOT(setContent(QString)));
-
     // log box
     log_box = new ClientLogBox;
     log_box->resize(230, 213);
@@ -158,11 +149,23 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     log_box_widget->setZValue(-2.0);
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
-    QGraphicsTextItem *lines_item = addText("");
-    lines_item->setDocument(log_box->getLineDoc());
-    lines_item->setParentItem(dashboard);
-    lines_item->setPos(134, 3);
-    lines_item->setDefaultTextColor(Qt::white);
+    {
+        prompt_box = new Pixmap(":/prompt_box.png", true);
+        prompt_box->setOpacity(0.8);
+        prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
+        prompt_box->shift();
+        prompt_box->hide();
+        prompt_box->setZValue(10);
+
+        QGraphicsTextItem *text_item = new QGraphicsTextItem(prompt_box);
+        text_item->setPos(66, 34);
+        text_item->setDefaultTextColor(Qt::white);
+
+        QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
+        text_item->setDocument(prompt_doc);
+
+        addItem(prompt_box);
+    }
 
     // chat box
     chat_box = new QTextEdit;
@@ -627,6 +630,12 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
         return card_item;
     }
 
+    if(src_place == Player::Special){
+        card_item = special_card;
+        special_card = NULL;
+        return card_item;
+    }
+
     // from discard pile
     int i;
     for(i=0; i<discarded_queue.length(); i++){
@@ -774,6 +783,10 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
         }else if(dest_place == Player::DrawPile){
             card_item->setHomePos(DrawPilePos);
             card_item->goBack(true);
+        }else if(dest_place == Player::Special){
+            special_card = card_item;
+            card_item->setHomePos(DrawPilePos);
+            card_item->goBack();
         }
 
     }else if(dest->objectName() == Self->objectName()){
@@ -1171,7 +1184,7 @@ void RoomScene::doTimeout(){
     case Client::AskForPlayerChoose:{
             ClientInstance->choosePlayer(NULL);
             dashboard->stopPending();
-            daqiao->hide();
+            prompt_box->hide();
             break;
         }
 
@@ -1205,7 +1218,9 @@ void RoomScene::doTimeout(){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
-            daqiao->hide();
+            prompt_box->hide();
+            ClientInstance->getPromptDoc()->clear();
+
             dashboard->disableAllCards();
             selected_targets.clear();
 
@@ -1220,6 +1235,7 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Responsing: {
+            prompt_box->show();
             if(ClientInstance->card_pattern.startsWith("@"))
                 dashboard->disableAllCards();
             else
@@ -1251,6 +1267,8 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Discarding:{
+            prompt_box->show();
+
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);
@@ -1270,11 +1288,13 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::AskForPlayerChoose:{
+            prompt_box->show();
+
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            daqiao->setContent(tr("Please choose a player"));
+            ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player"));
 
             choose_skill->setPlayerNames(ClientInstance->players_to_choose);
             dashboard->startPending(choose_skill);
@@ -1407,7 +1427,7 @@ void RoomScene::doOkButton(){
                     ClientInstance->responseCard(card);
                 else
                     ClientInstance->useCard(card, selected_targets);
-                daqiao->hide();
+                prompt_box->hide();
             }
 
             dashboard->unselectAll();
@@ -1419,7 +1439,7 @@ void RoomScene::doOkButton(){
             if(card){
                 ClientInstance->discardCards(card);
                 dashboard->stopPending();
-                daqiao->hide();
+                prompt_box->hide();
             }
             break;
         }        
@@ -1442,7 +1462,7 @@ void RoomScene::doOkButton(){
 
     case Client::AskForPlayerChoose:{
             ClientInstance->choosePlayer(selected_targets.first());
-            daqiao->hide();
+            prompt_box->hide();
 
             break;
         }
@@ -1452,7 +1472,7 @@ void RoomScene::doOkButton(){
             if(card){
                 ClientInstance->replyYiji(card, selected_targets.first());
                 dashboard->stopPending();
-                daqiao->hide();
+                prompt_box->hide();
             }
 
             break;
@@ -1522,7 +1542,7 @@ void RoomScene::doCancelButton(){
                 ClientInstance->responseCard(NULL);
             else
                 ClientInstance->useCard(NULL, QList<const ClientPlayer *>());
-            daqiao->hide();
+            prompt_box->hide();
             dashboard->stopPending();
             break;
         }
@@ -1530,7 +1550,7 @@ void RoomScene::doCancelButton(){
     case Client::Discarding:{
             dashboard->stopPending();
             ClientInstance->discardCards(NULL);
-            daqiao->hide();
+            prompt_box->hide();
             break;
         }
 
@@ -1542,7 +1562,7 @@ void RoomScene::doCancelButton(){
     case Client::AskForYiji:{
             dashboard->stopPending();
             ClientInstance->replyYiji(NULL, NULL);
-            daqiao->hide();
+            prompt_box->hide();
             break;
         }
 

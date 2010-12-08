@@ -218,12 +218,14 @@ public:
 
                 for(i=0; i<x; i++){
                     int card_id = room->drawCard();
-                    room->throwCard(card_id);
+                    room->moveCardTo(card_id, NULL, Player::Special, true);
+
                     room->getThread()->delay();
 
                     const Card *card = Sanguosha->getCard(card_id);
                     if(card->getSuit() == Card::Heart){
                         room->recover(menghuo);
+                        room->throwCard(card_id);
                         has_heart = true;
                     }else
                         room->obtainCard(menghuo, card_id);

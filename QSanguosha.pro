@@ -35,7 +35,6 @@ SOURCES += src/main.cpp \
     src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
     src/magatamawidget.cpp \
-    src/daqiao.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
@@ -92,7 +91,6 @@ HEADERS += src/mainwindow.h \
     src/nullificationdialog.h \
     src/playercarddialog.h \
     src/magatamawidget.h \
-    src/daqiao.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \

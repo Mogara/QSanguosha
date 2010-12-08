@@ -54,6 +54,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["addProhibitSkill"] = &Client::addProhibitSkill;
     callbacks["animate"] = &Client::animate;
+    callbacks["setPrompt"] = &Client::setPrompt;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -116,6 +117,9 @@ Client::Client(QObject *parent, const QString &filename)
     }
 
     lines_doc = new QTextDocument(this);
+    prompt_doc = new QTextDocument(this);
+    prompt_doc->setTextWidth(350);
+    prompt_doc->setDefaultFont(QFont("SimHei"));
 }
 
 void Client::signup(){
@@ -485,28 +489,42 @@ void Client::updateFrequentFlags(int state){
         frequent_flags.remove(flag);
 }
 
-void Client::askForCardOrUseCard(const QString &request_str){
-    QStringList texts = request_str.split(":");
-    QString pattern = texts.first();
+void Client::setPrompt(const QString &prompt_str){
+    QStringList texts = prompt_str.split(":");
+    setPromptList(texts);
+}
 
-    card_pattern = pattern;
-    QString prompt = Sanguosha->translate(texts.at(1));
-    if(texts.length() >= 3){
-        QString src = Sanguosha->translate(texts.at(2));
+void Client::setPromptList(const QStringList &texts){
+    QString prompt = Sanguosha->translate(texts.at(0));
+    if(texts.length() >= 2){
+        QString src = Sanguosha->translate(texts.at(1));
         prompt.replace("%src", src);
     }
 
-    if(texts.length() >= 4){
-        QString dest = Sanguosha->translate(texts.at(3));
+    if(texts.length() >= 3){
+        QString dest = Sanguosha->translate(texts.at(2));
         prompt.replace("%dest", dest);
     }
 
-    if(texts.length() >= 5){
-        QString arg = Sanguosha->translate(texts.at(4));
+    if(texts.length() >= 4){
+        QString arg = Sanguosha->translate(texts.at(3));
         prompt.replace("%arg", arg);
     }
 
-    emit prompt_changed(prompt);
+    prompt_doc->setHtml(prompt);
+}
+
+void Client::askForCardOrUseCard(const QString &request_str){
+    QStringList texts = request_str.split(":");
+    QString pattern = texts.takeFirst();
+
+    card_pattern = pattern;
+
+    if(texts.isEmpty()){
+        return;
+    }else
+        setPromptList(texts);
+
     if(pattern.endsWith("!"))
         refusable = false;
     else
@@ -788,12 +806,6 @@ bool Client::noTargetResponsing() const{
     return status == Responsing && !use_card;
 }
 
-void Client::prompt(const QString &prompt_str){
-    // translate the prompt string
-
-    emit prompt_changed(prompt_str);
-}
-
 ClientPlayer *Client::getPlayer(const QString &name){
     return findChild<ClientPlayer *>(name);
 }
@@ -838,6 +850,10 @@ QTextDocument *Client::getLinesDoc() const{
     return lines_doc;
 }
 
+QTextDocument *Client::getPromptDoc() const{
+    return prompt_doc;
+}
+
 void Client::clearPile(const QString &){
     discarded_list.clear();
 
@@ -875,7 +891,7 @@ void Client::askForDiscard(const QString &discard_str){
     else
         prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
 
-    emit prompt_changed(prompt);
+    prompt_doc->setHtml(prompt);
 
     setStatus(Discarding);    
 }
@@ -1070,11 +1086,11 @@ void Client::askForSinglePeach(const QString &ask_str){
     int peaches = texts.at(2).toInt();
 
     if(dying == Self){
-        emit prompt_changed(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
+        prompt_doc->setHtml(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
         card_pattern = "peach+analeptic";
     }else{
         QString dying_general = Sanguosha->translate(dying->getGeneralName());
-        emit prompt_changed(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
+        prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
         card_pattern = "peach";
     }
 
@@ -1085,7 +1101,7 @@ void Client::askForSinglePeach(const QString &ask_str){
 
 void Client::askForCardShow(const QString &requestor){
     QString name = Sanguosha->translate(requestor);
-    emit prompt_changed(tr("%1 request you to show one hand card").arg(name));
+    prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     card_pattern = "."; // any card can be matched
     refusable = false;
@@ -1182,9 +1198,9 @@ void Client::askForPindian(const QString &ask_str){
     // QString to = words.at(1);
 
     if(from == Self->getGeneralName())
-        prompt(tr("Please play a card for pindian"));
+        prompt_doc->setHtml(tr("Please play a card for pindian"));
     else
-        prompt(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
+        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
 
     use_card = false;
     card_pattern = ".";    

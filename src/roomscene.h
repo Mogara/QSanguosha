@@ -6,7 +6,6 @@
 #include "card.h"
 #include "client.h"
 #include "aux-skills.h"
-#include "daqiao.h"
 #include "clientlogbox.h"
 #include "irrKlang.h"
 
@@ -56,6 +55,7 @@ private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
+    CardItem *special_card;
 
     Dashboard *dashboard;
     Pixmap *avatar;
@@ -65,7 +65,7 @@ private:
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;
-    Daqiao *daqiao;
+    Pixmap *prompt_box;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
     QComboBox *sort_combobox;

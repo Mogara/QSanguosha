@@ -9,12 +9,6 @@ ClientLogBox::ClientLogBox(QWidget *parent) :
     QTextEdit(parent)
 {
     setReadOnly(true);
-
-    line_doc = new QTextDocument(this);
-}
-
-QTextDocument *ClientLogBox::getLineDoc() const{
-    return line_doc;
 }
 
 void ClientLogBox::appendLog(
@@ -54,7 +48,6 @@ void ClientLogBox::appendLog(
         log.replace("%card", log_name);
 
         append(log);
-        line_doc->setHtml(log);
 
         return;
     }
@@ -111,7 +104,6 @@ void ClientLogBox::appendLog(
     }
 
     append(log);
-    line_doc->setHtml(log);
 }
 
 void ClientLogBox::appendLog(const QString &log_str){
