@@ -22,6 +22,7 @@ public:
 
 public slots:
     void appendLog(const QString &log_str);
+    void appendSeparator();
 
 private:
     QTextDocument *line_doc;

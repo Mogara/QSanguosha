@@ -136,3 +136,7 @@ void ClientLogBox::appendLog(const QString &log_str){
 
     appendLog(type, from, tos, card_str, arg, arg2);
 }
+
+void ClientLogBox::appendSeparator(){
+    append("------------------------");
+}

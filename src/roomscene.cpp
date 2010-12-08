@@ -2177,6 +2177,11 @@ void RoomScene::onGameStart(){
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
 
+    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    foreach(const ClientPlayer *player, players){
+        connect(player, SIGNAL(turn_started()), log_box, SLOT(appendSeparator()));
+    }
+
     if(!Config.EnableBgMusic)
         return;
 
