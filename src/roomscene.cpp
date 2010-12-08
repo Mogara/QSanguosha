@@ -34,7 +34,8 @@ static const QPointF DiscardedPos(-6, -2);
 static const QPointF DrawPilePos(-102, -2);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
-    :focused(NULL), special_card(NULL), main_window(main_window)
+    :focused(NULL), special_card(NULL), viewing_discards(false),
+    main_window(main_window)
 {
     ClientInstance->setParent(this);
 
@@ -322,8 +323,6 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     foreach(Photo *photo, photos){
         item2player.insert(photo, photo->getPlayer());
         connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-
-        connect(group, SIGNAL(finished()), photo, SLOT(separateRoleCombobox()));
     }
 }
 
@@ -571,7 +570,6 @@ void RoomScene::viewDiscards(){
         int i;
         for(i=0; i< discarded_queue.length(); i++){
             CardItem *card_item = discarded_queue.at(i);
-            card_item->setRotation(0);
             card_item->setHomePos(QPointF(card_item->x() + i*card_item->boundingRect().width(), card_item->y()));
             card_item->goBack();
         }
@@ -587,6 +585,15 @@ void RoomScene::hideDiscards(){
         card_item->setHomePos(DiscardedPos);
         card_item->goBack();
     }
+}
+
+void RoomScene::toggleDiscards(){
+    viewing_discards = ! viewing_discards;
+
+    if(viewing_discards)
+        viewDiscards();
+    else
+        hideDiscards();
 }
 
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
@@ -777,8 +784,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
                 delete first;
             }
 
-            //connect(card_item, SIGNAL(show_discards()), this, SLOT(viewDiscards()));
-            //connect(card_item, SIGNAL(hide_discards()), this, SLOT(hideDiscards()));
+            connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
             card_item->setHomePos(DrawPilePos);
@@ -2201,6 +2207,9 @@ void RoomScene::onGameStart(){
     foreach(const ClientPlayer *player, players){
         connect(player, SIGNAL(turn_started()), log_box, SLOT(appendSeparator()));
     }
+
+    foreach(Photo *photo, photos)
+        photo->createRoleCombobox();
 
     if(!Config.EnableBgMusic)
         return;

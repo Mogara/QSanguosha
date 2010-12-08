@@ -33,8 +33,7 @@ public slots:
     void drawNCards(ClientPlayer *player, int n);
     void chooseGeneral(const QList<const General*> &generals);   
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
-    void viewDiscards();
-    void hideDiscards();
+    void toggleDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
     void updateStatus(Client::Status status);    
@@ -56,7 +55,7 @@ private:
     QMap<QString, Photo*> name2photo;
     Photo *focused;
     CardItem *special_card;
-
+    bool viewing_discards;
     Dashboard *dashboard;
     Pixmap *avatar;
     QQueue<CardItem*> discarded_queue;
@@ -106,6 +105,9 @@ private:
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<ClientPlayer *> &players);
     const ViewAsSkill *getViewAsSkill(const QString &skill_name);
+
+    void viewDiscards();
+    void hideDiscards();
 
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);

@@ -107,12 +107,10 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    if(hasFocus()){
+    if(hasFocus())
         emit clicked();
-    }else if(rotation() != 0.0)
-        emit show_discards();
     else
-        emit hide_discards();
+        emit toggle_discards();
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){

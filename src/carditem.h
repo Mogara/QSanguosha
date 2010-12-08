@@ -46,8 +46,7 @@ private:
     QPointF home_pos;
 
 signals:
-    void show_discards();
-    void hide_discards();
+    void toggle_discards();
     void clicked();
     void double_clicked();
     void thrown();

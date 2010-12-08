@@ -63,7 +63,8 @@ SOURCES += src/main.cpp \
     src/bossmode.cpp \
     src/challengemode.cpp \
     src/nostalgia.cpp \
-    src/joypackage.cpp
+    src/joypackage.cpp \
+    src/rolecombobox.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -121,7 +122,8 @@ HEADERS += src/mainwindow.h \
     src/bossmode.h \
     src/challengemode.h \
     src/nostalgia.h \
-    src/joypackage.h
+    src/joypackage.h \
+    src/rolecombobox.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

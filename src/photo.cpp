@@ -6,9 +6,9 @@
 #include "standard.h"
 #include "client.h"
 #include "magatamawidget.h"
+#include "rolecombobox.h"
 
 #include <QPainter>
-#include <QMimeData>
 #include <QDrag>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
@@ -27,15 +27,6 @@ Photo::Photo(int order)
     hide_avatar(false)
 {
     setAcceptHoverEvents(true);
-
-    role_combobox = new QComboBox;
-    role_combobox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    role_combobox->addItem(tr("unknown"));    
-
-    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
-    widget->setWidget(role_combobox);
-    widget->setPos(pixmap.width()/2, pixmap.height()-10);
-    role_combobox_widget = widget;
 
     order_item->setVisible(false);
 
@@ -58,7 +49,7 @@ Photo::Photo(int order)
     frame_item = new QGraphicsPixmapItem(this);
     frame_item->setPos(-6, -6);
 
-    widget = new QGraphicsProxyWidget(this);
+    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
     widget->setWidget(progress_bar);
     widget->setPos(pixmap.width() - 15, 0);
 
@@ -91,6 +82,18 @@ Photo::Photo(int order)
     mark_item = new QGraphicsTextItem(this);
     mark_item->setPos(2, 100);
     mark_item->setDefaultTextColor(Qt::white);
+
+    role_combobox2 = NULL;
+}
+
+void Photo::createRoleCombobox(){
+    role_combobox2 = new RoleCombobox(this);
+
+    QString role = player->getRole();
+    if(!role.isEmpty())
+        role_combobox2->fix(role);
+    else
+        connect(player, SIGNAL(role_changed(QString)), role_combobox2, SLOT(fix(QString)));
 }
 
 void Photo::showProcessBar(){
@@ -132,12 +135,6 @@ void Photo::tremble(){
     vibrate->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void Photo::separateRoleCombobox(){
-    QGraphicsProxyWidget *widget = role_combobox_widget;
-    widget->setParentItem(NULL);
-    widget->setPos(mapToScene(widget->pos()));
-}
-
 void Photo::showSkillName(const QString &skill_name){
     skill_name_item->setText(Sanguosha->translate(skill_name));
     skill_name_item->show();
@@ -169,12 +166,7 @@ void Photo::setPlayer(const ClientPlayer *player)
 {
     this->player = player;
 
-    if(player){        
-        role_combobox->addItem(QIcon(":/roles/loyalist.png"), tr("loyalist"));
-        role_combobox->addItem(QIcon(":/roles/rebel.png"), tr("rebel"));
-        role_combobox->addItem(QIcon(":/roles/renegade.png"), tr("renegade"));
-
-        connect(player, SIGNAL(role_changed(QString)), this, SLOT(updateRoleCombobox(QString)));
+    if(player){
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
@@ -182,9 +174,6 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
 
         mark_item->setDocument(player->getMarkDoc());
-    }else{
-        role_combobox->clear();
-        role_combobox->addItem(tr("Unknown"));
     }
 
     updateAvatar();
@@ -247,14 +236,6 @@ void Photo::updateSmallAvatar(){
 void Photo::refresh(){
     // just simply call update() to redraw itself
     update();
-}
-
-void Photo::updateRoleCombobox(const QString &new_role){
-    role_combobox->clear();
-    QIcon icon(QString(":/roles/%1.png").arg(new_role));
-    QString caption = Sanguosha->getRoleString(new_role);
-    role_combobox->addItem(icon, caption);
-    role_combobox->setEnabled(false);
 }
 
 const ClientPlayer *Photo::getPlayer() const{

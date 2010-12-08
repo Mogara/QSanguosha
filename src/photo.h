@@ -11,6 +11,7 @@
 #include <QProgressBar>
 
 class ClientPlayer;
+class RoleCombobox;
 
 class Photo : public Pixmap
 {
@@ -32,6 +33,7 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
+    void createRoleCombobox();
 
     enum FrameType{
         Playing,
@@ -43,10 +45,8 @@ public:
     void setFrame(FrameType type);
 
 public slots:
-    void separateRoleCombobox();
     void updateAvatar();
     void updateSmallAvatar();
-    void updateRoleCombobox(const QString &new_role);
     void updatePhase();
     void refresh();
     void hideEmotion();
@@ -64,8 +64,8 @@ private:
     QPixmap kingdom_frame;
     QPixmap handcard;
     QPixmap chain;
-    QComboBox *role_combobox;
-    QGraphicsProxyWidget *role_combobox_widget;
+    RoleCombobox *role_combobox2;
+
     QGraphicsTextItem *mark_item;
 
     CardItem *weapon, *armor, *defensive_horse, *offensive_horse;

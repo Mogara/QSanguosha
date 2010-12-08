@@ -172,7 +172,7 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
 
 const Card *Room::getJudgeCard(ServerPlayer *player){
     int card_id = drawCard();
-    moveCardTo(card_id, NULL, Player::Special, true);
+    moveCardTo(card_id, NULL, Player::Special, true);    
 
     LogMessage log;
     log.type = "$InitialJudge";
