@@ -86,7 +86,6 @@ class GodSalvation:public GlobalEffect{
 
 public:
     Q_INVOKABLE GodSalvation(Card::Suit suit = Heart, int number = 1);
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -96,6 +95,7 @@ class AmazingGrace:public GlobalEffect{
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class AOE:public TrickCard{

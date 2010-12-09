@@ -140,23 +140,15 @@ QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
 
-QString Engine::getRoleString(const QString &role) const{
+int Engine::getRoleIndex() const{
     if(ServerInfo.GameMode == "08boss"){
-        if(role == "lord")
-            return tr("boss");
-        else if(role == "renegade")
-            return tr("guardian");
-        else if(role == "loyalist")
-            return tr("citizen");
-        else
-            return tr("hero");
+        return 2;
+    }else if(ServerInfo.GameMode.startsWith("@")){
+        return 3;
     }else if(ServerInfo.GameMode == "06_3v3"){
-        if(role == "lord" || role == "renegade")
-            return tr("marshal");
-        else
-            return tr("vanguard");
+        return 4;
     }else
-        return translate(role);
+        return 1;
 }
 
 const General *Engine::getGeneral(const QString &name) const{
@@ -219,7 +211,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101115";
+    return "20101209";
 }
 
 QStringList Engine::getExtensions() const{

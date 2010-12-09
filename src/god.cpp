@@ -21,7 +21,7 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << Damage;
+        events << Damage << Dying;
         frequency = Compulsory;
     }
 
@@ -29,10 +29,20 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if(damage.to->hasSkill(objectName())){
-            player->gainMark("@nightmare", damage.damage);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == Damage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.to->hasSkill(objectName()))
+            {
+                player->gainMark("@nightmare", damage.damage);
+            }
+        }else if(event == Dying){
+            DyingStruct dying = data.value<DyingStruct>();
+            if(player->hasSkill(objectName()) && dying.damage
+               && dying.damage->from)
+            {
+                dying.damage->from->gainMark("@nightmare", dying.damage->damage);
+            }
         }
 
         return false;

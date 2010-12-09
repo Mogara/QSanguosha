@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>logo.png</file>
         <file>photo-back.png</file>
-        <file>background.png</file>
         <file>handcard.png</file>
         <file>card-back.png</file>
         <file>suit/club.png</file>
@@ -102,5 +101,6 @@
         <file>roles/renegade-3.png</file>
         <file>roles/renegade-4.png</file>
         <file>roles/unknown.png</file>
+        <file>background.jpg</file>
     </qresource>
 </RCC>

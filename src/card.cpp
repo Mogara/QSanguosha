@@ -324,8 +324,14 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
 
-        foreach(ServerPlayer *target, players){
-            room->cardEffect(this, source, target);
+        foreach(ServerPlayer *target, players){            
+            CardEffectStruct effect;
+            effect.card = this;
+            effect.from = source;
+            effect.to = target;
+            effect.multiple = true;
+
+            room->cardEffect(effect);
         }
     }
 }

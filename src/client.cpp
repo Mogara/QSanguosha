@@ -55,6 +55,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["addProhibitSkill"] = &Client::addProhibitSkill;
     callbacks["animate"] = &Client::animate;
     callbacks["setPrompt"] = &Client::setPrompt;
+    callbacks["jilei"] = &Client::jilei;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -492,6 +493,24 @@ void Client::updateFrequentFlags(int state){
 void Client::setPrompt(const QString &prompt_str){
     QStringList texts = prompt_str.split(":");
     setPromptList(texts);
+}
+
+void Client::jilei(const QString &jilei_str){
+    if(jilei_str == ".")
+        jilei_flags.clear();
+    else
+        jilei_flags.append(jilei_str);
+}
+
+bool Client::isJilei(const Card *card) const{
+    if(card->inherits("BasicCard"))
+        return jilei_flags.contains("B");
+    else if(card->inherits("EquipCard"))
+        return jilei_flags.contains("E");
+    else if(card->inherits("TrickCard"))
+        return jilei_flags.contains("T");
+    else
+        return false;
 }
 
 void Client::setPromptList(const QStringList &texts){
@@ -1165,21 +1184,21 @@ void Client::doGuanxing(const QString &guanxing_str){
 }
 
 void Client::doGongxin(const QString &gongxin_str){
-    QRegExp rx("(\\w+):(.+)");
+    QRegExp rx("(\\w+)(!?):(.+)");
     if(!rx.exactMatch(gongxin_str))
         return;
 
     QStringList texts = rx.capturedTexts();
     ClientPlayer *who = getPlayer(texts.at(1));
-
-    QStringList cards = texts.at(2).split("+");
+    bool enable_heart = texts.at(2).isEmpty();
+    QStringList cards = texts.at(3).split("+");
     QList<int> card_ids;
     foreach(QString card, cards)
         card_ids << card.toInt();
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids);
+    emit gongxin(card_ids, enable_heart);
     setStatus(AskForGongxin);
 }
 

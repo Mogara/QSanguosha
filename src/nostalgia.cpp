@@ -156,6 +156,8 @@ NostalgiaPackage::NostalgiaPackage()
     t["@moon-spear-slash"] = tr("@moon-spear-slash");
     t["@@tianxiang-card"] = tr("@@tianxiang-card");
 
+    t["#HongyanJudge"] = tr("#HongyanJudge");
+
     addMetaObject<TianxiangCard>();
 }
 

@@ -27,6 +27,7 @@
 #include <QDesktopServices>
 #include <QRadioButton>
 #include <QApplication>
+#include <QTimer>
 
 extern irrklang::ISoundEngine *SoundEngine;
 
@@ -76,18 +77,18 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     // add buttons that above the equipment area of dashboard
-    trust_button = dashboard->addButton(tr("Trust"), 7, true);
+    trust_button = dashboard->addButton(tr("Trust"), 4, true);
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
 
     QPushButton *expand_button = new QPushButton(tr("Expand to window width"));
-    dashboard->addWidget(expand_button, 70, true);
+    dashboard->addWidget(expand_button, 67, true);
     connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
 
     // add buttons that above the avatar area of dashbaord
-    ok_button = dashboard->addButton(tr("OK"), -62, false);
-    cancel_button = dashboard->addButton(tr("Cancel"), 3, false);
-    discard_button = dashboard->addButton(tr("Discard cards"), 85, false);
+    ok_button = dashboard->addButton(tr("OK"), -72, false);
+    cancel_button = dashboard->addButton(tr("Cancel"), -7, false);
+    discard_button = dashboard->addButton(tr("Discard cards"), 75, false);
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
@@ -114,7 +115,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
-    connect(ClientInstance, SIGNAL(gongxin(QList<int>)), this, SLOT(doGongxin(QList<int>)));
+    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
     connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
@@ -229,7 +230,7 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         QPointF(-66, -294), // 4:dongzhuo
         QPointF(79, -294), // 5:caocao
         QPointF(224, -296), // 6:shuangxiong
-        QPointF(360, -273), // 7:shenguanyu
+        QPointF(369, -273), // 7:shenguanyu
         QPointF(369, -69), // 8:xiaoqiao
     };
 
@@ -381,12 +382,19 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 }
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    QGraphicsItem* item = itemAt(event->scenePos().x(), event->scenePos().y());   
+    foreach(Photo *photo, photos){
+        if(photo->isUnderMouse() && photo->isEnabled() && photo->flags() & QGraphicsItem::ItemIsSelectable){
+            photo->setSelected(!photo->isSelected());
+            return;
+        }
+    }
 
-    if(item && item2player.contains(item) && item->isEnabled() && item->flags() & QGraphicsItem::ItemIsSelectable)
-        item->setSelected(!item->isSelected());
-    else
-        QGraphicsScene::mousePressEvent(event);
+    if(avatar->isUnderMouse() && avatar->isEnabled() && avatar->flags() & QGraphicsItem::ItemIsSelectable){
+        avatar->setSelected(!avatar->isSelected());
+        return;
+    }
+
+    QGraphicsScene::mousePressEvent(event);
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -985,7 +993,33 @@ void RoomScene::updateSkillButtons(){
 }
 
 void RoomScene::updateRoleComboBox(const QString &new_role){
-    role_combobox->setItemText(1, Sanguosha->getRoleString(new_role));
+    QMap<QString, QString> normal_mode, boss_mode, challenge_mode, threeV3_mode;
+    normal_mode["lord"] = tr("Lord");
+    normal_mode["loyalist"] = tr("Loyalist");
+    normal_mode["rebel"] = tr("Rebel");
+    normal_mode["renegade"] = tr("Renegade");
+
+    boss_mode["lord"] = tr("Boss");
+    boss_mode["loyalist"] = tr("Hero");
+    boss_mode["rebel"] = tr("Citizen");
+    boss_mode["renegade"] = tr("Guard");
+
+    challenge_mode["lord"] = challenge_mode["loyalist"] = tr("Defense");
+    challenge_mode["rebel"] = challenge_mode["renegade"] = tr("Attack");
+
+    threeV3_mode["lord"] = threeV3_mode["renegade"] = tr("Marshal");
+    threeV3_mode["loyalist"] = threeV3_mode["rebel"] = tr("Vanguard");
+
+    QMap<QString, QString> *map = NULL;
+    switch(Sanguosha->getRoleIndex()){
+    case 2: map = &boss_mode; break;
+    case 3: map = &challenge_mode; break;
+    case 4: map = &threeV3_mode; break;
+    default:
+        map = &normal_mode;
+    }
+
+    role_combobox->setItemText(1, map->value(new_role));
     role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
     role_combobox->setCurrentIndex(1);
 }
@@ -996,6 +1030,11 @@ void RoomScene::clickSkillButton(int order){
 }
 
 void RoomScene::enableTargets(const Card *card){
+    if(card && ClientInstance->isJilei(card)){
+        ok_button->setEnabled(false);
+        return;
+    }
+
     selected_targets.clear();
 
     // unset avatar and all photo
@@ -1508,11 +1547,7 @@ void RoomScene::doOkButton(){
 
     case Client::AskForGongxin:{
             ClientInstance->replyGongxin();
-
-            foreach(CardItem *card_item, gongxin_items)
-                delete card_item;
-
-            gongxin_items.clear();
+            clearGongxinCards();
 
             break;
         }
@@ -1521,6 +1556,13 @@ void RoomScene::doOkButton(){
     const ViewAsSkill *skill = dashboard->currentSkill();
     if(skill)
         dashboard->stopPending();
+}
+
+void RoomScene::clearGongxinCards(){
+    foreach(CardItem *card_item, gongxin_items)
+        delete card_item;
+
+    gongxin_items.clear();
 }
 
 void RoomScene::doCancelButton(){
@@ -2114,13 +2156,13 @@ void RoomScene::speak(){
     chat_edit->clear();
 }
 
-void RoomScene::doGongxin(const QList<int> &card_ids){
+void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
     gongxin_items.clear();
 
     foreach(int card_id, card_ids){
         const Card *card = Sanguosha->getCard(card_id);
         CardItem *card_item = new CardItem(card);
-        if(card->getSuit() == Card::Heart){
+        if(enable_heart && card->getSuit() == Card::Heart){
             card_item->setEnabled(true);
             card_item->setFlag(QGraphicsItem::ItemIsFocusable);
             connect(card_item, SIGNAL(double_clicked()), this, SLOT(chooseGongxinCard()));
@@ -2148,6 +2190,9 @@ void RoomScene::doGongxin(const QList<int> &card_ids){
         gongxin_items.at(i)->setPos(pos);
         gongxin_items.at(i)->setHomePos(pos);
     }
+
+    if(!enable_heart)
+        QTimer::singleShot(4000, this, SLOT(clearGongxinCards()));
 }
 
 void RoomScene::chooseGongxinCard(){

@@ -23,8 +23,7 @@ class Engine: public QObject
 public:
     explicit Engine();
 
-    QString translate(const QString &to_translate) const;
-    QString getRoleString(const QString &role) const;
+    QString translate(const QString &to_translate) const;    
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
@@ -41,6 +40,7 @@ public:
     QString getModeName(const QString &mode) const;
     int getPlayerCount(const QString &mode) const;
     void getRoles(const QString &mode, char *roles) const;
+    int getRoleIndex() const;
 
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);

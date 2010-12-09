@@ -43,10 +43,14 @@ struct DamageStruct{
 Q_DECLARE_METATYPE(DamageStruct);
 
 struct CardEffectStruct{
+    CardEffectStruct();
+
     const Card *card;
 
     ServerPlayer *from;
     ServerPlayer *to;
+
+    bool multiple;
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct);

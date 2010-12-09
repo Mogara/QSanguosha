@@ -64,7 +64,7 @@ private:
     QPixmap kingdom_frame;
     QPixmap handcard;
     QPixmap chain;
-    RoleCombobox *role_combobox2;
+    RoleCombobox *role_combobox;
 
     QGraphicsTextItem *mark_item;
 

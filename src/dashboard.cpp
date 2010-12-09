@@ -583,8 +583,12 @@ void Dashboard::disableAllCards(){
 }
 
 void Dashboard::enableCards(){    
-    foreach(CardItem *card_item, card_items)
-        card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
+    foreach(CardItem *card_item, card_items){
+        if(ClientInstance->isJilei(card_item->getFilteredCard()))
+            card_item->setEnabled(false);
+        else
+            card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
+    }
 }
 
 void Dashboard::enableCards(const QString &pattern){
@@ -623,6 +627,12 @@ void Dashboard::enableCards(const QString &pattern){
         foreach(CardItem *card_item, card_items){
             card_item->setEnabled(card_item->getFilteredCard()->match(pattern));
         }
+    }
+
+    // insert jilei
+    foreach(CardItem *card_item, card_items){
+        if(ClientInstance->isJilei(card_item->getFilteredCard()))
+            card_item->setEnabled(false);
     }
 }
 

@@ -100,5 +100,5 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", ":/background.png").toString();
+    BackgroundBrush = value("BackgroundBrush", ":/background.jpg").toString();
 }

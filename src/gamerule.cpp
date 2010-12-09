@@ -59,6 +59,40 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
     case Player::Discard:{
             int discard_num = player->getHandcardNum() - player->getMaxCards();
+            if(player->hasFlag("jilei")){
+                QList<const Card *> jilei_cards;
+                QList<const Card *> handcards = player->getHandcards();
+                foreach(const Card *card, handcards){
+                    if(card->inherits("BasicCard")){
+                        if(player->hasFlag("jileiB"))
+                            jilei_cards << card;
+                    }else if(card->inherits("EquipCard")){
+                        if(player->hasFlag("jileiE"))
+                            jilei_cards << card;
+                    }else if(card->inherits("TrickCard")){
+                        if(player->hasFlag("jileiT"))
+                            jilei_cards << card;
+                    }
+                }
+
+                if(jilei_cards.length() > player->getMaxCards()){
+                    // show all his cards
+                    QStringList handcards_str;
+                    foreach(const Card *card, handcards)
+                        handcards_str << QString::number(card->getId());
+                    QString gongxin_str = QString("%1!:%2").arg(player->objectName()).arg(handcards_str.join("+"));
+                    room->broadcastInvoke("doGongxin", gongxin_str, player);
+
+                    QList<const Card *> other_cards = handcards.toSet().subtract(jilei_cards.toSet()).toList();
+                    foreach(const Card *card, other_cards){
+                        room->throwCard(card);
+                    }
+
+                    return;
+                }
+            }
+
+
             if(discard_num > 0)
                 room->askForDiscard(player, discard_num);
             break;

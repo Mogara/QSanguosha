@@ -124,6 +124,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
     }
 
+    /*
     {
         // add challenge modes
         QRadioButton *challenge_button = new QRadioButton(tr("Challenge mode"));
@@ -161,6 +162,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }else
             updateChallengeLabel(0);
     }
+
+    */
 
     mode_box->setLayout(layout);
 

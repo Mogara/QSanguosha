@@ -80,20 +80,20 @@ Photo::Photo(int order)
     kingdom_item->setPos(-12, -6);
 
     mark_item = new QGraphicsTextItem(this);
-    mark_item->setPos(2, 100);
+    mark_item->setPos(2, 99);
     mark_item->setDefaultTextColor(Qt::white);
 
-    role_combobox2 = NULL;
+    role_combobox = NULL;
 }
 
 void Photo::createRoleCombobox(){
-    role_combobox2 = new RoleCombobox(this);
+    role_combobox = new RoleCombobox(this);
 
     QString role = player->getRole();
     if(!role.isEmpty())
-        role_combobox2->fix(role);
+        role_combobox->fix(role);
     else
-        connect(player, SIGNAL(role_changed(QString)), role_combobox2, SLOT(fix(QString)));
+        connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
 }
 
 void Photo::showProcessBar(){

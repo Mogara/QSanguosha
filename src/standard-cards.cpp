@@ -492,39 +492,43 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         card_str << QString::number(card_id);
     room->broadcastInvoke("fillAG", card_str.join("+"));
 
-    foreach(ServerPlayer *player, players){
-        bool nullified = room->askForNullification(objectName(), source, player);
-        if(!nullified){
-            int card_id = room->askForAG(player, card_ids);
-            card_ids.removeOne(card_id);
+    QVariantList ag_list;
+    foreach(int card_id, card_ids)
+        ag_list << card_id;
+    room->setTag("AmazingGrace", ag_list);
 
-            room->takeAG(player, card_id);
-        }
-    }
+    GlobalEffect::use(room, source, players);
+
+    ag_list = room->getTag("AmazingGrace").toList();
 
     // throw the rest cards
-    foreach(int card_id, card_ids){
-        room->takeAG(NULL, card_id);
+    foreach(QVariant card_id, ag_list){
+        room->takeAG(NULL, card_id.toInt());
     }
 
     room->broadcastInvoke("clearAG");
+}
+
+void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    QVariantList ag_list = room->getTag("AmazingGrace").toList();
+    QList<int> card_ids;
+    foreach(QVariant card_id, ag_list)
+        card_ids << card_id.toInt();
+
+    int card_id = room->askForAG(effect.to, card_ids);
+    card_ids.removeOne(card_id);
+
+    room->takeAG(effect.to, card_id);
+    ag_list.removeOne(card_id);
+
+    room->setTag("AmazingGrace", ag_list);
 }
 
 GodSalvation::GodSalvation(Suit suit, int number)
     :GlobalEffect(suit, number)
 {
     setObjectName("god_salvation");
-}
-
-void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
-
-    QList<ServerPlayer *> all_players = room->getAllPlayers();
-    foreach(ServerPlayer *player, all_players){
-        if(player->isWounded()){
-            room->cardEffect(this, source, player);
-        }
-    }
 }
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{

@@ -55,6 +55,9 @@ static void detector_notice(irc_session_t *session,
     const char *notice = params[1];
     const char *nick = origin;
 
+    if(strstr(nick, "SGS_") == NULL)
+        return;
+
     IrcDetector *detector = static_cast<IrcDetector*>(irc_get_ctx(session));
     if(notice[0] == '@'){
         int count = atoi(notice + 1);

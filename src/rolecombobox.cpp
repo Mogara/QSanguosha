@@ -1,5 +1,6 @@
 #include "rolecombobox.h"
 #include "photo.h"
+#include "engine.h"
 
 #include <QGraphicsScene>
 
@@ -23,11 +24,12 @@ void RoleComboboxItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 RoleCombobox::RoleCombobox(Photo *photo)
     :QObject(photo)
 {
+    int index = Sanguosha->getRoleIndex();
     items << new RoleComboboxItem("unknown", 0)
-            << new RoleComboboxItem("lord", 1)
-            << new RoleComboboxItem("loyalist", 1)
-            << new RoleComboboxItem("rebel", 1)
-            << new RoleComboboxItem("renegade", 1);
+            << new RoleComboboxItem("lord", index)
+            << new RoleComboboxItem("loyalist", index)
+            << new RoleComboboxItem("rebel", index)
+            << new RoleComboboxItem("renegade", index);
 
     qreal height = items.first()->boundingRect().height();
 

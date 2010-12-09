@@ -58,6 +58,7 @@ public:
     void setLines(const QString &skill_name);
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
+    bool isJilei(const Card *card) const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -95,6 +96,7 @@ public:
     void addProhibitSkill(const QString &skill_name);
     void animate(const QString &animate_str);
     void setPrompt(const QString &prompt_str);
+    void jilei(const QString &jilei_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -165,6 +167,7 @@ private:
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_line;
+    QString jilei_flags;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);
@@ -194,7 +197,7 @@ signals:
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids);
-    void gongxin(const QList<int> &card_ids);
+    void gongxin(const QList<int> &card_ids, bool enable_heart);
     void words_spoken(const QString &who, const QString &text);
     void focus_moved(const QString &focus);
     void emotion_set(const QString &target, const QString &emotion);

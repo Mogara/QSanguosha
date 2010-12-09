@@ -173,8 +173,9 @@ private slots:
     void doGuanxing(const QList<int> &card_ids);
     void adjustGuanxing();
 
-    void doGongxin(const QList<int> &card_ids);
+    void doGongxin(const QList<int> &card_ids, bool enable_heart);
     void chooseGongxinCard();
+    void clearGongxinCards();
 
 signals:
     void restart();

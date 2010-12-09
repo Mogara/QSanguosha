@@ -76,17 +76,8 @@ QString GlobalEffect::getSubtype() const{
 }
 
 void GlobalEffect::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
-
     QList<ServerPlayer *> all_players = room->getAllPlayers();
-    foreach(ServerPlayer *player, all_players){
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = player;
-
-        room->cardEffect(effect);
-    }
+    TrickCard::use(room, source, all_players);
 }
 
 QString AOE::getSubtype() const{
@@ -125,7 +116,13 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
         if(player->isDead())
             continue;
 
-        room->cardEffect(this, source, player);
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = player;
+        effect.multiple = other_players.length() >= 2;
+
+        room->cardEffect(effect);
     }
 }
 

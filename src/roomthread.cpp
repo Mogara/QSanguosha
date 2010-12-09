@@ -19,6 +19,12 @@ DamageStruct::DamageStruct()
 {
 }
 
+CardEffectStruct::CardEffectStruct()
+    :card(NULL), from(NULL), to(NULL), multiple(false)
+{
+
+}
+
 SlashEffectStruct::SlashEffectStruct()
     :slash(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
 {
