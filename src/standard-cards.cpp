@@ -1,4 +1,5 @@
 #include "standard.h"
+#include "standard-equips.h"
 #include "general.h"
 #include "engine.h"
 #include "client.h"
@@ -137,12 +138,11 @@ bool Peach::isAvailable() const{
     return Self->isWounded();
 }
 
-class Crossbow:public Weapon{
-public:
-    Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
-        setObjectName("crossbow");
-    }
-};
+Crossbow::Crossbow(Suit suit, int number)
+    :Weapon(suit, number, 1)
+{
+    setObjectName("crossbow");
+}
 
 class DoubleSwordSkill: public WeaponSkill{
 public:
@@ -178,13 +178,12 @@ public:
     }
 };
 
-class DoubleSword:public Weapon{
-public:
-    DoubleSword(Suit suit = Spade, int number = 2):Weapon(suit, number, 2){
-        setObjectName("double_sword");
-        skill = new DoubleSwordSkill;
-    }
-};
+DoubleSword::DoubleSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("double_sword");
+    skill = new DoubleSwordSkill;
+}
 
 class QinggangSwordSkill: public WeaponSkill{
 public:
@@ -201,14 +200,13 @@ public:
     }
 };
 
-class QinggangSword:public Weapon{
-public:
-    QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
-        setObjectName("qinggang_sword");
+QinggangSword::QinggangSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("qinggang_sword");
 
-        skill = new QinggangSwordSkill;
-    }
-};
+    skill = new QinggangSwordSkill;
+}
 
 class BladeSkill : public WeaponSkill{
 public:
@@ -246,13 +244,12 @@ public:
     }
 };
 
-class Blade:public Weapon{
-public:
-    Blade(Suit suit = Spade, int number = 5):Weapon(suit, number, 3){
-        setObjectName("blade");
-        skill = new BladeSkill;
-    }
-};
+Blade::Blade(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("blade");
+    skill = new BladeSkill;
+}
 
 class SpearSkill: public ViewAsSkill{
 public:
@@ -294,13 +291,12 @@ public:
     }
 };
 
-class Spear:public Weapon{
-public:
-    Spear(Suit suit = Spade, int number = 12):Weapon(suit, number, 3){
-        setObjectName("spear");
-        attach_skill = true;
-    }
-};
+Spear::Spear(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("spear");
+    attach_skill = true;
+}
 
 class AxeViewAsSkill: public ViewAsSkill{
 public:
@@ -374,21 +370,19 @@ public:
     }
 };
 
-class Axe:public Weapon{
-public:
-    Axe(Suit suit = Diamond, int number = 5):Weapon(suit, number, 3){
-        setObjectName("axe");
-        skill = new AxeSkill;
-        attach_skill = true;
-    }
-};
+Axe::Axe(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("axe");
+    skill = new AxeSkill;
+    attach_skill = true;
+}
 
-class Halberd:public Weapon{
-public:
-    Halberd(Suit suit = Diamond, int number = 12):Weapon(suit, number, 4){
-        setObjectName("halberd");
-    }
-};
+Halberd::Halberd(Suit suit, int number)
+    :Weapon(suit, number, 4)
+{
+    setObjectName("halberd");
+}
 
 class KylinBowSkill: public WeaponSkill{
 public:
@@ -429,13 +423,12 @@ public:
     }
 };
 
-class KylinBow:public Weapon{
-public:
-    KylinBow(Suit suit = Heart, int number = 5):Weapon(suit, number, 5){
-        setObjectName("kylin_bow");
-        skill = new KylinBowSkill;
-    }
-};
+KylinBow::KylinBow(Suit suit, int number)
+    :Weapon(suit, number, 5)
+{
+    setObjectName("kylin_bow");
+    skill = new KylinBowSkill;
+}
 
 class EightDiagramSkill: public ArmorSkill{
 public:
@@ -468,13 +461,11 @@ public:
     }
 };
 
-class EightDiagram:public Armor{
-public:
-    EightDiagram(Suit suit, int number = 2):Armor(suit, number){
-        setObjectName("eight_diagram");
-        skill = new EightDiagramSkill;
-    }
-};
+EightDiagram::EightDiagram(Suit suit, int number)
+    :Armor(suit, number){
+    setObjectName("eight_diagram");
+    skill = new EightDiagramSkill;
+}
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
     :GlobalEffect(suit, number)
@@ -865,6 +856,8 @@ void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     room->moveCardTo(this, source, Player::Judging);
 }
 
+// EX cards
+
 class IceSwordSkill: public TriggerSkill{
 public:
     IceSwordSkill():TriggerSkill("ice_sword"){
@@ -1009,16 +1002,28 @@ void StandardPackage::addCards(){
           << new KylinBow
 
           << new EightDiagram(Card::Spade)
-          << new EightDiagram(Card::Club)
+          << new EightDiagram(Card::Club);
 
-          << new Horse("jueying", Card::Spade, 5, +1)
-          << new Horse("dilu", Card::Club, 5, +1)
-          << new Horse("zhuahuangfeidian", Card::Heart, 13, +1)
-          << new Horse("chitu", Card::Heart, 5, -1)
-          << new Horse("dayuan", Card::Spade, 13, -1)
-          << new Horse("zixing", Card::Diamond, 13, -1)
+    {
+        QList<Card *> horses;
+        horses << new DefensiveHorse(Card::Spade, 5)
+                << new DefensiveHorse(Card::Club, 5)
+                << new DefensiveHorse(Card::Heart, 13)
+                << new OffensiveHorse(Card::Heart, 5)
+                << new OffensiveHorse(Card::Spade, 13)
+                << new OffensiveHorse(Card::Diamond, 13);
 
-          << new AmazingGrace(Card::Heart, 3)
+        horses.at(0)->setObjectName("jueying");
+        horses.at(1)->setObjectName("dilu");
+        horses.at(2)->setObjectName("zhuahuangfeidian");
+        horses.at(3)->setObjectName("chitu");
+        horses.at(4)->setObjectName("dayuan");
+        horses.at(5)->setObjectName("zixing");
+
+        cards << horses;
+    }
+
+    cards << new AmazingGrace(Card::Heart, 3)
           << new AmazingGrace(Card::Heart, 4)
           << new GodSalvation
           << new SavageAssault(Card::Spade, 7)

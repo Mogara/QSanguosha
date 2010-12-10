@@ -197,8 +197,9 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         effect.card = duel;
         effect.from = source;
         effect.to = room->getLord();
+        effect.cancelable = false;
 
-        room->directCardEffect(effect);
+        room->cardEffect(effect);
     }
 }
 

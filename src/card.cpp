@@ -53,6 +53,10 @@ int Card::getNumber() const{
     return number;
 }
 
+void Card::setNumber(int number){
+    this->number = number;
+}
+
 QString Card::getNumberString() const{
     if(number == 10)
         return "10";
@@ -64,6 +68,10 @@ QString Card::getNumberString() const{
 
 Card::Suit Card::getSuit() const{
     return suit;
+}
+
+void Card::setSuit(Suit suit){
+    this->suit = suit;
 }
 
 bool Card::sameColorWith(const Card *other) const{
@@ -280,6 +288,20 @@ const Card *Card::Parse(const QString &str){
         else
             return NULL;
     }
+}
+
+Card *Card::Clone(const Card *card){
+    const QMetaObject *meta = card->metaObject();
+    Card::Suit suit = card->getSuit();
+    int number = card->getNumber();
+
+    QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+    if(card_obj){
+        Card *new_card = qobject_cast<Card *>(card_obj);
+        new_card->addSubcard(card->getId());
+        return new_card;
+    }else
+        return NULL;
 }
 
 bool Card::targetFixed() const{

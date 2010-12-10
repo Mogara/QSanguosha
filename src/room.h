@@ -63,7 +63,6 @@ public:
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
-    void directCardEffect(const CardEffectStruct &effect);
     const Card *getJudgeCard(ServerPlayer *player);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;

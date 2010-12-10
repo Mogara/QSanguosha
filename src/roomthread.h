@@ -51,6 +51,7 @@ struct CardEffectStruct{
     ServerPlayer *to;
 
     bool multiple;
+    bool cancelable;
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct);

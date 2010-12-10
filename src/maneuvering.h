@@ -15,14 +15,14 @@ class ThunderSlash: public NatureSlash{
     Q_OBJECT
 
 public:
-    ThunderSlash(Suit suit, int number);
+    Q_INVOKABLE ThunderSlash(Card::Suit suit, int number);
 };
 
 class FireSlash: public NatureSlash{
     Q_OBJECT
 
 public:
-    FireSlash(Suit suit, int number);
+    Q_INVOKABLE FireSlash(Card::Suit suit, int number);
 };
 
 class Analeptic: public BasicCard{
@@ -45,28 +45,28 @@ class Fan: public Weapon{
     Q_OBJECT
 
 public:
-    Fan(Suit suit, int number);
+    Q_INVOKABLE Fan(Card::Suit suit, int number);
 };
 
 class GudingBlade: public Weapon{
     Q_OBJECT
 
 public:
-    GudingBlade(Suit suit, int number);
+    Q_INVOKABLE GudingBlade(Card::Suit suit, int number);
 };
 
 class Vine: public Armor{
     Q_OBJECT
 
 public:
-    Vine(Suit suit, int number);
+    Q_INVOKABLE Vine(Card::Suit suit, int number);
 };
 
 class SilverLion: public Armor{
     Q_OBJECT
 
 public:
-    SilverLion(Suit suit, int number);
+    Q_INVOKABLE SilverLion(Card::Suit suit, int number);
 
     virtual void onUninstall(ServerPlayer *player) const;
 };

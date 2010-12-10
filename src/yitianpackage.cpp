@@ -57,32 +57,31 @@ public:
     }
 };
 
-class YitianSword:public Weapon{
-public:
-    YitianSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
-        setObjectName("yitian_sword");
-        skill = new YitianSwordSkill;
-        attach_skill = true;
+YitianSword::YitianSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("yitian_sword");
+    skill = new YitianSwordSkill;
+    attach_skill = true;
+}
+
+void YitianSword::onMove(const CardMoveStruct &move) const{
+    if(move.from_place == Player::Equip && move.from->isAlive()){
+        Room *room = move.from->getRoom();
+
+        bool invoke = move.from->askForSkillInvoke(objectName());
+        if(!invoke)
+            return;
+
+        ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers());
+        DamageStruct damage;
+        damage.from = move.from;
+        damage.to = target;
+        damage.card = this;
+
+        room->damage(damage);
     }
-
-    virtual void onMove(const CardMoveStruct &move) const{
-        if(move.from_place == Player::Equip && move.from->isAlive()){
-            Room *room = move.from->getRoom();
-
-            bool invoke = move.from->askForSkillInvoke(objectName());
-            if(!invoke)
-                return;
-
-            ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers());
-            DamageStruct damage;
-            damage.from = move.from;
-            damage.to = target;
-            damage.card = this;
-
-            room->damage(damage);
-        }
-    }
-};
+}
 
 ChengxiangCard::ChengxiangCard()
 {
@@ -483,11 +482,23 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
 
-        if(effect.multiple && player->askForSkillInvoke(objectName())){
-            player->drawCards(1);
-            return true;
-        }else
-            return false;
+        if(effect.multiple && effect.card->inherits("TrickCard")){
+            Room *room = player->getRoom();
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                LogMessage log;
+
+                log.type = "#DanlaoAvoid";
+                log.from = player;
+                log.arg = effect.card->objectName();
+
+                room->sendLog(log);
+
+                player->drawCards(1);
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 
@@ -500,6 +511,7 @@ YitianPackage::YitianPackage()
     t["#AcquireSkill"] = tr("#AcquireSkill");
     t["#ChangeKingdom"] = tr("#ChangeKingdom");
     t["#Jilei"] = tr("#Jilei");
+    t["#DanlaoAvoid"] = tr("#DanlaoAvoid");
 
     t["yitian"] = tr("yitian");
     t["yitian_sword"] = tr("yitian_sword");

@@ -197,6 +197,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case CardEffected:{
             if(data.canConvert<CardEffectStruct>()){
                 CardEffectStruct effect = data.value<CardEffectStruct>();
+                if(effect.card->inherits("TrickCard") && effect.cancelable
+                   && room->askForNullification(effect.card->objectName(), effect.from, effect.to))
+                    return true;
+
                 effect.card->onEffect(effect);
             }
 

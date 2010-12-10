@@ -20,7 +20,7 @@ class Card : public QObject
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
     Q_PROPERTY(bool black READ isBlack STORED false CONSTANT)
     Q_PROPERTY(int id READ getId CONSTANT)
-    Q_PROPERTY(int number READ getNumber CONSTANT)    
+    Q_PROPERTY(int number READ getNumber WRITE setNumber)
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
@@ -36,15 +36,20 @@ public:
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);
 
-    // property getters, as all properties of card is read only, no setter is defined
+    // property getters/setters
     QString getSuitString() const;
     bool isRed() const;
     bool isBlack() const;
     int getId() const;
     void setId(int id);
+
     int getNumber() const;
+    void setNumber(int number);
     QString getNumberString() const;
+
     Suit getSuit() const;
+    void setSuit(Suit suit);
+
     bool sameColorWith(const Card *other) const;
     QString getPixmapPath() const;
     QString getIconPath() const;
@@ -91,6 +96,7 @@ public:
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
     static const Card *Parse(const QString &str);
+    static Card * Clone(const Card *card);
     static QString Suit2String(Suit suit);
 
 protected:

@@ -664,7 +664,19 @@ public:
 
         int n = to_exchange.length();
         room->setPlayerMark(shenzhuge, "qixing-exchange", n);
-        room->askForUseCard(shenzhuge, "@qixing!", "@qixing-exchange:::" + QString::number(n));
+
+        QString prompt = QString("@qixing-exchange:::%1").arg(n);
+        bool used = room->askForUseCard(shenzhuge, "@qixing!", prompt);
+        if(!used){
+            QList<int> to_exchange = shenzhuge->handCards().mid(0, n);
+            QixingCard *qixing_card = new QixingCard;
+            foreach(int card_id, to_exchange)
+                qixing_card->addSubcard(card_id);
+
+            qixing_card->use(room, shenzhuge, QList<ServerPlayer *>());
+
+            delete qixing_card;
+        }
     }
 
     static void DiscardStar(ServerPlayer *shenzhuge, int n){

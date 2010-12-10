@@ -392,10 +392,10 @@ public:
 
         Room *room = wolong->getRoom();
         if(wolong->askForSkillInvoke(objectName())){
-            room->playSkillEffect(objectName());
             const Card *card = room->getJudgeCard(wolong);
             if(card->isRed()){
                 Jink *jink = new Jink(Card::NoSuit, 0);
+                jink->setSkillName(objectName());
                 room->provide(jink);
                 room->setEmotion(wolong, Room::Good);
                 return true;

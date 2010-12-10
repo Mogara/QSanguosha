@@ -123,7 +123,8 @@ HEADERS += src/mainwindow.h \
     src/challengemode.h \
     src/nostalgia.h \
     src/joypackage.h \
-    src/rolecombobox.h
+    src/rolecombobox.h \
+    src/standard-equips.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

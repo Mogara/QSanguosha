@@ -11,7 +11,6 @@ public:
     YitianPackage();
 };
 
-
 class ChengxiangCard: public SkillCard{
     Q_OBJECT
 
@@ -33,5 +32,15 @@ public:
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
+
+class YitianSword:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YitianSword(Card::Suit suit = Spade, int number = 6);
+
+    virtual void onMove(const CardMoveStruct &move) const;
+};
+
 
 #endif // YITIANPACKAGE_H

@@ -240,13 +240,10 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
         LogMessage log;
         log.type = "$HongyanJudge";
         log.from = player;
-        const QMetaObject *meta = card->metaObject();
-        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, Card::Heart), Q_ARG(int, card->getNumber()));
-        if(card_obj){
-            Card *filtered = qobject_cast<Card *>(card_obj);
-            filtered->setSkillName(objectName());
-            card = filtered;
-        }
+
+        Card *new_card = Card::Clone(card);
+        new_card->setSuit(Card::Heart);
+        new_card->setSkillName("hongyan");
 
         sendLog(log);
     }
@@ -1272,24 +1269,19 @@ bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
     return cardEffect(effect);
 }
 
-bool Room::cardEffect(const CardEffectStruct &effect){
-    if(effect.card->inherits("TrickCard") && askForNullification(effect.card->objectName(), effect.from, effect.to))
+bool Room::cardEffect(const CardEffectStruct &effect){    
+    if(effect.to->isDead())
         return false;
 
-    directCardEffect(effect);
-
-    return true;
-}
-
-void Room::directCardEffect(const CardEffectStruct &effect){
     QVariant data = QVariant::fromValue(effect);
     bool broken = false;
     if(effect.from)
         broken = thread->trigger(CardEffect, effect.from, data);
 
-    if(!broken){
-        thread->trigger(CardEffected, effect.to, data);
-    }
+    if(!broken)
+        return !thread->trigger(CardEffected, effect.to, data);
+    else
+        return true;
 }
 
 void Room::damage(const DamageStruct &damage_data){

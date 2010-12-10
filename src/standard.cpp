@@ -85,10 +85,7 @@ QString AOE::getSubtype() const{
 }
 
 void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
-
-    bool is_savage_assault = inherits("SavageAssault");
-
+    QList<ServerPlayer *> targets;
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
         if(isBlack() && player->hasSkill("weimu")){
@@ -96,34 +93,11 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
             log.type = "#WeimuAvoid";
             log.from = player;
             room->sendLog(log);
-
-            continue;
-        }
-
-        if(is_savage_assault){
-            if(player->hasSkill("huoshou") || player->hasSkill("juxiang")){
-                LogMessage log;
-                log.type = "#SkillNullify";
-                log.from = player;
-                log.arg = player->hasSkill("huoshou") ? "huoshou" : "juxiang";
-                log.arg2 = "savage_assault";
-                room->sendLog(log);
-
-                continue;
-            }
-        }
-
-        if(player->isDead())
-            continue;
-
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = player;
-        effect.multiple = other_players.length() >= 2;
-
-        room->cardEffect(effect);
+        }else
+            targets << player;
     }
+
+    TrickCard::use(room, source, targets);
 }
 
 QString SingleTargetTrick::getSubtype() const{
@@ -249,17 +223,9 @@ QString Armor::label() const{
     return getName();
 }
 
-Horse::Horse(const QString &name, Suit suit, int number, int correct)
+Horse::Horse(Suit suit, int number, int correct)
     :EquipCard(suit, number), correct(correct)
 {
-    setObjectName(name);
-}
-
-QString Horse::getSubtype() const{
-    if(correct > 0)
-        return "defensive_horse";
-    else
-        return "offensive_horse";
 }
 
 QString Horse::getEffectPath(bool) const{
@@ -291,6 +257,26 @@ QString Horse::label() const{
         format = "%1(%2)";
 
     return format.arg(getName()).arg(correct);
+}
+
+OffensiveHorse::OffensiveHorse(Card::Suit suit, int number)
+    :Horse(suit, number, -1)
+{
+
+}
+
+QString OffensiveHorse::getSubtype() const{
+    return "offensive_horse";
+}
+
+DefensiveHorse::DefensiveHorse(Card::Suit suit, int number)
+    :Horse(suit, number, +1)
+{
+
+}
+
+QString DefensiveHorse::getSubtype() const{
+    return "defensive_horse";
 }
 
 EquipCard::Location Horse::location() const{

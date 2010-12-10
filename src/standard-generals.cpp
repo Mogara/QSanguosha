@@ -697,11 +697,14 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lumeng, QVariant &data) const{
         if(event == PhaseChange){
-            if(lumeng->getPhase() == Player::Start)
+            if(lumeng->getPhase() == Player::Finish)
                 lumeng->setMark("slash_count", 0);
             else if(lumeng->getPhase() == Player::Discard){
-                if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName()))
+                if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName())) {
+                    lumeng->getRoom()->playSkillEffect(objectName());
                     return true;
+                }
+
             }
         }else if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();

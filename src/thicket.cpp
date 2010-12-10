@@ -135,10 +135,37 @@ public:
     }
 };
 
+class SavageAssaultAvoid: public TriggerSkill{
+public:
+    SavageAssaultAvoid(const QString &avoid_skill)
+        :TriggerSkill("#sa_avoid"), avoid_skill(avoid_skill)
+    {
+        events << CardEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if(effect.card->inherits("SavageAssault")){
+            LogMessage log;
+            log.type = "#SkillNullify";
+            log.from = player;
+            log.arg = avoid_skill;
+            log.arg2 = "savage_assault";
+            player->getRoom()->sendLog(log);
+
+            return true;
+        }else
+            return false;
+    }
+
+private:
+    QString avoid_skill;
+};
+
 class Huoshou: public TriggerSkill{
 public:
     Huoshou():TriggerSkill("huoshou"){
-        events << Predamage;
+        events << Predamage << CardEffected;
         frequency = Compulsory;
     }
 
@@ -360,7 +387,10 @@ bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
 }
 
 void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
-    room->moveCardTo(this, targets.first(), Player::Hand, false);
+    ServerPlayer *beggar = targets.first();
+
+    room->moveCardTo(this, beggar, Player::Hand, false);
+    room->setEmotion(beggar, Room::DrawCard);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill{
@@ -419,6 +449,7 @@ public:
                 least = qMin(player->getHandcardNum(), least);
             room->setPlayerMark(lusu, "haoshi", least);
             bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi");
+
             if(!used){
                 // force lusu to give his half cards
                 ServerPlayer *beggar = NULL;
@@ -429,15 +460,15 @@ public:
                     }
                 }
 
-                QList<int> handcards = lusu->handCards();
-                QList<int> to_give = handcards.mid(0, lusu->getHandcardNum()/2);
-                DummyCard *dummy_card = new DummyCard;
+                int n = lusu->getHandcardNum()/2;
+                QList<int> to_give = lusu->handCards().mid(0, n);
+                HaoshiCard *haoshi_card = new HaoshiCard;
                 foreach(int card_id, to_give)
-                    dummy_card->addSubcard(card_id);
-                room->moveCardTo(dummy_card, beggar, Player::Hand, false);
-                delete dummy_card;
-
-                room->setEmotion(beggar, Room::DrawCard);
+                    haoshi_card->addSubcard(card_id);
+                QList<ServerPlayer *> targets;
+                targets << beggar;
+                haoshi_card->use(room, lusu, targets);
+                delete haoshi_card;
             }
         }
 
@@ -461,29 +492,6 @@ public:
     }
 };
 
-/*class Haoshi: public PhaseChangeSkill{
-public:
-    Haoshi():PhaseChangeSkill("#haoshi"){
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *lusu) const{
-        if(lusu->getPhase() != Player::Draw)
-            return false;
-
-        Room *room = lusu->getRoom();
-        if(!room->askForSkillInvoke(lusu, objectName()))
-            return false;
-
-        lusu->drawCards(4);
-        if(lusu->getHandcardNum() <= 5)
-            return true;
-
-
-
-        return true;
-    }
-};
-*/
 DimengCard::DimengCard(){
 
 }
@@ -814,10 +822,12 @@ ThicketPackage::ThicketPackage()
     xuhuang->addSkill(new Duanliang);
 
     menghuo = new General(this, "menghuo", "shu");
+    menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
+    menghuo->addSkill(new SavageAssaultAvoid("juxiang"));
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
 

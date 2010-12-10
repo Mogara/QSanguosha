@@ -235,13 +235,6 @@ protected:
     bool attach_skill;
 };
 
-class IceSword: public Weapon{
-    Q_OBJECT
-
-public:
-    IceSword(Suit suit, int number);
-};
-
 class Armor:public EquipCard{
     Q_OBJECT
 
@@ -253,19 +246,11 @@ public:
     virtual QString label() const;
 };
 
-class RenwangShield: public Armor{
-    Q_OBJECT
-
-public:
-    RenwangShield(Suit suit, int number);
-};
-
 class Horse:public EquipCard{
     Q_OBJECT
 
 public:
-    Horse(const QString &name, Suit suit, int number, int correct);
-    virtual QString getSubtype() const;
+    Horse(Suit suit, int number, int correct);
     virtual QString getEffectPath(bool is_male) const;
 
     virtual Location location() const;
@@ -276,6 +261,22 @@ public:
 
 private:
     int correct;
+};
+
+class OffensiveHorse: public Horse{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+};
+
+class DefensiveHorse: public Horse{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DefensiveHorse(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
 };
 
 // cards of standard package

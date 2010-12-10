@@ -18,14 +18,13 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getCard();
-        const QMetaObject *meta = card->metaObject();
-        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, Card::Heart), Q_ARG(int, card->getNumber()));
-        if(card_obj){
-            Card *real_card = qobject_cast<Card *>(card_obj);
-            real_card->addSubcard(card->getId());
-            real_card->setSkillName(objectName());
-            return real_card;
-        }else
+        Card *new_card = Card::Clone(card);
+        if(new_card) {
+            new_card->setSuit(Card::Heart);
+            new_card->setSkillName(objectName());
+            return new_card;
+        }
+        else
             return card;
     }
 };
@@ -146,6 +145,9 @@ NostalgiaPackage::NostalgiaPackage()
 
     t[":hongyan"] = tr(":hongyan");
     t[":tianxiang"] = tr(":tianxiang");
+
+    t["$tianxiang1"] = tr("$tianxiang1");
+    t["$tianxiang2"] = tr("$tianxiang2");
 
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);

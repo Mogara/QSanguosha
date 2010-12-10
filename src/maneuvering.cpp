@@ -402,8 +402,12 @@ ManeuveringPackage::ManeuveringPackage()
             << new Analeptic(Card::Diamond, 9)
             << new Jink(Card::Diamond, 10)
             << new Jink(Card::Diamond, 11)
-            << new FireAttack(Card::Diamond, 12)
-            << new Horse("hualiu", Card::Diamond, 13, +1);
+            << new FireAttack(Card::Diamond, 12);
+
+    DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
+    hualiu->setObjectName("hualiu");
+
+    cards << hualiu;
 
     foreach(Card *card, cards)
         card->setParent(this);

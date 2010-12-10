@@ -156,8 +156,9 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     effect.card = new Duel(Card::NoSuit, 0);
     effect.from = from;
     effect.to = to;
+    effect.cancelable = false;
 
-    room->directCardEffect(effect);
+    room->cardEffect(effect);
 }
 
 void LijianCard::use(const QList<const ClientPlayer *> &targets) const{
