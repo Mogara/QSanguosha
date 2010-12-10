@@ -14,8 +14,18 @@ int BasicCard::getTypeId() const{
     return 0;
 }
 
+TrickCard::TrickCard(Suit suit, int number, bool aggressive)
+    :Card(suit, number), aggressive(aggressive),
+    cancelable(true)
+{
+}
+
 bool TrickCard::isAggressive() const{
     return aggressive;
+}
+
+void TrickCard::setCancelable(bool cancelable){
+    this->cancelable = cancelable;
 }
 
 QString TrickCard::getType() const{
@@ -24,6 +34,10 @@ QString TrickCard::getType() const{
 
 int TrickCard::getTypeId() const{
     return 1;
+}
+
+bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
+    return cancelable;
 }
 
 TriggerSkill *EquipCard::getSkill() const{

@@ -11,6 +11,20 @@ GuidaoCard::GuidaoCard(){
     target_fixed = true;
 }
 
+void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
+    room->obtainCard(zhangjiao, room->throwSpecialCard());
+
+    int card_id = subcards.first();
+    room->moveCardTo(card_id, NULL, Player::Special, true);
+
+    LogMessage log;
+    log.type = "$ChangedJudge";
+    log.card_str = QString::number(card_id);
+    room->sendLog(log);
+
+    room->setEmotion(zhangjiao, Room::Normal);
+}
+
 LeijiCard::LeijiCard(){
 
 }

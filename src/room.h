@@ -121,6 +121,7 @@ public:
 
     void throwCard(const Card *card);
     void throwCard(int card_id);
+    int throwSpecialCard();
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open);
     void doMove(const CardMoveStruct &move);
@@ -133,8 +134,9 @@ public:
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
+    bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it = true);
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);

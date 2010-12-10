@@ -142,9 +142,33 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
+    const int widen_width = player_count <= 8 ? 148 : 0;
+
+    // chat box
+    chat_box = new QTextEdit;
+    chat_box->resize(230 + widen_width, 213);
+
+    QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
+    chat_box_widget->setPos(-343 - widen_width, -83);
+    chat_box_widget->setZValue(-2.0);
+    QPalette palette;
+    palette.setBrush(QPalette::Base, backgroundBrush());
+    chat_box->setPalette(palette);
+    chat_box->setReadOnly(true);
+
+    // chat edit
+    chat_edit = new QLineEdit;
+    chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
+
+    QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
+    chat_edit_widget->setWidget(chat_edit);
+    chat_edit_widget->setX(widen_width + 10);
+    chat_edit_widget->setY(chat_box->height());
+    connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
+
     // log box
     log_box = new ClientLogBox;
-    log_box->resize(230, 213);
+    log_box->resize(chat_box->size());
 
     QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
     log_box_widget->setPos(114, -83);
@@ -169,26 +193,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         addItem(prompt_box);
     }
 
-    // chat box
-    chat_box = new QTextEdit;
-    chat_box->resize(log_box->size());
 
-    QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
-    chat_box_widget->setPos(-343, -83);
-    chat_box_widget->setZValue(-2.0);
-    QPalette palette;
-    palette.setBrush(QPalette::Base, backgroundBrush());
-    chat_box->setPalette(palette);
-    chat_box->setReadOnly(true);
-
-    // chat edit
-    chat_edit = new QLineEdit;
-    chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
-
-    QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
-    chat_edit_widget->setWidget(chat_edit);
-    chat_edit_widget->setY(chat_box->height());
-    connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
     memory = new QSharedMemory("QSanguosha", this);
     bgmusic = NULL;

@@ -89,6 +89,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
 
     virtual void onMove(const CardMoveStruct &move) const;
 

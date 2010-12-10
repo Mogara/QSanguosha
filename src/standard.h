@@ -29,15 +29,17 @@ class TrickCard:public Card{
     Q_OBJECT
 
 public:
-    TrickCard(Suit suit, int number, bool aggressive)
-        :Card(suit, number), aggressive(aggressive){}
+    TrickCard(Suit suit, int number, bool aggressive);
     bool isAggressive() const;
+    void setCancelable(bool cancelable);
 
     virtual QString getType() const;
     virtual int getTypeId() const;
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
 
 private:
     bool aggressive;
+    bool cancelable;
 };
 
 class EquipCard:public Card{
@@ -86,6 +88,7 @@ class GodSalvation:public GlobalEffect{
 
 public:
     Q_INVOKABLE GodSalvation(Card::Suit suit = Heart, int number = 1);
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -433,6 +436,8 @@ class GuicaiCard: public SkillCard{
 
 public:
     Q_INVOKABLE GuicaiCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class LiuliCard: public SkillCard{

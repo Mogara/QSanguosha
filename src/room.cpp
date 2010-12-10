@@ -187,19 +187,7 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(simayi->isKongcheng())
                 continue;
 
-            const Card *card = askForCard(simayi, "@guicai", "@guicai-card", false);
-            if(card){
-                QList<int> subcards = card->getSubcards();
-                card_id = subcards.first();
-
-                moveCardTo(card_id, NULL, Player::Special, true);
-
-                log.type = "$ChangedJudge";
-                log.card_str = QString::number(card_id);
-                sendLog(log);
-
-                setEmotion(simayi, Normal);
-            }
+            askForUseCard(simayi, "@guicai", "@guicai-card");
         }
 
         if(p->hasSkill("guidao")){
@@ -207,22 +195,11 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(zhangjiao->isNude())
                 continue;
 
-            const Card *card = askForCard(zhangjiao, "@guidao", "@guidao-card", false);
-            if(card){                
-                QList<int> subcards = card->getSubcards();
-                obtainCard(zhangjiao, card_id);
-                card_id = subcards.first();
-
-                moveCardTo(card_id, NULL, Player::Special, true);
-
-                log.type = "$ChangedJudge";
-                log.card_str = QString::number(card_id);
-                sendLog(log);
-
-                setEmotion(zhangjiao, Normal);
-            }
+            askForUseCard(zhangjiao, "@guidao", "@guidao-card");
         }
     }
+
+    card_id = special_card;
 
     log.type = "$JudgeResult";
     log.card_str = QString::number(card_id);
@@ -230,20 +207,20 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
 
     // judge delay
     thread->delay();
-
-    throwCard(card_id);
+    throwSpecialCard();
 
     CardStar card = Sanguosha->getCard(card_id);
 
     // hongyan special case
     if(player->hasSkill("hongyan") && card->getSuit() == Card::Spade){
         LogMessage log;
-        log.type = "$HongyanJudge";
+        log.type = "#HongyanJudge";
         log.from = player;
 
         Card *new_card = Card::Clone(card);
         new_card->setSuit(Card::Heart);
         new_card->setSkillName("hongyan");
+        card = new_card;
 
         sendLog(log);
     }
@@ -396,6 +373,13 @@ void Room::obtainCard(ServerPlayer *target, int card_id){
     moveCardTo(card_id, target, Player::Hand, true);
 }
 
+bool Room::isCanceled(const CardEffectStruct &effect){
+    if(!effect.card->isCancelable(effect))
+        return false;
+
+    return askForNullification(effect.card->objectName(), effect.from, effect.to);
+}
+
 bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
@@ -493,7 +477,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -518,8 +502,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     if(card){
-        if(throw_it)
-            throwCard(card);
+        throwCard(card);
 
         if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
@@ -1441,6 +1424,17 @@ void Room::throwCard(const Card *card){
 
 void Room::throwCard(int card_id){
     moveCardTo(card_id, NULL, Player::DiscardedPile, true);
+}
+
+int Room::throwSpecialCard(){
+    Q_ASSERT(special_card != -1);
+
+    int card_id = special_card;
+    throwCard(special_card);
+
+    Q_ASSERT(special_card == -1);
+
+    return card_id;
 }
 
 RoomThread *Room::getThread() const{

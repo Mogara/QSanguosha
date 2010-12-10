@@ -20,7 +20,7 @@ DamageStruct::DamageStruct()
 }
 
 CardEffectStruct::CardEffectStruct()
-    :card(NULL), from(NULL), to(NULL), multiple(false), cancelable(true)
+    :card(NULL), from(NULL), to(NULL), multiple(false)
 {
 }
 

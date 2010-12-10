@@ -9,6 +9,8 @@ class GuidaoCard: public SkillCard{
 
 public:
     Q_INVOKABLE GuidaoCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class LeijiCard: public SkillCard{

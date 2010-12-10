@@ -152,11 +152,13 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
 
+    Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->setCancelable(false);
+
     CardEffectStruct effect;
-    effect.card = new Duel(Card::NoSuit, 0);
+    effect.card = duel;
     effect.from = from;
     effect.to = to;
-    effect.cancelable = false;
 
     room->cardEffect(effect);
 }
@@ -207,6 +209,21 @@ void QingnangCard::onEffect(const CardEffectStruct &effect) const{
 
 GuicaiCard::GuicaiCard(){
     target_fixed = true;
+}
+
+void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    room->throwSpecialCard();
+
+    int card_id = subcards.first();
+
+    room->moveCardTo(card_id, NULL, Player::Special, true);
+
+    LogMessage log;
+    log.type = "$ChangedJudge";
+    log.card_str = QString::number(card_id);
+    room->sendLog(log);
+
+    room->setEmotion(source, Room::Normal);
 }
 
 LiuliCard::LiuliCard()

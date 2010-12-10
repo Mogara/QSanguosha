@@ -298,6 +298,7 @@ Card *Card::Clone(const Card *card){
     QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
     if(card_obj){
         Card *new_card = qobject_cast<Card *>(card_obj);
+        new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
         return new_card;
     }else
@@ -360,6 +361,10 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
 
 void Card::onEffect(const CardEffectStruct &effect) const{
 
+}
+
+bool Card::isCancelable(const CardEffectStruct &effect) const{
+    return false;
 }
 
 void Card::onMove(const CardMoveStruct &move) const{

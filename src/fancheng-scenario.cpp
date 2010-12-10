@@ -192,12 +192,12 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 
     if(source->isAlive()){
         Duel *duel = new Duel(Card::NoSuit, 0);
+        duel->setCancelable(false);
 
         CardEffectStruct effect;
         effect.card = duel;
         effect.from = source;
         effect.to = room->getLord();
-        effect.cancelable = false;
 
         room->cardEffect(effect);
     }

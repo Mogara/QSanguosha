@@ -23,8 +23,7 @@ public:
             new_card->setSuit(Card::Heart);
             new_card->setSkillName(objectName());
             return new_card;
-        }
-        else
+        }else
             return card;
     }
 };

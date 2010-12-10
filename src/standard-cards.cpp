@@ -522,6 +522,10 @@ GodSalvation::GodSalvation(Suit suit, int number)
     setObjectName("god_salvation");
 }
 
+bool GodSalvation::isCancelable(const CardEffectStruct &effect) const{
+    return effect.to->isWounded();
+}
+
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     room->recover(effect.to, 1);
