@@ -5,6 +5,7 @@
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
 #include "choosegeneraldialog.h"
+#include "joystick.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -193,8 +194,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         addItem(prompt_box);
     }
 
-
-
     memory = new QSharedMemory("QSanguosha", this);
     bgmusic = NULL;
 
@@ -210,6 +209,12 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     addWidgetToSkillDock(sort_combobox, true);
 
     adjustItems();
+
+    Joystick *js = new Joystick(this);
+    connect(js, SIGNAL(button_clicked(int)), this, SLOT(onJoyButtonClicked(int)));
+    connect(js, SIGNAL(direction_clicked(int)), this, SLOT(onJoyDirectionClicked(int)));
+
+    js->start();
 }
 
 void RoomScene::adjustItems(){
@@ -1035,6 +1040,11 @@ void RoomScene::clickSkillButton(int order){
 }
 
 void RoomScene::enableTargets(const Card *card){
+    if(ClientInstance->getStatus() == Client::AskForCardShow && card){
+        ok_button->setEnabled(true);
+        return;
+    }
+
     if(card && ClientInstance->isJilei(card)){
         ok_button->setEnabled(false);
         return;
@@ -1149,6 +1159,23 @@ void RoomScene::cancelViewAsSkill(){
         updateStatus(ClientInstance->getStatus());
 }
 
+void RoomScene::onJoyButtonClicked(int bit){
+    QMessageBox::information(main_window, "", QString::number(bit));
+}
+
+void RoomScene::onJoyDirectionClicked(int direction){
+    QString str;
+
+    switch(direction){
+    case Joystick::Left: str = "Left"; break;
+    case Joystick::Right: str = "Right"; break;
+    case Joystick::Up: str = "Up"; break;
+    case Joystick::Down: str = "Down"; break;
+    }
+
+    QMessageBox::information(main_window, "", str);
+}
+
 void RoomScene::selectTarget(int order, bool multiple){
     QGraphicsItem *to_select = NULL;
 
@@ -1249,6 +1276,11 @@ void RoomScene::doTimeout(){
             break;
         }
 
+    case Client::AskForCardShow:{
+            ClientInstance->responseCard(NULL);
+            break;
+        }
+
     case Client::AskForYiji:{
             cancel_button->click();
             break;
@@ -1258,7 +1290,7 @@ void RoomScene::doTimeout(){
     case Client::AskForGongxin:{
             ok_button->click();
             break;
-        }
+        }         
 
     default:
         break;
@@ -1364,6 +1396,18 @@ void RoomScene::updateStatus(Client::Status status){
 
             break;
         }
+
+    case Client::AskForCardShow:{
+            prompt_box->show();
+            dashboard->enableAllCards();
+
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
+
+            break;
+        }
+
     case Client::AskForYiji:{
             ok_button->setEnabled(false);
             cancel_button->setEnabled(true);
@@ -1502,6 +1546,16 @@ void RoomScene::doOkButton(){
     case Client::AskForAG:{
             ClientInstance->chooseAG(-1);
             return;
+        }
+
+    case Client::AskForCardShow:{
+            const Card *card = dashboard->getSelected();
+            if(card){
+                ClientInstance->responseCard(card);
+                dashboard->unselectAll();
+            }
+
+            break;
         }
 
     case Client::ExecDialog:{

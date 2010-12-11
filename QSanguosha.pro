@@ -64,7 +64,8 @@ SOURCES += src/main.cpp \
     src/challengemode.cpp \
     src/nostalgia.cpp \
     src/joypackage.cpp \
-    src/rolecombobox.cpp
+    src/rolecombobox.cpp \
+    src/joystick.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -124,7 +125,8 @@ HEADERS += src/mainwindow.h \
     src/nostalgia.h \
     src/joypackage.h \
     src/rolecombobox.h \
-    src/standard-equips.h
+    src/standard-equips.h \
+    src/joystick.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -136,10 +138,11 @@ FORMS += src/mainwindow.ui \
 RESOURCES += resource/images/sanguosha.qrc
 INCLUDEPATH += include/libircclient
 INCLUDEPATH += include/irrKlang
+INCLUDEPATH += include
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += static-libircclient.lib -lws2_32 irrKlang.lib
+    LIBS += static-libircclient.lib -lws2_32 irrKlang.lib -lplibjs -lplibul -lwinmm -L.
 }
 
 unix {

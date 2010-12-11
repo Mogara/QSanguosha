@@ -444,15 +444,17 @@ public:
     }
 };
 
-class Jilei: public MasochismSkill{
+class Jilei: public TriggerSkill{
 public:
-    Jilei():MasochismSkill("jilei"){
-
+    Jilei():TriggerSkill("jilei"){
+        events << Predamaged;
     }
 
-    virtual void onDamaged(ServerPlayer *yangxiu, const DamageStruct &damage) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *yangxiu, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
         if(damage.from == NULL)
-           return;
+           return false;
 
         Room *room = yangxiu->getRoom();
         if(yangxiu->askForSkillInvoke(objectName())){
@@ -470,6 +472,8 @@ public:
             log.arg = choice;
             room->sendLog(log);
         }
+
+        return false;
     }
 };
 

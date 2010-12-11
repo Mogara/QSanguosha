@@ -1122,10 +1122,12 @@ void Client::askForCardShow(const QString &requestor){
     QString name = Sanguosha->translate(requestor);
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
-    card_pattern = "."; // any card can be matched
-    refusable = false;
+    //card_pattern = "."; // any card can be matched
+    //refusable = false;
     use_card = false;
-    setStatus(Responsing);
+    //setStatus(Responsing);
+
+    setStatus(AskForCardShow);
 }
 
 void Client::askForAG(const QString &ask_str){

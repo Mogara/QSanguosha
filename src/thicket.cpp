@@ -699,6 +699,8 @@ public:
             ServerPlayer *female = effect.to;
             Room *room = dongzhuo->getRoom();
 
+            room->playSkillEffect(objectName(), 1);
+
             bool jinked = false;
             const Card *jink = room->askForCard(female, "jink", "@roulin1-jink-1");
             if(jink && room->askForCard(female, "jink", "@roulin1-jink-2"))

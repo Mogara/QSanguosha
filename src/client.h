@@ -28,9 +28,10 @@ public:
         ExecDialog,   
         AskForAG,
         AskForPlayerChoose,
+        AskForCardShow,
         AskForYiji,
         AskForGuanxing,
-        AskForGongxin
+        AskForGongxin,
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());

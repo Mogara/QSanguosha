@@ -38,7 +38,7 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     damage.to = effect.to;
     room->damage(damage);
 
-    if(damage.to->isAlive())
+    if(damage.to->isAlive() && damage.to->isWounded())
         damage.to->drawCards(damage.to->getLostHp());
 }
 

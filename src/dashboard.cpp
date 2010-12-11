@@ -591,6 +591,11 @@ void Dashboard::enableCards(){
     }
 }
 
+void Dashboard::enableAllCards(){
+    foreach(CardItem *card_item, card_items)
+        card_item->setEnabled(true);
+}
+
 void Dashboard::enableCards(const QString &pattern){
     static QRegExp id_rx("\\d+");
     static QRegExp suit_rx("\\.[SCHD]");
@@ -615,8 +620,7 @@ void Dashboard::enableCards(const QString &pattern){
         foreach(CardItem *card_item, card_items)
             card_item->setEnabled(card_item->getCard()->getId() == id);
     }else if(pattern == "."){
-        foreach(CardItem *card_item, card_items)
-            card_item->setEnabled(true);
+        enableAllCards();
     }else if(suit_rx.exactMatch(pattern)){
         QChar end = pattern.at(1).toLower();
         foreach(CardItem *card_item, card_items){
@@ -699,8 +703,14 @@ void Dashboard::onCardItemClicked(){
 
 void Dashboard::updatePending(){
     foreach(CardItem *c, card_items){
-        if(!c->isPending())
+        if(!c->isPending()){
+            if(!c->isEquipped() && ClientInstance->isJilei(c->getFilteredCard())){
+                c->setEnabled(false);
+                continue;
+            }
+
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
+        }
     }
 
     foreach(CardItem **equip_ptr, equips){

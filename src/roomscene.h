@@ -159,6 +159,9 @@ private slots:
     void onGameOver(bool victory, const QList<bool> &result_list);
     void onStandoff();
 
+    void onJoyButtonClicked(int bit);
+    void onJoyDirectionClicked(int direction);
+
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);
 

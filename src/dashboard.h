@@ -40,6 +40,7 @@ public:
     void disableAllCards();
     void enableCards();
     void enableCards(const QString &pattern);
+    void enableAllCards();
 
     void installEquip(CardItem *equip);
     void installDelayedTrick(CardItem *card);    
