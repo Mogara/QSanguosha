@@ -206,7 +206,8 @@ public:
             if(room->askForSkillInvoke(zhurong, objectName())){
                 room->playSkillEffect(objectName(), 1);
 
-                bool success = room->pindian(zhurong, damage.to);
+                //bool success = room->pindian(zhurong, damage.to);
+                bool success = zhurong->pindian(damage.to);
                 if(success)
                     room->playSkillEffect(objectName(), 2);
                 else{

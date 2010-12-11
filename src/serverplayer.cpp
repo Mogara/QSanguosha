@@ -255,6 +255,54 @@ void ServerPlayer::kick(){
     }
 }
 
+bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
+    QString ask_str = QString("%1->%2").arg(getGeneralName()).arg(target->getGeneralName());
+
+    LogMessage log;
+    log.type = "#Pindian";
+    log.from = this;
+    log.to << target;
+    room->sendLog(log);
+
+    if(card1 == NULL)
+        card1 = room->askForPindian(this, ask_str);
+    else if(card1->isVirtualCard()){
+        Q_ASSERT(card1->subcardsLength() >= 1);
+        card1 = Sanguosha->getCard(card1->getSubcards().first());
+    }
+
+    const Card *card2 = room->askForPindian(target, ask_str);
+
+    room->throwCard(card1);
+    log.type = "$PindianResult";
+    log.from = this;
+    log.card_str = card1->getEffectIdString();
+    room->sendLog(log);
+    room->getThread()->delay();
+
+    room->throwCard(card2);
+    log.type = "$PindianResult";
+    log.from = target;
+    log.card_str = card2->getEffectIdString();
+    room->sendLog(log);
+    room->getThread()->delay();
+
+    bool success = card1->getNumber() > card2->getNumber();
+    log.type = success ? "#PindianSuccess" : "#PindianFailure";
+    log.from = this;
+    log.to.clear();
+    log.to << target;
+    log.card_str.clear();
+    room->sendLog(log);
+
+    if(success)
+        room->setEmotion(this, Room::Good);
+    else
+        room->setEmotion(this, Room::Bad);
+
+    return success;
+}
+
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
 

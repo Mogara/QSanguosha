@@ -39,6 +39,7 @@ public:
     bool isLord() const;
     bool hasNullification() const;
     void kick();
+    bool pindian(ServerPlayer *target, const Card *card1 = NULL);
 
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);

@@ -24,12 +24,10 @@ bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
     return true;
 }
 
-void QuhuCard::onEffect(const CardEffectStruct &effect) const{
-    ServerPlayer *xunyu = effect.from;
-    ServerPlayer *tiger = effect.to;
-    Room *room = xunyu->getRoom();
+void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *tiger = targets.first();
 
-    bool success = room->pindian(xunyu, tiger);
+    bool success = xunyu->pindian(tiger, this);
     if(success){
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach(ServerPlayer *player, players){
@@ -119,9 +117,9 @@ public:
     }
 };
 
-class Quhu: public ZeroCardViewAsSkill{
+class Quhu: public OneCardViewAsSkill{
 public:
-    Quhu():ZeroCardViewAsSkill("quhu"){
+    Quhu():OneCardViewAsSkill("quhu"){
 
     }
 
@@ -129,8 +127,14 @@ public:
         return !ClientInstance->turn_tag.value("quhu_used", false).toBool() && !Self->isKongcheng();
     }
 
-    virtual const Card *viewAs() const{
-        return new QuhuCard;
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        Card *card = new QuhuCard;
+        card->addSubcard(card_item->getCard()->getId());
+        return card;
     }
 };
 
@@ -416,11 +420,8 @@ bool TianyiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::onEffect(const CardEffectStruct &effect) const{
-    ServerPlayer *taishici = effect.from;
-    Room *room = taishici->getRoom();
-
-    bool success = room->pindian(taishici, effect.to);
+void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlayer *> &targets) const{
+    bool success = taishici->pindian(targets.first(), this);
     if(success){
         room->setPlayerFlag(taishici, "tianyi_success");
     }else{
@@ -432,9 +433,9 @@ void TianyiCard::use(const QList<const ClientPlayer *> &targets) const{
     ClientInstance->turn_tag.insert("tianyi_used", true);
 }
 
-class TianyiViewAsSkill: public ZeroCardViewAsSkill{
+class TianyiViewAsSkill: public OneCardViewAsSkill{
 public:
-    TianyiViewAsSkill():ZeroCardViewAsSkill("tianyi"){
+    TianyiViewAsSkill():OneCardViewAsSkill("tianyi"){
 
     }
 
@@ -442,8 +443,14 @@ public:
         return !ClientInstance->turn_tag.value("tianyi_used", false).toBool() && !Self->isKongcheng();
     }
 
-    virtual const Card *viewAs() const{
-        return new TianyiCard;
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        Card *card = new TianyiCard;
+        card->addSubcard(card_item->getCard()->getId());
+        return card;
     }
 };
 
@@ -584,6 +591,7 @@ FirePackage::FirePackage()
     t["$niepan"]=tr("$niepan");
     t["$qiangxi"]=tr("$qiangxi");
     t["$quhu"]=tr("$quhu");
+    t["$tianyi"] = tr("$tianyi");
 }
 
 ADD_PACKAGE(Fire);

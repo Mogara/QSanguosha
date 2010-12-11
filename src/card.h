@@ -42,6 +42,8 @@ public:
     bool isBlack() const;
     int getId() const;
     void setId(int id);
+    int getEffectiveId() const;
+    QString getEffectIdString() const;
 
     int getNumber() const;
     void setNumber(int number);

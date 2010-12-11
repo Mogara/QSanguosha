@@ -1875,48 +1875,6 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     }
 }
 
-bool Room::pindian(ServerPlayer *source, ServerPlayer *target){
-    QString ask_str = QString("%1->%2").arg(source->getGeneralName()).arg(target->getGeneralName());
-
-    LogMessage log;
-    log.type = "#Pindian";
-    log.from = source;
-    log.to << target;
-    sendLog(log);
-
-    const Card *card1 = askForPindian(source, ask_str);
-    const Card *card2 = askForPindian(target, ask_str);
-
-    throwCard(card1);
-    log.type = "$PindianResult";
-    log.from = source;
-    log.card_str = QString::number(card1->getId());
-    sendLog(log);
-    thread->delay();    
-
-    throwCard(card2);
-    log.type = "$PindianResult";
-    log.from = target;
-    log.card_str = QString::number(card2->getId());
-    sendLog(log);
-    thread->delay();
-
-    bool success = card1->getNumber() > card2->getNumber();
-    log.type = success ? "#PindianSuccess" : "#PindianFailure";
-    log.from = source;
-    log.to.clear();
-    log.to << target;
-    log.card_str.clear();
-    sendLog(log);
-
-    if(success)
-        setEmotion(source, Good);
-    else
-        setEmotion(source, Bad);
-
-    return success;
-}
-
 ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
     if(targets.length() == 1)
         return targets.first();

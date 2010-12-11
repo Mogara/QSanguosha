@@ -193,8 +193,10 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     QList<CardItem*> matches;
 
     foreach(CardItem *card_item, card_items){
-        if(card_item->isEnabled() && card_item->getFilteredCard()->match(pattern))
-            matches << card_item;
+        if(card_item->isEnabled()){
+            if(pattern == "." || card_item->getFilteredCard()->match(pattern))
+                matches << card_item;
+        }
     }
 
     if(matches.isEmpty()){

@@ -49,6 +49,20 @@ void Card::setId(int id){
     this->id = id;
 }
 
+int Card::getEffectiveId() const{
+    if(isVirtualCard()){
+        if(subcards.isEmpty())
+            return -1;
+        else
+            return subcards.first();
+    }else
+        return id;
+}
+
+QString Card::getEffectIdString() const{
+    return QString::number(getEffectiveId());
+}
+
 int Card::getNumber() const{
     return number;
 }

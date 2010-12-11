@@ -1160,20 +1160,20 @@ void RoomScene::cancelViewAsSkill(){
 }
 
 void RoomScene::onJoyButtonClicked(int bit){
-    QMessageBox::information(main_window, "", QString::number(bit));
+    switch(bit){
+    case 1: doOkButton(); break;
+    case 2: doCancelButton(); break;
+    case 3: doDiscardButton(); break;
+    }
 }
 
 void RoomScene::onJoyDirectionClicked(int direction){
-    QString str;
-
     switch(direction){
-    case Joystick::Left: str = "Left"; break;
-    case Joystick::Right: str = "Right"; break;
-    case Joystick::Up: str = "Up"; break;
-    case Joystick::Down: str = "Down"; break;
+    case Joystick::Left: dashboard->selectCard(".", false); break;
+    case Joystick::Right: dashboard->selectCard(".", true); break;
+    case Joystick::Up:
+    case Joystick::Down: selectNextTarget(false); break;
     }
-
-    QMessageBox::information(main_window, "", str);
 }
 
 void RoomScene::selectTarget(int order, bool multiple){
