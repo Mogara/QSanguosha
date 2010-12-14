@@ -66,7 +66,7 @@ QString General::getPackage() const{
 QString General::getSkillDescription() const{
     QString description;
 
-    QList<Skill *> skills = skill_map.values();
+    QList<const Skill *> skills = findChildren<const Skill *>();
     foreach(const Skill *skill, skills){
         if(skill->objectName().startsWith("#"))
             continue;

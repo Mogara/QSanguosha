@@ -459,6 +459,8 @@ public:
         Room *room = yangxiu->getRoom();
         if(yangxiu->askForSkillInvoke(objectName())){
             QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
+            room->playSkillEffect(objectName());
+
             QString jilei_flag = choice[0].toUpper();
             damage.from->invoke("jilei", jilei_flag);
 
@@ -489,6 +491,8 @@ public:
         if(effect.multiple && effect.card->inherits("TrickCard")){
             Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName(), data)){
+                room->playSkillEffect(objectName());
+
                 LogMessage log;
 
                 log.type = "#DanlaoAvoid";

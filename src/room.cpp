@@ -1473,6 +1473,10 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
     move.to = to;
     move.to_place = place;
 
+    // avoid useless operation
+    if(move.from == move.to && move.from_place == move.to_place)
+        return;
+
     const Card *card = Sanguosha->getCard(move.card_id);
     if(move.from)
         move.from->removeCard(card, move.from_place);
