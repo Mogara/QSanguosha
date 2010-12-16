@@ -465,8 +465,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
-#ifndef QT_NO_DEBUG
-
 class CheatCard: public SkillCard{
     Q_OBJECT
 
@@ -475,8 +473,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
-
-#endif
 
 class Mashu: public GameStartSkill{
 public:

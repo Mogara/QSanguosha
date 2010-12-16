@@ -503,18 +503,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
 
-#ifndef QT_NO_DEBUG
-    case Qt::Key_D:{
-            int max = Sanguosha->getCardCount();
-            bool ok;
-            int card_id = QInputDialog::getInteger(main_window, tr("Get card"), tr("Plase input the card's id"), 1, 1, max, 1, &ok);
-            if(ok)
-                ClientInstance->requestCard(card_id - 1);
-
-            break;
-        }
-#endif
-
     }
 }
 

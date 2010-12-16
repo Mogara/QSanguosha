@@ -285,8 +285,6 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
     }
 }
 
-#ifndef QT_NO_DEBUG
-
 CheatCard::CheatCard(){
     target_fixed = true;
 }
@@ -294,6 +292,4 @@ CheatCard::CheatCard(){
 void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->obtainCard(source, subcards.first());
 }
-
-#endif
 

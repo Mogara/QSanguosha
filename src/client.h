@@ -147,10 +147,7 @@ public slots:
     void chooseCard(int card_id = -2);
     void choosePlayer(const ClientPlayer *player);
     void trust();
-
-#ifndef QT_NO_DEBUG
     void requestCard(int card_id);
-#endif
 
 private:
     ClientSocket *socket;

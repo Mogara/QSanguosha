@@ -25,6 +25,7 @@ private:
 
 private slots:
     void on_tableWidget_itemSelectionChanged();
+    void askCard();
 };
 
 #endif // CARDOVERVIEW_H

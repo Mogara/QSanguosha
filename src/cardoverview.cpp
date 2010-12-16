@@ -1,6 +1,8 @@
 #include "cardoverview.h"
 #include "ui_cardoverview.h"
 #include "engine.h"
+#include "clientstruct.h"
+#include "client.h"
 
 CardOverview::CardOverview(QWidget *parent) :
     QDialog(parent),
@@ -13,6 +15,11 @@ CardOverview::CardOverview(QWidget *parent) :
     ui->tableWidget->setColumnWidth(2, 30);
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 70);
+
+    if(ServerInfo.FreeChoose)
+        connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
+    else
+        ui->getCardButton->hide();
 }
 
 void CardOverview::loadFromAll(){
@@ -71,4 +78,12 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     ui->cardLabel->setPixmap(pixmap_path);
 
     ui->cardDescriptionBox->setText(card->getDescription());
+}
+
+void CardOverview::askCard(){
+    int row = ui->tableWidget->currentRow();
+    if(row >= 0){
+        int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
+        ClientInstance->requestCard(card_id);
+    }
 }

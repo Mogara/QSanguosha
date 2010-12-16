@@ -305,13 +305,9 @@ void Client::chooseItem(const QString &item_name){
     }
 }
 
-#ifndef QT_NO_DEBUG
-
 void Client::requestCard(int card_id){
     request(QString("useCard @CheatCard=%1->.").arg(card_id));
 }
-
-#endif
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(card == NULL){

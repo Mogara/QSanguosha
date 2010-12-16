@@ -219,8 +219,7 @@ QLayout *ServerDialog::createRight(){
         QVBoxLayout *layout = new QVBoxLayout;
         advanced_box->setLayout(layout);
 
-        free_choose_checkbox = new QCheckBox(tr("Free choose generals"));
-        free_choose_checkbox->setToolTip(tr("Enable this will make the clients choose generals freely"));
+        free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
         free_choose_checkbox->setChecked(Config.FreeChoose);
         layout->addWidget(free_choose_checkbox);
 
