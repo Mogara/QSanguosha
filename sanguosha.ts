@@ -149,7 +149,7 @@
     <message>
         <location filename="src/choosegeneraldialog.cpp" line="91"/>
         <source>Free choose ...</source>
-        <translation>自由选将与自由取牌 ...</translation>
+        <translation>自由选将 ...</translation>
     </message>
 </context>
 <context>
@@ -5639,7 +5639,7 @@
     <message>
         <location filename="src/yitianpackage.cpp" line="572"/>
         <source>:jueji</source>
-        <translation>出牌阶段，你可以弃掉两张相同花色的手牌或装备，为除自己以外的1至3名角色各分配一枚绝汲标记，持有绝汲标记的角色在其摸牌阶段必须让你先摸一张牌，然后少摸一张牌并弃掉一枚绝汲标记，你的回合开始阶段，弃置所有其他角色的绝汲标记</translation>
+        <translation>出牌阶段，你可以弃掉两张相同颜色的牌，指定你以外的1~3名角色，直到你的下回合为止：被指定的角色下个回合摸牌阶段摸牌时，必须先让你摸一张牌，然后少摸一张牌。一回合限用一次</translation>
     </message>
     <message>
         <location filename="src/yitianpackage.cpp" line="573"/>
@@ -5653,68 +5653,68 @@
         <translation>当一个锦囊指定了不止一个目标，且你也是其中之一时，你可以立即摸一张牌，则该锦囊跳过对你的结算</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="576"/>
+        <location filename="src/yitianpackage.cpp" line="578"/>
         <source>guixin2:yes</source>
         <translation>永久改变一名其他角色的势力或永久获得一项未上场或已死亡角色的主公技</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="577"/>
+        <location filename="src/yitianpackage.cpp" line="579"/>
         <source>guixin2:modify</source>
         <translation>永久改变一名其他角色的势力</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="578"/>
+        <location filename="src/yitianpackage.cpp" line="580"/>
         <source>guixin2:obtain</source>
         <oldsource>guixin:obtain</oldsource>
         <translation>永久获得一项未上场或已死亡角色的主公技</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="580"/>
+        <location filename="src/yitianpackage.cpp" line="582"/>
         <source>guixin2:hujia</source>
         <translation>护驾</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="581"/>
+        <location filename="src/yitianpackage.cpp" line="583"/>
         <source>guixin2:jijiang</source>
         <translation>激将</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="582"/>
+        <location filename="src/yitianpackage.cpp" line="584"/>
         <source>guixin2:jiuyuan</source>
         <translation>救援</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="583"/>
+        <location filename="src/yitianpackage.cpp" line="585"/>
         <source>guixin2:huangtian</source>
         <translation>黄天</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="584"/>
+        <location filename="src/yitianpackage.cpp" line="586"/>
         <source>guixin2:xueyi</source>
         <translation>血裔</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="585"/>
+        <location filename="src/yitianpackage.cpp" line="587"/>
         <source>guixin2:baonue</source>
         <translation>暴虐</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="586"/>
+        <location filename="src/yitianpackage.cpp" line="588"/>
         <source>guixin2:songwei</source>
         <translation>颂威</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="588"/>
+        <location filename="src/yitianpackage.cpp" line="590"/>
         <source>:yitian_sword</source>
         <translation>1. 当你在回合外得到一张明牌【杀】时，你可以立即使用此【杀】；2. 当此剑从装备区失去时，你可用此剑指定任意一名角色受到你的1点无属性伤害</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="589"/>
+        <location filename="src/yitianpackage.cpp" line="591"/>
         <source>yitian_sword:yes</source>
         <translation>你可以使用指定任意一名角色受到你的一点无属性伤害</translation>
     </message>
     <message>
-        <location filename="src/yitianpackage.cpp" line="591"/>
+        <location filename="src/yitianpackage.cpp" line="593"/>
         <source>@chengxiang-card</source>
         <translation>请打出点数之和为 %arg 的卡牌以发动【称象】技能</translation>
     </message>

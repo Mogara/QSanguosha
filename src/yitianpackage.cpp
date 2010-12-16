@@ -545,9 +545,9 @@ YitianPackage::YitianPackage()
     //General *caozhi = new General(this, "caozhi", "wei", 3);
     //caozhi->addSkill(new Ganzhen);
 
-    //General *zhanghe = new General(this, "zhangjunyi", "wei");
-    //zhanghe->addSkill(new Jueji);
-    //zhanghe->addSkill(new JuejiClear);
+    General *zhangjunyi = new General(this, "zhangjunyi", "wei");
+    zhangjunyi->addSkill(new Jueji);
+    zhangjunyi->addSkill(new JuejiClear);
 
     t["shencc"] = tr("shencc");
     t["caochong"] = tr("caochong");
@@ -572,6 +572,8 @@ YitianPackage::YitianPackage()
     t[":jueji"] = tr(":jueji");
     t[":jilei"] = tr(":jilei");
     t[":danlao"] = tr(":danlao");
+
+    t["@jueji"] = t["jueji"];
 
     t["guixin2:yes"] = tr("guixin2:yes");
     t["guixin2:modify"] = tr("guixin2:modify");
