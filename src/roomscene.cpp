@@ -143,7 +143,9 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
-    const int widen_width = player_count <= 8 ? 148 : 0;
+    int widen_width = 0;
+    if(player_count != 6 && player_count <= 8)
+        widen_width = 148;
 
     // chat box
     chat_box = new QTextEdit;

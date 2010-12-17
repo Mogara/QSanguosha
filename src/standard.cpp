@@ -337,6 +337,8 @@ StandardPackage::StandardPackage()
     t["offline"] = tr("offline");
     t["trust"] = tr("trust");
 
+    t["cheat"] = tr("cheat");
+
     // normal phrases
     t["yes"] = tr("yes");
     t["no"] = tr("no");

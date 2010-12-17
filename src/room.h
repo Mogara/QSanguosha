@@ -196,6 +196,7 @@ private:
     QList<const ProhibitSkill *> prohibit_skills;
 
     static QString generatePlayerName();
+    void prepareForStart();
 
 private slots:
     void reportDisconnection();

@@ -457,7 +457,7 @@ public:
            return false;
 
         Room *room = yangxiu->getRoom();
-        if(yangxiu->askForSkillInvoke(objectName())){
+        if(room->askForSkillInvoke(yangxiu, objectName(), data)){
             QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
             room->playSkillEffect(objectName());
 

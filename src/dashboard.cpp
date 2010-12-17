@@ -391,7 +391,7 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // draw player's judging area
     int i;
     for(i=0; i<delayed_tricks.count(); i++){
-        QPoint pos(3 + i * 27, 10);
+        QPoint pos(3 + i * 27, 5);
         painter->drawPixmap(pos, delayed_tricks.at(i));
     }
 

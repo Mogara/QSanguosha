@@ -842,32 +842,40 @@ void Room::timerEvent(QTimerEvent *event){
     }else{
         killTimer(event->timerId());
 
-        if(scenario){
-            QStringList generals, roles;
-            scenario->assign(generals, roles);
-
-            int i;
-            for(i=0; i<players.length(); i++){
-                ServerPlayer *player = players.at(i);
-                player->setGeneralName(generals.at(i));
-                player->setRole(roles.at(i));
-
-                broadcastProperty(player, "general");
-                broadcastProperty(player, "role");
-            }
-
-            adjustSeats();
+        if(scenario)
             startGame();
-        }else{
-            assignRoles();
-            adjustSeats();
-
+        else{
             QStringList lord_list = Sanguosha->getRandomLords();
+            QString default_lord = lord_list.first();
             ServerPlayer *the_lord = getLord();
-            the_lord->setProperty("default_general", lord_list.first());
-            the_lord->invoke("doChooseGeneral", lord_list.join("+"));
+            if(the_lord->getState() == "offline") {
+                chooseCommand(the_lord, default_lord);
+            }else{
+                the_lord->setProperty("default_general", default_lord);
+                the_lord->invoke("doChooseGeneral", lord_list.join("+"));
+            }
         }
     }
+}
+
+void Room::prepareForStart(){
+    if(scenario){
+        QStringList generals, roles;
+        scenario->assign(generals, roles);
+
+        int i;
+        for(i=0; i<players.length(); i++){
+            ServerPlayer *player = players.at(i);
+            player->setGeneralName(generals.at(i));
+            player->setRole(roles.at(i));
+
+            broadcastProperty(player, "general");
+            broadcastProperty(player, "role");
+        }
+    }else
+        assignRoles();
+
+    adjustSeats();
 }
 
 void Room::reportDisconnection(){
@@ -879,11 +887,11 @@ void Room::reportDisconnection(){
     // send disconnection message to server log
     emit room_message(player->reportHeader() + tr("disconnected"));
 
-    // the 3 kinds of circumstances
+    // the 4 kinds of circumstances
     // 1. Just connected, with no object name : just remove it from player list
     // 2. Connected, with an object name : remove it, tell other clients and decrease signup_count
-    // 3. Game is not started, but role is assigned, give it the default general and others same with fourth case
-    // 4. Game is started, do not remove it just set its state as offline, and nullify the socket
+    // 3. Game is not started, but role is assigned, give it the default general(general2) and others same with fourth case
+    // 4. Game is started, do not remove it just set its state as offline
     // all above should set its socket to NULL
 
     player->setSocket(NULL);
@@ -902,12 +910,16 @@ void Room::reportDisconnection(){
             signup_count --;
         }
     }else{
-        if(!game_started && player->getGeneral() == NULL){
+        if(!game_started){
             // third case
-            QString default_general = player->property("default_general").toString();
-            if(default_general.isEmpty())
-                default_general = "lumeng";
-            chooseCommand(player, default_general);
+            if(player->getGeneral() == NULL){
+                QString default_general = player->property("default_general").toString();
+                if(default_general.isEmpty())
+                    default_general = "lumeng";
+                chooseCommand(player, default_general);
+            }
+
+            choose2Command(player, QString());
         }
 
         // fourth case
@@ -1022,6 +1034,8 @@ void Room::signupCommand(ServerPlayer *player, const QString &arg){
 
     signup_count ++;
     if(isFull()){
+        prepareForStart();
+
         broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
@@ -1106,7 +1120,14 @@ int Room::getCardFromPile(const QString card_pattern){
 }
 
 void Room::choose2Command(ServerPlayer *player, const QString &general_name){
-    player->setGeneral2Name(general_name);
+    if(!Config.Enable2ndGeneral || player->getGeneral2())
+        return;
+
+    QString name = general_name;
+    if(name.isEmpty())
+        name = player->property("default_general2").toString();
+
+    player->setGeneral2Name(name);
     player->sendProperty("general2");
 
     chosen_generals ++;
@@ -1141,8 +1162,15 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             for(j=0; j<choice_count; j++)
                 choices << general_list[(i-1)*choice_count + j];
 
-            players[i]->setProperty("default_general", choices.first());
-            players[i]->invoke("doChooseGeneral", choices.join("+"));
+            ServerPlayer *p = players.at(i);
+
+            QString default_general = choices.first();
+            if(p->getState() == "offline"){
+                p->setGeneralName(default_general);
+            }else{
+                p->setProperty("default_general", default_general);
+                p->invoke("doChooseGeneral", choices.join("+"));
+            }
         }
     }else
         player->sendProperty("general");
@@ -1166,7 +1194,15 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
                     int index = i*choice_count + j;
                     choices << general_list[index];
                 }
-                players.at(i)->invoke("doChooseGeneral", choices.join("+"));
+
+                QString default_general2 = choices.first();
+                ServerPlayer *p = players.at(i);
+                if(p->getState() == "offline"){
+                    choose2Command(p, default_general2);
+                }else{
+                    p->setProperty("default_general2", default_general2);
+                    p->invoke("doChooseGeneral", choices.join("+"));
+                }
             }
         }else
             startGame();
