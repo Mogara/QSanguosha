@@ -167,15 +167,13 @@ public:
         Room *room = xiahou->getRoom();
         QVariant source = QVariant::fromValue(from);
 
-        if(from && room->askForSkillInvoke(xiahou, "ganglie", source)){
+        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
             room->playSkillEffect(objectName());
 
             const Card *card = room->getJudgeCard(xiahou);
             if(card->getSuit() != Card::Heart){
                 if(!room->askForDiscard(from, 2, true)){
                     DamageStruct damage;
-                    damage.card = NULL;
-                    damage.damage = 1;
                     damage.from = xiahou;
                     damage.to = from;
 

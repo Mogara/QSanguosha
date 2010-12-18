@@ -913,13 +913,12 @@ void Room::reportDisconnection(){
         if(!game_started){
             // third case
             if(player->getGeneral() == NULL){
-                QString default_general = player->property("default_general").toString();
-                if(default_general.isEmpty())
-                    default_general = "lumeng";
-                chooseCommand(player, default_general);
+                if(player->property("default_general").isValid())
+                    chooseCommand(player, QString());
             }
 
-            choose2Command(player, QString());
+            if(player->property("default_general2").isValid())
+                choose2Command(player, QString());
         }
 
         // fourth case
@@ -1142,7 +1141,11 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
         return;
     }
 
-    player->setGeneralName(general_name);
+    QString name = general_name;
+    if(name.isEmpty())
+        name = player->property("default_general").toString();
+
+    player->setGeneralName(name);
 
     static const int max_choice = 5;
     const int total = Sanguosha->getGeneralCount();
@@ -1153,7 +1156,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
         const int max_available = (total-1) / (player_count-1);
         const int choice_count = qMin(max_choice, max_available);
         QSet<QString> the_lord;
-        the_lord << general_name;
+        the_lord << player->getGeneralName();
         QStringList general_list = Sanguosha->getRandomGenerals((player_count-1) * choice_count, the_lord);
 
         int i,j;
@@ -1166,7 +1169,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
             QString default_general = choices.first();
             if(p->getState() == "offline"){
-                p->setGeneralName(default_general);
+                chooseCommand(p, default_general);
             }else{
                 p->setProperty("default_general", default_general);
                 p->invoke("doChooseGeneral", choices.join("+"));
