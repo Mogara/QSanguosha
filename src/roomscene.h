@@ -123,6 +123,7 @@ private:
     void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
     void removeWidgetFromSkillDock(QWidget *widget);
     QList<QPointF> getPhotoPositions() const;
+    void createStateItem();
 
     // animation related functions
     QGraphicsObject *getAnimationObject(const QString &name) const;

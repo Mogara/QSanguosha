@@ -31,6 +31,7 @@ extern "C" {
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
+    Scenario *NewCoupleScenario();
 }
 
 extern irrklang::ISoundEngine *SoundEngine;
@@ -49,6 +50,7 @@ Engine::Engine()
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
+    addScenario(NewCoupleScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");

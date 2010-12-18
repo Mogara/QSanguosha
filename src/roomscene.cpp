@@ -217,6 +217,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(js, SIGNAL(direction_clicked(int)), this, SLOT(onJoyDirectionClicked(int)));
 
     js->start();
+
+    createStateItem();
 }
 
 void RoomScene::adjustItems(){
@@ -564,8 +566,13 @@ void RoomScene::chooseGeneral(const QList<const General *> &generals){
     if(!main_window->isActiveWindow())
         Sanguosha->playAudio("prelude");
 
-    ChooseGeneralDialog *dialog = new ChooseGeneralDialog(generals, main_window);
-    dialog->start();
+    QDialog *dialog = NULL;
+    if(generals.isEmpty())
+        dialog = new FreeChooseDialog(main_window);
+    else
+        dialog = new ChooseGeneralDialog(generals, main_window);
+
+    dialog->exec();
 }
 
 void RoomScene::viewDiscards(){
@@ -2257,10 +2264,7 @@ void RoomScene::chooseGongxinCard(){
     }
 }
 
-void RoomScene::onGameStart(){
-    trust_button->setEnabled(true);
-    updateStatus(ClientInstance->getStatus());
-
+void RoomScene::createStateItem(){
     QGraphicsItem *state_item = addPixmap(QPixmap(":/state.png"));
     state_item->setPos(-110, -90);
     char roles[100] = {0}, *role;
@@ -2296,6 +2300,11 @@ void RoomScene::onGameStart(){
     text_item->setDocument(ClientInstance->getLinesDoc());
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
+}
+
+void RoomScene::onGameStart(){
+    trust_button->setEnabled(true);
+    updateStatus(ClientInstance->getStatus());
 
     QList<ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){

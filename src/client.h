@@ -119,10 +119,10 @@ public:
     void askForDiscard(const QString &discard_str);
     void askForSuit(const QString &);
     void askForKingdom(const QString &);
-    void askForNullification(const QString &ask_str);
-    void askForCardChosen(const QString &ask_str);
+    void askForNullification(const QString &ask_str);    
     void askForPindian(const QString &ask_str);
     void askForYiji(const QString &card_list);
+    void askForCardChosen(const QString &ask_str);
     void askForPlayerChosen(const QString &ask_str);
 
     void attachSkill(const QString &skill_name);
@@ -185,7 +185,6 @@ signals:
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);    
     void generals_got(const QList<const General *> &generals);
-    void message_changed(const QString &message);
     void seats_arranged(const QList<const ClientPlayer*> &seats);    
     void hp_changed(const QString &who, int delta);    
     void status_changed(Client::Status new_status);

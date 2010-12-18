@@ -83,6 +83,7 @@ public:
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
+    void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);
 
     void addProhibitSkill(const ProhibitSkill *skill);
     bool isProhibited(Player *from, Player *to, const Card *card) const;

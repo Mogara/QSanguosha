@@ -100,13 +100,9 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QList<const General *> &generals,
     }
 
     setLayout(dialog_layout);
-}
 
-void ChooseGeneralDialog::start(){
     if(ServerInfo.OperationTimeout != 0)
         startTimer(200);
-
-    exec();
 }
 
 void ChooseGeneralDialog::freeChoose(){
@@ -144,7 +140,7 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
 
 // -------------------------------------
 
-FreeChooseDialog::FreeChooseDialog(QDialog *parent, bool pair_choose)
+FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     :QDialog(parent), pair_choose(pair_choose)
 {
     setWindowTitle(tr("Free choose generals"));

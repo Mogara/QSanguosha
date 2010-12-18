@@ -162,6 +162,10 @@ public:
     void constructTriggerTable(const GameRule *rule);
     bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, ServerPlayer *target);
+
+    void addPlayerSkills(ServerPlayer *player);
+    void removePlayerSkills(ServerPlayer *player);
+
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const QString &skill_name);

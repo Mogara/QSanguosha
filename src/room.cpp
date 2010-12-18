@@ -811,6 +811,31 @@ void Room::installEquip(ServerPlayer *player, const QString &equip_name){
     thread->delay(800);
 }
 
+void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state){
+    const General *furui = player->getGeneral();
+    const General *atarashi = Sanguosha->getGeneral(new_general);
+
+    Q_ASSERT(furui);
+    Q_ASSERT(atarashi);
+
+    LogMessage log;
+    log.type = "#Transfigure";
+    log.from = player;
+    log.arg = new_general;
+    sendLog(log);
+
+    thread->removePlayerSkills(player);
+    setPlayerProperty(player, "general", new_general);
+    thread->addPlayerSkills(player);
+
+    player->setMaxHP(player->getGeneralMaxHP());
+    broadcastProperty(player, "maxhp");
+
+    if(full_state)
+        player->setHp(player->getMaxHP());
+    broadcastProperty(player, "hp");
+}
+
 void Room::addProhibitSkill(const ProhibitSkill *skill){
     if(!prohibit_skills.contains(skill)){
         prohibit_skills << skill;

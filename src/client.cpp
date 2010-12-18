@@ -284,11 +284,15 @@ void Client::drawNCards(const QString &draw_str){
 }
 
 void Client::doChooseGeneral(const QString &generals_str){
-    QStringList generals_list = generals_str.split("+");
     QList<const General *> generals;
-    foreach(QString general_name, generals_list){
-        const General *general = Sanguosha->getGeneral(general_name);
-        generals << general;
+
+    if(generals_str != "."){
+        QStringList generals_list = generals_str.split("+");
+
+        foreach(QString general_name, generals_list){
+            const General *general = Sanguosha->getGeneral(general_name);
+            generals << general;
+        }
     }
 
     emit generals_got(generals);
@@ -344,9 +348,9 @@ void Client::useCard(const Card *card){
 
 void Client::startInXs(const QString &left_seconds){
     int seconds = left_seconds.toInt();
-    emit message_changed(tr("Game will start in %1 seconds").arg(left_seconds));
+    lines_doc->setHtml(tr("Game will start in %1 seconds").arg(left_seconds));
 
-    if(seconds == 0){
+    if(seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL){
         emit avatars_hiden();
     }
 }
@@ -385,7 +389,7 @@ void Client::notifyRoleChange(const QString &new_role){
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if(new_role != "lord")
             prompt_str += tr("\n wait for the lord player choosing general, please");
-        emit message_changed(prompt_str);
+        lines_doc->setHtml(prompt_str);
     }
 }
 

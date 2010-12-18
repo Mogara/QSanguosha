@@ -80,17 +80,37 @@ RoomThread::RoomThread(Room *room)
 {
 }
 
+void RoomThread::addPlayerSkills(ServerPlayer *player){
+    const General *general = player->getGeneral();
+
+    Q_ASSERT(general);
+
+    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    foreach(const TriggerSkill *skill, skills){
+        if(skill->isLordSkill() && !player->isLord())
+            continue;
+
+        addTriggerSkill(skill);
+    }
+}
+
+void RoomThread::removePlayerSkills(ServerPlayer *player){
+    const General *general = player->getGeneral();
+
+    Q_ASSERT(general);
+
+    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    foreach(const TriggerSkill *skill, skills){
+        if(skill->isLordSkill() && !player->isLord())
+            continue;
+
+        removeTriggerSkill(skill);
+    }
+}
+
 void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
-        const General *general = player->getGeneral();
-
-        QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
-        foreach(const TriggerSkill *skill, skills){
-            if(skill->isLordSkill() && !player->isLord())
-                continue;
-
-            addTriggerSkill(skill);
-        }
+        addPlayerSkills(player);
     }   
 
     addTriggerSkill(rule);

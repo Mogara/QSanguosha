@@ -16,8 +16,6 @@ public:
     explicit ChooseGeneralDialog(const QList<const General *> &generals,
                                  QWidget *parent);
 
-    void start();
-
 protected:
     virtual void timerEvent(QTimerEvent *);
 
@@ -33,7 +31,7 @@ class FreeChooseDialog: public QDialog{
     Q_OBJECT
 
 public:
-    explicit FreeChooseDialog(QDialog *parent, bool pair_choose = false);
+    explicit FreeChooseDialog(QWidget *parent, bool pair_choose = false);
 
 private:
     QButtonGroup *group;

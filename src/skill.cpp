@@ -177,7 +177,7 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
 ScenarioRule::ScenarioRule(Scenario *scenario)
     :TriggerSkill(scenario->objectName())
 {
-    setParent(this);
+    setParent(scenario);
 }
 
 int ScenarioRule::getPriority(ServerPlayer *) const{

@@ -13,11 +13,11 @@ class Scenario : public Package
     Q_OBJECT
 
 public:
-    explicit Scenario(const QString &name);
-    int getPlayerCount() const;
-    const ScenarioRule *getRule() const;
-    void getRoles(char *roles) const;
+    explicit Scenario(const QString &name);    
+    const ScenarioRule *getRule() const;    
 
+    virtual int getPlayerCount() const;
+    virtual void getRoles(char *roles) const;
     virtual void assign(QStringList &generals, QStringList &roles) const;
     virtual void onTagSet(Room *room, const QString &key) const = 0;
 

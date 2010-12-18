@@ -41,14 +41,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = "dujiang";
     room->sendLog(log);
 
-    // transfiguration
-    room->setPlayerProperty(source, "general", "shenlumeng");
-    room->getThread()->removeTriggerSkill("keji");
-    room->acquireSkill(source, "shelie", false);
-
-    source->setMaxHP(3);
-    room->broadcastProperty(source, "maxhp");
-    room->broadcastProperty(source, "hp");
+    room->transfigure(source, "shenlumeng", false);
 
     room->setTag("Dujiang", true);
 }
@@ -237,13 +230,7 @@ public:
                 guanyu->throwAllEquips();
                 guanyu->throwAllHandCards();
 
-                room->setPlayerProperty(guanyu, "general", "shenguanyu");
-
-                guanyu->setMaxHP(6);
-                guanyu->setHp(6);
-
-                room->broadcastProperty(guanyu, "maxhp");
-                room->broadcastProperty(guanyu, "hp");
+                room->transfigure(guanyu, "shenguanyu", true);
 
                 room->drawCards(guanyu, 3);
             }

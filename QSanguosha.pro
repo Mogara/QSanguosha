@@ -65,7 +65,8 @@ SOURCES += src/main.cpp \
     src/nostalgia.cpp \
     src/joypackage.cpp \
     src/rolecombobox.cpp \
-    src/joystick.cpp
+    src/joystick.cpp \
+    src/couple-scenario.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -126,7 +127,8 @@ HEADERS += src/mainwindow.h \
     src/joypackage.h \
     src/rolecombobox.h \
     src/standard-equips.h \
-    src/joystick.h
+    src/joystick.h \
+    src/couple-scenario.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
