@@ -76,6 +76,10 @@ public:
         view_as_skill = new TianxiangViewAsSkill;
     }
 
+    virtual int getPriority(ServerPlayer *target) const{
+        return 2;
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *xiaoqiao, QVariant &data) const{
         if(!xiaoqiao->isKongcheng()){
             DamageStruct damage = data.value<DamageStruct>();
