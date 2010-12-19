@@ -369,6 +369,7 @@ StandardPackage::StandardPackage()
     t["#ChooseKingdom"] = tr("#ChooseKingdom");
     t["#NullificationDetails"] = tr("#NullificationDetails");
     t["#WeimuAvoid"] = tr("#WeimuAvoid");
+    t["#Transfigure"] = tr("#Transfigure");
 
     t["$JudgeResult"] = tr("$JudgeResult");
     t["$InitialJudge"] = tr("$InitialJudge");

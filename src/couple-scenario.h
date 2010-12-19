@@ -31,6 +31,7 @@ public:
 
 private:
     QMap<QString, QString> map;
+    QMap<QString, QString> full_map;
 
     void marry(ServerPlayer *husband, ServerPlayer *wife, SpouseMapStar map_star) const;
 };

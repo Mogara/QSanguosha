@@ -18,6 +18,12 @@ public:
         case GameStart:{
                 if(player->isLord()){
                     scenario->marryAll(room);
+                }else if(player->getGeneralName() == "lubu"){
+                    if(player->askForSkillInvoke("reselect"))
+                        room->transfigure(player, "dongzhuo", true);
+                }else if(player->getGeneralName() == "zhugeliang"){
+                    if(player->askForSkillInvoke("reselect"))
+                        room->transfigure(player, "wolong", true);
                 }
 
                 break;
@@ -99,6 +105,8 @@ CoupleScenario::CoupleScenario()
 
     t["couple"] = tr("couple");
 
+    t["reselect"] = tr("reselect");
+
     t["#Marry"] = tr("#Marry");
     t["#Divorse"] = tr("#Divorse");
 
@@ -109,17 +117,24 @@ CoupleScenario::CoupleScenario()
     map["menghuo"] = "zhurong";
     map["zhouyu"] = "xiaoqiao";
     map["lubu"] = "diaochan";
+
+    full_map = map;
+    full_map["dongzhuo"] = "diaochan";
+    full_map["wolong"] = "huangyueying";
 }
 
 void CoupleScenario::marryAll(Room *room) const{
     SpouseMapStar spouse_map = new SpouseMap;
 
-    QList<ServerPlayer *> players = room->getOtherPlayers(room->getLord());
-    foreach(ServerPlayer *player, players){
-        QString wife_name = map.value(player->getGeneralName(), QString());
+    foreach(QString husband_name, full_map.keys()){
+        ServerPlayer *husband = room->findPlayer(husband_name, true);
+        if(husband == NULL)
+            continue;
+
+        QString wife_name = map.value(husband_name, QString());
         if(!wife_name.isNull()){
             ServerPlayer *wife = room->findPlayer(wife_name);
-            marry(player, wife, spouse_map);
+            marry(husband, wife, spouse_map);
         }
     }
 

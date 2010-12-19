@@ -509,8 +509,16 @@ bool Client::isJilei(const Card *card) const{
         return jilei_flags.contains("E");
     else if(card->inherits("TrickCard"))
         return jilei_flags.contains("T");
-    else
-        return false;
+    else if(card->inherits("SkillCard")){
+        QList<int> card_ids = card->getSubcards();
+        foreach(int card_id, card_ids){
+            const Card *subcard = Sanguosha->getCard(card_id);
+            if(isJilei(subcard))
+                return true;
+        }
+    }
+
+    return false;
 }
 
 void Client::setPromptList(const QStringList &texts){

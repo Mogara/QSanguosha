@@ -592,6 +592,9 @@ YitianPackage::YitianPackage()
 
     t["@chengxiang-card"] = tr("@chengxiang-card");
 
+    t["$jilei"] = tr("$jilei");
+    t["$danlao"] = tr("$danlao");
+
     skills << new YitianSwordViewAsSkill;
 
     addMetaObject<ChengxiangCard>();

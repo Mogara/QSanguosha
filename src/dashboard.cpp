@@ -617,12 +617,15 @@ void Dashboard::enableCards(const QString &pattern){
 
             card_item->setEnabled(enabled);
         }
+        return;
     }else if(id_rx.exactMatch(pattern)){
         int id = pattern.toInt();
         foreach(CardItem *card_item, card_items)
             card_item->setEnabled(card_item->getCard()->getId() == id);
+        return;
     }else if(pattern == "."){
         enableAllCards();
+        return;
     }else if(suit_rx.exactMatch(pattern)){
         QChar end = pattern.at(1).toLower();
         foreach(CardItem *card_item, card_items){
@@ -706,11 +709,6 @@ void Dashboard::onCardItemClicked(){
 void Dashboard::updatePending(){
     foreach(CardItem *c, card_items){
         if(!c->isPending()){
-            if(!c->isEquipped() && ClientInstance->isJilei(c->getFilteredCard())){
-                c->setEnabled(false);
-                continue;
-            }
-
             c->setEnabled(view_as_skill->viewFilter(pendings, c));
         }
     }

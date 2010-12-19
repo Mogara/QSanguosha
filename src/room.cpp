@@ -812,12 +812,6 @@ void Room::installEquip(ServerPlayer *player, const QString &equip_name){
 }
 
 void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state){
-    const General *furui = player->getGeneral();
-    const General *atarashi = Sanguosha->getGeneral(new_general);
-
-    Q_ASSERT(furui);
-    Q_ASSERT(atarashi);
-
     LogMessage log;
     log.type = "#Transfigure";
     log.from = player;

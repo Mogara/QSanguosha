@@ -68,6 +68,8 @@ Engine::Engine()
 
     challenge_mode_set = new ChallengeModeSet(this);
     addPackage(challenge_mode_set);
+
+    translations.insert("bossmode", tr("Boss mode"));
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -213,7 +215,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101209";
+    return "20101219";
 }
 
 QStringList Engine::getExtensions() const{
