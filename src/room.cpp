@@ -1944,7 +1944,9 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
 }
 
 ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
-    if(targets.length() == 1)
+    if(targets.isEmpty())
+        return NULL;
+    else if(targets.length() == 1)
         return targets.first();
 
     AI *ai = player->getAI();

@@ -92,8 +92,8 @@ void Photo::createRoleCombobox(){
     QString role = player->getRole();
     if(!role.isEmpty())
         role_combobox->fix(role);
-    else
-        connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
+
+    connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
 }
 
 void Photo::showProcessBar(){

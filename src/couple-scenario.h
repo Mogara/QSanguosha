@@ -27,6 +27,7 @@ public:
     ServerPlayer *getSpouse(ServerPlayer *player) const;
     void remarry(ServerPlayer *enkemann, ServerPlayer *widow) const;
     void disposeSpouseMap(Room *room) const;
+    bool isWidow(ServerPlayer *player) const;
 
 private:
     QMap<QString, QString> map;

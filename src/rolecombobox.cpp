@@ -76,22 +76,17 @@ void RoleCombobox::onItemClicked(){
 }
 
 void RoleCombobox::fix(const QString &role){
-    RoleComboboxItem *fixed = NULL;
-    foreach(RoleComboboxItem *item, items){
-        if(item->getRole() == role){
-            fixed = item;
-        }
-    }
-
+    // create the only one
     QPointF first_pos = items.first()->pos();
-    foreach(RoleComboboxItem *item, items){
-        if(item != fixed)
-            delete item;
-    }
-
-    items.clear();
-    items << fixed;
+    RoleComboboxItem *fixed = new RoleComboboxItem(role, Sanguosha->getRoleIndex());
     fixed->setPos(first_pos);
     fixed->show();
     fixed->setEnabled(false);
+    items.first()->scene()->addItem(fixed);
+
+    // delete all
+    foreach(RoleComboboxItem *item, items)
+        delete item;
+    items.clear();
+    items << fixed;
 }

@@ -26,11 +26,26 @@ public:
         case Death:{
                 player->throwAllCards();
 
-                // remarry
-                if(player->getGeneral()->isMale()){
+                if(player->isLord()){
+                    scenario->marryAll(room);
+                }else if(player->getGeneral()->isMale()){
                     ServerPlayer *widow = scenario->getSpouse(player);
                     if(widow && widow->isAlive() && widow->getGeneral()->isFemale() && room->getLord()->isAlive())
                         scenario->remarry(room->getLord(), widow);
+                }else{
+                    if(player->getRoleEnum() == Player::Loyalist){
+                        QList<ServerPlayer *> players = room->getAllPlayers();
+                        QList<ServerPlayer *> widows;
+                        foreach(ServerPlayer *player, players){
+                            if(scenario->isWidow(player))
+                                widows << player;
+                        }
+
+                        ServerPlayer *new_wife = room->askForPlayerChosen(room->getLord(), widows);
+                        if(new_wife){
+                            scenario->remarry(room->getLord(), new_wife);
+                        }
+                    }
                 }
 
                 QList<ServerPlayer *> players = room->getAllPlayers();
@@ -113,6 +128,9 @@ void CoupleScenario::marryAll(Room *room) const{
 }
 
 void CoupleScenario::marry(ServerPlayer *husband, ServerPlayer *wife, SpouseMapStar map_star) const{
+    if(map_star->value(husband, NULL) == wife && map_star->value(wife, NULL) == husband)
+        return;
+
     LogMessage log;
     log.type = "#Marry";
     log.from = husband;
@@ -162,13 +180,20 @@ void CoupleScenario::disposeSpouseMap(Room *room) const{
     room->setTag("SpouseMap", QVariant());
 }
 
+bool CoupleScenario::isWidow(ServerPlayer *player) const{
+    if(player->getGeneral()->isMale())
+        return false;
+
+    ServerPlayer *spouse = getSpouse(player);
+    return spouse && spouse->isDead();
+}
+
 void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     generals << lord;
 
     QStringList husbands = map.keys();
     qShuffle(husbands);
-    //husbands = husbands.mid(0, 4);
-    husbands = husbands.mid(0, 2);
+    husbands = husbands.mid(0, 4);
 
     QStringList others;
     foreach(QString husband, husbands)
@@ -180,19 +205,16 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     // roles
     roles << "lord";
     int i;
-    //for(i=0; i<8; i++)
-    for(i=0; i<4; i++)
+    for(i=0; i<8; i++)
         roles << "renegade";
 }
 
 int CoupleScenario::getPlayerCount() const{
-    //return 9;
-    return 5;
+    return 9;
 }
 
 void CoupleScenario::getRoles(char *roles) const{
-    //strcpy(roles, "ZNNNNNNNN");
-    strcpy(roles, "ZNNNN");
+    strcpy(roles, "ZNNNNNNNN");
 }
 
 void CoupleScenario::onTagSet(Room *room, const QString &key) const{
