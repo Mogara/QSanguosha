@@ -225,7 +225,7 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::isLord() const{
-    return room->getLord() == this;
+    return getRole() == "lord";
 }
 
 bool ServerPlayer::hasNullification() const{    

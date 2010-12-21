@@ -128,6 +128,7 @@ enum TriggerEvent{
     PhaseChange,
     DrawNCards,
     JudgeOnEffect,
+    HpRecover,
 
     Predamage,
     Predamaged,

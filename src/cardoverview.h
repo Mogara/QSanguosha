@@ -4,6 +4,7 @@
 #include "card.h"
 
 #include <QDialog>
+#include <QTableWidgetItem>
 
 namespace Ui {
     class CardOverview;
@@ -24,6 +25,7 @@ private:
     void addCard(int i, const Card *card);
 
 private slots:
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem* item);
     void on_tableWidget_itemSelectionChanged();
     void askCard();
 };

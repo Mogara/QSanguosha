@@ -75,7 +75,7 @@ int Room::alivePlayerCount() const{
     return alive_players.count();
 }
 
-QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except){
+QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except) const{
     int index = alive_players.indexOf(except);
 
     QList<ServerPlayer *> other_players;
@@ -89,7 +89,7 @@ QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except){
     return other_players;
 }
 
-QList<ServerPlayer *> Room::getAllPlayers(){
+QList<ServerPlayer *> Room::getAllPlayers() const{
     if(current == NULL)
         return alive_players;
 
@@ -104,6 +104,10 @@ QList<ServerPlayer *> Room::getAllPlayers(){
         all_players << alive_players.at(i);
 
     return all_players;
+}
+
+QList<ServerPlayer *> Room::getAlivePlayers() const{
+    return alive_players;
 }
 
 void Room::nextPlayer(){
@@ -1286,9 +1290,8 @@ void Room::recover(ServerPlayer *player, int recover, bool set_emotion){
     if(player->getLostHp() == 0 || player->isDead())
         return;
 
-    int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
-    setPlayerProperty(player, "hp", new_hp);
-    broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
+    QVariant data = recover;
+    thread->trigger(HpRecover, player, data);
 
     if(set_emotion){
         setEmotion(player, Recover);
@@ -1824,7 +1827,16 @@ void Room::resetSkipSet(){
 }
 
 ServerPlayer *Room::getLord() const{
-    return players.first();
+    ServerPlayer *the_lord = players.first();
+    if(the_lord->getRole() == "lord")
+        return the_lord;
+
+    foreach(ServerPlayer *player, players){
+        if(player->getRole() == "lord")
+            return player;
+    }
+
+    return NULL;
 }
 
 void Room::doGuanxing(ServerPlayer *zhuge){

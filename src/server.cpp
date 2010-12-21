@@ -256,6 +256,7 @@ QLayout *ServerDialog::createRight(){
 
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);
+        announce_ip_checkbox->setEnabled(false);
         layout->addWidget(announce_ip_checkbox);
 
         address_edit = new QLineEdit;

@@ -873,6 +873,13 @@ void Client::setLines(const QString &filename){
     }
 }
 
+void Client::setLastWord(const QString &general_name){
+    QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
+    skill_line = tr("<b>%1</b>[dead]: %2").arg(Sanguosha->translate(general_name)).arg(last_word);
+
+    updatePileNum();
+}
+
 QTextDocument *Client::getLinesDoc() const{
     return lines_doc;
 }
@@ -944,7 +951,7 @@ void Client::gameOver(const QString &result_str){
     QList<bool> result_list;
     foreach(ClientPlayer *player, players){
         QString role = player->getRole();
-        bool result = winner.contains(role);
+        bool result = winner.contains(player->objectName()) || winner.contains(role);
         result_list << result;
 
         if(player == Self)

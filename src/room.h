@@ -37,8 +37,9 @@ public:
     void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
-    QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except);
-    QList<ServerPlayer *> getAllPlayers();
+    QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
+    QList<ServerPlayer *> getAllPlayers() const;
+    QList<ServerPlayer *> getAlivePlayers() const;
     void nextPlayer();
     void output(const QString &message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);

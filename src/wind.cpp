@@ -340,11 +340,41 @@ public:
     }
 };
 
+class Buqu: public TriggerSkill{
+public:
+    Buqu():TriggerSkill("buqu"){
+        events << Dying << HpRecover;
+    }
+
+    bool HasDuplicated(ServerPlayer *zhoutai) const{
+        const QList<int> &buqu = zhoutai->getPile("buqu");
+        return buqu.toSet().size() < buqu.size();
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
+        Room *room = zhoutai->getRoom();
+        if(event == Dying){
+            DyingStruct dying = data.value<DyingStruct>();
+            if(room->askForSkillInvoke(zhoutai, objectName(), data)){
+                room->playSkillEffect(objectName());
+
+                return true;
+            }else
+                return false;
+        }else if(event == HpRecover){
+            if(zhoutai->getHp() > 0)
+                return false;
+        }
+
+        return false;
+    }
+};
+
 WindPackage::WindPackage()
     :Package("wind")
 {
     // xiaoqiao, zhoutai and yuji is omitted
-    General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao;
+    General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao; // *zhoutai;
 
     xiahouyuan = new General(this, "xiahouyuan", "wei");
     xiahouyuan->addSkill(new Shensu);
@@ -363,6 +393,9 @@ WindPackage::WindPackage()
     zhangjiao->addSkill(new Leiji);
     zhangjiao->addSkill(new Huangtian);
 
+    //zhoutai = new General(this, "zhoutai", "wu");
+    //zhoutai->addSkill(new Buqu);
+
     t["wind"] = tr("wind");
 
     t["xiahouyuan"] = tr("xiahouyuan");
@@ -370,6 +403,7 @@ WindPackage::WindPackage()
     t["huangzhong"] = tr("huangzhong");
     t["weiyan"] = tr("weiyan");
     t["zhangjiao"] = tr("zhangjiao");
+    t["zhoutai"] = tr("zhoutai");
 
     // skills
     t["shensu"] = tr("shensu");
@@ -379,6 +413,7 @@ WindPackage::WindPackage()
     t["guidao"] = tr("guidao");
     t["leiji"] = tr("leiji");
     t["huangtian"] = t["huangtianv"] = tr("huangtian");
+    t["buqu"] = tr("buqu");
 
     t[":shensu"] = tr(":shensu");
     t[":jushou"] = tr(":jushou");
@@ -387,6 +422,7 @@ WindPackage::WindPackage()
     t[":guidao"] = tr(":guidao");
     t[":leiji"] = tr(":leiji");
     t[":huangtian"] = tr(":huangtian");
+    t[":buqu"] = tr(":buqu");
 
     // skill prompt
     t["liegong:yes"] = tr("liegong:yes");
@@ -412,6 +448,8 @@ WindPackage::WindPackage()
     t["$liegong2"]=tr("$liegong2");
     t["$shensu1"]=tr("$shensu1");
     t["$shensu2"]=tr("$shensu2");
+    t["$buqu1"] = tr("$buqu1");
+    t["$buqu2"] = tr("$buqu2");
 }
 
 ADD_PACKAGE(Wind)

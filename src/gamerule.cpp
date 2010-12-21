@@ -8,8 +8,8 @@ GameRule::GameRule(QObject *parent)
 {
     setParent(parent);
 
-    events << GameStart << PhaseChange << CardUsed << Predamaged
-            << CardEffected << Death << Dying
+    events << GameStart << PhaseChange << CardUsed << HpRecover
+            << Predamaged << CardEffected << Death << Dying
             << SlashResult << SlashEffected << SlashProceed;
 }
 
@@ -136,6 +136,16 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 card_use.from->playCardEffect(card);
                 card->use(room, card_use.from, card_use.to);
             }
+
+            break;
+        }
+
+    case HpRecover:{
+            int recover = data.toInt();
+
+            int new_hp = qMin(player->getHp() + recover, player->getMaxHP());
+            room->setPlayerProperty(player, "hp", new_hp);
+            room->broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(recover));
 
             break;
         }

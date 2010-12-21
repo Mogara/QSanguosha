@@ -87,3 +87,8 @@ void CardOverview::askCard(){
         ClientInstance->requestCard(card_id);
     }
 }
+
+void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
+{
+    askCard();
+}

@@ -57,6 +57,7 @@ public:
     bool save(const QString &filename) const;
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
+    void setLastWord(const QString &general_name);
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
     bool isJilei(const Card *card) const;

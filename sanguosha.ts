@@ -204,63 +204,68 @@
         <translation>请选择:</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="897"/>
+        <location filename="src/client.cpp" line="878"/>
+        <source>&lt;b&gt;%1&lt;/b&gt;[dead]: %2</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt;【阵亡】: %2</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="904"/>
         <source>Draw pile: %1, discard pile: %2 &lt;br/&gt; %3</source>
         <translation>摸牌堆: %1， 弃牌堆: %2 &lt;br/&gt; %3</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="904"/>
+        <location filename="src/client.cpp" line="911"/>
         <source>Discarding string is not well formatted!</source>
         <translation>弃牌字符串没有格式化好!</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="917"/>
+        <location filename="src/client.cpp" line="924"/>
         <source>Please discard %1 card(s), include equip</source>
         <translation>请弃掉 %1 张牌，包括装备</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="919"/>
+        <location filename="src/client.cpp" line="926"/>
         <source>Please discard %1 card(s), only hand cards is allowed</source>
         <translation>请弃掉 %1 张手牌</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="964"/>
+        <location filename="src/client.cpp" line="971"/>
         <source>Game is over now</source>
         <translation>游戏已经结束</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="993"/>
+        <location filename="src/client.cpp" line="1000"/>
         <source>Please choose a suit</source>
         <translation>请选择一种花色</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1030"/>
+        <location filename="src/client.cpp" line="1037"/>
         <source>Please choose a kingdom</source>
         <translation>请选择一个势力</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1116"/>
+        <location filename="src/client.cpp" line="1123"/>
         <source>You are dying, please provide %1 peach(es)(or analeptic) to save yourself</source>
         <oldsource>You are dying, please provide %2 peach(es)(or analeptic) to save yourself</oldsource>
         <translation>您正在死亡线上挣扎，请提供 %1 个桃子（或酒）来救您自己</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1120"/>
+        <location filename="src/client.cpp" line="1127"/>
         <source>%1 is dying, please provide %2 peach(es) to save him</source>
         <translation>%1 正在死亡线上挣扎，请提供 %2 个桃子来拯救他</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1131"/>
+        <location filename="src/client.cpp" line="1138"/>
         <source>%1 request you to show one hand card</source>
         <translation>%1 要求您展示一张手牌</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1230"/>
+        <location filename="src/client.cpp" line="1237"/>
         <source>Please play a card for pindian</source>
         <translation>请打出一张卡牌以用于拼点</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1232"/>
+        <location filename="src/client.cpp" line="1239"/>
         <source>%1 ask for you to play a card to pindian</source>
         <translation>%1 要求你打出一张卡牌已用于拼点</translation>
     </message>
@@ -271,8 +276,8 @@
         <location filename="src/client.cpp" line="221"/>
         <location filename="src/client.cpp" line="431"/>
         <location filename="src/client.cpp" line="451"/>
-        <location filename="src/client.cpp" line="904"/>
-        <location filename="src/client.cpp" line="964"/>
+        <location filename="src/client.cpp" line="911"/>
+        <location filename="src/client.cpp" line="971"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -571,12 +576,12 @@
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="63"/>
+        <location filename="src/connectiondialog.cpp" line="65"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="63"/>
+        <location filename="src/connectiondialog.cpp" line="65"/>
         <source>The user name can not be empty!</source>
         <translation>用户名不能为空!</translation>
     </message>
@@ -2379,22 +2384,22 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="913"/>
+        <location filename="src/room.cpp" line="907"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1018"/>
+        <location filename="src/room.cpp" line="1012"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1010"/>
+        <location filename="src/room.cpp" line="1004"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1699"/>
+        <location filename="src/room.cpp" line="1692"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2740,18 +2745,18 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="574"/>
+        <location filename="src/server.cpp" line="575"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="588"/>
+        <location filename="src/server.cpp" line="589"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="519"/>
+        <location filename="src/server.cpp" line="520"/>
         <source>Server can be detected at WAN</source>
         <translation>服务器已可在广域网上被探测</translation>
     </message>
@@ -2809,38 +2814,38 @@
         <translation>在广域网上公布我的 IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="263"/>
+        <location filename="src/server.cpp" line="264"/>
         <source>Public IP or domain</source>
         <translation>公网 IP 或域名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="265"/>
+        <location filename="src/server.cpp" line="266"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="267"/>
+        <location filename="src/server.cpp" line="268"/>
         <source>Detect my WAN IP</source>
         <translation>探测我的广域网IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="282"/>
+        <location filename="src/server.cpp" line="283"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="288"/>
+        <location filename="src/server.cpp" line="289"/>
         <source>Stupid</source>
         <translation>愚蠢</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="343"/>
-        <location filename="src/server.cpp" line="358"/>
+        <location filename="src/server.cpp" line="344"/>
+        <location filename="src/server.cpp" line="359"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="358"/>
+        <location filename="src/server.cpp" line="359"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -2876,27 +2881,27 @@
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="289"/>
+        <location filename="src/server.cpp" line="290"/>
         <source>Normal</source>
         <translation>一般</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="290"/>
+        <location filename="src/server.cpp" line="291"/>
         <source>Smart</source>
         <translation>聪明</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="276"/>
+        <location filename="src/server.cpp" line="277"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="317"/>
+        <location filename="src/server.cpp" line="318"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="318"/>
+        <location filename="src/server.cpp" line="319"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -5343,16 +5348,21 @@
         <source>$zaiqi3</source>
         <translation>敌军势大，吾先退避</translation>
     </message>
+    <message>
+        <location filename="src/thicket.cpp" line="951"/>
+        <source>$roulin1</source>
+        <translation>屈我淫威，哈哈</translation>
+    </message>
 </context>
 <context>
     <name>UdpDetectorDialog</name>
     <message>
-        <location filename="src/connectiondialog.cpp" line="136"/>
+        <location filename="src/connectiondialog.cpp" line="138"/>
         <source>Detect available server&apos;s addresses at LAN</source>
         <translation>在局域网内探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="src/connectiondialog.cpp" line="137"/>
+        <location filename="src/connectiondialog.cpp" line="139"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
@@ -5360,138 +5370,163 @@
 <context>
     <name>WindPackage</name>
     <message>
-        <location filename="src/wind.cpp" line="366"/>
+        <location filename="src/wind.cpp" line="399"/>
         <source>wind</source>
         <translation>风包</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="368"/>
+        <location filename="src/wind.cpp" line="401"/>
         <source>xiahouyuan</source>
         <oldsource>xiaohouyuan</oldsource>
         <translation>夏侯渊</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="369"/>
+        <location filename="src/wind.cpp" line="402"/>
         <source>caoren</source>
         <translation>曹仁</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="370"/>
+        <location filename="src/wind.cpp" line="403"/>
         <source>huangzhong</source>
         <translation>黄忠</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="371"/>
+        <location filename="src/wind.cpp" line="404"/>
         <source>weiyan</source>
         <translation>魏延</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="372"/>
+        <location filename="src/wind.cpp" line="405"/>
         <source>zhangjiao</source>
         <translation>张角</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="376"/>
+        <location filename="src/wind.cpp" line="406"/>
+        <source>zhoutai</source>
+        <translation>周泰</translation>
+    </message>
+    <message>
+        <location filename="src/wind.cpp" line="410"/>
         <source>jushou</source>
         <translation>据守</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="377"/>
+        <location filename="src/wind.cpp" line="411"/>
         <source>liegong</source>
         <translation>烈弓</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="378"/>
+        <location filename="src/wind.cpp" line="412"/>
         <source>kuanggu</source>
         <translation>狂骨</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="379"/>
+        <location filename="src/wind.cpp" line="413"/>
         <source>guidao</source>
         <translation>鬼道</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="380"/>
+        <location filename="src/wind.cpp" line="414"/>
         <source>leiji</source>
         <translation>雷击</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="381"/>
+        <location filename="src/wind.cpp" line="415"/>
         <source>huangtian</source>
         <translation>黄天</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="393"/>
+        <location filename="src/wind.cpp" line="416"/>
+        <source>buqu</source>
+        <translation>不屈</translation>
+    </message>
+    <message>
+        <location filename="src/wind.cpp" line="425"/>
+        <source>:buqu</source>
+        <translation>任何时候，当你的体力被扣减到0或更低时，每扣减1点体力：从牌堆亮出一张牌放在你的武将牌上，若该牌的点数与你武将牌上已有的任何一张牌都不同，你可以不死。此牌亮出的时刻为你的濒死状态</translation>
+    </message>
+    <message>
+        <location filename="src/wind.cpp" line="429"/>
         <source>jushou:yes</source>
         <translation>摸三张牌，若如此做，并将你的武将翻面</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="395"/>
+        <location filename="src/wind.cpp" line="431"/>
         <source>@shensu1</source>
         <translation>跳过该回合的判定阶段和摸牌阶段, 视为对任意一名角色使用了一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="396"/>
+        <location filename="src/wind.cpp" line="432"/>
         <source>@shensu2</source>
         <translation>跳过该回合出牌阶段并弃一张装备牌视为对任意一名角色使用了一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="405"/>
+        <location filename="src/wind.cpp" line="441"/>
         <source>$huangtian1</source>
         <translation>苍天已死，黄天当立</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="406"/>
+        <location filename="src/wind.cpp" line="442"/>
         <source>$huangtian2</source>
         <translation>岁在甲子，天下大吉</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="407"/>
+        <location filename="src/wind.cpp" line="443"/>
         <source>$jushou1</source>
         <translation>我先休息一会</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="408"/>
+        <location filename="src/wind.cpp" line="444"/>
         <source>$jushou2</source>
         <translation>尽管来吧</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="409"/>
+        <location filename="src/wind.cpp" line="445"/>
         <source>$leiji1</source>
         <translation>以我之真气，合天地之造化</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="410"/>
+        <location filename="src/wind.cpp" line="446"/>
         <source>$leiji2</source>
         <translation>雷公助我</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="411"/>
+        <location filename="src/wind.cpp" line="447"/>
         <source>$liegong1</source>
         <translation>百步穿杨</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="412"/>
+        <location filename="src/wind.cpp" line="448"/>
         <source>$liegong2</source>
         <translation>中！</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="413"/>
+        <location filename="src/wind.cpp" line="449"/>
         <source>$shensu1</source>
         <translation>吾善于千里袭人</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="414"/>
+        <location filename="src/wind.cpp" line="450"/>
         <source>$shensu2</source>
         <translation>取汝首级犹如探囊取物</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="375"/>
+        <location filename="src/wind.cpp" line="451"/>
+        <source>$buqu1</source>
+        <translation>还不够！</translation>
+    </message>
+    <message>
+        <location filename="src/wind.cpp" line="452"/>
+        <source>$buqu2</source>
+        <translation>我绝不会倒下！</translation>
+    </message>
+    <message>
+        <location filename="src/wind.cpp" line="409"/>
         <source>shensu</source>
         <translation>神速</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="383"/>
+        <location filename="src/wind.cpp" line="418"/>
         <source>:shensu</source>
         <translation>你可以分别作出下列选择：
 1、跳过该回合的判定阶段和摸牌阶段
@@ -5499,38 +5534,38 @@
 你每做出上述之一项选择，视为对任意一名角色使用了一张【杀】</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="384"/>
+        <location filename="src/wind.cpp" line="419"/>
         <source>:jushou</source>
         <translation>回合结束阶段，你可以摸三张牌，若如此做，并将你的武将翻面</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="385"/>
+        <location filename="src/wind.cpp" line="420"/>
         <source>:liegong</source>
         <translation>出牌阶段，以下两种情况，你可以令你使用的『杀』不可被闪避：1、目标角色的手牌数大于或等于你的体力值。2、目标角色的手牌数小于或等于你的攻击范围
 ★攻击范围计算只和武器有关，与+1马-1马无关</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="386"/>
+        <location filename="src/wind.cpp" line="421"/>
         <source>:kuanggu</source>
         <translation>锁定技，任何时候，你每对与你距离1以内的一名角色造成1点伤害，你回复1点体力</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="387"/>
+        <location filename="src/wind.cpp" line="422"/>
         <source>:guidao</source>
         <translation>在任意一名角色的判定牌生效前，你可以用自己的一张【黑桃】或【梅花】牌替换之</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="388"/>
+        <location filename="src/wind.cpp" line="423"/>
         <source>:leiji</source>
         <translation>每当你使用或打出一张【闪】时（在结算前），可令任意一名角色判定，若为【黑桃】，你对该角色造成2点雷电伤害</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="389"/>
+        <location filename="src/wind.cpp" line="424"/>
         <source>:huangtian</source>
         <translation>主公技，群雄角色可在他们各自的回合里给你一张【闪】或【闪电】</translation>
     </message>
     <message>
-        <location filename="src/wind.cpp" line="392"/>
+        <location filename="src/wind.cpp" line="428"/>
         <source>liegong:yes</source>
         <translation>此【杀】不可闪避</translation>
     </message>

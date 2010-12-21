@@ -937,17 +937,18 @@ ThicketPackage::ThicketPackage()
     addMetaObject<HaoshiCard>();
 
     //lines
-    t["$baonue"]=tr("$baonue");
-    t["$benghuai"]=tr("$benghuai");
-    t["$huoshou"]=tr("$huoshou");
-    t["$jiuchi"]=tr("$jiuchi");
-    t["$juxiang"]=tr("$juxiang");
-    t["$lieren1"]=tr("$lieren1");
-    t["$lieren2"]=tr("$lieren2");
-    t["$lieren3"]=tr("$lieren3");
-    t["$zaiqi1"]=tr("$zaiqi1");
-    t["$zaiqi2"]=tr("$zaiqi2");
-    t["$zaiqi3"]=tr("$zaiqi3");
+    t["$baonue"] = tr("$baonue");
+    t["$benghuai"] = tr("$benghuai");
+    t["$huoshou"] = tr("$huoshou");
+    t["$jiuchi"] = tr("$jiuchi");
+    t["$juxiang"] = tr("$juxiang");
+    t["$lieren1"] = tr("$lieren1");
+    t["$lieren2"] = tr("$lieren2");
+    t["$lieren3"] = tr("$lieren3");
+    t["$zaiqi1"] = tr("$zaiqi1");
+    t["$zaiqi2"] = tr("$zaiqi2");
+    t["$zaiqi3"] = tr("$zaiqi3");
+    t["$roulin1"] = tr("$roulin1");
 }
 
 ADD_PACKAGE(Thicket)

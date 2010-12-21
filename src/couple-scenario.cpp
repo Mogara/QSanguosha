@@ -40,6 +40,8 @@ public:
                         scenario->remarry(room->getLord(), widow);
                 }else{
                     if(player->getRoleEnum() == Player::Loyalist){
+                        room->setPlayerProperty(player, "role", "renegade");
+
                         QList<ServerPlayer *> players = room->getAllPlayers();
                         QList<ServerPlayer *> widows;
                         foreach(ServerPlayer *player, players){
@@ -54,7 +56,7 @@ public:
                     }
                 }
 
-                QList<ServerPlayer *> players = room->getAllPlayers();
+                QList<ServerPlayer *> players = room->getAlivePlayers();
                 if(players.length() == 1){
                     ServerPlayer *survivor = players.first();
                     ServerPlayer *spouse = scenario->getSpouse(survivor);
@@ -124,7 +126,11 @@ CoupleScenario::CoupleScenario()
 }
 
 void CoupleScenario::marryAll(Room *room) const{
-    SpouseMapStar spouse_map = new SpouseMap;
+    SpouseMapStar spouse_map = NULL;
+    if(room->getTag("SpouseMap").isValid())
+        spouse_map = room->getTag("SpouseMap").value<SpouseMapStar>();
+    else
+        spouse_map = new SpouseMap;
 
     foreach(QString husband_name, full_map.keys()){
         ServerPlayer *husband = room->findPlayer(husband_name, true);
@@ -133,7 +139,7 @@ void CoupleScenario::marryAll(Room *room) const{
 
         QString wife_name = map.value(husband_name, QString());
         if(!wife_name.isNull()){
-            ServerPlayer *wife = room->findPlayer(wife_name);
+            ServerPlayer *wife = room->findPlayer(wife_name, true);
             marry(husband, wife, spouse_map);
         }
     }
@@ -208,7 +214,8 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
 
     QStringList husbands = map.keys();
     qShuffle(husbands);
-    husbands = husbands.mid(0, 4);
+    //husbands = husbands.mid(0, 4);
+    husbands = husbands.mid(0, 1);
 
     QStringList others;
     foreach(QString husband, husbands)
@@ -220,16 +227,19 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     // roles
     roles << "lord";
     int i;
-    for(i=0; i<8; i++)
+    //for(i=0; i<8; i++)
+    for(i=0; i<2; i++)
         roles << "renegade";
 }
 
 int CoupleScenario::getPlayerCount() const{
-    return 9;
+    //return 9;
+    return 3;
 }
 
 void CoupleScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZNNNNNNNN");
+    //strcpy(roles, "ZNNNNNNNN");
+    strcpy(roles, "ZNN");
 }
 
 void CoupleScenario::onTagSet(Room *room, const QString &key) const{
