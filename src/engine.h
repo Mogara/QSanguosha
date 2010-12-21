@@ -16,12 +16,15 @@ class Scenario;
 class ChallengeModeSet;
 class ChallengeMode;
 
+struct lua_State;
+
 class Engine: public QObject
 {
     Q_OBJECT
 
 public:
     explicit Engine();
+    ~Engine();
 
     QString translate(const QString &to_translate) const;    
 
@@ -80,6 +83,8 @@ private:
     QList<Card*> cards;
     QStringList lord_list, nonlord_list;
     QSet<QString> ban_package;
+
+    lua_State *lua;
 
     QStringList getLimitedGeneralNames() const;
 };

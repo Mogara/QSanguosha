@@ -7,6 +7,12 @@
 #include "challengemode.h"
 #include "irrKlang.h"
 
+extern "C"{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
 typedef irrklang::ISound SoundType;
 
 #include <QFile>
@@ -70,6 +76,15 @@ Engine::Engine()
     addPackage(challenge_mode_set);
 
     translations.insert("bossmode", tr("Boss mode"));
+
+    // lua = luaL_newstate();
+    // luaL_openlibs(lua);
+
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+}
+
+Engine::~Engine(){
+    // lua_close(lua);
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -435,6 +450,9 @@ void Engine::playEffect(const QString &filename) const{
         return;
 
     if(filename.isNull())
+        return;
+
+    if(SoundEngine == NULL)
         return;
 
     if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))

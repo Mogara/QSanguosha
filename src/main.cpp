@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         SoundEngine = irrklang::createIrrKlangDevice();
         Sanguosha = new Engine;
 
-        BanPair::loadBanPairs();
+        //BanPair::loadBanPairs();
         widget = new MainWindow;
     }
 

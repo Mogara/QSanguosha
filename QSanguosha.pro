@@ -140,11 +140,12 @@ FORMS += src/mainwindow.ui \
 RESOURCES += resource/images/sanguosha.qrc
 INCLUDEPATH += include/libircclient
 INCLUDEPATH += include/irrKlang
+INCLUDEPATH += include/lua
 INCLUDEPATH += include
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += static-libircclient.lib -lws2_32 irrKlang.lib -lplibjs -lplibul -lwinmm -L.
+    LIBS += -L. static-libircclient.lib -lws2_32 irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
 }
 
 unix {
