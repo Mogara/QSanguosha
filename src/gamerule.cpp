@@ -264,6 +264,9 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case Death:{
             player->throwAllCards();
 
+            if(room->getTag("SkipNormalDeathProcess").toBool())
+                return false;
+
             QString winner;
             QStringList alive_roles = room->aliveRoles(player);
 

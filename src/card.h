@@ -25,6 +25,7 @@ class Card : public QObject
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
     Q_PROPERTY(bool target_fixed READ targetFixed)
+    Q_PROPERTY(bool once READ isOnce CONSTANT)
 
     Q_ENUMS(Suit)
 
@@ -53,6 +54,7 @@ public:
     void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
+
     QString getPixmapPath() const;
     QString getIconPath() const;
     QString getPackage() const;    
@@ -87,6 +89,9 @@ public:
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool isAvailable() const;
 
+    // it can be used only once a turn or not
+    bool isOnce() const;
+
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void use(const QList<const ClientPlayer *> &targets) const;
@@ -105,6 +110,7 @@ public:
 protected:
     QList<int> subcards;
     bool target_fixed;
+    bool once;
     QString skill_name;
 
 private:

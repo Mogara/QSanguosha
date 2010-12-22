@@ -541,7 +541,7 @@ bool SavageAssault::isAvailable() const{
     if(isRed())
         return true;
 
-    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
         if(player != Self && player->isAlive() && !player->hasSkill("weimu"))
             return true;
@@ -605,7 +605,7 @@ Collateral::Collateral(Card::Suit suit, int number)
 }
 
 bool Collateral::isAvailable() const{
-    QList<const ClientPlayer*> players = ClientInstance->findChildren<const ClientPlayer*>();
+    QList<const ClientPlayer*> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
         if(player->getWeapon() != NULL && player != Self)
             return true;

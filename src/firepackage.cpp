@@ -6,6 +6,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "maneuvering.h"
+#include "standard-commons.h"
 
 QuhuCard::QuhuCard(){
 

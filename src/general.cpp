@@ -40,8 +40,6 @@ bool General::isLord() const{
 }
 
 QString General::getPixmapPath(const QString &category) const{
-   //return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
-
     QString suffix = "png";
     if(category == "card")
         suffix = "jpg";

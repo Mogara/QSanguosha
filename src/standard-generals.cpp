@@ -6,6 +6,7 @@
 #include "carditem.h"
 #include "serverplayer.h"
 #include "room.h"
+#include "standard-commons.h"
 
 class Jianxiong:public MasochismSkill{
 public:
@@ -550,17 +551,6 @@ public:
     }
 };
 
-Mashu::Mashu()
-    :GameStartSkill("mashu")
-{
-    frequency = Compulsory;
-}
-
-void Mashu::onGameStart(ServerPlayer *player) const
-{
-    player->getRoom()->setPlayerCorrect(player, "M");
-}
-
 class Guanxing:public PhaseChangeSkill{
 public:
     Guanxing():PhaseChangeSkill("guanxing"){
@@ -717,18 +707,6 @@ public:
         return false;
     }
 };
-
-class Qianxun: public ProhibitSkill{
-public:
-    Qianxun():ProhibitSkill("qianxun"){
-
-    }
-
-    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->inherits("Snatch") || card->inherits("Indulgence");
-    }
-};
-
 
 class Lianying: public TriggerSkill{
 public:

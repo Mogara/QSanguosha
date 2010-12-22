@@ -9,8 +9,6 @@
 
 extern "C"{
 #include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
 }
 
 typedef irrklang::ISound SoundType;
@@ -44,6 +42,8 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 Engine::Engine()
 {
+    Sanguosha = this;
+
     addPackage(NewStandard());
     addPackage(NewWind());
     addPackage(NewFire());
@@ -77,14 +77,20 @@ Engine::Engine()
 
     translations.insert("bossmode", tr("Boss mode"));
 
-    // lua = luaL_newstate();
-    // luaL_openlibs(lua);
-
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+
+    doStartScript();
+}
+
+void Engine::addTranslationEntry(const char *key, const char *value){
+    translations.insert(key, QString::fromUtf8(value));
 }
 
 Engine::~Engine(){
-    // lua_close(lua);
+    lua_close(lua);
+
+    if(SoundEngine)
+        SoundEngine->drop();
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -201,6 +207,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
     if(meta){
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+        card_obj->setObjectName(name);
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;    
@@ -230,7 +237,7 @@ AI *Engine::cloneAI(ServerPlayer *player) const{
 }
 
 QString Engine::getVersion() const{
-    return "20101219";
+    return "20101221";
 }
 
 QStringList Engine::getExtensions() const{

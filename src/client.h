@@ -49,7 +49,7 @@ public:
     void replyYiji(const Card *card, const ClientPlayer *to);
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     void replyGongxin(int card_id = -1);
-    QList<ClientPlayer *> getPlayers() const;
+    QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);    
     ClientPlayer *getPlayer(const QString &name);
     void surrender();
@@ -156,7 +156,7 @@ private:
     QSet<QString> frequent_flags;
     int alive_count;
     QHash<QString, Callback> callbacks;
-    QList<ClientPlayer*> players;
+    QList<const ClientPlayer*> players;
     NullificationDialog *nullification_dialog;
     bool use_card;
     QStringList ban_packages;

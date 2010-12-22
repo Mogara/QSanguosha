@@ -830,7 +830,7 @@ ThicketPackage::ThicketPackage()
     menghuo->addSkill(new Zaiqi);
 
     zhurong = new General(this, "zhurong", "shu", 4, false);
-    menghuo->addSkill(new SavageAssaultAvoid("juxiang"));
+    zhurong->addSkill(new SavageAssaultAvoid("juxiang"));
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
 

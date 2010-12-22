@@ -103,7 +103,7 @@ private:
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
     void clickSkillButton(int order);
     void useCard(const Card *card);
-    void fillTable(QTableWidget *table, const QList<ClientPlayer *> &players);
+    void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     const ViewAsSkill *getViewAsSkill(const QString &skill_name);
 
     void viewDiscards();

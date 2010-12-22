@@ -474,10 +474,4 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
-class Mashu: public GameStartSkill{
-public:
-    Mashu();
-    virtual void onGameStart(ServerPlayer *player) const;
-};
-
 #endif // STANDARD_H

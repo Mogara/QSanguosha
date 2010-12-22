@@ -1822,11 +1822,11 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     winner_table->setColumnCount(4);
     loser_table->setColumnCount(4);
 
-    QList<ClientPlayer *> players = ClientInstance->getPlayers();
-    QList<ClientPlayer *> winner_list, loser_list;
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+    QList<const ClientPlayer *> winner_list, loser_list;
     int i;
     for(i=0; i<players.length(); i++){
-        ClientPlayer *player = players.at(i);
+        const ClientPlayer *player = players.at(i);
         bool result = result_list.at(i);
 
         if(result)
@@ -1892,7 +1892,7 @@ void RoomScene::saveReplayRecord(){
     ClientInstance->save(filename);
 }
 
-void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &players){
+void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
     static QStringList labels;
     if(labels.isEmpty())
         labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
@@ -1902,7 +1902,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<ClientPlayer *> &play
 
     int i;
     for(i=0; i<players.length(); i++){
-        ClientPlayer *player = players.at(i);
+        const ClientPlayer *player = players.at(i);
 
         QTableWidgetItem *item = new QTableWidgetItem;
         item->setText(Sanguosha->translate(player->getGeneralName()));
@@ -2306,7 +2306,7 @@ void RoomScene::onGameStart(){
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
 
-    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
         connect(player, SIGNAL(turn_started()), log_box, SLOT(appendSeparator()));
     }
@@ -2462,11 +2462,11 @@ void RoomScene::kick(){
     }
 
     QStringList items;
-    QList<ClientPlayer *> players = ClientInstance->getPlayers();
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     if(players.isEmpty())
         return;
 
-    foreach(ClientPlayer *player, players){
+    foreach(const ClientPlayer *player, players){
         QString general_name = Sanguosha->translate(player->getGeneralName());
         items << QString("%1[%2]").arg(player->screenName()).arg(general_name);
     }

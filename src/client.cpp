@@ -939,7 +939,8 @@ void Client::gameOver(const QString &result_str){
 
     int i;
     for(i=0; i<roles.length(); i++){
-        players.at(i)->setRole(roles.at(i));
+        QString name = players.at(i)->objectName();
+        findChild<ClientPlayer *>(name)->setRole(roles.at(i));
     }
 
     if(winner == "."){
@@ -949,7 +950,7 @@ void Client::gameOver(const QString &result_str){
 
     bool victory = false;
     QList<bool> result_list;
-    foreach(ClientPlayer *player, players){
+    foreach(const ClientPlayer *player, players){
         QString role = player->getRole();
         bool result = winner.contains(player->objectName()) || winner.contains(role);
         result_list << result;
@@ -1156,7 +1157,7 @@ void Client::chooseAG(int card_id){
     setStatus(NotActive);
 }
 
-QList<ClientPlayer*> Client::getPlayers() const{
+QList<const ClientPlayer*> Client::getPlayers() const{
     return players;
 }
 

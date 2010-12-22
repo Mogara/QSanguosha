@@ -13,7 +13,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
         number = 0;
@@ -404,6 +404,10 @@ bool Card::isAvailable() const{
     return true;
 }
 
+bool Card::isOnce() const{
+    return once;
+}
+
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()
@@ -430,10 +434,9 @@ QString SkillCard::toString() const{
 // ---------- Dummy card      -------------------
 
 DummyCard::DummyCard()
-    :Card(NoSuit, 0)
+    :Card(NoSuit, 0, true)
 {
     setObjectName("dummy");
-    target_fixed = true;
 }
 
 QString DummyCard::getType() const{

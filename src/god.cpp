@@ -362,16 +362,6 @@ void Feiying::onGameStart(ServerPlayer *player) const
     player->getRoom()->setPlayerCorrect(player, "F");
 };
 
-class KuangbaoStart: public GameStartSkill{
-public:
-    KuangbaoStart():GameStartSkill("#kuangbao"){
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->gainMark("@wrath", 2);
-    }
-};
-
 class Kuangbao: public TriggerSkill{
 public:
     Kuangbao():TriggerSkill("kuangbao"){
@@ -1000,7 +990,7 @@ GodPackage::GodPackage()
 
     General *shenlubu = new General(this, "shenlubu", "god", 5);
     shenlubu->addSkill(new Kuangbao);
-    shenlubu->addSkill(new KuangbaoStart);
+    shenlubu->addSkill(new MarkAssignSkill("@wrath", 2));
     shenlubu->addSkill(new Wumou);
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);

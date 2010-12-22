@@ -4,6 +4,8 @@
 #include "client.h"
 #include "carditem.h"
 #include "god.h"
+#include "standard.h"
+#include "standard-commons.h"
 
 class YitianSwordSkill : public WeaponSkill{
 public:
@@ -273,23 +275,6 @@ public:
     }
 };
 
-class Plum: public DelayedTrick{
-public:
-    Plum(Suit suit, int number):DelayedTrick(suit, number){
-        setObjectName("plum");
-    }
-
-    virtual bool isAvailable() const{
-        return Self->containsTrick(objectName());
-    }
-
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-        room->recover(source, 2);
-
-        room->moveCardTo(this, source, Player::Judging);
-    }
-};
-
 class Ganzhen: public TriggerSkill{
 public:
     Ganzhen():TriggerSkill("ganzhen"){
@@ -510,6 +495,44 @@ public:
     }
 };
 
+class Fanji: public TriggerSkill{
+public:
+    Fanji():TriggerSkill("fanji"){
+        events << CardFinished;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+
+        if(use.to.length() != 1)
+            return false;
+
+        ServerPlayer *lukang = use.to.first();
+        if(lukang == player)
+            return false;
+
+        if(!lukang->hasSkill(objectName()))
+            return false;
+
+        if(!use.card->inherits("TrickCard"))
+            return false;
+
+        Room *room = lukang->getRoom();
+        if(!room->obtainable(use.card, lukang))
+            return false;
+
+        if(room->askForSkillInvoke(lukang, objectName(), data)){
+            lukang->obtainCard(use.card);
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -549,11 +572,16 @@ YitianPackage::YitianPackage()
     zhangjunyi->addSkill(new Jueji);
     zhangjunyi->addSkill(new JuejiClear);
 
+    General *lukang = new General(this, "lukang", "wu", 3);
+    lukang->addSkill(new Qianxun);
+    lukang->addSkill(new Fanji);
+
     t["shencc"] = tr("shencc");
     t["caochong"] = tr("caochong");
     t["caozhi"] = tr("caozhi");
     t["zhangjunyi"] = tr("zhangjunyi");
     t["yangxiu"] = tr("yangxiu");
+    t["lukang"] = tr("lukang");
 
     t["guixin2"] = tr("guixin2");
     t["chengxiang"] = tr("chengxiang");
@@ -563,6 +591,7 @@ YitianPackage::YitianPackage()
     t["jueji"] = tr("jueji");
     t["jilei"] = tr("jilei");
     t["danlao"] = tr("danlao");
+    t["fanji"] = tr("fanji");
 
     t[":guixin2"] = tr(":guixin2");
     t[":chengxiang"] = tr(":chengxiang");
@@ -572,6 +601,7 @@ YitianPackage::YitianPackage()
     t[":jueji"] = tr(":jueji");
     t[":jilei"] = tr(":jilei");
     t[":danlao"] = tr(":danlao");
+    t[":fanji"] = tr(":fanji");
 
     t["@jueji"] = t["jueji"];
 

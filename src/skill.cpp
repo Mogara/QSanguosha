@@ -285,3 +285,14 @@ ArmorSkill::ArmorSkill(const QString &name)
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
     return target->hasArmorEffect(objectName()) && target->getArmor()->getSkill() == this;
 }
+
+MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
+    :GameStartSkill("#" + mark), n(n)
+{
+}
+
+void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
+    QString mark_name = objectName();
+    mark_name.remove("#");
+    player->gainMark(mark_name, n);
+}
