@@ -6,6 +6,7 @@
 #include "distanceviewdialog.h"
 #include "choosegeneraldialog.h"
 #include "joystick.h"
+#include "irrKlang.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -197,7 +198,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     }
 
     memory = new QSharedMemory("QSanguosha", this);
-    bgmusic = NULL;
 
     progress_bar = dashboard->addProgressBar();
     timer_id = 0;
@@ -1762,10 +1762,9 @@ void RoomScene::freeze(){
     item2player.clear();
     trust_button->setEnabled(false);
     chat_edit->setEnabled(false);
-    if(bgmusic){
-       bgmusic->drop();
-       bgmusic = NULL;
-    }
+    if(SoundEngine)
+        SoundEngine->stopAllSounds();
+
     progress_bar->hide();
 
     main_window->setStatusBar(NULL);
@@ -2344,7 +2343,7 @@ void RoomScene::onGameStart(){
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
     const char *filename = bgmusic_path.toLocal8Bit().data();
-    bgmusic = SoundEngine->addSoundSourceFromFile(filename);
+    irrklang::ISoundSource *bgmusic = SoundEngine->addSoundSourceFromFile(filename);
 
     if(bgmusic){
         bgmusic->setDefaultVolume(Config.Volume);

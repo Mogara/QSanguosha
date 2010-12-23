@@ -145,7 +145,7 @@ public:
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
 
-    int askForPeaches(ServerPlayer *dying, int peaches);
+    void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 

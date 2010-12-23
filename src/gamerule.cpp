@@ -8,8 +8,9 @@ GameRule::GameRule(QObject *parent)
 {
     setParent(parent);
 
-    events << GameStart << PhaseChange << CardUsed << HpRecover
-            << Predamaged << CardEffected << Death << Dying
+    events << GameStart << PhaseChange << CardUsed
+            << Predamaged << CardEffected << HpRecover
+            << AskForPeaches << Death << Dying
             << SlashResult << SlashEffected << SlashProceed;
 }
 
@@ -150,18 +151,21 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
+    case AskForPeaches:{
+            DyingStruct dying = data.value<DyingStruct>();
+            int got = room->askForPeach(player, dying.who, dying.peaches);
+            dying.peaches -= got;
+
+            data = QVariant::fromValue(dying);
+
+            break;
+        }
+
     case Dying:{
             DyingStruct dying = data.value<DyingStruct>();
-            int got = room->askForPeaches(player, dying.peaches);
-            if(got >= dying.peaches)
-                room->setPlayerProperty(player, "hp", got - dying.peaches + 1);
-            else{
-                ServerPlayer *killer = NULL;
-                if(dying.damage && dying.damage->from)
-                    killer = dying.damage->from;
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            room->askForPeaches(dying, players);
 
-                room->killPlayer(player, killer);
-            }
             break;
         }
 
@@ -175,6 +179,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             room->damage(player, damage.damage);
             if(new_hp <= 0){
                 DyingStruct dying;
+                dying.who = player;
                 dying.damage = &damage;
                 dying.peaches = 1 - new_hp;
 

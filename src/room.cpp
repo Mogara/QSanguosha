@@ -603,29 +603,35 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
         return card->getId();
 }
 
-int Room::askForPeaches(ServerPlayer *dying, int peaches){
+void Room::askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players){
     LogMessage log;
     log.type = "#AskForPeaches";
-    log.from = dying;
-    log.arg = QString::number(peaches);
+    log.from = dying.who;
+    log.arg = QString::number(dying.peaches);
     sendLog(log);
 
-    QList<ServerPlayer *> players;
-    if(current->hasSkill("wansha") && current->isAlive()){
-        players << current;
-        if(dying != current)
-            players << dying;
-    }else
-        players = getAllPlayers();
-
-    int got = 0;
+    DyingStruct dying_data = dying;
     foreach(ServerPlayer *player, players){
-        got += askForPeach(player, dying, peaches);      
-        if(got >= peaches)
-            return got;
+        QVariant data = QVariant::fromValue(dying_data);
+
+        bool broken = thread->trigger(AskForPeaches, player, data);
+        if(broken)
+            return;
+
+        dying_data = data.value<DyingStruct>();
+        if(dying_data.peaches <= 0)
+            break;
     }
 
-    return got;
+    if(dying_data.peaches <= 0)
+        setPlayerProperty(dying.who, "hp", 1 - dying_data.peaches);
+    else{
+        ServerPlayer *killer = NULL;
+        if(dying.damage)
+            killer = dying.damage->from;
+
+        killPlayer(dying.who, killer);
+    }
 }
 
 int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
@@ -1270,6 +1276,7 @@ void Room::loseHp(ServerPlayer *victim, int lose){
 
     if(new_hp <= 0){
         DyingStruct dying;
+        dying.who = victim;
         dying.damage = NULL;
         dying.peaches = 1 - new_hp;
 

@@ -46,7 +46,7 @@ void SlashResultStruct::fill(const SlashEffectStruct &effect, bool success)
 }
 
 DyingStruct::DyingStruct()
-    :damage(NULL), peaches(0)
+    :who(NULL), damage(NULL), peaches(0)
 {
 
 }

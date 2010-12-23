@@ -348,7 +348,7 @@ void Client::useCard(const Card *card){
 
 void Client::startInXs(const QString &left_seconds){
     int seconds = left_seconds.toInt();
-    lines_doc->setHtml(tr("Game will start in %1 seconds").arg(left_seconds));
+    lines_doc->setHtml(tr("Game will start in <b>%1</b> seconds").arg(left_seconds));
 
     if(seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL){
         emit avatars_hiden();
@@ -901,7 +901,7 @@ void Client::setPileNumber(const QString &pile_str){
 }
 
 void Client::updatePileNum(){
-    lines_doc->setHtml(tr("Draw pile: %1, discard pile: %2 <br/> %3")
+    lines_doc->setHtml(tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b> <br/> %3")
                        .arg(pile_num).arg(discarded_list.length()).arg(skill_line));
 }
 

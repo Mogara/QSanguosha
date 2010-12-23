@@ -316,6 +316,7 @@ public:
 };
 
 JuejiCard::JuejiCard(){
+    once = true;
 }
 
 bool JuejiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{

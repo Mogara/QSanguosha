@@ -74,6 +74,42 @@ static int GetConfig(lua_State *lua){
     return 1;
 }
 
+static int GetProperty(lua_State *lua){
+    void *udata = lua_touserdata(lua, 1);
+    if(udata == NULL)
+        luaL_error(lua, "The first argument of %s must be a QObject !", __func__);
+
+    QObject *obj = static_cast<QObject *>(udata);
+    const char *property_name = luaL_checkstring(lua, 2);
+    QVariant value = obj->property(property_name);
+
+    switch(value.type()){
+    case QMetaType::Int:{
+            lua_pushinteger(lua, value.toInt());
+            break;
+        }
+
+    case QMetaType::Bool:{
+            lua_pushboolean(lua, value.toBool());
+            break;
+        }
+
+    case QMetaType::QString:{
+            lua_pushstring(lua, value.toString().toUtf8().constData());
+            break;
+        }
+
+    default:{
+            lua_pushnil(lua);
+            break;
+        }
+
+    }
+
+    return 1;
+}
+
+
 void Engine::doStartScript(){
     lua = luaL_newstate();
     luaL_openlibs(lua);
@@ -82,6 +118,7 @@ void Engine::doStartScript(){
     lua_register(lua, "Print", Print);
     lua_register(lua, "AddTranslationEntry", AddTranslationEntry);
     lua_register(lua, "GetConfig", GetConfig);
+    lua_register(lua, "GetProperty", GetProperty);
 
     luaL_dofile(lua, "sanguosha.lua");
 }

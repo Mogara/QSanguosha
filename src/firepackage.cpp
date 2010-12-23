@@ -331,7 +331,7 @@ public:
 class Niepan: public TriggerSkill{
 public:
     Niepan():TriggerSkill("niepan"){
-        events << Dying;
+        events << AskForPeaches;
         frequency = Limited;
     }
 
@@ -340,6 +340,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
+        DyingStruct dying_data = data.value<DyingStruct>();
+        if(dying_data.who != pangtong)
+            return false;
+
         Room *room = pangtong->getRoom();
         if(pangtong->askForSkillInvoke(objectName())){
             room->playSkillEffect(objectName());

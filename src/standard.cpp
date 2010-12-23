@@ -107,6 +107,8 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
             log.type = "#WeimuAvoid";
             log.from = player;
             room->sendLog(log);
+
+            room->playSkillEffect("weimu");
         }else
             targets << player;
     }

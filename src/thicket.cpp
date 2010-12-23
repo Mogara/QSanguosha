@@ -494,7 +494,7 @@ public:
 };
 
 DimengCard::DimengCard(){
-
+    once = true;
 }
 
 bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -641,6 +641,38 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
 void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
     ClientInstance->tag.insert("luanwu_used", true);
 }
+
+class Wansha: public TriggerSkill{
+public:
+    Wansha():TriggerSkill("wansha"){
+        frequency = Compulsory;
+
+        events << Dying;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        ServerPlayer *current = target->getRoom()->getCurrent();
+        return current->hasSkill(objectName()) && current->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DyingStruct dying = data.value<DyingStruct>();
+
+        Room *room = player->getRoom();
+        room->playSkillEffect(objectName());
+
+        QList<ServerPlayer *> players;
+
+        ServerPlayer *current = room->getCurrent();
+        players << current;
+        if(dying.who != current)
+            players << dying.who;
+
+        room->askForPeaches(dying, players);
+
+        return true;
+    }
+};
 
 class Weimu: public ProhibitSkill{
 public:
@@ -844,7 +876,7 @@ ThicketPackage::ThicketPackage()
     lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
-    jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
+    jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new Luanwu);
 

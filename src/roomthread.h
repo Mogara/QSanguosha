@@ -117,6 +117,7 @@ Q_DECLARE_METATYPE(PlayerStar);
 struct DyingStruct{
     DyingStruct();
 
+    ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
     int peaches; // peaches that needs
 };
@@ -136,6 +137,7 @@ enum TriggerEvent{
     Damaged,
 
     Dying,
+    AskForPeaches,
     Death,
 
     SlashEffect,
