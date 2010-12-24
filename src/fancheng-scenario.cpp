@@ -358,26 +358,6 @@ FanchengScenario::FanchengScenario()
     addMetaObject<FloodCard>();
     addMetaObject<TaichenCard>();
     addMetaObject<ZhiyuanCard>();
-
-    t["fancheng"] = tr("fancheng");
-
-    t["guagu"] = tr("guagu");
-    t["dujiang"] = tr("dujiang");
-    t["flood"] = tr("flood");
-    t["taichen"] = tr("taichen");
-    t["changqu"] = tr("changqu");
-    t["xiansheng"] = tr("xiansheng");
-    t["zhiyuan"] = tr("zhiyuan");
-
-    t[":guagu"] = tr(":guagu");
-    t[":dujiang"] = tr(":dujiang");
-    t[":flood"] = tr(":flood");
-    t[":taichen"] = tr(":taichen");
-    t[":changqu"] = tr(":changqu");
-    t[":xiansheng"] = tr(":xiansheng");
-    t[":zhiyuan"] = tr(":zhiyuan");
-
-    t["@@dujiang"] = tr("@@dujiang");
 }
 
 void FanchengScenario::onTagSet(Room *room, const QString &key) const{

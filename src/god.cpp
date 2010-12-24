@@ -915,8 +915,6 @@ public:
 GodPackage::GodPackage()
     :Package("god")
 {
-    t["god"] = tr("god");
-
     General *shenguanyu = new General(this, "shenguanyu", "god", 5);
     shenguanyu->addSkill(new Wushen);
     shenguanyu->addSkill(new Wuhun);
@@ -925,24 +923,6 @@ GodPackage::GodPackage()
     General *shenlumeng = new General(this, "shenlumeng", "god", 3);
     shenlumeng->addSkill(new Shelie);
     shenlumeng->addSkill(new Gongxin);
-
-    t["shenguanyu"] = tr("shenguanyu");
-    t["shenlumeng"] = tr("shenlumeng");
-
-    t["wushen"] = tr("wushen");
-    t["wuhun"] = tr("wuhun");
-    t["shelie"] = tr("shelie");
-    t["gongxin"] = tr("gongxin");
-
-    t[":wushen"] = tr(":wushen");
-    t[":wuhun"] = tr(":wuhun");
-    t[":shelie"] = tr(":shelie");
-    t[":gongxin"] = tr(":gongxin");
-
-    t["shelie:yes"] = tr("shelie:yes");
-    t[":gongxin:"] = tr(":gongxin:");
-    t["gongxin:discard"] = tr("gongxin:discard");
-    t["gongxin:put"] = tr("gongxin:put");
 
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
@@ -959,31 +939,6 @@ GodPackage::GodPackage()
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);
 
-    t["shenzhouyu"] = tr("shenzhouyu");
-    t["shenzhugeliang"] = tr("shenzhugeliang");
-
-    t["qinyin"] = tr("qinyin");
-    t["yeyan"] = tr("yeyan");
-    t["qixing"] = tr("qixing");
-    t["kuangfeng"] = tr("kuangfeng");
-    t["dawu"] = tr("dawu");
-
-    t[":qinyin"] = tr(":qinyin");
-    t[":greatyeyan"] = tr(":greatyeyan");
-    t[":mediumyeyan"] = tr(":mediumyeyan");
-    t[":smallyeyan"] = tr(":smallyeyan");
-    t[":qixing"] = tr(":qixing");
-    t[":kuangfeng"] = tr(":kuangfeng");
-    t[":dawu"] = tr(":dawu");
-
-    t["qinyin:yes"] = tr("qinyin:yes");
-    t[":qinyin:"] = tr(":qinyin:");   
-    t["qinyin:up"] = tr("qinyin:up");
-    t["qinyin:down"] = tr("qinyin:down");
-    t["greatyeyan"] = tr("greatyeyan");
-    t["mediumyeyan"] = tr("mediumyeyan");
-    t["smallyeyan"] = tr("smallyeyan");
-
     General *shencaocao = new General(this, "shencaocao$", "god", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
@@ -994,40 +949,6 @@ GodPackage::GodPackage()
     shenlubu->addSkill(new Wumou);
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);
-
-    t["shencaocao"] = tr("shencaocao");
-    t["shenlubu"] = tr("shenlubu");
-
-    t["guixin"] = tr("guixin");
-    t["feiying"] = tr("feiying");
-    t["kuangbao"] = tr("kuangbao");
-    t["wumou"] = tr("wumou");
-    t["wuqian"] = tr("wuqian");
-    t["shenfen"] = tr("shenfen");
-
-    t[":guixin"] = tr(":guixin");
-    t[":feiying"] = tr(":feiying");
-    t[":kuangbao"] = tr(":kuangbao");
-    t[":wumou"] = tr(":wumou");
-    t[":wuqian"] = tr(":wuqian");
-    t[":shenfen"] = tr(":shenfen");
-
-    t["wumou:discard"] = tr("wumou:discard");
-    t["wumou:losehp"] = tr("womou:losehp");
-
-    t["#GetMark"] = tr("#GetMark");
-    t["#LoseMark"] = tr("#LoseMark");
-
-    // marks
-    t["@nightmare"] = tr("@nightmare");
-    t["@wrath"] = tr("@wrath");
-    t["@star"] = tr("@star");
-    t["@fog"] = tr("@fog");
-    t["@gale"] = tr("@gale");
-
-    t["@qixing-exchange"] = tr("@qixing-exchange");
-    t["@@kuangfeng-card"] = tr("@@kuangfeng-card");
-    t["@@dawu-card"] = tr("@@dawu-card");
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
@@ -1040,12 +961,6 @@ GodPackage::GodPackage()
     addMetaObject<DawuCard>();
     addMetaObject<WuqianCard>();
     addMetaObject<QixingCard>();
-
-    t["$guixin"]=tr("$guixin");
-
-    t["#FogProtect"] = tr("#FogProtect");
-    t["#GalePower"] = tr("#GalePower");
-    t["#QixingExchange"] = tr("#QixingExchange");
 }
 
 ADD_PACKAGE(God)

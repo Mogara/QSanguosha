@@ -234,7 +234,11 @@ void Photo::updateSmallAvatar(){
 }
 
 void Photo::refresh(){
-    // just simply call update() to redraw itself
+    if(player && player->getHp() == 0)
+        setFrame(SOS);
+    else
+        updatePhase();
+
     update();
 }
 

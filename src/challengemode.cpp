@@ -26,17 +26,6 @@ ChallengeModeSet::ChallengeModeSet(QObject *parent)
     addMode("@manshow", "liubei+lumeng+zhangliao+daqiao");
     addMode("@greatrange", "machao+pangde+xiahouyuan+taishici");
     addMode("@p4cure", "liubei+menghuo+huatuo+weiyan");
-
-    t["@4lords"] = tr("@4lords");
-    t["@disaster4fr"] = tr("@disaster4fr");
-    t["@p4luoyi"] = tr("@p4luoyi");
-    t["@test4pile"] = tr("@test4pile");
-    t["@mythology"] = tr("@mythology");
-    t["@2strike"] = tr("@2strike");
-    t["@tortoise"] = tr("@tortoise");
-    t["@manshow"] = tr("@manshow");
-    t["@greatrange"] = tr("@greatrange");
-    t["@p4cure"] = tr("@p4cure");
 }
 
 const ChallengeMode *ChallengeModeSet::getMode(const QString &name) const{

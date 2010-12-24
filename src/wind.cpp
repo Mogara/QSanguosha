@@ -396,60 +396,12 @@ WindPackage::WindPackage()
     //zhoutai = new General(this, "zhoutai", "wu");
     //zhoutai->addSkill(new Buqu);
 
-    t["wind"] = tr("wind");
-
-    t["xiahouyuan"] = tr("xiahouyuan");
-    t["caoren"] = tr("caoren");
-    t["huangzhong"] = tr("huangzhong");
-    t["weiyan"] = tr("weiyan");
-    t["zhangjiao"] = tr("zhangjiao");
-    t["zhoutai"] = tr("zhoutai");
-
-    // skills
-    t["shensu"] = tr("shensu");
-    t["jushou"] = tr("jushou");
-    t["liegong"] = tr("liegong");
-    t["kuanggu"] = tr("kuanggu");
-    t["guidao"] = tr("guidao");
-    t["leiji"] = tr("leiji");
-    t["huangtian"] = t["huangtianv"] = tr("huangtian");
-    t["buqu"] = tr("buqu");
-
-    t[":shensu"] = tr(":shensu");
-    t[":jushou"] = tr(":jushou");
-    t[":liegong"] = tr(":liegong");
-    t[":kuanggu"] = tr(":kuanggu");
-    t[":guidao"] = tr(":guidao");
-    t[":leiji"] = tr(":leiji");
-    t[":huangtian"] = tr(":huangtian");
-    t[":buqu"] = tr(":buqu");
-
-    // skill prompt
-    t["liegong:yes"] = tr("liegong:yes");
-    t["jushou:yes"] = tr("jushou:yes");
-
-    t["@shensu1"] = tr("@shensu1");
-    t["@shensu2"] = tr("@shensu2");
-
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
     addMetaObject<LeijiCard>();
     addMetaObject<ShensuCard>();
 
     skills << new HuangtianViewAsSkill;
-
-    t["$huangtian1"]=tr("$huangtian1");
-    t["$huangtian2"]=tr("$huangtian2");
-    t["$jushou1"]=tr("$jushou1");
-    t["$jushou2"]=tr("$jushou2");
-    t["$leiji1"]=tr("$leiji1");
-    t["$leiji2"]=tr("$leiji2");
-    t["$liegong1"]=tr("$liegong1");
-    t["$liegong2"]=tr("$liegong2");
-    t["$shensu1"]=tr("$shensu1");
-    t["$shensu2"]=tr("$shensu2");
-    t["$buqu1"] = tr("$buqu1");
-    t["$buqu2"] = tr("$buqu2");
 }
 
 ADD_PACKAGE(Wind)

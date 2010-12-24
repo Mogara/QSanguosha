@@ -139,29 +139,8 @@ NostalgiaPackage::NostalgiaPackage()
     xiaoqiao->addSkill(new Hongyan);
     xiaoqiao->addSkill(new Tianxiang);
 
-    t["nostalgia"] = tr("nostalgia");
-
-    t["xiaoqiao"] = tr("xiaoqiao");
-
-    t["hongyan"] = tr("hongyan");
-    t["tianxiang"] = tr("tianxiang");
-
-    t[":hongyan"] = tr(":hongyan");
-    t[":tianxiang"] = tr(":tianxiang");
-
-    t["$tianxiang1"] = tr("$tianxiang1");
-    t["$tianxiang2"] = tr("$tianxiang2");
-
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
-
-    t["moon_spear"] = tr("moon_spear");
-    t[":moon_spear"] = tr(":moon_spear");
-
-    t["@moon-spear-slash"] = tr("@moon-spear-slash");
-    t["@@tianxiang-card"] = tr("@@tianxiang-card");
-
-    t["#HongyanJudge"] = tr("#HongyanJudge");
 
     addMetaObject<TianxiangCard>();
 }

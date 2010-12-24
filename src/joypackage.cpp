@@ -55,12 +55,6 @@ JoyPackage::JoyPackage()
 
     foreach(Card *card, cards)
         card->setParent(this);
-
-
-    t["joy"] = tr("joy");
-    t["shit"] = tr("shit");
-
-    t[":shit"] = tr(":shit");
 }
 
 ADD_PACKAGE(Joy);

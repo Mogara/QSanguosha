@@ -540,17 +540,6 @@ YitianPackage::YitianPackage()
 
     (new YitianSword)->setParent(this);
 
-    t["#AcquireSkill"] = tr("#AcquireSkill");
-    t["#ChangeKingdom"] = tr("#ChangeKingdom");
-    t["#Jilei"] = tr("#Jilei");
-    t["#DanlaoAvoid"] = tr("#DanlaoAvoid");
-
-    t["yitian"] = tr("yitian");
-    t["yitian_sword"] = tr("yitian_sword");
-    t["jilei:basic"] = tr("basic");
-    t["jilei:equip"] = tr("equip");
-    t["jilei:trick"] = tr("trick");
-
     // generals
     General *shencc = new General(this, "shencc$", "god", 3);
     shencc->addSkill(new Guixin2);
@@ -576,55 +565,6 @@ YitianPackage::YitianPackage()
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill(new Qianxun);
     lukang->addSkill(new Fanji);
-
-    t["shencc"] = tr("shencc");
-    t["caochong"] = tr("caochong");
-    t["caozhi"] = tr("caozhi");
-    t["zhangjunyi"] = tr("zhangjunyi");
-    t["yangxiu"] = tr("yangxiu");
-    t["lukang"] = tr("lukang");
-
-    t["guixin2"] = tr("guixin2");
-    t["chengxiang"] = tr("chengxiang");
-    t["conghui"] = tr("conghui");
-    t["zaoyao"] = tr("zaoyao");
-    t["ganzhen"] = tr("ganzhen");
-    t["jueji"] = tr("jueji");
-    t["jilei"] = tr("jilei");
-    t["danlao"] = tr("danlao");
-    t["fanji"] = tr("fanji");
-
-    t[":guixin2"] = tr(":guixin2");
-    t[":chengxiang"] = tr(":chengxiang");
-    t[":conghui"] = tr(":conghui");
-    t[":zaoyao"] = tr(":zaoyao");
-    t[":ganzhen"] = tr(":ganzhen");
-    t[":jueji"] = tr(":jueji");
-    t[":jilei"] = tr(":jilei");
-    t[":danlao"] = tr(":danlao");
-    t[":fanji"] = tr(":fanji");
-
-    t["@jueji"] = t["jueji"];
-
-    t["guixin2:yes"] = tr("guixin2:yes");
-    t["guixin2:modify"] = tr("guixin2:modify");
-    t["guixin2:obtain"] = tr("guixin2:obtain");
-
-    t["guixin2:hujia"] = tr("guixin2:hujia");
-    t["guixin2:jijiang"] = tr("guixin2:jijiang");
-    t["guixin2:jiuyuan"] = tr("guixin2:jiuyuan");
-    t["guixin2:huangtian"] = tr("guixin2:huangtian");
-    t["guixin2:xueyi"] = tr("guixin2:xueyi");
-    t["guixin2:baonue"] = tr("guixin2:baonue");
-    t["guixin2:songwei"] = tr("guixin2:songwei");
-
-    t[":yitian_sword"] = tr(":yitian_sword");
-    t["yitian_sword:yes"] = tr("yitian_sword:yes");
-
-    t["@chengxiang-card"] = tr("@chengxiang-card");
-
-    t["$jilei"] = tr("$jilei");
-    t["$danlao"] = tr("$danlao");
 
     skills << new YitianSwordViewAsSkill;
 

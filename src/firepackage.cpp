@@ -532,71 +532,10 @@ FirePackage::FirePackage()
     pangde->addSkill(new Mashu);
     pangde->addSkill(new Mengjin);
 
-    t["fire"] = tr("fire");
-    t["xunyu"] = tr("xunyu");
-    t["dianwei"] = tr("dianwei");
-    t["wolong"] = tr("wolong");
-    t["pangtong"] = tr("pangtong");
-    t["taishici"] = tr("taishici");
-    t["yuanshao"] = tr("yuanshao");
-    t["shuangxiong"] = tr("shuangxiong");
-    t["pangde"] = tr("pangde");
-
-    t["quhu"] = tr("quhu");
-    t["jieming"] = tr("jieming");
-    t["qiangxi"] = tr("qiangxi");
-    t["lianhuan"] = tr("lianhuan");
-    t["niepan"] = tr("niepan");
-    t["bazhen"] = tr("bazhen");
-    t["huoji"] = tr("huoji");
-    t["kanpo"] = tr("kanpo");
-    t["tianyi"] = tr("tianyi");
-    t["mengjin"] = tr("mengjin");
-    t["luanji"] = tr("luanji");
-    t["xueyi"] = tr("xueyi");
-
-    t[":quhu"] = tr(":quhu");
-    t[":jieming"] = tr(":jieming");
-    t[":qiangxi"] = tr(":qiangxi");
-    t[":lianhuan"] = tr(":lianhuan");
-    t[":niepan"] = tr(":niepan");
-    t[":bazhen"] = tr(":bazhen");
-    t[":huoji"] = tr(":huoji");
-    t[":kanpo"] = tr(":kanpo");
-    t[":tianyi"] = tr(":tianyi");
-    t[":mengjin"] = tr(":mengjin");
-    t[":luanji"] = tr(":luanji");    
-    t[":xueyi"] = tr(":xueyi");
-    t[":shuangxiong"] = tr(":shuangxiong");
-
-    // descriptive texts
-    t["jieming:yes"] = tr("jieming:yes");
-    t["shuangxiong:yes"] = tr("shuangxiong:yes");
-    t["mengjin:yes"] = tr("mengjin:yes");
-    t["niepan:yes"] = tr("niepan:yes");
-    t["bazhen:yes"] = tr("bazhen:yes");
-
-    t["@jieming"] = tr("@jieming");
-
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();
     addMetaObject<QiangxiCard>();
     addMetaObject<TianyiCard>();
-
-    t["$#tunlang"]=tr("$#tunlang");
-    t["$bazhen1"]=tr("$bazhen1");
-    t["$huoji1"]=tr("$huoji1");
-    t["$huoji2"]=tr("$huoji2");
-    t["$jieming1"]=tr("$jieming1");
-    t["$jieming2"]=tr("$jieming2");
-    t["$kanpo"]=tr("$kanpo");
-    t["$lianhuan"]=tr("$lianhuan");
-    t["$luanji1"]=tr("$luanji1");
-    t["$luanji2"]=tr("$luanji2");
-    t["$niepan"]=tr("$niepan");
-    t["$qiangxi"]=tr("$qiangxi");
-    t["$quhu"]=tr("$quhu");
-    t["$tianyi"] = tr("$tianyi");
 }
 
 ADD_PACKAGE(Fire);

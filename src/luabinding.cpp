@@ -8,6 +8,7 @@ extern "C"{
 #include "settings.h"
 
 #include <QDir>
+#include <QMessageBox>
 
 static int GetFileNames(lua_State *lua){
     const char *dirname = luaL_checkstring(lua, 1);
@@ -109,6 +110,14 @@ static int GetProperty(lua_State *lua){
     return 1;
 }
 
+static int Alert(lua_State *lua){
+    const char *msg = luaL_checkstring(lua, 1);
+
+    QMessageBox::warning(NULL, "Lua warning", msg);
+
+    return 0;
+}
+
 
 void Engine::doStartScript(){
     lua = luaL_newstate();
@@ -119,6 +128,7 @@ void Engine::doStartScript(){
     lua_register(lua, "AddTranslationEntry", AddTranslationEntry);
     lua_register(lua, "GetConfig", GetConfig);
     lua_register(lua, "GetProperty", GetProperty);
+    lua_register(lua, "Alert", Alert);
 
     luaL_dofile(lua, "sanguosha.lua");
 }

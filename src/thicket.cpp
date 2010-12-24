@@ -886,101 +886,11 @@ ThicketPackage::ThicketPackage()
     dongzhuo->addSkill(new Benghuai);
     dongzhuo->addSkill(new Baonue);
 
-    t["thicket"] = tr("thicket");
-
-    t["caopi"] = tr("caopi");
-    t["xuhuang"] = tr("xuhuang");
-    t["menghuo"] = tr("menghuo");
-    t["zhurong"] = tr("zhurong");
-    t["sunjian"] = tr("sunjian");
-    t["lusu"] = tr("lusu");
-    t["jiaxu"] = tr("jiaxu");
-    t["dongzhuo"] = tr("dongzhuo");
-
-    // skills
-    t["xingshang"] = tr("xingshang");
-    t["fangzhu"] = tr("fangzhu");
-    t["songwei"] = tr("songwei");
-    t["duanliang"] = tr("duanliang");
-    t["huoshou"] = tr("huoshou");
-    t["zaiqi"] = tr("zaiqi");
-    t["juxiang"] = tr("juxiang");
-    t["lieren"] = tr("lieren");
-    t["yinghun"] = tr("yinghun");
-    t["haoshi"] = tr("haoshi");
-    t["dimeng"] = tr("dimeng");
-    t["wansha"] = tr("wansha");
-    t["weimu"] = tr("weimu");
-    t["luanwu"] = tr("luanwu");
-    t["jiuchi"] = tr("jiuchi");
-    t["roulin"] = tr("roulin");
-    t["benghuai"] = tr("benghuai");
-    t["baonue"] = tr("baonue");
-
-    t[":xingshang"] = tr(":xingshang");
-    t[":fangzhu"] = tr(":fangzhu");
-    t[":songwei"] = tr(":songwei");
-    t[":duanliang"] = tr(":duanliang");
-    t[":huoshou"] = tr(":huoshou");
-    t[":zaiqi"] = tr(":zaiqi");
-    t[":juxiang"] = tr(":juxiang");
-    t[":lieren"] = tr(":lieren");
-    t[":yinghun"] = tr(":yinghun");
-    t[":haoshi"] = tr(":haoshi");
-    t[":dimeng"] = tr(":dimeng");
-    t[":wansha"] = tr(":wansha");
-    t[":weimu"] = tr(":weimu");
-    t[":luanwu"] = tr(":luanwu");
-    t[":jiuchi"] = tr(":jiuchi");
-    t[":roulin"] = tr(":roulin");
-    t[":benghuai"] = tr(":benghuai");
-    t[":baonue"] = tr(":baonue");
-
-    // skill descriptive texts
-    t[":benghuai:"] = tr(":benghuai:");
-    t["benghuai:hp"] = tr("benghuai:hp");
-    t["benghuai:max_hp"] = tr("benghuai:max_hp");
-    t["guixin:yes"] = tr("guixin:yes");
-    t["baonue:yes"] = tr("baonue:yes");
-    t["yinghun:d1tx"] = tr("yinghun:d1tx");
-    t["yinghun:dxt1"] = tr("yinghun:dxt1");
-    t["zaiqi:yes"] = tr("zaiqi:yes");
-    t["lieren:yes"] = tr("lieren:yes");
-    t["songwei:yes"] = tr("songwei:yes");
-    t["haoshi:yes"] = tr("haoshi:yes");
-    t[":yinghun:"] = tr(":yinghun:");
-    t["xingshang:yes"] = tr("xingshang:yes");
-
-    t["@luanwu-slash"] = tr("@luanwu-slash");
-    t["@roulin1-jink-1"] = tr("@roulin1-jink-1");
-    t["@roulin1-jink-2"] = tr("@roulin1-jink-2");
-    t["@roulin2-jink-1"] = tr("@roulin2-jink-1");
-    t["@roulin2-jink-2"] = tr("@roulin2-jink-2");
-    t["@haoshi"] = tr("@haoshi");
-    t["@fangzhu"] = tr("@fangzhu");
-    t["@yinghun"] = tr("@yinghun");
-
-    t["#Dimeng"] = tr("#Dimeng");
-
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();
     addMetaObject<YinghunCard>();
     addMetaObject<FangzhuCard>();
     addMetaObject<HaoshiCard>();
-
-    //lines
-    t["$baonue"] = tr("$baonue");
-    t["$benghuai"] = tr("$benghuai");
-    t["$huoshou"] = tr("$huoshou");
-    t["$jiuchi"] = tr("$jiuchi");
-    t["$juxiang"] = tr("$juxiang");
-    t["$lieren1"] = tr("$lieren1");
-    t["$lieren2"] = tr("$lieren2");
-    t["$lieren3"] = tr("$lieren3");
-    t["$zaiqi1"] = tr("$zaiqi1");
-    t["$zaiqi2"] = tr("$zaiqi2");
-    t["$zaiqi3"] = tr("$zaiqi3");
-    t["$roulin1"] = tr("$roulin1");
 }
 
 ADD_PACKAGE(Thicket)

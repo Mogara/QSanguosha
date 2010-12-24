@@ -112,13 +112,6 @@ CoupleScenario::CoupleScenario()
     renegades << "lubu" << "diaochan";
     rule = new CoupleScenarioRule(this);
 
-    t["couple"] = tr("couple");
-
-    t["reselect"] = tr("reselect");
-
-    t["#Marry"] = tr("#Marry");
-    t["#Divorse"] = tr("#Divorse");
-
     map["caopi"] = "zhenji";
     map["guojia"] = "simayi";
     map["liubei"] = "sunshangxiang";

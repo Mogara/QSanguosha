@@ -326,23 +326,6 @@ bool SupplyShortage::judge(const Card *card) const{
 ManeuveringPackage::ManeuveringPackage()
     :Package("maneuvering")
 {
-    t["maneuvering"] = tr("maneuvering");
-    t["buff_card"] = tr("buff_card");
-    t["damage_spread"] = tr("damage_spread");
-    t["fire_attack"] = tr("fire_attack");
-    t["thunder_slash"] = tr("thunder_slash");
-    t["fire_slash"] = tr("fire_slash");
-    t["analeptic"] = tr("analeptic");
-    t["fan"] = tr("fan");
-    t["hualiu"] = tr("hualiu");
-    t["guding_blade"] = tr("guding_blade");
-    t["vine"] = tr("vine");
-    t["silver_lion"] = tr("silver_lion");
-    t["iron_chain"] = tr("iron_chain");    
-    t["supply_shortage"] = tr("supply_shortage");
-
-    t["fan:yes"] = tr("fan:yes");
-
     QList<Card *> cards;
 
     // spade
@@ -411,27 +394,6 @@ ManeuveringPackage::ManeuveringPackage()
 
     foreach(Card *card, cards)
         card->setParent(this);
-
-    t["fire-attack-card"] = tr("fire-attack-card");
-
-    t[":analeptic"] = tr(":analeptic");
-    t[":fire_slash"] = tr(":fire_slash");
-    t[":thunder_slash"] = tr(":thunder_slash");
-    t[":fire_attack"] = tr(":fire_attack");
-    t[":iron_chain"] = tr(":iron_chain");
-    t[":supply_shortage"] = tr(":supply_shortage");
-
-    t[":guding_blade"] = tr(":guding_blade");
-    t[":fan"] = tr(":fan");
-    t[":vine"] = tr(":vine");
-    t[":silver_lion"] = tr(":silver_lion");
-
-    t[":hualiu"] = tr(":+1 horse");    
-
-    t["#SilverLion"] = tr("#SilverLion");
-    t["#VineDamage"] = tr("#VineDamage");
-
-    t["@fire-attack"] = tr("@fire-attack");
 }
 
 ADD_PACKAGE(Maneuvering)
