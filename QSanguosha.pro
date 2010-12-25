@@ -128,7 +128,8 @@ HEADERS += src/mainwindow.h \
     src/standard-equips.h \
     src/joystick.h \
     src/couple-scenario.h \
-    src/standard-commons.h
+    src/standard-commons.h \
+    src/standard-skillcards.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

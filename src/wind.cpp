@@ -52,11 +52,7 @@ void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlaye
 }
 
 HuangtianCard::HuangtianCard(){
-
-}
-
-void HuangtianCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("huangtian_used", true);
+    once = true;
 }
 
 void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
@@ -107,8 +103,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("huangtian_used", false).toBool()
-                && Self->getKingdom() == "qun";
+        return !ClientInstance->hasUsed("HuangtianCard") && Self->getKingdom() == "qun";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

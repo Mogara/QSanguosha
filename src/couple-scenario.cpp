@@ -90,7 +90,7 @@ public:
                     if(killer == player)
                         return false;
 
-                    if(scenario->getSpouse(killer) == player || player->isLord())
+                    if(scenario->getSpouse(killer) == player)
                         killer->throwAllCards();
                     else
                         killer->drawCards(3);
@@ -119,6 +119,7 @@ CoupleScenario::CoupleScenario()
     map["menghuo"] = "zhurong";
     map["zhouyu"] = "xiaoqiao";
     map["lubu"] = "diaochan";
+    map["zhangfei"] = "xiahoujuan";
 
     full_map = map;
     full_map["dongzhuo"] = "diaochan";

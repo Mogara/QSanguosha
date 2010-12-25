@@ -38,8 +38,7 @@ public:
 
     void disconnectFromHost();
     void request(const QString &message);
-    void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
-    void useCard(const Card *card);
+    void useCard(const Card *card, const QList<const ClientPlayer *> &targets = QList<const ClientPlayer *>());
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
@@ -58,6 +57,7 @@ public:
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     bool isJilei(const Card *card) const;
+    bool canSlashWithCrossbow() const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -100,6 +100,7 @@ public:
     void animate(const QString &animate_str);
     void setPrompt(const QString &prompt_str);
     void jilei(const QString &jilei_str);
+    bool hasUsed(const QString &card_class);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -135,10 +136,9 @@ public:
     bool refusable;
     bool include_equip;
     int discard_num;
-    QVariantMap tag, turn_tag;
     QList<const Card*> discarded_list;
     QDialog *ask_dialog;
-    QStringList players_to_choose;
+    QStringList players_to_choose;    
 
 public slots:
     void signup();
@@ -168,6 +168,8 @@ private:
     int pile_num;
     QString skill_line;
     QString jilei_flags;
+    QSet<QString> used;
+    int slash_count;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);

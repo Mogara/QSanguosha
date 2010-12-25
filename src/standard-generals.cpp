@@ -6,6 +6,7 @@
 #include "carditem.h"
 #include "serverplayer.h"
 #include "room.h"
+#include "standard-skillcards.h"
 #include "standard-commons.h"
 
 class Jianxiong:public MasochismSkill{
@@ -456,7 +457,7 @@ public:
             return false;
 
         if(card == Self->getWeapon() && card->objectName() == "crossbow"){
-            return Slash::IsAvailableWithCrossbow();
+            return ClientInstance->canSlashWithCrossbow();
         }else
             return true;
     }
@@ -640,7 +641,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("zhiheng_used", false).toBool();
+        return ! ClientInstance->hasUsed("ZhihengCard");
     }
 };
 
@@ -667,7 +668,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->turn_tag.value("fanjian_used", false).toBool();
+        return !Self->isKongcheng() && ! ClientInstance->hasUsed("FanjianCard");
     }
 
     virtual const Card *viewAs() const{
@@ -865,7 +866,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("jieyin_used", false).toBool();
+        return ! ClientInstance->hasUsed("JieyinCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -943,7 +944,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("lijian_used", false).toBool();
+        return ! ClientInstance->hasUsed("LijianCard");
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -984,7 +985,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("qingnang_used", false).toBool();
+        return ! ClientInstance->hasUsed("QingnangCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

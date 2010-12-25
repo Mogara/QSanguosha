@@ -118,13 +118,11 @@ FloodCard::FloodCard(){
     target_fixed = true;
 }
 
-void FloodCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->tag.insert("flood_used", true);
-}
-
 void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->setTag("Flood", true);
+
+    room->setPlayerFlag(source, "flood");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
@@ -154,7 +152,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->tag.value("flood_used", false).toBool();
+        return ! Self->hasFlag("flood");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -174,10 +172,7 @@ public:
 
 TaichenCard::TaichenCard(){
     target_fixed = true;
-}
-
-void TaichenCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("taichen_used", true);
+    once = true;
 }
 
 void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -192,7 +187,10 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         effect.from = source;
         effect.to = room->getLord();
 
+        room->acquireSkill(source, "wushuang", false);
         room->cardEffect(effect);
+        source->loseSkill("wushuang");
+        room->getThread()->removeTriggerSkill("wushuang");
     }
 }
 
@@ -203,7 +201,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("taichen_used", false).toBool();
+        return ! ClientInstance->hasUsed("TaichenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -248,24 +246,19 @@ bool ZhiyuanCard::targetFilter(const QList<const ClientPlayer *> &targets, const
     return targets.isEmpty() && to_select != Self && to_select->getRoleEnum() == Player::Rebel;
 }
 
-void ZhiyuanCard::use(const QList<const ClientPlayer *> &) const{
-    int count = ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt();
-    count ++;
-    ClientInstance->turn_tag.insert("zhiyuan_count", count);
-}
-
 void ZhiyuanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     targets.first()->obtainCard(this);
+    room->setPlayerMark(source, "zhiyuan", source->getMark("zhiyuan") - 1);
 }
 
-class Zhiyuan: public OneCardViewAsSkill{
+class ZhiyuanViewAsSkill: public OneCardViewAsSkill{
 public:
-    Zhiyuan():OneCardViewAsSkill("zhiyuan"){
+    ZhiyuanViewAsSkill():OneCardViewAsSkill(""){
 
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt() < 2;
+        return Self->getMark("zhiyuan") > 0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -277,6 +270,22 @@ public:
         card->addSubcard(card_item->getCard()->getId());
 
         return card;
+    }
+};
+
+class Zhiyuan: public PhaseChangeSkill{
+public:
+    Zhiyuan():PhaseChangeSkill("zhiyuan"){
+        view_as_skill = new ZhiyuanViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Start){
+            Room *room = target->getRoom();
+            room->setPlayerMark(target, "zhiyuan", 2);
+        }
+
+        return false;
     }
 };
 

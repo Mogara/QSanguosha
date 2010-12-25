@@ -34,6 +34,7 @@ Analeptic::Analeptic(Card::Suit suit, int number)
 {
     setObjectName("analeptic");
     target_fixed = true;
+    once = true;
 }
 
 QString Analeptic::getSubtype() const{
@@ -45,7 +46,7 @@ QString Analeptic::getEffectPath(bool is_male) const{
 }
 
 bool Analeptic::IsAvailable(){
-    return ! ClientInstance->turn_tag.value("analeptic_used", false).toBool();
+    return ! ClientInstance->hasUsed("Analeptic");
 }
 
 bool Analeptic::isAvailable() const{
@@ -55,10 +56,6 @@ bool Analeptic::isAvailable() const{
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->cardEffect(this, source, source);
-}
-
-void Analeptic::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("analeptic_used", true);
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
@@ -101,6 +98,16 @@ public:
         if(damage.card && damage.card->inherits("Slash") &&
             damage.to->isKongcheng() && !damage.chain)
         {
+            Room *room = damage.to->getRoom();
+
+            LogMessage log;
+            log.type = "#GudingBladeEffect";
+            log.from = player;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            room->sendLog(log);
+
             damage.damage ++;
             data = QVariant::fromValue(damage);
         }

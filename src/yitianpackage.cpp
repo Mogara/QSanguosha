@@ -333,6 +333,10 @@ public:
 
     }
 
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("JuejiCard");
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         if(selected.isEmpty())
             return true;
@@ -521,6 +525,8 @@ public:
     }
 };
 
+// ---------- Lianli related skills
+
 LianliCard::LianliCard(){
 
 }
@@ -538,17 +544,19 @@ void LianliCard::onEffect(const CardEffectStruct &effect) const{
     log.to << effect.to;
     room->sendLog(log);
 
-    if(!effect.from->hasFlag("lianli"))
-        room->setPlayerFlag(effect.from, "lianli");
+    if(effect.from->getMark("@tied") == 0)
+        effect.from->gainMark("@tied");
 
-    if(!effect.to->hasFlag("lianli")){
+    if(effect.to->getMark("@tied") == 0){
         QList<ServerPlayer *> players = room->getOtherPlayers(effect.from);
         foreach(ServerPlayer *player, players){
-            if(player->hasFlag("lianli"))
-                room->setPlayerFlag(player, "-lianli");
+            if(player->getMark("@tied") > 0){
+                player->loseMark("@tied");
+                break;
+            }
         }
 
-        room->setPlayerFlag(effect.to, "lianli");
+        effect.to->gainMark("@tied");
     }
 }
 
@@ -561,8 +569,6 @@ public:
     virtual void onGameStart(ServerPlayer *player) const{
         Room *room = player->getRoom();
 
-        room->attachSkillToPlayer(player, "lianli-jink");
-
         QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *player, players){
             if(player->getGeneral()->isMale())
@@ -571,11 +577,57 @@ public:
     }
 };
 
+LianliSlashCard::LianliSlashCard(){
+
+}
+
+bool LianliSlashCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && Self->canSlash(to_select);
+}
+
+void LianliSlashCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *zhangfei = effect.from;
+    Room *room = zhangfei->getRoom();
+
+    ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
+    if(xiahoujuan){
+        QString result = room->askForChoice(xiahoujuan, "lianli-slash", "accept+ignore");
+        if(result == "ignore")
+            return;
+
+        const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash");
+        if(slash){
+            zhangfei->invoke("increaseSlashCount");
+            room->cardEffect(slash, zhangfei, effect.to);
+            return;
+        }
+    }
+}
+
+class LianliSlashViewAsSkill:public ZeroCardViewAsSkill{
+public:
+    LianliSlashViewAsSkill():ZeroCardViewAsSkill("lianli-slash"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("@tied") > 0 && Slash::IsAvailable();
+    }
+
+    virtual const Card *viewAs() const{
+        return NULL;
+    }
+};
+
 class LianliSlash: public TriggerSkill{
 public:
-    LianliSlash():TriggerSkill("lianli-slash"){
+    LianliSlash():TriggerSkill("#lianli-slash"){
         events << CardAsked;
         default_choice = "ignore";
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@tied") > 0 && !target->hasSkill("lianli");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -583,13 +635,13 @@ public:
         if(pattern != "slash")
             return false;
 
-        if(!player->hasFlag("lianli"))
+        Room *room = player->getRoom();
+        if(!player->askForSkillInvoke("lianli-slash", data))
             return false;
 
-        Room *room = player->getRoom();
         ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
         if(xiahoujuan){
-            QString result = room->askForChoice(xiahoujuan, "lianli", "accept+ignore");
+            QString result = room->askForChoice(xiahoujuan, "lianli-slash", "accept+ignore");
             if(result == "ignore")
                 return false;
 
@@ -606,9 +658,13 @@ public:
 
 class LianliJink: public TriggerSkill{
 public:
-    LianliJink():TriggerSkill("lianli-jink"){
+    LianliJink():TriggerSkill("#lianli-jink"){
         events << CardAsked;
         default_choice = "ignore";
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getMark("@tied") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *xiahoujuan, QVariant &data) const{
@@ -616,15 +672,15 @@ public:
         if(pattern != "jink")
             return false;
 
-        if(!xiahoujuan->hasFlag("lianli"))
+        if(!xiahoujuan->askForSkillInvoke("lianli-jink", data))
             return false;
 
         Room *room = xiahoujuan->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(xiahoujuan);
         foreach(ServerPlayer *player, players){
-            if(player->hasFlag("lianli")){
+            if(player->getMark("@tied") > 0){
                 ServerPlayer *zhangfei = player;
-                QString result = room->askForChoice(zhangfei, "lianli", "accept+ignore");
+                QString result = room->askForChoice(zhangfei, "lianli-jink", "accept+ignore");
 
                 if(result == "ignore")
                     break;
@@ -679,8 +735,8 @@ public:
 
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *player, players){
-                    if(player->hasFlag("lianli"))
-                        room->setPlayerFlag(player, "-lianli");
+                    if(player->getMark("@tied") > 0)
+                        player->loseMark("@tied");
                 }
             }
         }
@@ -695,27 +751,36 @@ public:
         frequency = Frequent;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@tied") > 0;
+    }
+
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(!target->hasFlag("lianli"))
-            return;
+        Room *room = target->getRoom();
+        ServerPlayer *xiahoujuan = room->findPlayerBySkillName(objectName());
 
-        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
-            Room *room = target->getRoom();
+        if(xiahoujuan && xiahoujuan->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+            room->playSkillEffect(objectName());
 
-            target->drawCards(1);
-            QList<ServerPlayer *> players = room->getOtherPlayers(target);
-            foreach(ServerPlayer *player, players){
-                if(player->hasFlag("lianli")){
-                    player->drawCards(1);
-                    return;
+            xiahoujuan->drawCards(1);
+            if(target == xiahoujuan){
+                QList<ServerPlayer *> players = room->getOtherPlayers(xiahoujuan);
+                foreach(ServerPlayer *player, players){
+                    if(player->getMark("@tied") > 0){
+                        player->drawCards(1);
+                        return;
+                    }
                 }
-            }
+            }else
+                target->drawCards(1);
         }
     }
 };
 
-QiaocaiCard::QiaocaiCard(){
+// -------- end of Lianli related skills
 
+QiaocaiCard::QiaocaiCard(){
+    once = true;
 }
 
 void QiaocaiCard::onEffect(const CardEffectStruct &effect) const{
@@ -729,6 +794,10 @@ class Qiaocai: public ZeroCardViewAsSkill{
 public:
     Qiaocai():ZeroCardViewAsSkill("qiaocai"){
 
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getMark("@tied") == 0 && ! ClientInstance->hasUsed("QiaocaiCard");
     }
 
     virtual const Card *viewAs() const{
@@ -771,11 +840,13 @@ YitianPackage::YitianPackage()
     General *xiahoujuan = new General(this, "xiahoujuan", "wei", 3, false);
     xiahoujuan->addSkill(new LianliStart);
     xiahoujuan->addSkill(new Lianli);
+    xiahoujuan->addSkill(new LianliSlash);
+    xiahoujuan->addSkill(new LianliJink);
     xiahoujuan->addSkill(new Tongxin);
     xiahoujuan->addSkill(new Skill("liqian", Skill::Compulsory));
     xiahoujuan->addSkill(new Qiaocai);
 
-    skills << new YitianSwordViewAsSkill;
+    skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
     addMetaObject<JuejiCard>();

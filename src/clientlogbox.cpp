@@ -47,6 +47,7 @@ void ClientLogBox::appendLog(
         log.replace("%to", to);
         log.replace("%card", log_name);
 
+        log = QString("<font color='%2'>%1</font>").arg(log).arg(Config.TextEditColor.name());
         append(log);
 
         return;

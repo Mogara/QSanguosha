@@ -22,7 +22,7 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), refusable(true), status(NotActive), alive_count(1),
-    nullification_dialog(NULL)
+    nullification_dialog(NULL), slash_count(0)
 {
     ClientInstance = this;    
 
@@ -329,22 +329,16 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
             request(QString("useCard %1->.").arg(card->toString()));
         else
             request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
-    }
 
-    if(status == Playing)
-        card->use(targets);
-    else if(status == Responsing)
-        card_pattern.clear();
+        if(status == Playing){
+            if(card->isOnce())
+                used.insert(card->metaObject()->className());
 
-    setStatus(NotActive);
-}
+            if(card->inherits("Slash"))
+                increaseSlashCount();
 
-void Client::useCard(const Card *card){
-    if(card){
-        request(QString("useCard %1->.").arg(card->toString()));
-        card->use(QList<const ClientPlayer *>());
-    }else{
-        request("useCard .");
+        }else if(status == Responsing)
+            card_pattern.clear();
     }
 
     setStatus(NotActive);
@@ -523,6 +517,17 @@ bool Client::isJilei(const Card *card) const{
     }
 
     return false;
+}
+
+bool Client::canSlashWithCrossbow() const{
+    if(Self->hasSkill("paoxiao"))
+        return true;
+    else{
+        if(Self->hasFlag("tianyi_success"))
+            return slash_count < 2;
+        else
+            return slash_count < 1;
+    }
 }
 
 void Client::setPromptList(const QStringList &texts){
@@ -803,9 +808,7 @@ void Client::speakToServer(const QString &text){
 }
 
 void Client::increaseSlashCount(const QString &){
-    // increase slash count
-    int slash_count = turn_tag.value("slash_count", 0).toInt();
-    turn_tag.insert("slash_count", slash_count + 1);
+    slash_count ++;
 }
 
 int Client::alivePlayerCount() const{
@@ -1171,7 +1174,8 @@ QList<const ClientPlayer*> Client::getPlayers() const{
 void Client::clearTurnTag(){
     Sanguosha->playAudio("your-turn");
 
-    turn_tag.clear();
+    used.clear();
+    slash_count = 0;
 }
 
 void Client::showCard(const QString &show_str){
@@ -1371,4 +1375,8 @@ void Client::animate(const QString &animate_str){
     QString name = args.takeFirst();
 
     emit animated(name, args);
+}
+
+bool Client::hasUsed(const QString &card_class){
+    return used.contains(card_class);
 }

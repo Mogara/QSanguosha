@@ -4,14 +4,11 @@
 #include "carditem.h"
 
 GongxinCard::GongxinCard(){
+    once = true;
 }
 
 bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     return targets.isEmpty() && !to_select->isKongcheng();
-}
-
-void GongxinCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("gongxin_used", true);
 }
 
 void GongxinCard::onEffect(const CardEffectStruct &effect) const{
@@ -154,13 +151,9 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("gongxin_used", false).toBool();
+        return !ClientInstance->hasUsed("GongxinCard");
     }
 };
-
-void YeyanCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->tag.insert("yeyan_used", true);
-}
 
 void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point) const{
     DamageStruct damage;
@@ -172,6 +165,7 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
     damage.nature = DamageStruct::Fire;
 
     shenzhouyu->getRoom()->damage(damage);
+    shenzhouyu->loseMark("@flame");
 }
 
 GreatYeyanCard::GreatYeyanCard(){
@@ -228,7 +222,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->tag.value("yeyan_used", false).toBool();
+        return Self->getMark("@flame") >= 1;
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -278,7 +272,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->tag.value("yeyan_used", false).toBool();
+        return Self->getMark("@flame") >= 1;
     }
 
     virtual const Card *viewAs() const{
@@ -416,7 +410,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 6 && !ClientInstance->turn_tag.value("shenfen_used", false).toBool();
+        return Self->getMark("@wrath") >= 6 && !ClientInstance->hasUsed("ShenfenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -427,6 +421,7 @@ public:
 
 ShenfenCard::ShenfenCard(){
     target_fixed = true;
+    once = true;
 }
 
 void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlayer *> &) const{
@@ -455,10 +450,6 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlay
 
     shenlubu->turnOver();
     room->broadcastProperty(shenlubu, "faceup");
-}
-
-void ShenfenCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("shenfen_used", true);
 }
 
 WuqianCard::WuqianCard(){
@@ -926,6 +917,7 @@ GodPackage::GodPackage()
 
     General *shenzhouyu = new General(this, "shenzhouyu", "god");
     shenzhouyu->addSkill(new Qinyin);
+    shenzhouyu->addSkill(new MarkAssignSkill("@flame", 1));
     shenzhouyu->addSkill(new GreatYeyan);
     shenzhouyu->addSkill(new MediumYeyan);
     shenzhouyu->addSkill(new SmallYeyan);

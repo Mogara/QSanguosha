@@ -52,6 +52,16 @@ public:
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 };
 
+class LianliSlashCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LianliSlashCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class QiaocaiCard: public SkillCard{
     Q_OBJECT
 

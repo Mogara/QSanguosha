@@ -516,10 +516,6 @@ bool DimengCard::targetsFeasible(const QList<const ClientPlayer *> &targets) con
     return targets.length() == 2;
 }
 
-void DimengCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("dimeng_used", true);
-}
-
 void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);
@@ -573,7 +569,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("dimeng_used", false).toBool();
+        return ! ClientInstance->hasUsed("DimengCard");
     }
 };
 
@@ -588,7 +584,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->tag.value("luanwu_used", false).toBool();
+        return Self->getMark("@chaos") >= 1;
     }
 };
 
@@ -607,6 +603,8 @@ void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
+    effect.from->loseMark("@chaos");
+
     QList<ServerPlayer *> players = room->getOtherPlayers(effect.to);
     QList<int> distance_list;
     int nearest = 1000;
@@ -616,7 +614,6 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
 
         nearest = qMin(nearest, distance);
     }    
-
 
     QList<ServerPlayer *> luanwu_targets;
     int i;
@@ -636,10 +633,6 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         room->cardEffect(slash, effect.to, to_slash);
     }else
         room->loseHp(effect.to);
-}
-
-void LuanwuCard::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->tag.insert("luanwu_used", true);
 }
 
 class Wansha: public TriggerSkill{
@@ -880,6 +873,7 @@ ThicketPackage::ThicketPackage()
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new Weimu);
+    jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);

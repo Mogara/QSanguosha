@@ -72,5 +72,7 @@ return {
 	["$guixin"] = "山不厌高，海不厌深，周公吐哺，天下归心", 
 	["#FogProtect"] = "%from 受到大雾保护，防止了 %arg 点伤害(%arg2)", 
 	["#GalePower"] = "由于狂风的影响，%from 的伤害从 %arg 点火焰伤害增加到 %arg2 点火焰伤害", 
-	["#QixingExchange"] = "%from 使用了【七星】，交换了 %arg 张手牌", 
+	["#QixingExchange"] = "%from 使用了【七星】，交换了 %arg 张手牌",
+
+	["@flame"] = "业炎",
 }

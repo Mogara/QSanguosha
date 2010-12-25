@@ -7,9 +7,9 @@ return {
 	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算", 
 	["yitian"] = "倚天", 
 	["yitian_sword"] = "倚天剑", 
-	["basic"] = "基本牌", 
-	["equip"] = "装备牌", 
-	["trick"] = "锦囊牌", 
+	["jilei:basic"] = "基本牌", 
+	["jilei:equip"] = "装备牌", 
+	["jilei:trick"] = "锦囊牌", 
 	["shencc"] = "魏武帝", 
 	["caochong"] = "曹冲", 
 	["caozhi"] = "曹植", 
@@ -70,7 +70,16 @@ return {
 	["$qiaocai"] = "陟彼南山，言采其樵。未见君子，忧心惙惙",
 	["~xiahoujuan"] = "行与子逝兮，归于其室",
 	
+	["lianli-jink"] = "连理(闪)",
+	["lianli-jink:accept"] = "帮其出闪",
+	["lianli-jink:ignore"] = "不帮其出闪",
+	
+	["lianli-slash"] = "连理（杀）",
+	["lianli-slash:accept"] = "帮其出杀",
+	["lianli-slash:ignore"] = "不帮其出杀",
+	
 	["@@lianli-card"] = "请选择一名要连理的对象",
-	["#LianliConnection"] = "%from 与 %to 结为连理"
+	["#LianliConnection"] = "%from 与 %to 结为连理",
+	["@tied"] = "连理",
 }
 

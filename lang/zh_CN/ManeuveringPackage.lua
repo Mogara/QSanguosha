@@ -35,4 +35,5 @@ return {
 	["#SilverLion"] = "%from 的防具【白银狮子】防止了 %arg 点伤害，减至1点", 
 	["#VineDamage"] = "%from 装备【藤甲】的负面技能被触发，由 %arg 点火焰伤害增加到 %arg2 点火焰伤害", 
 	["@fire-attack"] = "%src 展示的牌的花色为 %arg，请弃掉与其相同花色的牌", 
+	["#GudingBladeEffect"] = "%from 装备的古锭刀生效，无手牌对象 %to 的伤害从 %arg 增加到 %arg2",
 }

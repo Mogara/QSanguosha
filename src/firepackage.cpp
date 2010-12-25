@@ -9,7 +9,7 @@
 #include "standard-commons.h"
 
 QuhuCard::QuhuCard(){
-
+    once = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -56,10 +56,6 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
 
         room->damage(damage);
     }
-}
-
-void QuhuCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("quhu_used", true);
 }
 
 JiemingCard::JiemingCard(){
@@ -125,7 +121,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("quhu_used", false).toBool() && !Self->isKongcheng();
+        return ! ClientInstance->hasUsed("QuhuCard") && !Self->isKongcheng();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -140,7 +136,7 @@ public:
 };
 
 QiangxiCard::QiangxiCard(){
-
+    once = true;
 }
 
 bool QiangxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -170,10 +166,6 @@ void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
     room->damage(damage);
 }
 
-void QiangxiCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("qiangxi_used", true);
-}
-
 class Qiangxi: public ViewAsSkill{
 public:
     Qiangxi():ViewAsSkill("qiangxi"){
@@ -181,7 +173,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("qiangxi_used", false).toBool();
+        return ! ClientInstance->hasUsed("QiangxiCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -336,7 +328,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->hasFlag("niepan_used");
+        return TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
@@ -352,7 +344,7 @@ public:
             room->setPlayerProperty(pangtong, "hp", 3);
             pangtong->drawCards(3);
 
-            room->setPlayerFlag(pangtong, "niepan_used");
+            pangtong->loseMark("@nirvana");
 
             if(pangtong->isChained())
                 room->setPlayerProperty(pangtong, "chained", false);
@@ -418,7 +410,7 @@ public:
 };
 
 TianyiCard::TianyiCard(){
-
+    once = true;
 }
 
 bool TianyiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -434,10 +426,6 @@ void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlaye
     }
 }
 
-void TianyiCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("tianyi_used", true);
-}
-
 class TianyiViewAsSkill: public OneCardViewAsSkill{
 public:
     TianyiViewAsSkill():OneCardViewAsSkill("tianyi"){
@@ -445,7 +433,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("tianyi_used", false).toBool() && !Self->isKongcheng();
+        return !ClientInstance->hasUsed("TianyiCard") && !Self->isKongcheng();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -516,6 +504,7 @@ FirePackage::FirePackage()
 
     pangtong = new General(this, "pangtong", "shu", 3);
     pangtong->addSkill(new Lianhuan);
+    pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
 
     taishici = new General(this, "taishici", "wu");

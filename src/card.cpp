@@ -334,9 +334,6 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const Client
     return targets.isEmpty() && to_select != Self;
 }
 
-void Card::use(const QList<const ClientPlayer *> &targets) const{    
-}
-
 static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
     Room *room = a->getRoom();
     int current = room->getCurrent()->getSeat();

@@ -3,6 +3,7 @@
 #include "carditem.h"
 #include "standard.h"
 #include "clientplayer.h"
+#include "standard-skillcards.h"
 
 DiscardSkill::DiscardSkill()
     :ViewAsSkill("discard"), card(new DummyCard),

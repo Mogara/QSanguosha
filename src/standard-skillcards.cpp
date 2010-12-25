@@ -1,4 +1,5 @@
 #include "standard.h"
+#include "standard-skillcards.h"
 #include "room.h"
 #include "clientplayer.h"
 #include "engine.h"
@@ -6,10 +7,7 @@
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
-}
-
-void ZhihengCard::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("zhiheng_used", true);
+    once = true;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -37,7 +35,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 }
 
 JieyinCard::JieyinCard(){
-
+    once = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -47,15 +45,11 @@ bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return to_select->getGeneral()->isMale() && to_select->isWounded();
 }
 
-void JieyinCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+void JieyinCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
 
-    room->recover(source, 1, true);
-    room->recover(targets.first(), 1, true);
-}
-
-void JieyinCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("jieyin_used", true);
+    room->recover(effect.from, 1, true);
+    room->recover(effect.to, 1, true);
 }
 
 TuxiCard::TuxiCard(){
@@ -82,13 +76,15 @@ void TuxiCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 FanjianCard::FanjianCard(){
-
+    once = true;
 }
 
-void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
+void FanjianCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *zhouyu = effect.from;
+    ServerPlayer *target = effect.to;
+    Room *room = zhouyu->getRoom();
 
-    int card_id = source->getRandomHandCard();
+    int card_id = zhouyu->getRandomHandCard();
     const Card *card = Sanguosha->getCard(card_id);
     Card::Suit suit = room->askForSuit(target);
 
@@ -98,12 +94,14 @@ void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = Card::Suit2String(suit);
     room->sendLog(log);
 
+    room->showCard(zhouyu, card_id);
+    room->getThread()->delay();
+
     if(card->getSuit() != suit){
         DamageStruct damage;
-        damage.card = this;
-        damage.from = source;
+        damage.card = NULL;
+        damage.from = zhouyu;
         damage.to = target;
-        damage.damage = 1;
 
         room->damage(damage);
     }
@@ -111,10 +109,6 @@ void FanjianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     if(target->isAlive()){
         target->obtainCard(card);
     }
-}
-
-void FanjianCard::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("fanjian_used", true);
 }
 
 KurouCard::KurouCard(){
@@ -128,7 +122,7 @@ void KurouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 }
 
 LijianCard::LijianCard(){
-
+    once = true;
 }
 
 bool LijianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -163,11 +157,8 @@ void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     room->cardEffect(effect);
 }
 
-void LijianCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("lijian_used", true);
-}
-
 QingnangCard::QingnangCard(){
+    once = true;
 }
 
 bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -197,10 +188,6 @@ void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     effect.to = target;
 
     room->cardEffect(effect);
-}
-
-void QingnangCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("qingnang_used", true);
 }
 
 void QingnangCard::onEffect(const CardEffectStruct &effect) const{

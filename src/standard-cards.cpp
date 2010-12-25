@@ -27,19 +27,7 @@ bool Slash::IsAvailable(){
     if(Self->hasWeapon("crossbow"))
         return true;
     else
-        return IsAvailableWithCrossbow();
-}
-
-bool Slash::IsAvailableWithCrossbow(){
-    if(Self->hasSkill("paoxiao"))
-        return true;
-    else{
-        int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
-        if(Self->hasFlag("tianyi_success"))
-            return slash_count < 2;
-        else
-            return slash_count < 1;
-    }
+        return ClientInstance->canSlashWithCrossbow();
 }
 
 bool Slash::isAvailable() const{
@@ -48,10 +36,6 @@ bool Slash::isAvailable() const{
 
 QString Slash::getSubtype() const{
     return "attack_card";
-}
-
-void Slash::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->increaseSlashCount();
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{

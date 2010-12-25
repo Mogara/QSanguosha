@@ -6,7 +6,7 @@
 #include "engine.h"
 
 ZhanShuangxiongCard::ZhanShuangxiongCard(){
-
+    once = true;
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -27,10 +27,6 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     room->damage(damage);
 
     room->setTag("ZhanShuangxiong", true);
-}
-
-void ZhanShuangxiongCard::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("zhanshuangxiong", true);
 }
 
 class GreatYiji: public MasochismSkill{
@@ -75,7 +71,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->turn_tag.value(objectName(), false).toBool();
+        return !Self->isKongcheng() && !ClientInstance->hasUsed("ZhanShuangxiongCard");
     }
 
     virtual const Card *viewAs() const{
