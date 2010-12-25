@@ -146,8 +146,6 @@ void Engine::addPackage(Package *package){
     foreach(const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
 
-    // translations.unite(package->getTranslation());
-
     QList<const Skill *> extra_skills = package->getSkills();
     foreach(const Skill *skill, extra_skills)
         skills.insert(skill->objectName(), skill);

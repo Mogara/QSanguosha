@@ -63,8 +63,8 @@ void ServerPlayer::drawCards(int n, bool set_emotion){
 }
 
 // a convenient way to ask player
-bool ServerPlayer::askForSkillInvoke(const QString &skill_name){
-    return room->askForSkillInvoke(this, skill_name);
+bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data){
+    return room->askForSkillInvoke(this, skill_name, data);
 }
 
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){

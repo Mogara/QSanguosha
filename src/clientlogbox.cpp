@@ -22,7 +22,7 @@ void ClientLogBox::appendLog(
     QString from;
     if(!from_general.isEmpty()){
         from = Sanguosha->translate(from_general);
-        from = QString("<b>%1</b>").arg(from);
+        from = bold(from);
     }
 
     QString to;
@@ -33,14 +33,14 @@ void ClientLogBox::appendLog(
         to = to_list.join(",");
         arg = Sanguosha->translate(arg);
 
-        to = QString("<b>%1</b>").arg(to);
+        to = bold(to);
     }
 
     QString log;
 
     if(type.startsWith("$")){
         const Card *card = Sanguosha->getCard(card_str.toInt());
-        QString log_name = QString("<font color='white'>%1</font>").arg(card->getLogName());
+        QString log_name = card->getLogName();
 
         log = Sanguosha->translate(type);
         log.replace("%from", from);
@@ -54,7 +54,7 @@ void ClientLogBox::appendLog(
 
     if(!card_str.isEmpty()){
         const Card *card = Card::Parse(card_str);
-        QString card_name = QString("<font color='white'>%1</font>").arg(card->getLogName());
+        QString card_name = card->getLogName();
 
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());
@@ -69,8 +69,6 @@ void ClientLogBox::appendLog(
                 }
 
                 QString subcard_str = subcard_list.join(",");
-                subcard_str = QString("<font color='white'>%1</font>").arg(subcard_str);
-
                 if(subcard_list.isEmpty())
                     log = tr("%from use skill [%1], played [%2]").arg(skill_name).arg(card_name);
                 else
@@ -94,18 +92,23 @@ void ClientLogBox::appendLog(
     log.replace("%to", to);
 
     if(!arg2.isEmpty()){
-        arg2 = QString("<b>%1</b>").arg(Sanguosha->translate(arg2));
+        arg2 = bold(Sanguosha->translate(arg2));
         log.replace("%arg2", arg2);
     }
 
     if(!arg.isEmpty()){
-        arg = QString("<b>%1</b>").arg(Sanguosha->translate(arg));
+        arg = bold(Sanguosha->translate(arg));
         log.replace("%arg", arg);
     }
 
     log = QString("<font color='%2'>%1</font>").arg(log).arg(Config.TextEditColor.name());
 
     append(log);
+}
+
+QString ClientLogBox::bold(const QString &str) const{
+    return QString("<font color='%1'><b>%2</b></font>")
+            .arg(Config.TextEditColor.name()).arg(str);
 }
 
 void ClientLogBox::appendLog(const QString &log_str){

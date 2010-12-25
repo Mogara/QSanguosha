@@ -19,6 +19,9 @@ public:
             const QString arg2 = QString()
             );
 
+private:
+    QString bold(const QString &str) const;
+
 public slots:
     void appendLog(const QString &log_str);
     void appendSeparator();

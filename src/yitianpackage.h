@@ -42,5 +42,23 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 };
 
+class LianliCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LianliCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+};
+
+class QiaocaiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QiaocaiCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
 
 #endif // YITIANPACKAGE_H

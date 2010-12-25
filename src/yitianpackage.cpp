@@ -521,6 +521,221 @@ public:
     }
 };
 
+LianliCard::LianliCard(){
+
+}
+
+bool LianliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && to_select->getGeneral()->isMale();
+}
+
+void LianliCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    LogMessage log;
+    log.type = "#LianliConnection";
+    log.from = effect.from;
+    log.to << effect.to;
+    room->sendLog(log);
+
+    if(!effect.from->hasFlag("lianli"))
+        room->setPlayerFlag(effect.from, "lianli");
+
+    if(!effect.to->hasFlag("lianli")){
+        QList<ServerPlayer *> players = room->getOtherPlayers(effect.from);
+        foreach(ServerPlayer *player, players){
+            if(player->hasFlag("lianli"))
+                room->setPlayerFlag(player, "-lianli");
+        }
+
+        room->setPlayerFlag(effect.to, "lianli");
+    }
+}
+
+class LianliStart: public GameStartSkill{
+public:
+    LianliStart():GameStartSkill("#lianli-start") {
+
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+
+        room->attachSkillToPlayer(player, "lianli-jink");
+
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        foreach(ServerPlayer *player, players){
+            if(player->getGeneral()->isMale())
+                room->attachSkillToPlayer(player, "lianli-slash");
+        }
+    }
+};
+
+class LianliSlash: public TriggerSkill{
+public:
+    LianliSlash():TriggerSkill("lianli-slash"){
+        events << CardAsked;
+        default_choice = "ignore";
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        QString pattern = data.toString();
+        if(pattern != "slash")
+            return false;
+
+        if(!player->hasFlag("lianli"))
+            return false;
+
+        Room *room = player->getRoom();
+        ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
+        if(xiahoujuan){
+            QString result = room->askForChoice(xiahoujuan, "lianli", "accept+ignore");
+            if(result == "ignore")
+                return false;
+
+            const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash");
+            if(slash){
+                room->provide(slash);
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+class LianliJink: public TriggerSkill{
+public:
+    LianliJink():TriggerSkill("lianli-jink"){
+        events << CardAsked;
+        default_choice = "ignore";
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *xiahoujuan, QVariant &data) const{
+        QString pattern = data.toString();
+        if(pattern != "jink")
+            return false;
+
+        if(!xiahoujuan->hasFlag("lianli"))
+            return false;
+
+        Room *room = xiahoujuan->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(xiahoujuan);
+        foreach(ServerPlayer *player, players){
+            if(player->hasFlag("lianli")){
+                ServerPlayer *zhangfei = player;
+                QString result = room->askForChoice(zhangfei, "lianli", "accept+ignore");
+
+                if(result == "ignore")
+                    break;
+
+                const Card *jink = room->askForCard(zhangfei, "jink", "@lianli-jink");
+                if(jink){
+                    room->provide(jink);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
+class LianliViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    LianliViewAsSkill():ZeroCardViewAsSkill(""){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "@lianli";
+    }
+
+    virtual const Card *viewAs() const{
+        return new LianliCard;
+    }
+};
+
+class Lianli: public PhaseChangeSkill{
+public:
+    Lianli():PhaseChangeSkill("lianli"){
+        view_as_skill = new LianliViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Start){
+            Room *room = target->getRoom();
+            bool used = room->askForUseCard(target, "@lianli", "@@lianli-card");
+            if(used){
+                if(target->getKingdom() != "shu")
+                    room->setPlayerProperty(target, "kingdom", "shu");
+            }else{
+                if(target->getKingdom() != "wei")
+                    room->setPlayerProperty(target, "kingdom", "wei");
+
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *player, players){
+                    if(player->hasFlag("lianli"))
+                        room->setPlayerFlag(player, "-lianli");
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
+class Tongxin: public MasochismSkill{
+public:
+    Tongxin():MasochismSkill("tongxin"){
+        frequency = Frequent;
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        if(!target->hasFlag("lianli"))
+            return;
+
+        if(target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+            Room *room = target->getRoom();
+
+            target->drawCards(1);
+            QList<ServerPlayer *> players = room->getOtherPlayers(target);
+            foreach(ServerPlayer *player, players){
+                if(player->hasFlag("lianli")){
+                    player->drawCards(1);
+                    return;
+                }
+            }
+        }
+    }
+};
+
+QiaocaiCard::QiaocaiCard(){
+
+}
+
+void QiaocaiCard::onEffect(const CardEffectStruct &effect) const{
+    QStack<const Card *> cards = effect.to->getJudgingArea();
+    foreach(const Card *card, cards){
+        effect.from->obtainCard(card);
+    }
+ }
+
+class Qiaocai: public ZeroCardViewAsSkill{
+public:
+    Qiaocai():ZeroCardViewAsSkill("qiaocai"){
+
+    }
+
+    virtual const Card *viewAs() const{
+        return new QiaocaiCard;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -553,10 +768,19 @@ YitianPackage::YitianPackage()
     lukang->addSkill(new Qianxun);
     lukang->addSkill(new Fanji);
 
+    General *xiahoujuan = new General(this, "xiahoujuan", "wei", 3, false);
+    xiahoujuan->addSkill(new LianliStart);
+    xiahoujuan->addSkill(new Lianli);
+    xiahoujuan->addSkill(new Tongxin);
+    xiahoujuan->addSkill(new Skill("liqian", Skill::Compulsory));
+    xiahoujuan->addSkill(new Qiaocai);
+
     skills << new YitianSwordViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
     addMetaObject<JuejiCard>();
+    addMetaObject<LianliCard>();
+    addMetaObject<QiaocaiCard>();
 }
 
 ADD_PACKAGE(Yitian);

@@ -30,7 +30,7 @@ public:
     void throwAllHandCards();
     void throwAllCards();
     void drawCards(int n, bool set_emotion = true);
-    bool askForSkillInvoke(const QString &skill_name);
+    bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
     QList<const Card *> getHandcards() const;

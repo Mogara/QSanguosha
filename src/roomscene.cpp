@@ -159,7 +159,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     chat_box->setPalette(palette);
     chat_box->setReadOnly(true);
     chat_box->setDocument(ClientInstance->getChatDoc());
-    chat_box->setTextColor(Qt::white);
+    chat_box->setTextColor(Config.TextEditColor);
 
     // chat edit
     chat_edit = new QLineEdit;
@@ -174,7 +174,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // log box
     log_box = new ClientLogBox;
     log_box->resize(chat_box->size());
-    log_box->setTextColor(Qt::white);
+    log_box->setTextColor(Config.TextEditColor);
 
     QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
     log_box_widget->setPos(114, -83);
