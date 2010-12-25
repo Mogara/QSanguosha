@@ -1,6 +1,6 @@
 -- translation for StandardPackage
 
-return {
+local t = {
 	["spade"] = "黑桃", 
 	["club"] = "梅花", 
 	["heart"] = "红桃", 
@@ -408,5 +408,48 @@ return {
 	[":ganglie"] = "你每受到一次伤害，可进行一次判定：若结果不为红桃，则目标来源必须进行二选一：弃两张手牌或受到你对其造成的1点伤害", 
 	["fankui"] = "反馈", 
 	["guicai"] = "鬼才", 
-	["luoyi"] = "裸衣", 
+	["luoyi"] = "裸衣",
+
+	-- last words
+	["~caocao"] = "霸业未成，未成啊……",
+	["~zhangliao"] = "真没想到",
+	["~guojia"] = "咳，咳……",
+	["~xiahoudun"] = "两边都看不见啦……",
+	["~simayi"] = "难道真的是天命难违？",
+	["~xuchu"] = "冷，好冷啊……",
+	["~zhenji"] = "悼良会之永绝兮，哀一逝而异乡。",
+	
+	["~liubei"] = "难道这就是桃园吗？",
+	["~guanyu"] = "什么？此地叫麦城？",
+	["~zhangfei"] = "实在是杀不动啦……",
+	["~zhaoyun"] = "难道这就是失败的滋味吗？",
+	["~machao"] = "(马蹄声...)",
+	["~zhugeliang"] = "将星陨落，天命难违",
+	["~huangyueying"] = "亮",
+	
+	["~sunquan"] = "父亲，大哥，仲谋溃矣……",
+	["~zhouyu"] = "既生瑜，何生……",
+	["~lumeng"] = "难道被看穿了吗？",
+	["~luxun"] = "我还是太年轻了……",
+	["~ganning"] = "二十年后，又是一条好汉。",
+	["~huanggai"] = "失血过多了……",
+	["~daqiao"] = "伯符，我去了",
+	["~sunshangxiang"] = "不！我还不可以死！",
+	
+	["~lubu"] = "不可能！",
+	["~huatuo"] = "医者不能自医啊",
+	["~diaochan"] = "父亲大人，对不起",	
 }
+
+local ohorses = {"chitu", "dayuan", "zixing"}
+local dhorses = {"zhuahuangfeidian", "dilu", "jueying", "hualiu"}
+
+for _, horse in ipairs(ohorses) do
+	t[":" .. horse] = t[":-1 horse"]
+end
+
+for _, horse in ipairs(dhorses) do
+	t[":" .. horse] = t[":+1 horse"]
+end
+
+return t

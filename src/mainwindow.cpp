@@ -6,7 +6,6 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
-#include "libircclient.h"
 #include "scenario-overview.h"
 
 #include <QGraphicsView>
@@ -54,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent)
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
-    connect(connection_dialog, SIGNAL(wan_detect()), ui->actionWAN_IP_detect, SIGNAL(triggered()));
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
@@ -87,7 +85,6 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionFullscreen);   
     addAction(ui->actionMinimize_to_system_tray);
 
-
     systray = NULL;
 }
 
@@ -102,7 +99,6 @@ void MainWindow::restoreFromConfig(){
         QApplication::setFont(Config.UIFont, "QTextEdit");
 
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
-    ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
@@ -348,21 +344,6 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
     menu_bar->setVisible(! menu_bar->isVisible());
 }
 
-void MainWindow::on_actionAbout_libircclient_triggered()
-{
-    QString content = tr("libircclient is a small but powerful library, which implements client-server IRC protocol. <br/>");
-    QString address = "http://libircclient.sourceforge.net";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-
-    char version[255];
-    unsigned int high, low;
-    irc_get_version(&high, &low);
-    sprintf(version, "%d.%02d", high, low);
-    content.append(tr("Current version %1 <br/>").arg(version));
-
-    QMessageBox::about(this, tr("About libircclient"), content);
-}
-
 void MainWindow::on_actionAbout_irrKlang_triggered()
 {
     QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
@@ -373,13 +354,6 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
     content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 
     QMessageBox::about(this, tr("About irrKlang"), content);
-}
-
-void MainWindow::on_actionWAN_IP_detect_triggered()
-{
-    QStringList args;
-    args << "-detect";
-    QProcess::startDetached(QApplication::applicationFilePath(), args);
 }
 
 void MainWindow::on_actionMinimize_to_system_tray_triggered()

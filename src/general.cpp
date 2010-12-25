@@ -89,5 +89,5 @@ void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 
-    //ClientInstance->setLastWord(objectName());
+    ClientInstance->setLastWord(objectName());
 }

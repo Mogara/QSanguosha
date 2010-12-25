@@ -46,10 +46,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     setFixedHeight(height());
     setFixedWidth(ShrinkWidth);
-
-    connect(ui->detectWANButton, SIGNAL(clicked()), this, SIGNAL(wan_detect()));
-
-    ui->detectWANButton->setEnabled(false);
 }
 
 ConnectionDialog::~ConnectionDialog()

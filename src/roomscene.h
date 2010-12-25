@@ -151,7 +151,6 @@ private slots:
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();
 
-    void speak(const QString &who, const QString &text);
     void speak();    
 
     void onGameStart();

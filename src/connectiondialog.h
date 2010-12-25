@@ -28,9 +28,6 @@ private slots:
     void on_avatarList_itemDoubleClicked(QListWidgetItem* item);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();
-
-signals:
-    void wan_detect();
 };
 
 class UdpDetectorDialog : public QDialog{

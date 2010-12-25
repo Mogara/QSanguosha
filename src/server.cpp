@@ -3,7 +3,6 @@
 #include "room.h"
 #include "engine.h"
 #include "nativesocket.h"
-#include "ircdetector.h"
 #include "banpairdialog.h"
 #include "scenario.h"
 #include "challengemode.h"
@@ -262,14 +261,14 @@ QLayout *ServerDialog::createRight(){
         address_edit = new QLineEdit;
         address_edit->setText(Config.Address);
         address_edit->setPlaceholderText(tr("Public IP or domain"));
-        address_edit->setEnabled(announce_ip_checkbox->isChecked());
         layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
 
         QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
         connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
         layout->addWidget(detect_button);
 
-        connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
+        //address_edit->setEnabled(announce_ip_checkbox->isChecked());
+        // connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
 
         port_edit = new QLineEdit;
         port_edit->setText(QString::number(Config.ServerPort));
@@ -427,141 +426,14 @@ Server::Server(QObject *parent)
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
     current = NULL;
-    session = NULL;
-}
-
-Server::~Server(){
-    if(session){
-        irc_disconnect(session);
-        irc_destroy_session(session);
-
-        session = NULL;
-    }
 }
 
 bool Server::listen(){
     return server->listen();
 }
 
-static void server_connect(irc_session_t *session,
-                           const char *event,
-                           const char *origin,
-                           const char **params,
-                           unsigned int count)
-{
-    char channel[255];
-    qstrcpy(channel, Config.IrcChannel.toAscii().constData());
-
-    irc_cmd_join(session, channel, NULL);
-
-    Server *server = static_cast<Server *>(irc_get_ctx(session));
-    server->emitDetectableMessage();
-}
-
-static void server_channel(irc_session_t *session,
-                           const char *event,
-                           const char *origin,
-                           const char **params,
-                           unsigned int count)
-{
-    const char *nick = origin;
-    const char *content = params[1];
-    if(qstrcmp(content, "whoIsServer") == 0){
-        Server *server = static_cast<Server *>(irc_get_ctx(session));
-        server->giveInfo(nick);
-    }
-}
-
-static void server_notice(irc_session_t *session,
-                          const char *event,
-                          const char *origin,
-                          const char **params,
-                          unsigned int count)
-{
-    const char *nick = origin;
-    const char *notice = params[1];
-    if(qstrcmp(notice, "giveYourInfo") == 0){
-        Server *server = static_cast<Server *>(irc_get_ctx(session));
-        server->giveInfo(nick);
-    }
-}
-
-static void server_leave(irc_session_t *session,
-                         const char *event,
-                         const char *origin,
-                         const char **params,
-                         unsigned int count)
-{
-    void *ctx = irc_get_ctx(session);
-    Server *server = static_cast<Server *>(ctx);
-
-    server->removeNick(origin);
-}
-
-static void server_numeric(irc_session_t *session,
-                           unsigned int event,
-                           const char *origin,
-                           const char **params,
-                           unsigned int count)
-{
-    if(event > 400){
-        Server *server = static_cast<Server *>(irc_get_ctx(session));
-        QStringList content;
-        unsigned int i;
-        for(i=0; i<count; i++)
-            content << params[i];
-
-        QString msg = QString("origin = %1, content = %2").arg(origin).arg(content.join(","));
-        server->emitServerMessage(msg);
-    }
-}
-
-void Server::emitDetectableMessage(){
-    emit server_message(tr("Server can be detected at WAN"));
-}
-
-void Server::emitServerMessage(const QString &msg){
-    emit server_message(msg);
-}
-
 void Server::daemonize(){
     server->daemonize();
-
-    if(Config.AnnounceIP){
-        // winsock initialize
-#ifdef Q_OS_WIN32
-        WORD wVersionRequested = MAKEWORD (1, 1);
-        WSADATA wsaData;
-
-        WSAStartup (wVersionRequested, &wsaData);
-#endif
-
-        irc_callbacks_t callbacks;
-        memset(&callbacks, 0, sizeof(callbacks));        
-        callbacks.event_connect = server_connect;
-        callbacks.event_channel = server_channel;
-        callbacks.event_notice = server_notice;
-        callbacks.event_part = server_leave;
-        callbacks.event_quit = server_leave;
-        callbacks.event_numeric = server_numeric;
-        session = irc_create_session(&callbacks);
-
-        irc_set_ctx(session, this);
-
-        irc_option_set(session, LIBIRC_OPTION_STRIPNICKS);
-
-        char server[255], nick[255];
-
-        qstrcpy(server, Config.IrcHost.toAscii().constData());
-        qstrcpy(nick, Config.IrcNick.toAscii().constData());
-        ushort port = Config.IrcPort;
-
-        int result = irc_connect(session, server, port, NULL, nick, NULL, NULL);
-        if(result == 0){
-            IrcRunner *runner = new IrcRunner(this, session);
-            runner->start();
-        }
-    }
 
     current = new Room(this, Config.GameMode);
     connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
@@ -587,48 +459,6 @@ void Server::processNewConnection(ClientSocket *socket){
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
-
-    tellLack();
-}
-
-void Server::giveInfo(const char *nick)
-{
-    char address[255];
-    qstrcpy(address, "#");
-    strcat(address, Config.Address.toAscii().constData());
-    irc_cmd_notice(session, nick, address);
-
-    char server_info[1024];
-    qstrcpy(server_info, Sanguosha->getSetupString().toAscii().constData());
-    irc_cmd_notice(session, nick, server_info);    
-
-    nicks << nick;
-    tellLack(nick);
-}
-
-void Server::removeNick(const char *nick){
-    nicks.remove(nick);
-}
-
-void Server::tellLack(const char *nick){
-    int lack = current->getLack();
-    if(lack == 0){
-        lack = Sanguosha->getPlayerCount(Config.GameMode);
-    }
-
-    char lack_str[100];
-    sprintf(lack_str, "@%d", lack);
-
-    if(nick)
-        irc_cmd_notice(session, nick, lack_str);
-    else{
-        char nick_buff[100];
-        foreach(QString nickname, nicks){
-            strcpy(nick_buff, nickname.toAscii().constData());
-
-            irc_cmd_notice(session, nick_buff, lack_str);
-        }
-    }
 }
 
 void Server::cleanup(){
@@ -636,6 +466,4 @@ void Server::cleanup(){
 
     if(Config.ForbidSIMC)
         addresses.remove(socket->peerAddress());
-
-    tellLack();
 }

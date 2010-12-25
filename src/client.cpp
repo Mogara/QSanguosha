@@ -118,9 +118,12 @@ Client::Client(QObject *parent, const QString &filename)
     }
 
     lines_doc = new QTextDocument(this);
+
     prompt_doc = new QTextDocument(this);
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
+
+    chat_doc = new QTextDocument(this);
 }
 
 void Client::signup(){
@@ -888,6 +891,10 @@ QTextDocument *Client::getPromptDoc() const{
     return prompt_doc;
 }
 
+QTextDocument *Client::getChatDoc() const{
+    return chat_doc;
+}
+
 void Client::clearPile(const QString &){
     discarded_list.clear();
 
@@ -1285,6 +1292,8 @@ void Client::log(const QString &log_str){
     emit log_received(log_str);
 }
 
+#include <QTextCursor>
+
 void Client::speak(const QString &speak_data){
     QStringList words = speak_data.split(":");
     QString who = words.at(0);
@@ -1293,7 +1302,20 @@ void Client::speak(const QString &speak_data){
     QByteArray data = QByteArray::fromBase64(base64.toAscii());
     QString text = QString::fromUtf8(data);
 
-    emit words_spoken(who, text);
+    const ClientPlayer *from = getPlayer(who);
+    QString title;
+    if(from){
+        title = from->getGeneralName();
+        title = Sanguosha->translate(title);
+        title.append(QString("(%1)").arg(from->screenName()));
+    }
+
+    title = QString("<b>%1</b>").arg(title);
+
+    QString line = tr("[%1] said: %2 <br />").arg(title).arg(text);
+    QTextCursor cursor(chat_doc);
+    cursor.movePosition(QTextCursor::End);
+    cursor.insertHtml(line);
 }
 
 void Client::moveFocus(const QString &focus){

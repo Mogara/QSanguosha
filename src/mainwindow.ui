@@ -40,7 +40,6 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
-    <addaction name="actionWAN_IP_detect"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionView_Discarded"/>
@@ -57,7 +56,6 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_irrKlang"/>
-    <addaction name="actionAbout_libircclient"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
@@ -149,14 +147,6 @@
     <string>Ctrl+D</string>
    </property>
   </action>
-  <action name="actionNever_Nullify_My_Trick">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Never Nullify My Trick</string>
-   </property>
-  </action>
   <action name="actionView_distance">
    <property name="enabled">
     <bool>false</bool>
@@ -166,11 +156,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
-   </property>
-  </action>
-  <action name="actionAbout_audiere">
-   <property name="text">
-    <string>About audiere</string>
    </property>
   </action>
   <action name="actionServerInformation">
@@ -224,16 +209,6 @@
    </property>
    <property name="text">
     <string>Surrender</string>
-   </property>
-  </action>
-  <action name="actionAbout_libircclient">
-   <property name="text">
-    <string>About libircclient</string>
-   </property>
-  </action>
-  <action name="actionWAN_IP_detect">
-   <property name="text">
-    <string>WAN IP detect ...</string>
    </property>
   </action>
   <action name="actionMinimize_to_system_tray">

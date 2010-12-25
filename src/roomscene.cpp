@@ -118,7 +118,6 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
-    connect(ClientInstance, SIGNAL(words_spoken(QString,QString)), this, SLOT(speak(QString,QString)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
@@ -159,6 +158,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     palette.setBrush(QPalette::Base, backgroundBrush());
     chat_box->setPalette(palette);
     chat_box->setReadOnly(true);
+    chat_box->setDocument(ClientInstance->getChatDoc());
+    chat_box->setTextColor(Qt::white);
 
     // chat edit
     chat_edit = new QLineEdit;
@@ -173,6 +174,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // log box
     log_box = new ClientLogBox;
     log_box->resize(chat_box->size());
+    log_box->setTextColor(Qt::white);
 
     QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
     log_box_widget->setPos(114, -83);
@@ -2189,21 +2191,6 @@ void RoomScene::adjustGuanxing(){
 void RoomScene::viewDistance(){
     DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
     dialog->show();
-}
-
-void RoomScene::speak(const QString &who, const QString &text){
-    const ClientPlayer *from = ClientInstance->findChild<const ClientPlayer *>(who);
-    QString title;
-    if(from){
-        title = from->getGeneralName();
-        title = Sanguosha->translate(title);
-        title.append(QString("(%1)").arg(from->screenName()));
-    }
-
-    title = QString("<b>%1</b>").arg(title);
-
-    QString line = QString(tr("[%1] said: %2").arg(title).arg(text));
-    chat_box->append(line);
 }
 
 void RoomScene::speak(){

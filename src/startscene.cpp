@@ -53,8 +53,10 @@ void StartScene::setServerLogBackground(){
 extern irrklang::ISoundEngine *SoundEngine;
 
 void StartScene::switchToServer(Server *server){
-    if(SoundEngine)
+    if(SoundEngine){
         SoundEngine->drop();
+        SoundEngine = NULL;
+    }
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");

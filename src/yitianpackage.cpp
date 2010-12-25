@@ -499,35 +499,22 @@ public:
 class Fanji: public TriggerSkill{
 public:
     Fanji():TriggerSkill("fanji"){
-        events << CardFinished;
+        events << CardEffected;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+    virtual int getPriority(ServerPlayer *target) const{
+        return -1;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-
-        if(use.to.length() != 1)
-            return false;
-
-        ServerPlayer *lukang = use.to.first();
-        if(lukang == player)
-            return false;
-
-        if(!lukang->hasSkill(objectName()))
-            return false;
-
-        if(!use.card->inherits("TrickCard"))
-            return false;
-
-        Room *room = lukang->getRoom();
-        if(!room->obtainable(use.card, lukang))
-            return false;
-
-        if(room->askForSkillInvoke(lukang, objectName(), data)){
-            lukang->obtainCard(use.card);
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if(!effect.multiple && effect.card->inherits("TrickCard") && effect.from != player){
+            Room *room = player->getRoom();
+            if(room->obtainable(effect.card, player) &&
+               room->askForSkillInvoke(player, objectName(), data))
+            {
+                player->obtainCard(effect.card);
+            }
         }
 
         return false;

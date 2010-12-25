@@ -39,8 +39,6 @@ private slots:
     void on_actionScenario_Overview_triggered();
     void on_actionRole_assign_table_triggered();
     void on_actionMinimize_to_system_tray_triggered();
-    void on_actionWAN_IP_detect_triggered();
-    void on_actionAbout_libircclient_triggered();
     void on_actionShow_Hide_Menu_triggered();
     void on_actionFullscreen_triggered();
     void on_actionReplay_triggered();

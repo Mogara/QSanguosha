@@ -83,9 +83,9 @@
    <widget class="QPushButton" name="clearHistoryButton">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>100</y>
-      <width>121</width>
+      <x>50</x>
+      <y>70</y>
+      <width>211</width>
       <height>23</height>
      </rect>
     </property>
@@ -164,24 +164,11 @@
      <string>Change avatar</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="detectWANButton">
-    <property name="geometry">
-     <rect>
-      <x>141</x>
-      <y>70</y>
-      <width>121</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Detect WAN ...</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="detectLANButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>70</y>
+      <x>140</x>
+      <y>100</y>
       <width>121</width>
       <height>23</height>
      </rect>

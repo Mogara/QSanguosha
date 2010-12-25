@@ -58,9 +58,11 @@ public:
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     void setLastWord(const QString &general_name);
+    bool isJilei(const Card *card) const;
+
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
-    bool isJilei(const Card *card) const;
+    QTextDocument *getChatDoc() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -163,7 +165,7 @@ private:
     Recorder *recorder;
     Replayer *replayer;
     QList<const ProhibitSkill *> prohibit_skills;
-    QTextDocument *lines_doc, *prompt_doc;
+    QTextDocument *lines_doc, *prompt_doc, *chat_doc;
     int pile_num;
     QString skill_line;
     QString jilei_flags;
@@ -196,7 +198,6 @@ signals:
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids);
     void gongxin(const QList<int> &card_ids, bool enable_heart);
-    void words_spoken(const QString &who, const QString &text);
     void focus_moved(const QString &focus);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);

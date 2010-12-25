@@ -7,7 +7,6 @@ class QLabel;
 
 #include "socket.h"
 #include "detector.h"
-#include "libircclient.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -63,21 +62,14 @@ class Server : public QObject{
 
 public:
     explicit Server(QObject *parent);
-    ~Server();
 
     bool listen();
     void daemonize();
-    void emitDetectableMessage();
-    void emitServerMessage(const QString &msg);
-    void giveInfo(const char *nick);
-    void removeNick(const char *nick);
-    void tellLack(const char *nick = NULL);
 
 private:
     ServerSocket *server;
     Room *current;
-    QSet<QString> addresses, nicks;
-    irc_session_t *session;
+    QSet<QString> addresses;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
