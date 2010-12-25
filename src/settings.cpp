@@ -11,13 +11,13 @@
 #include <QNetworkInterface>
 #include <QDateTime>
 
-Settings Config("Donghua University", "Sanguosha");
+Settings Config;
 
 static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;
 
-Settings::Settings(const QString &organization, const QString &application) :
-    QSettings(organization, application),
+Settings::Settings()
+    :QSettings("config.ini", QSettings::IniFormat),
     Rect(-ViewWidth/2, -ViewHeight/2, ViewWidth, ViewHeight)
 {
 }
@@ -39,6 +39,7 @@ void Settings::init(){
 
     AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
     UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
+    TextEditColor = QColor(value("TextEditColor", "white").toString());
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
@@ -100,5 +101,5 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", ":/background.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/default.jpg").toString();
 }

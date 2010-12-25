@@ -101,6 +101,5 @@
         <file>roles/renegade-3.png</file>
         <file>roles/renegade-4.png</file>
         <file>roles/unknown.png</file>
-        <file>background.jpg</file>
     </qresource>
 </RCC>

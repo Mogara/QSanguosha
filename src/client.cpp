@@ -16,6 +16,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QTextDocument>
+#include <QTextCursor>
 
 Client *ClientInstance = NULL;
 
@@ -1292,8 +1293,6 @@ void Client::log(const QString &log_str){
     emit log_received(log_str);
 }
 
-#include <QTextCursor>
-
 void Client::speak(const QString &speak_data){
     QStringList words = speak_data.split(":");
     QString who = words.at(0);
@@ -1312,7 +1311,9 @@ void Client::speak(const QString &speak_data){
 
     title = QString("<b>%1</b>").arg(title);
 
-    QString line = tr("[%1] said: %2 <br />").arg(title).arg(text);
+    QString line = tr("<font color='%1'>[%2] said: %3 <br /></font>")
+                   .arg(Config.TextEditColor.name()).arg(title).arg(text);
+
     QTextCursor cursor(chat_doc);
     cursor.movePosition(QTextCursor::End);
     cursor.insertHtml(line);

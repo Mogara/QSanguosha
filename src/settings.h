@@ -11,7 +11,7 @@ class Settings : public QSettings{
     Q_OBJECT
 
 public:
-    explicit Settings(const QString &organization, const QString &application);
+    explicit Settings();
     void init();
 
     const QRectF Rect;
@@ -21,6 +21,7 @@ public:
 
     QFont AppFont;
     QFont UIFont;
+    QColor TextEditColor;
 
     // server side
     QString ServerName;
