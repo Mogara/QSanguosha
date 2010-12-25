@@ -604,6 +604,9 @@ bool Collateral::targetsFeasible(const QList<const ClientPlayer *> &targets) con
 
 bool Collateral::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(targets.isEmpty()){
+        if(to_select->hasSkill("weimu") && isBlack())
+            return false;
+
         return to_select->getWeapon() && to_select != Self;
     }else if(targets.length() == 1){
         const ClientPlayer *first = targets.first();

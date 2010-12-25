@@ -165,7 +165,6 @@ void YeyanCard::damage(ServerPlayer *shenzhouyu, ServerPlayer *target, int point
     damage.nature = DamageStruct::Fire;
 
     shenzhouyu->getRoom()->damage(damage);
-    shenzhouyu->loseMark("@flame");
 }
 
 GreatYeyanCard::GreatYeyanCard(){
@@ -176,11 +175,12 @@ bool GreatYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, co
     return targets.isEmpty();
 }
 
-void GreatYeyanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    shenzhouyu->loseMark("@flame");
     room->throwCard(this);
-    room->loseHp(source, 3);
+    room->loseHp(shenzhouyu, 3);
 
-    damage(source, targets.first(), 3);
+    damage(shenzhouyu, targets.first(), 3);
 }
 
 MediumYeyanCard::MediumYeyanCard(){
@@ -191,16 +191,17 @@ bool MediumYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, c
     return targets.length() < 2;
 }
 
-void MediumYeyanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->loseHp(source, 3);
+void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    shenzhouyu->loseMark("@flame");
+    room->loseHp(shenzhouyu, 3);
 
     ServerPlayer *first = targets.first();
-    ServerPlayer *second = targets.length() >= 2 ? targets.at(1) : NULL;
+    ServerPlayer *second = targets.value(1, NULL);
 
-    damage(source, first, 2);
+    damage(shenzhouyu, first, 2);
 
     if(second)
-        damage(source, second, 1);
+        damage(shenzhouyu, second, 1);
 }
 
 SmallYeyanCard::SmallYeyanCard(){
@@ -209,6 +210,13 @@ SmallYeyanCard::SmallYeyanCard(){
 
 bool SmallYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     return targets.length() < 3;
+}
+
+void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    shenzhouyu->loseMark("@flame");
+
+    foreach(ServerPlayer *target, targets)
+        room->cardEffect(this, shenzhouyu, target);
 }
 
 void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{
