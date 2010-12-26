@@ -78,5 +78,9 @@ return {
 	["@@lianli-card"] = "请选择一名要连理的对象",
 	["#LianliConnection"] = "%from 与 %to 结为连理",
 	["@tied"] = "连理",
+	
+	["yanghu"] = "羊祜",
+	["jinshen"] = "谨慎",
+	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。"
 }
 

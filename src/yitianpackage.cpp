@@ -500,25 +500,53 @@ public:
     }
 };
 
+class FanjiGet: public TriggerSkill{
+public:
+    FanjiGet():TriggerSkill("#fanji-get"){
+        events << CardFinished;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        QVariant card_data = room->getTag("FanjiCard");
+
+        if(!card_data.isValid())
+            return false;
+
+        CardStar card = card_data.value<CardStar>();
+        room->setTag("FanjiCard", QVariant());
+
+        ServerPlayer *lukang = room->findPlayerBySkillName(objectName());
+        if(lukang == NULL)
+            return false;
+
+        if(!room->obtainable(card, lukang))
+            return false;
+
+        if(lukang->askForSkillInvoke("fanji", data))
+            lukang->obtainCard(card);
+
+        return false;
+    }
+};
+
 class Fanji: public TriggerSkill{
 public:
     Fanji():TriggerSkill("fanji"){
         events << CardEffected;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
-        return -1;
-    }
+    virtual bool trigger(TriggerEvent event, ServerPlayer *lukang, QVariant &data) const{
+        Room *room = lukang->getRoom();
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(!effect.multiple && effect.card->inherits("TrickCard") && effect.from != player){
-            Room *room = player->getRoom();
-            if(room->obtainable(effect.card, player) &&
-               room->askForSkillInvoke(player, objectName(), data))
-            {
-                player->obtainCard(effect.card);
-            }
+        if(!effect.multiple && effect.card->inherits("TrickCard")
+            && !effect.card->inherits("DelayedTrick") && effect.from != lukang){
+            room->setTag("FanjiCard", QVariant::fromValue(effect.card));
         }
 
         return false;
@@ -819,6 +847,17 @@ public:
     }
 };
 
+class Jinshen: public ProhibitSkill{
+public:
+    Jinshen():ProhibitSkill("jinshen"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        return card->inherits("Indulgence") || card->inherits("SupplyShortage");
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -850,6 +889,7 @@ YitianPackage::YitianPackage()
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill(new Qianxun);
     lukang->addSkill(new Fanji);
+    lukang->addSkill(new FanjiGet);
 
     General *xiahoujuan = new General(this, "xiahoujuan", "wei", 3, false);
     xiahoujuan->addSkill(new LianliStart);
