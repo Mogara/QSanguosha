@@ -65,6 +65,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         sort_combobox = new QComboBox;
 
         sort_combobox->addItem(tr("No sort"));
+        sort_combobox->addItem(tr("Sort by color"));
         sort_combobox->addItem(tr("Sort by suit"));
         sort_combobox->addItem(tr("Sort by type"));
         sort_combobox->addItem(tr("Sort by availability"));
@@ -182,7 +183,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
     {
-        prompt_box = new Pixmap(":/prompt_box.png", true);
+        prompt_box = new Pixmap("image/system/prompt_box.png", true);
         prompt_box->setOpacity(0.8);
         prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
         prompt_box->shift();
@@ -361,7 +362,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
     Photo *photo = name2photo[player->objectName()];
     int i;
     for(i=0; i<n; i++){
-        Pixmap *pixmap = new Pixmap(":/card-back.png");
+        Pixmap *pixmap = new Pixmap("image/system/card-back.png");
         addItem(pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
@@ -691,7 +692,7 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
 
     int i;
     for(i=0; i<n; i++){
-        Pixmap *card_pixmap = new Pixmap(":/card-back.png");
+        Pixmap *card_pixmap = new Pixmap("image/system/card-back.png");
         addItem(card_pixmap);
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(card_pixmap, "pos");
@@ -1029,7 +1030,7 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     }
 
     role_combobox->setItemText(1, map->value(new_role));
-    role_combobox->setItemIcon(1, QIcon(QString(":/roles/%1.png").arg(new_role)));
+    role_combobox->setItemIcon(1, QIcon(QString("image/system/roles/%1.png").arg(new_role)));
     role_combobox->setCurrentIndex(1);
 }
 
@@ -1921,7 +1922,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 2, item);
 
         item = new QTableWidgetItem;
-        QIcon icon(QString(":/roles/%1.png").arg(player->getRole()));
+        QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
         item->setIcon(icon);
         if(!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
@@ -2035,7 +2036,7 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
             avatar_pixmap.load(taker->getGeneral()->getPixmapPath("tiny"));
         }else{
             putCardItem(NULL, Player::DiscardedPile, item);
-            avatar_pixmap.load(":/card-back.png");
+            avatar_pixmap.load("image/system/card-back.png");
             avatar_pixmap = avatar_pixmap.scaled(avatar_pixmap.size() / 2);
         }
 
@@ -2251,15 +2252,15 @@ void RoomScene::chooseGongxinCard(){
 }
 
 void RoomScene::createStateItem(){
-    QGraphicsItem *state_item = addPixmap(QPixmap(":/state.png"));
+    QGraphicsItem *state_item = addPixmap(QPixmap("image/system/state.png"));
     state_item->setPos(-110, -90);
     char roles[100] = {0}, *role;
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     for(role = roles; *role!='\0'; role++){
-        static QPixmap lord(":/roles/small-lord.png");
-        static QPixmap loyalist(":/roles/small-loyalist.png");
-        static QPixmap rebel(":/roles/small-rebel.png");
-        static QPixmap renegade(":/roles/small-renegade.png");
+        static QPixmap lord("image/system/roles/small-lord.png");
+        static QPixmap loyalist("image/system/roles/small-loyalist.png");
+        static QPixmap rebel("image/system/roles/small-rebel.png");
+        static QPixmap renegade("image/system/roles/small-renegade.png");
 
         QPixmap *to_add = NULL;
         switch(*role){
@@ -2401,7 +2402,7 @@ void RoomScene::moveAndDisappear(QGraphicsObject *item, const QPointF &from, con
 
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     if(name == "peach" || name == "nullification"){
-        Pixmap *item = new Pixmap(QString(":/animation/%1.png").arg(name));
+        Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
         addItem(item);
 
         QPointF from = getAnimationObject(args.at(0))->scenePos();

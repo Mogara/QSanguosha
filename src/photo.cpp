@@ -18,19 +18,19 @@
 #include <QPropertyAnimation>
 
 Photo::Photo(int order)
-    :Pixmap(":/photo-back.png"),
+    :Pixmap("image/system/photo-back.png"),
     player(NULL),
-    handcard(":/handcard.png"),
-    chain(":/chain.png"),
+    handcard("image/system/handcard.png"),
+    chain("image/system/chain.png"),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    order_item(new QGraphicsPixmapItem(QPixmap(QString(":/number/%1.png").arg(order+1)),this)),
+    order_item(new QGraphicsPixmapItem(QPixmap(QString("image/system/number/%1.png").arg(order+1)),this)),
     hide_avatar(false)
 {
     setAcceptHoverEvents(true);
 
     order_item->setVisible(false);
 
-    back_icon = new Pixmap(":/small-back.png");
+    back_icon = new Pixmap("image/system/small-back.png");
     back_icon->setParentItem(this);
     back_icon->setPos(105, 67);
     back_icon->hide();
@@ -115,7 +115,7 @@ void Photo::hideProcessBar(){
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
-    QString path = QString(":/emotion/%1.png").arg(emotion);
+    QString path = QString("image/system/emotion/%1.png").arg(emotion);
     emotion_item->setPixmap(QPixmap(path));
     emotion_item->show();
 
@@ -375,9 +375,9 @@ void Photo::drawHp(QPainter *painter){
 }
 
 void Photo::setFrame(FrameType type){
-    static QPixmap playing_frame(":/frame/playing.png");
-    static QPixmap responsing_frame(":/frame/responsing.png");
-    static QPixmap sos_frame(":/frame/sos.png");
+    static QPixmap playing_frame("image/system/frame/playing.png");
+    static QPixmap responsing_frame("image/system/frame/responsing.png");
+    static QPixmap sos_frame("image/system/frame/sos.png");
 
     QPixmap *to_draw = NULL;
     switch(type){
@@ -415,7 +415,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     QString title = player->screenName();
     painter->drawText(QRectF(0,0,132,19), title, QTextOption(Qt::AlignHCenter));
 
-    static QPixmap wait_frame(":/wait-frame.png");
+    static QPixmap wait_frame("image/system/wait-frame.png");
     if(kingdom_frame.isNull())
         painter->drawPixmap(3, 13, wait_frame);
 
@@ -431,7 +431,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     if(!player->isAlive()){
         if(death_pixmap.isNull()){
-            death_pixmap.load(QString(":/death/%1.png").arg(player->getRole()));
+            death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
             death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
         }
 
@@ -460,7 +460,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
                     << "play" << "discard" << "finish";
 
             foreach(QString name, names)
-                phase_pixmaps << QPixmap(QString(":/phase/%1.png").arg(name));
+                phase_pixmaps << QPixmap(QString("image/system/phase/%1.png").arg(name));
         }
 
         int index = static_cast<int>(player->getPhase());

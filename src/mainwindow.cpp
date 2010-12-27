@@ -273,7 +273,7 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 void MainWindow::on_actionAbout_triggered()
 {
     // Cao Cao's pixmap
-    QString content =  "<center><img src=':/shencc.png'> <br /> </center>";
+    QString content =  "<center><img src='image/system/shencc.png'> <br /> </center>";
 
     // Cao Cao' poem
     QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
@@ -347,7 +347,7 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
 void MainWindow::on_actionAbout_irrKlang_triggered()
 {
     QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
-    content.append("<p align='center'> <img src=':/irrklang.png' /> </p> <br/>");
+    content.append("<p align='center'> <img src='image/system/irrklang.png' /> </p> <br/>");
 
     QString address = "http://www.ambiera.com/irrklang/";
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
@@ -359,7 +359,7 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if(systray == NULL){
-        QIcon icon(":/magatamas/5.png");
+        QIcon icon("image/system/magatamas/5.png");
         systray = new QSystemTrayIcon(icon, this);
 
         QAction *appear = new QAction(tr("Show main window"), this);

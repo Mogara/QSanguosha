@@ -521,19 +521,6 @@ SavageAssault::SavageAssault(Suit suit, int number)
     setObjectName("savage_assault");
 }
 
-bool SavageAssault::isAvailable() const{
-    if(isRed())
-        return true;
-
-    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
-    foreach(const ClientPlayer *player, players){
-        if(player != Self && player->isAlive() && !player->hasSkill("weimu"))
-            return true;
-    }
-
-    return false;
-}
-
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->getGeneralName());

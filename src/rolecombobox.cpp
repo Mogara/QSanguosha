@@ -8,9 +8,9 @@ RoleComboboxItem::RoleComboboxItem(const QString &role, int number)
     :role(role)
 {
     if(number != 0 )
-        changePixmap(QString(":/roles/%1-%2.png").arg(role).arg(number));
+        changePixmap(QString("image/system/roles/%1-%2.png").arg(role).arg(number));
     else
-        changePixmap(QString(":/roles/%1.png").arg(role));
+        changePixmap(QString("image/system/roles/%1.png").arg(role));
 }
 
 QString RoleComboboxItem::getRole() const{

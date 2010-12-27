@@ -96,8 +96,8 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
     list_widget->clear();
 
-    static QIcon enabled_icon(":/enabled.png");
-    static QIcon disabled_icon(":/disabled.png");
+    static QIcon enabled_icon("image/system/enabled.png");
+    static QIcon disabled_icon("image/system/disabled.png");
 
     QMap<QString, bool> extensions = info.Extensions;
     QMapIterator<QString, bool> itor(extensions);
@@ -116,7 +116,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
 void ServerInfoWidget::updateLack(int count){
     if(lack_label){
-        QString path = QString(":/number/%1.png").arg(count);
+        QString path = QString("image/system/number/%1.png").arg(count);
         lack_label->setPixmap(QPixmap(path));
     }
 }

@@ -11,7 +11,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 Dashboard::Dashboard()
-    :left_pixmap(":/dashboard-equip.png"), right_pixmap(":/dashboard-avatar.png"),
+    :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
     selected(NULL), player(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     view_as_skill(NULL), filter(NULL)
@@ -46,7 +46,7 @@ void Dashboard::createLeft(){
 void Dashboard::createMiddle(){
     middle = new QGraphicsRectItem(this);
 
-    QPixmap middle_pixmap(":/dashboard-hand.png");
+    QPixmap middle_pixmap("image/system/dashboard-hand.png");
     QBrush middle_brush(middle_pixmap);
     middle->setBrush(middle_brush);
     middle->setRect(0, 0, middle_pixmap.width(), middle_pixmap.height());
@@ -82,20 +82,20 @@ void Dashboard::createRight(){
     kingdom = new QGraphicsPixmapItem(right);
     kingdom->setPos(91, 54);
 
-    chain_icon = new Pixmap(":/chain.png");
+    chain_icon = new Pixmap("image/system/chain.png");
     chain_icon->setParentItem(right);
     chain_icon->setPos(small_avatar->pos());
     chain_icon->hide();
     chain_icon->setZValue(1.0);
 
-    back_icon = new Pixmap(":/big-back.png");
+    back_icon = new Pixmap("image/system/big-back.png");
     back_icon->setParentItem(right);
     back_icon->setPos(59, 105);
     back_icon->setZValue(1.0);
     back_icon->hide();
 
     QGraphicsPixmapItem *handcard_pixmap = new QGraphicsPixmapItem(right);
-    handcard_pixmap->setPixmap(QPixmap(":/handcard.png"));
+    handcard_pixmap->setPixmap(QPixmap("image/system/handcard.png"));
     handcard_pixmap->setPos(25, 127);
 
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
@@ -374,7 +374,7 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     if(!player->isAlive()){
         if(death_pixmap.isNull())
-            death_pixmap.load(QString(":/death/%1.png").arg(player->getRole()));
+            death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
 
         painter->drawPixmap(397, 82, death_pixmap);
         return;
@@ -548,6 +548,12 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
     }
 }
 
+typedef bool (*CompareFunc)(const CardItem *, const CardItem *);
+
+static bool CompareByColor(const CardItem *a, const CardItem *b){
+    return Card::CompareByColor(a->getCard(), b->getCard());
+}
+
 static bool CompareBySuitNumber(const CardItem *a, const CardItem *b){
     return Card::CompareBySuitNumber(a->getCard(), b->getCard());
 }
@@ -568,12 +574,17 @@ static bool CompareByAvailability(const CardItem *a, const CardItem *b){
 void Dashboard::sortCards(int sort_type){
     this->sort_type = sort_type;
 
-    switch(sort_type){
-    case 0: break;
-    case 1: qSort(card_items.begin(), card_items.end(), CompareBySuitNumber); break;
-    case 2: qSort(card_items.begin(), card_items.end(), CompareByType); break;
-    case 3: qSort(card_items.begin(), card_items.end(), CompareByAvailability); break;
-    }
+    static CompareFunc compare_funcs[] = {
+        NULL,
+        CompareByColor,
+        CompareBySuitNumber,
+        CompareByType,
+        CompareByAvailability,
+    };
+
+    CompareFunc func = compare_funcs[sort_type];
+    if(func)
+        qSort(card_items.begin(), card_items.end(), func);
 
     adjustCards();
 }

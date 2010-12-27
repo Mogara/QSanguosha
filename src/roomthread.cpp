@@ -179,8 +179,7 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
             itor.remove();
     }
 
-    static TriggerSkillSorter sorter;
-
+    TriggerSkillSorter sorter;
     sorter.sort(skills);
 
     foreach(const TriggerSkill *skill, skills){

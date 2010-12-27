@@ -219,7 +219,7 @@ QGroupBox *FreeChooseDialog::createGroupBox(const QList<const General *> &genera
     box->setTitle(Sanguosha->translate(kingdom));
 
     QVBoxLayout *layout = new QVBoxLayout;
-    QIcon lord_icon(":/roles/lord.png");
+    QIcon lord_icon("image/system/roles/lord.png");
 
     foreach(const General *general, generals){
         QString general_name = general->objectName();

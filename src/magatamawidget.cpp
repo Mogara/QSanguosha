@@ -31,7 +31,7 @@ QPixmap *MagatamaWidget::GetMagatama(int index){
     if(magatamas[0].isNull()){
         int i;
         for(i=0; i<=5; i++)
-            magatamas[i].load(QString(":/magatamas/%1.png").arg(i));
+            magatamas[i].load(QString("image/system/magatamas/%1.png").arg(i));
     }
 
     return &magatamas[index];
@@ -42,7 +42,7 @@ QPixmap *MagatamaWidget::GetSmallMagatama(int index){
     if(magatamas[0].isNull()){
         int i;
         for(i=0; i<=5; i++)
-            magatamas[i].load(QString(":/magatamas/small-%1.png").arg(i));
+            magatamas[i].load(QString("image/system/magatamas/small-%1.png").arg(i));
     }
 
     return &magatamas[index];

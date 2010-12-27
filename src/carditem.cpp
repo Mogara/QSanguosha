@@ -14,7 +14,7 @@ CardItem::CardItem(const Card *card)
 {
     Q_ASSERT(card != NULL);
 
-    suit_pixmap.load(QString(":/suit/%1.png").arg(card->getSuitString()));
+    suit_pixmap.load(QString("image/system/suit/%1.png").arg(card->getSuitString()));
     icon_pixmap.load(card->getIconPath());
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 

@@ -79,8 +79,8 @@
   </action>
   <action name="actionConfigure">
    <property name="icon">
-    <iconset resource="../resource/images/sanguosha.qrc">
-     <normaloff>:/settings.png</normaloff>:/settings.png</iconset>
+    <iconset>
+     <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
    </property>
    <property name="text">
     <string>Configure</string>
@@ -236,8 +236,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../resource/images/sanguosha.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

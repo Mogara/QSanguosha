@@ -139,7 +139,6 @@ FORMS += src/mainwindow.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
 
-RESOURCES += resource/images/sanguosha.qrc
 INCLUDEPATH += include/irrKlang
 INCLUDEPATH += include/lua
 INCLUDEPATH += include

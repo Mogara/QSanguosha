@@ -96,9 +96,20 @@ bool Card::match(const QString &pattern) const{
     return objectName() == pattern || getType() == pattern || getSubtype() == pattern;
 }
 
-bool Card::CompareBySuitNumber(const Card *a, const Card *b){
+bool Card::CompareByColor(const Card *a, const Card *b){
     if(a->suit != b->suit)
         return a->suit < b->suit;
+    else
+        return a->number < b->number;
+}
+
+bool Card::CompareBySuitNumber(const Card *a, const Card *b){
+    static Suit new_suits[] = { Spade, Heart, Club, Diamond, NoSuit};
+    Suit suit1 = new_suits[a->getSuit()];
+    Suit suit2 = new_suits[b->getSuit()];
+
+    if(suit1 != suit2)
+        return suit1 < suit2;
     else
         return a->number < b->number;
 }
@@ -113,7 +124,6 @@ bool Card::CompareByType(const Card *a, const Card *b){
 }
 
 QString Card::getPixmapPath() const{
-    //return QString("%1/cards/card/%2.png").arg(parent()->objectName()).arg(objectName());
     return QString("image/card/%1.jpg").arg(objectName());
 }
 
@@ -138,7 +148,7 @@ QString Card::getEffectPath() const{
 }
 
 QIcon Card::getSuitIcon() const{
-    return QIcon(QString(":/suit/%1.png").arg(getSuitString()));
+    return QIcon(QString("image/system/suit/%1.png").arg(getSuitString()));
 }
 
 QString Card::getFullName(bool include_suit) const{
@@ -155,7 +165,9 @@ QString Card::getLogName() const{
     QString number_string;
 
     if(suit != Card::NoSuit)
-        suit_char = QString("<img src=':/suit/%1.png' width='15' height='15' />").arg(getSuitString());
+        suit_char = QString("<img src='image/system/suit/%1.png' width='15' height='15' />").arg(getSuitString());
+    else
+        suit_char = tr("NoSuit");
 
     if(number != 0)
         number_string = getNumberString();

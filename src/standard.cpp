@@ -98,6 +98,27 @@ QString AOE::getSubtype() const{
     return "aoe";
 }
 
+#include "client.h"
+
+bool AOE::isAvailable() const{
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+    int count = 0;
+    foreach(const ClientPlayer *player, players){
+        if(player == Self)
+            continue;
+
+        if(player->isDead())
+            continue;
+
+        if(ClientInstance->isProhibited(player, this))
+            continue;
+
+        count ++;
+    }
+
+    return count > 0;
+}
+
 void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<ServerPlayer *> targets;
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);

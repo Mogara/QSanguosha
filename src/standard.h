@@ -107,7 +107,7 @@ class AOE:public TrickCard{
 public:
     AOE(Suit suit, int number):TrickCard(suit, number, true){ target_fixed = true;}
     virtual QString getSubtype() const;
-
+    virtual bool isAvailable() const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
@@ -116,7 +116,6 @@ class SavageAssault:public AOE{
 
 public:
     Q_INVOKABLE SavageAssault(Card::Suit suit, int number);
-    virtual bool isAvailable() const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

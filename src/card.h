@@ -100,6 +100,7 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 
     // static functions
+    static bool CompareByColor(const Card *a, const Card *b);
     static bool CompareBySuitNumber(const Card *a, const Card *b);
     static bool CompareByType(const Card *a, const Card *b);
     static const Card *Parse(const QString &str);
