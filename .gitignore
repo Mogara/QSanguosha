@@ -6,3 +6,4 @@ object_script*
 *.pro.user
 sanguosha.qm
 config.ini
+swig/sanguosha_wrap.cxx

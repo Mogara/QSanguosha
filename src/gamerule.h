@@ -10,7 +10,7 @@ public:
     GameRule(QObject *parent);
 
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 
 private:

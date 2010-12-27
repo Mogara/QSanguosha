@@ -40,7 +40,7 @@ private:
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
     QComboBox *challenge_combobox;
-    QLabel *challenge_label;
+    QList<QLabel *> challenge_avatars;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
 

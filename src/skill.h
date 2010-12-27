@@ -99,13 +99,14 @@ public:
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;    
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
 
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
+    int callback;
 };
 
 class Scenario;
@@ -116,7 +117,7 @@ class ScenarioRule: public TriggerSkill{
 public:
     ScenarioRule(Scenario *scenario);
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
@@ -126,7 +127,7 @@ class MasochismSkill: public TriggerSkill{
 public:
     MasochismSkill(const QString &name);
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };

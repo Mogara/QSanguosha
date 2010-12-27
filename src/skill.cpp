@@ -166,7 +166,7 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
     return events;
 }
 
-int TriggerSkill::getPriority(ServerPlayer *target) const{    
+int TriggerSkill::getPriority() const{
     if(frequency == Compulsory)
         return 2;
     else
@@ -183,7 +183,7 @@ ScenarioRule::ScenarioRule(Scenario *scenario)
     setParent(scenario);
 }
 
-int ScenarioRule::getPriority(ServerPlayer *) const{
+int ScenarioRule::getPriority() const{
     return 3;
 }
 
@@ -197,7 +197,7 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-int MasochismSkill::getPriority(ServerPlayer *) const{
+int MasochismSkill::getPriority() const{
     return -1;
 }
 

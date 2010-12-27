@@ -686,7 +686,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lumeng, QVariant &data) const{
         if(event == PhaseChange){
-            if(lumeng->getPhase() == Player::Finish)
+            if(lumeng->getPhase() == Player::Start)
                 lumeng->setMark("slash_count", 0);
             else if(lumeng->getPhase() == Player::Discard){
                 if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName())) {

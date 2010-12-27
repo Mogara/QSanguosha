@@ -432,7 +432,7 @@ public:
 
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 

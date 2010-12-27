@@ -38,7 +38,7 @@ public:
         events << Death;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 
@@ -596,7 +596,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 
@@ -689,7 +689,7 @@ public:
 
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 
@@ -882,7 +882,7 @@ public:
         events << Predamaged;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return 2;
     }
 

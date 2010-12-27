@@ -123,8 +123,6 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc = new QTextDocument(this);
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
-
-    chat_doc = new QTextDocument(this);
 }
 
 void Client::signup(){
@@ -888,10 +886,6 @@ QTextDocument *Client::getPromptDoc() const{
     return prompt_doc;
 }
 
-QTextDocument *Client::getChatDoc() const{
-    return chat_doc;
-}
-
 void Client::clearPile(const QString &){
     discarded_list.clear();
 
@@ -1314,12 +1308,10 @@ void Client::speak(const QString &speak_data){
 
     title = QString("<b>%1</b>").arg(title);
 
-    QString line = tr("<font color='%1'>[%2] said: %3 <br /></font>")
+    QString line = tr("<font color='%1'>[%2] said: %3 </font>")
                    .arg(Config.TextEditColor.name()).arg(title).arg(text);
 
-    QTextCursor cursor(chat_doc);
-    cursor.movePosition(QTextCursor::End);
-    cursor.insertHtml(line);
+    emit words_spoken(line);
 }
 
 void Client::moveFocus(const QString &focus){

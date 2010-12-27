@@ -1,160 +1,17 @@
 #ifndef ROOMTHREAD_H
 #define ROOMTHREAD_H
 
-class Room;
-class TriggerSkill;
-class ServerPlayer;
-class Card;
-class Slash;
-class GameRule;
-
-#include "player.h"
-
 #include <QThread>
 #include <QSemaphore>
 #include <QVariant>
 
 #include <csetjmp>
 
-struct TriggerSkillSorter{
-    ServerPlayer *target;
+#include "structs.h"
 
+struct TriggerSkillSorter{
     bool operator()(const TriggerSkill *a, const TriggerSkill *b);
     void sort(QList<const TriggerSkill *> &skills);
-};
-
-struct DamageStruct{
-    DamageStruct();
-
-    enum Nature{
-        Normal, // normal slash, duel and most damage caused by skill
-        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
-    };
-
-    ServerPlayer *from;
-    ServerPlayer *to;
-    const Card *card;
-    int damage;
-    Nature nature;
-    bool chain;
-};
-
-Q_DECLARE_METATYPE(DamageStruct);
-
-struct CardEffectStruct{
-    CardEffectStruct();
-
-    const Card *card;
-
-    ServerPlayer *from;
-    ServerPlayer *to;
-
-    bool multiple;
-};
-
-Q_DECLARE_METATYPE(CardEffectStruct);
-
-struct SlashEffectStruct{
-    SlashEffectStruct();
-
-    const Slash *slash;
-
-    ServerPlayer *from;
-    ServerPlayer *to;
-
-    bool drank;
-
-    DamageStruct::Nature nature;
-};
-
-Q_DECLARE_METATYPE(SlashEffectStruct)
-
-struct CardUseStruct{
-    CardUseStruct();
-    bool isValid() const;
-    void parse(const QString &str, Room *room);
-
-    const Card *card;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
-};
-
-Q_DECLARE_METATYPE(CardUseStruct);
-
-struct CardMoveStruct{
-    int card_id;
-    Player::Place from_place, to_place;
-    ServerPlayer *from, *to;
-
-    QString toString() const;
-};
-
-Q_DECLARE_METATYPE(CardMoveStruct);
-
-struct SlashResultStruct{
-    SlashResultStruct();
-    void fill(const SlashEffectStruct &effect, bool success);
-
-    const Slash *slash;
-    ServerPlayer *from;
-    ServerPlayer *to;
-    DamageStruct::Nature nature;
-    bool drank;
-    bool success;
-};
-
-Q_DECLARE_METATYPE(SlashResultStruct);
-
-typedef const Card *CardStar;
-
-Q_DECLARE_METATYPE(CardStar);
-
-typedef ServerPlayer *PlayerStar;
-
-Q_DECLARE_METATYPE(PlayerStar);
-
-struct DyingStruct{
-    DyingStruct();
-
-    ServerPlayer *who; // who is ask for help
-    DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
-    int peaches; // peaches that needs
-};
-
-Q_DECLARE_METATYPE(DyingStruct);
-
-enum TriggerEvent{
-    GameStart,
-    PhaseChange,
-    DrawNCards,
-    JudgeOnEffect,
-    HpRecover,
-
-    Predamage,
-    Predamaged,
-    Damage,
-    Damaged,
-
-    Dying,
-    AskForPeaches,
-    Death,
-
-    SlashEffect,
-    SlashEffected,
-    SlashProceed,
-    SlashResult,
-
-    CardAsked,
-    CardUsed,
-    CardResponsed,
-    CardDiscarded,
-    CardLost,
-    CardGot,    
-
-    CardEffect,
-    CardEffected,
-    CardFinished
 };
 
 class RoomThread : public QThread{

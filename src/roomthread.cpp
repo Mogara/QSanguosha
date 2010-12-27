@@ -4,8 +4,8 @@
 #include "gamerule.h"
 
 bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
-    int x = a->getPriority(target);
-    int y = b->getPriority(target);
+    int x = a->getPriority();
+    int y = b->getPriority();
 
     return x > y;
 }
@@ -181,7 +181,6 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
 
     static TriggerSkillSorter sorter;
 
-    sorter.target = target;
     sorter.sort(skills);
 
     foreach(const TriggerSkill *skill, skills){

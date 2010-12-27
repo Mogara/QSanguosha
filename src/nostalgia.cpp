@@ -76,7 +76,7 @@ public:
         view_as_skill = new TianxiangViewAsSkill;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return 2;
     }
 

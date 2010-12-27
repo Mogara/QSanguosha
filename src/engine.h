@@ -27,7 +27,9 @@ public:
     ~Engine();
 
     void addTranslationEntry(const char *key, const char *value);
-    QString translate(const QString &to_translate) const;    
+    QString translate(const QString &to_translate) const;
+
+    lua_State *createLuaThread() const;
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
@@ -88,7 +90,6 @@ private:
     lua_State *lua;
 
     QStringList getLimitedGeneralNames() const;
-    void doStartScript();
 };
 
 extern Engine *Sanguosha;

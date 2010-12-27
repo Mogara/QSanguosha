@@ -4,6 +4,7 @@
 class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
+struct lua_State;
 
 #include "serverplayer.h"
 #include "roomthread.h"
@@ -177,6 +178,7 @@ private:
     bool game_finished;
     int signup_count;
     int special_card;
+    lua_State *L;
 
     RoomThread *thread;
     QSemaphore *sem;

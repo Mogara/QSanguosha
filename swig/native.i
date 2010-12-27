@@ -1,15 +1,19 @@
-extern "C"{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
+%{
 
-#include "engine.h"
 #include "settings.h"
 
-#include <QDir>
 #include <QMessageBox>
 
+%}
+
+%native(GetFileNames) int GetFileNames(lua_State *lua);
+%native(Print) int Print(lua_State *lua);
+%native(AddTranslationEntry) int AddTranslationEntry(lua_State *lua);
+%native(GetConfig) int GetConfig(lua_State *lua);
+%native(GetProperty) int GetProperty(lua_State *lua);
+%native(Alert) int Alert(lua_State *lua);
+
+%{
 static int GetFileNames(lua_State *lua){
     const char *dirname = luaL_checkstring(lua, 1);
     QDir dir(dirname);
@@ -20,7 +24,7 @@ static int GetFileNames(lua_State *lua){
     int i;
     for(i=0; i<filenames.length(); i++){
         lua_pushstring(lua, filenames.at(i).toAscii());
-        lua_rawseti(lua, -2, i);
+        lua_rawseti(lua, -2, i+1);
     }
 
     return 1;
@@ -76,9 +80,9 @@ static int GetConfig(lua_State *lua){
 }
 
 static int GetProperty(lua_State *lua){
-    void *udata = lua_touserdata(lua, 1);
-    if(udata == NULL)
-        luaL_error(lua, "The first argument of %s must be a QObject !", __func__);
+	void *udata;
+	int result = SWIG_ConvertPtr(lua, 1, &udata, SWIGTYPE_p_QObject, 0);
+	luaL_argcheck(lua, SWIG_IsOK(result), 1, "QObject *");
 
     QObject *obj = static_cast<QObject *>(udata);
     const char *property_name = luaL_checkstring(lua, 2);
@@ -118,17 +122,4 @@ static int Alert(lua_State *lua){
     return 0;
 }
 
-
-void Engine::doStartScript(){
-    lua = luaL_newstate();
-    luaL_openlibs(lua);
-
-    lua_register(lua, "GetFileNames", GetFileNames);
-    lua_register(lua, "Print", Print);
-    lua_register(lua, "AddTranslationEntry", AddTranslationEntry);
-    lua_register(lua, "GetConfig", GetConfig);
-    lua_register(lua, "GetProperty", GetProperty);
-    lua_register(lua, "Alert", Alert);
-
-    luaL_dofile(lua, "sanguosha.lua");
-}
+%}

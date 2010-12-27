@@ -18,7 +18,7 @@ bool GameRule::triggerable(const ServerPlayer *) const{
     return true;
 }
 
-int GameRule::getPriority(ServerPlayer *) const{
+int GameRule::getPriority() const{
     return 0;
 }
 

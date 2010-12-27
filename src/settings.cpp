@@ -53,32 +53,6 @@ void Settings::init(){
     AILevel = value("AILevel", 2).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
-    QString default_host;
-
-#ifndef QT_NO_DEBUG
-    default_host = "localhost";
-#else
-    default_host = "irc.freenode.net";
-#endif
-
-    IrcHost = value("IrcHost", default_host).toString();
-    IrcPort = value("IrcPort", 6667).toUInt();
-    IrcNick = value("IrcNick").toString();
-    if(IrcNick.isEmpty()){
-        QString mac = QNetworkInterface::allInterfaces().first().hardwareAddress();
-        QDateTime now = QDateTime::currentDateTime();
-        QString combined = mac + now.toString();
-        QCryptographicHash::Algorithm algorithm;
-        if(now.toTime_t() % 2 == 0)
-            algorithm = QCryptographicHash::Md5;
-        else
-            algorithm = QCryptographicHash::Sha1;
-
-        QString hash = QCryptographicHash::hash(combined.toAscii(), algorithm).toHex().toUpper().right(10);
-        IrcNick = QString("SGS_%1").arg(hash);
-    }
-    IrcChannel = value("IrcChannel", "#sanguosha").toString();
-
     UserName = value("UserName", qgetenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");

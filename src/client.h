@@ -61,7 +61,6 @@ public:
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
-    QTextDocument *getChatDoc() const;
 
     typedef void (Client::*Callback)(const QString &);
 
@@ -164,7 +163,7 @@ private:
     Recorder *recorder;
     Replayer *replayer;
     QList<const ProhibitSkill *> prohibit_skills;
-    QTextDocument *lines_doc, *prompt_doc, *chat_doc;
+    QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_line;
     QString jilei_flags;
@@ -204,6 +203,7 @@ signals:
     void skill_invoked(const QString &who, const QString &skill_name);
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
     void animated(const QString &name, const QStringList &args);
+    void words_spoken(const QString &line);
 
     void game_started();
     void game_over(bool victory, const QList<bool> &result_list);

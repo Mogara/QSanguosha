@@ -37,11 +37,6 @@ public:
     int AILevel;
     ushort ServerPort;
 
-    QString IrcHost;
-    ushort IrcPort;
-    QString IrcNick;
-    QString IrcChannel;
-
     // client side
     QString HostAddress;
     QString UserName;

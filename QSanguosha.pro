@@ -66,7 +66,7 @@ SOURCES += src/main.cpp \
     src/rolecombobox.cpp \
     src/joystick.cpp \
     src/couple-scenario.cpp \
-    src/luabinding.cpp
+    swig/sanguosha_wrap.cxx
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -129,7 +129,8 @@ HEADERS += src/mainwindow.h \
     src/joystick.h \
     src/couple-scenario.h \
     src/standard-commons.h \
-    src/standard-skillcards.h
+    src/standard-skillcards.h \
+    src/structs.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -142,10 +143,11 @@ RESOURCES += resource/images/sanguosha.qrc
 INCLUDEPATH += include/irrKlang
 INCLUDEPATH += include/lua
 INCLUDEPATH += include
+INCLUDEPATH += src
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += -L. static-libircclient.lib -lws2_32 irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
+    LIBS += -L. irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
 }
 
 unix {

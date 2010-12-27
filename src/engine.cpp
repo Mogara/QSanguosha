@@ -8,7 +8,11 @@
 #include "irrKlang.h"
 
 extern "C"{
+
 #include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
 }
 
 typedef irrklang::ISound SoundType;
@@ -39,6 +43,10 @@ extern "C" {
 }
 
 extern irrklang::ISoundEngine *SoundEngine;
+
+extern "C" {
+    int luaopen_sgs(lua_State *);
+}
 
 Engine::Engine()
 {
@@ -79,7 +87,19 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    doStartScript();
+    lua = luaL_newstate();
+    luaL_openlibs(lua);
+
+    luaopen_sgs(lua);
+
+    luaL_dofile(lua, "sanguosha.lua");
+}
+
+lua_State *Engine::createLuaThread() const{
+    lua_State *new_thread = lua_newthread(lua);
+    lua_pop(lua, 1);
+
+    return new_thread;
 }
 
 void Engine::addTranslationEntry(const char *key, const char *value){

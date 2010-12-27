@@ -158,8 +158,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     palette.setBrush(QPalette::Base, backgroundBrush());
     chat_box->setPalette(palette);
     chat_box->setReadOnly(true);
-    chat_box->setDocument(ClientInstance->getChatDoc());
     chat_box->setTextColor(Config.TextEditColor);
+    connect(ClientInstance, SIGNAL(words_spoken(QString)), chat_box, SLOT(append(QString)));
 
     // chat edit
     chat_edit = new QLineEdit;

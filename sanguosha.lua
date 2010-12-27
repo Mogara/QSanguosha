@@ -7,15 +7,15 @@ function load_translation(file)
 	end
 	
 	for key, value in pairs(t) do
-		AddTranslationEntry(key, value)		
+		sgs.AddTranslationEntry(key, value)		
 	end
 end
 
 function main()
-	local lang = GetConfig("Language", "zh_CN")
+	local lang = sgs.GetConfig("Language", "zh_CN")
 	local lang_dir = "lang/" .. lang
 
-	local lang_files = GetFileNames(lang_dir)
+	local lang_files = sgs.GetFileNames(lang_dir)
 	for _, file in ipairs(lang_files) do	
 		load_translation(("%s/%s"):format(lang_dir, file))
 	end
@@ -23,5 +23,5 @@ end
 
 local success, msg = pcall(main)
 if not success then
-	Alert(msg)
+	sgs.Alert(msg)
 end

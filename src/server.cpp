@@ -123,17 +123,14 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
     }
 
-    /*
+
     {
         // add challenge modes
         QRadioButton *challenge_button = new QRadioButton(tr("Challenge mode"));
         challenge_button->setObjectName("challenge");
-
-        layout->addWidget(challenge_button);
         mode_group->addButton(challenge_button);
 
         challenge_combobox = new QComboBox;
-        layout->addWidget(challenge_combobox);
 
         const ChallengeModeSet *set = Sanguosha->getChallengeModeSet();
         QList<const ChallengeMode *> modes = set->allModes();
@@ -146,8 +143,13 @@ QGroupBox *ServerDialog::createGameModeBox(){
             challenge_combobox->addItem(text, name);
         }
 
-        challenge_label = new QLabel;
-        layout->addWidget(challenge_label);
+        QHBoxLayout *challenge_layout = new QHBoxLayout;
+        int i;
+        for(i=0; i<4; i++){
+            QLabel *avatar = new QLabel;
+            challenge_avatars << avatar;
+            challenge_layout->addWidget(avatar);
+        }
 
         connect(challenge_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateChallengeLabel(int)));
 
@@ -160,9 +162,11 @@ QGroupBox *ServerDialog::createGameModeBox(){
             }
         }else
             updateChallengeLabel(0);
-    }
 
-    */
+        //layout->addWidget(challenge_button);
+        //layout->addWidget(challenge_combobox);
+        //layout->addLayout(challenge_layout);
+    }
 
     mode_box->setLayout(layout);
 
@@ -173,13 +177,22 @@ void ServerDialog::updateChallengeLabel(int index){
     QString name = challenge_combobox->itemData(index).toString();
     const ChallengeMode *mode = Sanguosha->getChallengeMode(name);
 
-    if(mode){
-        QStringList generals = mode->getGenerals();
-        int i;
-        for(i=0; i<generals.size(); i++)
-            generals[i] = Sanguosha->translate(generals.at(i));
-        QString general_str = generals.join("+");
-        challenge_label->setText(tr("Defence: %1").arg(general_str));
+    if(mode == NULL)
+        return;
+
+    QStringList generals = mode->getGenerals();
+
+    if(challenge_avatars.length() != generals.length())
+        return;
+
+    int i;
+    for(i=0; i<generals.length(); i++){
+        const General *general = Sanguosha->getGeneral(generals.at(i));
+
+        QPixmap avatar_pixmap(general->getPixmapPath("tiny"));
+        QLabel *avatar = challenge_avatars.at(i);
+        avatar->setPixmap(avatar_pixmap);
+        avatar->setToolTip(general->getSkillDescription());
     }
 }
 

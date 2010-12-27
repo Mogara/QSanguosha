@@ -97,9 +97,7 @@ public:
     QString getState() const;
 
     int getSeat() const;
-    void setSeat(int seat);
-    bool isFocus() const;
-    void setFocus(bool focus);    
+    void setSeat(int seat);  
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;

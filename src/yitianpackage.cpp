@@ -907,6 +907,7 @@ YitianPackage::YitianPackage()
     addMetaObject<JuejiCard>();
     addMetaObject<LianliCard>();
     addMetaObject<QiaocaiCard>();
+    addMetaObject<LianliSlashCard>();
 }
 
 ADD_PACKAGE(Yitian);

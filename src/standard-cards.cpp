@@ -198,7 +198,7 @@ public:
         events << SlashResult;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 
@@ -420,7 +420,7 @@ public:
         events << CardAsked;
     }
 
-    virtual int getPriority(ServerPlayer *) const{
+    virtual int getPriority() const{
         return 2;
     }
 

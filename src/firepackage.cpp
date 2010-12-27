@@ -284,7 +284,7 @@ public:
         events << SlashResult;
     }
 
-    virtual int getPriority(ServerPlayer *) const{
+    virtual int getPriority() const{
         return 2;
     }
 

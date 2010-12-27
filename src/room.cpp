@@ -35,7 +35,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    special_card(-1), thread(NULL), sem(NULL), provided(NULL)
+    special_card(-1), L(Sanguosha->createLuaThread()), thread(NULL), sem(NULL), provided(NULL)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
