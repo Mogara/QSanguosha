@@ -19,6 +19,11 @@ CardItem::CardItem(const Card *card)
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 
     setToolTip(card->getDescription());
+
+    QPixmap frame_pixmap("image/system/frame/good.png");
+    frame = new QGraphicsPixmapItem(frame_pixmap, this);
+    frame->setPos(-6, -6);
+    frame->hide();
 }
 
 const Card *CardItem::getCard() const{
@@ -79,18 +84,35 @@ const QPixmap &CardItem::getIconPixmap() const{
     return icon_pixmap;
 }
 
+#include "clientplayer.h"
+
+static inline bool IsMultilayer(){
+    return Self && Self->getHandcardNum() > 7;
+}
+
 void CardItem::select(){
-    home_pos.setY(PendingY);
-    setY(PendingY);
+    if(IsMultilayer())
+        frame->show();
+    else{
+        home_pos.setY(PendingY);
+        setY(PendingY);
+    }
 }
 
 void CardItem::unselect(){
-    home_pos.setY(NormalY);
-    setY(NormalY);
+    if(IsMultilayer())
+        frame->hide();
+    else{
+        home_pos.setY(NormalY);
+        setY(NormalY);
+    }
 }
 
 bool CardItem::isPending() const{
-    return home_pos.y() == PendingY;
+    if(IsMultilayer())
+        return frame->isVisible();
+    else
+        return home_pos.y() == PendingY;
 }
 
 bool CardItem::isEquipped() const{

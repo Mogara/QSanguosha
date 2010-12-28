@@ -28,11 +28,20 @@ class Card : public QObject
     Q_PROPERTY(bool once READ isOnce CONSTANT)
 
     Q_ENUMS(Suit)
+    Q_ENUMS(CardType)
 
 public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
     static const Suit AllSuits[4];
+
+    // card types
+    enum CardType{
+        Skill,
+        Basic,
+        Trick,
+        Equip,
+    };
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);
@@ -79,9 +88,10 @@ public:
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
-    virtual int getTypeId() const = 0;
+    virtual CardType getTypeId() const = 0;
     virtual QString toString() const;
     virtual QString getEffectPath(bool is_male) const;
+    bool isNDTrick() const;
 
     // card target selection
     bool targetFixed() const;
@@ -124,11 +134,15 @@ class SkillCard: public Card{
 
 public:
     SkillCard();
+    bool willThrow() const;
 
     virtual QString getSubtype() const;    
     virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual CardType getTypeId() const;
     virtual QString toString() const;
+
+protected:
+    bool will_throw;
 };
 
 class DummyCard: public Card{
@@ -139,7 +153,7 @@ public:
 
     virtual QString getSubtype() const;
     virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual CardType getTypeId() const;
     virtual QString toString() const;
 };
 

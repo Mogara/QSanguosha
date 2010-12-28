@@ -824,10 +824,7 @@ bool Lightning::isAvailable() const{
     if(Self->containsTrick(objectName()))
         return false;
 
-    if(Self->hasSkill("weimu") && isBlack())
-        return false;
-
-    return true;
+    return !ClientInstance->isProhibited(Self, this);
 }
 
 void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{

@@ -22,7 +22,7 @@ class BasicCard:public Card{
 public:
     BasicCard(Suit suit, int number):Card(suit, number){}
     virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual CardType getTypeId() const;
 };
 
 class TrickCard:public Card{
@@ -34,7 +34,7 @@ public:
     void setCancelable(bool cancelable);
 
     virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual CardType getTypeId() const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
 private:
@@ -59,7 +59,7 @@ public:
     TriggerSkill *getSkill() const;    
 
     virtual QString getType() const;
-    virtual int getTypeId() const;
+    virtual CardType getTypeId() const;
     virtual QString getEffectPath(bool is_male) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 

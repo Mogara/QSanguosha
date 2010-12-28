@@ -374,7 +374,7 @@ public:
 };
 
 HaoshiCard::HaoshiCard(){
-
+    will_throw = false;
 }
 
 bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{

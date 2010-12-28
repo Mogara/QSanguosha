@@ -506,6 +506,10 @@ bool Client::isJilei(const Card *card) const{
     else if(card->inherits("TrickCard"))
         return jilei_flags.contains("T");
     else if(card->inherits("SkillCard")){
+        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card);
+        if(!skill_card->willThrow())
+            return false;
+
         QList<int> card_ids = card->getSubcards();
         foreach(int card_id, card_ids){
             const Card *subcard = Sanguosha->getCard(card_id);
@@ -938,7 +942,7 @@ void Client::gameOver(const QString &result_str){
     int i;
     for(i=0; i<roles.length(); i++){
         QString name = players.at(i)->objectName();
-        findChild<ClientPlayer *>(name)->setRole(roles.at(i));
+        getPlayer(name)->setRole(roles.at(i));
     }
 
     if(winner == "."){

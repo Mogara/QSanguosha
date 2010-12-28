@@ -44,6 +44,7 @@ private:
     const Card *card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
+    QGraphicsPixmapItem *frame;
 
 signals:
     void toggle_discards();

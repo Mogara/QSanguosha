@@ -88,7 +88,7 @@ public:
     void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);
 
     void addProhibitSkill(const ProhibitSkill *skill);
-    bool isProhibited(Player *from, Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;

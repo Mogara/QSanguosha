@@ -90,5 +90,6 @@ void CardOverview::askCard(){
 
 void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem* item)
 {
-    askCard();
+    if(Self)
+        askCard();
 }

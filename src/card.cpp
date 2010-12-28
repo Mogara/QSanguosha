@@ -143,6 +143,10 @@ QString Card::getEffectPath(bool is_male) const{
     return QString("audio/card/%1/%2.ogg").arg(gender).arg(objectName());
 }
 
+bool Card::isNDTrick() const{
+    return getTypeId() == Trick && !inherits("DelayedTrick");
+}
+
 QString Card::getEffectPath() const{
     return QString("audio/card/common/%1.ogg").arg(objectName());
 }
@@ -420,8 +424,12 @@ bool Card::isOnce() const{
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()
-    :Card(NoSuit, 0)
+    :Card(NoSuit, 0), will_throw(true)
 {
+}
+
+bool SkillCard::willThrow() const{
+    return will_throw;
 }
 
 QString SkillCard::getType() const{
@@ -432,8 +440,8 @@ QString SkillCard::getSubtype() const{
     return "skill_card";
 }
 
-int SkillCard::getTypeId() const{
-    return 0;
+Card::CardType SkillCard::getTypeId() const{
+    return Card::Skill;
 }
 
 QString SkillCard::toString() const{
@@ -456,8 +464,8 @@ QString DummyCard::getSubtype() const{
     return "dummy_card";
 }
 
-int DummyCard::getTypeId() const{
-    return 0;
+Card::CardType DummyCard::getTypeId() const{
+    return Skill;
 }
 
 QString DummyCard::toString() const{

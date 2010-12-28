@@ -314,6 +314,14 @@ public:
     // enumeration type
     enum Suit {Spade, Club, Heart, Diamond, NoSuit};
     static const Suit AllSuits[4];
+	
+	// card types
+    enum CardType{
+        Skill,
+        Basic,
+        Trick,
+        Equip,
+    };
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);
@@ -360,9 +368,10 @@ public:
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
-    virtual int getTypeId() const = 0;
+    virtual CardType getTypeId() const = 0;
     virtual QString toString() const;
     virtual QString getEffectPath(bool is_male) const;
+	bool isNDTrick() const;
 
     // card target selection
     bool targetFixed() const;

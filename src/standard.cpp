@@ -10,8 +10,8 @@ QString BasicCard::getType() const{
     return "basic";
 }
 
-int BasicCard::getTypeId() const{
-    return 0;
+Card::CardType BasicCard::getTypeId() const{
+    return Basic;
 }
 
 TrickCard::TrickCard(Suit suit, int number, bool aggressive)
@@ -32,8 +32,8 @@ QString TrickCard::getType() const{
     return "trick";
 }
 
-int TrickCard::getTypeId() const{
-    return 1;
+Card::CardType TrickCard::getTypeId() const{
+    return Trick;
 }
 
 bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
@@ -48,8 +48,8 @@ QString EquipCard::getType() const{
     return "equip";
 }
 
-int EquipCard::getTypeId() const{
-    return 2;
+Card::CardType EquipCard::getTypeId() const{
+    return Equip;
 }
 
 QString EquipCard::getEffectPath(bool is_male) const{
@@ -123,13 +123,16 @@ void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) c
     QList<ServerPlayer *> targets;
     QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, other_players){
-        if(isBlack() && player->hasSkill("weimu")){
+        const ProhibitSkill *skill = room->isProhibited(source, player, this);
+        if(skill){
             LogMessage log;
-            log.type = "#WeimuAvoid";
+            log.type = "#SkillAvoid";
             log.from = player;
+            log.arg = skill->objectName();
+            log.arg2 = objectName();
             room->sendLog(log);
 
-            room->playSkillEffect("weimu");
+            room->playSkillEffect(skill->objectName());
         }else
             targets << player;
     }
@@ -187,6 +190,9 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
         foreach(ServerPlayer *player, players){            
             if(player->containsTrick(objectName()))
+                continue;
+
+            if(room->isProhibited(target, player, this))
                 continue;
 
             room->moveCardTo(this, player, Player::Judging, true);

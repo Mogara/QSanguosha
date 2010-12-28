@@ -848,13 +848,13 @@ void Room::addProhibitSkill(const ProhibitSkill *skill){
     }
 }
 
-bool Room::isProhibited(Player *from, Player *to, const Card *card) const{
+const ProhibitSkill *Room::isProhibited(Player *from, Player *to, const Card *card) const{
     foreach(const ProhibitSkill *skill, prohibit_skills){
         if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
-            return true;
+            return skill;
     }
 
-    return false;
+    return NULL;
 }
 
 int Room::drawCard(){
