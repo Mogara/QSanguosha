@@ -444,11 +444,52 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     }
 }
 
-void Dashboard::adjustCards(){
-    adjustCards(card_items, CardItem::NormalY);
 
-    if(view_as_skill)
-        adjustCards(pendings, CardItem::PendingY);
+
+void Dashboard::adjustCards(){
+    int MaxCards = Config.MaxCards;
+
+    int n = card_items.length();
+
+    if(n > MaxCards){
+        if(n > MaxCards * 2)
+            MaxCards *= 2;
+
+        if(n > MaxCards * 2)
+            MaxCards *= 2;
+
+        QList<CardItem *> all_items;
+
+        int i, j, row_count = (n-1) / MaxCards + 1;
+        int diff = (CardItem::NormalY - CardItem::PendingY) / (row_count -1);
+
+        for(i=0; i<row_count; i ++){
+            QList<CardItem *> row;
+            for(j=0; j<MaxCards; j++){
+                int index = i*MaxCards + j;
+                if(index >= n)
+                    break;
+
+                row << card_items.at(index);
+            }
+
+            QListIterator<CardItem *> itor(row);
+            itor.toBack();
+            while(itor.hasPrevious())
+                all_items.prepend(itor.previous());
+
+            adjustCards(row, CardItem::NormalY - diff * i);
+        }
+
+        // reset Z value
+        for(i=0; i<n; i++)
+            all_items.at(i)->setZValue(0.0001 * i);
+    }else{
+        adjustCards(card_items, CardItem::NormalY);
+
+        if(view_as_skill)
+            adjustCards(pendings, CardItem::PendingY);
+    }
 }
 
 void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
@@ -471,7 +512,9 @@ void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
 
     int i;
     for(i=0; i<n; i++){
-        list[i]->setZValue(0.0001 * i);
+        if(card_items.length() <= Config.MaxCards)
+            list[i]->setZValue(0.0001 * i);
+
         QPointF home_pos(start_x + i * card_skip, y);
         list[i]->setHomePos(home_pos);
         list[i]->goBack();
@@ -512,6 +555,8 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         else{
             handcard_num->setText(QString::number(Self->getHandcardNum()));
         }
+
+        card_item->hideFrame();
     }else if(place == Player::Equip){
         foreach(CardItem **equip_ptr, equips){
             CardItem *equip = *equip_ptr;

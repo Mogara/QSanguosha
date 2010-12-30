@@ -19,9 +19,10 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::playCardEffect(const Card *card){
-    if(card->isVirtualCard() && !card->getSkillName().isEmpty())
+    if(card->isVirtualCard() && !card->getSkillName().isEmpty()){
         room->playSkillEffect(card->getSkillName());
-    else
+        room->broadcastInvoke("skillInvoked", QString("%1:%2").arg(objectName()).arg(card->getSkillName()));
+    }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
 }
 

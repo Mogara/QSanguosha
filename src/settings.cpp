@@ -62,6 +62,7 @@ void Settings::init(){
     UserAvatar = value("UserAvatar", "zhangliao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
+    MaxCards = value("MaxCards", 15).toInt();
 
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();

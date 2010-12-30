@@ -147,6 +147,7 @@ private slots:
     void adjustDashboard();
 
     void clearPile();
+    void removeLightBox();
 
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();

@@ -58,6 +58,7 @@ public:
     void setLines(const QString &skill_name);
     bool isJilei(const Card *card) const;
     bool canSlashWithCrossbow() const;
+    QString getSkillLine() const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -165,7 +166,7 @@ private:
     QList<const ProhibitSkill *> prohibit_skills;
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
-    QString skill_line;
+    QString skill_title, skill_line;
     QString jilei_flags;
     QSet<QString> used;
     int slash_count;

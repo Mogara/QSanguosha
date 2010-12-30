@@ -1940,6 +1940,7 @@ void RoomScene::killPlayer(const QString &who){
         general = Self->getGeneral();
     }else{
         Photo *photo = name2photo[who];
+        photo->setFrame(Photo::NoFrame);
         photo->setEnabled(false);
         photo->update();
 
@@ -2373,6 +2374,39 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
         Photo *photo = name2photo.value(who);
         photo->showSkillName(skill_name);
     }
+
+    if(Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Limited){
+        QGraphicsRectItem *lightbox = addRect(main_window->rect());
+
+        lightbox->setBrush(QColor(0x20, 0x20, 0x20));
+        lightbox->setOpacity(0.8);
+        lightbox->moveBy(-main_window->width()/2, -main_window->height()/2);
+
+        QGraphicsTextItem *line = addText(ClientInstance->getSkillLine(), Config.BigFont);
+        line->setDefaultTextColor(Qt::white);
+        QRectF line_rect = line->boundingRect();
+        line->setPos(-line_rect.width()/2, -line_rect.height());
+
+        line->setParentItem(lightbox);
+        line->setPos(lightbox->mapFromScene(line->x(), line->y()));
+
+        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
+        appear->setStartValue(0.0);
+        appear->setKeyValueAt(0.8, 1.0);
+        appear->setEndValue(1.0);
+        appear->setDuration(2000);
+
+        appear->start();
+
+        connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
+    }
+}
+
+void RoomScene::removeLightBox(){
+    QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
+    QGraphicsTextItem *line = qobject_cast<QGraphicsTextItem *>(animation->targetObject());
+
+    removeItem(line->parentItem());
 }
 
 QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const{

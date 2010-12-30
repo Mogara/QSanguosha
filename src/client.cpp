@@ -532,6 +532,10 @@ bool Client::canSlashWithCrossbow() const{
     }
 }
 
+QString Client::getSkillLine() const{
+    return skill_line;
+}
+
 void Client::setPromptList(const QStringList &texts){
     QString prompt = Sanguosha->translate(texts.at(0));
     if(texts.length() >= 2){
@@ -870,13 +874,13 @@ void Client::setLines(const QString &filename){
     QRegExp rx(".+/(\\w+\\d?).ogg");
     if(rx.exactMatch(filename)){
         QString skill_name = rx.capturedTexts().at(1);
-        QString lines = Sanguosha->translate("$" + skill_name);
+        skill_line = Sanguosha->translate("$" + skill_name);
+
         QChar last_char = skill_name[skill_name.length()-1];
         if(last_char.isDigit())
             skill_name.chop(1);
-        lines = QString("<b>%1</b>: %2").arg(Sanguosha->translate(skill_name)).arg(lines);
 
-        skill_line = lines;
+        skill_title = Sanguosha->translate(skill_name);
 
         updatePileNum();
     }
@@ -903,8 +907,13 @@ void Client::setPileNumber(const QString &pile_str){
 }
 
 void Client::updatePileNum(){
-    lines_doc->setHtml(tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b> <br/> %3")
-                       .arg(pile_num).arg(discarded_list.length()).arg(skill_line));
+    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>")
+                       .arg(pile_num).arg(discarded_list.length());
+
+    if(skill_title.isEmpty())
+        lines_doc->setHtml(pile_str);
+    else
+        lines_doc->setHtml(QString("<br/> <b>%1</b>: %2").arg(skill_title).arg(skill_line));
 }
 
 void Client::askForDiscard(const QString &discard_str){
@@ -969,7 +978,9 @@ void Client::killPlayer(const QString &player_name){
 
     QString general_name = getPlayer(player_name)->getGeneralName();
     QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
-    skill_line = tr("<b>%1</b>[dead]: %2").arg(Sanguosha->translate(general_name)).arg(last_word);
+
+    skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
+    skill_line = last_word;
 
     updatePileNum();
 

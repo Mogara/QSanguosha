@@ -23,6 +23,7 @@ public:
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
+    void hideFrame();
 
     void select();
     void unselect();

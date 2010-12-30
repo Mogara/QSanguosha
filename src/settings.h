@@ -43,6 +43,7 @@ public:
     QString UserAvatar;
     QStringList HistoryIPs;
     ushort DetectorPort;
+    int MaxCards;
 
     bool FitInView;
     bool EnableHotKey;

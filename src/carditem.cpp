@@ -84,10 +84,15 @@ const QPixmap &CardItem::getIconPixmap() const{
     return icon_pixmap;
 }
 
+void CardItem::hideFrame(){
+    frame->hide();
+}
+
 #include "clientplayer.h"
+#include "settings.h"
 
 static inline bool IsMultilayer(){
-    return Self && Self->getHandcardNum() > 7;
+    return Self && Self->getHandcardNum() > Config.MaxCards;
 }
 
 void CardItem::select(){
