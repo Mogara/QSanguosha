@@ -802,6 +802,17 @@ void Room::swapPile(){
 
 ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) const{
     const QList<ServerPlayer *> &list = include_dead ? players : alive_players;
+
+    if(general_name.contains("+")){
+        QStringList names = general_name.split("+");
+        foreach(ServerPlayer *player, list){
+            if(names.contains(player->getGeneralName()))
+                return player;
+        }
+
+        return NULL;
+    }
+
     foreach(ServerPlayer *player, list){
         if(player->getGeneralName() == general_name)
             return player;

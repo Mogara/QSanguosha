@@ -308,6 +308,7 @@ public:
             QString result = room->askForChoice(shenzhouyu, objectName(), "up+down");
             QList<ServerPlayer *> all_players = room->getAllPlayers();
             if(result == "up"){
+                room->playSkillEffect(objectName(), 2);
                 foreach(ServerPlayer *player, all_players){
                     room->recover(player);
                 }
@@ -315,6 +316,12 @@ public:
                 foreach(ServerPlayer *player, all_players){
                     room->loseHp(player);
                 }
+
+                int index = 1;
+                if(room->findPlayer("caocao+shencaocao+shencc"))
+                    index = 3;
+
+                room->playSkillEffect(objectName(), index);
             }
         }
 
