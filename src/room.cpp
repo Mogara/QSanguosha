@@ -191,7 +191,16 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(simayi->isKongcheng())
                 continue;
 
-            askForUseCard(simayi, "@guicai", "@guicai-card");
+            bool used = askForUseCard(simayi, "@guicai", "@guicai-card");
+
+            if(used){
+                LogMessage log;
+                log.type = "$ChangedJudge";
+                log.from = simayi;
+                log.to << player;
+                log.card_str = QString::number(special_card);
+                sendLog(log);
+            }
         }
 
         if(p->hasSkill("guidao")){
@@ -199,7 +208,16 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
             if(zhangjiao->isNude())
                 continue;
 
-            askForUseCard(zhangjiao, "@guidao", "@guidao-card");
+            bool used = askForUseCard(zhangjiao, "@guidao", "@guidao-card");
+
+            if(used){
+                LogMessage log;
+                log.type = "$ChangedJudge";
+                log.from = zhangjiao;
+                log.to << player;
+                log.card_str = QString::number(special_card);
+                sendLog(log);
+            }
         }
     }
 
@@ -476,7 +494,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     }
 
     if(card_id == -1)
-        card_id = who->getRandomHandCard();
+        card_id = who->getRandomHandCardId();
 
     return card_id;
 }
@@ -577,9 +595,9 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     return card_id;
 }
 
-int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
+const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     if(player->getHandcardNum() == 1){
-        return player->handCards().first();
+        return player->getHandcards().first();
     }
 
     AI *ai = player->getAI();
@@ -594,13 +612,7 @@ int Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     else if(result == ".")
         return player->getRandomHandCard();
 
-    const Card *card = Card::Parse(result);
-    if(card->isVirtualCard()){
-        int card_id = card->getSubcards().first();
-        delete card;
-        return card_id;
-    }else
-        return card->getId();
+    return Card::Parse(result);
 }
 
 void Room::askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players){
@@ -838,6 +850,10 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     if(full_state)
         player->setHp(player->getMaxHP());
     broadcastProperty(player, "hp");
+}
+
+lua_State *Room::getLuaState() const{
+    return L;
 }
 
 void Room::addProhibitSkill(const ProhibitSkill *skill){
@@ -1123,7 +1139,7 @@ void Room::adjustSeats(){
     broadcastInvoke("arrangeSeats", player_circle.join("+"));
 }
 
-int Room::getCardFromPile(const QString card_pattern){
+int Room::getCardFromPile(const QString &card_pattern){
     if(draw_pile->isEmpty())
         swapPile();
 
@@ -1943,7 +1959,7 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     if(result.isEmpty())
         return askForPindian(player, ask_str);
     else if(result == "."){
-        int card_id = player->getRandomHandCard();
+        int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }else{
         const Card *card = Card::Parse(result);

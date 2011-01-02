@@ -233,10 +233,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->isKongcheng())
         return;
 
-    int card_id = room->askForCardShow(effect.to, effect.from);
-    room->showCard(effect.to, card_id);
+    const Card *card = room->askForCardShow(effect.to, effect.from);
+    room->showCard(effect.to, card->getEffectiveId());
 
-    const Card *card = Sanguosha->getCard(card_id);
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
@@ -249,6 +248,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
 
         room->damage(damage);
     }
+
+    if(card->isVirtualCard())
+        delete card;
 }
 
 IronChain::IronChain(Card::Suit suit, int number)

@@ -38,7 +38,7 @@ public:
     virtual const Card *askForCard(const QString &pattern)  = 0;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
-    virtual int askForCardShow(ServerPlayer *requestor) = 0;
+    virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
@@ -65,7 +65,7 @@ public:
     virtual const Card *askForCard(const QString &pattern) ;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
-    virtual int askForCardShow(ServerPlayer *requestor) ;
+    virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
@@ -79,7 +79,7 @@ class SmartAI: public TrustAI{
 public:
     SmartAI(ServerPlayer *player, bool always_invoke = false);
 
-    virtual int askForCardShow(ServerPlayer *requestor) ;
+    virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
 
     virtual void activate(CardUseStruct &card_use) ;

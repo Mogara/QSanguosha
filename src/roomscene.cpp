@@ -2375,7 +2375,8 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
         photo->showSkillName(skill_name);
     }
 
-    if(Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Limited){
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill && skill->getFrequency() == Skill::Limited){
         QGraphicsRectItem *lightbox = addRect(main_window->rect());
 
         lightbox->setBrush(QColor(0x20, 0x20, 0x20));

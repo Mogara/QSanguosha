@@ -67,7 +67,7 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
 }
 
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
-    int card_id = effect.to->getRandomHandCard();
+    int card_id = effect.to->getRandomHandCardId();
     const Card *card = Sanguosha->getCard(card_id);
     Room *room = effect.from->getRoom();
     room->moveCardTo(card, effect.from, Player::Hand, false);
@@ -85,7 +85,7 @@ void FanjianCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *target = effect.to;
     Room *room = zhouyu->getRoom();
 
-    int card_id = zhouyu->getRandomHandCard();
+    int card_id = zhouyu->getRandomHandCardId();
     const Card *card = Sanguosha->getCard(card_id);
     Card::Suit suit = room->askForSuit(target);
 
@@ -205,12 +205,6 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     int card_id = subcards.first();
 
     room->moveCardTo(card_id, NULL, Player::Special, true);
-
-    LogMessage log;
-    log.type = "$ChangedJudge";
-    log.card_str = QString::number(card_id);
-    room->sendLog(log);
-
     room->setEmotion(source, Room::Normal);
 }
 

@@ -1,5 +1,7 @@
 -- This is the start script of QSanguosha
 
+dofile "sgs_ex.lua"
+
 function load_translation(file)
 	local t = dofile(file)
 	if type(t) ~= "table" then
@@ -11,7 +13,8 @@ function load_translation(file)
 	end
 end
 
-function main()
+
+function load_translations()
 	local lang = sgs.GetConfig("Language", "zh_CN")
 	local lang_dir = "lang/" .. lang
 
@@ -21,7 +24,15 @@ function main()
 	end
 end
 
-local success, msg = pcall(main)
-if not success then
-	sgs.Alert(msg)
+function load_extensions()
+	local scripts = sgs.GetFileNames("extensions")
+	
+	for _, script in ipairs(scripts) do		
+		local filename = ("extensions/%s"):format(script)
+		local package = dofile(filename)
+		sgs.Sanguosha:addPackage(package)
+	end
 end
+
+load_translations()
+load_extensions()

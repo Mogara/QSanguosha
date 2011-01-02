@@ -106,7 +106,6 @@ public:
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
-    int callback;
 };
 
 class Scenario;

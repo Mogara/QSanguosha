@@ -26,9 +26,13 @@ void ServerPlayer::playCardEffect(const Card *card){
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
 }
 
-int ServerPlayer::getRandomHandCard() const{
+int ServerPlayer::getRandomHandCardId() const{
+    return getRandomHandCard()->getEffectiveId();
+}
+
+const Card *ServerPlayer::getRandomHandCard() const{
     int index = qrand() % handcards.length();
-    return handcards.at(index)->getId();
+    return handcards.at(index);
 }
 
 void ServerPlayer::obtainCard(const Card *card){

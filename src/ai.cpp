@@ -210,7 +210,7 @@ int TrustAI::askForAG(const QList<int> &card_ids, bool refsuable){
     return card_ids.at(r);
 }
 
-int TrustAI::askForCardShow(ServerPlayer *) {
+const Card *TrustAI::askForCardShow(ServerPlayer *) {
     return self->getRandomHandCard();
 }
 
@@ -248,7 +248,7 @@ SmartAI::SmartAI(ServerPlayer *player, bool always_invoke)
 
 }
 
-int SmartAI::askForCardShow(ServerPlayer *requestor) {
+const Card *SmartAI::askForCardShow(ServerPlayer *requestor) {
     QList<const Card *> cards = requestor->getHandcards();
     Card::Suit lack = Card::NoSuit;
     int i;
@@ -272,7 +272,7 @@ int SmartAI::askForCardShow(ServerPlayer *requestor) {
     if(lack != Card::NoSuit){
         foreach(const Card *card, cards){
             if(card->getSuit() == lack)
-                return card->getId();
+                return card;
         }
     }
 

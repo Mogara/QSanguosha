@@ -1,3 +1,10 @@
+%naturalvar LuaFunction;
+%typemap(in, checkfn="lua_isfunction") LuaFunction
+%{
+lua_pushvalue(L, $input);
+$1 = luaL_ref(L, LUA_REGISTRYINDEX);
+%}
+
 
 // binding of QString to lua basic type string
 // -------------------------------------------
@@ -5,7 +12,7 @@
 %naturalvar QString;
 
 %typemap(in, checkfn="lua_isstring") QString
-%{$1 = lua_tostring(L,$input)%}
+%{$1 = lua_tostring(L,$input); %}
 
 %typemap(out) QString
 %{lua_pushstring(L, $1.toUtf8()); SWIG_arg++; %}

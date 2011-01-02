@@ -669,12 +669,17 @@
         <translation>魔王模式</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="312"/>
+        <location filename="src/engine.cpp" line="98"/>
+        <source>Lua script error</source>
+        <translation>Lua 脚本错误</translation>
+    </message>
+    <message>
+        <location filename="src/engine.cpp" line="316"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="314"/>
+        <location filename="src/engine.cpp" line="318"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1220,22 +1225,22 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="917"/>
+        <location filename="src/room.cpp" line="915"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1022"/>
+        <location filename="src/room.cpp" line="1020"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1014"/>
+        <location filename="src/room.cpp" line="1012"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1703"/>
+        <location filename="src/room.cpp" line="1701"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1292,11 +1297,11 @@
         <location filename="src/roomscene.cpp" line="687"/>
         <location filename="src/roomscene.cpp" line="1542"/>
         <location filename="src/roomscene.cpp" line="1562"/>
-        <location filename="src/roomscene.cpp" line="2081"/>
-        <location filename="src/roomscene.cpp" line="2087"/>
-        <location filename="src/roomscene.cpp" line="2480"/>
-        <location filename="src/roomscene.cpp" line="2505"/>
-        <location filename="src/roomscene.cpp" line="2511"/>
+        <location filename="src/roomscene.cpp" line="2082"/>
+        <location filename="src/roomscene.cpp" line="2088"/>
+        <location filename="src/roomscene.cpp" line="2481"/>
+        <location filename="src/roomscene.cpp" line="2506"/>
+        <location filename="src/roomscene.cpp" line="2512"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1333,8 +1338,8 @@
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="87"/>
-        <location filename="src/roomscene.cpp" line="2451"/>
-        <location filename="src/roomscene.cpp" line="2457"/>
+        <location filename="src/roomscene.cpp" line="2452"/>
+        <location filename="src/roomscene.cpp" line="2458"/>
         <source>Expand to window width</source>
         <translation>延长至窗口宽度</translation>
     </message>
@@ -1490,47 +1495,47 @@
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2454"/>
+        <location filename="src/roomscene.cpp" line="2455"/>
         <source>Reset to default width</source>
         <translation>重置回默认宽度</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2467"/>
+        <location filename="src/roomscene.cpp" line="2468"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2480"/>
+        <location filename="src/roomscene.cpp" line="2481"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2495"/>
+        <location filename="src/roomscene.cpp" line="2496"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2496"/>
+        <location filename="src/roomscene.cpp" line="2497"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2505"/>
+        <location filename="src/roomscene.cpp" line="2506"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2511"/>
+        <location filename="src/roomscene.cpp" line="2512"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2516"/>
+        <location filename="src/roomscene.cpp" line="2517"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2516"/>
+        <location filename="src/roomscene.cpp" line="2517"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
@@ -1545,12 +1550,12 @@
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2081"/>
+        <location filename="src/roomscene.cpp" line="2082"/>
         <source>No such skill named %1</source>
         <translation>没有名为 %1 的技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2087"/>
+        <location filename="src/roomscene.cpp" line="2088"/>
         <source>The skill %1 must be view as skill!</source>
         <translation>技能 %1 必须为视作技!</translation>
     </message>
@@ -1825,7 +1830,7 @@
 <context>
     <name>ServerPlayer</name>
     <message>
-        <location filename="src/serverplayer.cpp" line="135"/>
+        <location filename="src/serverplayer.cpp" line="139"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>

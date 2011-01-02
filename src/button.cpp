@@ -3,8 +3,12 @@
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsRotation>
+#include <QPropertyAnimation>
 
 extern irrklang::ISoundEngine *SoundEngine;
+
+static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label)
     :label(label){
@@ -13,10 +17,26 @@ Button::Button(const QString &label)
     width = metrics.width(label);
     height = metrics.height();
 
-    setFlags(QGraphicsItem::ItemIsFocusable);
+    setFlags(ItemIsFocusable);
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
+
+//    QGraphicsRotation *yRotation = new QGraphicsRotation(this);
+//    yRotation->setAxis(Qt::YAxis);
+//    yRotation->setOrigin(QVector3D(ButtonRect.width()/2, ButtonRect.height()/2, 0));
+//    //yRotation->setAngle(45);
+//    setTransformations(QList<QGraphicsTransform *>() << yRotation);
+
+//    QPropertyAnimation *animation = new QPropertyAnimation(yRotation, "angle");
+//    animation->setStartValue(0.0);
+//    animation->setKeyValueAt(0.5, 90);
+//    animation->setEndValue(0.0);
+
+//    animation->setLoopCount(5);
+
+
+//    animation->start();
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
@@ -37,25 +57,28 @@ void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     emit clicked();
 }
 
+
+
 QRectF Button::boundingRect() const{
-    return QRectF(-width/2 -2, -height/2 -8, width + 10, height + 10);
+    return ButtonRect;
 }
 
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    painter->setFont(Config.BigFont);
-    qreal font_size = Config.BigFont.pixelSize();
+    QPainterPath path;
+    path.addRoundedRect(ButtonRect, 5, 5);
 
-    if(hasFocus()){
-        painter->setPen(QPen(Qt::black));
-        painter->drawText(QPointF(8 - width/2, 8 + font_size/2), label);
+    QColor rect_color(Qt::black);
+    if(hasFocus())
+        rect_color = QColor(0xFF, 0xFF, 0x00);
+    rect_color.setAlpha(0.43 * 255);
+    painter->fillPath(path, rect_color);
 
-        painter->setPen(QPen(Qt::white));
-        painter->drawText(QPointF(-2 - width/2,-2 + font_size/2),label);
-    }else{
-        painter->setPen(QPen(Qt::black));
-        painter->drawText(QPointF(5 - width/2, 5 + font_size/2), label);
+    QPen pen(Qt::white);
+    pen.setWidth(3);
+    painter->setPen(pen);
+    painter->drawPath(path);
 
-        painter->setPen(QPen(Qt::white));
-        painter->drawText(QPointF(-width/2, font_size/2),label);
-    }
+    painter->setFont(Config.SmallFont);
+    painter->setPen(Qt::white);
+    painter->drawText(ButtonRect, Qt::AlignCenter, label);
 }

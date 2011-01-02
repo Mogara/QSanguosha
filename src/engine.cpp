@@ -92,7 +92,12 @@ Engine::Engine()
 
     luaopen_sgs(lua);
 
-    luaL_dofile(lua, "sanguosha.lua");
+    int error = luaL_dofile(lua, "sanguosha.lua");
+    if(error){
+        const char *error_message = lua_tostring(lua, -1);
+        QMessageBox::warning(NULL, tr("Lua script error"), error_message);
+        exit(1);
+    }
 }
 
 lua_State *Engine::createLuaThread() const{
@@ -100,6 +105,10 @@ lua_State *Engine::createLuaThread() const{
     lua_pop(lua, 1);
 
     return new_thread;
+}
+
+lua_State *Engine::getLuaState() const{
+    return lua;
 }
 
 void Engine::addTranslationEntry(const char *key, const char *value){

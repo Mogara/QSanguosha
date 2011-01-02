@@ -81,11 +81,12 @@ public:
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
     void adjustSeats();
     void swapPile();
-    int getCardFromPile(const QString card_name);
+    int getCardFromPile(const QString &card_name);
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
     void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);
+    lua_State *getLuaState() const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
@@ -126,7 +127,6 @@ public:
     int throwSpecialCard();
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open);
-    void doMove(const CardMoveStruct &move);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -141,7 +141,7 @@ public:
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
-    int askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
+    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);

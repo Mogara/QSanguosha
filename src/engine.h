@@ -30,6 +30,7 @@ public:
     QString translate(const QString &to_translate) const;
 
     lua_State *createLuaThread() const;
+    lua_State *getLuaState() const;
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);

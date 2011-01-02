@@ -23,10 +23,6 @@ StartScene::StartScene()
                        Config.Rect.height()/2 - email_text->boundingRect().height());
 
     server_log = NULL;
-
-//    logo = new Pixmap("start.jpg");
-//    logo->shift();
-//    addItem(logo);
 }
 
 void StartScene::addButton(QAction *action){
@@ -35,7 +31,7 @@ void StartScene::addButton(QAction *action){
     qreal menu_height = Config.BigFont.pixelSize();
     Button *button = new Button(action->text());
     connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
-    button->setPos(0, (buttons.size()-0.8)*menu_height);
+    button->setPos(-button->boundingRect().width()/2, (buttons.size()-0.8)*menu_height);
 
     addItem(button);
     buttons << button;

@@ -66,7 +66,8 @@ SOURCES += src/main.cpp \
     src/rolecombobox.cpp \
     src/joystick.cpp \
     src/couple-scenario.cpp \
-    swig/sanguosha_wrap.cxx
+    swig/sanguosha_wrap.cxx \
+    src/lua-wrapper.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -130,7 +131,8 @@ HEADERS += src/mainwindow.h \
     src/couple-scenario.h \
     src/standard-commons.h \
     src/standard-skillcards.h \
-    src/structs.h
+    src/structs.h \
+    src/lua-wrapper.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
