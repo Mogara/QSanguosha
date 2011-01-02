@@ -108,6 +108,8 @@ public:
         if(!shenlumeng->askForSkillInvoke(objectName()))
             return false;
 
+        room->playSkillEffect(objectName());
+
         QList<int> card_ids = room->getNCards(5);
         qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
         QStringList card_str;
