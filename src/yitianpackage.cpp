@@ -320,7 +320,7 @@ JuejiCard::JuejiCard(){
 }
 
 bool JuejiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.length() < 3 && to_select != Self;
+    return targets.length() < 2 && to_select != Self;
 }
 
 void JuejiCard::onEffect(const CardEffectStruct &effect) const{
@@ -342,7 +342,7 @@ public:
             return true;
         else if(selected.length() == 1){
             const Card *first = selected.first()->getFilteredCard();
-            return first->getSuit() == to_select->getFilteredCard()->getSuit();
+            return first->sameColorWith(to_select->getFilteredCard());
         }
 
         return false;

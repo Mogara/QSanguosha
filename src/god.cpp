@@ -193,6 +193,7 @@ bool MediumYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, c
 
 void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
     shenzhouyu->loseMark("@flame");
+    room->throwCard(this);
     room->loseHp(shenzhouyu, 3);
 
     ServerPlayer *first = targets.first();
