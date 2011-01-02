@@ -66,10 +66,8 @@ void StartScene::switchToServer(Server *server){
     group->addAnimation(logo_shrink);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach(Button *button, buttons){
-        removeItem(button);
+    foreach(Button *button, buttons)
         delete button;
-    }
     buttons.clear();
 
     server_log = new QTextEdit();

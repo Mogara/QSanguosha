@@ -23,19 +23,19 @@ Settings::Settings()
 }
 
 void Settings::init(){
-//    QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
-//    int font_id = QFontDatabase::addApplicationFont(font_path);
-//    if(font_id!=-1){
-//        QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
-//        BigFont.setFamily(font_family);
-//        SmallFont.setFamily(font_family);
-//        TinyFont.setFamily(font_family);
-//    }else
-//        QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
+    QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
+    int font_id = QFontDatabase::addApplicationFont(font_path);
+    if(font_id!=-1){
+        QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
+        BigFont.setFamily(font_family);
+        SmallFont.setFamily(font_family);
+        TinyFont.setFamily(font_family);
+    }else
+        QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
-    BigFont.setFamily("SimHei");
-    SmallFont.setFamily("SimHei");
-    TinyFont.setFamily("SimHei");
+//    BigFont.setFamily("SimHei");
+//    SmallFont.setFamily("SimHei");
+//    TinyFont.setFamily("SimHei");
 
     BigFont.setPixelSize(56);
     SmallFont.setPixelSize(27);

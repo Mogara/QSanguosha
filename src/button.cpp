@@ -10,39 +10,40 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 static QRectF ButtonRect(0, 0, 189, 46);
 
-Button::Button(const QString &label)
-    :label(label){
+Button::Button(const QString &label, qreal scale)
+    :label(label), size(ButtonRect.size() * scale),
+    mute(true), font(Config.SmallFont)
+{
 
-    QFontMetrics metrics(Config.BigFont);
-    width = metrics.width(label);
-    height = metrics.height();
+    init();
+}
 
+Button::Button(const QString &label, const QSizeF &size)
+    :label(label), size(size), mute(true), font(Config.SmallFont)
+{
+    init();
+}
+
+void Button::init()
+{
     setFlags(ItemIsFocusable);
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
+}
 
-//    QGraphicsRotation *yRotation = new QGraphicsRotation(this);
-//    yRotation->setAxis(Qt::YAxis);
-//    yRotation->setOrigin(QVector3D(ButtonRect.width()/2, ButtonRect.height()/2, 0));
-//    //yRotation->setAngle(45);
-//    setTransformations(QList<QGraphicsTransform *>() << yRotation);
+void Button::setMute(bool mute){
+    this->mute = mute;
+}
 
-//    QPropertyAnimation *animation = new QPropertyAnimation(yRotation, "angle");
-//    animation->setStartValue(0.0);
-//    animation->setKeyValueAt(0.5, 90);
-//    animation->setEndValue(0.0);
-
-//    animation->setLoopCount(5);
-
-
-//    animation->start();
+void Button::setFont(const QFont &font){
+    this->font = font;
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    if(SoundEngine)
+    if(SoundEngine && !mute)
         SoundEngine->play2D("audio/system/button-hover.ogg");
 }
 
@@ -51,25 +52,26 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(SoundEngine)
+    if(SoundEngine && !mute)
         SoundEngine->play2D("audio/system/button-down.ogg");
 
     emit clicked();
 }
 
-
-
 QRectF Button::boundingRect() const{
-    return ButtonRect;
+    return QRectF(QPointF(), size);
 }
 
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    QRectF rect = boundingRect();
+
     QPainterPath path;
-    path.addRoundedRect(ButtonRect, 5, 5);
+    path.addRoundedRect(rect, 5, 5);
 
     QColor rect_color(Qt::black);
     if(hasFocus())
-        rect_color = QColor(0xFF, 0xFF, 0x00);
+        rect_color = QColor("orange");
+
     rect_color.setAlpha(0.43 * 255);
     painter->fillPath(path, rect_color);
 
@@ -78,7 +80,7 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     painter->setPen(pen);
     painter->drawPath(path);
 
-    painter->setFont(Config.SmallFont);
+    painter->setFont(font);
     painter->setPen(Qt::white);
-    painter->drawText(ButtonRect, Qt::AlignCenter, label);
+    painter->drawText(rect, Qt::AlignCenter, label);
 }

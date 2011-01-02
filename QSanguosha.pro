@@ -67,7 +67,8 @@ SOURCES += src/main.cpp \
     src/joystick.cpp \
     src/couple-scenario.cpp \
     swig/sanguosha_wrap.cxx \
-    src/lua-wrapper.cpp
+    src/lua-wrapper.cpp \
+    src/window.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -132,7 +133,8 @@ HEADERS += src/mainwindow.h \
     src/standard-commons.h \
     src/standard-skillcards.h \
     src/structs.h \
-    src/lua-wrapper.h
+    src/lua-wrapper.h \
+    src/window.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

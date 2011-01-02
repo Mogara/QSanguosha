@@ -7,6 +7,7 @@
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
 #include "scenario-overview.h"
+#include "window.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -298,7 +299,16 @@ void MainWindow::on_actionAbout_triggered()
 
     // FIXME: add acknowledgement
 
-    QMessageBox::about(this, tr("About QSanguosha"), content);
+    //QMessageBox::about(this, tr("About QSanguosha"), content);
+
+    Window *window = new Window(tr("About QSanguosha"), QSize(365, 401));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::changeBackground(){
@@ -353,7 +363,16 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
     content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 
-    QMessageBox::about(this, tr("About irrKlang"), content);
+    //QMessageBox::about(this, tr("About irrKlang"), content);
+
+    Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
@@ -417,7 +436,16 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    QMessageBox::information(this, tr("Role assign table"), content);
+    //QMessageBox::information(this, tr("Role assign table"), content);
+
+    Window *window = new Window(tr("Role assign table"), QSize(232, 342));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::on_actionScenario_Overview_triggered()
