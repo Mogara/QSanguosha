@@ -7,6 +7,7 @@
 #include "choosegeneraldialog.h"
 #include "joystick.h"
 #include "irrKlang.h"
+#include "window.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -183,15 +184,15 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
     {
-        prompt_box = new Pixmap("image/system/prompt_box.png", true);
+        prompt_box = new Window(tr("Sanguosha"), QSize(480, 177));
         prompt_box->setOpacity(0.8);
         prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
         prompt_box->shift();
-        prompt_box->hide();
         prompt_box->setZValue(10);
+        prompt_box->keepWhenDisappear();
 
         QGraphicsTextItem *text_item = new QGraphicsTextItem(prompt_box);
-        text_item->setPos(66, 34);
+        text_item->setPos(66, 45);
         text_item->setDefaultTextColor(Qt::white);
 
         QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
@@ -1261,7 +1262,7 @@ void RoomScene::doTimeout(){
     case Client::AskForPlayerChoose:{
             ClientInstance->choosePlayer(NULL);
             dashboard->stopPending();
-            prompt_box->hide();
+            prompt_box->disappear();
             break;
         }
 
@@ -1300,7 +1301,7 @@ void RoomScene::doTimeout(){
 void RoomScene::updateStatus(Client::Status status){
     switch(status){
     case Client::NotActive:{
-            prompt_box->hide();
+            prompt_box->disappear();
             ClientInstance->getPromptDoc()->clear();
 
             dashboard->disableAllCards();
@@ -1317,7 +1318,7 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Responsing: {
-            prompt_box->show();
+            prompt_box->appear();
             if(ClientInstance->card_pattern.startsWith("@"))
                 dashboard->disableAllCards();
             else
@@ -1349,7 +1350,7 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::Discarding:{
-            prompt_box->show();
+            prompt_box->appear();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->refusable);
@@ -1370,7 +1371,7 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::AskForPlayerChoose:{
-            prompt_box->show();
+            prompt_box->appear();
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
@@ -1398,7 +1399,7 @@ void RoomScene::updateStatus(Client::Status status){
         }
 
     case Client::AskForCardShow:{
-            prompt_box->show();
+            prompt_box->appear();
             dashboard->enableAllCards();
 
             ok_button->setEnabled(false);
@@ -1521,7 +1522,7 @@ void RoomScene::doOkButton(){
                     ClientInstance->responseCard(card);
                 else
                     ClientInstance->useCard(card, selected_targets);
-                prompt_box->hide();
+                prompt_box->disappear();
             }
 
             dashboard->unselectAll();
@@ -1533,7 +1534,7 @@ void RoomScene::doOkButton(){
             if(card){
                 ClientInstance->discardCards(card);
                 dashboard->stopPending();
-                prompt_box->hide();
+                prompt_box->disappear();
             }
             break;
         }        
@@ -1566,7 +1567,7 @@ void RoomScene::doOkButton(){
 
     case Client::AskForPlayerChoose:{
             ClientInstance->choosePlayer(selected_targets.first());
-            prompt_box->hide();
+            prompt_box->disappear();
 
             break;
         }
@@ -1576,7 +1577,7 @@ void RoomScene::doOkButton(){
             if(card){
                 ClientInstance->replyYiji(card, selected_targets.first());
                 dashboard->stopPending();
-                prompt_box->hide();
+                prompt_box->disappear();
             }
 
             break;
@@ -1649,7 +1650,7 @@ void RoomScene::doCancelButton(){
                 ClientInstance->responseCard(NULL);
             else
                 ClientInstance->useCard(NULL, QList<const ClientPlayer *>());
-            prompt_box->hide();
+            prompt_box->disappear();
             dashboard->stopPending();
             break;
         }
@@ -1657,7 +1658,7 @@ void RoomScene::doCancelButton(){
     case Client::Discarding:{
             dashboard->stopPending();
             ClientInstance->discardCards(NULL);
-            prompt_box->hide();
+            prompt_box->disappear();
             break;
         }
 
@@ -1669,7 +1670,7 @@ void RoomScene::doCancelButton(){
     case Client::AskForYiji:{
             dashboard->stopPending();
             ClientInstance->replyYiji(NULL, NULL);
-            prompt_box->hide();
+            prompt_box->disappear();
             break;
         }
 

@@ -8,6 +8,8 @@
 #include "aux-skills.h"
 #include "clientlogbox.h"
 
+class Window;
+
 #include <QGraphicsScene>
 #include <QTableWidget>
 #include <QQueue>
@@ -63,7 +65,8 @@ private:
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;
-    Pixmap *prompt_box;
+    //Pixmap *prompt_box;
+    Window *prompt_box;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
     QComboBox *sort_combobox;

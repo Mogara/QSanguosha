@@ -8,7 +8,7 @@
 #include <QPropertyAnimation>
 
 Window::Window(const QString &title, const QSizeF &size)
-    :title(title), size(size)
+    :title(title), size(size), keep_when_disappear(false)
 {
     setFlags(ItemIsMovable);
 
@@ -45,6 +45,10 @@ void Window::addCloseButton(const QString &label)
 
 void Window::shift(){
     moveBy(-size.width()/2, -size.height()/2);
+}
+
+void Window::keepWhenDisappear(){
+    keep_when_disappear = true;
 }
 
 QRectF Window::boundingRect() const{
@@ -86,5 +90,6 @@ void Window::disappear(){
     y->setEndValue(90);
     y->start();
 
-    connect(y, SIGNAL(finished()), this, SLOT(deleteLater()));
+    if(!keep_when_disappear)
+        connect(y, SIGNAL(finished()), this, SLOT(deleteLater()));
 }

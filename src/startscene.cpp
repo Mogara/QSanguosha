@@ -26,14 +26,20 @@ StartScene::StartScene()
 }
 
 void StartScene::addButton(QAction *action){
-    //return;
-
-    qreal menu_height = Config.BigFont.pixelSize();
     Button *button = new Button(action->text());
-    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
-    button->setPos(-button->boundingRect().width()/2, (buttons.size()-0.8)*menu_height);
+    button->setMute(false);
 
+    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
     addItem(button);
+
+    QRectF rect = button->boundingRect();
+    int n = buttons.length();
+    if(n < 5){
+        button->setPos(- rect.width() - 5, (n - 1) * (rect.height() * 1.2));
+    }else{
+        button->setPos(5, (n - 6) * (rect.height() * 1.2));
+    }
+
     buttons << button;
 }
 

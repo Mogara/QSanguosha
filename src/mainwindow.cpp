@@ -68,9 +68,11 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionStart_Server
             << ui->actionReplay
             << ui->actionConfigure
+            << ui->actionAbout
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview;
+            << ui->actionScenario_Overview
+            << ui->actionExit;
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);    

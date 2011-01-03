@@ -13,6 +13,7 @@ public:
     void addContent(const QString &content);
     void addCloseButton(const QString &label);
     void shift();
+    void keepWhenDisappear();
 
     virtual QRectF boundingRect() const;
 
@@ -27,6 +28,7 @@ private:
     QString title;
     QGraphicsRotation *yRotation;
     QSizeF size;
+    bool keep_when_disappear;
 };
 
 #endif // WINDOW_H
