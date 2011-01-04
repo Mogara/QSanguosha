@@ -281,7 +281,7 @@ public:
 class Mengjin: public TriggerSkill{
 public:
     Mengjin():TriggerSkill("mengjin"){
-        events << SlashResult;
+        events << SlashMissed;
     }
 
     virtual int getPriority() const{
@@ -289,11 +289,11 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *pangde, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success && !result.to->isNude()){
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(!effect.to->isNude()){
             Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName())){
-                int to_throw = room->askForCardChosen(pangde, result.to, "he", objectName());
+                int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
                 room->throwCard(to_throw);
             }
         }

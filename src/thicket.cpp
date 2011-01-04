@@ -732,9 +732,7 @@ public:
             if(jink && room->askForCard(female, "jink", "@roulin1-jink-2"))
                 jinked = true;
 
-            SlashResultStruct result;
-            result.fill(effect, !jinked);
-            room->slashResult(result);
+            room->slashResult(effect, !jinked);
             return true;
 
         }else if(effect.from->getGeneral()->isFemale() && effect.to->hasSkill(objectName())){
@@ -751,9 +749,7 @@ public:
             if(jink && room->askForCard(dongzhuo, "jink", "@roulin2-jink-2"))
                 jinked = true;
 
-            SlashResultStruct result;
-            result.fill(effect, !jinked);
-            room->slashResult(result);
+            room->slashResult(effect, !jinked);
 
             return true;
         }

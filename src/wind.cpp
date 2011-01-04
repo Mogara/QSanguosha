@@ -295,10 +295,7 @@ public:
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
             if(room->askForSkillInvoke(huangzhong, "liegong")){
                 room->playSkillEffect(objectName());
-
-                SlashResultStruct result;
-                result.fill(effect, true);
-                room->slashResult(result);
+                room->slashResult(effect, true);
 
                 return true;
             }

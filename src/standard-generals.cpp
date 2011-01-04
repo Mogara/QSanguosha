@@ -541,9 +541,7 @@ public:
 
             const Card *card = room->getJudgeCard(machao);
             if(card->isRed()){
-                SlashResultStruct result;
-                result.fill(effect, true);
-                room->slashResult(result);
+                room->slashResult(effect, true);
                 return true;
             }
         }
@@ -929,9 +927,7 @@ public:
         if(first_jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
             jinked = true;
 
-        SlashResultStruct result;
-        result.fill(effect, !jinked);
-        room->slashResult(result);
+        room->slashResult(effect, !jinked);
 
         return true;
     }

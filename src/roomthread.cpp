@@ -29,22 +29,6 @@ SlashEffectStruct::SlashEffectStruct()
 {
 }
 
-SlashResultStruct::SlashResultStruct()
-    :slash(NULL), from(NULL), to(NULL), nature(DamageStruct::Normal),
-    drank(false), success(false)
-{
-}
-
-void SlashResultStruct::fill(const SlashEffectStruct &effect, bool success)
-{
-    slash = effect.slash;
-    from = effect.from;
-    to = effect.to;
-    nature = effect.nature;
-    drank = effect.drank;
-    this->success = success;
-}
-
 DyingStruct::DyingStruct()
     :who(NULL), damage(NULL), peaches(0)
 {

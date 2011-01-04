@@ -105,15 +105,15 @@ Client::Client(QObject *parent, const QString &filename)
         connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processCommand(QString)));
     }else{
         socket = new NativeClientSocket;
-
         socket->setParent(this);
+
+        recorder = new Recorder(this);
+
+        connect(socket, SIGNAL(message_got(char*)), recorder, SLOT(record(char*)));
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
         connect(socket, SIGNAL(connected()), this, SLOT(signup()));
         socket->connectToHost();
-
-        recorder = new Recorder(this);
-        connect(socket, SIGNAL(message_got(char*)), recorder, SLOT(record(char*)));
 
         replayer = NULL;
     }

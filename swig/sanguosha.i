@@ -254,18 +254,6 @@ struct CardMoveStruct{
     QString toString() const;
 };
 
-struct SlashResultStruct{
-    SlashResultStruct();
-    void fill(const SlashEffectStruct &effect, bool success);
-
-    const Slash *slash;
-    ServerPlayer *from;
-    ServerPlayer *to;
-    DamageStruct::Nature nature;
-    bool drank;
-    bool success;
-};
-
 struct DyingStruct{
     DyingStruct();
 
@@ -293,7 +281,8 @@ enum TriggerEvent{
     SlashEffect,
     SlashEffected,
     SlashProceed,
-    SlashResult,
+    SlashHit,
+    SlashMissed,
 
     CardAsked,
     CardUsed,
@@ -511,7 +500,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const char *winner);
     void slashEffect(const SlashEffectStruct &effect);
-    void slashResult(const SlashResultStruct &result);
+    void slashResult(const SlashEffectStruct &effect, bool hit);
     void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);

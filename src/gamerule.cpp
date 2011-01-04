@@ -11,7 +11,7 @@ GameRule::GameRule(QObject *parent)
     events << GameStart << PhaseChange << CardUsed
             << Predamaged << CardEffected << HpRecover
             << AskForPeaches << Death << Dying
-            << SlashResult << SlashEffected << SlashProceed;
+            << SlashHit << SlashEffected << SlashProceed;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -234,34 +234,30 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             QString slasher = effect.from->getGeneralName();
-            bool success = !room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
-
-            SlashResultStruct result;
-            result.fill(effect, success);
-            room->slashResult(result);
+            bool hit = !room->askForCard(effect.to, "jink", "slash-jink:" + slasher);
+            room->slashResult(effect, hit);
 
             break;
         }
 
-    case SlashResult:{
-            SlashResultStruct result = data.value<SlashResultStruct>();
-            if(result.success){
-                DamageStruct damage;
-                damage.card = result.slash;
+    case SlashHit:{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-                damage.damage = 1;
-                if(result.drank)
-                    damage.damage ++;
+            DamageStruct damage;
+            damage.card = effect.slash;
 
-                damage.from = result.from;
-                damage.to = result.to;
-                damage.nature = result.nature;
+            damage.damage = 1;
+            if(effect.drank)
+                damage.damage ++;
 
-                room->damage(damage);
-            }
+            damage.from = effect.from;
+            damage.to = effect.to;
+            damage.nature = effect.nature;
 
-            if(result.to->hasFlag("armor_nullified"))
-                room->setPlayerFlag(result.to, "-armor_nullified");
+            room->damage(damage);
+
+            if(effect.to->hasFlag("armor_nullified"))
+                room->setPlayerFlag(effect.to, "-armor_nullified");
 
             break;
         }

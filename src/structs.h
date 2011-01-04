@@ -12,8 +12,6 @@ class GameRule;
 
 #include <QVariant>
 
-// tolua_begin
-
 struct DamageStruct{
     DamageStruct();
 
@@ -73,18 +71,6 @@ struct CardMoveStruct{
     QString toString() const;
 };
 
-struct SlashResultStruct{
-    SlashResultStruct();
-    void fill(const SlashEffectStruct &effect, bool success);
-
-    const Slash *slash;
-    ServerPlayer *from;
-    ServerPlayer *to;
-    DamageStruct::Nature nature;
-    bool drank;
-    bool success;
-};
-
 struct DyingStruct{
     DyingStruct();
 
@@ -112,7 +98,8 @@ enum TriggerEvent{
     SlashEffect,
     SlashEffected,
     SlashProceed,
-    SlashResult,
+    SlashHit,
+    SlashMissed,
 
     CardAsked,
     CardUsed,
@@ -126,8 +113,6 @@ enum TriggerEvent{
     CardFinished
 };
 
-// tolua_end
-
 typedef const Card *CardStar;
 typedef ServerPlayer *PlayerStar;
 
@@ -136,7 +121,6 @@ Q_DECLARE_METATYPE(CardEffectStruct);
 Q_DECLARE_METATYPE(SlashEffectStruct);
 Q_DECLARE_METATYPE(CardUseStruct);
 Q_DECLARE_METATYPE(CardMoveStruct);
-Q_DECLARE_METATYPE(SlashResultStruct);
 Q_DECLARE_METATYPE(CardStar);
 Q_DECLARE_METATYPE(PlayerStar);
 Q_DECLARE_METATYPE(DyingStruct);

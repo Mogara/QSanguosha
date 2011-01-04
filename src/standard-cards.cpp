@@ -195,7 +195,7 @@ QinggangSword::QinggangSword(Suit suit, int number)
 class BladeSkill : public WeaponSkill{
 public:
     BladeSkill():WeaponSkill("blade"){
-        events << SlashResult;
+        events << SlashMissed;
     }
 
     virtual int getPriority() const{
@@ -203,25 +203,24 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success){
-            if(result.to->hasSkill("kongcheng") && result.to->isKongcheng())
-                return false;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            Room *room = player->getRoom();
-            const Card *card = room->askForCard(player, "slash", "blade-slash");
-            if(card){
-                // if player is drank, unset his flag
-                if(player->hasFlag("drank"))
-                    room->setPlayerFlag(player, "-drank");
+        if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
+            return false;
 
-                CardEffectStruct effect;
-                effect.card = card;
-                effect.from = player;
-                effect.to = result.to;
+        Room *room = player->getRoom();
+        const Card *card = room->askForCard(player, "slash", "blade-slash");
+        if(card){
+            // if player is drank, unset his flag
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
 
-                room->cardEffect(effect);
-            }
+            CardEffectStruct effect;
+            effect.card = card;
+            effect.from = player;
+            effect.to = effect.to;
+
+            room->cardEffect(effect);
         }
 
         return false;
@@ -320,34 +319,32 @@ public:
 class AxeSkill: public WeaponSkill{
 public:
     AxeSkill():WeaponSkill("axe"){
-        events << SlashResult;
+        events << SlashMissed;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success){
-            Room *room = player->getRoom();
-            CardStar card = room->askForCard(player, "@axe-card", "axe-card");
-            if(card){
-                QList<int> card_ids = card->getSubcards();
-                foreach(int card_id, card_ids){
-                    LogMessage log;
-                    log.type = "$DiscardCard";
-                    log.from = player;
-                    log.card_str = QString::number(card_id);
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-                    room->sendLog(log);
-                }
-
+        Room *room = player->getRoom();
+        CardStar card = room->askForCard(player, "@axe-card", "axe-card");
+        if(card){
+            QList<int> card_ids = card->getSubcards();
+            foreach(int card_id, card_ids){
                 LogMessage log;
-                log.type = "#AxeSkill";
+                log.type = "$DiscardCard";
                 log.from = player;
-                log.to << result.to;
-                room->sendLog(log);
+                log.card_str = QString::number(card_id);
 
-                result.success = true;
-                data = QVariant::fromValue(result);
+                room->sendLog(log);
             }
+
+            LogMessage log;
+            log.type = "#AxeSkill";
+            log.from = player;
+            log.to << effect.to;
+            room->sendLog(log);
+
+            room->slashResult(effect, true);
         }
 
         return false;
@@ -371,18 +368,16 @@ Halberd::Halberd(Suit suit, int number)
 class KylinBowSkill: public WeaponSkill{
 public:
     KylinBowSkill():WeaponSkill("kylin_bow"){
-        events << SlashResult;
+        events << SlashHit;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success)
-            return false;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         QStringList horses;
-        if(result.to->getDefensiveHorse())
+        if(effect.to->getDefensiveHorse())
             horses << "dhorse";
-        if(result.to->getOffensiveHorse())
+        if(effect.to->getOffensiveHorse())
             horses << "ohorse";
 
         if(horses.isEmpty())
@@ -399,9 +394,9 @@ public:
             horse_type = horses.first();
 
         if(horse_type == "dhorse")
-            room->throwCard(result.to->getDefensiveHorse());
+            room->throwCard(effect.to->getDefensiveHorse());
         else if(horse_type == "ohorse")
-            room->throwCard(result.to->getOffensiveHorse());
+            room->throwCard(effect.to->getOffensiveHorse());
 
         return false;
     }
@@ -836,7 +831,7 @@ void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 class IceSwordSkill: public TriggerSkill{
 public:
     IceSwordSkill():TriggerSkill("ice_sword"){
-        events << SlashResult;
+        events << SlashHit;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -844,22 +839,20 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-        if(result.success){
-            Room *room = player->getRoom();
+        Room *room = player->getRoom();
 
-            if(!result.to->isNude() && player->askForSkillInvoke("ice_sword")){
-                int card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
+        if(!effect.to->isNude() && player->askForSkillInvoke("ice_sword")){
+            int card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
+            room->throwCard(card_id);
+
+            if(!effect.to->isNude()){
+                card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
                 room->throwCard(card_id);
-
-                if(!result.to->isNude()){
-                    card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
-                    room->throwCard(card_id);
-                }
-
-                return true;
             }
+
+            return true;
         }
 
         return false;

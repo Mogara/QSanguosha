@@ -301,9 +301,13 @@ void Room::slashEffect(const SlashEffectStruct &effect){
         thread->trigger(SlashEffected, effect.to, data);
 }
 
-void Room::slashResult(const SlashResultStruct &result){
-    QVariant data = QVariant::fromValue(result);
-    thread->trigger(SlashResult, result.from, data);
+void Room::slashResult(const SlashEffectStruct &effect, bool hit){
+    QVariant data = QVariant::fromValue(effect);
+
+    if(hit)
+        thread->trigger(SlashHit, effect.from, data);
+    else
+        thread->trigger(SlashMissed, effect.from, data);
 }
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
