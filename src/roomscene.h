@@ -169,6 +169,7 @@ private slots:
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);
+    void grabCardItem();
     void chooseAmazingGrace();
     void clearAmazingGrace();
 

@@ -172,6 +172,8 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
+    QVariantMap tag;
+
 protected:
     QMap<QString, int> marks;
 

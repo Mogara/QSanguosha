@@ -20,6 +20,7 @@ public:
 
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
+    QPointF homePos() const;
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
@@ -52,6 +53,7 @@ signals:
     void clicked();
     void double_clicked();
     void thrown();
+    void grabbed();
 };
 
 class GuanxingCardItem : public CardItem {

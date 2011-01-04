@@ -44,6 +44,10 @@ void CardItem::setHomePos(QPointF home_pos){
     this->home_pos = home_pos;
 }
 
+QPointF CardItem::homePos() const{
+    return home_pos;
+}
+
 void CardItem::goBack(bool kieru){
     if(home_pos == pos()){
         if(kieru)
@@ -141,8 +145,12 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(parentItem() && y() < -80)
-        emit thrown();
+    if(parentItem()){
+        if(y() < -80)
+            emit thrown();
+    }else{
+        emit grabbed();
+    }
 
     goBack();
 }

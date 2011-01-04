@@ -1392,8 +1392,10 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            foreach(CardItem *item, amazing_grace)
+            foreach(CardItem *item, amazing_grace){
                 connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
+                connect(item, SIGNAL(grabbed()), this, SLOT(grabCardItem()));
+            }
 
             break;
         }
@@ -2027,6 +2029,7 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
     if(to_take){
         to_take->setEnabled(false);
 
+        // make a copy on the amazing grace item and put it to dashboard later
         CardItem *item = new CardItem(to_take->getCard());
         addItem(item);
         item->setPos(to_take->pos());
@@ -2046,7 +2049,7 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
         QRectF rect(to_take->boundingRect());
         qreal dx = rect.width() - avatar_pixmap.width() - 5;
         qreal dy = rect.height() - avatar_pixmap.height() - 5;
-        taker_avatar->setPos(to_take->pos());
+        taker_avatar->setPos(to_take->homePos());
         taker_avatar->moveBy(dx, dy);
         taker_avatar->setZValue(1.1);
 
@@ -2057,6 +2060,15 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
 void RoomScene::chooseAmazingGrace(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if(card_item){
+        ClientInstance->chooseAG(card_item->getCard()->getId());
+        foreach(CardItem *item, amazing_grace)
+            item->disconnect(this);
+    }
+}
+
+void RoomScene::grabCardItem(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if(card_item && card_item->collidesWithItem(dashboard)){
         ClientInstance->chooseAG(card_item->getCard()->getId());
         foreach(CardItem *item, amazing_grace)
             item->disconnect(this);

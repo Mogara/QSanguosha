@@ -162,6 +162,8 @@ public:
     int getCardCount(bool include_equip) const;
 
     QList<int> &getPile(const char *pile_name);
+	
+	QVariantMap tag;
 };
 
 class ServerPlayer : public Player
