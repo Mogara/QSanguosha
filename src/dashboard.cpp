@@ -786,7 +786,8 @@ void Dashboard::updatePending(){
 void Dashboard::onCardItemThrown(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if(card_item){
-        selected = card_item;
+        if(!view_as_skill)
+            selected = card_item;
         emit card_to_use();
     }
 }
