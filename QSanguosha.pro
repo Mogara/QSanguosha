@@ -154,7 +154,7 @@ win32{
 }
 
 unix {
-    LIBS += -lm -llua
+    LIBS += -lm -llua -lIrrKlang -lplibjs -lplibul
 }
 
 TRANSLATIONS += sanguosha.ts
