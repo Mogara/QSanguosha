@@ -9,9 +9,10 @@ GameRule::GameRule(QObject *parent)
     setParent(parent);
 
     events << GameStart << PhaseChange << CardUsed
-            << Predamaged << CardEffected << HpRecover
+            << CardEffected << HpRecover
             << AskForPeaches << Death << Dying
-            << SlashHit << SlashEffected << SlashProceed;
+            << SlashHit << SlashEffected << SlashProceed
+            << DamageDone;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -169,7 +170,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
-    case Predamaged:{
+    case DamageDone:{
             DamageStruct damage = data.value<DamageStruct>();
             room->sendDamageLog(damage);
 

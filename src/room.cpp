@@ -1387,6 +1387,9 @@ void Room::damage(const DamageStruct &damage_data){
     if(broken)
         return;    
 
+    // damage done, should not cause damage process broken
+    thread->trigger(DamageDone, damage_data.to, data);
+
     // damage
     if(damage_data.from)
         broken = thread->trigger(Damage, damage_data.from, data);
@@ -1394,7 +1397,7 @@ void Room::damage(const DamageStruct &damage_data){
         return;
 
     // damaged
-    thread->trigger(Damaged, damage_data.to, data);
+    thread->trigger(Damaged, damage_data.to, data);    
 }
 
 void Room::sendDamageLog(const DamageStruct &data){

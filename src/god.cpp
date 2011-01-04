@@ -18,7 +18,7 @@ void GongxinCard::onEffect(const CardEffectStruct &effect) const{
 class Wuhun: public TriggerSkill{
 public:
     Wuhun():TriggerSkill("wuhun"){
-        events << Predamaged;
+        events << DamageDone;
         frequency = Compulsory;
     }
 

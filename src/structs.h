@@ -88,6 +88,7 @@ enum TriggerEvent{
 
     Predamage,
     Predamaged,
+    DamageDone,
     Damage,
     Damaged,
 
