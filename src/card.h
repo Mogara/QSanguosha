@@ -26,6 +26,7 @@ class Card : public QObject
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
     Q_PROPERTY(bool target_fixed READ targetFixed)
     Q_PROPERTY(bool once READ isOnce CONSTANT)
+    Q_PROPERTY(bool equipped READ isEquipped)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -63,6 +64,7 @@ public:
     void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
+    bool isEquipped() const;
 
     QString getPixmapPath() const;
     QString getIconPath() const;

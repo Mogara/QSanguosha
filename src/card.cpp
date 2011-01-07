@@ -4,6 +4,7 @@
 #include "client.h"
 #include "room.h"
 #include "carditem.h"
+#include "lua-wrapper.h"
 
 const Card::Suit Card::AllSuits[4] = {
     Card::Spade,
@@ -90,6 +91,10 @@ void Card::setSuit(Suit suit){
 
 bool Card::sameColorWith(const Card *other) const{
     return isBlack() == other->isBlack();
+}
+
+bool Card::isEquipped() const{
+    return Self->hasEquip(this);
 }
 
 bool Card::match(const QString &pattern) const{
@@ -263,7 +268,10 @@ const Card *Card::Parse(const QString &str){
         }
 
         return dummy;
-    }else if(str.contains(QChar('='))){
+    }else if(str.startsWith(QChar('#'))){
+        LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
+        return new_card;
+    }if(str.contains(QChar('='))){
         static QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         if(!pattern.exactMatch(str))
             return NULL;

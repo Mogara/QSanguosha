@@ -200,6 +200,18 @@ public:
     virtual void addCard(const Card *card, Place place);
 };
 
+class ClientPlayer : public Player
+{
+public:
+    explicit ClientPlayer(Client *client);
+    virtual int aliveCount() const;
+    virtual int getHandcardNum() const;	
+    virtual void removeCard(const Card *card, Place place);
+    virtual void addCard(const Card *card, Place place);
+    virtual void addKnownHandCard(const Card *card);
+    virtual bool isLastHandCard(const Card *card) const; 
+};
+
 struct DamageStruct{
     DamageStruct();
 

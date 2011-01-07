@@ -541,11 +541,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *lukang, QVariant &data) const{
-        Room *room = lukang->getRoom();
-
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(!effect.multiple && effect.card->inherits("TrickCard")
-            && !effect.card->inherits("DelayedTrick") && effect.from != lukang){
+        if(!effect.multiple && effect.card->isNDTrick() && effect.from != lukang){
+            Room *room = effect.to->getRoom();
             room->setTag("FanjiCard", QVariant::fromValue(effect.card));
         }
 

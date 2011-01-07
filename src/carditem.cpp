@@ -125,7 +125,7 @@ bool CardItem::isPending() const{
 }
 
 bool CardItem::isEquipped() const{
-    return opacity() == 0.0;
+    return Self->hasEquip(card);
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){

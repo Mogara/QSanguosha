@@ -348,6 +348,10 @@ void Player::removeEquip(const EquipCard *equip){
     }
 }
 
+bool Player::hasEquip(const Card *card) const{
+    return weapon == card || armor == card || defensive_horse == card || offensive_horse == card;
+}
+
 const Weapon *Player::getWeapon() const{
     return weapon;
 }

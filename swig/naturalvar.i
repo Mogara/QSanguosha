@@ -1,8 +1,18 @@
 %naturalvar LuaFunction;
-%typemap(in, checkfn="lua_isfunction") LuaFunction
+%typemap(in) LuaFunction
 %{
-lua_pushvalue(L, $input);
-$1 = luaL_ref(L, LUA_REGISTRYINDEX);
+if(lua_isfunction(L, $input)){
+	lua_pushvalue(L, $input);
+	$1 = luaL_ref(L, LUA_REGISTRYINDEX);
+}else{
+	$1 = 0;
+}
+%}
+
+%typemap(out) LuaFunction
+%{
+lua_rawgeti(L, LUA_REGISTRYINDEX, $1);	
+SWIG_arg ++;
 %}
 
 

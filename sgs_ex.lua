@@ -2,9 +2,8 @@
 
 -- trigger skills
 function sgs.CreateTriggerSkill(spec)
-	local name = spec.name
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
-	local skill = sgs.LuaTriggerSkill("moligaloo", frequency)
+	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
 	
 	if(type(spec.events) == "number") then
 		skill:addEvent(spec.events)
@@ -54,5 +53,32 @@ end
 -- skill cards
 
 function sgs.CreateSkillCard(spec)
+	assert(spec.name)
 	
+	local card = sgs.LuaSkillCard(spec.name)
+	
+	card:setTargetFixed(spec.target_fixed)
+	card:setWillThrow(spec.will_throw)	
+	
+	card.available = spec.available
+	card.filter = spec.filter
+	card.feasible = spec.feasible
+	card.on_use = spec.on_use
+	card.on_effect = spec.on_effect
+	
+	return card
+end
+
+function sgs.CreateViewAsSkill(spec)
+	assert(spec.name)
+	
+	local skill = sgs.LuaViewAsSkill(spec.name)
+	
+	skill.view_filter = spec.view_filter
+	skill.view_as = spec.view_as
+	
+	skill.enabled_at_play = spec.enabled_at_play
+	skill.enabled_at_response = spec.enabled_at_response
+	
+	return skill
 end
