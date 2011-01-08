@@ -256,8 +256,8 @@ public:
         if(cards.length() != 2)
             return NULL;
 
-        const Card *first = cards.at(0)->getCard();
-        const Card *second = cards.at(1)->getCard();
+        const Card *first = cards.at(0)->getFilteredCard();
+        const Card *second = cards.at(1)->getFilteredCard();
 
         Card::Suit suit = Card::NoSuit;
         if(first->isBlack() && second->isBlack())
@@ -267,8 +267,8 @@ public:
 
         Slash *slash = new Slash(suit, 0);
         slash->setSkillName(objectName());
-        slash->addSubcard(first->getId());
-        slash->addSubcard(second->getId());
+        slash->addSubcard(first);
+        slash->addSubcard(second);
 
         return slash;
     }

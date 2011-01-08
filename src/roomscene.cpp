@@ -2304,6 +2304,18 @@ void RoomScene::createStateItem(){
 }
 
 void RoomScene::onGameStart(){
+    // add free discard button
+    if(ServerInfo.FreeChoose){
+        QPushButton *free_discard = new QPushButton(tr("Free discard"));
+        free_discard->setToolTip(tr("Discard cards freely"));
+
+        addWidgetToSkillDock(free_discard, true);
+
+        FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+        button2skill.insert(free_discard, discard_skill);
+        connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+    }
+
     trust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
 
@@ -2389,7 +2401,7 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     }
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill && skill->getFrequency() == Skill::Limited){
+    if(skill && skill->useLightBox()){
         QGraphicsRectItem *lightbox = addRect(main_window->rect());
 
         lightbox->setBrush(QColor(0x20, 0x20, 0x20));

@@ -60,6 +60,7 @@ public:
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
+    void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1, bool set_emotion = false);
     void playCardEffect(const QString &card_name, bool is_male);

@@ -41,6 +41,30 @@ const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
 
 // -------------------------------------------
 
+FreeDiscardSkill::FreeDiscardSkill(QObject *parent)
+    :ViewAsSkill("free-discard")
+{
+    setParent(parent);
+    card = new DummyCard;
+}
+
+bool FreeDiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    return true;
+}
+
+const Card *FreeDiscardSkill::viewAs(const QList<CardItem *> &cards) const{
+    if(!cards.isEmpty()){
+
+        card->clearSubcards();
+        card->addSubcards(cards);
+
+        return card;
+    }else
+        return NULL;
+}
+
+// -------------------------------------------
+
 YijiViewAsSkill::YijiViewAsSkill()
     :ViewAsSkill("yiji")
 {

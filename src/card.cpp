@@ -413,6 +413,10 @@ void Card::addSubcard(int card_id){
         subcards << card_id;
 }
 
+void Card::addSubcard(const Card *card){
+    addSubcard(card->getEffectiveId());
+}
+
 QList<int> Card::getSubcards() const{
     return subcards;
 }

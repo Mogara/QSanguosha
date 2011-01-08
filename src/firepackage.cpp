@@ -130,7 +130,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new QuhuCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
         return card;
     }
 };
@@ -245,7 +245,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         const Card *card = card_item->getCard();
         Duel *duel = new Duel(card->getSuit(), card->getNumber());
-        duel->addSubcard(card->getId());
+        duel->addSubcard(card);
         duel->setSkillName(objectName());
         return duel;
     }
@@ -312,9 +312,9 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
+        const Card *card = card_item->getFilteredCard();
         IronChain *chain = new IronChain(card->getSuit(), card->getNumber());
-        chain->addSubcard(card->getId());
+        chain->addSubcard(card);
         chain->setSkillName(objectName());
         return chain;
     }
@@ -442,7 +442,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new TianyiCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
         return card;
     }
 };

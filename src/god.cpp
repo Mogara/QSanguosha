@@ -337,6 +337,10 @@ public:
 
     }
 
+    virtual bool useLightBox() const{
+        return true;
+    }
+
     virtual void onDamaged(ServerPlayer *shencc, const DamageStruct &damage) const{
         Room *room = shencc->getRoom();
         int i, x = damage.damage;

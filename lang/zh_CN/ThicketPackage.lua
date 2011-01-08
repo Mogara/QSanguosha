@@ -71,6 +71,8 @@ return {
 	["@fangzhu"] = "请指定要放逐的对象", 
 	["@yinghun"] = "请指定要英魂的对象", 
 	["#Dimeng"] = "%from (原来 %arg 手牌) 与 %to (原来 %arg2 手牌) 交换了手牌", 
+	["#BenghuaiLoseHp"] = "%from 的【崩坏】锁定技被触发，流失了一点体力",
+	["#BenghuaiLoseMaxHp"] = "%from 的【崩坏】锁定技被触发，流失了一点体力上限",
 	["$baonue"] = "天下群雄，唯我独尊", 
 	["$benghuai"] = "不朽之躯，天却亡我", 
 	["$huoshou"] = "南蛮之地，皆我子民", 

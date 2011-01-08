@@ -73,12 +73,35 @@ function sgs.CreateViewAsSkill(spec)
 	assert(spec.name)
 	
 	local skill = sgs.LuaViewAsSkill(spec.name)
+	local n = spec.n
 	
-	skill.view_filter = spec.view_filter
-	skill.view_as = spec.view_as
+	if not n then
+		skill.view_filter = spec.view_filter
+		skill.view_as = spec.view_as
+	elseif n == 0 then
+		function skill:view_as()
+			return spec.view_as(self)
+		end
+	elseif n == 1 then
+		function skill:view_filter(selected, to_select)
+			if next(selected) then
+				return false
+			end
+			
+			return spec.view_filter(self, to_select)
+		end
+		
+		function skill:view_as(cards)
+			if #cards == 1 then
+				local card = cards[1]
+				return spec.view_as(self, card)
+			end
+		end
+	end	
 	
 	skill.enabled_at_play = spec.enabled_at_play
 	skill.enabled_at_response = spec.enabled_at_response
 	
 	return skill
 end
+

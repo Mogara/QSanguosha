@@ -228,7 +228,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new GuicaiCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
     }
@@ -471,7 +471,6 @@ public:
     }
 };
 
-// should be ViewAsSkill
 class Longdan:public OneCardViewAsSkill{
 public:
     Longdan():OneCardViewAsSkill("longdan"){
@@ -510,15 +509,15 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
+        const Card *card = card_item->getFilteredCard();
         if(card->inherits("Slash")){
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
-            jink->addSubcard(card->getId());
+            jink->addSubcard(card);
             jink->setSkillName(objectName());
             return jink;
         }else if(card->inherits("Jink")){
             Slash *slash = new Slash(card->getSuit(), card->getNumber());
-            slash->addSubcard(card->getId());
+            slash->addSubcard(card);
             slash->setSkillName(objectName());
             return slash;
         }else

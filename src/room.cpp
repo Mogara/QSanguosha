@@ -1316,6 +1316,16 @@ void Room::loseHp(ServerPlayer *victim, int lose){
     }
 }
 
+void Room::loseMaxHp(ServerPlayer *victim, int lose){
+    victim->setMaxHP(qMax(victim->getMaxHP() - lose, 0));
+
+    broadcastProperty(victim, "maxhp");
+    broadcastProperty(victim, "hp");
+
+    if(victim->getMaxHP() == 0)
+        killPlayer(victim);
+}
+
 void Room::damage(ServerPlayer *victim, int damage){
     int new_hp = victim->getHp() - damage;
     new_hp = qMax(0, new_hp);

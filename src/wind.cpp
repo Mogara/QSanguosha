@@ -84,7 +84,7 @@ public:
             return NULL;
 
         GuidaoCard *card = new GuidaoCard;
-        card->addSubcard(cards.first()->getCard()->getId());
+        card->addSubcard(cards.first()->getFilteredCard());
 
         return card;
     }
@@ -108,7 +108,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         HuangtianCard *card = new HuangtianCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
     }

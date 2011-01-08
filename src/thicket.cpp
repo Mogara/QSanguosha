@@ -125,11 +125,11 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
+        const Card *card = card_item->getFilteredCard();
 
         SupplyShortage *shortage = new SupplyShortage(card->getSuit(), card->getNumber());
         shortage->setSkillName(objectName());
-        shortage->addSubcard(card->getId());
+        shortage->addSubcard(card);
 
         return shortage;
     }
@@ -783,17 +783,18 @@ public:
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
             room->playSkillEffect(objectName());
+            room->setEmotion(dongzhuo, Room::Bad);
+
+            LogMessage log;
+            log.from = dongzhuo;
             if(result == "hp"){
+                log.type = "#BenghuaiLoseHp";
+                room->sendLog(log);
                 room->loseHp(dongzhuo);
             }else{
-                dongzhuo->setMaxHP(dongzhuo->getMaxHP() - 1);
-                if(dongzhuo->getMaxHP() == 0){
-                    room->killPlayer(dongzhuo);
-                }
-
-                room->broadcastProperty(dongzhuo, "maxhp");
-                room->broadcastProperty(dongzhuo, "hp");
-                room->setEmotion(dongzhuo, Room::Bad);
+                log.type = "#BenghuaiLoseMaxHp";
+                room->sendLog(log);
+                room->loseMaxHp(dongzhuo);
             }
         }
 

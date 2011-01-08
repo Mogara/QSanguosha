@@ -267,7 +267,7 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         ZhiyuanCard *card = new ZhiyuanCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
     }

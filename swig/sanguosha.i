@@ -10,6 +10,7 @@
 
 %include "naturalvar.i"
 %include "native.i"
+%include "qvariant.i"
 
 // ----------------------------------------
 
@@ -212,6 +213,8 @@ public:
     virtual bool isLastHandCard(const Card *card) const; 
 };
 
+extern ClientPlayer *Self;
+
 struct DamageStruct{
     DamageStruct();
 
@@ -350,6 +353,7 @@ public:
     void setSuit(Suit suit);
 
     bool sameColorWith(const Card *other) const;
+	bool isEquipped() const;
 
     QString getPixmapPath() const;
     QString getIconPath() const;
@@ -367,6 +371,7 @@ public:
     virtual bool match(const char *pattern) const;
 
     void addSubcard(int card_id);
+	void addSubcard(const Card *card);
     QList<int> getSubcards() const;
     void clearSubcards();
     QString subcardString() const;
@@ -531,6 +536,7 @@ public:
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
+	void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void damage(ServerPlayer *victim, int damage = 1);
     void recover(ServerPlayer *player, int recover = 1, bool set_emotion = false);
     void playCardEffect(const char *card_name, bool is_male);
@@ -626,5 +632,4 @@ public:
 };
 
 %include "luaskills.i"
-
 

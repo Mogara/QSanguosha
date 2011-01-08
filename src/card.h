@@ -82,6 +82,7 @@ public:
     virtual bool match(const QString &pattern) const;
 
     void addSubcard(int card_id);
+    void addSubcard(const Card *card);
     QList<int> getSubcards() const;
     void clearSubcards();
     QString subcardString() const;

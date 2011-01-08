@@ -89,6 +89,10 @@ Skill::Frequency Skill::getFrequency() const{
     return frequency;
 }
 
+bool Skill::useLightBox() const{
+    return frequency == Limited;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
 {
