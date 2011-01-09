@@ -10,22 +10,8 @@ AI::AI(ServerPlayer *player)
     room = player->getRoom();
 }
 
-AI *AI::CreateAI(ServerPlayer *player){
-    switch(Config.AILevel){
-    case 0: return new TrustAI(player);
-    case 1: return new SmartAI(player);
-    case 2:
-    default:
-        AI *ai = Sanguosha->cloneAI(player);
-        if(ai == NULL)
-            return new SmartAI(player);
-        else
-            return ai;
-    }
-}
-
 AI::Relation AI::relationTo(const ServerPlayer *other) const{
-    static QMap<Player::Role, int> group_map;
+    /*static QMap<Player::Role, int> group_map;
     if(group_map.isEmpty()){
         group_map.insert(Player::Lord, 1);
         group_map.insert(Player::Loyalist, 1);
@@ -46,7 +32,38 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
     else if(room->getTag("GameProcess").toString() == "ZN")
         return Enemy;
     else
-        return Neutrality;
+        return Neutrality;*/
+
+    if(self == other)
+        return Friend;
+
+    typedef QPair<Player::Role, Player::Role> RolePair;
+    static QMap<RolePair, Relation> map;
+    if(map.isEmpty()){
+        map[qMakePair(Player::Lord, Player::Lord)] = Friend;
+        map[qMakePair(Player::Lord, Player::Rebel)] = Enemy;
+        map[qMakePair(Player::Lord, Player::Loyalist)] = Friend;
+        map[qMakePair(Player::Lord, Player::Renegade)] = Neutrality;
+
+        map[qMakePair(Player::Loyalist, Player::Loyalist)] = Friend;
+        map[qMakePair(Player::Loyalist, Player::Lord)] = Friend;
+        map[qMakePair(Player::Loyalist, Player::Rebel)] = Enemy;
+        map[qMakePair(Player::Loyalist, Player::Renegade)] =Neutrality;
+
+        map[qMakePair(Player::Rebel, Player::Rebel)] = Friend;
+        map[qMakePair(Player::Rebel, Player::Lord)] = Enemy;
+        map[qMakePair(Player::Rebel, Player::Loyalist)] = Enemy;
+        map[qMakePair(Player::Rebel, Player::Renegade)] =Neutrality;
+
+        map[qMakePair(Player::Renegade, Player::Lord)] = Neutrality;
+        map[qMakePair(Player::Renegade, Player::Loyalist)] = Neutrality;
+        map[qMakePair(Player::Renegade, Player::Rebel)] = Neutrality;
+        map[qMakePair(Player::Renegade, Player::Renegade)] =Neutrality;
+    }
+
+    RolePair pair(self->getRoleEnum(), other->getRoleEnum());
+
+    return map.value(pair, Neutrality);
 }
 
 bool AI::isFriend(const ServerPlayer *other) const{
@@ -242,13 +259,13 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
     return NULL;
 }
 
-SmartAI::SmartAI(ServerPlayer *player, bool always_invoke)
-    :TrustAI(player), always_invoke(always_invoke)
+LuaAI::LuaAI(ServerPlayer *player)
+    :TrustAI(player), callback(0)
 {
 
 }
 
-const Card *SmartAI::askForCardShow(ServerPlayer *requestor) {
+const Card *LuaAI::askForCardShow(ServerPlayer *requestor) {
     QList<const Card *> cards = requestor->getHandcards();
     Card::Suit lack = Card::NoSuit;
     int i;
@@ -277,32 +294,4 @@ const Card *SmartAI::askForCardShow(ServerPlayer *requestor) {
     }
 
     return TrustAI::askForCardShow(requestor);
-}
-
-bool SmartAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
-    return always_invoke;
-}
-
-void SmartAI::activate(CardUseStruct &card_use) {
-    QList<const Card *> cards = self->getHandcards();
-    foreach(const Card *card, cards){
-        if(card->targetFixed()){
-            if(useCard(card)){
-                card_use.card = card;
-                card_use.from = self;
-
-                return;
-            }
-        }else{
-            useCard(card, card_use);
-        }
-    }
-}
-
-bool SmartAI::useCard(const Card *card){
-    return TrustAI::useCard(card);
-}
-
-void SmartAI::useCard(const Card *card, CardUseStruct &card_use){
-    // dummy;
 }

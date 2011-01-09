@@ -177,6 +177,7 @@ private slots:
     void detachSkill(const QString &skill_name);
 
     void doGuanxing(const QList<int> &card_ids);
+    void clearGuanxing();
     void adjustGuanxing();
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart);

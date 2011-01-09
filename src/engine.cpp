@@ -94,9 +94,20 @@ Engine::Engine()
 
     int error = luaL_dofile(lua, "sanguosha.lua");
     if(error){
-        const char *error_message = lua_tostring(lua, -1);
+        const char *error_message = lua_tostring(lua, -1);        
         QMessageBox::warning(NULL, tr("Lua script error"), error_message);
         exit(1);
+    }
+}
+
+void Engine::loadAIs() const{
+    int error = luaL_dofile(lua, "ai/smart-ai.lua");
+    if(error){
+        const char *error_message = lua_tostring(lua, -1);
+        QMessageBox::warning(NULL, tr("Load AI scripts error"), error_message);
+        exit(1);
+    }else{
+        qDebug("AI scripts load successfully");
     }
 }
 
@@ -246,19 +257,6 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
         return card;
-    }else
-        return NULL;
-}
-
-AI *Engine::cloneAI(ServerPlayer *player) const{
-    QString general_name = player->getGeneralName();
-    general_name[0] = general_name[0].toUpper();
-    QString ai_name = general_name + "AI";
-    const QMetaObject *meta = metaobjects.value(ai_name, NULL);
-    if(meta){
-        QObject *ai_object = meta->newInstance(Q_ARG(ServerPlayer *, player));
-        AI *ai = qobject_cast<AI *>(ai_object);
-        return ai;
     }else
         return NULL;
 }

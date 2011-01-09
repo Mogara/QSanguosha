@@ -1,21 +1,10 @@
-#ifndef AI_H
-#define AI_H
+%{
 
-class Room;
-class ServerPlayer;
+#include "ai.h"
 
-typedef int LuaFunction;
-
-#include "card.h"
-#include "roomthread.h"
-
-#include <QString>
-#include <QObject>
+%}
 
 class AI: public QObject{
-    Q_OBJECT
-    Q_ENUMS(Relation);
-
 public:
     AI(ServerPlayer *player);
 
@@ -24,8 +13,8 @@ public:
     bool isFriend(const ServerPlayer *other) const;
     bool isEnemy(const ServerPlayer *other) const;
 
-    QList<ServerPlayer *> getEnemies() const;
-    QList<ServerPlayer *> getFriends() const;
+    SPlayerList getEnemies() const;
+    SPlayerList getFriends() const;
 
     virtual void activate(CardUseStruct &card_use) = 0;
     virtual Card::Suit askForSuit() = 0;
@@ -40,17 +29,11 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
+    virtual ServerPlayer *askForPlayerChosen(const SPlayerList &targets) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
-
-protected:
-    Room *room;
-    ServerPlayer *self;
 };
 
 class TrustAI: public AI{
-    Q_OBJECT
-
 public:
     TrustAI(ServerPlayer *player);
 
@@ -67,15 +50,13 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
+    virtual ServerPlayer *askForPlayerChosen(const SPlayerList &targets) ;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
 
     virtual bool useCard(const Card *card);
 };
 
 class LuaAI: public TrustAI{
-    Q_OBJECT
-
 public:
     LuaAI(ServerPlayer *player);
 
@@ -86,4 +67,87 @@ public:
     LuaFunction callback;
 };
 
-#endif // AI_H
+%{
+
+bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
+    if(callback == 0)
+        return TrustAI::askForSkillInvoke(skill_name, data);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, skill_name.toAscii());
+
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 3, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }else{
+        bool invoke = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        return invoke;
+    }
+
+    return false;
+}
+
+void LuaAI::activate(CardUseStruct &card_use) {
+    if(callback == 0){
+        return TrustAI::activate(card_use);
+    }
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    SWIG_NewPointerObj(L, &card_use, SWIGTYPE_p_CardUseStruct, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }
+}
+
+AI *Room::cloneAI(ServerPlayer *player){
+    bool specialized = false;
+    switch(Config.AILevel){
+    case 0: return new TrustAI(player);
+    case 1: break;
+    case 2: specialized = true; break;
+    }
+
+    lua_getglobal(L, "CloneAI");
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    lua_pushboolean(L, specialized);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        output(error_msg);
+    }else{
+        void *ai_ptr;
+        int result = SWIG_ConvertPtr(L, -1, &ai_ptr, SWIGTYPE_p_AI, 0);
+        lua_pop(L, 1);
+        if(SWIG_IsOK(result)){
+            AI *ai = static_cast<AI *>(ai_ptr);
+            return ai;
+        }
+    }
+
+    return new TrustAI(player);
+}
+
+%}

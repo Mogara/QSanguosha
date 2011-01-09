@@ -311,7 +311,6 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(smart);
 
         smart->setChecked(true);
-        ai_box->setEnabled(false);
     }
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -442,6 +441,9 @@ Server::Server(QObject *parent)
 }
 
 bool Server::listen(){
+    // the server side will load the AI module
+    Sanguosha->loadAIs();
+
     return server->listen();
 }
 

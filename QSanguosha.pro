@@ -47,7 +47,6 @@ SOURCES += src/main.cpp \
     src/configdialog.cpp \
     src/clientlogbox.cpp \
     src/ai.cpp \
-    src/standard-ai.cpp \
     src/aux-skills.cpp \
     src/choosegeneraldialog.cpp \
     src/nativesocket.cpp \
@@ -109,7 +108,6 @@ HEADERS += src/mainwindow.h \
     src/configdialog.h \
     src/clientlogbox.h \
     src/ai.h \
-    src/standard-ai.h \
     src/aux-skills.h \
     src/choosegeneraldialog.h \
     src/socket.h \

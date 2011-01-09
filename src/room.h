@@ -202,6 +202,7 @@ private:
 
     static QString generatePlayerName();
     void prepareForStart();
+    AI *cloneAI(ServerPlayer *player);
 
 private slots:
     void reportDisconnection();

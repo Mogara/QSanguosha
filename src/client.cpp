@@ -1212,10 +1212,13 @@ void Client::detachSkill(const QString &skill_name){
 }
 
 void Client::doGuanxing(const QString &guanxing_str){
-    QStringList cards = guanxing_str.split("+");
     QList<int> card_ids;
-    foreach(QString card, cards)
-        card_ids << card.toInt();
+    if(guanxing_str != "."){
+        QStringList cards = guanxing_str.split("+");
+
+        foreach(QString card, cards)
+            card_ids << card.toInt();
+    }
 
     emit guanxing(card_ids);
     setStatus(AskForGuanxing);

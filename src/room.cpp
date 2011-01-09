@@ -1461,7 +1461,7 @@ void Room::startGame(){
         broadcastProperty(player, "hp");
 
         // setup AI
-        player->setAIByGeneral();
+        player->setAI(cloneAI(player));
     }
 
     broadcastInvoke("startGame");
@@ -1729,6 +1729,7 @@ void Room::setEmotion(ServerPlayer *target, TargetType type){
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     AI *ai = player->getAI();
     if(ai){
+        thread->delay(800);
         ai->activate(card_use);
     }else{
         broadcastInvoke("activate", player->objectName());
@@ -1902,6 +1903,7 @@ void Room::doGuanxing(ServerPlayer *zhuge){
     getResult("replyGuanxingCommand", zhuge);
 
     if(result.isEmpty()){
+        zhuge->invoke("doGuanxing");
         foreach(int card_id, cards)
             draw_pile->prepend(card_id);
         return;

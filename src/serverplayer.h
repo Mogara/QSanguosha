@@ -45,7 +45,6 @@ public:
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);
 
-    void setAIByGeneral();
     void setAI(AI *ai);
     AI *getAI() const;
 

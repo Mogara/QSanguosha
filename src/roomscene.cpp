@@ -1587,22 +1587,14 @@ void RoomScene::doOkButton(){
 
     case Client::AskForGuanxing:{
             QList<int> up_cards, down_cards;
-            foreach(CardItem *card_item, up_items){
+            foreach(CardItem *card_item, up_items)
                 up_cards << card_item->getCard()->getId();
-                removeItem(card_item);
-                delete card_item;
-            }
 
-            foreach(CardItem *card_item, down_items){
+            foreach(CardItem *card_item, down_items)
                 down_cards << card_item->getCard()->getId();
-                removeItem(card_item);
-                delete card_item;
-            }
-
-            up_items.clear();
-            down_items.clear();
 
             ClientInstance->replyGuanxing(up_cards, down_cards);
+            clearGuanxing();
 
             break;
         }
@@ -1618,6 +1610,18 @@ void RoomScene::doOkButton(){
     const ViewAsSkill *skill = dashboard->currentSkill();
     if(skill)
         dashboard->stopPending();
+}
+
+void RoomScene::clearGuanxing()
+{
+    foreach(CardItem *card_item, up_items)
+        delete card_item;
+
+    foreach(CardItem *card_item, down_items)
+        delete card_item;
+
+    up_items.clear();
+    down_items.clear();
 }
 
 void RoomScene::clearGongxinCards(){
@@ -2134,6 +2138,11 @@ void RoomScene::detachSkill(const QString &skill_name){
 }
 
 void RoomScene::doGuanxing(const QList<int> &card_ids){
+    if(card_ids.isEmpty()){
+        clearGuanxing();
+        return;
+    }
+
     up_items.clear();
     foreach(int card_id, card_ids){
         GuanxingCardItem *card_item = new GuanxingCardItem(Sanguosha->getCard(card_id));

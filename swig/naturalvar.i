@@ -61,7 +61,6 @@ SWIG_arg++;
 
 //-----------------------------------------
 
-// binding of QString to lua basic type string
 %naturalvar QList<int>;
 
 %typemap(in, checkfn="lua_istable") QList<int>
@@ -91,3 +90,5 @@ for(i=0; i<$1.length(); i++){
 
 SWIG_arg++;
 %}
+
+

@@ -334,7 +334,6 @@ StandardPackage::StandardPackage()
 {
     addCards();
     addGenerals();
-    addAIs();
 }
 
 ADD_PACKAGE(Standard)

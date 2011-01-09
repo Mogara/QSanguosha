@@ -13,7 +13,6 @@ public:
     StandardPackage();
     void addCards();
     void addGenerals();
-    void addAIs();
 };
 
 class BasicCard:public Card{

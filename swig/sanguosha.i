@@ -6,11 +6,32 @@
 
 #include <QDir>
 
+typedef QList<const Card *> CardList;
+typedef QList<ServerPlayer *> SPlayerList;
+
 %}
 
 %include "naturalvar.i"
 %include "native.i"
 %include "qvariant.i"
+
+class CardList{
+public:
+	CardList();
+	~CardList();
+	int length() const;
+	const Card *at(int i) const;
+	void append(const Card *card);
+};
+
+class SPlayerList{
+public:
+	SPlayerList();
+	~SPlayerList();
+	int length() const;
+	ServerPlayer *at(int i) const;
+	void append(ServerPlayer *player);
+};
 
 // ----------------------------------------
 
@@ -142,7 +163,7 @@ public:
     const Armor *getArmor() const;
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
-    QList<const Card *> getEquips() const;
+    CardList getEquips() const;
 
     bool hasWeapon(const char *weapon_name) const;
     bool hasArmorEffect(const char *armor_name) const;
@@ -185,8 +206,8 @@ public:
     bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
-    QList<const Card *> getHandcards() const;
-    QList<const Card *> getCards(const char *flags) const;
+    CardList getHandcards() const;
+    CardList getCards(const char *flags) const;
     DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
@@ -263,7 +284,7 @@ struct CardUseStruct{
 
     const Card *card;
     ServerPlayer *from;
-    QList<ServerPlayer *> to;
+    SPlayerList to;
 };
 
 struct CardMoveStruct{
@@ -395,7 +416,7 @@ public:
     bool isOnce() const;
 
     // FIXME: should be pure virtual
-    virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source,  const SPlayerList &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
@@ -433,7 +454,6 @@ public:
     QStringList getBanPackages() const;
     Card *cloneCard(const char *name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const char *name) const;
-    AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
@@ -514,9 +534,9 @@ public:
     void playSkillEffect(const char *skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
-    QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
-    QList<ServerPlayer *> getAllPlayers() const;
-    QList<ServerPlayer *> getAlivePlayers() const;
+    SPlayerList getOtherPlayers(ServerPlayer *except) const;
+    SPlayerList getAllPlayers() const;
+    SPlayerList getAlivePlayers() const;
     void nextPlayer();
     void output(const char *message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
@@ -550,7 +570,7 @@ public:
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
-    QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
+    SPlayerList getLieges(const char *kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id);   
     void getResult(const char *reply_func, ServerPlayer *reply_player, bool move_focus = true);
@@ -621,9 +641,9 @@ public:
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const char *ask_str);    
-    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
+    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const SPlayerList &targets);
 
-    void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
+    void askForPeaches(const DyingStruct &dying, const SPlayerList &players);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 
@@ -632,4 +652,4 @@ public:
 };
 
 %include "luaskills.i"
-
+%include "ai.i"

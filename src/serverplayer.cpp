@@ -336,13 +336,6 @@ void ServerPlayer::loseMark(const QString &mark, int n){
     room->setPlayerMark(this, mark, value);
 }
 
-void ServerPlayer::setAIByGeneral(){
-    if(getGeneral()){
-        delete ai;
-        ai = AI::CreateAI(this);
-    }
-}
-
 void ServerPlayer::setAI(AI *ai) {
     this->ai = ai;
 }

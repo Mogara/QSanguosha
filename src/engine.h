@@ -29,6 +29,7 @@ public:
     void addTranslationEntry(const char *key, const char *value);
     QString translate(const QString &to_translate) const;
 
+    void loadAIs() const;
     lua_State *createLuaThread() const;
     lua_State *getLuaState() const;
 
@@ -37,7 +38,6 @@ public:
     QStringList getBanPackages() const;
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name) const;
-    AI *cloneAI(ServerPlayer *player) const;
     QString getVersion() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
