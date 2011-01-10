@@ -42,6 +42,7 @@ public:
     virtual const Card *askForPindian() = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
 
 protected:
     Room *room;
@@ -69,6 +70,7 @@ public:
     virtual const Card *askForPindian() ;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
 
     virtual bool useCard(const Card *card);
 };
@@ -82,6 +84,8 @@ public:
     virtual const Card *askForCardShow(ServerPlayer *requestor);
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
+    virtual QString askForUseCard(const QString &pattern, const QString &prompt);
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
 
     LuaFunction callback;
 };

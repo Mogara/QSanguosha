@@ -157,6 +157,7 @@ public:
     void surrenderCommand(ServerPlayer *player, const QString &);
     void commonCommand(ServerPlayer *player, const QString &arg);
     void signupCommand(ServerPlayer *player, const QString &arg);
+    void addRobotCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
     void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
@@ -168,6 +169,7 @@ protected:
 private:
     QString mode;
     QList<ServerPlayer*> players, alive_players;
+    ServerPlayer *owner;
     int player_count;
     ServerPlayer *current;
     ServerPlayer *reply_player;
@@ -203,6 +205,7 @@ private:
     static QString generatePlayerName();
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);
+    void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
 
 private slots:
     void reportDisconnection();

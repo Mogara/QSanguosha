@@ -6,7 +6,7 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), general2(NULL),
+    :QObject(parent), owner(false), general(NULL), general2(NULL),
     hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
@@ -24,6 +24,17 @@ void Player::setScreenName(const QString &screen_name){
 
 QString Player::screenName() const{
     return screen_name;
+}
+
+bool Player::isOwner() const{
+    return owner;
+}
+
+void Player::setOwner(bool owner){
+    if(this->owner != owner){
+        this->owner = owner;
+        emit owner_changed(owner);
+    }
 }
 
 void Player::setHp(int hp){

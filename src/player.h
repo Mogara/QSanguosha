@@ -35,6 +35,7 @@ class Player : public QObject
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
+    Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
 
     // distance related properties
     Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
@@ -72,6 +73,9 @@ public:
     void setMaxHP(int max_hp);    
     int getLostHp() const;
     bool isWounded() const;
+
+    bool isOwner() const;
+    void setOwner(bool owner);
 
     int getMaxCards() const;    
     int getXueyi() const;
@@ -180,6 +184,7 @@ protected:
 
 private:    
     QString screen_name;
+    bool owner;
     const General *general, *general2;
     int hp, max_hp, xueyi;
     QString kingdom;
@@ -211,6 +216,7 @@ signals:
     void turn_started();
     void kingdom_changed();
     void phase_changed();
+    void owner_changed(bool owner);
 };
 
 #endif // PLAYER_H

@@ -121,7 +121,7 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
         CardStar card = data.value<CardStar>();
         Room *room = guojia->getRoom();
-        if(room->askForSkillInvoke(guojia, "tiandu")){
+        if(guojia->askForSkillInvoke(objectName(), data)){
             if(card->objectName() == "shit"){
                 QString result = room->askForChoice(guojia, objectName(), "yes+no");
                 if(result == "no")

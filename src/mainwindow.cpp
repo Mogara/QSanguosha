@@ -438,8 +438,6 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    //QMessageBox::information(this, tr("Role assign table"), content);
-
     Window *window = new Window(tr("Role assign table"), QSize(232, 342));
     scene->addItem(window);
 
@@ -455,3 +453,4 @@ void MainWindow::on_actionScenario_Overview_triggered()
     ScenarioOverview *dialog = new ScenarioOverview(this);
     dialog->show();
 }
+

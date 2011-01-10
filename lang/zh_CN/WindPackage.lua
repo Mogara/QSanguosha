@@ -46,6 +46,8 @@ return {
 	[":huangtian"] = "主公技，群雄角色可在他们各自的回合里给你一张【闪】或【闪电】", 
 	["liegong:yes"] = "此【杀】不可闪避", 
 	
+	["#KuangguRecover"] = "%from 的锁定技【狂骨】被触发，恢复了 %arg 点体力",
+	
 	-- last words
 	["~caoren"] = "实在是守不住了……",
 	["~xiahouyuan"] = "竟然比我还……快……",

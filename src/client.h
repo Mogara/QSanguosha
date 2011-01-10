@@ -150,6 +150,7 @@ public slots:
     void choosePlayer(const ClientPlayer *player);
     void trust();
     void requestCard(int card_id);
+    void addRobot();
 
 private:
     ClientSocket *socket;

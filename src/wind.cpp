@@ -318,6 +318,13 @@ public:
 
             if(player->distanceTo(damage.to) <= 1){
                 Room *room = player->getRoom();
+
+                LogMessage log;
+                log.type = "#KuangguRecover";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                room->sendLog(log);
+
                 room->recover(player, damage.damage);
             }
         }

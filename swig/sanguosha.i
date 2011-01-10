@@ -14,24 +14,7 @@ typedef QList<ServerPlayer *> SPlayerList;
 %include "naturalvar.i"
 %include "native.i"
 %include "qvariant.i"
-
-class CardList{
-public:
-	CardList();
-	~CardList();
-	int length() const;
-	const Card *at(int i) const;
-	void append(const Card *card);
-};
-
-class SPlayerList{
-public:
-	SPlayerList();
-	~SPlayerList();
-	int length() const;
-	ServerPlayer *at(int i) const;
-	void append(ServerPlayer *player);
-};
+%include "list.i"
 
 // ----------------------------------------
 
@@ -652,4 +635,6 @@ public:
 };
 
 %include "luaskills.i"
+%include "card.i"
 %include "ai.i"
+

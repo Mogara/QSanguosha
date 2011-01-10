@@ -4,6 +4,14 @@
 #include "standard.h"
 #include "settings.h"
 
+extern "C"{
+
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
+}
+
 AI::AI(ServerPlayer *player)
     :self(player)
 {
@@ -248,14 +256,21 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets) 
 }
 
 const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
-    if(dying == self){
+    if(isFriend(dying)){
         QList<const Card *> cards = self->getHandcards();
         foreach(const Card *card, cards){
-            if(card->inherits("Peach") || card->inherits("Analeptic"))
+            if(card->inherits("Peach"))
+                return card;
+
+            if(card->inherits("Analeptic") && dying == self)
                 return card;
         }
     }
 
+    return NULL;
+}
+
+ServerPlayer *TrustAI::askForYiji(const QList<int> &, int &){
     return NULL;
 }
 
@@ -294,4 +309,31 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor) {
     }
 
     return TrustAI::askForCardShow(requestor);
+}
+
+QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
+    if(callback == 0)
+        return TrustAI::askForUseCard(pattern, prompt);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, pattern.toAscii());
+
+    lua_pushstring(L, prompt.toAscii());
+
+    int error = lua_pcall(L, 3, 1, 0);
+    const char *result = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    if(error){
+        const char *error_msg = result;
+        room->output(error_msg);
+        return ".";
+    }
+
+    return result;
 }

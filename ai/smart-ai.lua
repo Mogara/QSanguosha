@@ -53,8 +53,79 @@ function SmartAI:isNeutrality(other)
 end
 
 function SmartAI:askForSkillInvoke(skill_name, data)
-	if skill_name == "jianxiong" then
+	local skill = sgs.Sanguosha:getSkill(skill_name)
+	if skill:getFrequency() == sgs.Skill_Frequent then
 		return true
+	end
+end
+
+function SmartAI:askForYiji(card_ids)
+	return nil, 0
+end
+
+function SmartAI:askForUseCard(pattern, prompt)
+	return "."
+end
+
+function SmartAI:slashIsEffective(slash, to)
+	local weapon = self.player:getWeapon()
+	if weapon and weapon:objectName() == "qinggang_sword" then
+		return true
+	end
+	
+	local armor = to:getArmor()
+	if armor then
+		if armor:objectName() == "renwang_shield" then
+			return not slash:isBlack()
+		elseif armor:inherits("Vine") then
+			if slash:inherits("NatureSlash") then
+				return true
+			elseif weapon and weapon:inherits("Fan") then
+				return true
+			else
+				return false
+			end
+		end		
+	end
+	
+	return true
+end
+
+function SmartAI:slashHit(slash, to)
+	
+end
+
+function SmartAI:useBasicCard(card, use)
+	if card:inherits("Slash") then
+		local enemies = self.lua_ai:getEnemies()
+		enemies:sortByHp()
+		for j=0, enemies:length()-1 do
+			local enemy = enemies:at(j)			
+			if self.player:canSlash(enemy, true) and
+				self:slashIsEffective(card, enemy) then
+				use.card = card
+				local to = sgs.SPlayerList()
+				to:append(enemy)
+				use.to = to
+				return
+			end
+		end
+	elseif card:inherits("Peach") and self.player:isWounded() then
+		use.card = card		
+	end
+end
+
+function SmartAI:useTrickCard(card, use)
+	if card:inherits("ExNihilo") then
+		use.card = card
+	elseif card:inherits("Collateral") then
+	
+	end
+end
+
+function SmartAI:useEquipCard(card, use)
+	if self.lua_ai:useCard(card) then
+		use.card = card
 	end
 end
 
@@ -62,18 +133,16 @@ function SmartAI:activate(use)
 	local cards = self.player:getHandcards()
 	for i=0, cards:length()-1 do
 		local card = cards:at(i)
+		local type = card:getTypeId()
 		
-		if card:inherits("Slash") then
-			local enemies = self.lua_ai:getEnemies()
-			for j=0, enemies:length()-1 do
-				local enemy = enemies:at(j)
-				if self.player:canSlash(enemy, true) then
-					use.card = card
-					use.from = self.player
-					use.to:append(enemy)
-					return
-				end
-			end
+		if type == sgs.Card_Basic then
+			self:useBasicCard(card, use)
+		elseif type == sgs.Card_Trick then
+			self:useTrickCard(card, use)
+		else
+			self:useEquipCard(card, use)
 		end
 	end
 end
+
+dofile("ai/standard-ai.lua")

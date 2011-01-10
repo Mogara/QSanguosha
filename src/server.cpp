@@ -254,8 +254,6 @@ QLayout *ServerDialog::createRight(){
 
         layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
 
-
-        /*
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
         BanPairDialog *banpair_dialog = new BanPairDialog(this);
         connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
@@ -264,7 +262,7 @@ QLayout *ServerDialog::createRight(){
 
 
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
-        */
+
 
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);

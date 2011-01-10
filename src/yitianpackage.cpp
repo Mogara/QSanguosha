@@ -856,6 +856,147 @@ public:
     }
 };
 
+class WulingExEffect: public TriggerSkill{
+public:
+    WulingExEffect():TriggerSkill("#wuling-ex-effect"){
+        events << CardEffected << Predamaged;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
+        if(xuandi == NULL)
+            return false;
+
+        QString wuling = xuandi->tag.value("wuling").toString();
+        if(event == CardEffected && wuling == "water"){
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if(effect.card && effect.card->inherits("Peach")){
+                room->recover(player);
+
+                LogMessage log;
+                log.type = "#WulingWater";
+                log.from = player;
+                room->sendLog(log);
+            }
+        }else if(event == Predamaged && wuling == "earth"){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature != DamageStruct::Normal && damage.damage > 1){
+                damage.damage = 1;
+                data = QVariant::fromValue(damage);
+
+                LogMessage log;
+                log.type = "#WulingEarth";
+                log.from = player;
+                room->sendLog(log);
+            }
+        }
+
+        return false;
+    }
+};
+
+class WulingEffect: public TriggerSkill{
+public:
+    WulingEffect():TriggerSkill("#wuling-effect"){
+        events << Predamage;
+    }
+
+    virtual int getPriority() const{
+        return 2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
+        if(xuandi == NULL)
+            return false;
+
+        QString wuling = xuandi->tag.value("wuling").toString();
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if(wuling == "wind"){
+            if(damage.nature == DamageStruct::Fire){
+                damage.damage ++;
+                data = QVariant::fromValue(damage);
+
+                LogMessage log;
+                log.type = "#WulingWind";
+                log.from = damage.to;
+                log.arg = QString::number(damage.damage - 1);
+                log.arg2 = QString::number(damage.damage);
+                room->sendLog(log);
+            }
+        }else if(wuling == "thunder"){
+            if(damage.nature == DamageStruct::Thunder){
+                damage.damage ++;
+                data = QVariant::fromValue(damage);
+
+                LogMessage log;
+                log.type = "#WulingThunder";
+                log.from = damage.to;
+                log.arg = QString::number(damage.damage - 1);
+                log.arg2 = QString::number(damage.damage);
+                room->sendLog(log);
+            }
+        }else if(wuling == "fire"){
+            if(damage.nature != DamageStruct::Fire){
+                damage.nature = DamageStruct::Fire;
+                data = QVariant::fromValue(damage);
+
+                LogMessage log;
+                log.type = "#WulingFire";
+                log.from = damage.to;
+                room->sendLog(log);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Wuling: public PhaseChangeSkill{
+public:
+    Wuling():PhaseChangeSkill("wuling"){
+        default_choice = "wind";
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *xuandi) const{
+        static QStringList effects;
+        if(effects.isEmpty()){
+            effects << "wind" << "thunder" << "water" << "fire" << "earth";
+        }
+
+        if(xuandi->getPhase() == Player::Start){
+            QString current = xuandi->tag.value("wuling").toString();
+            QStringList choices;
+            foreach(QString effect, effects){
+                if(effect != current)
+                    choices << effect;
+            }
+
+            Room *room = xuandi->getRoom();
+            QString choice = room->askForChoice(xuandi, objectName(), choices.join("+"));
+            if(!current.isEmpty())
+                xuandi->loseMark("@" + current);
+
+            current = choice;
+            xuandi->gainMark("@" + current);
+            xuandi->tag["wuling"] = choice;
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -888,6 +1029,11 @@ YitianPackage::YitianPackage()
     lukang->addSkill(new Qianxun);
     lukang->addSkill(new Fanji);
     lukang->addSkill(new FanjiGet);
+
+    General *jinxuandi = new General(this, "jinxuandi", "god");
+    jinxuandi->addSkill(new Wuling);
+    jinxuandi->addSkill(new WulingEffect);
+    jinxuandi->addSkill(new WulingExEffect);
 
     General *xiahoujuan = new General(this, "xiahoujuan", "wei", 3, false);
     xiahoujuan->addSkill(new LianliStart);

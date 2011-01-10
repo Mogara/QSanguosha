@@ -58,6 +58,7 @@ private:
     QList<const Card *> handcards;
     Room *room;
     AI *ai;
+    AI *trust_ai;
 
 private slots:
     void getMessage(char *message);

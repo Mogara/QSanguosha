@@ -6,7 +6,7 @@
 #include "settings.h"
 
 ServerPlayer::ServerPlayer(Room *room)
-    : Player(room), socket(NULL), room(room), ai(NULL)
+    : Player(room), socket(NULL), room(room), ai(NULL), trust_ai(new TrustAI(this))
 {
 }
 
@@ -343,6 +343,8 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if(getState() == "online")
         return NULL;
+    else if(getState() == "trust")
+        return trust_ai;
     else
         return ai;
 }

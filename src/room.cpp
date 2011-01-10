@@ -32,7 +32,7 @@ QString LogMessage::toString() const{
 }
 
 Room::Room(QObject *parent, const QString &mode)
-    :QObject(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
+    :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
     special_card(-1), L(Sanguosha->createLuaThread()), thread(NULL), sem(NULL), provided(NULL)
@@ -57,6 +57,7 @@ Room::Room(QObject *parent, const QString &mode)
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
     callbacks["replyNullificationCommand"] = &Room::commonCommand;
 
+    callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
@@ -513,9 +514,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         provided = NULL;
     }else{
         AI *ai = player->getAI();
-        if(ai)
+        if(ai){
+            thread->delay(500);
             card = ai->askForCard(pattern);
-        else{
+        }else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
             getResult("responseCardCommand", player);
 
@@ -906,9 +908,9 @@ void Room::timerEvent(QTimerEvent *event){
             startGame();
         else{
             QStringList lord_list = Sanguosha->getRandomLords();
-            QString default_lord = lord_list.first();
+            QString default_lord = lord_list[qrand() % lord_list.length()];
             ServerPlayer *the_lord = getLord();
-            if(the_lord->getState() == "offline") {
+            if(the_lord->getState() != "online") {
                 chooseCommand(the_lord, default_lord);
             }else{
                 the_lord->setProperty("default_general", default_lord);
@@ -1005,6 +1007,18 @@ void Room::reportDisconnection(){
             sem->release();
         }
     }
+
+    if(player == owner){
+        owner = NULL;
+        foreach(ServerPlayer *p, players){
+            if(p->getState() == "online"){
+                owner = p;
+                p->setOwner(true);
+                broadcastProperty(p, "owner");
+                break;
+            }
+        }
+    }
 }
 
 void Room::trustCommand(ServerPlayer *player, const QString &){
@@ -1060,44 +1074,81 @@ void Room::processRequest(const QString &request){
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
 }
 
-void Room::signupCommand(ServerPlayer *player, const QString &arg){
-    QStringList words = arg.split(":");
-    QString base64 = words[0];
-    QString avatar = words[1];
+void Room::addRobotCommand(ServerPlayer *player, const QString &){
+    if(player != owner)
+        return;
 
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
+    ServerPlayer *robot = new ServerPlayer(this);
+    robot->setState("robot");
 
-    player->setObjectName(generatePlayerName());
-    player->setScreenName(screen_name);
-    player->setProperty("avatar", avatar);
+    players << robot;
 
-    player->invoke("checkVersion", Sanguosha->getVersion());
-    player->invoke("setup", Sanguosha->getSetupString());
+    const QString robot_name = tr("Computer");
+    const QString robot_avatar = "zhangliao";
+    signup(robot, robot_name, robot_avatar, true);
+}
+
+void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
+    player->setObjectName(generatePlayerName());    
+
+    if(!is_robot){
+        player->setProperty("avatar", avatar);
+
+        player->invoke("checkVersion", Sanguosha->getVersion());
+        player->invoke("setup", Sanguosha->getSetupString());
+
+        player->setScreenName(screen_name);
+
+        player->sendProperty("objectName");
+
+        if(owner == NULL){
+            owner = player;
+            player->setOwner(true);
+            broadcastProperty(player, "owner");
+        }
+    }else{
+        player->setProperty("avatar", "zhangliao");
+    }
 
     // introduce the new joined player to existing players except himself
-    player->sendProperty("objectName");
+    QString base64 = screen_name.toUtf8().toBase64();
     broadcastInvoke("addPlayer", QString("%1:%2:%3").arg(player->objectName()).arg(base64).arg(avatar), player);
 
-    // introduce all existing player to the new joined
-    foreach(ServerPlayer *p, players){
-        if(p == player)
-            continue;
+    if(!is_robot){
+        // introduce all existing player to the new joined
+        foreach(ServerPlayer *p, players){
+            if(p == player)
+                continue;
 
-        QString name = p->objectName();
-        QString base64 = p->screenName().toUtf8().toBase64();
-        QString avatar = p->property("avatar").toString();
+            QString name = p->objectName();
+            QString base64 = p->screenName().toUtf8().toBase64();
+            QString avatar = p->property("avatar").toString();
 
-        player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
+            player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
+        }
     }
 
     signup_count ++;
     if(isFull()){
         prepareForStart();
 
+#ifndef QT_NO_DEBUG
+        left_seconds = 1;
+#endif
         broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
+}
+
+void Room::signupCommand(ServerPlayer *player, const QString &arg){
+    QStringList words = arg.split(":");
+    QString base64 = words[0];
+    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QString screen_name = QString::fromUtf8(data);
+
+    QString avatar = words[1];
+
+    signup(player, screen_name, avatar, false);
 }
 
 void Room::assignRoles(){
@@ -1228,7 +1279,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             ServerPlayer *p = players.at(i);
 
             QString default_general = choices.first();
-            if(p->getState() == "offline"){
+            if(p->getState() != "online"){
                 chooseCommand(p, default_general);
             }else{
                 p->setProperty("default_general", default_general);
@@ -1260,7 +1311,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
                 QString default_general2 = choices.first();
                 ServerPlayer *p = players.at(i);
-                if(p->getState() == "offline"){
+                if(p->getState() != "online"){
                     choose2Command(p, default_general2);
                 }else{
                     p->setProperty("default_general2", default_general2);
@@ -1461,7 +1512,8 @@ void Room::startGame(){
         broadcastProperty(player, "hp");
 
         // setup AI
-        player->setAI(cloneAI(player));
+        AI *ai = cloneAI(player);
+        player->setAI(ai);
     }
 
     broadcastInvoke("startGame");
@@ -1505,6 +1557,9 @@ void Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
 }
 
 void Room::drawCards(ServerPlayer *player, int n){
+    if(n <= 0)
+        return;
+
     QStringList cards_str;
 
     int i;
@@ -1730,7 +1785,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     AI *ai = player->getAI();
     if(ai){
         thread->delay(800);
-        ai->activate(card_use);
+        card_use.from = player;
+        ai->activate(card_use);        
     }else{
         broadcastInvoke("activate", player->objectName());
         getResult("useCardCommand", player);
@@ -2105,37 +2161,49 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
     if(cards.isEmpty())
         return false;
 
-    QStringList card_str;
-    foreach(int card_id, cards)
-        card_str << QString::number(card_id);
-
-    guojia->invoke("askForYiji", card_str.join("+"));
-
-    getResult("replyYijiCommand", guojia);
-
-    if(result.isEmpty() || result == ".")
-        return false;
-    else{
-        QRegExp rx("(.+)->(\\w+)");
-        rx.exactMatch(result);
-
-        QStringList texts = rx.capturedTexts();
-        QStringList ids = texts.at(1).split("+");
-        ServerPlayer *who = findChild<ServerPlayer *>(texts.at(2));
-
-        DummyCard *dummy_card = new DummyCard;
-        foreach(QString id, ids){
-            int card_id = id.toInt();
+    AI *ai = guojia->getAI();
+    if(ai){
+        int card_id;
+        ServerPlayer *who = ai->askForYiji(cards, card_id);
+        if(who){
             cards.removeOne(card_id);
-            dummy_card->addSubcard(card_id);
+            who->obtainCard(Sanguosha->getCard(card_id));
+            return true;
+        }else
+            return false;
+    }else{
+        QStringList card_str;
+        foreach(int card_id, cards)
+            card_str << QString::number(card_id);
+
+        guojia->invoke("askForYiji", card_str.join("+"));
+
+        getResult("replyYijiCommand", guojia);
+
+        if(result.isEmpty() || result == ".")
+            return false;
+        else{
+            QRegExp rx("(.+)->(\\w+)");
+            rx.exactMatch(result);
+
+            QStringList texts = rx.capturedTexts();
+            QStringList ids = texts.at(1).split("+");
+            ServerPlayer *who = findChild<ServerPlayer *>(texts.at(2));
+
+            DummyCard *dummy_card = new DummyCard;
+            foreach(QString id, ids){
+                int card_id = id.toInt();
+                cards.removeOne(card_id);
+                dummy_card->addSubcard(card_id);
+            }
+
+            moveCardTo(dummy_card, who, Player::Hand, false);
+            delete dummy_card;
+
+            setEmotion(who, DrawCard);
+
+            return true;
         }
-
-        moveCardTo(dummy_card, who, Player::Hand, false);
-        delete dummy_card;
-
-        setEmotion(who, DrawCard);
-
-        return true;
     }
 }
 

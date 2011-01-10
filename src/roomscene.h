@@ -9,6 +9,7 @@
 #include "clientlogbox.h"
 
 class Window;
+class Button;
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -64,9 +65,9 @@ private:
     QComboBox *role_combobox;
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
-    QMenu *known_cards_menu;
-    //Pixmap *prompt_box;
+    QMenu *known_cards_menu;   
     Window *prompt_box;
+    Button *add_robot;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
     QComboBox *sort_combobox;
@@ -148,6 +149,7 @@ private slots:
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void adjustDashboard();
+    void showOwnerButtons(bool owner);
 
     void clearPile();
     void removeLightBox();

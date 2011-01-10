@@ -8,6 +8,7 @@
 #include "joystick.h"
 #include "irrKlang.h"
 #include "window.h"
+#include "button.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -1696,6 +1697,8 @@ void RoomScene::doDiscardButton(){
 }
 
 void RoomScene::hideAvatars(){
+    add_robot->hide();
+
     foreach(Photo *photo, photos)
         photo->hideAvatar();
 
@@ -2310,6 +2313,18 @@ void RoomScene::createStateItem(){
     text_item->setDocument(ClientInstance->getLinesDoc());
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
+
+    add_robot = new Button(tr("Add robot"));
+    add_robot->setPos(state_item->x() + 10, state_item->y() + state_item->boundingRect().height() + 10);
+    addItem(add_robot);
+    add_robot->hide();
+
+    connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
+    connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
+}
+
+void RoomScene::showOwnerButtons(bool owner){
+    add_robot->setVisible(owner);
 }
 
 void RoomScene::onGameStart(){

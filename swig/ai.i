@@ -1,6 +1,7 @@
 %{
 
 #include "ai.h"
+#include "joypackage.h"
 
 %}
 
@@ -65,6 +66,16 @@ public:
     virtual void activate(CardUseStruct &card_use);
 
     LuaFunction callback;
+};
+
+// for some AI use
+class Shit:public BasicCard{
+public:
+    Shit(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+    virtual void onMove(const CardMoveStruct &move) const;
+
+    static bool HasShit(const Card *card);
 };
 
 %{
@@ -148,6 +159,45 @@ AI *Room::cloneAI(ServerPlayer *player){
     }
 
     return new TrustAI(player);
+}
+
+ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, int &card_id){
+    if(callback == 0)
+        return TrustAI::askForYiji(cards, card_id);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+	lua_createtable(L, cards.length(), 0);
+	int i;
+	for(i=0; i<cards.length(); i++){
+		int elem = cards.at(i);
+		lua_pushnumber(L, elem);
+		lua_rawseti(L, -2, i+1);
+	}
+
+    int error = lua_pcall(L, 2, 2, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return NULL;
+    }
+
+    void *player_ptr;
+    int result = SWIG_ConvertPtr(L, -2, &player_ptr, SWIGTYPE_p_ServerPlayer, 0);
+    int number = lua_tonumber(L, -1);
+    lua_pop(L, 2);
+
+    if(SWIG_IsOK(result)){
+        card_id = number;
+        return static_cast<ServerPlayer *>(player_ptr);
+    }
+
+    return NULL;
 }
 
 %}

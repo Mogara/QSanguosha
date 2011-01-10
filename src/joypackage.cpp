@@ -22,8 +22,13 @@ void Shit::onMove(const CardMoveStruct &move) const{
         DamageStruct damage;
         damage.from = damage.to = from;
         damage.card = this;
-        damage.damage = 1;
-        damage.nature = DamageStruct::Normal;
+
+        switch(getSuit()){
+        case Club: damage.nature = DamageStruct::Thunder; break;
+        case Heart: damage.nature = DamageStruct::Fire; break;
+        default:
+            damage.nature = DamageStruct::Normal;
+        }
 
         from->getRoom()->damage(damage);
     }
