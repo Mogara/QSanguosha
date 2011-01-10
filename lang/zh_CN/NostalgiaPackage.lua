@@ -14,4 +14,10 @@ return {
 	["@moon-spear-slash"] = "银月枪的技能被触发，请打出一张【杀】以攻击", 
 	["@@tianxiang-card"] = "请打出一张红桃或黑桃来转移伤害", 
 	["#HongyanJudge"] = "%from 的锁定技【红颜】触发， 判定牌由黑牌变成了红桃", 
+	
+	["yangxiu"] = "杨修", 
+	["jilei"] = "鸡肋", 
+	["danlao"] = "啖酪", 
+	["$jilei"] = "食之无味，弃之可惜", 
+	["$danlao"] = "一人一口，分而食之", 
 }

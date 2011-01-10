@@ -403,103 +403,6 @@ public:
     }
 };
 
-class JileiClear: public PhaseChangeSkill{
-public:
-    JileiClear():PhaseChangeSkill("#jilei-clear"){
-
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
-            Room *room = target->getRoom();
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            foreach(ServerPlayer *player, players){
-                if(player->hasFlag("jilei")){
-
-                    player->setFlags("-jilei");
-                    player->setFlags("-jileiB");
-                    player->setFlags("-jileiE");
-                    player->setFlags("-jileiT");
-
-                    player->invoke("jilei");
-                }
-            }
-        }
-
-        return false;
-    }
-};
-
-class Jilei: public TriggerSkill{
-public:
-    Jilei():TriggerSkill("jilei"){
-        events << Predamaged;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *yangxiu, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-
-        if(damage.from == NULL)
-           return false;
-
-        Room *room = yangxiu->getRoom();
-        if(room->askForSkillInvoke(yangxiu, objectName(), data)){
-            QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
-            room->playSkillEffect(objectName());
-
-            QString jilei_flag = choice[0].toUpper();
-            damage.from->invoke("jilei", jilei_flag);
-
-            damage.from->setFlags("jilei");
-            damage.from->setFlags("jilei" + jilei_flag);
-
-            LogMessage log;
-            log.type = "#Jilei";
-            log.from = yangxiu;
-            log.to << damage.from;
-            log.arg = choice;
-            room->sendLog(log);
-        }
-
-        return false;
-    }
-};
-
-class Danlao: public TriggerSkill{
-public:
-    Danlao():TriggerSkill("danlao"){
-        events << CardEffected;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-
-        if(effect.multiple && effect.card->inherits("TrickCard")){
-            Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName(), data)){
-                room->playSkillEffect(objectName());
-
-                LogMessage log;
-
-                log.type = "#DanlaoAvoid";
-                log.from = player;
-                log.arg = effect.card->objectName();
-
-                room->sendLog(log);
-
-                player->drawCards(1);
-                return true;
-            }
-        }
-
-        return false;
-    }
-};
-
 class FanjiGet: public TriggerSkill{
 public:
     FanjiGet():TriggerSkill("#fanji-get"){
@@ -1012,11 +915,6 @@ YitianPackage::YitianPackage()
     caochong->addSkill(new Chengxiang);
     caochong->addSkill(new Conghui);
     caochong->addSkill(new Zaoyao);
-
-    General *yangxiu = new General(this, "yangxiu", "wei", 3);
-    yangxiu->addSkill(new Jilei);
-    yangxiu->addSkill(new JileiClear);
-    yangxiu->addSkill(new Danlao);
 
     //General *caozhi = new General(this, "caozhi", "wei", 3);
     //caozhi->addSkill(new Ganzhen);
