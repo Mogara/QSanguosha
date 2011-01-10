@@ -54,7 +54,7 @@ end
 
 function SmartAI:askForSkillInvoke(skill_name, data)
 	local skill = sgs.Sanguosha:getSkill(skill_name)
-	if skill:getFrequency() == sgs.Skill_Frequent then
+	if skill and skill:getFrequency() == sgs.Skill_Frequent then
 		return true
 	end
 end

@@ -10,6 +10,12 @@ ServerPlayer::ServerPlayer(Room *room)
 {
 }
 
+ServerPlayer::~ServerPlayer(){
+    delete socket;
+    delete ai;
+    delete trust_ai;
+}
+
 void ServerPlayer::drawCard(const Card *card){
     handcards << card;
 }
@@ -343,8 +349,12 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if(getState() == "online")
         return NULL;
+
+#ifdef QT_NO_DEBUG
     else if(getState() == "trust")
         return trust_ai;
+#endif
+
     else
         return ai;
 }

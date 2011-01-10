@@ -75,7 +75,7 @@ function guojia_ai:initialize(player)
 end
 
 function guojia_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "yiji"then
+	if skill_name == "yiji" then
 		return true
 	elseif skill_name == "tiandu" then
 		return not sgs.Shit_HashShit(data:toCard())
@@ -84,6 +84,23 @@ function guojia_ai:askForSkillInvoke(skill_name, data)
 	end
 end
 
+-- Xiahou Dun's AI
+
+local xiahoudun_ai = class("XiahoudunAI", SmartAI)
+
+function xiahoudun_ai:initialize(player)
+	super.initialize(self, player)	
+end
+
+function xiahoudun_ai:askForSkillInvoke(skill_name, data)
+	if skill_name == "ganglie" then
+		return not self.lua_ai:isFriend(data:toPlayer())
+	else
+		return super.askForSkillInvoke(self, skill_name, data)
+	end
+end
+
 sgs.ai_classes["caocao"] = caocao_ai
 sgs.ai_classes["zhangliao"] = zhangliao_ai
 sgs.ai_classes["guojia"] = guojia_ai
+sgs.ai_classes["xiahoudun"] = xiahoudun_ai

@@ -16,6 +16,8 @@ class ServerPlayer : public Player
 
 public:
     explicit ServerPlayer(Room *room);
+    ~ServerPlayer();
+
     void setSocket(ClientSocket *socket);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
