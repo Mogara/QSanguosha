@@ -149,7 +149,7 @@ bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets,
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    :TrickCard(suit, number, true), movable(movable)
+    :TrickCard(suit, number, true), callback(NULL), movable(movable)
 {
 }
 
@@ -174,8 +174,9 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     log.arg = effect.card->objectName();
     room->sendLog(log);
 
-    const Card *card = room->getJudgeCard(effect.to);
-    if(judge(card)){
+    Q_ASSERT(callback != NULL);
+
+    if(room->judge(effect.to, callback) == "bad"){
         takeEffect(effect.to);
     }else if(movable){
         onNullified(effect.to);

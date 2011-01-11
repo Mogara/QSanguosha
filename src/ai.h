@@ -32,7 +32,7 @@ public:
     virtual QString askForKingdom() = 0;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) = 0;
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) = 0;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
     virtual const Card *askForCard(const QString &pattern)  = 0;
@@ -43,6 +43,8 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
+
+    virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
 protected:
     Room *room;
@@ -60,7 +62,7 @@ public:
     virtual QString askForKingdom() ;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) ;
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) ;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
     virtual const Card *askForCard(const QString &pattern) ;
@@ -86,6 +88,9 @@ public:
     virtual void activate(CardUseStruct &card_use);
     virtual QString askForUseCard(const QString &pattern, const QString &prompt);
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip);
+
+    virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
     LuaFunction callback;
 };

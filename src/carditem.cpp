@@ -1,6 +1,8 @@
 #include "carditem.h"
 #include "engine.h"
 #include "skill.h"
+#include "clientplayer.h"
+#include "settings.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -88,12 +90,18 @@ const QPixmap &CardItem::getIconPixmap() const{
     return icon_pixmap;
 }
 
+void CardItem::setFrame(const QString &result){
+    QString path = QString("image/system/frame/%1.png").arg(result);
+    QPixmap frame_pixmap(path);
+    if(!frame_pixmap.isNull()){
+        frame->setPixmap(frame_pixmap);
+        frame->show();
+    }
+}
+
 void CardItem::hideFrame(){
     frame->hide();
 }
-
-#include "clientplayer.h"
-#include "settings.h"
 
 static inline bool IsMultilayer(){
     return Self && Self->getHandcardNum() > Config.MaxCards;

@@ -104,6 +104,10 @@ QList<ServerPlayer *> AI::getFriends() const{
     return friends;
 }
 
+void AI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data){
+    // dummy
+}
+
 TrustAI::TrustAI(ServerPlayer *player)
     :AI(player)
 {
@@ -160,7 +164,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &){
     return skill->getDefaultChoice();
 }
 
-QList<int> TrustAI::askForDiscard(int discard_num, bool optional, bool include_equip) {
+QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
     QList<int> to_discard;
 
     if(optional)
@@ -337,3 +341,48 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
 
     return result;
 }
+
+QList<int> LuaAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
+    if(callback == 0)
+        return TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, reason.toAscii());
+
+    lua_pushinteger(L, discard_num);
+
+    lua_pushboolean(L, optional);
+
+    lua_pushboolean(L, include_equip);
+
+    int error = lua_pcall(L, 5, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
+    }
+
+    QList<int> result;
+
+    if(lua_istable(L, -1)){
+        size_t len = lua_objlen(L, -1);
+        size_t i;
+        for(i=0; i<len; i++){
+            lua_rawgeti(L, -1, i+1);
+            result << lua_tointeger(L, -1);
+            lua_pop(L, 1);
+        }
+    }else
+        result = TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
+
+    lua_pop(L, 1);
+
+    return result;
+}
+

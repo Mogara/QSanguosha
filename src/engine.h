@@ -68,6 +68,7 @@ public:
     QStringList getRandomLords() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
+    QString getRandomGeneralName() const;
 
     void playAudio(const QString &name) const;
     void playEffect(const QString &filename) const;

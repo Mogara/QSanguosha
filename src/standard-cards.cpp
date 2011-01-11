@@ -409,6 +409,13 @@ KylinBow::KylinBow(Suit suit, int number)
     skill = new KylinBowSkill;
 }
 
+static QString EightDiagramCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
+
 class EightDiagramSkill: public ArmorSkill{
 public:
     EightDiagramSkill():ArmorSkill("eight_diagram"){
@@ -423,15 +430,13 @@ public:
         QString asked = data.toString();
         if(asked == "jink"){
             Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName())){
-                const Card *card = room->getJudgeCard(player);
-                if(card->isRed()){
+            if(room->askForSkillInvoke(player, objectName())){                
+                QString result = room->judge(player, EightDiagramCallback);
+                if(result == "good"){
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
                     room->setEmotion(player, Room::Good);
-
-                    return true;
                 }else
                     room->setEmotion(player, Room::Bad);
             }
@@ -763,11 +768,20 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(card_id);
 }
 
+static QString IndulgenceCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Heart)
+        return "good";
+    else
+        return "bad";
+}
+
 Indulgence::Indulgence(Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("indulgence");
     target_fixed = false;
+
+    callback = IndulgenceCallback;
 }
 
 bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
@@ -788,14 +802,18 @@ void Indulgence::takeEffect(ServerPlayer *target) const{
     target->getRoom()->skip(Player::Play);
 }
 
-bool Indulgence::judge(const Card *card) const{
-    return card->getSuit() != Card::Heart;
+static QString LightningCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9)
+        return "bad";
+    else
+        return "good";
 }
-
 
 Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
     setObjectName("lightning");
     target_fixed = true;
+
+    callback = LightningCallback;
 }
 
 void Lightning::takeEffect(ServerPlayer *target) const{
@@ -809,10 +827,6 @@ void Lightning::takeEffect(ServerPlayer *target) const{
     damage.nature = DamageStruct::Thunder;
 
     target->getRoom()->damage(damage);
-}
-
-bool Lightning::judge(const Card *card) const{
-    return card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9;
 }
 
 bool Lightning::isAvailable() const{

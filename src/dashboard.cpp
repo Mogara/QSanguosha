@@ -576,6 +576,7 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             CardItem *item = judging_area.at(i);
             if(item->getCard()->getId() == card_id){
                 card_item = item;                
+                card_item->hideFrame();
 
                 judging_area.remove(i);
                 delayed_tricks.remove(i);

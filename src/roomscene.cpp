@@ -37,6 +37,7 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 static const QPointF DiscardedPos(-6, -2);
 static const QPointF DrawPilePos(-102, -2);
+static const QPointF TinyAvatarOffset(44, 87);
 
 RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
@@ -128,6 +129,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
             this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)),
             this, SLOT(doAnimation(QString,QStringList)));
+    connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
@@ -224,6 +226,12 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     js->start();
 
     createStateItem();
+
+    judge_avatar = new QGraphicsPixmapItem;
+    judge_avatar->setPos(DrawPilePos + TinyAvatarOffset);
+    judge_avatar->setZValue(10.0);
+
+    addItem(judge_avatar);
 }
 
 void RoomScene::adjustItems(){
@@ -659,6 +667,8 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     if(src_place == Player::Special){
         card_item = special_card;
+        card_item->hideFrame();
+        judge_avatar->hide();
         special_card = NULL;
         return card_item;
     }
@@ -2053,11 +2063,7 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
         }
 
         QGraphicsPixmapItem *taker_avatar = addPixmap(avatar_pixmap);
-        QRectF rect(to_take->boundingRect());
-        qreal dx = rect.width() - avatar_pixmap.width() - 5;
-        qreal dy = rect.height() - avatar_pixmap.height() - 5;
-        taker_avatar->setPos(to_take->homePos());
-        taker_avatar->moveBy(dx, dy);
+        taker_avatar->setPos(to_take->homePos() + TinyAvatarOffset);
         taker_avatar->setZValue(1.1);
 
         taker_avatars << taker_avatar;
@@ -2325,6 +2331,16 @@ void RoomScene::createStateItem(){
 
 void RoomScene::showOwnerButtons(bool owner){
     add_robot->setVisible(owner);
+}
+
+void RoomScene::showJudgeResult(const QString &who, const QString &result){
+    if(special_card){
+        const ClientPlayer *player = ClientInstance->getPlayer(who);
+        QString path = player->getGeneral()->getPixmapPath("tiny");
+        judge_avatar->setPixmap(QPixmap(path));
+        judge_avatar->show();
+        special_card->setFrame(result);
+    }
 }
 
 void RoomScene::onGameStart(){

@@ -263,7 +263,8 @@ public:
             room->setPlayerMark(target, "shuangxiong", 0);
         }else if(target->getPhase() == Player::Draw){
             if(target->askForSkillInvoke(objectName())){
-                const Card *card = room->getJudgeCard(target);
+                const Card *card;
+                room->judge(target, NULL, &card);
                 target->obtainCard(card);
                 if(card->isRed())
                     room->setPlayerMark(target, "shuangxiong", 1);
@@ -373,6 +374,13 @@ public:
     }
 };
 
+static QString BazhenCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
+
 class Bazhen: public TriggerSkill{
 public:
     Bazhen():TriggerSkill("bazhen"){
@@ -393,8 +401,7 @@ public:
 
         Room *room = wolong->getRoom();
         if(wolong->askForSkillInvoke(objectName())){
-            const Card *card = room->getJudgeCard(wolong);
-            if(card->isRed()){
+            if(room->judge(wolong, BazhenCallback) == "good"){
                 Jink *jink = new Jink(Card::NoSuit, 0);
                 jink->setSkillName(objectName());
                 room->provide(jink);

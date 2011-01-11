@@ -298,10 +298,18 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->broadcastProperty(effect.to, "chained");
 }
 
+static QString SupplyShortageCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Club)
+        return "good";
+    else
+        return "bad";
+}
+
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("supply_shortage");
+    callback = SupplyShortageCallback;
 }
 
 bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -326,10 +334,6 @@ bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, co
 
 void SupplyShortage::takeEffect(ServerPlayer *target) const{
     target->getRoom()->skip(Player::Draw);
-}
-
-bool SupplyShortage::judge(const Card *card) const{
-    return card->getSuit() != Card::Club;
 }
 
 ManeuveringPackage::ManeuveringPackage()

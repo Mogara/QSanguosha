@@ -156,6 +156,7 @@ local t = {
 	["finish"] = "结束", 
 	["online"] = "在线", 
 	["offline"] = "离线", 
+	["robot"] = "电脑",
 	["trust"] = "托管", 
 	["cheat"] = "作弊", 
 	["yes"] = "是", 

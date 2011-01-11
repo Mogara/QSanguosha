@@ -315,18 +315,18 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     bool good = false;
     if(x == 1){
         effect.to->drawCards(1);
-        room->askForDiscard(effect.to, 1, false, true);
+        room->askForDiscard(effect.to, "yinghun", 1, false, true);
         good = true;
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));
-            room->askForDiscard(effect.to, x, false, true);
+            room->askForDiscard(effect.to, "yinghun", x, false, true);
             good = false;
         }else{
             effect.to->drawCards(x);
-            room->askForDiscard(effect.to, 1, false, true);
+            room->askForDiscard(effect.to, "yinghun", 1, false, true);
             good = true;
         }
     }
@@ -531,7 +531,7 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
     int diff = n1 - n2;
     if(diff != 0){
-        room->askForDiscard(source, diff, false, true);
+        room->askForDiscard(source, "dimeng", diff, false, true);
     }
 
     DummyCard *card1 = a->wholeHandCards();
@@ -802,6 +802,13 @@ public:
     }
 };
 
+static QString BaonueCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Spade)
+        return "good";
+    else
+        return "bad";
+}
+
 class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
@@ -824,8 +831,7 @@ public:
         }
 
         if(dongzhuo && dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
-            const Card *card = room->getJudgeCard(player);
-            if(card->getSuit() == Card::Spade){
+            if(room->judge(player, BaonueCallback) == "good"){
                 room->playSkillEffect(objectName());
                 room->recover(dongzhuo);
             }

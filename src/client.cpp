@@ -57,6 +57,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["animate"] = &Client::animate;
     callbacks["setPrompt"] = &Client::setPrompt;
     callbacks["jilei"] = &Client::jilei;
+    callbacks["judgeResult"] = &Client::judgeResult;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -502,6 +503,14 @@ void Client::jilei(const QString &jilei_str){
         jilei_flags.append(jilei_str);
 }
 
+void Client::judgeResult(const QString &result_str){
+    QStringList texts = result_str.split(":");
+    QString who = texts.at(0);
+    QString result = texts.at(1);
+
+    emit judge_result(who, result);
+}
+
 bool Client::isJilei(const Card *card) const{
     if(card->inherits("BasicCard"))
         return jilei_flags.contains("B");
@@ -917,7 +926,7 @@ void Client::updatePileNum(){
     if(skill_title.isEmpty())
         lines_doc->setHtml(pile_str);
     else
-        lines_doc->setHtml(QString("<br/> <b>%1</b>: %2").arg(skill_title).arg(skill_line));
+        lines_doc->setHtml(QString("%1 <br/> <b>%2</b>: %3").arg(pile_str).arg(skill_title).arg(skill_line));
 }
 
 void Client::askForDiscard(const QString &discard_str){

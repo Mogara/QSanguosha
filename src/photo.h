@@ -51,6 +51,7 @@ public slots:
     void refresh();
     void hideEmotion();
     void hideSkillName();
+    void setDrankState(bool drank);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

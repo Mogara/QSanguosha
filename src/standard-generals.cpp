@@ -158,6 +158,13 @@ public:
     }
 };
 
+static QString GanglieCallback(const Card *card, Room *){
+    if(card->getSuit() != Card::Heart)
+        return "good";
+    else
+        return "bad";
+}
+
 class Ganglie:public MasochismSkill{
 public:
     Ganglie():MasochismSkill("ganglie"){
@@ -172,18 +179,17 @@ public:
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
             room->playSkillEffect(objectName());
 
-            const Card *card = room->getJudgeCard(xiahou);
-            if(card->getSuit() != Card::Heart){
-                if(!room->askForDiscard(from, 2, true)){
+            if(room->judge(xiahou, GanglieCallback) == "good"){
+                if(!room->askForDiscard(from, objectName(), 2, true)){
                     DamageStruct damage;
                     damage.from = xiahou;
                     damage.to = from;
 
                     room->setEmotion(xiahou, Room::Good);
                     room->damage(damage);
-                }else
-                    room->setEmotion(xiahou, Room::Bad);
-            }
+                }
+            }else
+                room->setEmotion(xiahou, Room::Bad);
         }
     }
 };
@@ -293,6 +299,13 @@ public:
     }
 };
 
+static QString LuoshenCallback(const Card *card, Room *){
+    if(card->isBlack())
+        return "good";
+    else
+        return "bad";
+}
+
 class Luoshen:public PhaseChangeSkill{
 public:
     Luoshen():PhaseChangeSkill("luoshen"){
@@ -306,8 +319,8 @@ public:
                 if(room->askForSkillInvoke(target, objectName())){
                     room->playSkillEffect(objectName());
 
-                    const Card *card = room->getJudgeCard(target);
-                    if(card->isBlack())
+                    const Card *card;
+                    if(room->judge(target, LuoshenCallback, &card) == "good")
                         target->obtainCard(card);
                     else
                         break;
@@ -525,6 +538,13 @@ public:
     }
 };
 
+static QString TiejiCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
+
 class Tieji:public SlashBuffSkill{
 public:
     Tieji():SlashBuffSkill("tieji"){
@@ -538,8 +558,7 @@ public:
         if(room->askForSkillInvoke(effect.from, "tieji")){
             room->playSkillEffect(objectName());
 
-            const Card *card = room->getJudgeCard(machao);
-            if(card->isRed()){
+            if(room->judge(machao, TiejiCallback) == "good"){
                 room->slashResult(effect, true);
                 return true;
             }

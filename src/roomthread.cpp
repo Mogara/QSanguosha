@@ -152,8 +152,13 @@ void RoomThread::run(){
     }
 }
 
+#include "ai.h"
+
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
+
+    foreach(AI *ai, room->ais)
+        ai->filterEvent(event, target, data);
 
     QList<const TriggerSkill *> skills = skill_table[event];
     QMutableListIterator<const TriggerSkill *> itor(skills);

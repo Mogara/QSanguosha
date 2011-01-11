@@ -25,8 +25,9 @@ BanPair::BanPair(const QString &first, const QString &second)
 
 Q_DECLARE_METATYPE(BanPair);
 
-bool BanPair::isBanned(const BanPair &pair){
-    return BanPairSet.contains(pair);
+bool BanPair::isBanned(const QString &first, const QString &second){
+    BanPair pair(first, second);
+    return BanPairSet.contains(pair);    
 }
 
 void BanPair::loadBanPairs(){
@@ -109,7 +110,7 @@ void BanPairDialog::addPair(){
 
 void BanPairDialog::addPair(const QString &first, const QString &second){
     BanPair pair(first, second);
-    if(!BanPair::isBanned(pair)){
+    if(!BanPairSet.contains(pair)){
         BanPairSet.insert(pair);
         addPairToList(pair);
     }

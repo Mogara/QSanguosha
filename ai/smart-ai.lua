@@ -40,6 +40,10 @@ function SmartAI:relationTo(other)
 	end
 end
 
+function SmartAI:filterEvent(event, player, data)
+	-- do nothing
+end
+
 function SmartAI:isFriend(other)
 	return self.lua_ai:isFriend(other)
 end
@@ -142,6 +146,14 @@ function SmartAI:activate(use)
 		else
 			self:useEquipCard(card, use)
 		end
+	end
+end
+
+function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
+	if optional then
+		return {}
+	else
+		return self.player:forceToDiscard(discard_num, include_equip)
 	end
 end
 

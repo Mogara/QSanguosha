@@ -473,6 +473,10 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
+QString Engine::getRandomGeneralName() const{
+    return generals.keys().at(qrand() % generals.size());
+}
+
 void Engine::playAudio(const QString &name) const{
     playEffect(QString("audio/system/%1.ogg").arg(name));
 }

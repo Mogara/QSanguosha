@@ -20,13 +20,13 @@ public:
     virtual void activate(CardUseStruct &card_use) = 0;
     virtual Card::Suit askForSuit() = 0;
     virtual QString askForKingdom() = 0;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
-    virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) = 0;
-    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
-    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
-    virtual const Card *askForCard(const QString &pattern)  = 0;
-    virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
+    virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) = 0;
+    virtual QString askForChoice(const char *skill_name, const char *choices) = 0;
+    virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) = 0;
+    virtual int askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
+    virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason)  = 0;
+    virtual const Card *askForCard(const char *pattern)  = 0;
+    virtual QString askForUseCard(const char *pattern, const char *prompt)  = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
@@ -41,13 +41,13 @@ public:
     virtual void activate(CardUseStruct &card_use) ;
     virtual Card::Suit askForSuit() ;
     virtual QString askForKingdom() ;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
-    virtual QString askForChoice(const QString &skill_name, const QString &choices);
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) ;
-    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
-    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
-    virtual const Card *askForCard(const QString &pattern) ;
-    virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
+    virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) ;
+    virtual QString askForChoice(const char *skill_name, const char *choices);
+    virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
+    virtual int askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to) ;
+    virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason) ;
+    virtual const Card *askForCard(const char *pattern) ;
+    virtual QString askForUseCard(const char *pattern, const char *prompt) ;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
@@ -62,9 +62,10 @@ public:
     LuaAI(ServerPlayer *player);
 
     virtual const Card *askForCardShow(ServerPlayer *requestor);
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);
+    virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
-
+    virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
+	
     LuaFunction callback;
 };
 
@@ -198,6 +199,30 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, int &card_id){
     }
 
     return NULL;
+}
+
+void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data){
+    if(callback == 0)
+        return;
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushinteger(L, event);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 4, 0, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }
 }
 
 %}

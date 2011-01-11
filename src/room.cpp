@@ -175,15 +175,55 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     thread->trigger(Death, victim, killer_name);
 }
 
-const Card *Room::getJudgeCard(ServerPlayer *player){
-    int card_id = drawCard();
-    moveCardTo(card_id, NULL, Player::Special, true);    
+QString Room::judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr){
+    QString result;
+    const Card *card = getJudgeCard(player, callback, result);
+    if(card_ptr)
+        *card_ptr = card;
+
+    return result;
+}
+
+void Room::judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step){
+    ServerPlayer *player = tag["CurrentJudge"].value<PlayerStar>();
 
     LogMessage log;
-    log.type = "$InitialJudge";
-    log.from = player;
-    log.card_str = QString::number(card_id);
+    switch(step){
+    case 0: {
+            log.type = "$InitialJudge";
+            log.from = player;
+            break;
+        }
+    case 1: {
+            log.type = "$ChangedJudge";
+            log.from = wizard;
+            log.to << player;
+            break;
+        }
+    case 2: {
+            log.type = "$JudgeResult";
+            log.from = player;
+            break;
+        }
+    }
+
+    const Card *card = Sanguosha->getCard(special_card);
+    log.card_str = card->toString();
     sendLog(log);
+
+    if(callback){
+        QString who = player->objectName();
+        QString result = callback(card, this);
+        broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
+    }
+}
+
+const Card *Room::getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result){
+    tag["CurrentJudge"] = QVariant::fromValue(player);
+
+    int card_id = drawCard();
+    moveCardTo(card_id, NULL, Player::Special, true);
+    judgeResult(NULL, callback, 0);
 
     QList<ServerPlayer *> all_players = getAllPlayers();
     foreach(ServerPlayer *p, all_players){
@@ -193,15 +233,8 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 continue;
 
             bool used = askForUseCard(simayi, "@guicai", "@guicai-card");
-
-            if(used){
-                LogMessage log;
-                log.type = "$ChangedJudge";
-                log.from = simayi;
-                log.to << player;
-                log.card_str = QString::number(special_card);
-                sendLog(log);
-            }
+            if(used)
+                judgeResult(simayi, callback, 1);
         }
 
         if(p->hasSkill("guidao")){
@@ -210,31 +243,20 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
                 continue;
 
             bool used = askForUseCard(zhangjiao, "@guidao", "@guidao-card");
-
-            if(used){
-                LogMessage log;
-                log.type = "$ChangedJudge";
-                log.from = zhangjiao;
-                log.to << player;
-                log.card_str = QString::number(special_card);
-                sendLog(log);
-            }
+            if(used)
+                judgeResult(zhangjiao, callback, 1);
         }
     }
 
     card_id = special_card;
-
-    log.type = "$JudgeResult";
-    log.card_str = QString::number(card_id);
-    sendLog(log);
+    judgeResult(NULL, callback, 2);
 
     // judge delay
     thread->delay();
-    throwSpecialCard();
-
-    CardStar card = Sanguosha->getCard(card_id);
+    throwSpecialCard();    
 
     // hongyan special case
+    CardStar card = Sanguosha->getCard(card_id);
     if(player->hasSkill("hongyan") && card->getSuit() == Card::Spade){
         LogMessage log;
         log.type = "#HongyanJudge";
@@ -250,6 +272,9 @@ const Card *Room::getJudgeCard(ServerPlayer *player){
 
     QVariant card_data = QVariant::fromValue(card);
     thread->trigger(JudgeOnEffect, player, card_data);
+
+    if(callback)
+        result = callback(card, this);
 
     return card;
 }
@@ -1078,14 +1103,25 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     if(player != owner)
         return;
 
+    int n = 0;
+    foreach(ServerPlayer *player, players){
+        if(player->getState() == "robot")
+            n ++;
+    }
+
     ServerPlayer *robot = new ServerPlayer(this);
     robot->setState("robot");
 
     players << robot;
 
-    const QString robot_name = tr("Computer");
-    const QString robot_avatar = "zhangliao";
+    const QString robot_name = tr("Computer %1").arg(QChar('A' + n));
+    const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
+
+    QString greeting = tr("Hello, I'm a robot").toUtf8().toBase64();
+    speakCommand(robot, greeting);
+
+    broadcastProperty(robot, "state");
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
@@ -1246,6 +1282,8 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     }
 }
 
+#include "banpairdialog.h"
+
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getGeneral()){
         // the player has chosen player, should ignore it
@@ -1298,19 +1336,30 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
             QSet<QString> exists;
             foreach(ServerPlayer *player, players){
                 exists << player->getGeneralName();
-            }            
-            QStringList general_list = Sanguosha->getRandomGenerals(player_count * choice_count, exists);
+            }
 
-            int i,j;
+            QStringList general_list = Sanguosha->getRandomGenerals(total - exists.size(), exists);
+            int i, j;
             for(i=0; i<player_count; i++){
                 QStringList choices;
-                for(j=0; j<choice_count; j++){
-                    int index = i*choice_count + j;
-                    choices << general_list[index];
+                ServerPlayer *p = players.at(i);
+                for(j=0; j< choice_count; j++){
+                    QString choice;
+                    foreach(QString general, general_list){
+                        if(!BanPair::isBanned(p->getGeneralName(), general)){
+                            choice = general;
+                            break;
+                        }
+                    }
+
+                    if(choice.isNull())
+                        choice = general_list.first();
+
+                    general_list.removeOne(choice);
+                    choices << choice;
                 }
 
                 QString default_general2 = choices.first();
-                ServerPlayer *p = players.at(i);
                 if(p->getState() != "online"){
                     choose2Command(p, default_general2);
                 }else{
@@ -1318,6 +1367,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
                     p->invoke("doChooseGeneral", choices.join("+"));
                 }
             }
+
         }else
             startGame();
     }
@@ -1513,7 +1563,8 @@ void Room::startGame(){
 
         // setup AI
         AI *ai = cloneAI(player);
-        player->setAI(ai);
+        ais << ai;
+        player->setAI(ai);        
     }
 
     broadcastInvoke("startGame");
@@ -1850,13 +1901,12 @@ QString Room::askForKingdom(ServerPlayer *player){
         return result;
 }
 
-bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, bool include_equip){
-    QList<int> to_discard;
-
+bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional, bool include_equip){
     AI *ai = target->getAI();
-    if(ai)
-       to_discard = ai->askForDiscard(discard_num, optional, include_equip);
-    else{
+    QList<int> to_discard;
+    if(ai) {
+        to_discard = ai->askForDiscard(reason, discard_num, optional, include_equip);
+    }else{
         QString ask_str = QString::number(discard_num);
         if(optional)
             ask_str.append("o");
@@ -1867,7 +1917,7 @@ bool Room::askForDiscard(ServerPlayer *target, int discard_num, bool optional, b
         getResult("discardCardsCommand", target);
 
         if(result.isEmpty())
-            return askForDiscard(target, discard_num, optional, include_equip);
+            return askForDiscard(target, reason, discard_num, optional, include_equip);
 
         if(result == "."){
             if(optional)

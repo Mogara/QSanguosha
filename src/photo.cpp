@@ -146,6 +146,13 @@ void Photo::hideSkillName(){
     skill_name_item->hide();
 }
 
+void Photo::setDrankState(bool drank){
+    if(drank)
+        avatar_area->setBrush(QColor(0xFF, 0x00, 0x00, 255 * 0.45));
+    else
+        avatar_area->setBrush(Qt::NoBrush);
+}
+
 void Photo::hideEmotion(){
     emotion_item->hide();
 }
@@ -172,6 +179,7 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
+        connect(player, SIGNAL(drank_changed(bool)), this, SLOT(setDrankState(bool)));
 
         mark_item->setDocument(player->getMarkDoc());
     }

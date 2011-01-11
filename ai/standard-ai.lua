@@ -30,38 +30,26 @@ function zhangliao_ai:initialize(player)
 	super.initialize(self, player)
 end
 
-function zhangliao_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "tuxi" then
-		local enemies = self.lua_ai:getEnemies()
-		local n = 0
-		for i=0, enemies:length()-1 do
-			if enemies:at(i):getHandcardNum() > 0 then
-				n = n + 1
-			end
-		end	
-		
-		return n >= 2
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end	
-end
-
 function zhangliao_ai:askForUseCard(pattern, prompt)
 	if pattern == "@@tuxi" then
 		local enemies = self.lua_ai:getEnemies()
 		enemies:sortByHandcard()
 		
-		local first_index = 0
-		for i=0, enemies:length()-1 do
-			if enemies:at(i):getHandcardNum() > 0 then
+		local first_index
+		for i=0, enemies:length()-2 do
+			if not enemies:at(i):isKongcheng() then
 				first_index = i
 				break;
 			end
 		end
 		
-		local first = enemies:at(first_index)
-		local second = enemies:at(first_index + 1)
-		return "@TuxiCard=.->" .. first:objectName() .. "+" .. second:objectName()
+		if not index then
+			return "."
+		end
+		
+		local first = enemies:at(first_index):objectName()
+		local second = enemies:at(first_index + 1):objectName()
+		return ("@TuxiCard=.->%s+%s"):format(first, second)
 	else
 		return super.askForUseCard(self, pattern, prompt)
 	end

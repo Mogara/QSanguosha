@@ -21,6 +21,8 @@ struct LogMessage{
     QString arg2;
 };
 
+typedef QString (* JudgeCallback)(const Card *card, Room *room);
+
 class Room : public QObject{
     Q_OBJECT
 
@@ -66,7 +68,7 @@ public:
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
-    const Card *getJudgeCard(ServerPlayer *player);
+    QString judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr = NULL);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge);
@@ -135,7 +137,7 @@ public:
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
-    bool askForDiscard(ServerPlayer *target, int discard_num, bool optional = false, bool include_equip = false);
+    bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional = false, bool include_equip = false);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
@@ -182,6 +184,7 @@ private:
     int signup_count;
     int special_card;
     lua_State *L;
+    QList<AI *> ais;
 
     RoomThread *thread;
     QSemaphore *sem;
@@ -206,6 +209,8 @@ private:
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
+    const Card *getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result);
+    void judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step);
 
 private slots:
     void reportDisconnection();

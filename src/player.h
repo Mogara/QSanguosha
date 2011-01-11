@@ -217,6 +217,7 @@ signals:
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);
+    void drank_changed(bool drank);
 };
 
 #endif // PLAYER_H

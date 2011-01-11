@@ -56,6 +56,7 @@ private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
+    QGraphicsPixmapItem *judge_avatar;
     CardItem *special_card;
     bool viewing_discards;
     Dashboard *dashboard;
@@ -150,6 +151,7 @@ private slots:
     void doAnimation(const QString &name, const QStringList &args);
     void adjustDashboard();
     void showOwnerButtons(bool owner);
+    void showJudgeResult(const QString &who, const QString &result);
 
     void clearPile();
     void removeLightBox();

@@ -24,6 +24,7 @@ public:
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
+    void setFrame(const QString &frame);
     void hideFrame();
 
     void select();

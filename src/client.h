@@ -100,7 +100,8 @@ public:
     void animate(const QString &animate_str);
     void setPrompt(const QString &prompt_str);
     void jilei(const QString &jilei_str);
-    bool hasUsed(const QString &card_class);
+    void judgeResult(const QString &result_str);
+    bool hasUsed(const QString &card_class);    
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -206,6 +207,7 @@ signals:
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
     void animated(const QString &name, const QStringList &args);
     void words_spoken(const QString &line);
+    void judge_result(const QString &who, const QString &result);
 
     void game_started();
     void game_over(bool victory, const QList<bool> &result_list);

@@ -10,12 +10,6 @@ ServerPlayer::ServerPlayer(Room *room)
 {
 }
 
-ServerPlayer::~ServerPlayer(){
-    delete socket;
-    delete ai;
-    delete trust_ai;
-}
-
 void ServerPlayer::drawCard(const Card *card){
     handcards << card;
 }

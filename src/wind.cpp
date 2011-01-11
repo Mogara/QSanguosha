@@ -27,13 +27,19 @@ bool LeijiCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     return targets.isEmpty();
 }
 
+static QString LeijiCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Spade)
+        return "bad";
+    else
+        return "good";
+}
+
 void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     room->setEmotion(zhangjiao, Room::Normal);
     room->setEmotion(target, Room::Bad);
 
-    const Card *card = room->getJudgeCard(target);
-    if(card->getSuit() == Card::Spade){
+    if(room->judge(target, LeijiCallback) == "bad"){
         DamageStruct damage;
         damage.card = this;
         damage.damage = 2;

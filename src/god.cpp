@@ -32,6 +32,13 @@ public:
     }
 };
 
+static QString WuhunCallback(const Card *card, Room *){
+    if(card->inherits("Peach") || card->inherits("GodSalvation"))
+        return "good";
+    else
+        return "bad";
+}
+
 class WuhunRevenge: public TriggerSkill{
 public:
     WuhunRevenge():TriggerSkill("#wuhun"){
@@ -76,8 +83,7 @@ public:
         else
             foe = room->askForPlayerChosen(shenguanyu, foes);
 
-        const Card *card = room->getJudgeCard(foe);
-        if(!card->inherits("Peach") && !card->inherits("GodSalvation") && foe != shenguanyu)
+        if(room->judge(foe, WuhunCallback) == "bad" && foe != shenguanyu)
             room->killPlayer(foe);
 
         return false;
@@ -467,7 +473,7 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlay
         if(player->getHandcardNum() <= 4)
             player->throwAllHandCards();
         else
-            room->askForDiscard(player, 4);
+            room->askForDiscard(player, "shenfen", 4);
     }
 
     shenlubu->turnOver();
