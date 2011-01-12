@@ -587,9 +587,23 @@ public:
     }
 };
 
-class Kongcheng: public TriggerSkill{
+class Kongcheng: public ProhibitSkill{
 public:
-    Kongcheng():TriggerSkill("kongcheng"){
+    Kongcheng():ProhibitSkill("kongcheng"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(card->inherits("Slash") || card->inherits("Duel"))
+            return to->isKongcheng();
+        else
+            return false;
+    }
+};
+
+class KongchengEffect: public TriggerSkill{
+public:
+    KongchengEffect():TriggerSkill("#kongcheng-effect"){
         frequency = Compulsory;
 
         events << CardLost;
@@ -597,7 +611,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            player->getRoom()->playSkillEffect(objectName());
+            player->getRoom()->playSkillEffect("kongcheng");
         }
 
         return false;
@@ -1092,6 +1106,7 @@ void StandardPackage::addGenerals(){
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
+    zhugeliang->addSkill(new KongchengEffect);
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);

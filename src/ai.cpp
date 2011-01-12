@@ -133,7 +133,14 @@ bool TrustAI::useCard(const Card *card){
     else if(card->inherits("EquipCard")){
         const EquipCard *equip = qobject_cast<const EquipCard *>(card);
         switch(equip->location()){
-        case EquipCard::WeaponLocation: return !self->getWeapon();
+        case EquipCard::WeaponLocation:{
+                const Weapon *weapon = self->getWeapon();
+                if(weapon == NULL)
+                    return true;
+
+                const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
+                return new_weapon->getRange() > weapon->getRange();
+            }
         case EquipCard::ArmorLocation: return !self->getArmor();
         case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
         case EquipCard::DefensiveHorseLocation: return !self->getDefensiveHorse();
@@ -386,3 +393,52 @@ QList<int> LuaAI::askForDiscard(const QString &reason, int discard_num, bool opt
     return result;
 }
 
+QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, skill_name.toAscii());
+
+    lua_pushstring(L, choices.toAscii());
+
+    int error = lua_pcall(L, 3, 1, 0);
+    const char *result = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if(error){
+        room->output(result);
+
+        return TrustAI::askForChoice(skill_name, choices);
+    }
+
+    return result;
+}
+
+const Card *LuaAI::askForCard(const QString &pattern){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, pattern.toAscii());
+
+    int error = lua_pcall(L, 2, 1, 0);
+    const char *result = lua_tostring(L, -1);
+    lua_pop(L, 1);
+    if(error){
+        room->output(result);
+        return TrustAI::askForCard(pattern);
+    }
+
+    if(result == NULL)
+        return TrustAI::askForCard(pattern);
+
+    return Card::Parse(result);
+}

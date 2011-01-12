@@ -27,6 +27,8 @@ class FreeDiscardSkill: public ViewAsSkill{
 public:
     explicit FreeDiscardSkill(QObject *parent);
 
+    virtual bool isEnabledAtPlay() const;
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const;
 

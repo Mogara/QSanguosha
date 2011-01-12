@@ -225,6 +225,10 @@ Weapon::Weapon(Suit suit, int number, int range)
 {
 }
 
+int Weapon::getRange() const{
+    return range;
+}
+
 QString Weapon::getSubtype() const{
     return "weapon";
 }

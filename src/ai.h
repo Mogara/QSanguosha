@@ -89,6 +89,9 @@ public:
     virtual QString askForUseCard(const QString &pattern, const QString &prompt);
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
     virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip);
+    virtual QString askForChoice(const QString &skill_name, const QString &choices);
+    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
+    virtual const Card *askForCard(const QString &pattern);
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 

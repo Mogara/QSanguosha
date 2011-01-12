@@ -48,6 +48,10 @@ FreeDiscardSkill::FreeDiscardSkill(QObject *parent)
     card = new DummyCard;
 }
 
+bool FreeDiscardSkill::isEnabledAtPlay() const{
+    return true;
+}
+
 bool FreeDiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
     return true;
 }

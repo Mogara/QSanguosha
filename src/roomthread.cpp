@@ -38,7 +38,7 @@ DyingStruct::DyingStruct()
 CardUseStruct::CardUseStruct()
     :card(NULL), from(NULL)
 {
-
+    to.clear();
 }
 
 bool CardUseStruct::isValid() const{

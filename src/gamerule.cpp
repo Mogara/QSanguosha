@@ -26,7 +26,10 @@ int GameRule::getPriority() const{
 void GameRule::onPhaseChange(ServerPlayer *player) const{
     Room *room = player->getRoom();
     switch(player->getPhase()){
-    case Player::Start: break;
+    case Player::Start: {
+            player->setMark("SlashCount", 0);
+            break;
+        }
     case Player::Judge: {
             QStack<const DelayedTrick *> tricks = player->delayedTricks();
             while(!tricks.isEmpty() && player->isAlive()){

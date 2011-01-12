@@ -317,6 +317,8 @@ void Room::gameOver(const QString &winner){
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
+    effect.from->addMark("SlashCount");
+
     QVariant data = QVariant::fromValue(effect);
 
     setEmotion(effect.from, Killer);
@@ -611,9 +613,10 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     int card_id;
 
     AI *ai = player->getAI();
-    if(ai)
+    if(ai){
+        thread->delay(800);
         card_id = ai->askForAG(card_ids, refusable);
-    else{
+    }else{
         player->invoke("askForAG", refusable ? "?" : ".");
         getResult("chooseAGCommand", player);
 
@@ -1101,6 +1104,9 @@ void Room::processRequest(const QString &request){
 
 void Room::addRobotCommand(ServerPlayer *player, const QString &){
     if(player != owner)
+        return;
+
+    if(isFull())
         return;
 
     int n = 0;
@@ -1998,6 +2004,10 @@ ServerPlayer *Room::getLord() const{
 }
 
 void Room::doGuanxing(ServerPlayer *zhuge){
+    // if Zhuge Liang is not online, just return immediately
+    if(zhuge->getState() != "online")
+        return;
+
     int n = qMin(5, alive_players.length());
 
     QList<int> cards = getNCards(n, false);

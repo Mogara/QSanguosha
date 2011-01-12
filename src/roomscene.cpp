@@ -2353,6 +2353,7 @@ void RoomScene::onGameStart(){
 
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
+        skill_buttons << free_discard;
         connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
     }
 

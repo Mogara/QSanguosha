@@ -14,8 +14,8 @@ public:
     bool isFriend(const ServerPlayer *other) const;
     bool isEnemy(const ServerPlayer *other) const;
 
-    SPlayerList getEnemies() const;
-    SPlayerList getFriends() const;
+    QList<ServerPlayer *> getEnemies() const;
+    QList<ServerPlayer *> getFriends() const;
 
     virtual void activate(CardUseStruct &card_use) = 0;
     virtual Card::Suit askForSuit() = 0;
@@ -30,7 +30,7 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
-    virtual ServerPlayer *askForPlayerChosen(const SPlayerList &targets) = 0;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
 };
 
@@ -51,7 +51,7 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
-    virtual ServerPlayer *askForPlayerChosen(const SPlayerList &targets) ;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
 
     virtual bool useCard(const Card *card);
@@ -65,6 +65,8 @@ public:
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
+	virtual QString askForChoice(const char *skill_name, const char *choices);
+    virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason);
 	
     LuaFunction callback;
 };
@@ -224,5 +226,41 @@ void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant
         room->output(error_msg);
     }
 }
+
+int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    SWIG_NewPointerObj(L, who, SWIGTYPE_p_ServerPlayer, 0);
+
+    lua_pushstring(L, flags.toAscii());
+
+    lua_pushstring(L, reason.toAscii());
+
+    int error = lua_pcall(L, 4, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+
+        return TrustAI::askForCardChosen(who, flags, reason);
+    }
+
+    if(lua_isnumber(L, -1)){
+        int result = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        return result;
+    }
+
+    room->output(QString("The result of function %1 should be an integer!").arg(__func__));
+    lua_pop(L, 1);
+    return TrustAI::askForCardChosen(who, flags, reason);
+}
+
 
 %}

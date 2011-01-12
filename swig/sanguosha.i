@@ -6,9 +6,6 @@
 
 #include <QDir>
 
-typedef QList<const Card *> CardList;
-typedef QList<ServerPlayer *> SPlayerList;
-
 %}
 
 %include "naturalvar.i"
@@ -25,6 +22,12 @@ public:
 	bool inherits(const char *class_name);
 	bool setProperty ( const char * name, const QVariant & value);
 	QVariant property ( const char * name ) const;
+};
+
+%extend QObject{
+	const char *className() const{
+		return $self->metaObject()->className();
+	}
 };
 
 class General : public QObject
@@ -146,7 +149,7 @@ public:
     const Armor *getArmor() const;
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
-    CardList getEquips() const;
+    QList<const Card *> getEquips() const;
 
     bool hasWeapon(const char *weapon_name) const;
     bool hasArmorEffect(const char *armor_name) const;
@@ -189,8 +192,8 @@ public:
     bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
-    CardList getHandcards() const;
-    CardList getCards(const char *flags) const;
+    QList<const Card *> getHandcards() const;
+    QList<const Card *> getCards(const char *flags) const;
     DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
@@ -267,7 +270,7 @@ struct CardUseStruct{
 
     const Card *card;
     ServerPlayer *from;
-    SPlayerList to;
+    QList<ServerPlayer *> to;
 };
 
 struct CardMoveStruct{
@@ -399,7 +402,7 @@ public:
     bool isOnce() const;
 
     // FIXME: should be pure virtual
-    virtual void use(Room *room, ServerPlayer *source,  const SPlayerList &targets) const;
+    virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
@@ -517,9 +520,9 @@ public:
     void playSkillEffect(const char *skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
     int alivePlayerCount() const;
-    SPlayerList getOtherPlayers(ServerPlayer *except) const;
-    SPlayerList getAllPlayers() const;
-    SPlayerList getAlivePlayers() const;
+    QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
+    QList<ServerPlayer *> getAllPlayers() const;
+    QList<ServerPlayer *> getAlivePlayers() const;
     void nextPlayer();
     void output(const char *message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
@@ -552,7 +555,7 @@ public:
     int drawCard();   
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
-    SPlayerList getLieges(const char *kingdom, ServerPlayer *lord) const;
+    QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id);   
     void getResult(const char *reply_func, ServerPlayer *reply_player, bool move_focus = true);
@@ -623,9 +626,9 @@ public:
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const char *ask_str);    
-    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const SPlayerList &targets);
+    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
 
-    void askForPeaches(const DyingStruct &dying, const SPlayerList &players);
+    void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
     bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
 

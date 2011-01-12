@@ -221,6 +221,8 @@ class Weapon:public EquipCard{
 
 public:
     Weapon(Suit suit, int number, int range);
+    int getRange() const;
+
     virtual QString getSubtype() const;
 
     virtual Location location() const;
