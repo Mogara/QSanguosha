@@ -163,6 +163,7 @@ function machao_ai:askForSkillInvoke(skill_name, data)
 end
 
 local sunshangxiang_ai = SmartAI:newSubclass "sunshangxiang"
+sunshangxiang_ai:setOnceSkill("jieyin")
 
 function sunshangxiang_ai:activate(use)
 	local cards = self.player:getHandcards()
@@ -184,7 +185,7 @@ function sunshangxiang_ai:activate(use)
 		end
 	end
 
-	if target and self.player:getHandcardNum()>=2 then
+	if not self.jieyin_used and target and self.player:getHandcardNum()>=2 then
 		local cards = self.player:getHandcards()
 		local first = cards:at(0):getEffectiveId()
 		local second = cards:at(1):getEffectiveId()
@@ -192,6 +193,8 @@ function sunshangxiang_ai:activate(use)
 		local card_str = ("@JieyinCard=%d+%d"):format(first, second)
 		use.card = sgs.Card_Parse(card_str)
 		use.to:append(target)
+
+		self.jieyin_used = true
 
 		return
 	end

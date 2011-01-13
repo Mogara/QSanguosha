@@ -611,7 +611,7 @@ end
 
 function SmartAI:setOnceSkill(name)
 	function self:filterEvent(event, player, data)
-		super.filterEvent(event, player, data)
+		super.filterEvent(self, event, player, data)
 		if event == sgs.PhaseChange and player:objectName() == self.player:objectName()
 			and player:getPhase() == sgs.Player_Play then
 			self[name .. "_used"] = false
