@@ -507,6 +507,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     AI *ai = player->getAI();
     if(ai){
+        thread->delay(800);
         card_id = ai->askForCardChosen(who, flags, reason);
     }else{
         player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
@@ -925,6 +926,14 @@ int Room::drawCard(){
     return draw_pile->takeFirst();
 }
 
+const Card *Room::peek(){
+    if(draw_pile->isEmpty())
+        swapPile();
+
+    int card_id = draw_pile->first();
+    return Sanguosha->getCard(card_id);
+}
+
 void Room::timerEvent(QTimerEvent *event){
     if(left_seconds > 0){
         left_seconds --;
@@ -1132,10 +1141,9 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
     player->setObjectName(generatePlayerName());    
+    player->setProperty("avatar", avatar);
 
     if(!is_robot){
-        player->setProperty("avatar", avatar);
-
         player->invoke("checkVersion", Sanguosha->getVersion());
         player->invoke("setup", Sanguosha->getSetupString());
 
@@ -1148,8 +1156,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             player->setOwner(true);
             broadcastProperty(player, "owner");
         }
-    }else{
-        player->setProperty("avatar", "zhangliao");
     }
 
     // introduce the new joined player to existing players except himself

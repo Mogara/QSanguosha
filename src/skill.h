@@ -33,7 +33,6 @@ public:
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
-    virtual bool useLightBox() const;
 
 protected:
     Frequency frequency;

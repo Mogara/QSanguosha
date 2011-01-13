@@ -115,7 +115,11 @@ QString Peach::getEffectPath(bool is_male) const{
 
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    room->recover(source, 1);
+    room->cardEffect(this, source, source);
+}
+
+void Peach::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->recover(effect.to);
 }
 
 bool Peach::isAvailable() const{
@@ -215,12 +219,7 @@ public:
             if(player->hasFlag("drank"))
                 room->setPlayerFlag(player, "-drank");
 
-            CardEffectStruct effect;
-            effect.card = card;
-            effect.from = player;
-            effect.to = effect.to;
-
-            room->cardEffect(effect);
+            room->cardEffect(card, player, effect.to);
         }
 
         return false;

@@ -112,9 +112,7 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
 }
 
 void LuaAI::activate(CardUseStruct &card_use) {
-    if(callback == 0){
-        return TrustAI::activate(card_use);
-    }
+    Q_ASSERT(callback);
 
     lua_State *L = room->getLuaState();
 
@@ -129,6 +127,8 @@ void LuaAI::activate(CardUseStruct &card_use) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
+
+        TrustAI::activate(card_use);
     }
 }
 

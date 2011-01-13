@@ -1,10 +1,6 @@
 -- Menghuo's AI
 
-local menghuo_ai = class("MenghuoAI", SmartAI)
-
-function menghuo_ai:initialize(player)
-	super.initialize(self, player)
-end
+local menghuo_ai = SmartAI:newSubclass "menghuo"
 
 function menghuo_ai:askForSkillInvoke(skill_name, data)
 	if skill_name == "zaiqi" then
@@ -16,11 +12,7 @@ end
 
 -- Sunjian's AI
 
-local sunjian_ai = class("SunjianAI", SmartAI)
-
-function sunjian_ai:initialize(player)
-	super.initialize(self, player)
-end
+local sunjian_ai = SmartAI:newSubclass "sunjian"
 
 function sunjian_ai:askForChoice(skill_name, choices)
 	if skill_name == "yinghun" then
@@ -54,11 +46,7 @@ function sunjian_ai:askForUseCard(pattern, prompt)
 end
 
 -- Dong Zhuo's AI
-local dongzhuo_ai = class("SunjianAI", SmartAI)
-
-function dongzhuo_ai:initialize(player)
-	super.initialize(self, player)
-end
+local dongzhuo_ai = SmartAI:newSubclass "dongzhuo"
 
 function dongzhuo_ai:askForChoice(skill_name, choice)
 	if skill_name == "benghuai" then
@@ -72,6 +60,87 @@ function dongzhuo_ai:askForChoice(skill_name, choice)
 	end
 end
 
-sgs.ai_classes["menghuo"] = menghuo_ai
-sgs.ai_classes["sunjian"] = sunjian_ai
-sgs.ai_classes["dongzhuo"] = dongzhuo_ai
+local caopi_ai = SmartAI:newSubclass "caopi"
+
+function caopi_ai:askForSkillInvoke(skill_name, data)
+	if skill_name == "xingshang" then
+		return true
+	else
+		return super.askForSkillInvoke(self, skill_name, data)
+	end
+end
+
+function caopi_ai:askForUseCard(pattern, prompt)
+	if pattern == "@@fangzhu" then
+		self:sort(self.friends)
+
+		local target
+		for _, friend in ipairs(self.friends) do
+			if not friend:faceUp() then
+				target = friend
+				break
+			end
+
+			if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then
+				target = friend
+				break
+			end
+		end
+
+		if not target then
+			local x = self.player:getLostHp()
+			if x >= 3 then
+				target = self:getOneFriend()
+			else
+				self:sort(self.enemies)
+				for _, enemy in ipairs(self.enemies) do
+					if enemy:faceUp() then
+						target = enemy
+						break
+					end
+				end
+			end
+		end
+
+		if target then
+			return "@FangzhuCard=.->" .. target:objectName()
+		else
+			return "."
+		end
+	else
+		return super.askForUseCard(self, pattern, prompt)
+	end
+end
+
+local xuhuang_ai = SmartAI:newSubclass "xuhuang"
+
+function xuhuang_ai:activate(use)
+	-- find black basic or equip card
+	local cards = self.player:getCards("he")
+	local to_use
+	for i=0, cards:length()-1 do
+		local card = cards:at(i)
+		if card:isBlack() and (card:inherits("BasicCard") or card:inherits("EquipCard")) then
+			to_use = card
+			break
+		end
+	end
+
+	if to_use then
+		local suit = to_use:getSuitString()
+		local number = to_use:getNumberString()
+		local card_id = to_use:getEffectiveId()
+		local card_name = "supply_shortage"
+		local skill_name = "duanliang"
+		local card_str = ("%s:%s[%s:%s]=%d"):format(card_name, skill_name, suit, number, card_id)
+
+		card = sgs.Card_Parse(card_str)
+
+		self:useCardByClassName(card, use)
+		if use:isValid() then
+			return
+		end
+	end
+
+	super.activate(self, use)
+end

@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "settings.h"
+#include "maneuvering.h"
 
 extern "C"{
 
@@ -275,6 +276,29 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
 
             if(card->inherits("Analeptic") && dying == self)
                 return card;
+        }
+
+        if(self->hasSkill("jiuchi") && dying == self){
+            foreach(const Card *card, cards){
+                if(card->getSuit() == Card::Spade){
+                    Analeptic *analeptic = new Analeptic(Card::Spade, card->getNumber());
+                    analeptic->addSubcard(card);
+                    analeptic->setSkillName("jiuchi");
+                    return analeptic;
+                }
+            }
+        }
+
+        if(self->hasSkill("jijiu") && self->getPhase() == Player::NotActive){
+            cards = self->getCards("he");
+            foreach(const Card *card, cards){
+                if(card->isRed()){
+                    Peach *peach = new Peach(card->getSuit(), card->getNumber());
+                    peach->addSubcard(card);
+                    peach->setSkillName("jijiu");
+                    return peach;
+                }
+            }
         }
     }
 

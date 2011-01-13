@@ -184,6 +184,8 @@ bool GreatYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, co
 }
 
 void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    room->broadcastInvoke("animate", "lightbox:$greatyeyan");
+
     shenzhouyu->loseMark("@flame");
     room->throwCard(this);
     room->loseHp(shenzhouyu, 3);
@@ -200,6 +202,8 @@ bool MediumYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, c
 }
 
 void MediumYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    room->broadcastInvoke("animate", "lightbox:$mediumyeyan");
+
     shenzhouyu->loseMark("@flame");
     room->throwCard(this);
     room->loseHp(shenzhouyu, 3);
@@ -222,6 +226,7 @@ bool SmallYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, co
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<ServerPlayer *> &targets) const{
+    room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
 
     foreach(ServerPlayer *target, targets)
@@ -343,15 +348,13 @@ public:
 
     }
 
-    virtual bool useLightBox() const{
-        return true;
-    }
-
     virtual void onDamaged(ServerPlayer *shencc, const DamageStruct &damage) const{
         Room *room = shencc->getRoom();
         int i, x = damage.damage;
         for(i=0; i<x; i++){
             if(shencc->askForSkillInvoke(objectName())){
+                room->broadcastInvoke("animate", "lightbox:$guixin");
+
                 room->playSkillEffect(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);

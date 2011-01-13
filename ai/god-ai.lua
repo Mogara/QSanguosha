@@ -1,8 +1,6 @@
-local shencaocao_ai = class("ShencaocaoAI", SmartAI)
+-- this script file contains the AI classes for gods
 
-function shencaocao_ai:initialize(player)
-	super.initialize(self, player)
-end
+local shencaocao_ai = SmartAI:newSubclass "shencaocao"
 
 function shencaocao_ai:askForSkillInvoke(skill_name, data)
 	if skill_name == "guixin" then
@@ -12,4 +10,3 @@ function shencaocao_ai:askForSkillInvoke(skill_name, data)
 	end
 end
 
-sgs.ai_classes["shencaocao"] = shencaocao_ai

@@ -555,7 +555,7 @@ public:
         ServerPlayer *machao = effect.from;
 
         Room *room = machao->getRoom();
-        if(room->askForSkillInvoke(effect.from, "tieji")){
+        if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue(effect))){
             room->playSkillEffect(objectName());
 
             if(room->judge(machao, TiejiCallback) == "good"){

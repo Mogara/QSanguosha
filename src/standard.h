@@ -321,6 +321,7 @@ public:
     virtual QString getSubtype() const;
     virtual QString getEffectPath(bool is_male) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable() const;
 };
 

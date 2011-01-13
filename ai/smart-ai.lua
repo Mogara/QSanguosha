@@ -150,6 +150,7 @@ end
 sgs.ai_skill_table = {
 	eight_diagram = true,
 	double_sword = true,
+	fan = true,
 }
 
 function SmartAI:askForSkillInvoke(skill_name, data)
@@ -187,7 +188,7 @@ function SmartAI:slashIsEffective(slash, to)
 end
 
 function SmartAI:slashHit(slash, to)
-	
+	return self:getJinkNumber(to) == 0
 end
 
 function SmartAI:slashIsAvailable()
@@ -211,9 +212,7 @@ function SmartAI:useBasicCard(card, use)
 
 				-- fill the card use struct
 				use.card = card
-				local to = sgs.SPlayerList()
-				to:append(enemy)
-				use.to = to
+				use.to:append(enemy)
 
 				return
 			end
@@ -274,7 +273,7 @@ function SmartAI:useCardDismantlement(card, to)
 			return to:containsTrick("indulgence") or to:containsTrick("supply_shortage")
 		end
 	elseif self:isEnemy(to) then
-		return true
+		return not to:isNude()
 	end	
 end
 
@@ -292,9 +291,7 @@ function SmartAI:useCardByClassName(card, use)
 			and use_func(self, card, player) then
 
 			use.card = card
-			local to = sgs.SPlayerList()
-			to:append(player)
-			use.to = to
+			use.to:append(player)
 			
 			return
 		end
@@ -348,6 +345,54 @@ function SmartAI:getSlashNumber(player)
 	return n
 end
 
+function SmartAI:getJinkNumber(player)
+	local n = 0
+	
+	local cards = player:getHandcards()
+	for i=0, cards:length() do
+		local card = cards:at(i)
+		if card:inherits("Jink") then
+			n = n + 1
+		end
+	end
+
+	if player:hasSkill("longdan") then
+		for i=0, cards:length() do
+			local card = cards:at(i)
+			if card:inherits("Slash") then
+				n = n + 1
+			end
+		end
+	elseif player:hasSkill("qingguo") then
+		for i=0, cards:length() do
+			local card = cards:at(i)
+			if card:isBlack() then
+				n = n + 1
+			end
+		end
+	end
+
+	local armor = player:getArmor()
+	if armor and armor:objectName() == "eight_diagram" then
+		local judge_card = self.room:peek()
+		if judge_card:isRed() then
+			n = n + 1
+		end
+	end
+
+	if player:isLord() and player:hasSkill("hujia") then
+		local lieges = self.room:getLieges(player, "wei")
+		for i=0, lieges:length() do
+			local liege = lieges:at(i)
+			if liege:getRole() == "loyalist" then
+				n = n + self:getJinkNumber(liege)
+			end
+		end
+	end
+
+	return n
+end
+
 function SmartAI:useCardDuel(card, to)
 	if self:isEnemy(to) then
 		local n1 = self:getSlashNumber(self.player)
@@ -368,6 +413,8 @@ function SmartAI:useCardSupplyShortage(card, to)
 
 	if self.player:hasSkill("qicai") then
 		return true
+	elseif self.player:hasSkill("duanliang") then
+		return self.player:distanceTo(to) <= 2
 	else
 		return self.player:distanceTo(to) <= 1
 	end
@@ -392,7 +439,6 @@ function SmartAI:useCollateral(card, use)
 				if enemy:canSlash(enemy2) then
 					use.card = card
 					use.from = self.player
-					use.to = sgs.SPlayerList()
 					use.to:append(enemy)
 					use.to:append(enemy2)
 
@@ -420,7 +466,6 @@ function SmartAI:useIronChain(card, use)
 	end
 
 	use.card = card
-	use.to = sgs.SPlayerList()
 
 	if #targets >= 2 then
 		use.to:append(targets[1])
@@ -501,6 +546,10 @@ function SmartAI:activate(use)
 		else
 			self:useEquipCard(card, use)
 		end
+
+		if use:isValid() then
+			return
+		end
 	end
 end
 
@@ -547,7 +596,31 @@ function SmartAI:getOneFriend()
 	end
 end
 
+function SmartAI.newSubclass(theClass, name)
+	local class_name = name:sub(1, 1):upper() .. name:sub(2) .. "AI"
+	local new_class = class(class_name, theClass)	
+	
+	function new_class:initialize(player)
+		super.initialize(self, player)
+	end
+
+	sgs.ai_classes[name] = new_class
+
+	return new_class
+end
+
+function SmartAI:setOnceSkill(name)
+	function self:filterEvent(event, player, data)
+		super.filterEvent(event, player, data)
+		if event == sgs.PhaseChange and player:objectName() == self.player:objectName()
+			and player:getPhase() == sgs.Player_Play then
+			self[name .. "_used"] = false
+		end
+	end
+end
+
 dofile "ai/standard-ai.lua"
+dofile "ai/wind-ai.lua"
 dofile "ai/fire-ai.lua"
 dofile "ai/thicket-ai.lua"
 dofile "ai/god-ai.lua"

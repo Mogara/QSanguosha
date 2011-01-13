@@ -593,6 +593,8 @@ LuanwuCard::LuanwuCard(){
 }
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->broadcastInvoke("animate", "lightbox:$luanwu");
+
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
         if(player->isAlive())

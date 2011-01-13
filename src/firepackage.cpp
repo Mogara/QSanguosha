@@ -293,7 +293,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(!effect.to->isNude()){
             Room *room = pangde->getRoom();
-            if(pangde->askForSkillInvoke(objectName())){
+            if(pangde->askForSkillInvoke(objectName(), data)){
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
                 room->throwCard(to_throw);
             }
@@ -338,7 +338,8 @@ public:
             return false;
 
         Room *room = pangtong->getRoom();
-        if(pangtong->askForSkillInvoke(objectName())){
+        if(pangtong->askForSkillInvoke(objectName(), data)){
+            room->broadcastInvoke("animate", "lightbox:$niepan");
             room->playSkillEffect(objectName());
 
             pangtong->throwAllCards();

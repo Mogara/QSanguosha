@@ -73,7 +73,8 @@ public:
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
-    int drawCard();   
+    int drawCard();
+    const Card *peek();
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
@@ -88,7 +89,7 @@ public:
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
-    void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);
+    void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);    
     lua_State *getLuaState() const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
