@@ -75,7 +75,7 @@ void YitianSword::onMove(const CardMoveStruct &move) const{
         if(!invoke)
             return;
 
-        ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers());
+        ServerPlayer *target = room->askForPlayerChosen(move.from, room->getAllPlayers(), objectName());
         DamageStruct damage;
         damage.from = move.from;
         damage.to = target;
@@ -226,7 +226,7 @@ public:
         QString choice = room->askForChoice(shencc, objectName(), "modify+obtain");
 
         if(choice == "modify"){
-            ServerPlayer *to_modify = room->askForPlayerChosen(shencc, room->getOtherPlayers(shencc));
+            ServerPlayer *to_modify = room->askForPlayerChosen(shencc, room->getOtherPlayers(shencc), objectName());
             QString kingdom = room->askForKingdom(shencc);
             QString old_kingdom = to_modify->getKingdom();
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
@@ -769,6 +769,10 @@ public:
         return -1;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         ServerPlayer *xuandi = room->findPlayerBySkillName(objectName());
@@ -806,7 +810,7 @@ public:
 class WulingEffect: public TriggerSkill{
 public:
     WulingEffect():TriggerSkill("#wuling-effect"){
-        events << Predamage;
+        events << Predamaged;
     }
 
     virtual int getPriority() const{

@@ -40,7 +40,7 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
 
@@ -70,7 +70,7 @@ public:
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
 
@@ -92,6 +92,7 @@ public:
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
     virtual const Card *askForCard(const QString &pattern);
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 

@@ -290,7 +290,15 @@ void MainWindow::on_actionAbout_triggered()
                       "totally written in C++ Qt GUI framework <br />"
                       "My Email: moligaloo@gmail.com <br/>"));
 
-    content.append(tr("Current version: %1 <br/>").arg(Sanguosha->getVersion()));
+    QString config;
+
+#ifdef QT_NO_DEBUG
+    config = "release";
+#else
+    config = "debug";
+#endif
+
+    content.append(tr("Current version: %1 %2<br/>").arg(Sanguosha->getVersion()).arg(config));
 
     const char *date = __DATE__;
     const char *time = __TIME__;

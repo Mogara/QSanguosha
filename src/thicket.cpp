@@ -631,7 +631,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         if(luanwu_targets.length() == 1)
             to_slash = luanwu_targets.first();
         else
-            to_slash = room->askForPlayerChosen(effect.to, luanwu_targets);
+            to_slash = room->askForPlayerChosen(effect.to, luanwu_targets, "luanwu");
         room->cardEffect(slash, effect.to, to_slash);
     }else
         room->loseHp(effect.to);

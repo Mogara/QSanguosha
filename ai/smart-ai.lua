@@ -2,6 +2,7 @@
 
 require "middleclass"
 
+-- initialize the random seed for later use
 math.randomseed(os.time())
 
 -- this table stores all specialized AI classes
@@ -147,18 +148,51 @@ function SmartAI:isNeutrality(other)
 	return self.lua_ai:relationTo(other) == sgs.AI_Neutrality
 end
 
-sgs.ai_skill_table = {
+function SmartAI:getMaxCard(player)
+	player = player or self.player
+
+	if player:isKongcheng() then
+		return nil
+	end
+
+	local cards = player:getHandcards()	
+	local max_card, max_point = nil, 0
+	for i=0, cards:length()-1 do
+		local card = cards:at(i)
+		local point = card:getNumber()
+		if point > max_point then
+			max_point = point
+			max_card = card
+		end
+	end
+
+	return max_card
+end
+
+-- the table that stores whether the skill should be invoked
+sgs.ai_skill_invoke = {
 	eight_diagram = true,
 	double_sword = true,
 	fan = true,
 }
 
+-- some useful ai functions
+function sgs.ai_invoke_if_not_friend(ai, data)
+	return not ai:isFriend(data:toPlayer())
+end
+
+-- used for SmartAI:askForChoice
+sgs.ai_skill_choice = {}
+
 function SmartAI:askForSkillInvoke(skill_name, data)
-	local skill = sgs.Sanguosha:getSkill(skill_name)
-	if skill then
-		return skill:getFrequency() == sgs.Skill_Frequent
+	local invoke = sgs.ai_skill_invoke[skill_name]
+	if type(invoke) == "boolean" then
+		return invoke
+	elseif type(invoke) == "function" then
+		return invoke(self, data)		
 	else
-		return sgs.ai_skill_table[skill_name]
+		local skill = sgs.Sanguosha:getSkill(skill_name)
+		return skill and skill:getFrequency() == sgs.Skill_Frequent
 	end
 end
 
@@ -166,8 +200,16 @@ function SmartAI:askForYiji(card_ids)
 	return nil, 0
 end
 
+-- used for SmartAI:askForUseCard
+sgs.ai_skill_use = {}
+
 function SmartAI:askForUseCard(pattern, prompt)
-	return "."
+	local use_func = sgs.ai_skill_use[pattern]
+	if use_func then
+		return use_func(self, prompt) or "."
+	else
+		return "."
+	end
 end
 
 function SmartAI:slashIsEffective(slash, to)
@@ -559,6 +601,11 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	else
 		return self.player:forceToDiscard(discard_num, include_equip)
 	end
+end
+
+function SmartAI:askForPlayerChosen(targets, reason)	
+	local r = math.random(0, targets:length() - 1)
+	return targets:at(r)
 end
 
 function SmartAI:askForChoice(skill_name, choices)

@@ -81,7 +81,7 @@ public:
         if(foes.length() == 1)
             foe = foes.first();
         else
-            foe = room->askForPlayerChosen(shenguanyu, foes);
+            foe = room->askForPlayerChosen(shenguanyu, foes, "wuhun");
 
         if(room->judge(foe, WuhunCallback) == "bad" && foe != shenguanyu)
             room->killPlayer(foe);

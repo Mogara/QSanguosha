@@ -262,7 +262,7 @@ const Card *TrustAI::askForPindian() {
     return highest;
 }
 
-ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets) {
+ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason){
     int r = qrand() % targets.length();
     return targets.at(r);
 }

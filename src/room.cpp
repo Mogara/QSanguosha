@@ -2124,7 +2124,7 @@ const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
     }
 }
 
-ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets){
+ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason){
     if(targets.isEmpty())
         return NULL;
     else if(targets.length() == 1)
@@ -2132,7 +2132,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 
     AI *ai = player->getAI();
     if(ai)
-        return ai->askForPlayerChosen(targets);
+        return ai->askForPlayerChosen(targets, reason);
 
     QStringList options;
     foreach(ServerPlayer *target, targets)
@@ -2143,7 +2143,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     getResult("choosePlayerCommand", player);
 
     if(result.isEmpty())
-        return askForPlayerChosen(player, targets);
+        return askForPlayerChosen(player, targets, reason);
 
     QString player_name = result;
     if(player_name == ".")

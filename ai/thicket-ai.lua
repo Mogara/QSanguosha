@@ -144,3 +144,30 @@ function xuhuang_ai:activate(use)
 
 	super.activate(self, use)
 end
+
+-- baonue
+sgs.ai_skill_invoke.baonue = function(self, data)
+	return self.player:getRole() == "loyalist"
+end
+
+-- haoshi
+sgs.ai_skill_invoke.haoshi = function(self, data)
+	if self:getHandcardNum() <= 1 then
+		return true
+	end
+
+	local least = 1000
+	local players = self.room:getOtherPlayers(self.player)
+	for i=0, players:length()-1 do
+		least = math.min(players:at(i):getHandcardNum(), least)		
+	end
+
+	self:sort(self.friends)
+	for _, friend in ipairs(self.friends) do
+		if friend:getHandcardNum() == least then
+			return true
+		end
+	end
+
+	return false
+end

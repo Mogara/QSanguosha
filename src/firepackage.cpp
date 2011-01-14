@@ -40,7 +40,7 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
             return;
 
         room->playSkillEffect("#tunlang");
-        ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves);
+        ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu");
 
         DamageStruct damage;
         damage.from = tiger;

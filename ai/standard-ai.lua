@@ -1,84 +1,56 @@
--- the general AI in standard package
 
--- Cao Cao's AI
-local caocao_ai = SmartAI:newSubclass "caocao"
-
-function caocao_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "jianxiong" then
-		return not sgs.Shit_HasShit(data:toCard())
-	elseif skill_name == "hujia" then
-		local cards = self.player:getHandcards()
-		for i=0, cards:length()-1 do
-			if cards:at(i):inherits("Jink") then
-				return false
-			end
-		end
-		return true		
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
+-- jianxiong
+sgs.ai_skill_invoke.jianxiong = function(self, data)
+	return not sgs.Shit_HasShit(data:toCard())
 end
 
--- Zhang Liao's AI
-local zhangliao_ai = SmartAI:newSubclass "zhangliao"
-
-function zhangliao_ai:askForUseCard(pattern, prompt)
-	if pattern == "@@tuxi" then
-		self:sort(self.enemies, "handcard")
-		
-		local first_index
-		for i=1, #self.enemies-1 do
-			if not self.enemies[i]:isKongcheng() then
-				first_index = i
-				break
-			end
+-- hujia
+sgs.ai_skill_invoke.hujia = function(self, data)
+	local cards = self.player:getHandcards()
+	for i=0, cards:length()-1 do
+		if cards:at(i):inherits("Jink") then
+			return false
 		end
-		
-		if not first_index then
-			return "."
-		end
-		
-		local first = self.enemies[first_index]:objectName()
-		local second = self.enemies[first_index + 1]:objectName()
-		return ("@TuxiCard=.->%s+%s"):format(first, second)
-	else
-		return super.askForUseCard(self, pattern, prompt)
 	end
+	return true	
 end
 
--- Guo Jia's AI
-local guojia_ai = SmartAI:newSubclass "guojia"
+-- tuxi
+sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
+	self:sort(self.enemies, "handcard")
+	
+	local first_index
+	for i=1, #self.enemies-1 do
+		if not self.enemies[i]:isKongcheng() then
+			first_index = i
+			break
+		end
+	end
+	
+	if not first_index then
+		return "."
+	end
+	
+	local first = self.enemies[first_index]:objectName()
+	local second = self.enemies[first_index + 1]:objectName()
+	return ("@TuxiCard=.->%s+%s"):format(first, second)
+end
 
-function guojia_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "yiji" then
+-- yiji (frequent)
+
+-- tiandu, same as jianxiong
+sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
+
+-- ganglie
+sgs.ai_skill_invoke.ganglie = function(self, data) return not self:isFriend(data:toPlayer()) end
+
+-- fankui 
+sgs.ai_skill_invoke.fankui = function(self, data) 
+	local target = data:toPlayer()
+	if self:isFriend(target) then
+		return target:hasSkill("xiaoji") and not target:getEquips():isEmpty()
+	else
 		return true
-	elseif skill_name == "tiandu" then
-		return not sgs.Shit_HasShit(data:toCard())
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
-end
-
--- Xiahou Dun's AI
-
-local xiahoudun_ai = SmartAI:newSubclass "xiahoudun"
-
-function xiahoudun_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "ganglie" then
-		return not self:isFriend(data:toPlayer())
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
-end
-
--- Sima Yi's AI
-local simayi_ai = SmartAI:newSubclass "simayi"
-
-function simayi_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "fankui" then
-		return not self:isFriend(data:toPlayer())
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
 	end
 end
 
@@ -150,16 +122,10 @@ function zhaoyun_ai:askForCard(pattern)
 	return super.askForCard(self, pattern)	
 end
 
-local machao_ai = SmartAI:newSubclass "machao"
-
-function machao_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "tieji" then
-		local effect = data:toSlashEffect()
-		assert(effect.to)
-		return not self:isFriend(effect.to)
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
+-- tieji
+sgs.ai_skill_invoke.tieji = function(self, data) 
+	local effect = data:toSlashEffect()
+	return not self:isFriend(effect.to) 
 end
 
 local sunshangxiang_ai = SmartAI:newSubclass "sunshangxiang"
@@ -201,7 +167,6 @@ function sunshangxiang_ai:activate(use)
 
 	super.activate(self, use)
 end
-
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"
 huatuo_ai:setOnceSkill("qingnang")

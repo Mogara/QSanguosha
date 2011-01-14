@@ -148,7 +148,7 @@ public:
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
-    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets);
+    ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
 
     void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
