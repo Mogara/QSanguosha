@@ -11,7 +11,7 @@ bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *
 }
 
 void TriggerSkillSorter::sort(QList<const TriggerSkill *> &skills){
-    qSort(skills.begin(), skills.end(), *this);
+    qStableSort(skills.begin(), skills.end(), *this);
 }
 
 DamageStruct::DamageStruct()

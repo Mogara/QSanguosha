@@ -831,7 +831,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if(wuling == "wind"){
-            if(damage.nature == DamageStruct::Fire){
+            if(damage.nature == DamageStruct::Fire && !damage.chain){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 
@@ -843,7 +843,7 @@ public:
                 room->sendLog(log);
             }
         }else if(wuling == "thunder"){
-            if(damage.nature == DamageStruct::Thunder){
+            if(damage.nature == DamageStruct::Thunder && !damage.chain){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
 
@@ -895,8 +895,7 @@ public:
             if(!current.isEmpty())
                 xuandi->loseMark("@" + current);
 
-            current = choice;
-            xuandi->gainMark("@" + current);
+            xuandi->gainMark("@" + choice);
             xuandi->tag["wuling"] = choice;
         }
 

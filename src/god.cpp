@@ -353,11 +353,12 @@ public:
         int i, x = damage.damage;
         for(i=0; i<x; i++){
             if(shencc->askForSkillInvoke(objectName())){
-                room->broadcastInvoke("animate", "lightbox:$guixin");
-
                 room->playSkillEffect(objectName());
 
                 QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
+                if(players.length() >=5)
+                    room->broadcastInvoke("animate", "lightbox:$guixin");
+
                 foreach(ServerPlayer *player, players){
                     if(!player->isAllNude()){
                         int card_id = room->askForCardChosen(shencc, player, "hej", objectName());

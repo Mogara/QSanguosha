@@ -625,11 +625,59 @@ function SmartAI:activate(use)
 	end
 end
 
+sgs.ai_keep_value = {
+	Shit = 6,
+
+	Peach = 5,
+
+	Analeptic = 4.5,
+	Jink = 4,
+
+	Nullification = 3,
+
+	Slash = 2,
+	ThunderSlash = 2.5,
+	FireSlash = 2.6,
+}
+
+function SmartAI:getKeepValue(card)
+	local class_name = card:className()
+	return sgs.ai_keep_value[class_name] or 0
+end
+
+function SmartAI:sortByKeepValue(cards)
+	local compare_func = function(a,b)
+		local value1 = self:getKeepValue(a)
+		local value2 = self:getKeepValue(b)
+
+		if value1 ~= value2 then
+			return value1 < value2
+		else
+			return a:getNumber() < b:getNumber()
+		end	
+	end
+
+	table.sort(cards, compare_func)
+end
+
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	if optional then
 		return {}
 	else
-		return self.player:forceToDiscard(discard_num, include_equip)
+		local flags = "h"
+		if include_equip then
+			flags = flags .. "e"
+		end
+
+		local cards = self.player:getCards(flags)
+		cards = sgs.QList2Table(cards)
+		self:sortByKeepValue(cards)
+		local to_discard = {}
+		for i=1, discard_num do
+			table.insert(to_discard, cards[i]:getEffectiveId())
+		end
+
+		return to_discard
 	end
 end
 

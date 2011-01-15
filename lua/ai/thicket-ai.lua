@@ -62,13 +62,8 @@ end
 
 local caopi_ai = SmartAI:newSubclass "caopi"
 
-function caopi_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "xingshang" then
-		return true
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
-end
+-- xingshang, allways invoke 
+sgs.ai_skill_invoke.xingshang = true
 
 function caopi_ai:askForUseCard(pattern, prompt)
 	if pattern == "@@fangzhu" then
@@ -152,7 +147,7 @@ end
 
 -- haoshi
 sgs.ai_skill_invoke.haoshi = function(self, data)
-	if self:getHandcardNum() <= 1 then
+	if self.player:getHandcardNum() <= 1 then
 		return true
 	end
 

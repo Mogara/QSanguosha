@@ -611,7 +611,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            player->getRoom()->playSkillEffect("kongcheng");
+            CardMoveStruct move = data.value<CardMoveStruct>();
+            if(move.from_place == Player::Hand)
+                player->getRoom()->playSkillEffect("kongcheng");
         }
 
         return false;
