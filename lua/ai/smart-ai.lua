@@ -1,9 +1,22 @@
--- This is the Smart AI, and it should load at the server side
+-- This is the Smart AI, and it should be loaded and run at the server side
 
+-- "middleclass" is the Lua OOP library written by kikito
+-- more information see: https://github.com/kikito/middleclass
 require "middleclass"
 
 -- initialize the random seed for later use
 math.randomseed(os.time())
+
+-- the iterator of QList object
+local qlist_iterator = function(list, n)
+	if n < list:length()-1 then
+		return n+1, list:at(n+1) -- the next element of list
+	end
+end
+
+function sgs.qlist(list)
+	return qlist_iterator, list, -1
+end
 
 -- this table stores all specialized AI classes
 sgs.ai_classes = {}
@@ -18,12 +31,19 @@ sgs.ai_compare_funcs = {
 		return a:getHandcardNum() < b:getHandcardNum()
 	end,
 
+	value = function(a, b)
+		local value1 = a:getHp() * 2 + a:getHandcardNum()
+		local value2 = b:getHp() * 2 + b:getHandcardNum()
+
+		return value1 < value2
+	end,
+
 	chaofeng = function(a, b)
 		local c1 = sgs.ai_chaofeng[a:getGeneralName()]	or 0
 		local c2 = sgs.ai_chaofeng[b:getGeneralName()] or 0
 		
 		if c1 == c2 then
-			return SmartAI.getWeak(a) < SmartAI.getWeak(b)
+			return sgs.ai_compare_funcs.value(a, b)
 		else
 			return c1 > c2
 		end
@@ -76,10 +96,6 @@ end
 
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI" 
-
-function SmartAI.getWeak(player)
-	return player:getHp() * 2 + player:getHandcardNum()
-end
 
 -- the "initialize" function is just the "constructor"
 function SmartAI:initialize(player)
@@ -148,6 +164,7 @@ function SmartAI:isNeutrality(other)
 	return self.lua_ai:relationTo(other) == sgs.AI_Neutrality
 end
 
+-- get the card with the maximal card point
 function SmartAI:getMaxCard(player)
 	player = player or self.player
 
@@ -175,11 +192,6 @@ sgs.ai_skill_invoke = {
 	double_sword = true,
 	fan = true,
 }
-
--- some useful ai functions
-function sgs.ai_invoke_if_not_friend(ai, data)
-	return not ai:isFriend(data:toPlayer())
-end
 
 -- used for SmartAI:askForChoice
 sgs.ai_skill_choice = {}
@@ -319,10 +331,23 @@ function SmartAI:useCardDismantlement(card, to)
 	end	
 end
 
+local single_target_tricks = {
+	Indulgence = true,
+	SupplyShortage = true,
+	Duel = true,
+	Snatch = true,
+	Dismantlement = true
+}
+
 function SmartAI:useCardByClassName(card, use)
 	local class_name = card:className()
 	local use_func = self["useCard" .. class_name]
 	if not use_func then
+		return
+	end
+	
+	if not single_target_tricks[class_name] then
+		use_func(self, card, use)
 		return
 	end
 
@@ -470,7 +495,7 @@ function SmartAI:useCardIndulgence(card, to)
 	return not to:containsTrick(card:objectName())
 end
 
-function SmartAI:useCollateral(card, use)
+function SmartAI:useCardCollateral(card, use)
 	self:sort(self.enemies)
 
 	for _, enemy in ipairs(self.enemies) do
@@ -480,7 +505,6 @@ function SmartAI:useCollateral(card, use)
 			for _, enemy2 in ipairs(self.enemies) do
 				if enemy:canSlash(enemy2) then
 					use.card = card
-					use.from = self.player
 					use.to:append(enemy)
 					use.to:append(enemy2)
 
@@ -491,7 +515,7 @@ function SmartAI:useCollateral(card, use)
 	end
 end
 
-function SmartAI:useIronChain(card, use)
+function SmartAI:useCardIronChain(card, use)
 	local targets = {}
 	self:sort(self.friends)
 	for _, friend in ipairs(self.friends) do
@@ -515,35 +539,45 @@ function SmartAI:useIronChain(card, use)
 	end
 end
 
-function SmartAI:useTrickCard(card, use)
-	if card:inherits("ExNihilo") then
+-- the ExNihilo is always used
+function SmartAI:useCardExNihilo(card, use)
+	use.card = card
+end
+
+-- when self has wizard (zhangjiao, simayi, use it)
+function SmartAI:useCardLightning(card, use)
+	if self.has_wizard and self.room:isProhibited(self.player, self.player, card) then
 		use.card = card
-	elseif card:inherits("Lightning") then
-		if self.has_wizard and self.room:isProhibited(self.player, self.player, card) then
-			use.card = card
-		end
-	elseif card:inherits("IronChain") then
-		self:useIronChain(card, use)
-	elseif card:inherits("Collateral") then
-		self:useCollateral(card, use)
-	elseif card:inherits("GodSalvation") then
-		local good, bad = 0, 0
-		for _, friend in ipairs(self.friends) do
-			if friend:isWounded() then
-				good = good + 1
-			end
-		end
+	end
+end
 
-		for _, enemy in ipairs(self.enemies) do
-			if enemy:isWounded() then
-				bad = bad + 1
-			end
+function SmartAI:useCardGodSalvation(card, use)
+	local good, bad = 0, 0
+	for _, friend in ipairs(self.friends) do
+		if friend:isWounded() then
+			good = good + 1
 		end
+	end
 
-		if good > bad then
-			use.card = card
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:isWounded() then
+			bad = bad + 1
 		end
-	elseif card:inherits("AOE") then
+	end
+
+	if good > bad then
+		use.card = card
+	end
+end
+
+function SmartAI:useCardAmazingGrace(card, use)
+	if #self.friends >= #self.enemies then
+		use.card = card
+	end
+end
+
+function SmartAI:useTrickCard(card, use)
+	if card:inherits("AOE") then
 		local good, bad = 0, 0
 		for _, friend in ipairs(self.friends) do
 			if self:aoeIsEffective(card, friend) then
@@ -558,10 +592,6 @@ function SmartAI:useTrickCard(card, use)
 		end
 
 		if good > bad then
-			use.card = card
-		end
-	elseif card:inherits("AmazingGrace") then
-		if #self.friends >= #self.enemies then
 			use.card = card
 		end
 	else
@@ -666,8 +696,10 @@ function SmartAI:setOnceSkill(name)
 	end
 end
 
-dofile "ai/standard-ai.lua"
-dofile "ai/wind-ai.lua"
-dofile "ai/fire-ai.lua"
-dofile "ai/thicket-ai.lua"
-dofile "ai/god-ai.lua"
+-- load other ai scripts
+dofile "lua/ai/standard-ai.lua"
+dofile "lua/ai/wind-ai.lua"
+dofile "lua/ai/fire-ai.lua"
+dofile "lua/ai/thicket-ai.lua"
+dofile "lua/ai/god-ai.lua"
+dofile "lua/ai/yitian-ai.lua"

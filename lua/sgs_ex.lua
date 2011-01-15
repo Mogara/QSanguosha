@@ -105,7 +105,7 @@ function sgs.CreateViewAsSkill(spec)
 	return skill
 end
 
--- Utilities, i.e: convert QList<const Card> to Lua's native table
+-- utilities, i.e: convert QList<const Card> to Lua's native table
 function sgs.QList2Table(qlist)
 	local t = {}
 	for i=0, qlist:length()-1 do
@@ -115,3 +115,27 @@ function sgs.QList2Table(qlist)
 	return t
 end
 
+-- the iterator of QList object
+local qlist_iterator = function(list, n)
+	if n < list:length()-1 then
+		return n+1, list:at(n+1) -- the next element of list
+	end
+end
+
+function sgs.qlist(list)
+	return qlist_iterator, list, -1
+end
+
+-- copied from "Well House Consultants"
+function string:split(delimiter)
+  local result = { }
+  local from  = 1
+  local delim_from, delim_to = string.find( self, delimiter, from  )
+  while delim_from do
+    table.insert( result, string.sub( self, from , delim_from-1 ) )
+    from  = delim_to + 1
+    delim_from, delim_to = string.find( self, delimiter, from  )
+  end
+  table.insert( result, string.sub( self, from  ) )
+  return result
+end

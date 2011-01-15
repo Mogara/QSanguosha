@@ -26,6 +26,23 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 	return n < peaches
 end
 
+-- lianhuan
+function pangtong_ai:activate(use)
+	local cards = self.player:getHandcards()	
+	for _, card in sgs.qlist(cards) do
+		if card:getSuit() == sgs.Card_Club then
+			local number = card:getNumber()
+			local card_id = card:getEffectiveId()
+			local card_str = ("iron_chain:lianhuan[club:%d]=%d"):format(number, card_id)
+			local interlink = sgs.Card_Parse(card_str)
+			self:useCardIronChain(interlink, use)
+			return
+		end
+	end
+
+	super.activate(self, use)
+end
+
 local xunyu_ai = SmartAI:newSubclass "xunyu"
 xunyu_ai:setOnceSkill("quhu")
 
@@ -98,3 +115,8 @@ end
 
 -- mengjin
 sgs.ai_skill_invoke.mengjin = sgs.ai_skill_invoke.tieji
+
+--[[
+local dianwei_ai = SmartAI:newSubclass "dianwei"
+dianwei_ai:setOnceSkill "qiangxi"
+]]

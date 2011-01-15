@@ -2074,7 +2074,23 @@ void Room::doGuanxing(ServerPlayer *zhuge){
 }
 
 void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
+    if(shenlumeng->getState() != "online"){
+        // throw the first card which suit is Heart
+        QList<const Card *> cards = target->getHandcards();
+        foreach(const Card *card, cards){
+            if(card->getSuit() == Card::Heart){
+                showCard(target, card->getEffectiveId());
+                thread->delay();
+                throwCard(card);
+                return;
+            }
+        }
+
+        return;
+    }
+
     QList<int> handcards = target->handCards();
+
     QStringList handcards_str;
     foreach(int handcard, handcards)
         handcards_str << QString::number(handcard);
@@ -2086,7 +2102,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         return;
 
     int card_id = result.toInt();
-    showCard(target, card_id);
+    showCard(target, card_id);    
 
     QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
     if(result == "discard")

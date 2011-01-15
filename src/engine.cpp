@@ -101,7 +101,7 @@ Engine::Engine()
 }
 
 void Engine::loadAIs() const{
-    int error = luaL_dofile(lua, "ai/smart-ai.lua");
+    int error = luaL_dofile(lua, "lua/ai/smart-ai.lua");
     if(error){
         const char *error_message = lua_tostring(lua, -1);
         QMessageBox::warning(NULL, tr("Load AI scripts error"), error_message);

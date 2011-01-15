@@ -1,8 +1,8 @@
 -- This is the start script of QSanguosha
 
-package.path = package.path .. ";./lua/?.lua"
+package.path = package.path .. ";./lua/lib/?.lua"
 
-dofile "sgs_ex.lua"
+dofile "lua/sgs_ex.lua"
 
 function load_translation(file)
 	local t = dofile(file)

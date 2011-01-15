@@ -58,9 +58,8 @@ local zhenji_ai = SmartAI:newSubclass "zhenji"
 
 function zhenji_ai:askForCard(pattern)
 	if pattern == "jink" then
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _, card in ipairs(cards) do			
+		local cards = self.player:getHandcards()		
+		for _, card in sgs.qlist(cards) do			
 			if card:isBlack() then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
@@ -78,8 +77,7 @@ local guanyu_ai = SmartAI:newSubclass "guanyu"
 function guanyu_ai:askForCard(pattern)
 	if pattern == "slash" then
 		local cards = self.player:getCards("he")
-		cards = sgs.QList2Table(cards)
-		for _, card in ipairs(cards) do
+		for _, card in sgs.qlist(cards) do
 			if card:isRed() then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
@@ -96,9 +94,8 @@ local zhaoyun_ai = SmartAI:newSubclass "zhaoyun"
 
 function zhaoyun_ai:askForCard(pattern)
 	if pattern == "jink" then
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _, card in ipairs(cards) do			
+		local cards = self.player:getHandcards()		
+		for _, card in sgs.qlist(cards) do			
 			if card:inherits("Slash") then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
@@ -107,9 +104,8 @@ function zhaoyun_ai:askForCard(pattern)
 			end
 		end
 	elseif pattern == "slash" then
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _, card in ipairs(cards) do
+		local cards = self.player:getHandcards()		
+		for _, card in sgs.qlist(cards) do
 			if card:inherits("Jink") then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
@@ -133,9 +129,7 @@ sunshangxiang_ai:setOnceSkill("jieyin")
 
 function sunshangxiang_ai:activate(use)
 	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-
-	for _, card in ipairs(cards) do
+	for _, card in sgs.qlist(cards) do
 		if card:inherits("EquipCard") then
 			use.card = card
 			return
@@ -167,6 +161,28 @@ function sunshangxiang_ai:activate(use)
 
 	super.activate(self, use)
 end
+
+--[[
+
+local ganning_ai = SmartAI:newSubclass "ganning"
+
+function ganning_ai:activate()
+	local cards = self.player:getCards("he")	
+	local black_cards = {}
+	for _, card in sgs.qlist(cards) do
+		if card:isBlack() then
+			table.insert(black_cards, card)
+		end
+	end
+
+	while next(balck_cards) do
+		for _, friend in ipairs(self.friends) do
+			self:useCard
+		end
+	end
+end
+
+--]]
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"
 huatuo_ai:setOnceSkill("qingnang")
@@ -234,3 +250,4 @@ function diaochan_ai:activate(use)
 
 	super.activate(self, use)
 end
+
