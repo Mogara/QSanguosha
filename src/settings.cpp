@@ -57,6 +57,7 @@ void Settings::init(){
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
     AILevel = value("AILevel", 2).toInt();
+    AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
     UserName = value("UserName", qgetenv("USERNAME")).toString();

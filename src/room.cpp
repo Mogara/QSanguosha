@@ -371,9 +371,10 @@ void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
     bool invoked;
     AI *ai = player->getAI();
-    if(ai)
+    if(ai){
+        thread->delay(Config.AIDelay);
         invoked = ai->askForSkillInvoke(skill_name, data);
-    else{
+    }else{
         player->invoke("askForSkillInvoke", skill_name);
         getResult("invokeSkillCommand", player);
 
@@ -507,7 +508,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(800);
+        thread->delay(Config.AIDelay);
         card_id = ai->askForCardChosen(who, flags, reason);
     }else{
         player->invoke("askForCardChosen", QString("%1:%2:%3").arg(who->objectName()).arg(flags).arg(reason));
@@ -543,7 +544,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }else{
         AI *ai = player->getAI();
         if(ai){
-            thread->delay(500);
+            thread->delay(Config.AIDelay);
             card = ai->askForCard(pattern);
         }else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
@@ -582,9 +583,10 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     QString answer;
 
     AI *ai = player->getAI();
-    if(ai)
+    if(ai){
+        thread->delay(Config.AIDelay);
         answer = ai->askForUseCard(pattern, prompt);
-    else{
+    }else{
         player->invoke("askForUseCard", QString("%1:%2").arg(pattern).arg(prompt));
         getResult("useCardCommand", player);
 
@@ -615,7 +617,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(800);
+        thread->delay(Config.AIDelay);
         card_id = ai->askForAG(card_ids, refusable);
     }else{
         player->invoke("askForAG", refusable ? "?" : ".");
@@ -1873,7 +1875,7 @@ void Room::setEmotion(ServerPlayer *target, TargetType type){
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     AI *ai = player->getAI();
     if(ai){
-        thread->delay(800);
+        thread->delay(Config.AIDelay);
         card_use.from = player;
         ai->activate(card_use);        
     }else{

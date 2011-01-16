@@ -308,6 +308,14 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(normal);
         layout->addWidget(smart);
 
+        ai_delay_spinbox = new QSpinBox;
+        ai_delay_spinbox->setMinimum(0);
+        ai_delay_spinbox->setMaximum(5000);
+        ai_delay_spinbox->setValue(Config.AIDelay);
+        ai_delay_spinbox->setSuffix(tr(" millisecond"));
+
+        layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
+
         smart->setChecked(true);
     }
 
@@ -386,6 +394,7 @@ bool ServerDialog::config(){
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.AILevel = ai_group->checkedId();
+    Config.AIDelay = ai_delay_spinbox->value();
     Config.ServerPort = port_edit->text().toInt();
 
     // game mode
@@ -406,6 +415,7 @@ bool ServerDialog::config(){
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("AILevel", Config.AILevel);
+    Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);

@@ -35,6 +35,7 @@ public:
     bool AnnounceIP;
     QString Address;
     int AILevel;
+    int AIDelay;
     ushort ServerPort;
 
     // client side
