@@ -903,6 +903,84 @@ public:
     }
 };
 
+GuihanCard::GuihanCard(){
+    once = true;
+}
+
+void GuihanCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *caizhaoji = effect.from;
+    caizhaoji->getRoom()->swapSeat(caizhaoji, effect.to);
+}
+
+class Guihan: public ViewAsSkill{
+public:
+    Guihan():ViewAsSkill("guihan"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("GuihanCard");
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(to_select->isEquipped())
+            return false;
+
+        if(selected.isEmpty())
+            return to_select->getFilteredCard()->isRed();
+        else if(selected.length() == 1){
+            Card::Suit suit = selected.first()->getFilteredCard()->getSuit();
+            return to_select->getFilteredCard()->getSuit() == suit;
+        }else
+            return false;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() != 2)
+            return NULL;
+
+        GuihanCard *card = new GuihanCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+static QString Hujia2Callback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
+
+class Hujia2: public PhaseChangeSkill{
+public:
+    Hujia2():PhaseChangeSkill("hujia2"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish){
+            int times = 0;
+            Room *room = target->getRoom();
+            while(target->askForSkillInvoke(objectName())){
+                times ++;
+                if(times == 3){
+                    target->turnOver();
+                    room->broadcastProperty(target, "faceup");
+                }
+
+                CardStar card;
+                if(room->judge(target, Hujia2Callback, &card) == "good"){
+                    target->obtainCard(card);
+                }else
+                    break;
+            }
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -946,6 +1024,10 @@ YitianPackage::YitianPackage()
     xiahoujuan->addSkill(new Skill("liqian", Skill::Compulsory));
     xiahoujuan->addSkill(new Qiaocai);
 
+    General *caizhaoji = new General(this, "caizhaoji", "qun", 3, false);
+    caizhaoji->addSkill(new Guihan);
+    caizhaoji->addSkill(new Hujia2);
+
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
@@ -953,6 +1035,7 @@ YitianPackage::YitianPackage()
     addMetaObject<LianliCard>();
     addMetaObject<QiaocaiCard>();
     addMetaObject<LianliSlashCard>();
+    addMetaObject<GuihanCard>();
 }
 
 ADD_PACKAGE(Yitian);

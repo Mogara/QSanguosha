@@ -202,16 +202,19 @@ function huatuo_ai:activate(use)
 	if not self.qingnang_used and not self.player:isKongcheng() then
 		self:sort(self.friends, "hp")
 		local most_misery = self.friends[1]
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		table.sort(cards, black_before_red)
-		local card_id = cards[1]:getEffectiveId()
 
-		use.card = sgs.Card_Parse("@QingnangCard=" .. card_id)
-		use.to:append(most_misery)
-		self.qingnang_used = true
+		if most_misery:isWounded() then
+			local cards = self.player:getHandcards()
+			cards = sgs.QList2Table(cards)
+			table.sort(cards, black_before_red)
+			local card_id = cards[1]:getEffectiveId()
 
-		return
+			use.card = sgs.Card_Parse("@QingnangCard=" .. card_id)
+			use.to:append(most_misery)
+			self.qingnang_used = true
+
+			return
+		end
 	end
 
 	super.activate(self, use)

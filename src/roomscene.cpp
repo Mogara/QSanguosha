@@ -345,7 +345,12 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    // set item to player mapping
+    // set item to player mapping    
+    item2player.clear();
+    avatar->disconnect(this);
+    foreach(Photo *photo, photos)
+        photo->disconnect(this);
+
     item2player.insert(avatar, Self);
     connect(avatar, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
     foreach(Photo *photo, photos){

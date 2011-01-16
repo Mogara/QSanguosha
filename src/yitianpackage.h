@@ -71,4 +71,13 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class GuihanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GuihanCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // YITIANPACKAGE_H

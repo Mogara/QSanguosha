@@ -1233,6 +1233,32 @@ void Room::assignRoles(){
     }
 }
 
+void Room::swapSeat(ServerPlayer *a, ServerPlayer *b){
+    int seat1 = players.indexOf(a);
+    int seat2 = players.indexOf(b);
+
+    players.swap(seat1, seat2);
+
+    QStringList player_circle;
+    foreach(ServerPlayer *player, players)
+        player_circle << player->objectName();
+    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+
+    alive_players.clear();
+    int i;
+    for(i=0; i<players.length(); i++){
+        ServerPlayer *player = players.at(i);
+        if(player->isAlive()){
+            alive_players << player;
+            player->setSeat(alive_players.length());
+        }else{
+            player->setSeat(0);
+        }
+
+        broadcastProperty(player, "seat");
+    }
+}
+
 void Room::adjustSeats(){
     int i;
     for(i=0; i<players.length(); i++){

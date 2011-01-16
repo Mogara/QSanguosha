@@ -90,6 +90,7 @@ public:
     ServerPlayer *findPlayerBySkillName(const QString &skill_name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
     void transfigure(ServerPlayer *player, const QString &new_general, bool full_state);    
+    void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
