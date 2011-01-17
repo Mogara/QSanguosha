@@ -952,9 +952,9 @@ static QString Hujia2Callback(const Card *card, Room *){
         return "bad";
 }
 
-class Hujia2: public PhaseChangeSkill{
+class CaizhaojiHujia: public PhaseChangeSkill{
 public:
-    Hujia2():PhaseChangeSkill("hujia2"){
+    CaizhaojiHujia():PhaseChangeSkill("caizhaoji_hujia"){
 
     }
 
@@ -1026,7 +1026,7 @@ YitianPackage::YitianPackage()
 
     General *caizhaoji = new General(this, "caizhaoji", "qun", 3, false);
     caizhaoji->addSkill(new Guihan);
-    caizhaoji->addSkill(new Hujia2);
+    caizhaoji->addSkill(new CaizhaojiHujia);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 
