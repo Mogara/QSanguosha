@@ -268,7 +268,7 @@ QString IronChain::getEffectPath(bool is_male) const{
 }
 
 bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(targets.length() > 2)
+    if(targets.length() >= 2)
         return false;
 
     return true;

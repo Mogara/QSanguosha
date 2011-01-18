@@ -31,6 +31,7 @@ public:
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
     explicit Room(QObject *parent, const QString &mode);
+    QString createLuaState();
     void addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;

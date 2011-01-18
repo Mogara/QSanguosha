@@ -60,50 +60,46 @@ function dongzhuo_ai:askForChoice(skill_name, choice)
 	end
 end
 
-local caopi_ai = SmartAI:newSubclass "caopi"
-
 -- xingshang, allways invoke 
 sgs.ai_skill_invoke.xingshang = true
 
-function caopi_ai:askForUseCard(pattern, prompt)
-	if pattern == "@@fangzhu" then
-		self:sort(self.friends)
+-- fangzhu, fangzhu 
+sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
+	self:sort(self.friends)
 
-		local target
-		for _, friend in ipairs(self.friends) do
-			if not friend:faceUp() then
-				target = friend
-				break
-			end
-
-			if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then
-				target = friend
-				break
-			end
+	local target
+	for _, friend in ipairs(self.friends) do
+		if not friend:faceUp() then
+			target = friend
+			break
 		end
 
-		if not target then
-			local x = self.player:getLostHp()
-			if x >= 3 then
-				target = self:getOneFriend()
-			else
-				self:sort(self.enemies)
-				for _, enemy in ipairs(self.enemies) do
-					if enemy:faceUp() then
-						target = enemy
-						break
-					end
+		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play 
+			and self.player:objectName() ~= friend:objectName() then		
+			target = friend
+			break
+		end
+	end
+
+	if not target then
+		local x = self.player:getLostHp()
+		if x >= 3 then
+			target = self:getOneFriend()
+		else
+			self:sort(self.enemies)
+			for _, enemy in ipairs(self.enemies) do
+				if enemy:faceUp() then
+					target = enemy
+					break
 				end
 			end
 		end
+	end
 
-		if target then
-			return "@FangzhuCard=.->" .. target:objectName()
-		else
-			return "."
-		end
+	if target then
+		return "@FangzhuCard=.->" .. target:objectName()
 	else
-		return super.askForUseCard(self, pattern, prompt)
+		return "."
 	end
 end
 
@@ -159,10 +155,26 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 
 	self:sort(self.friends)
 	for _, friend in ipairs(self.friends) do
-		if friend:getHandcardNum() == least then
+		if friend:getHandcardNum() == least and friend:objectName() ~= self.player:objectName() then
+			self.beggar = friend
 			return true
 		end
 	end
 
 	return false
+end
+
+sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
+	local beggar = self.beggar
+	assert(beggar)
+	self.beggar = nil
+	
+	local cards = self.player:getHandcards()
+	local n = math.floor(self.player:getHandcardNum()/2)
+	local card_ids = {}
+	for i=1, n do
+		table.insert(card_ids, cards:at(i-1):getEffectiveId())
+	end
+	
+	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "->" .. beggar:objectName()
 end

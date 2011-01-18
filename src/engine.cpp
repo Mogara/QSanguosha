@@ -87,35 +87,35 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    lua = luaL_newstate();
-    luaL_openlibs(lua);
-
-    luaopen_sgs(lua);
-
-    int error = luaL_dofile(lua, "sanguosha.lua");
-    if(error){
-        const char *error_message = lua_tostring(lua, -1);        
-        QMessageBox::warning(NULL, tr("Lua script error"), error_message);
+    QString error_msg;
+    lua = createLuaState(false, error_msg);
+    if(lua == NULL){
+        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
         exit(1);
     }
 }
 
-void Engine::loadAIs() const{
-    int error = luaL_dofile(lua, "lua/ai/smart-ai.lua");
+lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+
+    luaopen_sgs(L);
+
+    int error = luaL_dofile(L, "sanguosha.lua");
     if(error){
-        const char *error_message = lua_tostring(lua, -1);
-        QMessageBox::warning(NULL, tr("Load AI scripts error"), error_message);
-        exit(1);
-    }else{
-        qDebug("AI scripts load successfully");
+        error_msg = lua_tostring(L, -1);
+        return NULL;
     }
-}
 
-lua_State *Engine::createLuaThread() const{
-    lua_State *new_thread = lua_newthread(lua);
-    lua_pop(lua, 1);
+    if(load_ai){
+        error = luaL_dofile(L, "lua/ai/smart-ai.lua");
+        if(error){
+            error_msg = lua_tostring(L, -1);
+            return NULL;
+        }
+    }
 
-    return new_thread;
+    return L;
 }
 
 lua_State *Engine::getLuaState() const{

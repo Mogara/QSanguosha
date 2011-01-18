@@ -331,12 +331,33 @@ function SmartAI:useCardDismantlement(card, to)
 	end	
 end
 
+function SmartAI:useCardFireAttack(card, use)	
+	local lack = {
+		spade = true,
+		club = true,
+		heart = true,
+		diamond = true,
+	}
+
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		local suit = card:getSuitString()
+		lack[suit] = nil
+	end
+
+	if not next(lack) and next(self.enemies) then
+		self:sort(self.enemies)
+		use.card = card
+		use.to:append(self.enemies[1])		
+	end		
+end
+
 local single_target_tricks = {
 	Indulgence = true,
 	SupplyShortage = true,
 	Duel = true,
 	Snatch = true,
-	Dismantlement = true
+	Dismantlement = true,
 }
 
 function SmartAI:useCardByClassName(card, use)

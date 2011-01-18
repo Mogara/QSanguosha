@@ -449,17 +449,23 @@ Server::Server(QObject *parent)
 }
 
 bool Server::listen(){
-    // the server side will load the AI module
-    Sanguosha->loadAIs();
-
     return server->listen();
 }
 
 void Server::daemonize(){
     server->daemonize();
 
+    createNewRoom();
+}
+
+void Server::createNewRoom(){
     current = new Room(this, Config.GameMode);
-    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+    QString error_msg = current->createLuaState();
+    if(!error_msg.isEmpty()){
+        emit server_message(error_msg);
+    }else{
+        connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+    }
 }
 
 void Server::processNewConnection(ClientSocket *socket){
@@ -474,8 +480,7 @@ void Server::processNewConnection(ClientSocket *socket){
     }
 
     if(current->isFull()){
-        current = new Room(this, Config.GameMode);
-        connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+        createNewRoom();
     }
 
     current->addSocket(socket);

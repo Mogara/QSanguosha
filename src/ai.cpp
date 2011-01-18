@@ -226,6 +226,12 @@ const Card *TrustAI::askForCard(const QString &pattern) {
         foreach(const Card *card, cards)
             if(card->getId() == card_id)
                 return card;
+    }else if(pattern.startsWith(".")){
+        QChar end = pattern.at(1).toLower();
+        foreach(const Card *card, cards){
+            if(card->getSuitString().startsWith(end))
+                return card;
+        }
     }else{
         foreach(const Card *card, cards)
             if(card->match(pattern))

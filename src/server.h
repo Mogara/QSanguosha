@@ -72,6 +72,8 @@ private:
     Room *current;
     QSet<QString> addresses;
 
+    void createNewRoom();
+
 private slots:
     void processNewConnection(ClientSocket *socket);
     void cleanup();
