@@ -114,9 +114,61 @@ function xunyu_ai:askForUseCard(pattern, prompt)
 end
 
 -- mengjin
-sgs.ai_skill_invoke.mengjin = sgs.ai_skill_invoke.tieji
+sgs.ai_skill_invoke.mengjin = function(self, data)
+	local effect = data:toSlashEffect()
+	return not self:isFriend(effect.to) and not effect.to:isKongcheng()
+end
 
---[[
+
 local dianwei_ai = SmartAI:newSubclass "dianwei"
 dianwei_ai:setOnceSkill "qiangxi"
-]]
+
+function dianwei_ai:activate(use)
+	if not self.qiangxi_used then
+		local weapon = self.player:getWeapon()
+		if weapon then
+			local hand_weapon, cards
+			cards = self.player:getHandcards()
+			for _, card in sgs.qlist(cards) do
+				if card:inherits("Weapon") then
+					hand_weapon = card
+					break
+				end
+			end			
+
+			self:sort(self.enemies)
+			for _, enemy in ipairs(self.enemies) do
+				if hand_weapon and self.player:inMyAttackRange(enemy) then
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
+					use.to:append(enemy)
+					
+					self.qiangxi_used = true
+					break				
+				end
+
+				if self.player:distanceTo(enemy) <= 1 then
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
+					use.to:append(enemy)
+
+					self.qiangxi_used = true
+
+					return
+				end
+			end
+		else
+			self:sort(self.enemies, "hp")
+			for _, enemy in ipairs(self.enemies) do
+				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() then
+					use.card = sgs.Card_Parse("@QiangxiCard=.")
+					use.to:append(enemy)
+
+					self.qiangxi_used = true
+
+					return
+				end
+			end
+		end
+	end
+
+	super.activate(self, use)
+end

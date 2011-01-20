@@ -40,8 +40,12 @@ function sunjian_ai:askForUseCard(pattern, prompt)
             self:sort(self.enemies, "chaofeng")
             self.yinghun = self.enemies[1]
         end
-
-		return "@YinghunCard=.->" .. self.yinghun:objectName()
+		
+		if self.yinghun then
+			return "@YinghunCard=.->" .. self.yinghun:objectName()
+		else
+			return "."
+		end
     end
 end
 

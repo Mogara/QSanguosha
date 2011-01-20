@@ -11,7 +11,7 @@ GameRule::GameRule(QObject *parent)
     events << GameStart << PhaseChange << CardUsed
             << CardEffected << HpRecover
             << AskForPeaches << Death << Dying
-            << SlashHit << SlashEffected << SlashProceed
+            << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone;
 }
 
@@ -259,6 +259,16 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             damage.nature = effect.nature;
 
             room->damage(damage);
+
+
+            if(effect.to->hasFlag("armor_nullified"))
+                room->setPlayerFlag(effect.to, "-armor_nullified");
+
+            break;
+        }
+
+    case SlashMissed:{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
             if(effect.to->hasFlag("armor_nullified"))
                 room->setPlayerFlag(effect.to, "-armor_nullified");

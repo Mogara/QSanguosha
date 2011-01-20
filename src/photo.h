@@ -33,7 +33,7 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
-    void createRoleCombobox();
+    void createRoleCombobox();    
 
     enum FrameType{
         Playing,
@@ -52,6 +52,7 @@ public slots:
     void hideEmotion();
     void hideSkillName();
     void setDrankState(bool drank);
+    void updateRoleComboboxPos();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

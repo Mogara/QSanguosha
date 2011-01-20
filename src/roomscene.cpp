@@ -341,6 +341,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
         translation->setEasingCurve(QEasingCurve::OutBounce);
 
         group->addAnimation(translation);
+
+        connect(group, SIGNAL(finished()), photos.at(i), SLOT(updateRoleComboboxPos()));
     }
 
     group->start(QAbstractAnimation::DeleteWhenStopped);

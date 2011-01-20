@@ -78,10 +78,12 @@ sgs.ai_chaofeng = {
 	xiahoudun = -2,
 	xunyu = -2,
 	guojia = -3,
+
 	shencaocao = -4,
+	shenguanyu = -4,
 }
 
--- this function is exposed to the host program
+-- this function is only function that exposed to the host program
 -- and it clones an AI instance by general name
 function CloneAI(player, specialized)	
 	if specialized then
@@ -390,15 +392,15 @@ function SmartAI:getSlashNumber(player)
 	local n = 0
 	if player:hasSkill("wusheng") then
 		local cards = player:getCards("he")
-		for i=0, cards:length()-1 do
-			if cards:at(i):isRed() then
+		for _, card in sgs.qlist(cards) do
+			if card:isRed() or card:inherits("Slash") then
 				n = n + 1
 			end
 		end
 	elseif player:hasSkill("wushen") then
 		local cards = player:getHandcards()
-		for i=0, cards:length()-1 do
-			if cards:at(i):getSuit() == sgs.Card_Heart then
+		for _, card in sgs.qlist(cards) do
+			if card:getSuit() == sgs.Card_Heart or card:inherits("Slash") then
 				n = n + 1
 			end
 		end
@@ -554,8 +556,11 @@ function SmartAI:useCardIronChain(card, use)
 
 	use.card = card
 
-	if #targets >= 2 then
-		use.to:append(targets[1])
+	if targets[1] then
+		use.to:append(targets[1])	
+	end
+
+	if targets[2] then
 		use.to:append(targets[2])
 	end
 end
@@ -720,10 +725,37 @@ function SmartAI:getCardRandomly(who, flags)
 end
 
 function SmartAI:askForCardChosen(who, flags, reason)
-	if flags:match("j") and self:isFriend(who) then
-		local tricks = who:getCards("j")
-		if tricks:isEmpty() then
-			return self:getCardRandomly(who, flags)
+	if self:isFriend(who) then
+		if flags:match("j") then
+			local tricks = who:getCards("j")
+			
+			local lightning, indulgence, supply_shortage
+			for _, trick in sgs.qlist(tricks) do
+				if trick:inherits "Lightning" then
+					lightning = trick:getId()
+				elseif trick:inherits "Indulgence" then
+					indulgence = trick:getId()
+				elseif trick:inherits "SupplyShortage" then
+					supply_shortage = trick:getId()
+				end
+			end
+
+			if not self.has_wizard and lightning then
+				return lightning
+			elseif who:getHp() > who:getHandcardNum() and supply_shortage then
+				return supply_shortage
+			elseif indulgence then
+				return indulgence
+			end
+		end
+	else
+		if flags:match("e") then
+			local equips = who:getCards("e")
+			if not equips:isEmpty() then
+				return equips:at(0):getId()
+			end
+		elseif flags:match("h") and not who:isKongcheng() then
+			return -1
 		end
 	end
 

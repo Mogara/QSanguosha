@@ -31,6 +31,7 @@ class RoleCombobox : public QObject
 
 public:
     RoleCombobox(Photo *photo);
+    void setupItems(Photo *photo);
 
 public slots:
     void fix(const QString &role);

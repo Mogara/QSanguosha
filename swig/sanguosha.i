@@ -559,7 +559,7 @@ public:
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const char *mark, int value);
     void useCard(const CardUseStruct &card_use);
-    void damage(const DamageStruct &data);
+    void damage(const DamageStruct &data, bool skip_process = false);
     void sendDamageLog(const DamageStruct &data);
     void loseHp(ServerPlayer *victim, int lose = 1);
 	void loseMaxHp(ServerPlayer *victim, int lose = 1);

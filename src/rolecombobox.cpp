@@ -29,18 +29,12 @@ RoleCombobox::RoleCombobox(Photo *photo)
             << new RoleComboboxItem("lord", index)
             << new RoleComboboxItem("loyalist", index)
             << new RoleComboboxItem("rebel", index)
-            << new RoleComboboxItem("renegade", index);
-
-    qreal height = items.first()->boundingRect().height();
+            << new RoleComboboxItem("renegade", index);    
 
     QGraphicsScene *scene = photo->scene();
-    int i;
-    for(i=0; i<5; i++){
-        qreal x = photo->x() + 85;
-        qreal y = photo->y() + 15 + i*height;
+    setupItems(photo);
 
-        RoleComboboxItem *item = items.at(i);
-        item->setPos(x, y);
+    foreach(RoleComboboxItem *item, items){
         scene->addItem(item);
         item->hide();
 
@@ -48,6 +42,18 @@ RoleCombobox::RoleCombobox(Photo *photo)
     }
 
     items.first()->show();
+}
+
+void RoleCombobox::setupItems(Photo *photo){
+    qreal height = items.first()->boundingRect().height();
+    int i;
+    for(i=0; i<items.length(); i++){
+        qreal x = photo->x() + 85;
+        qreal y = photo->y() + 15 + i*height;
+
+        RoleComboboxItem *item = items.at(i);
+        item->setPos(x, y);
+    }
 }
 
 void RoleCombobox::onItemClicked(){

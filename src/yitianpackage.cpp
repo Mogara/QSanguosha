@@ -963,6 +963,8 @@ public:
             int times = 0;
             Room *room = target->getRoom();
             while(target->askForSkillInvoke(objectName())){
+                room->playSkillEffect(objectName());
+
                 times ++;
                 if(times == 3){
                     target->turnOver();

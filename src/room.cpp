@@ -1523,7 +1523,7 @@ bool Room::cardEffect(const CardEffectStruct &effect){
         return true;
 }
 
-void Room::damage(const DamageStruct &damage_data){
+void Room::damage(const DamageStruct &damage_data, bool skip_preprocess){
     if(damage_data.to == NULL)
         return;
 
@@ -1532,26 +1532,29 @@ void Room::damage(const DamageStruct &damage_data){
 
     QVariant data = QVariant::fromValue(damage_data);
 
-    // predamage
-    bool broken = false;
-    if(damage_data.from)
-        broken = thread->trigger(Predamage, damage_data.from, data);
-    if(broken)
-        return;
+    if(!skip_preprocess){
+        // predamage
+        bool broken = false;
+        if(damage_data.from)
+            broken = thread->trigger(Predamage, damage_data.from, data);
+        if(broken)
+            return;
+    }
 
     // predamaged
-    broken = thread->trigger(Predamaged, damage_data.to, data);
+    bool broken = thread->trigger(Predamaged, damage_data.to, data);
     if(broken)
-        return;    
+        return;
 
     // damage done, should not cause damage process broken
     thread->trigger(DamageDone, damage_data.to, data);
 
-    // damage
-    if(damage_data.from)
-        broken = thread->trigger(Damage, damage_data.from, data);
-    if(broken)
-        return;
+    // damage  
+    if(damage_data.from){
+        bool broken = thread->trigger(Damage, damage_data.from, data);
+        if(broken)
+            return;
+    }
 
     // damaged
     thread->trigger(Damaged, damage_data.to, data);    

@@ -96,6 +96,12 @@ void Photo::createRoleCombobox(){
     connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
 }
 
+void Photo::updateRoleComboboxPos()
+{
+    if(role_combobox)
+        role_combobox->setupItems(this);
+}
+
 void Photo::showProcessBar(){
     progress_bar->setValue(0);
     progress_bar->show();
