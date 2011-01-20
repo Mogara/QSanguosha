@@ -16,8 +16,7 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 
 	local cards = self.player:getHandcards()
 	local n = 0
-	for i=0, cards:length()-1 do
-		local card = cards:at(i)
+	for _, card in sgs.qlist(cards) do		
 		if card:inherits "Peach" or card:inherits "Analeptic" then
 			n = n + 1
 		end
@@ -76,8 +75,7 @@ end
 
 function xunyu_ai:askForPlayerChosen(players, reason)
 	if reason == "quhu" then
-		for i=0, players:length()-1 do
-			local player = players:at(i)
+		for _, player in sgs.qlist(players) do			
 			if self:isEnemy(player) then
 				return player
 			end

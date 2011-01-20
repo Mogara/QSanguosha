@@ -7,8 +7,8 @@ end
 -- hujia
 sgs.ai_skill_invoke.hujia = function(self, data)
 	local cards = self.player:getHandcards()
-	for i=0, cards:length()-1 do
-		if cards:at(i):inherits("Jink") then
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Jink") then
 			return false
 		end
 	end
@@ -224,7 +224,7 @@ local diaochan_ai = SmartAI:newSubclass "diaochan"
 diaochan_ai:setOnceSkill("lijian")
 
 function diaochan_ai:activate(use)
-	if not self.lijian_used and not self.player:isKongcheng() then
+	if not self.lijian_used and not self.player:isNude() then
 		self:sort(self.enemies, "hp")
 		local males = {}
 		local first, second
@@ -241,7 +241,7 @@ function diaochan_ai:activate(use)
 		end
 
 		if first and second then
-			local card_id = self.player:getHandcards():at(0):getEffectiveId()
+			local card_id = self:getCardRandomly(self.player, "he")
 			use.card = sgs.Card_Parse("@LijianCard=" .. card_id)
 			use.to:append(first)
 			use.to:append(second)

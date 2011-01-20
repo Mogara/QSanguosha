@@ -1784,7 +1784,7 @@ void Room::moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool o
         thread->trigger(CardLost, move.from, data);
     }
 
-    if(move.to){
+    if(move.to && open){
         QVariant data = QVariant::fromValue(move);
         thread->trigger(CardGot, move.to, data);
     }

@@ -7,17 +7,6 @@ require "middleclass"
 -- initialize the random seed for later use
 math.randomseed(os.time())
 
--- the iterator of QList object
-local qlist_iterator = function(list, n)
-	if n < list:length()-1 then
-		return n+1, list:at(n+1) -- the next element of list
-	end
-end
-
-function sgs.qlist(list)
-	return qlist_iterator, list, -1
-end
-
 -- this table stores all specialized AI classes
 sgs.ai_classes = {}
 
@@ -115,19 +104,11 @@ function SmartAI:initialize(player)
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
-function SmartAI:updatePlayers()
-	local friends = self.lua_ai:getFriends()
-	self.friends = {}
-	for i=0, friends:length()-1 do		
-		table.insert(self.friends, friends:at(i))		
-	end
+function SmartAI:updatePlayers()	
+	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
-
-	local enemies = self.lua_ai:getEnemies()
-	self.enemies = {}
-	for i=0, enemies:length()-1 do
-		table.insert(self.enemies, enemies:at(i))
-	end
+	
+	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
 
 	self.has_wizard = self:hasWizard(self.friends) and not self:hasWizard(self.enemies)
 end
@@ -176,8 +157,7 @@ function SmartAI:getMaxCard(player)
 
 	local cards = player:getHandcards()	
 	local max_card, max_point = nil, 0
-	for i=0, cards:length()-1 do
-		local card = cards:at(i)
+	for _, card in sgs.qlist(cards) do		
 		local point = card:getNumber()
 		if point > max_point then
 			max_point = point
@@ -375,8 +355,7 @@ function SmartAI:useCardByClassName(card, use)
 	end
 
 	local players = self.room:getOtherPlayers(self.player)
-	for i=0, players:length()-1 do
-		local player = players:at(i)
+	for _, player in sgs.qlist(players) do		
 		if not self.room:isProhibited(self.player, player, card)
 			and use_func(self, card, player) then
 
@@ -406,8 +385,8 @@ function SmartAI:getSlashNumber(player)
 		end
 	else
 		local cards = player:getHandcards()
-		for i=0, cards:length()-1 do
-			if cards:at(i):inherits("Slash") then
+		for _, card in sgs.qlist(cards) do
+			if card:inherits("Slash") then
 				n = n + 1
 			end
 		end
@@ -420,8 +399,7 @@ function SmartAI:getSlashNumber(player)
 
 	if player:isLord() and player:hasSkill("jijiang") then
 		local lieges = self.room:getLieges("shu", player)
-		for i=0, lieges:length()-1 do
-			local liege = lieges:at(i)
+		for _, liege in sgs.qlist(lieges) do			
 			if liege == "loyalist" then
 				n = n + self:getSlashNumber(liege)
 			end
@@ -439,23 +417,20 @@ function SmartAI:getJinkNumber(player)
 	local n = 0
 	
 	local cards = player:getHandcards()
-	for i=0, cards:length() do
-		local card = cards:at(i)
+	for _, card in sgs.qlist(cards) do		
 		if card:inherits("Jink") then
 			n = n + 1
 		end
 	end
 
 	if player:hasSkill("longdan") then
-		for i=0, cards:length() do
-			local card = cards:at(i)
+		for _, card in sgs.qlist(cards) do			
 			if card:inherits("Slash") then
 				n = n + 1
 			end
 		end
 	elseif player:hasSkill("qingguo") then
-		for i=0, cards:length() do
-			local card = cards:at(i)
+		for _, card in sgs.qlist(cards) do			
 			if card:isBlack() then
 				n = n + 1
 			end
@@ -472,8 +447,7 @@ function SmartAI:getJinkNumber(player)
 
 	if player:isLord() and player:hasSkill("hujia") then
 		local lieges = self.room:getLieges(player, "wei")
-		for i=0, lieges:length() do
-			local liege = lieges:at(i)
+		for _, liege in sgs.qlist(lieges) do			
 			if liege:getRole() == "loyalist" then
 				n = n + self:getJinkNumber(liege)
 			end
@@ -633,8 +607,7 @@ end
 
 function SmartAI:activate(use)
 	local cards = self.player:getHandcards()
-	for i=0, cards:length()-1 do
-		local card = cards:at(i)
+	for _, card in sgs.qlist(cards) do		
 		local type = card:getTypeId()
 		
 		if type == sgs.Card_Basic then

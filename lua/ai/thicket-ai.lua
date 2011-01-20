@@ -113,8 +113,7 @@ function xuhuang_ai:activate(use)
 	-- find black basic or equip card
 	local cards = self.player:getCards("he")
 	local to_use
-	for i=0, cards:length()-1 do
-		local card = cards:at(i)
+	for _, card in sgs.qlist(cards) do		
 		if card:isBlack() and (card:inherits("BasicCard") or card:inherits("EquipCard")) then
 			to_use = card
 			break
@@ -153,8 +152,8 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 
 	local least = 1000
 	local players = self.room:getOtherPlayers(self.player)
-	for i=0, players:length()-1 do
-		least = math.min(players:at(i):getHandcardNum(), least)		
+	for _, player in sgs.qlist(players) do
+		least = math.min(player:getHandcardNum(), least)		
 	end
 
 	self:sort(self.friends)

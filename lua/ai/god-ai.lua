@@ -15,8 +15,7 @@ function shenlumeng_ai:activate(use)
         
         for _, enemy in ipairs(self.enemies) do
             local cards = enemy:getHandcards()
-			for i=0, cards:length()-1 do
-				local card = cards:at(i)
+			for _, card in sgs.qlist(cards) do				
 				if card:getSuit() == sgs.Card_Heart and not card:inherits("Shit") then
 					use.card = sgs.Card_Parse("@GongxinCard=.")
 					use.to:append(enemy)
