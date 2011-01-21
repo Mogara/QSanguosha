@@ -124,6 +124,34 @@ sgs.ai_skill_invoke.tieji = function(self, data)
 	return not self:isFriend(effect.to) 
 end
 
+local zhouyu_ai = SmartAI:newSubclass "zhouyu"
+zhouyu_ai:setOnceSkill "fanjian"
+
+function zhouyu_ai:activate(use)
+	super.activate(self, use)
+
+	if not use:isValid() and not self.fanjian_used and not self.player:isKongcheng() and next(self.enemies) then
+		local cards = self.player:getHandcards()
+		local should_fanjian = true
+		for _, card in sgs.qlist(cards) do
+			if card:getSuit() == sgs.Card_Diamond or card:inherits("Peach") or card:inherits("Analeptic") then
+				should_fanjian = false
+			end
+		end
+
+		if should_fanjian then
+			self:sort(self.enemies)
+			
+			use.card = sgs.Card_Parse("@FanjianCard=.")
+			use.to:append(self.enemies[1])
+
+			self.fanjian_used = true
+
+			return		
+		end
+	end
+end
+
 local sunshangxiang_ai = SmartAI:newSubclass "sunshangxiang"
 sunshangxiang_ai:setOnceSkill("jieyin")
 
@@ -162,27 +190,65 @@ function sunshangxiang_ai:activate(use)
 	super.activate(self, use)
 end
 
---[[
-
 local ganning_ai = SmartAI:newSubclass "ganning"
 
-function ganning_ai:activate()
+function ganning_ai:activate(use)
 	local cards = self.player:getCards("he")	
-	local black_cards = {}
+	local black_card
 	for _, card in sgs.qlist(cards) do
 		if card:isBlack() then
-			table.insert(black_cards, card)
+			black_card = card
+			break
 		end
 	end
 
-	while next(balck_cards) do
-		for _, friend in ipairs(self.friends) do
-			self:useCard
+	if black_card then		
+		local suit = black_card:getSuitString()
+		local number = black_card:getNumberString()
+		local card_id = black_card:getEffectiveId()
+		local card_str = ("dismantlement:qixi[%s:%s]=%d"):format(suit, number, card_id)
+		local dismantlement = sgs.Card_Parse(card_str)
+		
+		assert(dismantlement)
+
+		if not self.has_wizard then
+			-- find lightning
+
+			local players = self.room:getOtherPlayers(self.player)
+			for _, player in sgs.qlist(players) do
+				if player:containsTrick("lightning") then
+					use.card = dismantlement
+					use.to:append(player)
+					return
+				end
+			end			
 		end
+
+		self:sort(self.friends_noself)
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
+				use.card = dismantlement
+				use.to:append(friend)
+
+				return
+			end			
+		end		
+		
+		self:sort(self.enemies)
+		for _, enemy in ipairs(self.enemies) do
+			local equips = enemy:getEquips()
+			if not equips:isEmpty() then
+				use.card = dismantlement
+				use.to:append(enemy)
+
+				return
+			end
+		end		
 	end
+
+	super.activate(self, use)
 end
 
---]]
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"
 huatuo_ai:setOnceSkill("qingnang")

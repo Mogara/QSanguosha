@@ -69,17 +69,16 @@ sgs.ai_skill_invoke.xingshang = true
 
 -- fangzhu, fangzhu 
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
-	self:sort(self.friends)
 
+	self:sort(self.friends_noself)
 	local target
-	for _, friend in ipairs(self.friends) do
+	for _, friend in ipairs(self.friends_noself) do
 		if not friend:faceUp() then
 			target = friend
 			break
 		end
 
-		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play 
-			and self.player:objectName() ~= friend:objectName() then		
+		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then			
 			target = friend
 			break
 		end

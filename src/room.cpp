@@ -102,6 +102,9 @@ QList<ServerPlayer *> Room::getAllPlayers() const{
 
     int index = alive_players.indexOf(current);
 
+    if(index == -1)
+        return alive_players;
+
     QList<ServerPlayer *> all_players;
     int i;
     for(i=index; i<alive_players.length(); i++)

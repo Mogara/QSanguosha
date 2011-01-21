@@ -462,7 +462,7 @@ void Server::createNewRoom(){
     current = new Room(this, Config.GameMode);
     QString error_msg = current->createLuaState();
     if(!error_msg.isEmpty()){
-        emit server_message(error_msg);
+        QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
     }else{
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     }

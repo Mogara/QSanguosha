@@ -107,6 +107,8 @@ end
 function SmartAI:updatePlayers()	
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
+
+	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
 	
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
 
