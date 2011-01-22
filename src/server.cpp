@@ -294,19 +294,8 @@ QLayout *ServerDialog::createRight(){
         QVBoxLayout *layout = new QVBoxLayout;
         ai_box->setLayout(layout);
 
-        ai_group = new QButtonGroup;
-
-        QRadioButton *stupid = new QRadioButton(tr("Stupid"));
-        QRadioButton *normal = new QRadioButton(tr("Normal"));
-        QRadioButton *smart = new QRadioButton(tr("Smart"));
-
-        ai_group->addButton(stupid, 0);
-        ai_group->addButton(normal, 1);
-        ai_group->addButton(smart, 2);
-
-        layout->addWidget(stupid);
-        layout->addWidget(normal);
-        layout->addWidget(smart);
+        ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
+        ai_enable_checkbox->setChecked(Config.EnableAI);
 
         ai_delay_spinbox = new QSpinBox;
         ai_delay_spinbox->setMinimum(0);
@@ -314,9 +303,8 @@ QLayout *ServerDialog::createRight(){
         ai_delay_spinbox->setValue(Config.AIDelay);
         ai_delay_spinbox->setSuffix(tr(" millisecond"));
 
+        layout->addWidget(ai_enable_checkbox);
         layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
-
-        smart->setChecked(true);
     }
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -393,7 +381,7 @@ bool ServerDialog::config(){
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
-    Config.AILevel = ai_group->checkedId();
+    Config.EnableAI = ai_enable_checkbox->isChecked();
     Config.AIDelay = ai_delay_spinbox->value();
     Config.ServerPort = port_edit->text().toInt();
 
@@ -414,7 +402,7 @@ bool ServerDialog::config(){
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
-    Config.setValue("AILevel", Config.AILevel);
+    Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);

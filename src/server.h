@@ -43,9 +43,9 @@ private:
     QList<QLabel *> challenge_avatars;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
+    QCheckBox *ai_enable_checkbox;
     QSpinBox *ai_delay_spinbox;
 
-    QButtonGroup *ai_group;
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
 

@@ -134,20 +134,17 @@ void LuaAI::activate(CardUseStruct &card_use) {
 }
 
 AI *Room::cloneAI(ServerPlayer *player){
-    bool specialized = false;
-    switch(Config.AILevel){
-    case 0: return new TrustAI(player);
-    case 1: break;
-    case 2: specialized = true; break;
-    }
+    if(L == NULL)
+        return new TrustAI(player);
+
+    if(!Config.EnableAI)
+        return new TrustAI(player);
 
     lua_getglobal(L, "CloneAI");
 
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 
-    lua_pushboolean(L, specialized);
-
-    int error = lua_pcall(L, 2, 1, 0);
+    int error = lua_pcall(L, 1, 1, 0);
     if(error){
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);

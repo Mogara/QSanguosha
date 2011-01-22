@@ -33,10 +33,6 @@ void Settings::init(){
     }else
         QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
-//    BigFont.setFamily("SimHei");
-//    SmallFont.setFamily("SimHei");
-//    TinyFont.setFamily("SimHei");
-
     BigFont.setPixelSize(56);
     SmallFont.setPixelSize(27);
     TinyFont.setPixelSize(18);
@@ -56,7 +52,7 @@ void Settings::init(){
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
-    AILevel = value("AILevel", 2).toInt();
+    EnableAI = value("EnableAI", false).toBool();
     AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 

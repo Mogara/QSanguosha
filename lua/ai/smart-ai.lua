@@ -30,7 +30,7 @@ sgs.ai_compare_funcs = {
 	chaofeng = function(a, b)
 		local c1 = sgs.ai_chaofeng[a:getGeneralName()]	or 0
 		local c2 = sgs.ai_chaofeng[b:getGeneralName()] or 0
-		
+
 		if c1 == c2 then
 			return sgs.ai_compare_funcs.value(a, b)
 		else
@@ -61,7 +61,7 @@ sgs.ai_chaofeng = {
 	lubu = 1,
 	huangzhong = 1,
 	machao = 1,
-	
+
 	simayi = -1,
 	caopi = -2,
 	xiahoudun = -2,
@@ -74,42 +74,40 @@ sgs.ai_chaofeng = {
 
 -- this function is only function that exposed to the host program
 -- and it clones an AI instance by general name
-function CloneAI(player, specialized)	
-	if specialized then
-		local ai_class = sgs.ai_classes[player:getGeneralName()]
-		if ai_class then
-			return ai_class(player).lua_ai
-		end
+function CloneAI(player)
+	local ai_class = sgs.ai_classes[player:getGeneralName()]
+	if ai_class then
+		return ai_class(player).lua_ai
+	else
+		return SmartAI(player).lua_ai
 	end
-	
-	return SmartAI(player).lua_ai
 end
 
 -- SmartAI is the base class for all other specialized AI classes
-SmartAI = class "SmartAI" 
+SmartAI = class "SmartAI"
 
 -- the "initialize" function is just the "constructor"
 function SmartAI:initialize(player)
 	self.player = player
 	self.room = player:getRoom()
-	self.lua_ai = sgs.LuaAI(player)	
+	self.lua_ai = sgs.LuaAI(player)
 	self.lua_ai.callback = function(method_name, ...)
 		local method = self[method_name]
 		if method then
 			return method(self, ...)
 		end
-	end	
+	end
 
 	self:updatePlayers()
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
-function SmartAI:updatePlayers()	
+function SmartAI:updatePlayers()
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
 
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
-	
+
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
 
 	self.has_wizard = self:hasWizard(self.friends) and not self:hasWizard(self.enemies)
@@ -157,9 +155,9 @@ function SmartAI:getMaxCard(player)
 		return nil
 	end
 
-	local cards = player:getHandcards()	
+	local cards = player:getHandcards()
 	local max_card, max_point = nil, 0
-	for _, card in sgs.qlist(cards) do		
+	for _, card in sgs.qlist(cards) do
 		local point = card:getNumber()
 		if point > max_point then
 			max_point = point
@@ -185,7 +183,7 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	if type(invoke) == "boolean" then
 		return invoke
 	elseif type(invoke) == "function" then
-		return invoke(self, data)		
+		return invoke(self, data)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		return skill and skill:getFrequency() == sgs.Skill_Frequent
@@ -212,16 +210,16 @@ function SmartAI:slashIsEffective(slash, to)
 	if self.player:hasWeapon("qinggang_sword") then
 		return true
 	end
-	
+
 	local armor = to:getArmor()
 	if armor then
 		if armor:objectName() == "renwang_shield" then
 			return not slash:isBlack()
 		elseif armor:inherits("Vine") then
 			return slash:inherits("NatureSlash") or self.player:hasWeapon("fan")
-		end		
+		end
 	end
-	
+
 	return true
 end
 
@@ -256,7 +254,7 @@ function SmartAI:useBasicCard(card, use)
 			end
 		end
 	elseif card:inherits("Peach") and self.player:isWounded() then
-		use.card = card		
+		use.card = card
 	end
 end
 
@@ -281,7 +279,7 @@ function SmartAI:aoeIsEffective(card, to)
 	if to:hasSkill("danlao") then
 		return false
 	end
-	
+
 	-- Menghuo and Zhurong
 	if card:inherits("SavageAssault") then
 		if to:hasSkill("huoshou") or to:hasSkill("juxiang") then
@@ -312,10 +310,10 @@ function SmartAI:useCardDismantlement(card, to)
 		end
 	elseif self:isEnemy(to) then
 		return not to:isNude()
-	end	
+	end
 end
 
-function SmartAI:useCardFireAttack(card, use)	
+function SmartAI:useCardFireAttack(card, use)
 	local lack = {
 		spade = true,
 		club = true,
@@ -329,11 +327,27 @@ function SmartAI:useCardFireAttack(card, use)
 		lack[suit] = nil
 	end
 
-	if not next(lack) and next(self.enemies) then
-		self:sort(self.enemies)
-		use.card = card
-		use.to:append(self.enemies[1])		
-	end		
+	local fire_attack = card
+
+	self:sort(self.enemies)
+	for _, enemy in ipairs(self.enemies) do
+		if not enemy:isKongcheng() then
+			local cards = enemy:getHandcards()
+			local success = true
+			for _, card in sgs.qlist(cards) do
+				if lack[card:getSuitString()] then
+					success = false
+					break
+				end
+			end
+
+			if success then
+				use.card = fire_attack
+				use.to:append(enemy)
+				return
+			end
+		end
+	end
 end
 
 local single_target_tricks = {
@@ -350,20 +364,20 @@ function SmartAI:useCardByClassName(card, use)
 	if not use_func then
 		return
 	end
-	
+
 	if not single_target_tricks[class_name] then
 		use_func(self, card, use)
 		return
 	end
 
 	local players = self.room:getOtherPlayers(self.player)
-	for _, player in sgs.qlist(players) do		
+	for _, player in sgs.qlist(players) do
 		if not self.room:isProhibited(self.player, player, card)
 			and use_func(self, card, player) then
 
 			use.card = card
 			use.to:append(player)
-			
+
 			return
 		end
 	end
@@ -401,7 +415,7 @@ function SmartAI:getSlashNumber(player)
 
 	if player:isLord() and player:hasSkill("jijiang") then
 		local lieges = self.room:getLieges("shu", player)
-		for _, liege in sgs.qlist(lieges) do			
+		for _, liege in sgs.qlist(lieges) do
 			if liege == "loyalist" then
 				n = n + self:getSlashNumber(liege)
 			end
@@ -417,22 +431,22 @@ end
 
 function SmartAI:getJinkNumber(player)
 	local n = 0
-	
+
 	local cards = player:getHandcards()
-	for _, card in sgs.qlist(cards) do		
+	for _, card in sgs.qlist(cards) do
 		if card:inherits("Jink") then
 			n = n + 1
 		end
 	end
 
 	if player:hasSkill("longdan") then
-		for _, card in sgs.qlist(cards) do			
+		for _, card in sgs.qlist(cards) do
 			if card:inherits("Slash") then
 				n = n + 1
 			end
 		end
 	elseif player:hasSkill("qingguo") then
-		for _, card in sgs.qlist(cards) do			
+		for _, card in sgs.qlist(cards) do
 			if card:isBlack() then
 				n = n + 1
 			end
@@ -449,7 +463,7 @@ function SmartAI:getJinkNumber(player)
 
 	if player:isLord() and player:hasSkill("hujia") then
 		local lieges = self.room:getLieges(player, "wei")
-		for _, liege in sgs.qlist(lieges) do			
+		for _, liege in sgs.qlist(lieges) do
 			if liege:getRole() == "loyalist" then
 				n = n + self:getJinkNumber(liege)
 			end
@@ -498,9 +512,9 @@ function SmartAI:useCardCollateral(card, use)
 	self:sort(self.enemies)
 
 	for _, enemy in ipairs(self.enemies) do
-		if not self.room:isProhibited(self.player, enemy, card) 
+		if not self.room:isProhibited(self.player, enemy, card)
 			and enemy:getWeapon() then
-			
+
 			for _, enemy2 in ipairs(self.enemies) do
 				if enemy:canSlash(enemy2) then
 					use.card = card
@@ -533,7 +547,7 @@ function SmartAI:useCardIronChain(card, use)
 	use.card = card
 
 	if targets[1] then
-		use.to:append(targets[1])	
+		use.to:append(targets[1])
 	end
 
 	if targets[2] then
@@ -609,9 +623,9 @@ end
 
 function SmartAI:activate(use)
 	local cards = self.player:getHandcards()
-	for _, card in sgs.qlist(cards) do		
+	for _, card in sgs.qlist(cards) do
 		local type = card:getTypeId()
-		
+
 		if type == sgs.Card_Basic then
 			self:useBasicCard(card, use)
 		elseif type == sgs.Card_Trick then
@@ -655,7 +669,7 @@ function SmartAI:sortByKeepValue(cards)
 			return value1 < value2
 		else
 			return a:getNumber() < b:getNumber()
-		end	
+		end
 	end
 
 	table.sort(cards, compare_func)
@@ -682,7 +696,7 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	end
 end
 
-function SmartAI:askForPlayerChosen(targets, reason)	
+function SmartAI:askForPlayerChosen(targets, reason)
 	local r = math.random(0, targets:length() - 1)
 	return targets:at(r)
 end
@@ -696,14 +710,14 @@ function SmartAI:getCardRandomly(who, flags)
 	local cards = who:getCards(flags)
 	local r = math.random(0, cards:length()-1)
 	local card = cards:at(r)
-	return card:getEffectiveId()	
+	return card:getEffectiveId()
 end
 
 function SmartAI:askForCardChosen(who, flags, reason)
 	if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
-			
+
 			local lightning, indulgence, supply_shortage
 			for _, trick in sgs.qlist(tricks) do
 				if trick:inherits "Lightning" then
@@ -751,8 +765,8 @@ end
 
 function SmartAI.newSubclass(theClass, name)
 	local class_name = name:sub(1, 1):upper() .. name:sub(2) .. "AI"
-	local new_class = class(class_name, theClass)	
-	
+	local new_class = class(class_name, theClass)
+
 	function new_class:initialize(player)
 		super.initialize(self, player)
 	end

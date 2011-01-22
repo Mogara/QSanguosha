@@ -372,7 +372,7 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     if(!player)
         return;
 
-    if(!player->isAlive()){
+    if(player->isDead()){
         if(death_pixmap.isNull())
             death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
 

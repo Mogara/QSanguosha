@@ -34,7 +34,7 @@ public:
     int MaxHpScheme;
     bool AnnounceIP;
     QString Address;
-    int AILevel;
+    bool EnableAI;
     int AIDelay;
     ushort ServerPort;
 

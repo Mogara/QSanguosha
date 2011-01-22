@@ -1628,17 +1628,17 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="465"/>
+        <location filename="src/server.cpp" line="453"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="476"/>
+        <location filename="src/server.cpp" line="464"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="489"/>
+        <location filename="src/server.cpp" line="477"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
@@ -1717,28 +1717,23 @@
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="299"/>
-        <source>Stupid</source>
-        <translation>愚蠢</translation>
-    </message>
-    <message>
-        <location filename="src/server.cpp" line="315"/>
+        <location filename="src/server.cpp" line="304"/>
         <source> millisecond</source>
         <translation> 毫秒</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="317"/>
+        <location filename="src/server.cpp" line="307"/>
         <source>AI delay</source>
         <translation>电脑延迟</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="361"/>
-        <location filename="src/server.cpp" line="376"/>
+        <location filename="src/server.cpp" line="349"/>
+        <location filename="src/server.cpp" line="364"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="376"/>
+        <location filename="src/server.cpp" line="364"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -1779,27 +1774,22 @@
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="300"/>
-        <source>Normal</source>
-        <translation>一般</translation>
-    </message>
-    <message>
-        <location filename="src/server.cpp" line="301"/>
-        <source>Smart</source>
-        <translation>聪明</translation>
-    </message>
-    <message>
         <location filename="src/server.cpp" line="287"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="335"/>
+        <location filename="src/server.cpp" line="297"/>
+        <source>Enable AI</source>
+        <translation>启用 AI</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="323"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="336"/>
+        <location filename="src/server.cpp" line="324"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -1910,13 +1900,13 @@
         <translation>不能载入字体文件 %1 !</translation>
     </message>
     <message>
-        <location filename="src/settings.cpp" line="65"/>
+        <location filename="src/settings.cpp" line="61"/>
         <source>Sanguosha-fans</source>
         <oldsource>Sanguosha-lover</oldsource>
         <translation>三国杀fans</translation>
     </message>
     <message>
-        <location filename="src/settings.cpp" line="66"/>
+        <location filename="src/settings.cpp" line="62"/>
         <source>%1&apos;s server</source>
         <translation>%1的服务器</translation>
     </message>
@@ -1971,6 +1961,16 @@
         <translation>未启用</translation>
     </message>
     <message>
+        <location filename="src/startscene.cpp" line="132"/>
+        <source>This server is AI enabled</source>
+        <translation>此服务器已启用 AI</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="134"/>
+        <source>This server is AI disabled</source>
+        <translation>此服务器尚未启用 AI</translation>
+    </message>
+    <message>
         <location filename="src/startscene.cpp" line="124"/>
         <source>There is no time limit</source>
         <translation>没有时间限制</translation>
@@ -1989,26 +1989,6 @@
         <location filename="src/startscene.cpp" line="129"/>
         <source>Secondary general is %1</source>
         <translation>双将是 %1</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="133"/>
-        <source>stupid</source>
-        <translation>愚蠢</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="134"/>
-        <source>normal</source>
-        <translation>一般</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="137"/>
-        <source>smart</source>
-        <translation>聪明</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="139"/>
-        <source>The computer AI level is %1</source>
-        <translation>电脑的 AI 水平是 %1</translation>
     </message>
 </context>
 <context>

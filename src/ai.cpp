@@ -232,7 +232,7 @@ const Card *TrustAI::askForCard(const QString &pattern) {
 
         QChar end = pattern.at(1).toLower();
         foreach(const Card *card, cards){
-            if(card->getSuitString().startsWith(end))
+            if(card->getSuitString().startsWith(end, Qt::CaseInsensitive))
                 return card;
         }
     }else{

@@ -128,13 +128,8 @@ void StartScene::printServerInfo(){
     server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
     server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
 
-    QString level;
-    switch(Config.AILevel){
-    case 0: level = tr("stupid"); break;
-    case 1: level = tr("normal"); break;
-    case 2:
-    default:
-        level = tr("smart"); break;
-    }
-    server_log->append(tr("The computer AI level is %1").arg(level));
+    if(Config.EnableAI)
+        server_log->append(tr("This server is AI enabled"));
+    else
+        server_log->append(tr("This server is AI disabled"));
 }

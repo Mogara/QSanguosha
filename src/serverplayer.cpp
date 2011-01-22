@@ -342,12 +342,8 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if(getState() == "online")
         return NULL;
-
-#ifdef QT_NO_DEBUG
-    else if(getState() == "trust")
+    else if(getState() == "trust" && !Config.FreeChoose)
         return trust_ai;
-#endif
-
     else
         return ai;
 }
