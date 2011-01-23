@@ -22,5 +22,36 @@ public:
     static bool HasShit(const Card *card);
 };
 
+class Deluge: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Deluge(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
+class Typhoon: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Typhoon(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
+class Earthquake: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Earthquake(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
+class Volcano: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Volcano(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+};
 
 #endif // JOYPACKAGE_H

@@ -120,7 +120,7 @@ function xuhuang_ai:activate(use)
 
 		card = sgs.Card_Parse(card_str)
 
-		self:useCardByClassName(card, use)
+		self:useCardSupplyShortage(card, use)
 		if use:isValid() then
 			return
 		end
@@ -140,15 +140,15 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 		return true
 	end
 
-	local least = 1000
+	local least = math.huge
 	local players = self.room:getOtherPlayers(self.player)
 	for _, player in sgs.qlist(players) do
 		least = math.min(player:getHandcardNum(), least)		
 	end
 
-	self:sort(self.friends)
-	for _, friend in ipairs(self.friends) do
-		if friend:getHandcardNum() == least and friend:objectName() ~= self.player:objectName() then
+	self:sort(self.friends_noself)
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:getHandcardNum() == least then
 			self.beggar = friend
 			return true
 		end

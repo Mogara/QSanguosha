@@ -211,42 +211,13 @@ function ganning_ai:activate(use)
 		
 		assert(dismantlement)
 
-		if not self.has_wizard then
-			-- find lightning
-
-			local players = self.room:getOtherPlayers(self.player)
-			for _, player in sgs.qlist(players) do
-				if player:containsTrick("lightning") then
-					use.card = dismantlement
-					use.to:append(player)
-					return
-				end
-			end			
+		self:useCardDismantlement(dismantlement, use)
+		if use:isValid() then
+			return
 		end
-
-		self:sort(self.friends_noself)
-		for _, friend in ipairs(self.friends_noself) do
-			if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
-				use.card = dismantlement
-				use.to:append(friend)
-
-				return
-			end			
-		end		
-		
-		self:sort(self.enemies)
-		for _, enemy in ipairs(self.enemies) do
-			local equips = enemy:getEquips()
-			if not equips:isEmpty() then
-				use.card = dismantlement
-				use.to:append(enemy)
-
-				return
-			end
-		end		
 	end
 
-	super.activate(self, use)
+	super.activate(self, use)	
 end
 
 local daqiao_ai = SmartAI:newSubclass "daqiao"

@@ -30,3 +30,12 @@ function shenlumeng_ai:activate(use)
 	super.activate(self, use)
 end
 
+local shenlubu_ai = SmartAI:newSubclass "shenlubu"
+
+function shenlubu_ai:useTrickCard(card, use)
+	if self.player:getMark("@wrath") > 0 then
+		return super.useTrickCard(self, card, use)
+	end
+end
+
+sgs.ai_skill_choice.wumou = "discard"

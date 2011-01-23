@@ -126,6 +126,15 @@ function sgs.qlist(list)
 	return qlist_iterator, list, -1
 end
 
+-- more general iterator
+function sgs.list(list)
+	if type(list) == "table" then
+		return ipairs(list)
+	else
+		return sgs.qlist(list)
+	end
+end		
+
 -- copied from "Well House Consultants"
 -- used to split string into a table, similar with php' explode function
 function string:split(delimiter)

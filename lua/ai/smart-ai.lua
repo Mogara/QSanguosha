@@ -1,4 +1,4 @@
--- This is the Smart AI, and it should be loaded and run at the server side
+ -- This is the Smart AI, and it should be loaded and run at the server side
 
 -- "middleclass" is the Lua OOP library written by kikito
 -- more information see: https://github.com/kikito/middleclass
@@ -288,30 +288,119 @@ function SmartAI:aoeIsEffective(card, to)
 	return true
 end
 
--- tell the user that the snatch should be used on this target or not
-function SmartAI:useCardSnatch(card, to)
-	if not self.player:hasSkill("qicai") and self.player:distanceTo(to) > 1 then
-		return false
-	elseif self:isNeutrality(to) then
-		return true
-	else
-		return self:useCardDismantlement(card, to)
+function SmartAI:getDistanceLimit(card)
+	if self.player:hasSkill "qicai" then
+		return nil
 	end
-end
 
-function SmartAI:useCardDismantlement(card, to)
-	if self:isFriend(to) then
-		if to:containsTrick("lightning") then
-			return not self.has_wizard
+	if card:inherits "Snatch" then
+		return 1
+	elseif card:inherits "SupplyShortage" then
+		if self.player:hasSkill "duanliang" then
+			return 2
 		else
-			return to:containsTrick("indulgence") or to:containsTrick("supply_shortage")
+			return 1
 		end
-	elseif self:isEnemy(to) then
-		return not to:isNude()
 	end
 end
 
-function SmartAI:useCardFireAttack(card, use)
+function SmartAI:exclude(players, card)
+	local excluded = {}
+	local limit = self:getDistanceLimit(card)
+	for _, player in sgs.list(players) do
+		if not self.room:isProhibited(self.player, player, card) then
+			local should_insert = true
+			if limit then
+				should_insert = self.player:distanceTo(player) <= limit
+			end
+
+			if should_insert then
+				table.insert(excluded, player)
+			end
+		end
+	end
+
+	return excluded
+end
+
+function SmartAI:useCardDismantlement(dismantlement, use)
+	if not self.has_wizard then
+		-- find lightning
+		local players = self.room:getOtherPlayers(self.player)
+		players = self:exclude(players, dismantlement)
+		for _, player in ipairs(players) do
+			if player:containsTrick("lightning") then
+				use.card = dismantlement
+				use.to:append(player)
+				return			
+			end
+		end
+	end
+
+	self:sort(self.friends_noself)
+	local friends = self:exclude(self.friends_noself, dismantlement)
+	for _, friend in ipairs(friends) do
+		if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
+			use.card = dismantlement
+			use.to:append(friend)
+
+			return
+		end			
+	end		
+	
+	self:sort(self.enemies)
+	local enemies = self:exclude(self.enemies, dismantlement)
+	for _, enemy in ipairs(enemies) do
+		local equips = enemy:getEquips()
+		if not equips:isEmpty() then
+			use.card = dismantlement
+			use.to:append(enemy)
+
+			return
+		end
+	end
+end
+
+-- very similar with SmartAI:useCardDismantlement
+function SmartAI:useCardSnatch(snatch, use)
+	if not self.has_wizard then
+		-- find lightning
+		local players = self.room:getOtherPlayers(self.player)
+		players = self:exclude(players, snatch)
+		for _, player in ipairs(players) do
+			if player:containsTrick("lightning") then
+				use.card = snatch
+				use.to:append(player)
+				
+				return			
+			end			
+		end
+	end
+
+	self:sort(self.friends_noself)
+	local friends = self:exclude(self.friends_noself, snatch)
+	for _, friend in ipairs(friends) do
+		if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
+			use.card = snatch
+			use.to:append(friend)
+
+			return
+		end			
+	end		
+	
+	self:sort(self.enemies)
+	local enemies = self:exclude(self.enemies, snatch)
+	for _, enemy in ipairs(enemies) do
+		if not enemy:isNude() then
+			use.card = snatch
+			use.to:append(enemy)
+
+			return
+		end
+	end
+end
+
+function SmartAI:useCardFireAttack(fire_attack, use)
 	local lack = {
 		spade = true,
 		club = true,
@@ -321,11 +410,10 @@ function SmartAI:useCardFireAttack(card, use)
 
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		local suit = card:getSuitString()
-		lack[suit] = nil
-	end
-
-	local fire_attack = card
+		if card:getEffectiveId() ~= fire_attack:getEffectiveId() then
+			lack[card:getSuitString()] = nil
+		end
+	end	
 
 	self:sort(self.enemies)
 	for _, enemy in ipairs(self.enemies) do
@@ -348,35 +436,12 @@ function SmartAI:useCardFireAttack(card, use)
 	end
 end
 
-local single_target_tricks = {
-	SupplyShortage = true,
-	Duel = true,
-	Snatch = true,
-	Dismantlement = true,
-}
-
 function SmartAI:useCardByClassName(card, use)
 	local class_name = card:className()
 	local use_func = self["useCard" .. class_name]
-	if not use_func then
-		return
-	end
-
-	if not single_target_tricks[class_name] then
+	
+	if use_func then
 		use_func(self, card, use)
-		return
-	end
-
-	local players = self.room:getOtherPlayers(self.player)
-	for _, player in sgs.qlist(players) do
-		if not self.room:isProhibited(self.player, player, card)
-			and use_func(self, card, player) then
-
-			use.card = card
-			use.to:append(player)
-
-			return
-		end
 	end
 end
 
@@ -470,34 +535,44 @@ function SmartAI:getJinkNumber(player)
 	return n
 end
 
-function SmartAI:useCardDuel(card, to)
-	if self:isEnemy(to) then
+function SmartAI:useCardDuel(duel, use)
+	self:sort(self.enemies)
+	local enemies = self:exclude(self.enemies, duel)
+	for _, enemy in ipairs(enemies) do
 		local n1 = self:getSlashNumber(self.player)
-		local n2 = self:getSlashNumber(to)
+		local n2 = self:getSlashNumber(enemy)
 
-		return n1 >= n2
+		if n1 >= n2 then
+			use.card = duel
+			use.to:append(enemy)
+
+			return
+		end
 	end
 end
 
-function SmartAI:useCardSupplyShortage(card, to)
-	if not self:isEnemy(to) then
-		return false
-	end
+local function handcard_subtract_hp(a, b)
+	local diff1 = a:getHandcardNum() - a:getHp()
+	local diff2 = b:getHandcardNum() - b:getHp()
 
-	if to:containsTrick(card:objectName()) then
-		return false
-	end
+	return diff1 < diff2
+end
 
-	if self.player:hasSkill("qicai") then
-		return true
-	elseif self.player:hasSkill("duanliang") then
-		return self.player:distanceTo(to) <= 2
-	else
-		return self.player:distanceTo(to) <= 1
+function SmartAI:useCardSupplyShortage(card, use)
+	table.sort(self.enemies, handcard_subtract_hp)
+
+	local enemies = self:exclude(self.enemies, card)
+	for _, enemy in ipairs(enemies) do
+		if not enemy:containsTrick("supply_shortage") then
+			use.card = card
+			use.to:append(enemy)
+
+			return
+		end
 	end
 end
 
-local function compare_by_diff(a,b)
+local function hp_subtract_handcard(a,b)
 	local diff1 = a:getHp() - a:getHandcardNum()
 	local diff2 = b:getHp() - b:getHandcardNum()
 
@@ -505,11 +580,11 @@ local function compare_by_diff(a,b)
 end
 
 function SmartAI:useCardIndulgence(card, use)
-	table.sort(self.enemies, compare_by_diff)
+	table.sort(self.enemies, hp_subtract_handcard)
 
+	local enemies = self:exclude(self.enemies, card)
 	for _, enemy in ipairs(self.enemies) do
-		if not self.room:isProhibited(self.player, enemy, card)
-		and not enemy:containsTrick("indulgence") then
+		if not enemy:containsTrick("indulgence") then
 			use.card = card
 			use.to:append(enemy)
 
@@ -814,3 +889,4 @@ dofile "lua/ai/fire-ai.lua"
 dofile "lua/ai/thicket-ai.lua"
 dofile "lua/ai/god-ai.lua"
 dofile "lua/ai/yitian-ai.lua"
+dofile "lua/ai/nostalgia-ai.lua"

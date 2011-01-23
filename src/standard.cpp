@@ -154,8 +154,12 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
-    room->moveCardTo(this, target, Player::Judging, true);
+    if(target_fixed)
+        room->moveCardTo(this, source, Player::Judging, true);
+    else{
+        ServerPlayer *target = targets.first();
+        room->moveCardTo(this, target, Player::Judging, true);
+    }
 }
 
 QString DelayedTrick::getSubtype() const{

@@ -2240,6 +2240,17 @@ void Room::surrenderCommand(ServerPlayer *player, const QString &){
     }
 }
 
+void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who){
+    QStringList card_str;
+    foreach(int card_id, card_ids)
+        card_str << QString::number(card_id);
+
+    if(who)
+        who->invoke("fillAG", card_str.join("+"));
+    else
+        broadcastInvoke("fillAG", card_str.join("+"));
+}
+
 void Room::takeAG(ServerPlayer *player, int card_id){
     if(player){
         player->addCard(Sanguosha->getCard(card_id), Player::Hand);

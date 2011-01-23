@@ -75,7 +75,8 @@ public:
     void doGuanxing(ServerPlayer *zhuge);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();
-    const Card *peek();
+    const Card *peek();    
+    void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL);
     void takeAG(ServerPlayer *player, int card_id);
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;

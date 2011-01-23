@@ -461,10 +461,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
 
     QList<ServerPlayer *> players = room->getAllPlayers();
     QList<int> card_ids = room->getNCards(players.length());
-    QStringList card_str;
-    foreach(int card_id, card_ids)
-        card_str << QString::number(card_id);
-    room->broadcastInvoke("fillAG", card_str.join("+"));
+    room->fillAG(card_ids);
 
     QVariantList ag_list;
     foreach(int card_id, card_ids)

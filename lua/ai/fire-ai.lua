@@ -114,9 +114,8 @@ end
 -- mengjin
 sgs.ai_skill_invoke.mengjin = function(self, data)
 	local effect = data:toSlashEffect()
-	return not self:isFriend(effect.to) and not effect.to:isNude()
+	return not self:isFriend(effect.to)
 end
-
 
 local dianwei_ai = SmartAI:newSubclass "dianwei"
 dianwei_ai:setOnceSkill "qiangxi"

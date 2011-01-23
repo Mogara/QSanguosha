@@ -117,11 +117,8 @@ public:
         room->playSkillEffect(objectName());
 
         QList<int> card_ids = room->getNCards(5);
-        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
-        QStringList card_str;
-        foreach(int card_id, card_ids)
-            card_str << QString::number(card_id);
-        room->broadcastInvoke("fillAG", card_str.join("+"));
+        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);        
+        room->fillAG(card_ids);
 
         while(!card_ids.isEmpty()){
             int card_id = room->askForAG(shenlumeng, card_ids);
@@ -633,12 +630,8 @@ public:
         if(stars.isEmpty())
             return;
 
-        QStringList card_str;
-        foreach(int card_id, stars)
-            card_str << QString::number(card_id);
-
         Room *room = shenzhuge->getRoom();
-        shenzhuge->invoke("fillAG", card_str.join("+"));
+        room->fillAG(stars, shenzhuge);
 
         QList<int> to_exchange;
         while(!stars.isEmpty()){
@@ -682,10 +675,7 @@ public:
         Room *room = shenzhuge->getRoom();
         QList<int> &stars = shenzhuge->getPile("stars");
 
-        QStringList card_str;
-        foreach(int star, stars)
-            card_str << QString::number(star);
-        shenzhuge->invoke("fillAG", card_str.join("+"));
+        room->fillAG(stars, shenzhuge);
 
         int i;
         for(i=0; i<n; i++){
