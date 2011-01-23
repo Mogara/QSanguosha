@@ -674,12 +674,12 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="319"/>
+        <location filename="src/engine.cpp" line="321"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="321"/>
+        <location filename="src/engine.cpp" line="323"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1321,9 +1321,9 @@
         <location filename="src/roomscene.cpp" line="1580"/>
         <location filename="src/roomscene.cpp" line="2112"/>
         <location filename="src/roomscene.cpp" line="2118"/>
-        <location filename="src/roomscene.cpp" line="2552"/>
-        <location filename="src/roomscene.cpp" line="2577"/>
-        <location filename="src/roomscene.cpp" line="2583"/>
+        <location filename="src/roomscene.cpp" line="2554"/>
+        <location filename="src/roomscene.cpp" line="2579"/>
+        <location filename="src/roomscene.cpp" line="2585"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1360,8 +1360,8 @@
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="90"/>
-        <location filename="src/roomscene.cpp" line="2523"/>
-        <location filename="src/roomscene.cpp" line="2529"/>
+        <location filename="src/roomscene.cpp" line="2525"/>
+        <location filename="src/roomscene.cpp" line="2531"/>
         <source>Expand to window width</source>
         <translation>延长至窗口宽度</translation>
     </message>
@@ -1522,62 +1522,62 @@
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2327"/>
+        <location filename="src/roomscene.cpp" line="2328"/>
         <source>Add robot</source>
         <translation>添加电脑</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2353"/>
+        <location filename="src/roomscene.cpp" line="2355"/>
         <source>Free discard</source>
         <translation>自由弃牌</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2354"/>
+        <location filename="src/roomscene.cpp" line="2356"/>
         <source>Discard cards freely</source>
         <translation>自由扔掉任意手牌和装备</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2526"/>
+        <location filename="src/roomscene.cpp" line="2528"/>
         <source>Reset to default width</source>
         <translation>重置回默认宽度</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2539"/>
+        <location filename="src/roomscene.cpp" line="2541"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2552"/>
+        <location filename="src/roomscene.cpp" line="2554"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2567"/>
+        <location filename="src/roomscene.cpp" line="2569"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2568"/>
+        <location filename="src/roomscene.cpp" line="2570"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2577"/>
+        <location filename="src/roomscene.cpp" line="2579"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2583"/>
+        <location filename="src/roomscene.cpp" line="2585"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2588"/>
+        <location filename="src/roomscene.cpp" line="2590"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2588"/>
+        <location filename="src/roomscene.cpp" line="2590"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
@@ -1807,74 +1807,81 @@
 <context>
     <name>ServerInfoWidget</name>
     <message>
-        <location filename="src/clientstruct.cpp" line="63"/>
+        <location filename="src/clientstruct.cpp" line="65"/>
         <source>Server name</source>
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="64"/>
+        <location filename="src/clientstruct.cpp" line="66"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="65"/>
+        <location filename="src/clientstruct.cpp" line="67"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="66"/>
+        <location filename="src/clientstruct.cpp" line="68"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="67"/>
+        <location filename="src/clientstruct.cpp" line="69"/>
         <source>Player count</source>
         <translation>玩家人数</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="68"/>
+        <location filename="src/clientstruct.cpp" line="70"/>
         <source>2nd general mode</source>
         <translation>双将模式</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="75"/>
+        <location filename="src/clientstruct.cpp" line="72"/>
+        <source>Enable AI</source>
+        <translation>启用 AI</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="78"/>
         <source>Lack</source>
         <translation>缺人</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="89"/>
-        <location filename="src/clientstruct.cpp" line="90"/>
+        <location filename="src/clientstruct.cpp" line="92"/>
+        <location filename="src/clientstruct.cpp" line="93"/>
+        <location filename="src/clientstruct.cpp" line="94"/>
         <source>Enabled</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="89"/>
-        <location filename="src/clientstruct.cpp" line="90"/>
+        <location filename="src/clientstruct.cpp" line="92"/>
+        <location filename="src/clientstruct.cpp" line="93"/>
+        <location filename="src/clientstruct.cpp" line="94"/>
         <source>Disabled</source>
         <translation>未启用</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="69"/>
+        <location filename="src/clientstruct.cpp" line="71"/>
         <source>Free choose</source>
         <translation>自由选将</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="93"/>
+        <location filename="src/clientstruct.cpp" line="97"/>
         <source>No limit</source>
         <translation>没有限制</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="95"/>
+        <location filename="src/clientstruct.cpp" line="99"/>
         <source>%1 seconds</source>
         <translation>%1 秒</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="70"/>
+        <location filename="src/clientstruct.cpp" line="73"/>
         <source>Operation time</source>
         <translation>操作时间</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="71"/>
+        <location filename="src/clientstruct.cpp" line="74"/>
         <source>Extension packages</source>
         <translation>扩展包</translation>
     </message>

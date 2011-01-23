@@ -14,15 +14,11 @@ end
 
 local sunjian_ai = SmartAI:newSubclass "sunjian"
 
-function sunjian_ai:askForChoice(skill_name, choices)
-	if skill_name == "yinghun" then
-		if self:isFriend(self.yinghun) then
-			return "dxt1"
-		else
-			return "d1tx"
-		end
+sgs.ai_skill_choice.yinghun = function(self, choices)
+	if self:isFriend(self.yinghun) then
+		return "dxt1"
 	else
-		return super.askForChoice(skill_name, choices)
+		return "d1tx"
 	end
 end
 
@@ -49,18 +45,13 @@ function sunjian_ai:askForUseCard(pattern, prompt)
     end
 end
 
--- Dong Zhuo's AI
-local dongzhuo_ai = SmartAI:newSubclass "dongzhuo"
+-- benghuai
 
-function dongzhuo_ai:askForChoice(skill_name, choice)
-	if skill_name == "benghuai" then
-		if self.player:getLostHp() >= 2 then
-			return "maxhp"
-		else
-			return "hp"
-		end
+sgs.ai_skill_choice.benghuai = function(self, choices)
+	if self.player:getLostHp() >= 2 then
+		return "maxhp"
 	else
-		return super.askForChoice(self, skill_name, choice)
+		return "hp"
 	end
 end
 

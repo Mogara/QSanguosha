@@ -296,6 +296,8 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
+    if(Config.EnableAI)
+        flags.append("A");
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;

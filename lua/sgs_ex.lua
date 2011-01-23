@@ -127,6 +127,7 @@ function sgs.qlist(list)
 end
 
 -- copied from "Well House Consultants"
+-- used to split string into a table, similar with php' explode function
 function string:split(delimiter)
   local result = { }
   local from  = 1

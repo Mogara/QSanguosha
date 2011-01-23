@@ -169,14 +169,12 @@ function SmartAI:getMaxCard(player)
 end
 
 -- the table that stores whether the skill should be invoked
+-- used for SmartAI:askForSkillInvoke
 sgs.ai_skill_invoke = {
 	eight_diagram = true,
 	double_sword = true,
 	fan = true,
 }
-
--- used for SmartAI:askForChoice
-sgs.ai_skill_choice = {}
 
 function SmartAI:askForSkillInvoke(skill_name, data)
 	local invoke = sgs.ai_skill_invoke[skill_name]
@@ -351,7 +349,6 @@ function SmartAI:useCardFireAttack(card, use)
 end
 
 local single_target_tricks = {
-	Indulgence = true,
 	SupplyShortage = true,
 	Duel = true,
 	Snatch = true,
@@ -500,12 +497,25 @@ function SmartAI:useCardSupplyShortage(card, to)
 	end
 end
 
-function SmartAI:useCardIndulgence(card, to)
-	if not self:isEnemy(to) then
-		return false
-	end
+local function compare_by_diff(a,b)
+	local diff1 = a:getHp() - a:getHandcardNum()
+	local diff2 = b:getHp() - b:getHandcardNum()
 
-	return not to:containsTrick(card:objectName())
+	return diff1 < diff2
+end
+
+function SmartAI:useCardIndulgence(card, use)
+	table.sort(self.enemies, compare_by_diff)
+
+	for _, enemy in ipairs(self.enemies) do
+		if not self.room:isProhibited(self.player, enemy, card)
+		and not enemy:containsTrick("indulgence") then
+			use.card = card
+			use.to:append(enemy)
+
+			return
+		end
+	end
 end
 
 function SmartAI:useCardCollateral(card, use)
@@ -539,7 +549,8 @@ function SmartAI:useCardIronChain(card, use)
 
 	self:sort(self.enemies)
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) then
+		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) 
+			and not enemy:hasSkill("danlao") then
 			table.insert(targets, enemy)
 		end
 	end
@@ -701,9 +712,19 @@ function SmartAI:askForPlayerChosen(targets, reason)
 	return targets:at(r)
 end
 
+-- used for SmartAI:askForChoice
+sgs.ai_skill_choice = {}
+
 function SmartAI:askForChoice(skill_name, choices)
-	local skill = sgs.Sanguosha:getSkill(skill_name)
-	return skill:getDefaultChoice()
+	local choice = sgs.ai_skill_choice[skill_name]
+	if type(choice) == "string" then
+		return choice
+	elseif type(choice) == "function" then
+		return choice(self, choices)
+	else
+		local skill = sgs.Sanguosha:getSkill(skill_name)
+		return skill:getDefaultChoice()
+	end		
 end
 
 function SmartAI:getCardRandomly(who, flags)

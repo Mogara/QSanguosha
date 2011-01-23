@@ -294,6 +294,7 @@ public:
         if(!effect.to->isNude()){
             Room *room = pangde->getRoom();
             if(pangde->askForSkillInvoke(objectName(), data)){
+                room->playSkillEffect(objectName());
                 int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName());
                 room->throwCard(to_throw);
             }

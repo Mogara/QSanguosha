@@ -249,6 +249,33 @@ function ganning_ai:activate(use)
 	super.activate(self, use)
 end
 
+local daqiao_ai = SmartAI:newSubclass "daqiao"
+
+function daqiao_ai:activate(use)
+	super.activate(self, use)
+	if use:isValid() then
+		return
+	end
+
+	local cards = self.player:getCards("he")
+	for _, card in sgs.qlist(cards) do
+		if card:getSuit() == sgs.Card_Diamond then
+			local number = card:getNumberString()
+			local card_id = card:getEffectiveId()
+			local card_str = ("indulgence:guose[diamond:%s]=%d"):format(number, card_id)
+			
+			local indulgence = sgs.Card_Parse(card_str)
+			
+			self:useCardIndulgence(indulgence, use)
+			
+			if use:isValid() then
+				return
+			end			
+		end
+	end
+
+
+end
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"
 huatuo_ai:setOnceSkill("qingnang")

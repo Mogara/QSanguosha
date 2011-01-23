@@ -2324,13 +2324,15 @@ void RoomScene::createStateItem(){
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
 
-    add_robot = new Button(tr("Add robot"));
-    add_robot->setPos(state_item->x() + 10, state_item->y() + state_item->boundingRect().height() + 10);
-    addItem(add_robot);
-    add_robot->hide();
+    if(ServerInfo.EnableAI){
+        add_robot = new Button(tr("Add robot"));
+        add_robot->setPos(state_item->x() + 10, state_item->y() + state_item->boundingRect().height() + 10);
+        addItem(add_robot);
+        add_robot->hide();
 
-    connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
-    connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
+        connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
+        connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
+    }
 }
 
 void RoomScene::showOwnerButtons(bool owner){

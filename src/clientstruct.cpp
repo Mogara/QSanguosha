@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FS]*)");
+    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSA]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -42,6 +42,7 @@ bool ServerInfoStruct::parse(const QString &str){
 
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
+    EnableAI = flags.contains("A");
 
     return true;
 }
@@ -55,6 +56,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     player_count_label = new QLabel;
     two_general_label = new QLabel;
     free_choose_label = new QLabel;
+    enable_ai_label = new QLabel;
     time_limit_label = new QLabel;
 
     list_widget = new QListWidget;
@@ -67,6 +69,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Player count"), player_count_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
     layout->addRow(tr("Free choose"), free_choose_label);
+    layout->addRow(tr("Enable AI"), enable_ai_label);
     layout->addRow(tr("Operation time"), time_limit_label);
     layout->addRow(tr("Extension packages"), list_widget);
 
@@ -88,6 +91,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
+    enable_ai_label->setText(info.EnableAI ? tr("Enabled") : tr("Disabled"));
 
     if(info.OperationTimeout == 0)
         time_limit_label->setText(tr("No limit"));
