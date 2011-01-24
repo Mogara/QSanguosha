@@ -181,6 +181,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     Q_ASSERT(callback != NULL);
 
     if(room->judge(effect.to, callback) == "bad"){
+        room->throwCard(this);
         takeEffect(effect.to);
     }else if(movable){
         onNullified(effect.to);

@@ -48,6 +48,7 @@ void Settings::init(){
     BanPackages = value("BanPackages").toStringList();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
+    DisableChat = value("DisableChat", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();

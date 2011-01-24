@@ -813,8 +813,6 @@ Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
 }
 
 void Lightning::takeEffect(ServerPlayer *target) const{
-    target->getRoom()->throwCard(this);
-
     DamageStruct damage;
     damage.card = this;
     damage.damage = 3;

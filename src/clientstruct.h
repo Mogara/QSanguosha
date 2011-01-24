@@ -14,8 +14,9 @@ struct ServerInfoStruct{
     int OperationTimeout;
     QMap<QString, bool> Extensions;
     bool FreeChoose;
-    bool Enable2ndGeneral;
+    bool Enable2ndGeneral;   
     bool EnableAI;
+    bool DisableChat;
 };
 
 extern ServerInfoStruct ServerInfo;

@@ -239,6 +239,10 @@ QLayout *ServerDialog::createRight(){
         forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
         layout->addWidget(forbid_same_ip_checkbox);
 
+        disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
+        disable_chat_checkbox->setChecked(Config.DisableChat);
+        layout->addWidget(disable_chat_checkbox);
+
         second_general_checkbox = new QCheckBox(tr("Enable second general"));        
         layout->addWidget(second_general_checkbox);
 
@@ -377,6 +381,7 @@ bool ServerDialog::config(){
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
+    Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
@@ -400,6 +405,7 @@ bool ServerDialog::config(){
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);

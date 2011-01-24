@@ -78,8 +78,8 @@ public:
     void startGame(const QString &);
     void hpChange(const QString &change_str);
     void playSkillEffect(const QString &play_str);
-    void closeNullification(const QString &);
     void playCardEffect(const QString &play_str);
+    void playAudio(const QString &name);
     void clearPile(const QString &);
     void setPileNumber(const QString &pile_num);
     void gameOver(const QString &result_str);

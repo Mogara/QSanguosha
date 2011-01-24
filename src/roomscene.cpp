@@ -152,29 +152,35 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     if(player_count != 6 && player_count <= 8)
         widen_width = 148;
 
-    // chat box
-    chat_box = new QTextEdit;
-    chat_box->resize(230 + widen_width, 213);
+    {
+        // chat box
+        chat_box = new QTextEdit;
+        chat_box->resize(230 + widen_width, 213);
 
-    QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
-    chat_box_widget->setPos(-343 - widen_width, -83);
-    chat_box_widget->setZValue(-2.0);
-    QPalette palette;
-    palette.setBrush(QPalette::Base, backgroundBrush());
-    chat_box->setPalette(palette);
-    chat_box->setReadOnly(true);
-    chat_box->setTextColor(Config.TextEditColor);
-    connect(ClientInstance, SIGNAL(words_spoken(QString)), chat_box, SLOT(append(QString)));
+        QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
+        chat_box_widget->setPos(-343 - widen_width, -83);
+        chat_box_widget->setZValue(-2.0);
+        QPalette palette;
+        palette.setBrush(QPalette::Base, backgroundBrush());
+        chat_box->setPalette(palette);
+        chat_box->setReadOnly(true);
+        chat_box->setTextColor(Config.TextEditColor);
+        connect(ClientInstance, SIGNAL(words_spoken(QString)), chat_box, SLOT(append(QString)));
 
-    // chat edit
-    chat_edit = new QLineEdit;
-    chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
+        // chat edit
+        chat_edit = new QLineEdit;
+        chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
 
-    QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
-    chat_edit_widget->setWidget(chat_edit);
-    chat_edit_widget->setX(widen_width + 10);
-    chat_edit_widget->setY(chat_box->height());
-    connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
+        QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
+        chat_edit_widget->setWidget(chat_edit);
+        chat_edit_widget->setX(widen_width + 10);
+        chat_edit_widget->setY(chat_box->height());
+        connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
+
+        if(ServerInfo.DisableChat)
+            chat_edit_widget->hide();
+    }
+
 
     // log box
     log_box = new ClientLogBox;

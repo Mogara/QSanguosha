@@ -93,6 +93,7 @@ public:
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
     virtual const Card *askForCard(const QString &pattern);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
+    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 

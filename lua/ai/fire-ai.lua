@@ -85,29 +85,25 @@ function xunyu_ai:askForPlayerChosen(players, reason)
 	return super.askForPlayerChosen(self, players, reason)
 end
 
-function xunyu_ai:askForUseCard(pattern, prompt)
-	if pattern == "@@jieming" then
-		self:sort(self.friends)
+sgs.ai_skill_use["@@jieming"] = function(self, prompt)
+	self:sort(self.friends)
 
-		local max_x = 0
-		local target
-		for _, friend in ipairs(self.friends) do
-			local x = friend:getMaxHP() - friend:getHandcardNum()
-			x = math.min(5, x)
+	local max_x = 0
+	local target
+	for _, friend in ipairs(self.friends) do
+		local x = friend:getMaxHP() - friend:getHandcardNum()
+		x = math.min(5, x)
 
-			if x > max_x then
-				max_x = x
-				target = friend
-			end
+		if x > max_x then
+			max_x = x
+			target = friend
 		end
+	end
 
-		if target then
-			return "@JiemingCard=.->" .. target:objectName()
-		else
-			return "."
-		end
+	if target then
+		return "@JiemingCard=.->" .. target:objectName()
 	else
-		return super.askForUseCard(self, pattern, prompt)
+		return "."
 	end
 end
 

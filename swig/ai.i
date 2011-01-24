@@ -292,4 +292,39 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
     }
 }
 
+int LuaAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_pushstring(L, trick_name.toAscii());
+
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_ServerPlayer, 0);
+
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 4, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+
+        return TrustAI::askForNullification(trick_name, from, to);
+    }
+
+    if(lua_isnumber(L, -1)){
+        int card_id = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+        return card_id;
+    }
+
+    lua_pop(L, 1);
+
+    return TrustAI::askForNullification(trick_name, from, to);
+}
+
 %}

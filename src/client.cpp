@@ -33,10 +33,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
     callbacks["startGame"] = &Client::startGame;
-    callbacks["hpChange"] = &Client::hpChange;    
-    callbacks["playSkillEffect"] = &Client::playSkillEffect;    
-    callbacks["closeNullification"] = &Client::closeNullification;    
-    callbacks["playCardEffect"] = &Client::playCardEffect;
+    callbacks["hpChange"] = &Client::hpChange;
     callbacks["clearPile"] = &Client::clearPile;
     callbacks["setPileNumber"] = &Client::setPileNumber;    
     callbacks["gameOver"] = &Client::gameOver;
@@ -58,6 +55,10 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setPrompt"] = &Client::setPrompt;
     callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
+
+    callbacks["playSkillEffect"] = &Client::playSkillEffect;
+    callbacks["playCardEffect"] = &Client::playCardEffect;
+    callbacks["playAudio"] = &Client::playAudio;
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
@@ -734,9 +735,8 @@ void Client::askForNullification(const QString &ask_str){
     nullification_dialog->exec();
 }
 
-void Client::closeNullification(const QString &){
-    if(nullification_dialog)
-        nullification_dialog->accept();
+void Client::playAudio(const QString &name){
+    Sanguosha->playAudio(name);
 }
 
 void Client::askForCardChosen(const QString &ask_str){

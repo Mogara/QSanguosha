@@ -35,6 +35,7 @@ private:
     QCheckBox *nolimit_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *forbid_same_ip_checkbox;
+    QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;

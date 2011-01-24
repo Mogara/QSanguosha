@@ -583,7 +583,7 @@ function SmartAI:useCardIndulgence(card, use)
 	table.sort(self.enemies, hp_subtract_handcard)
 
 	local enemies = self:exclude(self.enemies, card)
-	for _, enemy in ipairs(self.enemies) do
+	for _, enemy in ipairs(enemies) do
 		if not enemy:containsTrick("indulgence") then
 			use.card = card
 			use.to:append(enemy)
@@ -848,6 +848,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 end
 
 function SmartAI:askForCard(pattern)
+	return nil
+end
+
+function SmartAI:askForNullification(trick_name, from, to)
 	return nil
 end
 

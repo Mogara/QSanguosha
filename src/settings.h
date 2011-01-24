@@ -30,6 +30,7 @@ public:
     QStringList BanPackages;
     bool FreeChoose;
     bool ForbidSIMC;
+    bool DisableChat;
     bool Enable2ndGeneral;
     int MaxHpScheme;
     bool AnnounceIP;

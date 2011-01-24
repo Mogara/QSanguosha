@@ -87,6 +87,7 @@ void Deluge::takeEffect(ServerPlayer *target) const{
 
     QList<ServerPlayer *> players = room->getOtherPlayers(target);
     players << target;
+    players = players.mid(0, n);
     foreach(ServerPlayer *player, players){
         if(player->isAlive()){
             int card_id = room->askForAG(player, card_ids);
@@ -122,7 +123,14 @@ Typhoon::Typhoon(Card::Suit suit, int number)
 }
 
 void Typhoon::takeEffect(ServerPlayer *target) const{
-
+    Room *room = target->getRoom();
+    QList<ServerPlayer *> players = room->getOtherPlayers(target);
+    foreach(ServerPlayer *player, players){
+        if(target->distanceTo(player) == 1){
+            int discard_num = qMin(6, player->getHandcardNum());
+            room->askForDiscard(player, objectName(), discard_num);
+        }
+    }
 }
 
 // -----------  Earthquake -----------------
@@ -145,16 +153,25 @@ Earthquake::Earthquake(Card::Suit suit, int number)
 }
 
 void Earthquake::takeEffect(ServerPlayer *target) const{
+    Room *room = target->getRoom();
+    QList<ServerPlayer *> players = room->getAllPlayers();
+    foreach(ServerPlayer *player, players){
+        if(target->distanceTo(player) <= 1){
+            player->throwAllEquips();
+        }
+    }
 }
 
 // -----------  Volcano -----------------
 
-static QString VolcanoCallback(const Card *card, Room *)
+static QString VolcanoCallback(const Card *card, Room *room)
 {
     int number = card->getNumber();
-    if(card->getSuit() == Card::Heart && number >= 2 && number <= 9)
+    if(card->getSuit() == Card::Heart && number >= 2 && number <= 9){
+        QString victim = number <= 5 ? "Previous" : "Next";
+        room->setTag("VolcanoVictim", victim);
         return "bad";
-    else
+    }else
         return "good";
 }
 
@@ -167,7 +184,29 @@ Volcano::Volcano(Card::Suit suit, int number)
 }
 
 void Volcano::takeEffect(ServerPlayer *target) const{
+    Room *room = target->getRoom();
 
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+    int index = players.indexOf(target);
+
+    QString victim = room->getTag("VolcanoVictim").toString();
+    if(victim == "Previous"){
+        index --;
+        if(index < 0)
+            index += players.length();
+    }else{
+        index ++;
+        if(index >= players.length())
+            index -= players.length();
+    }
+
+    DamageStruct damage;
+    damage.card = this;
+    damage.damage = 3;
+    damage.nature = DamageStruct::Fire;
+    damage.to = players.at(index);
+
+    room->damage(damage);
 }
 
 JoyPackage::JoyPackage()
