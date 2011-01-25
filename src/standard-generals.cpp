@@ -254,9 +254,6 @@ public:
             if(reason == NULL)
                 return false;
 
-            if(damage.chain)
-                return false;
-
             if(reason->inherits("Slash") || reason->inherits("Duel")){
                 damage.damage ++;
                 data = QVariant::fromValue(damage);

@@ -584,7 +584,7 @@ function SmartAI:useCardIndulgence(card, use)
 
 	local enemies = self:exclude(self.enemies, card)
 	for _, enemy in ipairs(enemies) do
-		if not enemy:containsTrick("indulgence") then
+		if not enemy:containsTrick("indulgence") and not enemy:hasSkill("keji") then			
 			use.card = card
 			use.to:append(enemy)
 
@@ -818,24 +818,37 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			for _, trick in sgs.qlist(tricks) do
 				if trick:inherits "Lightning" then
 					lightning = trick:getId()
-				elseif trick:inherits "Indulgence" then
+				elseif trick:inherits "Indulgence" or trick:getSuit() == sgs.Card_Diamond then
 					indulgence = trick:getId()
-				elseif trick:inherits "SupplyShortage" then
+				else
 					supply_shortage = trick:getId()
 				end
 			end
 
 			if not self.has_wizard and lightning then
 				return lightning
-			elseif who:getHp() > who:getHandcardNum() and supply_shortage then
-				return supply_shortage
-			elseif indulgence then
-				return indulgence
+			end
+
+			if indulgence and supply_shortage then
+				if who:getHp() < who:getHandcardNum() then
+					return indulgence
+				else
+					return supply_shortage
+				end
+			end
+
+			if indulgence or supply_shortage then
+				return indulgence or supply_shortage
+			end
+		elseif flags:match("e") and who:hasSkill("xiaoji") then
+			local equips = who:getEquips()
+			if not equips:isEmpty() then
+				return equips:at(0):getId()
 			end
 		end
 	else
 		if flags:match("e") then
-			local equips = who:getCards("e")
+			local equips = who:getEquips()
 			if not equips:isEmpty() then
 				return equips:at(0):getId()
 			end
