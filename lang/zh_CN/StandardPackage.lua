@@ -326,6 +326,7 @@ local t = {
 	["@tuxi-card"] = "您是否想发动【突袭】技能？", 
 	["@leiji"] = "令任意一名角色判定，若为【黑桃】，你对该角色造成2点雷电伤害", 
 	["#GuanxingResult"] = "%from 的观星结果：%arg 上 %arg2 下", 
+	["#LuoyiBuff"] = "%from 的【裸衣】效果被触发，伤害从 %arg 点上升至 %arg2 点",
 	["$biyue2"] = "羡慕吧", 
 	["$biyue1"] = "失礼了", 
 	["$fanjian1"] = "挣扎吧，在血和暗的深渊里", 

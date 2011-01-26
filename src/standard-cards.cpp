@@ -119,7 +119,10 @@ void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &)
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->recover(effect.to);
+    Room *room = effect.to->getRoom();
+    QString who = effect.to->objectName();
+    room->broadcastInvoke("animate", QString("peach:%1:%2").arg(who).arg(who));
+    room->recover(effect.to);
 }
 
 bool Peach::isAvailable() const{

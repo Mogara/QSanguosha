@@ -255,6 +255,14 @@ public:
                 return false;
 
             if(reason->inherits("Slash") || reason->inherits("Duel")){
+                LogMessage log;
+                log.type = "#LuoyiBuff";
+                log.from = xuchu;
+                log.to << damage.to;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(damage.damage + 1);
+                xuchu->getRoom()->sendLog(log);
+
                 damage.damage ++;
                 data = QVariant::fromValue(damage);
             }
