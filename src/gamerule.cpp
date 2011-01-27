@@ -297,8 +297,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             case Player::Rebel:
             case Player::Renegade:
                 {
-                    if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade"))
+                    if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade")){
                         winner = "lord+loyalist";
+                        if(player->getRole() == "renegade" && !alive_roles.contains("loyalist"))
+                            room->setTag("RenegadeInFinalPK", true);
+                    }
                     break;
                 }
 

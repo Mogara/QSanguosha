@@ -6,6 +6,7 @@
 #include "banpairdialog.h"
 #include "scenario.h"
 #include "challengemode.h"
+#include "contestdb.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -231,20 +232,23 @@ QLayout *ServerDialog::createRight(){
         QVBoxLayout *layout = new QVBoxLayout;
         advanced_box->setLayout(layout);
 
+        contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
+        contest_mode_checkbox->setChecked(Config.ContestMode);
+        contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
+
         free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
         free_choose_checkbox->setChecked(Config.FreeChoose);
-        layout->addWidget(free_choose_checkbox);
 
         forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
         forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
-        layout->addWidget(forbid_same_ip_checkbox);
+
 
         disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
         disable_chat_checkbox->setChecked(Config.DisableChat);
-        layout->addWidget(disable_chat_checkbox);
 
-        second_general_checkbox = new QCheckBox(tr("Enable second general"));        
-        layout->addWidget(second_general_checkbox);
+
+        second_general_checkbox = new QCheckBox(tr("Enable second general"));
+
 
         max_hp_scheme_combobox = new QComboBox;
         max_hp_scheme_combobox->addItem(tr("Sum - 3"));
@@ -253,10 +257,7 @@ QLayout *ServerDialog::createRight(){
         max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
         connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));
 
-        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-
-
-        layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
+        second_general_checkbox->setChecked(Config.Enable2ndGeneral);        
 
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
         BanPairDialog *banpair_dialog = new BanPairDialog(this);
@@ -264,23 +265,16 @@ QLayout *ServerDialog::createRight(){
 
         connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
 
-
-        layout->addLayout(HLay(second_general_checkbox, banpair_button));
-
-
         announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
         announce_ip_checkbox->setChecked(Config.AnnounceIP);
-        announce_ip_checkbox->setEnabled(false);
-        layout->addWidget(announce_ip_checkbox);
+        announce_ip_checkbox->setEnabled(false); // not support now
 
         address_edit = new QLineEdit;
         address_edit->setText(Config.Address);
         address_edit->setPlaceholderText(tr("Public IP or domain"));
-        layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
 
         QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
         connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
-        layout->addWidget(detect_button);
 
         //address_edit->setEnabled(announce_ip_checkbox->isChecked());
         // connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
@@ -288,6 +282,16 @@ QLayout *ServerDialog::createRight(){
         port_edit = new QLineEdit;
         port_edit->setText(QString::number(Config.ServerPort));
         port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
+
+        layout->addWidget(contest_mode_checkbox);
+        layout->addWidget(forbid_same_ip_checkbox);
+        layout->addWidget(disable_chat_checkbox);
+        layout->addWidget(free_choose_checkbox);
+        layout->addLayout(HLay(second_general_checkbox, banpair_button));
+        layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
+        layout->addWidget(announce_ip_checkbox);
+        layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
+        layout->addWidget(detect_button);
         layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
     }
 
@@ -379,6 +383,7 @@ bool ServerDialog::config(){
     Config.ServerName = server_name_edit->text();
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
+    Config.ContestMode = contest_mode_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
@@ -403,6 +408,7 @@ bool ServerDialog::config(){
     Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
+    Config.setValue("ContestMode", Config.ContestMode);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
@@ -426,6 +432,11 @@ bool ServerDialog::config(){
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
+
+    if(Config.ContestMode){
+        ContestDB *db = ContestDB::GetInstance();
+        return db->loadMembers();
+    }
 
     return true;
 }

@@ -6,6 +6,7 @@
 #include "scenario.h"
 #include "gamerule.h"
 #include "bossmode.h"
+#include "contestdb.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -146,6 +147,10 @@ void Room::output(const QString &message){
 }
 
 void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
+    if(Config.ContestMode && killer){
+        killer->addVictim(victim);
+    }
+
     victim->setAlive(false);
     broadcastProperty(victim, "alive");
 
@@ -317,6 +322,17 @@ void Room::gameOver(const QString &winner){
         all_roles << player->getRole();
 
     game_finished = true;
+
+    if(Config.ContestMode){
+        ContestDB *db = ContestDB::GetInstance();
+        db->saveResult(players, winner);
+
+        foreach(ServerPlayer *player, players){
+            QString screen_name = player->screenName().toUtf8().toBase64();
+            broadcastInvoke("setScreenName", QString("%1:%2").arg(player->objectName()).arg(screen_name));
+        }
+    }
+
     broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
 
     if(QThread::currentThread() == thread)
@@ -1094,7 +1110,7 @@ void Room::processRequest(const QString &request){
         return;
 
     if(game_finished){
-        player->invoke("gameOverWarn");
+        player->invoke("warn", "GAME_OVER");
         return;
     }
 
@@ -1153,12 +1169,11 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
     player->setObjectName(generatePlayerName());    
     player->setProperty("avatar", avatar);
+    player->setScreenName(screen_name);
 
     if(!is_robot){
         player->invoke("checkVersion", Sanguosha->getVersion());
         player->invoke("setup", Sanguosha->getSetupString());
-
-        player->setScreenName(screen_name);
 
         player->sendProperty("objectName");
 
@@ -1170,7 +1185,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     }
 
     // introduce the new joined player to existing players except himself
-    QString base64 = screen_name.toUtf8().toBase64();
+    QString contestant = tr("Contestant").toUtf8().toBase64();
+    QString base64;
+    if(Config.ContestMode)
+        base64 = contestant;
+    else
+        base64 = screen_name.toUtf8().toBase64();
     broadcastInvoke("addPlayer", QString("%1:%2:%3").arg(player->objectName()).arg(base64).arg(avatar), player);
 
     if(!is_robot){
@@ -1179,8 +1199,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             if(p == player)
                 continue;
 
-            QString name = p->objectName();
-            QString base64 = p->screenName().toUtf8().toBase64();
+            QString name = p->objectName();            
+            QString base64;
+            if(Config.ContestMode)
+                base64 = contestant;
+            else
+                base64 = p->screenName().toUtf8().toBase64();
             QString avatar = p->property("avatar").toString();
 
             player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
@@ -1201,11 +1225,26 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
 void Room::signupCommand(ServerPlayer *player, const QString &arg){
     QStringList words = arg.split(":");
+
     QString base64 = words[0];
     QByteArray data = QByteArray::fromBase64(base64.toAscii());
     QString screen_name = QString::fromUtf8(data);
 
     QString avatar = words[1];
+
+    if(Config.ContestMode){
+        QString password = words.value(2);
+        if(password.isEmpty()){
+            player->invoke("warn", "REQUIRE_PASSWORD");
+            return;
+        }
+
+        ContestDB *db = ContestDB::GetInstance();
+        if(!db->checkPassword(screen_name, password)){
+            player->invoke("warn", "WRONG_PASSWORD");
+            return;
+        }
+    }
 
     signup(player, screen_name, avatar, false);
 }
@@ -1582,7 +1621,12 @@ void Room::sendDamageLog(const DamageStruct &data){
     sendLog(log);
 }
 
+#include <QDateTime>
+
 void Room::startGame(){    
+    if(Config.ContestMode)
+        tag.insert("StartTime", QDateTime::currentDateTime());
+
     int i;
     if(scenario == NULL){
         for(i=1; i<players.count(); i++)

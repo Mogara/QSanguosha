@@ -28,6 +28,7 @@ public:
     int CountDownSeconds;
     QString GameMode;
     QStringList BanPackages;
+    bool ContestMode;
     bool FreeChoose;
     bool ForbidSIMC;
     bool DisableChat;
@@ -43,6 +44,7 @@ public:
     QString HostAddress;
     QString UserName;
     QString UserAvatar;
+    QString Password;
     QStringList HistoryIPs;
     ushort DetectorPort;
     int MaxCards;

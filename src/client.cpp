@@ -38,7 +38,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setPileNumber"] = &Client::setPileNumber;    
     callbacks["gameOver"] = &Client::gameOver;
     callbacks["killPlayer"] = &Client::killPlayer;
-    callbacks["gameOverWarn"] = &Client::gameOverWarn;
+    callbacks["warn"] = &Client::warn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
@@ -127,12 +127,20 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setDefaultFont(QFont("SimHei"));
 }
 
+#include <QCryptographicHash>
+
 void Client::signup(){
     if(replayer)
         replayer->start();
     else{
-        QString base64 = Config.UserName.toUtf8().toBase64();
-        request(QString("signup %1:%2").arg(base64).arg(Config.UserAvatar));
+        QString base64 = Config.UserName.toUtf8().toBase64();       
+        QString signup_str = QString("signup %1:%2").arg(base64).arg(Config.UserAvatar);
+        QString password = Config.Password;
+        if(!password.isEmpty()){
+            password = QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5).toHex();
+            signup_str.append(":" + password);
+        }
+        request(signup_str);
     }
 }
 
@@ -1000,8 +1008,19 @@ void Client::killPlayer(const QString &player_name){
     emit player_killed(player_name);
 }
 
-void Client::gameOverWarn(const QString &){
-    QMessageBox::warning(NULL, tr("Warning"), tr("Game is over now"));
+void Client::warn(const QString &reason){
+    QString msg;
+    if(reason == "GAME_OVER")
+        msg = tr("Game is over now");
+    else if(reason == "REQUIRE_PASSWORD")
+        msg = tr("The server require password to signup");
+    else if(reason == "WRONG_PASSWORD")
+        msg = tr("Your password is wrong");
+    else
+        msg = tr("Unknown warning: %1").arg(reason);
+
+    disconnectFromHost();
+    QMessageBox::warning(NULL, tr("Warning"), msg);
 }
 
 void Client::askForSuit(const QString &){
@@ -1402,4 +1421,12 @@ void Client::animate(const QString &animate_str){
 
 bool Client::hasUsed(const QString &card_class){
     return used.contains(card_class);
+}
+
+void Client::setScreenName(const QString &set_str){
+    QStringList words = set_str.split(":");
+    ClientPlayer *player = getPlayer(words.first());
+    QString base64 = words.at(1);
+    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toAscii()));
+    player->setScreenName(screen_name);
 }

@@ -347,3 +347,11 @@ AI *ServerPlayer::getAI() const{
     else
         return ai;
 }
+
+void ServerPlayer::addVictim(ServerPlayer *victim){
+    victims.append(victim);
+}
+
+QList<ServerPlayer *> ServerPlayer::getVictims() const{
+    return victims;
+}

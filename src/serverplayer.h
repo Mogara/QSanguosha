@@ -54,12 +54,16 @@ public:
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
 
+    void addVictim(ServerPlayer *victim);
+    QList<ServerPlayer *> getVictims() const;
+
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
     AI *ai;
     AI *trust_ai;
+    QList<ServerPlayer *> victims;
 
 private slots:
     void getMessage(char *message);

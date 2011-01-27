@@ -64,6 +64,8 @@ void ConnectionDialog::on_connectButton_clicked()
 
     Config.UserName = username;
     Config.HostAddress = ui->hostComboBox->lineEdit()->text();
+    Config.Password = ui->passwordLineEdit->text();
+
     bool ok;
     int port = ui->portLineEdit->text().toInt(&ok);
     if(port){

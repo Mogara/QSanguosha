@@ -125,11 +125,14 @@ void StartScene::printServerInfo(){
     else
         server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));    
 
+    if(Config.ContestMode)
+        server_log->append(tr("The contest mode is enabled"));
+
     server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
     server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
 
     if(Config.EnableAI)
-        server_log->append(tr("This server is AI enabled"));
+        server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
     else
         server_log->append(tr("This server is AI disabled"));
 }

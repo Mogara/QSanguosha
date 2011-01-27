@@ -59,6 +59,7 @@ public:
     bool isJilei(const Card *card) const;
     bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
+    bool hasUsed(const QString &card_class);
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -84,7 +85,7 @@ public:
     void setPileNumber(const QString &pile_num);
     void gameOver(const QString &result_str);
     void killPlayer(const QString &player_name);
-    void gameOverWarn(const QString &);
+    void warn(const QString &);
     void setMark(const QString &mark_str);
     void showCard(const QString &show_str);
     void doGuanxing(const QString &guanxing_str);
@@ -100,8 +101,8 @@ public:
     void animate(const QString &animate_str);
     void setPrompt(const QString &prompt_str);
     void jilei(const QString &jilei_str);
-    void judgeResult(const QString &result_str);
-    bool hasUsed(const QString &card_class);    
+    void judgeResult(const QString &result_str);    
+    void setScreenName(const QString &set_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);

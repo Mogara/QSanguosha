@@ -7,7 +7,6 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QApplication>
-#include <QCryptographicHash>
 #include <QNetworkInterface>
 #include <QDateTime>
 
@@ -46,6 +45,7 @@ void Settings::init(){
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
     BanPackages = value("BanPackages").toStringList();
+    ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();

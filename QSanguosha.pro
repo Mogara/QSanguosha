@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network
+QT += network sql
 TEMPLATE = app
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -67,7 +67,8 @@ SOURCES += src/main.cpp \
     src/couple-scenario.cpp \
     swig/sanguosha_wrap.cxx \
     src/lua-wrapper.cpp \
-    src/window.cpp
+    src/window.cpp \
+    src/contestdb.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -132,7 +133,8 @@ HEADERS += src/mainwindow.h \
     src/standard-skillcards.h \
     src/structs.h \
     src/lua-wrapper.h \
-    src/window.h
+    src/window.h \
+    src/contestdb.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
