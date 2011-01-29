@@ -38,6 +38,14 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     font = Config.UIFont;
     showFont(ui->textEditFontLineEdit, font);
+
+    // tab 3
+    ui->smtpServerLineEdit->setText(Config.value("Contest/SMTPServer").toString());
+    ui->senderLineEdit->setText(Config.value("Contest/Sender").toString());
+    ui->passwordLineEdit->setText(Config.value("Contest/Password").toString());
+    ui->receiverLineEdit->setText(Config.value("Contest/Receiver").toString());
+
+    ui->onlySaveLordCheckBox->setChecked(Config.value("Contest/OnlySaveLordRecord", true).toBool());
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
@@ -71,7 +79,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
 
-    QString filename = "backdrop/default.jpg";
+    QString filename = "backdrop/new-year.jpg";
     Config.BackgroundBrush = filename;
     Config.setValue("BackgroundBrush", filename);
 
@@ -109,6 +117,12 @@ void ConfigDialog::saveConfig()
 
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
+
+    Config.setValue("Contest/SMTPServer", ui->smtpServerLineEdit->text());
+    Config.setValue("Contest/Sender", ui->senderLineEdit->text());
+    Config.setValue("Contest/Password", ui->passwordLineEdit->text());
+    Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
+    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

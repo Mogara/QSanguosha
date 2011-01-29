@@ -89,6 +89,10 @@ Skill::Frequency Skill::getFrequency() const{
     return frequency;
 }
 
+QStringList Skill::getSources() const{
+    return sources;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
 {

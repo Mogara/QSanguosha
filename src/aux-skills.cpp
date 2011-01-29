@@ -1,5 +1,5 @@
 #include "aux-skills.h"
-
+#include "client.h"
 #include "carditem.h"
 #include "standard.h"
 #include "clientplayer.h"
@@ -25,6 +25,9 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
         return false;
 
     if(!include_equip && to_select->isEquipped())
+        return false;
+
+    if(ClientInstance->isJilei(to_select->getFilteredCard()))
         return false;
 
     return true;

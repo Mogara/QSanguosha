@@ -12,7 +12,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     ui->setupUi(this);    
 
     button_group = new QButtonGroup;
-    button_layout = new QHBoxLayout;
+    button_layout = new QVBoxLayout;
     ui->skillGroupBox->setLayout(button_layout);
 
     QList<General*> generals = Sanguosha->findChildren<General*>();
@@ -69,11 +69,14 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 
 void GeneralOverview::resetButtons(){
     QList<QAbstractButton *> buttons = button_group->buttons();
-    foreach(QAbstractButton *button, buttons){
+    foreach(QAbstractButton *button, buttons)
         button_group->removeButton(button);
-        button_layout->removeWidget(button);
-        button->setParent(NULL);
-        delete button;
+
+    QLayoutItem *child;
+    while((child = button_layout->takeAt(0))){
+        QWidget *widget = child->widget();
+        if(widget)
+            delete widget;
     }
 }
 
@@ -103,7 +106,13 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
         button_layout->addWidget(button);
         button_group->addButton(button);
+
+        QStringList sources = skill->getSources();
+        if(sources.isEmpty())
+            button->setEnabled(false);
     }
+
+    button_layout->addStretch();
 
     QList<QAbstractButton *> buttons = button_group->buttons();
     if(!buttons.isEmpty())

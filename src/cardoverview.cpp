@@ -81,6 +81,9 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 }
 
 void CardOverview::askCard(){
+    if(!ServerInfo.FreeChoose)
+        return;
+
     int row = ui->tableWidget->currentRow();
     if(row >= 0){
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();

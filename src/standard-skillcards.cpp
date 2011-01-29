@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "client.h"
+#include "settings.h"
 
 ZhihengCard::ZhihengCard(){
     target_fixed = true;
@@ -272,6 +273,7 @@ CheatCard::CheatCard(){
 }
 
 void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->obtainCard(source, subcards.first());
+    if(Config.FreeChoose)
+        room->obtainCard(source, subcards.first());
 }
 

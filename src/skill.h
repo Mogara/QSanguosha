@@ -33,6 +33,7 @@ public:
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
+    QStringList getSources() const;
 
 protected:
     Frequency frequency;

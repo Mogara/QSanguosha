@@ -1,6 +1,7 @@
 -- This is the start script of QSanguosha
 
 package.path = package.path .. ";./lua/lib/?.lua"
+package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 dofile "lua/sgs_ex.lua"
 

@@ -449,22 +449,73 @@
         <translation>从不无懈自己的单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/configdialog.cpp" line="56"/>
+        <location filename="src/configdialog.ui" line="442"/>
+        <source>Contest mode</source>
+        <translation>竞赛模式</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="457"/>
+        <source>SMTP Server</source>
+        <translation>SMTP 服务器</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="464"/>
+        <source>SMTP server&apos;s address</source>
+        <translation>SMTP 服务器的地址</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="471"/>
+        <source>Sender</source>
+        <translation>发送者</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="478"/>
+        <source>The sender&apos;s email address</source>
+        <oldsource>The user name of SMTP server</oldsource>
+        <translation>发送者的邮件地址</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="485"/>
+        <source>Password</source>
+        <translation>密码</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="492"/>
+        <source>The password</source>
+        <translation>密码</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="499"/>
+        <source>Receiver</source>
+        <translation>接收者</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="506"/>
+        <source>The receiver&apos;s email address</source>
+        <translation>接收者的电子邮件</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.ui" line="522"/>
+        <source>Only save the record of lord</source>
+        <translation>仅保存主公的重放记录</translation>
+    </message>
+    <message>
+        <location filename="src/configdialog.cpp" line="64"/>
         <source>Select a background image</source>
         <translation>请选择一个背景图片</translation>
     </message>
     <message>
-        <location filename="src/configdialog.cpp" line="58"/>
+        <location filename="src/configdialog.cpp" line="66"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="src/configdialog.cpp" line="118"/>
+        <location filename="src/configdialog.cpp" line="132"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="src/configdialog.cpp" line="120"/>
+        <location filename="src/configdialog.cpp" line="134"/>
         <source>Audio files (*.wav *.mp3)</source>
         <translation>音频文件 (*.wav *.mp3)</translation>
     </message>
@@ -546,24 +597,24 @@
 <context>
     <name>ContestDB</name>
     <message>
-        <location filename="src/contestdb.cpp" line="23"/>
+        <location filename="src/contestdb.cpp" line="26"/>
         <source>Database open error</source>
         <translation>数据库打开出错</translation>
     </message>
     <message>
-        <location filename="src/contestdb.cpp" line="23"/>
+        <location filename="src/contestdb.cpp" line="26"/>
         <source>The database can not be opened:
  %1</source>
         <translation>数据库无法打开:
 %1</translation>
     </message>
     <message>
-        <location filename="src/contestdb.cpp" line="39"/>
+        <location filename="src/contestdb.cpp" line="42"/>
         <source>Database query error</source>
         <translation>数据库查询出错</translation>
     </message>
     <message>
-        <location filename="src/contestdb.cpp" line="39"/>
+        <location filename="src/contestdb.cpp" line="42"/>
         <source>Load member table error:
  %1</source>
         <translation>加载用户表出错:
@@ -666,82 +717,82 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/engine.cpp" line="70"/>
+        <location filename="src/engine.cpp" line="63"/>
         <source>2 players</source>
         <translation>2 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="71"/>
+        <location filename="src/engine.cpp" line="64"/>
         <source>3 players</source>
         <translation>3 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="72"/>
+        <location filename="src/engine.cpp" line="65"/>
         <source>4 players</source>
         <translation>4 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="73"/>
+        <location filename="src/engine.cpp" line="66"/>
         <source>5 players</source>
         <translation>5 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="74"/>
+        <location filename="src/engine.cpp" line="67"/>
         <source>6 players</source>
         <translation>6 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="75"/>
+        <location filename="src/engine.cpp" line="68"/>
         <source>6 players (2 renegades)</source>
         <translation>6 人局（双内奸）</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="76"/>
+        <location filename="src/engine.cpp" line="69"/>
         <source>7 players</source>
         <translation>7 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="77"/>
+        <location filename="src/engine.cpp" line="70"/>
         <source>8 players</source>
         <translation>8 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="78"/>
+        <location filename="src/engine.cpp" line="71"/>
         <source>8 players (2 renegades)</source>
         <translation>8 人局（双内奸）</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="79"/>
+        <location filename="src/engine.cpp" line="72"/>
         <source>8 players (boss mode)</source>
         <translation>8 人局 (魔王模式)</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="80"/>
+        <location filename="src/engine.cpp" line="73"/>
         <source>9 players</source>
         <translation>9 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="81"/>
+        <location filename="src/engine.cpp" line="74"/>
         <source>10 players</source>
         <translation>10 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="86"/>
+        <location filename="src/engine.cpp" line="79"/>
         <source>Boss mode</source>
         <translation>魔王模式</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="93"/>
+        <location filename="src/engine.cpp" line="86"/>
         <source>Lua script error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="323"/>
+        <location filename="src/engine.cpp" line="316"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="325"/>
+        <location filename="src/engine.cpp" line="318"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1299,37 +1350,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="1008"/>
+        <location filename="src/room.cpp" line="1034"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1125"/>
+        <location filename="src/room.cpp" line="1151"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1153"/>
+        <location filename="src/room.cpp" line="1179"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1117"/>
+        <location filename="src/room.cpp" line="1143"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1157"/>
+        <location filename="src/room.cpp" line="1183"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1184"/>
+        <location filename="src/room.cpp" line="1211"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1937"/>
+        <location filename="src/room.cpp" line="1971"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1389,8 +1440,9 @@
         <location filename="src/roomscene.cpp" line="2118"/>
         <location filename="src/roomscene.cpp" line="2124"/>
         <location filename="src/roomscene.cpp" line="2560"/>
-        <location filename="src/roomscene.cpp" line="2585"/>
-        <location filename="src/roomscene.cpp" line="2591"/>
+        <location filename="src/roomscene.cpp" line="2565"/>
+        <location filename="src/roomscene.cpp" line="2590"/>
+        <location filename="src/roomscene.cpp" line="2596"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1619,32 +1671,37 @@
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2575"/>
+        <location filename="src/roomscene.cpp" line="2565"/>
+        <source>This function is disabled in contest mode</source>
+        <translation>此功能在竞赛模式下是禁用的</translation>
+    </message>
+    <message>
+        <location filename="src/roomscene.cpp" line="2580"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2576"/>
+        <location filename="src/roomscene.cpp" line="2581"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2585"/>
+        <location filename="src/roomscene.cpp" line="2590"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2591"/>
+        <location filename="src/roomscene.cpp" line="2596"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2596"/>
+        <location filename="src/roomscene.cpp" line="2601"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2596"/>
+        <location filename="src/roomscene.cpp" line="2601"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
@@ -1972,7 +2029,7 @@
 <context>
     <name>ServerPlayer</name>
     <message>
-        <location filename="src/serverplayer.cpp" line="138"/>
+        <location filename="src/serverplayer.cpp" line="151"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>

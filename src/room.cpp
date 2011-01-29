@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QMetaEnum>
 #include <QTimerEvent>
+#include <QDateTime>
 
 LogMessage::LogMessage()
     :from(NULL)
@@ -324,16 +325,35 @@ void Room::gameOver(const QString &winner){
     game_finished = true;
 
     if(Config.ContestMode){
-        ContestDB *db = ContestDB::GetInstance();
-        db->saveResult(players, winner);
-
         foreach(ServerPlayer *player, players){
             QString screen_name = player->screenName().toUtf8().toBase64();
             broadcastInvoke("setScreenName", QString("%1:%2").arg(player->objectName()).arg(screen_name));
         }
+
+        ContestDB *db = ContestDB::GetInstance();
+        db->saveResult(players, winner);
     }
 
     broadcastInvoke("gameOver", QString("%1:%2").arg(winner).arg(all_roles.join("+")));
+
+    // save records
+    if(Config.ContestMode){
+        bool only_lord = Config.value("Contest/OnlySaveLordRecord", true).toBool();
+        QString start_time = tag.value("StartTime").toDateTime().toString(ContestDB::TimeFormat);
+
+        if(only_lord)
+            getLord()->saveRecord(QString("records/%1.txt").arg(start_time));
+        else{
+            foreach(ServerPlayer *player, players){
+                QString filename = QString("records/%1-%2.txt").arg(start_time).arg(player->getGeneralName());
+                player->saveRecord(filename);
+            }
+        }
+
+        ContestDB *db = ContestDB::GetInstance();
+        if(!Config.value("Contest/Sender").toString().isEmpty())
+            db->sendResult(this);
+    }
 
     if(QThread::currentThread() == thread)
         thread->end();
@@ -1170,6 +1190,9 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     player->setObjectName(generatePlayerName());    
     player->setProperty("avatar", avatar);
     player->setScreenName(screen_name);
+
+    if(Config.ContestMode)
+        player->startRecord();
 
     if(!is_robot){
         player->invoke("checkVersion", Sanguosha->getVersion());
@@ -2250,6 +2273,10 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 }
 
 void Room::kickCommand(ServerPlayer *player, const QString &arg){
+    // kicking is not allowed at contest mode
+    if(Config.ContestMode)
+        return;
+
     if(player != getLord())
         return;
 

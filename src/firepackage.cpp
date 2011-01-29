@@ -527,8 +527,8 @@ FirePackage::FirePackage()
     shuangxiong->addSkill(new Shuangxiong);
 
     pangde = new General(this, "pangde", "qun");
-    pangde->addSkill(new Mashu);
     pangde->addSkill(new Mengjin);
+    pangde->addSkill(new Mashu);
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

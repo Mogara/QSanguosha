@@ -4,9 +4,10 @@
 #include "standard.h"
 #include "ai.h"
 #include "settings.h"
+#include "recorder.h"
 
 ServerPlayer::ServerPlayer(Room *room)
-    : Player(room), socket(NULL), room(room), ai(NULL), trust_ai(new TrustAI(this))
+    : Player(room), socket(NULL), room(room), ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL)
 {
 }
 
@@ -117,6 +118,18 @@ void ServerPlayer::getMessage(char *message){
 
 void ServerPlayer::unicast(const QString &message){
     emit message_cast(message);
+
+    if(recorder)
+        recorder->recordLine(message);
+}
+
+void ServerPlayer::startRecord(){
+    recorder = new Recorder(this);
+}
+
+void ServerPlayer::saveRecord(const QString &filename){
+    if(recorder)
+        recorder->save(filename);
 }
 
 void ServerPlayer::castMessage(const QString &message){

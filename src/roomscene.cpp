@@ -1717,7 +1717,8 @@ void RoomScene::doDiscardButton(){
 }
 
 void RoomScene::hideAvatars(){
-    add_robot->hide();
+    if(add_robot)
+        add_robot->hide();
 
     foreach(Photo *photo, photos)
         photo->hideAvatar();
@@ -2338,11 +2339,13 @@ void RoomScene::createStateItem(){
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
-    }
+    }else
+        add_robot = NULL;
 }
 
 void RoomScene::showOwnerButtons(bool owner){
-    add_robot->setVisible(owner);
+    if(add_robot)
+        add_robot->setVisible(owner);
 }
 
 void RoomScene::showJudgeResult(const QString &who, const QString &result){
@@ -2522,6 +2525,12 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         appear->start();
 
         connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
+    }else if(name == "fire" || name == "thunder"){
+        Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
+        addItem(item);
+
+        QPointF from = getAnimationObject(args.at(0))->scenePos();
+        moveAndDisappear(item, from, from);
     }
 }
 
@@ -2558,6 +2567,11 @@ void RoomScene::showServerInformation()
 void RoomScene::kick(){
     if(Self->getRole() != "lord"){
         QMessageBox::warning(main_window, tr("Warning"), tr("Only the lord can kick!"));
+        return;
+    }
+
+    if(!Config.Password.isEmpty()){
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is disabled in contest mode"));
         return;
     }
 

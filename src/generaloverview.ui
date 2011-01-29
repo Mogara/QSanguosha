@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
-    <height>656</height>
+    <width>905</width>
+    <height>557</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>441</width>
-     <height>631</height>
+     <height>531</height>
     </rect>
    </property>
    <property name="editTriggers">
@@ -66,8 +66,8 @@
   <widget class="QPushButton" name="okButton">
    <property name="geometry">
     <rect>
-     <x>640</x>
-     <y>620</y>
+     <x>820</x>
+     <y>510</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -94,8 +94,8 @@
     <rect>
      <x>470</x>
      <y>330</y>
-     <width>241</width>
-     <height>211</height>
+     <width>421</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="readOnly">
@@ -105,8 +105,8 @@
   <widget class="QPushButton" name="playEffecButton">
    <property name="geometry">
     <rect>
-     <x>470</x>
-     <y>620</y>
+     <x>720</x>
+     <y>20</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -118,8 +118,8 @@
   <widget class="QPushButton" name="lastWordButton">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>620</y>
+     <x>810</x>
+     <y>20</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -131,10 +131,10 @@
   <widget class="QGroupBox" name="skillGroupBox">
    <property name="geometry">
     <rect>
-     <x>470</x>
-     <y>550</y>
-     <width>241</width>
-     <height>61</height>
+     <x>710</x>
+     <y>50</y>
+     <width>181</width>
+     <height>261</height>
     </rect>
    </property>
    <property name="title">

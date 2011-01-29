@@ -6,14 +6,7 @@
 #include "scenario.h"
 #include "challengemode.h"
 #include "irrKlang.h"
-
-extern "C"{
-
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-}
+#include "lua.hpp"
 
 typedef irrklang::ISound SoundType;
 
@@ -262,7 +255,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersion() const{
-    return "20110127";
+    return "20110129";
 }
 
 QStringList Engine::getExtensions() const{

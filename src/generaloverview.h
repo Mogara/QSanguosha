@@ -6,7 +6,7 @@ class General;
 #include <QDialog>
 #include <QTableWidgetItem>
 #include <QButtonGroup>
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 namespace Ui {
     class GeneralOverview;
@@ -20,7 +20,7 @@ public:
 
 private:
     Ui::GeneralOverview *ui;
-    QHBoxLayout *button_layout;
+    QVBoxLayout *button_layout;
     QButtonGroup *button_group;
 
     void resetButtons();

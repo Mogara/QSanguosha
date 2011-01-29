@@ -7,3 +7,5 @@ object_script*
 sanguosha.qm
 config.ini
 swig/sanguosha_wrap.cxx
+records/*
+users.db

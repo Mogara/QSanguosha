@@ -80,5 +80,5 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/default.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/new-year.jpg").toString();
 }

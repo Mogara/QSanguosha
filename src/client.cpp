@@ -8,6 +8,7 @@
 #include "nativesocket.h"
 #include "recorder.h"
 
+#include <QCryptographicHash>
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QCommandLinkButton>
@@ -55,6 +56,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setPrompt"] = &Client::setPrompt;
     callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
+    callbacks["setScreenName"] = &Client::setScreenName;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -126,8 +128,6 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setTextWidth(350);
     prompt_doc->setDefaultFont(QFont("SimHei"));
 }
-
-#include <QCryptographicHash>
 
 void Client::signup(){
     if(replayer)

@@ -14,8 +14,15 @@ Recorder::Recorder(QObject *parent) :
 
 void Recorder::record(char *line)
 {
+    recordLine(line);
+}
+
+void Recorder::recordLine(const QString &line){
     int elapsed = watch.elapsed();
-    data.append(QString("%1 %2").arg(elapsed).arg(line));
+    if(line.endsWith("\n"))
+        data.append(QString("%1 %2").arg(elapsed).arg(line));
+    else
+        data.append(QString("%1 %2\n").arg(elapsed).arg(line));
 }
 
 bool Recorder::save(const QString &filename) const{

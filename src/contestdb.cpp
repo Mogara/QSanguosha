@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "settings.h"
 #include "serverplayer.h"
+#include "lua.hpp"
 
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -9,6 +10,8 @@
 #include <QMessageBox>
 #include <QCryptographicHash>
 #include <QDateTime>
+
+const QString ContestDB::TimeFormat = "MMdd-hhmmss";
 
 ContestDB::ContestDB(QObject *parent) :
     QObject(parent)
@@ -62,8 +65,6 @@ bool ContestDB::checkPassword(const QString &username, const QString &password){
     }else
         return false;
 }
-
-static const QString TimeFormat = "MMdd-hh:mm:ss";
 
 void ContestDB::saveResult(const QList<ServerPlayer *> &players, const QString &winner){
     Room *room = players.first()->getRoom();
@@ -145,27 +146,27 @@ int ContestDB::getScore(ServerPlayer *player, const QString &winner){
 
         }
     }else if(winner == "rebel"){
-        if(role == "lord" || role == "renegade")
+        if(role == "lord" || role == "loyalist")
             return 0;
         else if(role == "renegade")
             return player->isAlive() ? 1 : 0;
 
-            QList<ServerPlayer *> survivors = room->getAlivePlayers();
-            int rebels = 0;
-            foreach(ServerPlayer *survivor, survivors){
-                if(survivor->getRole() == "rebel")
-                    rebels ++;
-            }
+        QList<ServerPlayer *> survivors = room->getAlivePlayers();
+        int rebels = 0;
+        foreach(ServerPlayer *survivor, survivors){
+            if(survivor->getRole() == "rebel")
+                rebels ++;
+        }
 
-            int bonus = 0;
-            foreach(ServerPlayer *victim, player->getVictims()){
-                if(victim->getRole() == "loyalist" || victim->getRole() == "renegade")
-                    bonus ++;
-                else if(victim->isLord())
-                    bonus += 2;
-            }
+        int bonus = 0;
+        foreach(ServerPlayer *victim, player->getVictims()){
+            if(victim->getRole() == "loyalist" || victim->getRole() == "renegade")
+                bonus ++;
+            else if(victim->isLord())
+                bonus += 2;
+        }
 
-            return rebels * 3 + bonus;
+        return rebels * 3 + bonus;
     }
 
     // renegade win
@@ -175,4 +176,27 @@ int ContestDB::getScore(ServerPlayer *player, const QString &winner){
         return 1;
     else
         return 0;
+}
+
+void ContestDB::sendResult(Room *room){
+    QString start_time = room->getTag("StartTime").toDateTime().toString(TimeFormat);
+
+    lua_State *L = room->getLuaState();
+
+    int error = luaL_loadfile(L, "lua/tools/send-result.lua");
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return;
+    }
+
+    lua_pushstring(L, start_time.toAscii());
+
+    error = lua_pcall(L, 1, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }
 }

@@ -124,6 +124,9 @@ Typhoon::Typhoon(Card::Suit suit, int number)
 
 void Typhoon::takeEffect(ServerPlayer *target) const{
     Room *room = target->getRoom();
+
+    room->broadcastInvoke("playAudio", "typhoon");
+
     QList<ServerPlayer *> players = room->getOtherPlayers(target);
     foreach(ServerPlayer *player, players){
         if(target->distanceTo(player) == 1){

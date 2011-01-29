@@ -4,6 +4,7 @@
 class Room;
 struct CardMoveStruct;
 class AI;
+class Recorder;
 
 #include "player.h"
 #include "socket.h"
@@ -57,6 +58,9 @@ public:
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
 
+    void startRecord();
+    void saveRecord(const QString &filename);
+
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;
@@ -64,6 +68,7 @@ private:
     AI *ai;
     AI *trust_ai;
     QList<ServerPlayer *> victims;
+    Recorder *recorder;
 
 private slots:
     void getMessage(char *message);
