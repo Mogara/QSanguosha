@@ -116,7 +116,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(arrangeSeats(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
-    connect(ClientInstance, SIGNAL(hp_changed(QString,int)), this, SLOT(changeHp(QString,int)));
+    connect(ClientInstance, SIGNAL(hp_changed(QString,int,DamageStruct::Nature)), SLOT(changeHp(QString,int,DamageStruct::Nature)));
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
@@ -1726,7 +1726,7 @@ void RoomScene::hideAvatars(){
     dashboard->hideAvatar();
 }
 
-void RoomScene::changeHp(const QString &who, int delta){
+void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature){
     // update
     Photo *photo = name2photo.value(who, NULL);
     if(photo)
@@ -1765,6 +1765,12 @@ void RoomScene::changeHp(const QString &who, int delta){
             photo->setEmotion("damage");
             photo->tremble();
         }
+
+        if(nature == DamageStruct::Fire)
+            doAnimation("fire", QStringList() << who);
+        else if(nature == DamageStruct::Thunder)
+            doAnimation("lightning", QStringList() << who);
+
     }else if(delta > 0){
         QString type = "#Recover";
         QString from_general = ClientInstance->getPlayer(who)->getGeneralName();

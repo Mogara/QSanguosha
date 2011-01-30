@@ -171,8 +171,6 @@ void MainWindow::startConnection(){
 
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
-
-    //client->signup();
 }
 
 void MainWindow::on_actionReplay_triggered()

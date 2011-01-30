@@ -180,7 +180,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             bool chained = player->isChained();
 
             int new_hp = player->getHp() - damage.damage;
-            room->damage(player, damage.damage);
+            room->applyDamage(player, damage);
             if(new_hp <= 0){
                 DyingStruct dying;
                 dying.who = player;

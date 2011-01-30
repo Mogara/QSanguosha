@@ -193,7 +193,7 @@ signals:
     void player_removed(const QString &player_name);    
     void generals_got(const QList<const General *> &generals);
     void seats_arranged(const QList<const ClientPlayer*> &seats);    
-    void hp_changed(const QString &who, int delta);    
+    void hp_changed(const QString &who, int delta, DamageStruct::Nature nature);
     void status_changed(Client::Status new_status);
     void avatars_hiden();
     void pile_cleared();

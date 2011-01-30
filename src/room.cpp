@@ -1515,7 +1515,9 @@ void Room::useCard(const CardUseStruct &card_use){
 
 void Room::loseHp(ServerPlayer *victim, int lose){
     int new_hp = victim->getHp() - lose;
-    damage(victim, lose);
+
+    setPlayerProperty(victim, "hp", qMax(0, new_hp));
+    broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
 
     if(new_hp <= 0){
         DyingStruct dying;
@@ -1538,12 +1540,19 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
         killPlayer(victim);
 }
 
-void Room::damage(ServerPlayer *victim, int damage){
-    int new_hp = victim->getHp() - damage;
+void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage){
+    int new_hp = victim->getHp() - damage.damage;
     new_hp = qMax(0, new_hp);
 
     setPlayerProperty(victim, "hp", new_hp);
-    broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-damage));
+    QString change_str = QString("%1:%2").arg(victim->objectName()).arg(-damage.damage);
+    switch(damage.nature){
+    case DamageStruct::Fire: change_str.append("F"); break;
+    case DamageStruct::Thunder: change_str.append("T"); break;
+    default: break;
+    }
+
+    broadcastInvoke("hpChange", change_str);
 }
 
 void Room::recover(ServerPlayer *player, int recover, bool set_emotion){
