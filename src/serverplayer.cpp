@@ -20,7 +20,7 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::playCardEffect(const Card *card){
-    if(card->isVirtualCard() && !card->getSkillName().isEmpty()){
+    if(card->isVirtualCard() && !card->isMute()){
         room->playSkillEffect(card->getSkillName());        
     }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());

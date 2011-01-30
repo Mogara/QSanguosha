@@ -2,6 +2,7 @@
 #define GENERALOVERVIEW_H
 
 class General;
+class Skill;
 
 #include <QDialog>
 #include <QTableWidgetItem>
@@ -21,14 +22,12 @@ public:
 private:
     Ui::GeneralOverview *ui;
     QVBoxLayout *button_layout;
-    QButtonGroup *button_group;
 
     void resetButtons();
-    const General *currentGeneral();
+    void addLines(const Skill *skill);
 
 private slots:
-    void on_lastWordButton_clicked();
-    void on_playEffecButton_clicked();
+    void playEffect();
     void on_tableWidget_itemSelectionChanged();
 };
 

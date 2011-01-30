@@ -14,7 +14,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
         number = 0;
@@ -431,6 +431,10 @@ bool Card::isAvailable() const{
 
 bool Card::isOnce() const{
     return once;
+}
+
+bool Card::isMute() const{
+    return mute;
 }
 
 // ---------   Skill card     ------------------

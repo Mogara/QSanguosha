@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>905</width>
-    <height>557</height>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>10</x>
      <y>10</y>
      <width>441</width>
-     <height>531</height>
+     <height>581</height>
     </rect>
    </property>
    <property name="editTriggers">
@@ -67,7 +67,7 @@
    <property name="geometry">
     <rect>
      <x>820</x>
-     <y>510</y>
+     <y>570</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -94,65 +94,55 @@
     <rect>
      <x>470</x>
      <y>330</y>
-     <width>421</width>
-     <height>171</height>
+     <width>201</width>
+     <height>261</height>
     </rect>
    </property>
    <property name="readOnly">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="playEffecButton">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>20</y>
-     <width>81</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Play effect</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="lastWordButton">
-   <property name="geometry">
-    <rect>
-     <x>810</x>
-     <y>20</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Last word</string>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="skillGroupBox">
-   <property name="geometry">
-    <rect>
-     <x>710</x>
-     <y>50</y>
-     <width>181</width>
-     <height>261</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Skills</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="generalPhoto">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>470</x>
      <y>10</y>
-     <width>221</width>
-     <height>291</height>
+     <width>200</width>
+     <height>290</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
+   <property name="pixmap">
+    <pixmap>../image/generals/card/caocao.jpg</pixmap>
+   </property>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>20</y>
+     <width>211</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>211</width>
+      <height>531</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

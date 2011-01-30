@@ -26,6 +26,7 @@ class Card : public QObject
     Q_PROPERTY(QString pixmap_path READ getPixmapPath)
     Q_PROPERTY(bool target_fixed READ targetFixed)
     Q_PROPERTY(bool once READ isOnce CONSTANT)
+    Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
 
     Q_ENUMS(Suit)
@@ -102,8 +103,8 @@ public:
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool isAvailable() const;
 
-    // it can be used only once a turn or not
     bool isOnce() const;
+    bool isMute() const;
 
     // FIXME: should be pure virtual
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -125,6 +126,7 @@ protected:
     bool target_fixed;
     bool once;
     QString skill_name;
+    bool mute;
 
 private:
     Suit suit;

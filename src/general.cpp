@@ -78,13 +78,6 @@ QString General::getSkillDescription() const{
     return description;
 }
 
-void General::playEffect(const QString &skill_name) const
-{
-    Skill *skill = skill_map.value(skill_name, NULL);
-    if(skill)
-        skill->playEffect();
-}
-
 void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);

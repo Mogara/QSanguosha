@@ -34,7 +34,7 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
 
-    void playEffect(const QString &skill_name) const;
+public slots:
     void lastWord() const;
 
 private:

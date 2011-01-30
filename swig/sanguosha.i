@@ -48,8 +48,7 @@ public:
     QString getPixmapPath(const char *category) const;    
     QString getPackage() const;
     QString getSkillDescription() const;
-
-    void playEffect(const char *skill_name) const;
+	
     void lastWord() const;
 };
 

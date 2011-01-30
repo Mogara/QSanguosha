@@ -4,6 +4,8 @@
 
 #include <QMessageBox>
 #include <QRadioButton>
+#include <QGroupBox>
+#include <QCommandLinkButton>
 
 GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
@@ -11,9 +13,12 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 {
     ui->setupUi(this);    
 
-    button_group = new QButtonGroup;
     button_layout = new QVBoxLayout;
-    ui->skillGroupBox->setLayout(button_layout);
+
+    QGroupBox *group_box = new QGroupBox;
+    group_box->setTitle(tr("Effects"));
+    group_box->setLayout(button_layout);
+    ui->scrollArea->setWidget(group_box);
 
     QList<General*> generals = Sanguosha->findChildren<General*>();
     ui->tableWidget->setRowCount(generals.length());
@@ -68,10 +73,6 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 }
 
 void GeneralOverview::resetButtons(){
-    QList<QAbstractButton *> buttons = button_group->buttons();
-    foreach(QAbstractButton *button, buttons)
-        button_group->removeButton(button);
-
     QLayoutItem *child;
     while((child = button_layout->takeAt(0))){
         QWidget *widget = child->widget();
@@ -83,6 +84,38 @@ void GeneralOverview::resetButtons(){
 GeneralOverview::~GeneralOverview()
 {
     delete ui;
+}
+
+void GeneralOverview::addLines(const Skill *skill){
+    if(skill->objectName().startsWith("#"))
+        return;
+
+    QString skill_name = Sanguosha->translate(skill->objectName());
+    QStringList sources = skill->getSources();
+
+
+    if(sources.isEmpty()){
+        QCommandLinkButton *button = new QCommandLinkButton(skill_name);
+
+        button->setEnabled(false);
+        button_layout->addWidget(button);
+    }else{
+        QRegExp rx(".+/(\\w+\\d?).ogg");
+        foreach(QString source, sources){
+            if(!rx.exactMatch(source))
+                continue;
+
+            QCommandLinkButton *button = new QCommandLinkButton(skill_name);
+            button->setObjectName(source);            
+            button_layout->addWidget(button);
+
+            QString filename = rx.capturedTexts().at(1);
+            QString skill_line = Sanguosha->translate("$" + filename);
+            button->setDescription(skill_line);
+
+            connect(button, SIGNAL(clicked()), this, SLOT(playEffect()));
+        }
+    }
 }
 
 void GeneralOverview::on_tableWidget_itemSelectionChanged()
@@ -97,48 +130,27 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     resetButtons();
 
     foreach(const Skill *skill, skills){
-        if(skill->objectName().startsWith("#"))
-            continue;
+        addLines(skill);
+    }
 
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        QRadioButton *button = new QRadioButton(skill_name);
-        button->setObjectName(skill->objectName());
+    QString last_word = Sanguosha->translate("~" + general->objectName());
+    if(!last_word.startsWith("~")){
+        QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
+        button_layout->addWidget(death_button);
 
-        button_layout->addWidget(button);
-        button_group->addButton(button);
-
-        QStringList sources = skill->getSources();
-        if(sources.isEmpty())
-            button->setEnabled(false);
+        connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
     }
 
     button_layout->addStretch();
-
-    QList<QAbstractButton *> buttons = button_group->buttons();
-    if(!buttons.isEmpty())
-        buttons.first()->setChecked(true);
-
     ui->skillTextEdit->append(general->getSkillDescription());
 }
 
-const General *GeneralOverview::currentGeneral(){
-    int row = ui->tableWidget->currentRow();
-    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-    const General *general = Sanguosha->getGeneral(general_name);
-
-    return general;
-}
-
-void GeneralOverview::on_playEffecButton_clicked()
+void GeneralOverview::playEffect()
 {
-    const General *general = currentGeneral();
-    QAbstractButton *button = button_group->checkedButton();
-    if(button)
-        general->playEffect(button->objectName());
-}
-
-void GeneralOverview::on_lastWordButton_clicked()
-{
-    const General *general = currentGeneral();
-    general->lastWord();
+    QObject *button = sender();
+    if(button){
+        QString source = button->objectName();
+        if(!source.isEmpty())
+            Sanguosha->playEffect(source);
+    }
 }

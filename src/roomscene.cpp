@@ -2525,7 +2525,7 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         appear->start();
 
         connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
-    }else if(name == "fire" || name == "thunder"){
+    }else if(name == "fire" || name == "lightning" || name == "typhoon"){
         Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
         addItem(item);
 

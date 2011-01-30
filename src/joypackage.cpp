@@ -131,7 +131,12 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
     foreach(ServerPlayer *player, players){
         if(target->distanceTo(player) == 1){
             int discard_num = qMin(6, player->getHandcardNum());
-            room->askForDiscard(player, objectName(), discard_num);
+            if(discard_num == 0)
+                room->setEmotion(player, Room::Good);
+            else{
+                room->setEmotion(player, Room::Bad);
+                room->askForDiscard(player, objectName(), discard_num);
+            }
         }
     }
 }
