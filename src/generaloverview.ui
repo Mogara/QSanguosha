@@ -21,7 +21,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>441</width>
+     <width>411</width>
      <height>581</height>
     </rect>
    </property>
@@ -79,7 +79,7 @@
   <widget class="QLabel" name="skillLabel">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>450</x>
      <y>310</y>
      <width>30</width>
      <height>12</height>
@@ -92,9 +92,9 @@
   <widget class="QTextEdit" name="skillTextEdit">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>440</x>
      <y>330</y>
-     <width>201</width>
+     <width>211</width>
      <height>261</height>
     </rect>
    </property>
@@ -105,7 +105,7 @@
   <widget class="QLabel" name="generalPhoto">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>450</x>
      <y>10</y>
      <width>200</width>
      <height>290</height>
@@ -121,9 +121,9 @@
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
-     <x>680</x>
+     <x>670</x>
      <y>20</y>
-     <width>211</width>
+     <width>221</width>
      <height>531</height>
     </rect>
    </property>
@@ -138,11 +138,24 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>211</width>
+      <width>221</width>
       <height>531</height>
      </rect>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="cvLabel">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>570</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CV: official</string>
+   </property>
   </widget>
  </widget>
  <resources/>

@@ -858,29 +858,35 @@
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="115"/>
-        <source>Play effect</source>
-        <translation>播放台词</translation>
+        <location filename="src/generaloverview.ui" line="157"/>
+        <location filename="src/generaloverview.cpp" line="148"/>
+        <source>CV: official</source>
+        <translation>配音：官方</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.ui" line="128"/>
+        <location filename="src/generaloverview.cpp" line="19"/>
         <source>Effects</source>
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.cpp" line="31"/>
+        <location filename="src/generaloverview.cpp" line="36"/>
         <source>Male</source>
         <translation>男性</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.cpp" line="31"/>
+        <location filename="src/generaloverview.cpp" line="36"/>
         <source>Female</source>
         <translation>女性</translation>
     </message>
     <message>
-        <location filename="src/generaloverview.cpp" line="141"/>
+        <location filename="src/generaloverview.cpp" line="138"/>
         <source>Death</source>
         <translation>阵亡</translation>
+    </message>
+    <message>
+        <location filename="src/generaloverview.cpp" line="146"/>
+        <source>CV: </source>
+        <translation>配音: </translation>
     </message>
 </context>
 <context>

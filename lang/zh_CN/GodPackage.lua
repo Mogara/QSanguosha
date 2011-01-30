@@ -93,4 +93,11 @@ return {
 	["~shencaocao"] = "神龟虽寿，犹有竟时。腾蛇乘雾，终为土灰",
 	["~shenlumeng"] = "死去元知万事空",
 	["~shenzhugeliang"] = "吾命将至，再不能临阵讨贼矣",
+	
+	["cv:shenguanyu"] = "",
+	["cv:shenlumeng"] = "宇文天启",
+	["cv:shenzhouyu"] = "血桜の涙",
+	["cv:shenzhugeliang"] = "背后灵",
+	["cv:shencaocao"] = "倚天の剑",
+	["cv:shenlubu"] = "",	
 }

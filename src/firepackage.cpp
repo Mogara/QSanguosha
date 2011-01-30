@@ -10,6 +10,7 @@
 
 QuhuCard::QuhuCard(){
     once = true;
+    mute = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -28,8 +29,12 @@ bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
 void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *tiger = targets.first();
 
+    room->playSkillEffect("quhu", 1);
+
     bool success = xunyu->pindian(tiger, this);
     if(success){
+        room->playSkillEffect("quhu", 2);
+
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach(ServerPlayer *player, players){
             if(tiger->inMyAttackRange(player))
@@ -501,7 +506,6 @@ FirePackage::FirePackage()
     xunyu = new General(this, "xunyu", "wei", 3);
     xunyu->addSkill(new Quhu);
     xunyu->addSkill(new Jieming);
-    xunyu->addSkill(new Skill("#tunlang"));
 
     dianwei = new General(this, "dianwei", "wei");
     dianwei->addSkill(new Qiangxi);

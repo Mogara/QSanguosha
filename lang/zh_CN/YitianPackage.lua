@@ -115,6 +115,15 @@ return {
 	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
-	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。"
+	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
+	
+	-- CV
+	["cv:shencc"] = "",
+	["cv:caochong"] = "",
+	["cv:zhangjunyi"] = "",
+	["cv:lukang"] = "",
+	["cv:jinxuandi"] = "",
+	["cv:xiahoujuan"] = "妙妙",
+	["cv:caizhaoji"] = "妙妙",
 }
 

@@ -141,6 +141,12 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
     }
 
+    QString cv_text = Sanguosha->translate("cv:" + general->objectName());
+    if(!cv_text.startsWith("cv:")){
+        ui->cvLabel->setText(tr("CV: ") + cv_text);
+    }else
+        ui->cvLabel->setText(tr("CV: official"));
+
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription());
 }

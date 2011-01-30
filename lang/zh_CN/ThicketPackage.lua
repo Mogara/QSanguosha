@@ -102,4 +102,14 @@ return {
 	["~lusu"] = "荆襄未还，虽死难安",
 	
 	["@chaos"] = "乱武",
+	
+	-- CV
+	["cv:caopi"] = "",
+	["cv:xuhuang"] = "",
+	["cv:menghuo"] = "墨染の飞猫",
+	["cv:zhurong"] = "妙妙",
+	["cv:sunjian"] = "",
+	["cv:lusu"] = "听雨",
+	["cv:jiaxu"] = "落凤一箭",
+	["cv:dongzhuo"] = "やまもとみ，迷宫女友(肉林2)",	
 }
