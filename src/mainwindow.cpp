@@ -200,6 +200,9 @@ void MainWindow::on_actionReplay_triggered()
 }
 
 void MainWindow::restartConnection(){
+    if(scene)
+        scene->clear();
+
     ClientInstance = NULL;
 
     delete Self;
