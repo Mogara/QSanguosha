@@ -125,8 +125,6 @@ Typhoon::Typhoon(Card::Suit suit, int number)
 void Typhoon::takeEffect(ServerPlayer *target) const{
     Room *room = target->getRoom();
 
-    room->broadcastInvoke("playAudio", "typhoon");
-
     QList<ServerPlayer *> players = room->getOtherPlayers(target);
     foreach(ServerPlayer *player, players){
         if(target->distanceTo(player) == 1){
@@ -135,8 +133,13 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
                 room->setEmotion(player, Room::Good);
             else{
                 room->setEmotion(player, Room::Bad);
+                room->broadcastInvoke("animate", "typhoon:" + player->objectName());
+                room->broadcastInvoke("playAudio", "typhoon");
+
                 room->askForDiscard(player, objectName(), discard_num);
             }
+
+            room->getThread()->delay();
         }
     }
 }
@@ -165,7 +168,15 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
     QList<ServerPlayer *> players = room->getAllPlayers();
     foreach(ServerPlayer *player, players){
         if(target->distanceTo(player) <= 1){
-            player->throwAllEquips();
+            if(player->getEquips().isEmpty()){
+                room->setEmotion(player, Room::Good);
+            }else{
+                room->setEmotion(player, Room::Bad);
+                room->broadcastInvoke("playAudio", "earthquake");
+                player->throwAllEquips();
+            }
+
+            room->getThread()->delay();
         }
     }
 }
