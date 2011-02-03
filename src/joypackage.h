@@ -22,7 +22,9 @@ public:
     static bool HasShit(const Card *card);
 };
 
-class Deluge: public DelayedTrick{
+// five disasters:
+
+class Deluge: public Disaster{
     Q_OBJECT
 
 public:
@@ -30,7 +32,7 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class Typhoon: public DelayedTrick{
+class Typhoon: public Disaster{
     Q_OBJECT
 
 public:
@@ -38,7 +40,7 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class Earthquake: public DelayedTrick{
+class Earthquake: public Disaster{
     Q_OBJECT
 
 public:
@@ -46,11 +48,19 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class Volcano: public DelayedTrick{
+class Volcano: public Disaster{
     Q_OBJECT
 
 public:
     Q_INVOKABLE Volcano(Card::Suit suit, int number);
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
+class MudSlide: public Disaster{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MudSlide(Card::Suit suit, int number);
     virtual void takeEffect(ServerPlayer *target) const;
 };
 

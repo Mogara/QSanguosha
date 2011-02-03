@@ -59,11 +59,10 @@ static QString DelugeCallback(const Card *card, Room *){
 }
 
 Deluge::Deluge(Card::Suit suit, int number)
-    :DelayedTrick(suit, number, true)
+    :Disaster(suit, number)
 {
     callback = DelugeCallback;
     setObjectName("deluge");
-    target_fixed = true;
 }
 
 void Deluge::takeEffect(ServerPlayer *target) const{
@@ -115,11 +114,10 @@ static QString TyphoonCallback(const Card *card, Room *)
 }
 
 Typhoon::Typhoon(Card::Suit suit, int number)
-    :DelayedTrick(suit, number, true)
+    :Disaster(suit, number)
 {
     callback = TyphoonCallback;
     setObjectName("typhoon");
-    target_fixed = true;
 }
 
 void Typhoon::takeEffect(ServerPlayer *target) const{
@@ -156,11 +154,10 @@ static QString EarthquakeCallback(const Card *card, Room *)
 }
 
 Earthquake::Earthquake(Card::Suit suit, int number)
-    :DelayedTrick(suit, number, true)
+    :Disaster(suit, number)
 {
     callback = EarthquakeCallback;
     setObjectName("earthquake");
-    target_fixed = true;
 }
 
 void Earthquake::takeEffect(ServerPlayer *target) const{
@@ -183,49 +180,89 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
 
 // -----------  Volcano -----------------
 
-static QString VolcanoCallback(const Card *card, Room *room)
+static QString VolcanoCallback(const Card *card, Room *)
 {
     int number = card->getNumber();
     if(card->getSuit() == Card::Heart && number >= 2 && number <= 9){
-        QString victim = number <= 5 ? "Previous" : "Next";
-        room->setTag("VolcanoVictim", victim);
         return "bad";
     }else
         return "good";
 }
 
 Volcano::Volcano(Card::Suit suit, int number)
-    :DelayedTrick(suit, number, true)
+    :Disaster(suit, number)
 {
     callback = VolcanoCallback;
     setObjectName("volcano");
-    target_fixed = true;
 }
 
 void Volcano::takeEffect(ServerPlayer *target) const{
     Room *room = target->getRoom();
 
-    QList<ServerPlayer *> players = room->getAlivePlayers();
-    int index = players.indexOf(target);
+    QList<ServerPlayer *> players = room->getAllPlayers();
 
-    QString victim = room->getTag("VolcanoVictim").toString();
-    if(victim == "Previous"){
-        index --;
-        if(index < 0)
-            index += players.length();
-    }else{
-        index ++;
-        if(index >= players.length())
-            index -= players.length();
+    foreach(ServerPlayer *player, players){
+        int point = 2 - target->distanceTo(player);
+        if(point >= 1){
+            DamageStruct damage;
+            damage.card = this;
+            damage.damage = point;
+            damage.to = player;
+            damage.nature = DamageStruct::Fire;
+
+            room->broadcastInvoke("playAudio", "volcano");
+            room->damage(damage);
+        }
     }
+}
 
-    DamageStruct damage;
-    damage.card = this;
-    damage.damage = 3;
-    damage.nature = DamageStruct::Fire;
-    damage.to = players.at(index);
+static QString MudSlideCallback(const Card *card, Room *){
+    if(!card->isBlack())
+        return "good";
 
-    room->damage(damage);
+    switch(card->getNumber()){
+    case 1:
+    case 4:
+    case 7:
+    case 13: return "bad";
+    default:
+        return "good";
+    }
+}
+
+// -----------  MudSlide -----------------
+MudSlide::MudSlide(Card::Suit suit, int number)
+    :Disaster(suit, number)
+{
+    callback = MudSlideCallback;
+    setObjectName("mudslide");
+    target_fixed = true;
+}
+
+void MudSlide::takeEffect(ServerPlayer *target) const{
+    Room *room = target->getRoom();
+    QList<ServerPlayer *> players = room->getAllPlayers();
+    int to_destroy = 4;
+    foreach(ServerPlayer *player, players){
+        room->broadcastInvoke("playAudio", "mudslide");
+
+        QList<const Card *> equips = player->getEquips();
+        if(equips.isEmpty()){
+            DamageStruct damage;
+            damage.card = this;
+            damage.to = player;
+            room->damage(damage);
+        }else{
+            int i, n = qMin(equips.length(), to_destroy);
+            for(i=0; i<n; i++){
+                room->throwCard(equips.at(i));
+            }
+
+            to_destroy -= n;
+            if(to_destroy == 0)
+                break;
+        }
+    }
 }
 
 JoyPackage::JoyPackage()
@@ -240,7 +277,8 @@ JoyPackage::JoyPackage()
     cards << new Deluge(Card::Spade, 1)
             << new Typhoon(Card::Spade, 4)
             << new Earthquake(Card::Club, 10)
-            << new Volcano(Card::Heart, 13);
+            << new Volcano(Card::Heart, 13)
+            << new MudSlide(Card::Heart, 7);
 
     foreach(Card *card, cards)
         card->setParent(this);

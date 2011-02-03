@@ -197,14 +197,22 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class Lightning: public DelayedTrick{
+class Disaster: public DelayedTrick{
+    Q_OBJECT
+
+public:
+    Disaster(Card::Suit suit, int number);
+
+    virtual bool isAvailable() const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class Lightning: public Disaster{
     Q_OBJECT
 
 public:
     Q_INVOKABLE Lightning(Card::Suit suit, int number);
     virtual void takeEffect(ServerPlayer *target) const;
-    virtual bool isAvailable() const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class Nullification:public SingleTargetTrick{

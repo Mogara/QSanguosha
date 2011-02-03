@@ -801,6 +801,23 @@ void Indulgence::takeEffect(ServerPlayer *target) const{
     target->getRoom()->skip(Player::Play);
 }
 
+Disaster::Disaster(Card::Suit suit, int number)
+    :DelayedTrick(suit, number, true)
+{
+    target_fixed = true;
+}
+
+bool Disaster::isAvailable() const{
+    if(Self->containsTrick(objectName()))
+        return false;
+
+    return !ClientInstance->isProhibited(Self, this);
+}
+
+void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->moveCardTo(this, source, Player::Judging);
+}
+
 static QString LightningCallback(const Card *card, Room *){
     if(card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9)
         return "bad";
@@ -808,10 +825,8 @@ static QString LightningCallback(const Card *card, Room *){
         return "good";
 }
 
-Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
+Lightning::Lightning(Suit suit, int number):Disaster(suit, number){
     setObjectName("lightning");
-    target_fixed = true;
-
     callback = LightningCallback;
 }
 
@@ -826,16 +841,6 @@ void Lightning::takeEffect(ServerPlayer *target) const{
     target->getRoom()->damage(damage);
 }
 
-bool Lightning::isAvailable() const{
-    if(Self->containsTrick(objectName()))
-        return false;
-
-    return !ClientInstance->isProhibited(Self, this);
-}
-
-void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->moveCardTo(this, source, Player::Judging);
-}
 
 // EX cards
 
