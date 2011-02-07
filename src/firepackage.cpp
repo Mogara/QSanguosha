@@ -348,11 +348,11 @@ public:
             room->broadcastInvoke("animate", "lightbox:$niepan");
             room->playSkillEffect(objectName());
 
+            pangtong->loseMark("@nirvana");
+
             pangtong->throwAllCards();
             room->setPlayerProperty(pangtong, "hp", 3);
             pangtong->drawCards(3);
-
-            pangtong->loseMark("@nirvana");
 
             if(pangtong->isChained())
                 room->setPlayerProperty(pangtong, "chained", false);

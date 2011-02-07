@@ -3,6 +3,7 @@
 
 class General;
 class Skill;
+class QCommandLinkButton;
 
 #include <QDialog>
 #include <QTableWidgetItem>
@@ -25,9 +26,11 @@ private:
 
     void resetButtons();
     void addLines(const Skill *skill);
+    void addCopyAction(QCommandLinkButton *button);
 
 private slots:
     void playEffect();
+    void copyLines();
     void on_tableWidget_itemSelectionChanged();
 };
 

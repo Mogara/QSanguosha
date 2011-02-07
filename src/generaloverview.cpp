@@ -6,6 +6,7 @@
 #include <QRadioButton>
 #include <QGroupBox>
 #include <QCommandLinkButton>
+#include <QClipboard>
 
 GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
@@ -114,7 +115,27 @@ void GeneralOverview::addLines(const Skill *skill){
             button->setDescription(skill_line);
 
             connect(button, SIGNAL(clicked()), this, SLOT(playEffect()));
+
+            addCopyAction(button);
         }
+    }
+}
+
+void GeneralOverview::addCopyAction(QCommandLinkButton *button){
+    QAction *action = new QAction(button);
+    action->setData(button->description());
+    button->addAction(action);
+    action->setText(tr("Copy lines"));
+    button->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    connect(action, SIGNAL(triggered()), this, SLOT(copyLines()));
+}
+
+void GeneralOverview::copyLines(){
+    QAction *action = qobject_cast<QAction *>(sender());
+    if(action){
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(action->data().toString());
     }
 }
 
@@ -139,6 +160,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         button_layout->addWidget(death_button);
 
         connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
+
+        addCopyAction(death_button);
     }
 
     QString cv_text = Sanguosha->translate("cv:" + general->objectName());
