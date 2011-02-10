@@ -354,8 +354,10 @@ public:
             room->setPlayerProperty(pangtong, "hp", 3);
             pangtong->drawCards(3);
 
-            if(pangtong->isChained())
-                room->setPlayerProperty(pangtong, "chained", false);
+            if(pangtong->isChained()){
+                if(dying_data.damage == NULL || dying_data.damage->nature == DamageStruct::Normal)
+                    room->setPlayerProperty(pangtong, "chained", false);
+            }
 
             return true;
         }else

@@ -102,11 +102,18 @@ void GeneralOverview::addLines(const Skill *skill){
         button_layout->addWidget(button);
     }else{
         QRegExp rx(".+/(\\w+\\d?).ogg");
-        foreach(QString source, sources){
+        int i;
+        for(i=0; i<sources.length(); i++){
+            QString source = sources.at(i);
             if(!rx.exactMatch(source))
                 continue;
 
-            QCommandLinkButton *button = new QCommandLinkButton(skill_name);
+            QString button_text = skill_name;
+            if(sources.length() != 1){
+                button_text.append(QString(" (%1)").arg(i+1));
+            }
+
+            QCommandLinkButton *button = new QCommandLinkButton(button_text);
             button->setObjectName(source);            
             button_layout->addWidget(button);
 

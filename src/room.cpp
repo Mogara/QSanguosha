@@ -86,9 +86,25 @@ int Room::alivePlayerCount() const{
 
 QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except) const{
     int index = alive_players.indexOf(except);
-
     QList<ServerPlayer *> other_players;
     int i;
+
+    if(index == -1){
+        // the "except" is dead
+        index = players.indexOf(except);
+        for(i=index+1; i<players.length(); i++){
+            if(players.at(i)->isAlive())
+                other_players << players.at(i);
+        }
+
+        for(i=0; i<index; i++){
+            if(players.at(i)->isAlive())
+                other_players << players.at(i);
+        }
+
+        return other_players;
+    }
+
     for(i=index+1; i<alive_players.length(); i++)
         other_players << alive_players.at(i);
 
@@ -1628,7 +1644,11 @@ void Room::damage(const DamageStruct &damage_data){
     }
 
     // damaged
-    thread->trigger(Damaged, damage_data.to, data);    
+    broken = thread->trigger(Damaged, damage_data.to, data);
+    if(broken)
+        return;
+
+    thread->trigger(DamageComplete, damage_data.to, data);
 }
 
 void Room::sendDamageLog(const DamageStruct &data){

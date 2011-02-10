@@ -983,6 +983,126 @@ public:
     }
 };
 
+class Weiniang: public TriggerSkill{
+public:
+    Weiniang():TriggerSkill("weiniang"){
+        events << GameStart << PhaseChange << Predamaged;
+        frequency = Compulsory;
+    }   
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        if(event == GameStart){
+            QString gender = room->askForChoice(player, objectName(), "male+female");
+            if(gender == "female"){
+                player->flip();
+                room->broadcastInvoke("flip", player->objectName());
+            }
+
+            LogMessage log;
+            log.type = "#WeiniangChoose";
+            log.from = player;
+            log.arg = gender;
+            room->sendLog(log);
+
+        }else if(event == PhaseChange){
+            if(player->getPhase() == Player::Start){
+                LogMessage log;
+                log.from = player;
+                log.type = "#WeiniangFlip";
+                room->sendLog(log);
+
+                player->flip();
+                room->broadcastInvoke("flip", player->objectName());
+            }
+        }else if(event == Predamaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature != DamageStruct::Thunder && damage.from &&
+               damage.from->getGeneral()->isMale() != player->getGeneral()->isMale()){
+
+                LogMessage log;
+                log.type = "#WeiniangProtect";
+                log.to << player;
+                log.from = damage.from;
+                room->sendLog(log);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+class Zonghuo: public TriggerSkill{
+public:
+    Zonghuo():TriggerSkill("zonghuo"){
+        frequency = Compulsory;
+        events << SlashEffect;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(effect.nature != DamageStruct::Fire){
+            effect.nature = DamageStruct::Fire;
+
+            data = QVariant::fromValue(effect);
+
+            LogMessage log;
+            log.type = "#Zonghuo";
+            log.from = player;
+            player->getRoom()->sendLog(log);
+        }
+
+        return false;
+    }
+};
+
+static QString ShaoyingCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
+
+class Shaoying: public TriggerSkill{
+public:
+    Shaoying():TriggerSkill("shaoying"){
+        events << DamageComplete;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if(damage.from == NULL)
+            return false;
+
+        if(!damage.from->hasSkill(objectName()))
+            return false;
+
+        ServerPlayer *luboyan = damage.from;
+        if(!damage.to->isChained() && damage.nature == DamageStruct::Fire
+           && luboyan->askForSkillInvoke(objectName(), data))
+        {
+            Room *room = luboyan->getRoom();
+            if(room->judge(luboyan, ShaoyingCallback) == "good"){
+                DamageStruct shaoying_damage;
+                shaoying_damage.nature = DamageStruct::Fire;
+                shaoying_damage.from = luboyan;
+                shaoying_damage.to = room->getOtherPlayers(damage.to).first();
+
+                room->damage(shaoying_damage);
+            }
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1029,6 +1149,18 @@ YitianPackage::YitianPackage()
     General *caizhaoji = new General(this, "caizhaoji", "qun", 3, false);
     caizhaoji->addSkill(new Guihan);
     caizhaoji->addSkill(new CaizhaojiHujia);
+
+    General *luboyan = new General(this, "luboyan", "wu", 3);
+    luboyan->addSkill(new Weiniang);
+    luboyan->addSkill(new Shaoying);
+    luboyan->addSkill(new Zonghuo);
+
+    General *luboyanf = new General(NULL, "luboyanf", "wu", 3, false);
+    luboyanf->addSkill(new Weiniang);
+    luboyanf->addSkill(new Shaoying);
+    luboyanf->addSkill(new Zonghuo);
+
+    luboyan->setHyde(luboyanf);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

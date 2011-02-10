@@ -15,7 +15,7 @@ class General : public QObject
     Q_PROPERTY(int maxhp READ getMaxHp CONSTANT)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
-    Q_PROPERTY(bool lord READ isLord CONSTANT)
+    Q_PROPERTY(bool lord READ isLord CONSTANT)   
 
 public:
     explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
@@ -34,6 +34,9 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
 
+    void setHyde(General *hyde);
+    const General *getHyde() const;
+
 public slots:
     void lastWord() const;
 
@@ -43,6 +46,7 @@ private:
     bool male;
     bool lord;
     QMap<QString, Skill *> skill_map;
+    General *hyde;
 };
 
 #endif // GENERAL_H

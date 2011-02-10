@@ -17,7 +17,7 @@ ContestDB::ContestDB(QObject *parent) :
     QObject(parent)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    QString filename = Config.value("ContestDB", "users.db").toString();
+    QString filename = Config.value("Contest/Database", "users.db").toString();
     db.setDatabaseName(filename);
 
     bool ok = db.open();

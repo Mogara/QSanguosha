@@ -1003,6 +1003,9 @@ void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
 
+    if(general->getHyde() != general && !skill_buttons.isEmpty())
+        return;
+
     skill_buttons.clear();
     button2skill.clear();
 
@@ -2350,7 +2353,7 @@ void RoomScene::createStateItem(){
 }
 
 void RoomScene::showOwnerButtons(bool owner){
-    if(add_robot)
+    if(add_robot && !trust_button->isEnabled())
         add_robot->setVisible(owner);
 }
 

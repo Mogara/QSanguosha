@@ -12,7 +12,7 @@ GameRule::GameRule(QObject *parent)
             << CardEffected << HpRecover
             << AskForPeaches << Death << Dying
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
-            << DamageDone;
+            << DamageDone << DamageComplete;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -177,8 +177,6 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             DamageStruct damage = data.value<DamageStruct>();
             room->sendDamageLog(damage);
 
-            bool chained = player->isChained();
-
             int new_hp = player->getHp() - damage.damage;
             room->applyDamage(player, damage);
             if(new_hp <= 0){
@@ -191,27 +189,37 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 room->getThread()->trigger(Dying, player, dying_data);
             }
 
-            if(chained && damage.nature != DamageStruct::Normal){
+            break;
+        }        
+
+    case DamageComplete:{
+            bool chained = player->isChained();
+            if(!chained)
+                break;
+
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature != DamageStruct::Normal){
                 room->setPlayerProperty(player, "chained", false);
 
                 // iron chain effect
-                QList<ServerPlayer *> chained_players = room->getAllPlayers();
-                chained_players.removeOne(player);
-
+                QList<ServerPlayer *> chained_players = room->getOtherPlayers(player);
                 foreach(ServerPlayer *chained_player, chained_players){
                     if(chained_player->isChained()){
+                        room->getThread()->delay();
+
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
                         chain_damage.chain = true;
 
-                        room->setPlayerProperty(chained_player, "chained", false);
                         room->damage(chain_damage);
+
+                        break;
                     }
                 }
             }
 
             break;
-        }        
+        }
 
     case CardEffected:{
             if(data.canConvert<CardEffectStruct>()){

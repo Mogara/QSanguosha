@@ -5,7 +5,7 @@
 #include "client.h"
 
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hyde(this)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -58,7 +58,11 @@ bool General::hasSkill(const QString &skill_name) const{
 }
 
 QString General::getPackage() const{
-    return parent()->objectName();
+    QObject *p = parent();
+    if(p)
+        return p->objectName();
+    else
+        return QString(); // avoid null pointer exception;
 }
 
 QString General::getSkillDescription() const{
@@ -82,3 +86,13 @@ void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 }
+
+void General::setHyde(General *hyde){
+    this->hyde = hyde;
+    hyde->hyde = this;
+}
+
+const General *General::getHyde() const{
+    return hyde;
+}
+

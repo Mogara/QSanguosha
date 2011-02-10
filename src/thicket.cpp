@@ -25,6 +25,14 @@ public:
         Room *room = player->getRoom();
         ServerPlayer *caopi = room->findPlayerBySkillName(objectName());
         if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName())){
+            QString general_name = player->getGeneralName();
+            if(general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc"){
+                room->playSkillEffect(objectName(), 3);
+            }else if(player->getGeneral()->isMale())
+                room->playSkillEffect(objectName(), 1);
+            else
+                room->playSkillEffect(objectName(), 2);
+
             caopi->obtainCard(player->getWeapon());
             caopi->obtainCard(player->getArmor());
             caopi->obtainCard(player->getDefensiveHorse());
@@ -42,14 +50,19 @@ public:
 };
 
 FangzhuCard::FangzhuCard(){
+    mute = true;
 }
 
 void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
     int x = effect.from->getLostHp();
 
     effect.to->drawCards(x);
+
+    Room *room = effect.to->getRoom();
+    room->playSkillEffect("fangzhu", effect.to->faceUp() ? 1 : 2);
+
     effect.to->turnOver();
-    effect.to->getRoom()->broadcastProperty(effect.to, "faceup");
+    room->broadcastProperty(effect.to, "faceup");
 }
 
 class FangzhuViewAsSkill: public ZeroCardViewAsSkill{
@@ -99,9 +112,11 @@ public:
         if(card->isBlack()){
             Room *room = player->getRoom();
             if(room->askForSkillInvoke(player, objectName())){
+                room->playSkillEffect(objectName());
+
                 QList<ServerPlayer *> players = room->getOtherPlayers(player);
                 foreach(ServerPlayer *p, players){
-                    if(p->hasSkill(objectName())){
+                    if(p->hasSkill(objectName())){                        
                         p->drawCards(1);
                         break;
                     }

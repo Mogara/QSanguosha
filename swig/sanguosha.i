@@ -300,6 +300,7 @@ enum TriggerEvent{
     DamageDone,
     Damage,
     Damaged,
+    DamageComplete,
 
     Dying,
     AskForPeaches,

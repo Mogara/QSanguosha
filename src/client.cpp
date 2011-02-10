@@ -57,6 +57,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
+    callbacks["flip"] = &Client::flip;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -1438,4 +1439,10 @@ void Client::setScreenName(const QString &set_str){
     QString base64 = words.at(1);
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toAscii()));
     player->setScreenName(screen_name);
+}
+
+void Client::flip(const QString &who){
+    Player *player = getPlayer(who);
+    if(player)
+        player->flip();
 }
