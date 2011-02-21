@@ -63,19 +63,6 @@
     </property>
    </column>
   </widget>
-  <widget class="QPushButton" name="okButton">
-   <property name="geometry">
-    <rect>
-     <x>820</x>
-     <y>570</y>
-     <width>71</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>OK</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="skillLabel">
    <property name="geometry">
     <rect>
@@ -149,7 +136,7 @@
     <rect>
      <x>670</x>
      <y>570</y>
-     <width>121</width>
+     <width>221</width>
      <height>20</height>
     </rect>
    </property>
@@ -159,22 +146,5 @@
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>okButton</sender>
-   <signal>clicked()</signal>
-   <receiver>GeneralOverview</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>551</x>
-     <y>492</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>459</x>
-     <y>492</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

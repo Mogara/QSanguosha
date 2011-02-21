@@ -62,14 +62,17 @@ return {
 	["$quhu2"] = "驱虎吞狼，坐收渔利", 
 	["$tianyi"] = "大丈夫生于乱世，当立不世之功", 
 	["$mengjin"] = "西凉铁骑，杀汝片甲不留",
+	["$shuangxiong1"] = "虎狼兄弟，无往不利",
+	["$shuangxiong2"] = "兄弟齐心，其利断金",
 	
 	["~pangtong"] = "落凤坡？此地不利于吾。",
-	["~wolong"] = "悠悠苍天,曷此其极",
+	["~wolong"] = "悠悠苍天，曷此其极",
 	["~dianwei"] = "丞相，我就到这啦",
 	["~xunyu"] = "身为汉臣，至死不渝",
 	["~yuanshao"] = "天不助袁哪！",
 	["~taishici"] = "今所志未遂，奈何死乎",
 	["~pangde"] = "宁做国家鬼，不为贼将也",
+	["~shuangxiong"] = "生不逢时啊",
 	
 	["@nirvana"] = "涅槃",	
 	
@@ -81,6 +84,6 @@ return {
 	["cv:taishici"] = "口渴口樂",
 	["cv:yuanshao"] = "耗子王",
 	["cv:pangde"] = "Glory",
-	["cv:shuangxiong"] = "",
+	["cv:shuangxiong"] = "墨染の飞猫，霸气爷们",
 }
 

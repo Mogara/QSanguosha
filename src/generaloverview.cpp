@@ -94,7 +94,6 @@ void GeneralOverview::addLines(const Skill *skill){
     QString skill_name = Sanguosha->translate(skill->objectName());
     QStringList sources = skill->getSources();
 
-
     if(sources.isEmpty()){
         QCommandLinkButton *button = new QCommandLinkButton(skill_name);
 
