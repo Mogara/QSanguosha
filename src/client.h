@@ -123,6 +123,7 @@ public:
     void askForSkillInvoke(const QString &skill_name);
     void askForChoice(const QString &ask_str);
     void askForDiscard(const QString &discard_str);
+    void askForExchange(const QString &exchange_str);
     void askForSuit(const QString &);
     void askForKingdom(const QString &);
     void askForNullification(const QString &ask_str);    

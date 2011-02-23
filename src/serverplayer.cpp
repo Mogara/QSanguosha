@@ -320,6 +320,11 @@ bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
     return success;
 }
 
+void ServerPlayer::turnOver(){
+    setFaceUp(!faceUp());
+    room->broadcastProperty(this, "faceup");
+}
+
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
 

@@ -276,7 +276,6 @@ public:
                 target->drawCards(3);
                 target->turnOver();
 
-                room->broadcastProperty(target, "faceup");
                 room->playSkillEffect(objectName());
             }
         }

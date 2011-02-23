@@ -968,7 +968,6 @@ public:
                 times ++;
                 if(times == 3){
                     target->turnOver();
-                    room->broadcastProperty(target, "faceup");
                 }
 
                 CardStar card;
@@ -1103,6 +1102,86 @@ public:
     }
 };
 
+class Gongmou: public PhaseChangeSkill{
+public:
+    Gongmou():PhaseChangeSkill("gongmou"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhonghui) const{
+        switch(zhonghui->getPhase()){
+        case Player::Finish:{
+                if(zhonghui->askForSkillInvoke(objectName())){
+                    Room *room = zhonghui->getRoom();
+                    QList<ServerPlayer *> players = room->getOtherPlayers(zhonghui);
+                    ServerPlayer *target = room->askForPlayerChosen(zhonghui, players, "gongmou");
+                    target->gainMark("@conspiracy");
+                }
+                break;
+            }
+
+        case Player::Start:{
+                Room *room = zhonghui->getRoom();
+                QList<ServerPlayer *> players = room->getOtherPlayers(zhonghui);
+                foreach(ServerPlayer *player, players){
+                    if(player->getMark("@conspiracy") > 0)
+                        player->loseMark("@conspiracy");
+                }
+            }
+
+        default:
+            break;
+        }
+
+
+        return false;
+    }
+};
+
+class GongmouExchange:public PhaseChangeSkill{
+public:
+    GongmouExchange():PhaseChangeSkill("#gongmou-exchange"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->getMark("@conspiracy") > 0;
+    }
+
+    virtual int getPriority() const{
+        return -2;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        if(player->getPhase() != Player::Draw)
+            return false;
+
+        player->loseMark("@conspiracy");
+
+        Room *room = player->getRoom();
+        ServerPlayer *zhonghui = room->findPlayerBySkillName("gongmou");
+        if(zhonghui){
+            int x = qMin(zhonghui->getHandcardNum(), player->getHandcardNum());
+            if(x == 0)
+                return false;
+
+            const Card *to_exchange = NULL;
+            if(player->getHandcardNum() == x)
+                to_exchange = player->wholeHandCards();
+            else
+                to_exchange = room->askForExchange(player, "gongmou", x);
+
+            zhonghui->obtainCard(to_exchange);
+            delete to_exchange;
+            to_exchange = room->askForExchange(zhonghui, "gongmou", x);
+            player->obtainCard(to_exchange);
+            delete to_exchange;
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1161,6 +1240,10 @@ YitianPackage::YitianPackage()
     luboyanf->addSkill(new Zonghuo);
 
     luboyan->setHyde(luboyanf);
+
+    General *zhonghui = new General(this, "zhonghui", "wei");
+    zhonghui->addSkill(new Gongmou);
+    zhonghui->addSkill(new GongmouExchange);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

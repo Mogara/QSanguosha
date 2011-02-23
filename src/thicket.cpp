@@ -62,7 +62,6 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
     room->playSkillEffect("fangzhu", effect.to->faceUp() ? 1 : 2);
 
     effect.to->turnOver();
-    room->broadcastProperty(effect.to, "faceup");
 }
 
 class FangzhuViewAsSkill: public ZeroCardViewAsSkill{

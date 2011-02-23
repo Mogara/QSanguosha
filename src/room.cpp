@@ -151,7 +151,6 @@ void Room::nextPlayer(){
 
         if(!next->faceUp()){
             next->turnOver();
-            broadcastProperty(next, "faceup");
         }else{
             current = next;
             return;
@@ -2091,6 +2090,35 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     thread->trigger(CardDiscarded, target, data);
 
     return true;
+}
+
+const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num){
+    AI *ai = player->getAI();
+    QList<int> to_exchange;
+    if(ai){
+        // share the same callback interface
+        to_exchange = ai->askForDiscard(reason, discard_num, false, false);
+    }else{
+        player->invoke("askForExchange", QString::number(discard_num));
+        getResult("discardCardsCommand", player);
+
+        if(result.isEmpty())
+            return askForExchange(player, reason, discard_num);
+
+        if(result == "."){
+            to_exchange = player->forceToDiscard(discard_num, false);
+        }else{
+            QStringList card_strs = result.split("+");
+            foreach(QString card_str, card_strs)
+                to_exchange << card_str.toInt();
+        }
+    }
+
+    DummyCard *card = new DummyCard;
+    foreach(int card_id, to_exchange)
+        card->addSubcard(card_id);
+
+    return card;
 }
 
 void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place){

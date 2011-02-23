@@ -142,6 +142,7 @@ public:
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional = false, bool include_equip = false);
+    const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num);
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);

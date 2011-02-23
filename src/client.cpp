@@ -74,6 +74,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["doGuanxing"] = &Client::doGuanxing;
     callbacks["doGongxin"] = &Client::doGongxin;
     callbacks["askForDiscard"] = &Client::askForDiscard;
+    callbacks["askForExchange"] = &Client::askForExchange;
     callbacks["askForSuit"] = &Client::askForSuit;
     callbacks["askForKingdom"] = &Client::askForKingdom;
     callbacks["askForSinglePeach"] = &Client::askForSinglePeach;
@@ -970,6 +971,22 @@ void Client::askForDiscard(const QString &discard_str){
     prompt_doc->setHtml(prompt);
 
     setStatus(Discarding);    
+}
+
+void Client::askForExchange(const QString &exchange_str){
+    bool ok;
+    discard_num = exchange_str.toInt(&ok);
+    if(!ok){
+        QMessageBox::warning(NULL, tr("Warning"), tr("Exchange string is not well formatted!"));
+        return;
+    }
+
+    refusable = false;
+    include_equip = false;
+
+    prompt_doc->setHtml(tr("Please give %1 cards to exchange").arg(discard_num));
+
+    setStatus(Discarding);
 }
 
 void Client::gameOver(const QString &result_str){    

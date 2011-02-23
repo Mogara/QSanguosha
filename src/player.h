@@ -126,7 +126,6 @@ public:
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
-    void turnOver();
 
     virtual int aliveCount() const = 0;
     int distanceTo(const Player *other) const;

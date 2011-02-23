@@ -118,7 +118,6 @@ public:
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
-    void turnOver();
 
     virtual int aliveCount() const = 0;
     int distanceTo(const Player *other) const;
@@ -197,6 +196,7 @@ public:
     bool isLord() const;
     bool hasNullification() const;
     bool pindian(ServerPlayer *target, const Card *card1 = NULL);
+	void turnOver();
 
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);

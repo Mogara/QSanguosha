@@ -367,7 +367,6 @@ public:
                 }
 
                 shencc->turnOver();
-                room->broadcastProperty(shencc, "faceup");
             }else
                 break;
         }
@@ -478,7 +477,6 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlay
     }
 
     shenlubu->turnOver();
-    room->broadcastProperty(shenlubu, "faceup");
 }
 
 WuqianCard::WuqianCard(){

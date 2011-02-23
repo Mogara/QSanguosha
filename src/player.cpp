@@ -448,10 +448,6 @@ void Player::setFaceUp(bool face_up){
     }
 }
 
-void Player::turnOver(){
-    face_up = !face_up;
-}
-
 int Player::getMaxCards() const{
     return hp + xueyi;
 }
