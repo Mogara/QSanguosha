@@ -373,6 +373,23 @@ static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
     return seat1 < seat2;
 }
 
+void Card::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *player = card_use.from;
+
+    LogMessage log;
+    log.from = player;
+    log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+    thread->trigger(CardUsed, player, data);
+
+    thread->trigger(CardFinished, player, data);
+}
+
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 

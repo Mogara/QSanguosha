@@ -56,6 +56,19 @@ QString EquipCard::getEffectPath(bool is_male) const{
     return "audio/card/common/equip.ogg";
 }
 
+void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    if(card_use.to.isEmpty()){
+        ServerPlayer *player = card_use.from;
+
+        QVariant data = QVariant::fromValue(card_use);
+        RoomThread *thread = room->getThread();
+        thread->trigger(CardUsed, player, data);
+
+        thread->trigger(CardFinished, player, data);
+    }else
+        Card::onUse(room, card_use);
+}
+
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     const EquipCard *equipped = NULL;
     switch(location()){
@@ -67,6 +80,12 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     if(equipped)
         room->throwCard(equipped);
+
+    LogMessage log;
+    log.from = source;
+    log.type = "$Install";
+    log.card_str = QString::number(getEffectiveId());
+    room->sendLog(log);
 
     room->moveCardTo(this, source, Player::Equip, true);
 }

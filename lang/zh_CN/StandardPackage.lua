@@ -194,6 +194,7 @@ local t = {
 	["#DrawNCards"] = "%from 摸了 %arg 张牌", 
 	["#MoveNCards"] = "%to 从 %from 处得到 %arg 张牌", 
 	["$TakeAG"] = "%from 拿走了 %card", 
+	["$Install"] = "%from 装备了 %card",
 	["$Uninstall"] = "%from 卸载了 %card", 
 	["$JudgeResult"] = "%from 最终判定结果为 %card", 
 	["$PindianResult"] = "%from 的拼点结果为 %card", 

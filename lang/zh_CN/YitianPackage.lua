@@ -136,6 +136,7 @@ return {
 	["gongmou"] = "共谋",
 	["@conspiracy"] = "共谋",
 	[":gongmou"] = "回合结束阶段,可指定一名其他角色:其在摸牌阶段摸牌后,须给你观看X张手牌(X为你与对方的手牌数的较小值),然后你可用任意数量手牌等量交换这些牌。",	
+	["#GongmouExchange"] = "%from 发动了【共谋】技能，与 %to 交换了 %arg 张手牌",
 	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
@@ -149,6 +150,7 @@ return {
 	["cv:jinxuandi"] = "",
 	["cv:xiahoujuan"] = "妙妙",
 	["cv:caizhaoji"] = "妙妙",
+	["cv:luboyan"] = "",
 	["cv:zhonghui"] = "",
 }
 

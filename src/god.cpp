@@ -411,11 +411,6 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-
-            // special case
-            if(use.card->inherits("IronChain") && use.to.isEmpty())
-                return false;
-
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 

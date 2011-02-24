@@ -60,9 +60,10 @@ public:
     virtual QString getType() const;
     virtual CardType getTypeId() const;
     virtual QString getEffectPath(bool is_male) const;
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 
-    // should be pure virtual
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
 

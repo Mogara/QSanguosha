@@ -9,9 +9,11 @@ class Room;
 class ServerPlayer;
 class Client;
 class ClientPlayer;
+class CardItem;
+
 struct CardEffectStruct;
 struct CardMoveStruct;
-class CardItem;
+struct CardUseStruct;
 
 class Card : public QObject
 {
@@ -106,7 +108,7 @@ public:
     bool isOnce() const;
     bool isMute() const;
 
-    // FIXME: should be pure virtual
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;

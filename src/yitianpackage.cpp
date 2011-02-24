@@ -1171,11 +1171,21 @@ public:
             else
                 to_exchange = room->askForExchange(player, "gongmou", x);
 
-            zhonghui->obtainCard(to_exchange);
+            room->moveCardTo(to_exchange, zhonghui, Player::Hand, false);
+
             delete to_exchange;
+
             to_exchange = room->askForExchange(zhonghui, "gongmou", x);
-            player->obtainCard(to_exchange);
+            room->moveCardTo(to_exchange, player, Player::Hand, false);
+
             delete to_exchange;
+
+            LogMessage log;
+            log.type = "#GongmouExchange";
+            log.from = zhonghui;
+            log.to << player;
+            log.arg = QString::number(x);
+            room->sendLog(log);
         }
 
         return false;

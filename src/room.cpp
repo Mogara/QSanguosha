@@ -1513,19 +1513,7 @@ void Room::commonCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::useCard(const CardUseStruct &card_use){
-    ServerPlayer *player = card_use.from;
-
-    LogMessage log;
-    log.from = player;
-    log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString();
-    sendLog(log);
-
-    QVariant data = QVariant::fromValue(card_use);
-    thread->trigger(CardUsed, player, data);
-
-    thread->trigger(CardFinished, player, data);
+    card_use.card->onUse(this, card_use);
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
