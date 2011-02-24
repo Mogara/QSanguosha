@@ -149,5 +149,6 @@ return {
 	["cv:jinxuandi"] = "",
 	["cv:xiahoujuan"] = "妙妙",
 	["cv:caizhaoji"] = "妙妙",
+	["cv:zhonghui"] = "",
 }
 

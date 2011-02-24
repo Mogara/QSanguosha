@@ -324,6 +324,8 @@ public:
             if(player->distanceTo(damage.to) <= 1){
                 Room *room = player->getRoom();
 
+                room->playSkillEffect(objectName());
+
                 LogMessage log;
                 log.type = "#KuangguRecover";
                 log.from = player;
