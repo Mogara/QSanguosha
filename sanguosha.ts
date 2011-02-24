@@ -37,7 +37,7 @@
         <translation>&lt;b&gt;【%1】&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="src/card.cpp" line="411"/>
+        <location filename="src/card.cpp" line="428"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -80,17 +80,17 @@
         <translation>包</translation>
     </message>
     <message>
-        <location filename="src/cardoverview.ui" line="101"/>
+        <location filename="src/cardoverview.ui" line="104"/>
         <source>Get this card</source>
         <translation>得到这张卡牌</translation>
     </message>
     <message>
-        <location filename="src/cardoverview.ui" line="114"/>
+        <location filename="src/cardoverview.ui" line="117"/>
         <source>Play (male)</source>
         <translation>男性配音</translation>
     </message>
     <message>
-        <location filename="src/cardoverview.ui" line="127"/>
+        <location filename="src/cardoverview.ui" line="130"/>
         <source>Play (female)</source>
         <translation>女性配音</translation>
     </message>
@@ -1397,7 +1397,7 @@
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1999"/>
+        <location filename="src/room.cpp" line="1987"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1769,17 +1769,17 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="470"/>
+        <location filename="src/server.cpp" line="471"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="481"/>
+        <location filename="src/server.cpp" line="482"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="494"/>
+        <location filename="src/server.cpp" line="495"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
@@ -1839,58 +1839,63 @@
         <translation>较小值</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="291"/>
+        <location filename="src/server.cpp" line="256"/>
+        <source>Average</source>
+        <translation>平均值</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="292"/>
         <source>Max HP scheme</source>
         <translation>体力上限分配方案</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="262"/>
+        <location filename="src/server.cpp" line="263"/>
         <source>Ban pairs table ...</source>
         <translation>禁配表 ...</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="268"/>
+        <location filename="src/server.cpp" line="269"/>
         <source>Annouce my IP in WAN</source>
         <translation>在广域网上公布我的 IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="274"/>
+        <location filename="src/server.cpp" line="275"/>
         <source>Public IP or domain</source>
         <translation>公网 IP 或域名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="293"/>
+        <location filename="src/server.cpp" line="294"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="276"/>
+        <location filename="src/server.cpp" line="277"/>
         <source>Detect my WAN IP</source>
         <translation>探测我的广域网IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="301"/>
+        <location filename="src/server.cpp" line="302"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="312"/>
+        <location filename="src/server.cpp" line="313"/>
         <source> millisecond</source>
         <translation> 毫秒</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="315"/>
+        <location filename="src/server.cpp" line="316"/>
         <source>AI delay</source>
         <translation>电脑延迟</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="357"/>
-        <location filename="src/server.cpp" line="372"/>
+        <location filename="src/server.cpp" line="358"/>
+        <location filename="src/server.cpp" line="373"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="372"/>
+        <location filename="src/server.cpp" line="373"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -1931,22 +1936,22 @@
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="295"/>
+        <location filename="src/server.cpp" line="296"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="305"/>
+        <location filename="src/server.cpp" line="306"/>
         <source>Enable AI</source>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="331"/>
+        <location filename="src/server.cpp" line="332"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="332"/>
+        <location filename="src/server.cpp" line="333"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -2119,23 +2124,46 @@
     </message>
     <message>
         <location filename="src/startscene.cpp" line="131"/>
-        <location filename="src/startscene.cpp" line="132"/>
         <source>Enabled</source>
         <translation>启用</translation>
     </message>
     <message>
         <location filename="src/startscene.cpp" line="131"/>
-        <location filename="src/startscene.cpp" line="132"/>
         <source>Disabled</source>
         <translation>未启用</translation>
     </message>
     <message>
-        <location filename="src/startscene.cpp" line="135"/>
+        <location filename="src/startscene.cpp" line="136"/>
+        <source>sum - 3</source>
+        <translation>和减3</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="137"/>
+        <source>minimum</source>
+        <translation>最小值</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="138"/>
+        <source>average</source>
+        <translation>平均值</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="141"/>
+        <source>Secondary general is enabled, max hp scheme is %1</source>
+        <translation>双将模式已启用，体力上限分配方案是 %1</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="143"/>
+        <source>Seconardary general is disabled</source>
+        <translation>双将模式未启用</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="146"/>
         <source>This server is AI enabled, AI delay is %1 milliseconds</source>
         <translation>服务器启用了 AI，AI 的延迟是 %1 毫秒</translation>
     </message>
     <message>
-        <location filename="src/startscene.cpp" line="137"/>
+        <location filename="src/startscene.cpp" line="148"/>
         <source>This server is AI disabled</source>
         <translation>此服务器尚未启用 AI</translation>
     </message>
@@ -2153,11 +2181,6 @@
         <location filename="src/startscene.cpp" line="131"/>
         <source>Free general choose is %1</source>
         <translation>自由选将是 %1</translation>
-    </message>
-    <message>
-        <location filename="src/startscene.cpp" line="132"/>
-        <source>Secondary general is %1</source>
-        <translation>双将是 %1</translation>
     </message>
 </context>
 <context>

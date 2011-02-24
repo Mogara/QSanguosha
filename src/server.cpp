@@ -253,6 +253,7 @@ QLayout *ServerDialog::createRight(){
         max_hp_scheme_combobox = new QComboBox;
         max_hp_scheme_combobox->addItem(tr("Sum - 3"));
         max_hp_scheme_combobox->addItem(tr("Minimum"));
+        max_hp_scheme_combobox->addItem(tr("Average"));
         max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
         max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
         connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));

@@ -129,7 +129,18 @@ void StartScene::printServerInfo(){
         server_log->append(tr("The contest mode is enabled"));
 
     server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
-    server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
+
+    if(Config.Enable2ndGeneral){
+        QString scheme_str;
+        switch(Config.MaxHpScheme){
+        case 0: scheme_str = tr("sum - 3"); break;
+        case 1: scheme_str = tr("minimum"); break;
+        case 2: scheme_str = tr("average"); break;
+        }
+
+        server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
+    }else
+        server_log->append(tr("Seconardary general is disabled"));
 
     if(Config.EnableAI)
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));

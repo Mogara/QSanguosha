@@ -206,6 +206,7 @@ int Player::getGeneralMaxHP() const{
 
     int max_hp;
     switch(Config.MaxHpScheme){
+    case 2: max_hp = (first + second)/2; break;
     case 1: max_hp = qMin(first, second); break;
     case 0:
     default:
@@ -449,7 +450,14 @@ void Player::setFaceUp(bool face_up){
 }
 
 int Player::getMaxCards() const{
-    return hp + xueyi;
+    int extra = 0;
+    if(Config.MaxHpScheme == 2 && general2){
+        int total = general->getMaxHp() + general2->getMaxHp();
+        if(total % 2 != 0)
+            extra = 1;
+    }
+
+    return hp + xueyi + extra;
 }
 
 int Player::getXueyi() const{
