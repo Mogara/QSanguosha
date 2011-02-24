@@ -19,7 +19,7 @@ CardOverview::CardOverview(QWidget *parent) :
     if(ServerInfo.FreeChoose)
         connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
     else
-        ui->getCardButton->hide();
+        ui->getCardButton->hide();    
 }
 
 void CardOverview::loadFromAll(){
