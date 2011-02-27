@@ -364,6 +364,27 @@ public:
         }else if(event == HpRecover){
             if(zhoutai->getHp() > 0)
                 return false;
+
+            int recover = data.toInt();
+            QList<int> &buqu = zhoutai->getPile("buqu");
+            if(buqu.length() > recover){
+                room->fillAG(buqu);
+
+                int i;
+                for(i=0; i<recover; i++){
+                    int card_id = room->askForAG(zhoutai, buqu);
+                    buqu.removeOne(card_id);
+                    room->throwCard(card_id);
+                }
+
+                room->broadcastInvoke("clearAG");
+            }else{
+                foreach(int card_id, buqu){
+                    room->throwCard(card_id);
+                }
+
+                buqu.clear();
+            }
         }
 
         return false;

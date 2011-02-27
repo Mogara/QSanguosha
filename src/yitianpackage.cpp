@@ -982,9 +982,9 @@ public:
     }
 };
 
-class Weiniang: public TriggerSkill{
+class Shenjun: public TriggerSkill{
 public:
-    Weiniang():TriggerSkill("weiniang"){
+    Shenjun():TriggerSkill("shenjun"){
         events << GameStart << PhaseChange << Predamaged;
         frequency = Compulsory;
     }   
@@ -999,7 +999,7 @@ public:
             }
 
             LogMessage log;
-            log.type = "#WeiniangChoose";
+            log.type = "#ShenjunChoose";
             log.from = player;
             log.arg = gender;
             room->sendLog(log);
@@ -1008,7 +1008,7 @@ public:
             if(player->getPhase() == Player::Start){
                 LogMessage log;
                 log.from = player;
-                log.type = "#WeiniangFlip";
+                log.type = "#ShenjunFlip";
                 room->sendLog(log);
 
                 player->flip();
@@ -1020,7 +1020,7 @@ public:
                damage.from->getGeneral()->isMale() != player->getGeneral()->isMale()){
 
                 LogMessage log;
-                log.type = "#WeiniangProtect";
+                log.type = "#ShenjunProtect";
                 log.to << player;
                 log.from = damage.from;
                 room->sendLog(log);
@@ -1108,21 +1108,21 @@ public:
 
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhonghui) const{
-        switch(zhonghui->getPhase()){
+    virtual bool onPhaseChange(ServerPlayer *zhongshiji) const{
+        switch(zhongshiji->getPhase()){
         case Player::Finish:{
-                if(zhonghui->askForSkillInvoke(objectName())){
-                    Room *room = zhonghui->getRoom();
-                    QList<ServerPlayer *> players = room->getOtherPlayers(zhonghui);
-                    ServerPlayer *target = room->askForPlayerChosen(zhonghui, players, "gongmou");
+                if(zhongshiji->askForSkillInvoke(objectName())){
+                    Room *room = zhongshiji->getRoom();
+                    QList<ServerPlayer *> players = room->getOtherPlayers(zhongshiji);
+                    ServerPlayer *target = room->askForPlayerChosen(zhongshiji, players, "gongmou");
                     target->gainMark("@conspiracy");
                 }
                 break;
             }
 
         case Player::Start:{
-                Room *room = zhonghui->getRoom();
-                QList<ServerPlayer *> players = room->getOtherPlayers(zhonghui);
+                Room *room = zhongshiji->getRoom();
+                QList<ServerPlayer *> players = room->getOtherPlayers(zhongshiji);
                 foreach(ServerPlayer *player, players){
                     if(player->getMark("@conspiracy") > 0)
                         player->loseMark("@conspiracy");
@@ -1159,9 +1159,9 @@ public:
         player->loseMark("@conspiracy");
 
         Room *room = player->getRoom();
-        ServerPlayer *zhonghui = room->findPlayerBySkillName("gongmou");
-        if(zhonghui){
-            int x = qMin(zhonghui->getHandcardNum(), player->getHandcardNum());
+        ServerPlayer *zhongshiji = room->findPlayerBySkillName("gongmou");
+        if(zhongshiji){
+            int x = qMin(zhongshiji->getHandcardNum(), player->getHandcardNum());
             if(x == 0)
                 return false;
 
@@ -1171,18 +1171,18 @@ public:
             else
                 to_exchange = room->askForExchange(player, "gongmou", x);
 
-            room->moveCardTo(to_exchange, zhonghui, Player::Hand, false);
+            room->moveCardTo(to_exchange, zhongshiji, Player::Hand, false);
 
             delete to_exchange;
 
-            to_exchange = room->askForExchange(zhonghui, "gongmou", x);
+            to_exchange = room->askForExchange(zhongshiji, "gongmou", x);
             room->moveCardTo(to_exchange, player, Player::Hand, false);
 
             delete to_exchange;
 
             LogMessage log;
             log.type = "#GongmouExchange";
-            log.from = zhonghui;
+            log.from = zhongshiji;
             log.to << player;
             log.arg = QString::number(x);
             room->sendLog(log);
@@ -1240,20 +1240,20 @@ YitianPackage::YitianPackage()
     caizhaoji->addSkill(new CaizhaojiHujia);
 
     General *luboyan = new General(this, "luboyan", "wu", 3);
-    luboyan->addSkill(new Weiniang);
+    luboyan->addSkill(new Shenjun);
     luboyan->addSkill(new Shaoying);
     luboyan->addSkill(new Zonghuo);
 
     General *luboyanf = new General(NULL, "luboyanf", "wu", 3, false);
-    luboyanf->addSkill(new Weiniang);
+    luboyanf->addSkill(new Shenjun);
     luboyanf->addSkill(new Shaoying);
     luboyanf->addSkill(new Zonghuo);
 
     luboyan->setHyde(luboyanf);
 
-    General *zhonghui = new General(this, "zhonghui", "wei");
-    zhonghui->addSkill(new Gongmou);
-    zhonghui->addSkill(new GongmouExchange);
+    General *zhongshiji = new General(this, "zhongshiji", "wei");
+    zhongshiji->addSkill(new Gongmou);
+    zhongshiji->addSkill(new GongmouExchange);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

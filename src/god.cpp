@@ -560,53 +560,9 @@ public:
     }
 };
 
-class Qixing: public ViewAsSkill{
+class Qixing: public PhaseChangeSkill{
 public:
-    Qixing():ViewAsSkill("qixing"){
-
-    }
-
-    virtual bool isEnabledAtPlay() const{
-        return false;
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.length() < Self->getMark("qixing-exchange") && !to_select->isEquipped();
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != Self->getMark("qixing-exchange"))
-            return NULL;
-
-        QixingCard *card = new QixingCard;
-        card->addSubcards(cards);
-
-        return card;
-    }
-};
-
-QixingCard::QixingCard(){
-    target_fixed = true;
-}
-
-void QixingCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    QList<int> &stars = source->getPile("stars");
-
-    foreach(int subcard, subcards){
-        stars << subcard;
-        room->moveCardTo(subcard, source, Player::Special, false);
-    }
-
-    LogMessage log;
-    log.type = "#QixingExchange";
-    log.from = source;
-    log.arg = QString::number(subcards.length());
-    room->sendLog(log);
-}
-
-class QixingExchange: public PhaseChangeSkill{
-public:
-    QixingExchange():PhaseChangeSkill("#qixing-exchange"){
+    Qixing():PhaseChangeSkill("qixing"){
         frequency = Frequent;
     }
 
@@ -648,20 +604,19 @@ public:
             return;
 
         int n = to_exchange.length();
-        room->setPlayerMark(shenzhuge, "qixing-exchange", n);
+        const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", n);
 
-        QString prompt = QString("@qixing-exchange:::%1").arg(n);
-        bool used = room->askForUseCard(shenzhuge, "@qixing!", prompt);
-        if(!used){
-            QList<int> to_exchange = shenzhuge->handCards().mid(0, n);
-            QixingCard *qixing_card = new QixingCard;
-            foreach(int card_id, to_exchange)
-                qixing_card->addSubcard(card_id);
+        LogMessage log;
+        log.type = "#QixingExchange";
+        log.from = shenzhuge;
+        log.arg = QString::number(n);
+        room->sendLog(log);
 
-            qixing_card->use(room, shenzhuge, QList<ServerPlayer *>());
+        room->moveCardTo(exchange_card, shenzhuge, Player::Special, false);
 
-            delete qixing_card;
-        }
+        stars.append(exchange_card->getSubcards());
+
+        delete exchange_card;
     }
 
     static void DiscardStar(ServerPlayer *shenzhuge, int n){
@@ -709,7 +664,7 @@ public:
             room->setCardMapping(star, shenzhuge, Player::Special);
         shenzhuge->getPile("stars") = stars;
 
-        QixingExchange::Exchange(shenzhuge);
+        Qixing::Exchange(shenzhuge);
     }
 };
 
@@ -722,7 +677,7 @@ bool KuangfengCard::targetFilter(const QList<const ClientPlayer *> &targets, con
 }
 
 void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
-    QixingExchange::DiscardStar(effect.from, 1);
+    Qixing::DiscardStar(effect.from, 1);
 
     effect.from->loseMark("@star");
     effect.to->gainMark("@gale");
@@ -854,7 +809,7 @@ bool DawuCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
 
 void DawuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     int n = targets.length();
-    QixingExchange::DiscardStar(source, n);
+    Qixing::DiscardStar(source, n);
 
     source->loseMark("@star", n);
     foreach(ServerPlayer *target, targets){
@@ -939,7 +894,6 @@ GodPackage::GodPackage()
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
     shenzhugeliang->addSkill(new Qixing);
-    shenzhugeliang->addSkill(new QixingExchange);
     shenzhugeliang->addSkill(new QixingStart);
     shenzhugeliang->addSkill(new QixingClear);
     shenzhugeliang->addSkill(new QixingAsk);
@@ -967,7 +921,6 @@ GodPackage::GodPackage()
     addMetaObject<KuangfengCard>();
     addMetaObject<DawuCard>();
     addMetaObject<WuqianCard>();
-    addMetaObject<QixingCard>();
 }
 
 ADD_PACKAGE(God)
