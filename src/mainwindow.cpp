@@ -308,11 +308,10 @@ void MainWindow::on_actionAbout_triggered()
     QString project_url = "http://github.com/Moligaloo/QSanguosha";
     content.append(tr("Project home: <a href='%1'>%1</a> <br/>").arg(project_url));
 
-    // FIXME: add acknowledgement
+    QString forum_url = "http://qsanguosha.com";
+    content.append(tr("Forum: <a href='%1'>%1</a> <br/>").arg(forum_url));
 
-    //QMessageBox::about(this, tr("About QSanguosha"), content);
-
-    Window *window = new Window(tr("About QSanguosha"), QSize(365, 401));
+    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
     scene->addItem(window);
 
     window->addContent(content);

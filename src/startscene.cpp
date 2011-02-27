@@ -14,13 +14,13 @@ StartScene::StartScene()
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
 
-    //my e-mail address
-    QFont email_font(Config.SmallFont);
-    email_font.setStyle(QFont::StyleItalic);
-    QGraphicsSimpleTextItem *email_text = addSimpleText("moligaloo@gmail.com", email_font);
-    email_text->setBrush(Qt::white);
-    email_text->setPos(Config.Rect.width()/2 - email_text->boundingRect().width(),
-                       Config.Rect.height()/2 - email_text->boundingRect().height());
+    //the website URL
+    QFont website_font(Config.SmallFont);
+    website_font.setStyle(QFont::StyleItalic);
+    QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.com", website_font);
+    website_text->setBrush(Qt::white);
+    website_text->setPos(Config.Rect.width()/2 - website_text->boundingRect().width(),
+                       Config.Rect.height()/2 - website_text->boundingRect().height());
 
     server_log = NULL;
 }
