@@ -33,7 +33,7 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
-    void chooseGeneral(const QList<const General*> &generals);   
+    void chooseGeneral(const QStringList &generals);
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
     void toggleDiscards();
     void enableTargets(const Card *card);
@@ -104,10 +104,10 @@ private:
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
-    void clickSkillButton(int order);
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     const ViewAsSkill *getViewAsSkill(const QString &skill_name);
+    void chooseSkillButton();
 
     void viewDiscards();
     void hideDiscards();

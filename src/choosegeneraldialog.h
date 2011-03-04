@@ -13,7 +13,7 @@ class ChooseGeneralDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ChooseGeneralDialog(const QList<const General *> &generals,
+    explicit ChooseGeneralDialog(const QStringList &general_names,
                                  QWidget *parent);
 
 protected:

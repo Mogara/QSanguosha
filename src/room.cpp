@@ -53,6 +53,7 @@ Room::Room(QObject *parent, const QString &mode)
     callbacks["chooseKingdomCommand"] = &Room::commonCommand;
     callbacks["chooseAGCommand"] = &Room::commonCommand;
     callbacks["choosePlayerCommand"] = &Room::commonCommand;
+    callbacks["chooseGeneralCommand"] = &Room::commonCommand;
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
@@ -1490,7 +1491,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
                     choose2Command(p, default_general2);
                 }else{
                     p->setProperty("default_general2", default_general2);
-                    p->invoke("doChooseGeneral", choices.join("+"));
+                    p->invoke("doChooseGeneral2", choices.join("+"));
                 }
             }
 
@@ -2315,6 +2316,20 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         return NULL;
     else
         return findChild<ServerPlayer *>(player_name);
+}
+
+QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals){
+    AI *ai = player->getAI();
+    if(ai)
+        return generals.first();
+
+    player->invoke("askForGeneral", generals.join("+"));
+    getResult("chooseGeneralCommand", player);
+
+    if(result.isEmpty() || result == ".")
+        return generals.first();
+    else
+        return result;
 }
 
 void Room::kickCommand(ServerPlayer *player, const QString &arg){

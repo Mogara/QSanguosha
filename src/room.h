@@ -153,6 +153,7 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals);
 
     void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
     int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);

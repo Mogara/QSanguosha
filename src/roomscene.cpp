@@ -32,6 +32,7 @@
 #include <QRadioButton>
 #include <QApplication>
 #include <QTimer>
+#include <QCommandLinkButton>
 
 extern irrklang::ISoundEngine *SoundEngine;
 
@@ -112,7 +113,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));    
-    connect(ClientInstance, SIGNAL(generals_got(QList<const General*>)), this, SLOT(chooseGeneral(QList<const General*>)));
+    connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(arrangeSeats(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
@@ -464,20 +465,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     bool control_is_down = event->modifiers() & Qt::ControlModifier;
 
     switch(event->key()){        
-    case Qt::Key_F1:
-    case Qt::Key_F2:
-    case Qt::Key_F3:
-    case Qt::Key_F4: sort_combobox->setCurrentIndex(event->key() - Qt::Key_F1); break;
-
-    case Qt::Key_F5:
-    case Qt::Key_F6:
-    case Qt::Key_F7:
-    case Qt::Key_F8: break;
-
-    case Qt::Key_F9:
-    case Qt::Key_F10:
-    case Qt::Key_F11:
-    case Qt::Key_F12: clickSkillButton(event->key() - Qt::Key_F9); break;
+    case Qt::Key_F1: break;
+    case Qt::Key_F2: chooseSkillButton(); break;
+    case Qt::Key_F3: sort_combobox->showPopup(); break;
 
     case Qt::Key_S: dashboard->selectCard("slash");  break;
     case Qt::Key_J: dashboard->selectCard("jink"); break;
@@ -584,7 +574,7 @@ void RoomScene::timerEvent(QTimerEvent *event){
     }
 }
 
-void RoomScene::chooseGeneral(const QList<const General *> &generals){
+void RoomScene::chooseGeneral(const QStringList &generals){
     QApplication::alert(main_window);
     if(!main_window->isActiveWindow())
         Sanguosha->playAudio("prelude");
@@ -1059,11 +1049,6 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
     role_combobox->setCurrentIndex(1);
 }
 
-void RoomScene::clickSkillButton(int order){
-    if(order >= 0 && order < skill_buttons.length())
-        skill_buttons.at(order)->click();
-}
-
 void RoomScene::enableTargets(const Card *card){
     if(ClientInstance->getStatus() == Client::AskForCardShow && card){
         ok_button->setEnabled(true);
@@ -1185,19 +1170,103 @@ void RoomScene::cancelViewAsSkill(){
 }
 
 void RoomScene::onJoyButtonClicked(int bit){
-    switch(bit){
-    case 1: doOkButton(); break;
-    case 2: doCancelButton(); break;
-    case 3: doDiscardButton(); break;
+    QWidget *active_window = QApplication::activeWindow();
+
+    if(active_window == main_window){
+        switch(bit){
+        case 1: doOkButton(); break;
+        case 2: doCancelButton(); break;
+        case 3: doDiscardButton(); break;
+        case 4: chooseSkillButton(); break;
+        }
+    }else{
+        switch(bit){
+        case 1: {
+                QLayout *layout = active_window->layout();
+                int i, n = layout->count();
+                for(i=0; i<n; i++){
+                    QLayoutItem *item = layout->itemAt(i);
+                    QWidget *widget = item->widget();
+                    if(widget && widget->underMouse()){
+                        QAbstractButton *button = qobject_cast<QAbstractButton *>(widget);
+                        if(button){
+                            button->click();
+                        }
+
+                        return;
+                    }
+                }
+
+                break;
+            }
+        case 2: {
+                QDialog *dialog = qobject_cast<QDialog *>(active_window);
+                if(dialog)
+                    dialog->reject();
+                break;
+            }
+        }
     }
 }
 
 void RoomScene::onJoyDirectionClicked(int direction){
-    switch(direction){
-    case Joystick::Left: dashboard->selectCard(".", false); break;
-    case Joystick::Right: dashboard->selectCard(".", true); break;
-    case Joystick::Up:
-    case Joystick::Down: selectNextTarget(false); break;
+    QWidget *active_window = QApplication::activeWindow();
+
+    if(active_window == main_window){
+        switch(direction){
+        case Joystick::Left: dashboard->selectCard(".", false); break;
+        case Joystick::Right: dashboard->selectCard(".", true); break;
+        case Joystick::Up: selectNextTarget(true); break;
+        case Joystick::Down: selectNextTarget(false); break;
+        }
+    }else{
+        bool next;
+        switch(direction){
+        case Joystick::Left:
+        case Joystick::Up: next = false; break;
+        case Joystick::Right:
+        case Joystick::Down: next = true; break;
+        }
+
+
+        QLayout *layout = active_window->layout();
+        int i, n = layout->count();
+        int index = -1;
+        QWidgetList list;
+        for(i=0; i<n; i++){
+            QLayoutItem *item = layout->itemAt(i);
+            QWidget *widget = item->widget();
+            if(widget && widget->inherits("QAbstractButton")){
+                list << widget;
+                if(index == -1 && widget->underMouse()){
+                    index = i;
+                }
+            }
+        }
+
+        if(list.isEmpty())
+            return;
+
+        QWidget *dest = NULL;
+        if(index == -1){
+            dest = list.first();
+        }else{
+            n = list.length();
+            if(!next){
+                index--;
+                if(index == -1)
+                    index += n;
+            }else{
+                index++;
+                if(index >= n)
+                    index -= n;
+            }
+
+            dest = list.at(index);
+        }
+
+        QPoint center(dest->width()/2, dest->height()/2);
+        QCursor::setPos(dest->mapToGlobal(center));
     }
 }
 
@@ -1792,27 +1861,6 @@ void RoomScene::clearPile(){
     discarded_queue.clear();
 }
 
-void RoomScene::freeze(){
-    main_window->removeDockWidget(skill_dock);
-    delete skill_dock;
-    skill_dock = NULL;
-
-    ClientInstance->disconnectFromHost();
-    dashboard->setEnabled(false);
-    avatar->setEnabled(false);
-    foreach(Photo *photo, photos)
-        photo->setEnabled(false);
-    item2player.clear();
-    trust_button->setEnabled(false);
-    chat_edit->setEnabled(false);
-    if(SoundEngine)
-        SoundEngine->stopAllSounds();
-
-    progress_bar->hide();
-
-    main_window->setStatusBar(NULL);
-}
-
 void RoomScene::onStandoff(){
     freeze();
 
@@ -2138,6 +2186,32 @@ const ViewAsSkill *RoomScene::getViewAsSkill(const QString &skill_name){
     return view_as_skill;
 }
 
+void RoomScene::chooseSkillButton(){
+    QList<QAbstractButton *> enabled_buttons;
+    foreach(QAbstractButton *skill_button, skill_buttons){
+        if(skill_button->isEnabled())
+            enabled_buttons << skill_button;
+    }
+
+    if(enabled_buttons.isEmpty())
+        return;
+
+    QDialog *dialog = new QDialog(main_window);
+    dialog->setWindowTitle(tr("Select skill"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    foreach(QAbstractButton *skill_button, enabled_buttons){
+        QCommandLinkButton *button = new QCommandLinkButton(skill_button->text());
+        connect(button, SIGNAL(clicked()), skill_button, SIGNAL(clicked()));
+        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        layout->addWidget(button);
+    }
+
+    dialog->setLayout(layout);
+    dialog->exec();
+}
+
 void RoomScene::attachSkill(const QString &skill_name){
     const ViewAsSkill *skill = getViewAsSkill(skill_name);
 
@@ -2367,6 +2441,8 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
     }
 }
 
+static irrklang::ISound *BackgroundMusic;
+
 void RoomScene::onGameStart(){
     // add free discard button
     if(ServerInfo.FreeChoose){
@@ -2422,12 +2498,31 @@ void RoomScene::onGameStart(){
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
     const char *filename = bgmusic_path.toLocal8Bit().data();
-    irrklang::ISoundSource *bgmusic = SoundEngine->addSoundSourceFromFile(filename);
+    BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
 
-    if(bgmusic){
-        bgmusic->setDefaultVolume(Config.Volume);
-        SoundEngine->play2D(bgmusic, true);
-    }
+    if(BackgroundMusic)
+        BackgroundMusic->setVolume(Config.Volume);
+}
+
+void RoomScene::freeze(){
+    main_window->removeDockWidget(skill_dock);
+    delete skill_dock;
+    skill_dock = NULL;
+
+    ClientInstance->disconnectFromHost();
+    dashboard->setEnabled(false);
+    avatar->setEnabled(false);
+    foreach(Photo *photo, photos)
+        photo->setEnabled(false);
+    item2player.clear();
+    trust_button->setEnabled(false);
+    chat_edit->setEnabled(false);
+    if(BackgroundMusic)
+        BackgroundMusic->stop();
+
+    progress_bar->hide();
+
+    main_window->setStatusBar(NULL);
 }
 
 void RoomScene::moveFocus(const QString &who){

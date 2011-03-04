@@ -71,6 +71,7 @@ Client::Client(QObject *parent, const QString &filename)
     // interactive methods
     callbacks["activate"] = &Client::activate;
     callbacks["doChooseGeneral"] = &Client::doChooseGeneral;
+    callbacks["doChooseGeneral2"] = &Client::doChooseGeneral2;
     callbacks["doGuanxing"] = &Client::doGuanxing;
     callbacks["doGongxin"] = &Client::doGongxin;
     callbacks["askForDiscard"] = &Client::askForDiscard;
@@ -88,6 +89,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForPindian"] = &Client::askForPindian;
     callbacks["askForYiji"] = &Client::askForYiji;
     callbacks["askForPlayerChosen"] = &Client::askForPlayerChosen;
+    callbacks["askForGeneral"] = &Client::askForGeneral;
 
     callbacks["fillAG"] = &Client::fillAG;
     callbacks["askForAG"] = &Client::askForAG;
@@ -298,27 +300,18 @@ void Client::drawNCards(const QString &draw_str){
 }
 
 void Client::doChooseGeneral(const QString &generals_str){
-    QList<const General *> generals;
+    choose_command = "choose";
+    emit generals_got(generals_str.split("+"));
+}
 
-    if(generals_str != "."){
-        QStringList generals_list = generals_str.split("+");
-
-        foreach(QString general_name, generals_list){
-            const General *general = Sanguosha->getGeneral(general_name);
-            generals << general;
-        }
-    }
-
-    emit generals_got(generals);
+void Client::doChooseGeneral2(const QString &generals_str){
+    choose_command = "choose2";
+    emit generals_got(generals_str.split("+"));
 }
 
 void Client::chooseItem(const QString &item_name){
-    if(!item_name.isEmpty()){
-        if(!Self->getGeneral())
-            request("choose " + item_name);
-        else
-            request("choose2 " + item_name);
-
+    if(!item_name.isEmpty()){        
+        request(QString("%1 %2").arg(choose_command).arg(item_name));
         Sanguosha->playAudio("choose-item");
     }
 }
@@ -1314,7 +1307,6 @@ void Client::replyGongxin(int card_id){
 void Client::askForPindian(const QString &ask_str){
     QStringList words = ask_str.split("->");
     QString from = words.at(0);
-    // QString to = words.at(1);
 
     if(from == Self->getGeneralName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
@@ -1339,6 +1331,11 @@ void Client::askForPlayerChosen(const QString &players){
     Q_ASSERT(!players_to_choose.isEmpty());
 
     setStatus(AskForPlayerChoose);
+}
+
+void Client::askForGeneral(const QString &generals){
+    choose_command = "chooseGeneral";
+    emit generals_got(generals.split("+"));
 }
 
 void Client::replyYiji(const Card *card, const ClientPlayer *to){

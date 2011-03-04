@@ -1192,6 +1192,116 @@ public:
     }
 };
 
+LexueCard::LexueCard(){
+
+}
+
+void LexueCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+
+    const Card *card = room->askForCardShow(effect.to, effect.from);
+    int card_id = card->getEffectiveId();
+    room->showCard(effect.to, card_id);
+
+    if(card->inherits("BasicCard") || card->isNDTrick())
+        room->setPlayerMark(effect.from, "lexue", card_id);
+    else
+        effect.from->obtainCard(card);
+}
+
+class Lexue: public ViewAsSkill{
+public:
+    Lexue():ViewAsSkill("lexue"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(ClientInstance->hasUsed("LexueCard") && selected.isEmpty()){
+            int card_id = Self->getMark("lexue");
+            const Card *card = Sanguosha->getCard(card_id);
+            return to_select->getFilteredCard()->getSuit() == card->getSuit();
+        }else
+            return false;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(ClientInstance->hasUsed("LexueCard")){
+            if(cards.length() != 1)
+                return NULL;
+
+            int card_id = Self->getMark("lexue");
+            const Card *card = Sanguosha->getCard(card_id);
+            const Card *first = cards.first()->getFilteredCard();
+
+            return Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());
+        }else{
+            return new LexueCard;
+        }
+    }
+};
+
+XunzhiCard::XunzhiCard(){
+    target_fixed = true;
+}
+
+void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+    QStringList all_generals = Sanguosha->getLimitedGeneralNames();
+    QStringList shu_generals;
+    foreach(QString name, all_generals){
+        const General *general = Sanguosha->getGeneral(name);
+        if(general->getKingdom() != "shu")
+            continue;
+
+        bool duplicated = false;
+        foreach(ServerPlayer *player, players){
+            if(player->getGeneralName() == name){
+                duplicated = true;
+                break;
+            }
+        }
+
+        if(!duplicated)
+            shu_generals << name;
+    }
+
+    QString general = room->askForGeneral(source, shu_generals);
+
+    room->transfigure(source, general, false);
+    room->acquireSkill(source, "xunzhi", false);
+}
+
+class XunzhiViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    XunzhiViewAsSkill():ZeroCardViewAsSkill("#xunzhi"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return Self->getGeneral()->hasSkill("xunzhi");
+    }
+
+    virtual const Card *viewAs() const{
+        return new XunzhiCard;
+    }
+};
+
+class Xunzhi: public PhaseChangeSkill{
+public:
+    Xunzhi():PhaseChangeSkill("xunzhi"){
+        view_as_skill = new XunzhiViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish &&
+           !target->getGeneral()->hasSkill(objectName())){
+            target->getRoom()->killPlayer(target);
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1255,6 +1365,10 @@ YitianPackage::YitianPackage()
     zhongshiji->addSkill(new Gongmou);
     zhongshiji->addSkill(new GongmouExchange);
 
+    General *jiangboyue = new General(this, "jiangboyue", "shu");
+    jiangboyue->addSkill(new Lexue);
+    jiangboyue->addSkill(new Xunzhi);
+
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
@@ -1263,6 +1377,8 @@ YitianPackage::YitianPackage()
     addMetaObject<QiaocaiCard>();
     addMetaObject<LianliSlashCard>();
     addMetaObject<GuihanCard>();
+    addMetaObject<LexueCard>();
+    addMetaObject<XunzhiCard>();
 }
 
 ADD_PACKAGE(Yitian);

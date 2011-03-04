@@ -73,6 +73,7 @@ public:
     void drawCards(const QString &cards_str);
     void drawNCards(const QString &draw_str);
     void doChooseGeneral(const QString &generals_str);
+    void doChooseGeneral2(const QString &generals_str);
     void startInXs(const QString &);
     void arrangeSeats(const QString &seats);    
     void activate(const QString &focus_player);
@@ -131,6 +132,7 @@ public:
     void askForYiji(const QString &card_list);
     void askForCardChosen(const QString &ask_str);
     void askForPlayerChosen(const QString &ask_str);
+    void askForGeneral(const QString &generals);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -175,6 +177,7 @@ private:
     QString jilei_flags;
     QSet<QString> used;
     int slash_count;
+    QString choose_command;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);
@@ -193,7 +196,7 @@ signals:
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);    
-    void generals_got(const QList<const General *> &generals);
+    void generals_got(const QStringList &generals);
     void seats_arranged(const QList<const ClientPlayer*> &seats);    
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature);
     void status_changed(Client::Status new_status);

@@ -68,6 +68,7 @@ public:
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
+    QStringList getLimitedGeneralNames() const;
 
     void playAudio(const QString &name) const;
     void playEffect(const QString &filename) const;
@@ -89,8 +90,6 @@ private:
     QSet<QString> ban_package;
 
     lua_State *lua;
-
-    QStringList getLimitedGeneralNames() const;
 };
 
 extern Engine *Sanguosha;
