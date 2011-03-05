@@ -1204,10 +1204,13 @@ void LexueCard::onEffect(const CardEffectStruct &effect) const{
     int card_id = card->getEffectiveId();
     room->showCard(effect.to, card_id);
 
-    if(card->inherits("BasicCard") || card->isNDTrick())
+    if(card->inherits("BasicCard") || card->isNDTrick()){
         room->setPlayerMark(effect.from, "lexue", card_id);
-    else
+        room->setPlayerFlag(effect.from, "-lexue");
+    }else{
         effect.from->obtainCard(card);
+        room->setPlayerFlag(effect.from, "lexue");
+    }
 }
 
 class Lexue: public ViewAsSkill{
@@ -1226,6 +1229,9 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
+        if(!Self->hasFlag("lexue"))
+            return false;
+
         if(ClientInstance->hasUsed("LexueCard")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
@@ -1235,7 +1241,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(ClientInstance->hasUsed("LexueCard") && selected.isEmpty()){
+        if(ClientInstance->hasUsed("LexueCard") && selected.isEmpty() && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
             return to_select->getFilteredCard()->getSuit() == card->getSuit();
