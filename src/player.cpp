@@ -216,16 +216,10 @@ int Player::getGeneralMaxHP() const{
     return qMin(max_hp, 8);
 }
 
-void Player::flip(){
-    setGeneral(general->getHyde(), false);
-}
-
-void Player::setGeneral(const General *new_general, bool full_state){
+void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;
         if(new_general){
-            if(full_state)
-                setHp(getMaxHP());
             setKingdom(general->getKingdom());
         }
 
@@ -235,7 +229,7 @@ void Player::setGeneral(const General *new_general, bool full_state){
 
 void Player::setGeneralName(const QString &general_name){
     const General *new_general = Sanguosha->getGeneral(general_name);
-    setGeneral(new_general, true);
+    setGeneral(new_general);
 }
 
 QString Player::getGeneralName() const{

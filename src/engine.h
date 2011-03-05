@@ -77,7 +77,7 @@ public:
 
 private:
     QHash<QString, QString> translations;
-    QHash<QString, const General *> generals;
+    QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;    
     QMap<QString, QString> modes;

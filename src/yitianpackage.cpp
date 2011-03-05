@@ -994,8 +994,7 @@ public:
         if(event == GameStart){
             QString gender = room->askForChoice(player, objectName(), "male+female");
             if(gender == "female"){
-                player->flip();
-                room->broadcastInvoke("flip", player->objectName());
+                room->transfigure(player, "luboyanf", false);
             }
 
             LogMessage log;
@@ -1011,8 +1010,10 @@ public:
                 log.type = "#ShenjunFlip";
                 room->sendLog(log);
 
-                player->flip();
-                room->broadcastInvoke("flip", player->objectName());
+                QString new_general = "luboyan";
+                if(player->getGeneral()->isMale())
+                    new_general.append("f");
+                room->transfigure(player, new_general, false);
             }
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
@@ -1193,7 +1194,7 @@ public:
 };
 
 LexueCard::LexueCard(){
-
+    once = true;
 }
 
 void LexueCard::onEffect(const CardEffectStruct &effect) const{
@@ -1215,6 +1216,24 @@ public:
 
     }
 
+    virtual bool isEnabledAtPlay() const{
+        if(ClientInstance->hasUsed("LexueCard")){
+            int card_id = Self->getMark("lexue");
+            const Card *card = Sanguosha->getCard(card_id);
+            return card->isAvailable();
+        }else
+            return true;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        if(ClientInstance->hasUsed("LexueCard")){
+            int card_id = Self->getMark("lexue");
+            const Card *card = Sanguosha->getCard(card_id);
+            return ClientInstance->card_pattern.contains(card->objectName());
+        }else
+            return false;
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         if(ClientInstance->hasUsed("LexueCard") && selected.isEmpty()){
             int card_id = Self->getMark("lexue");
@@ -1233,7 +1252,10 @@ public:
             const Card *card = Sanguosha->getCard(card_id);
             const Card *first = cards.first()->getFilteredCard();
 
-            return Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());
+            Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());
+            new_card->setSkillName(objectName());
+            new_card->addSubcards(cards);
+            return new_card;
         }else{
             return new LexueCard;
         }
@@ -1294,8 +1316,11 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Finish &&
-           !target->getGeneral()->hasSkill(objectName())){
-            target->getRoom()->killPlayer(target);
+           !target->getGeneral()->hasSkill(objectName()))
+        {
+            Room *room = target->getRoom();
+            room->transfigure(target, parent()->objectName(), false);
+            room->killPlayer(target);
         }
 
         return false;
@@ -1354,12 +1379,10 @@ YitianPackage::YitianPackage()
     luboyan->addSkill(new Shaoying);
     luboyan->addSkill(new Zonghuo);
 
-    General *luboyanf = new General(NULL, "luboyanf", "wu", 3, false);
+    General *luboyanf = new General(this, "luboyanf", "wu", 3, false, true);
     luboyanf->addSkill(new Shenjun);
     luboyanf->addSkill(new Shaoying);
     luboyanf->addSkill(new Zonghuo);
-
-    luboyan->setHyde(luboyanf);
 
     General *zhongshiji = new General(this, "zhongshiji", "wei");
     zhongshiji->addSkill(new Gongmou);

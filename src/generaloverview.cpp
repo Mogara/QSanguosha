@@ -21,14 +21,23 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
 
-    QList<General*> generals = Sanguosha->findChildren<General*>();
+    QList<const General *> generals = Sanguosha->findChildren<const General *>();
+
+    // remove hidden generals
+    QMutableListIterator<const General *> itor(generals);
+    while(itor.hasNext()){
+        if(itor.next()->isHidden())
+            itor.remove();
+    }
+
     ui->tableWidget->setRowCount(generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
     QIcon lord_icon("image/system/roles/lord.png");
 
     int i;
     for(i=0; i<generals.length(); i++){
-        General *general = generals[i];
+        const General *general = generals[i];
+
         QString name, kingdom, gender, max_hp, package;
 
         name = Sanguosha->translate(general->objectName());

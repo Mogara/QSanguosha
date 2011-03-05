@@ -55,6 +55,13 @@ Engine::Engine()
     addPackage(NewNostalgia());
     addPackage(NewJoy());
 
+    {
+        Package *test_package = new Package("test");
+        (new General(test_package, "sujiang", "god", 5, true, true));
+        (new General(test_package, "sujiangf", "god", 5, false, true));
+        addPackage(test_package);
+    }
+
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
     addScenario(NewCoupleScenario());
@@ -163,6 +170,11 @@ void Engine::addPackage(Package *package){
 
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
+        if(general->isHidden()){
+            hidden_generals.insert(general->objectName(), general);
+            continue;
+        }
+
         if(general->isLord())
             lord_list << general->objectName();
         else
@@ -208,7 +220,10 @@ int Engine::getRoleIndex() const{
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    return generals.value(name, NULL);
+    if(generals.contains(name))
+        return generals.value(name);
+    else
+        return hidden_generals.value(name, NULL);
 }
 
 int Engine::getGeneralCount(bool include_banned) const{

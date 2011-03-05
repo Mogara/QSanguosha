@@ -33,7 +33,7 @@ public:
 class General : public QObject
 {
 public:
-    explicit General(Package *package, const char *name, const char *kingdom, int max_hp = 4, bool male = true);
+    explicit General(Package *package, const char *name, const char *kingdom, int max_hp = 4, bool male = true, bool hidden = false);
 
     // property getters/setters
     int getMaxHp() const;
@@ -41,6 +41,7 @@ public:
     bool isMale() const;
     bool isFemale() const;
     bool isLord() const;
+    bool isHidden() const;
 
     void addSkill(Skill* skill);
     bool hasSkill(const char *skill_name) const;

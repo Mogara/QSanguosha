@@ -993,7 +993,7 @@ void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
 
-    if(general->getHyde() != general && !skill_buttons.isEmpty())
+    if(general->isHidden() || !skill_buttons.isEmpty())
         return;
 
     skill_buttons.clear();
@@ -1182,18 +1182,11 @@ void RoomScene::onJoyButtonClicked(int bit){
     }else{
         switch(bit){
         case 1: {
-                QLayout *layout = active_window->layout();
-                int i, n = layout->count();
-                for(i=0; i<n; i++){
-                    QLayoutItem *item = layout->itemAt(i);
-                    QWidget *widget = item->widget();
-                    if(widget && widget->underMouse()){
-                        QAbstractButton *button = qobject_cast<QAbstractButton *>(widget);
-                        if(button){
-                            button->click();
-                        }
-
-                        return;
+                QList<QAbstractButton *> buttons = active_window->findChildren<QAbstractButton *>();
+                foreach(QAbstractButton *button, buttons){
+                    if(button->underMouse() && button->isEnabled()){
+                        button->click();
+                        break;
                     }
                 }
 
@@ -1220,34 +1213,30 @@ void RoomScene::onJoyDirectionClicked(int direction){
         case Joystick::Down: selectNextTarget(false); break;
         }
     }else{
-        bool next;
-        switch(direction){
-        case Joystick::Left:
-        case Joystick::Up: next = false; break;
-        case Joystick::Right:
-        case Joystick::Down: next = true; break;
-        }
-
-
-        QLayout *layout = active_window->layout();
-        int i, n = layout->count();
+        bool next = (direction == Joystick::Right || direction == Joystick::Down);        
         int index = -1;
-        QWidgetList list;
-        for(i=0; i<n; i++){
-            QLayoutItem *item = layout->itemAt(i);
-            QWidget *widget = item->widget();
-            if(widget && widget->inherits("QAbstractButton")){
-                list << widget;
-                if(index == -1 && widget->underMouse()){
-                    index = i;
-                }
-            }
+        QList<QAbstractButton *> list = active_window->findChildren<QAbstractButton *>();
+
+        QMutableListIterator<QAbstractButton *> itor(list);
+        while(itor.hasNext()){
+            QAbstractButton *button = itor.next();
+            if(!button->isEnabled())
+                itor.remove();
         }
 
         if(list.isEmpty())
             return;
 
-        QWidget *dest = NULL;
+        int i, n = list.length();
+        for(i=0; i<n; i++){
+            QAbstractButton *button = list.at(i);
+            if(button->underMouse() && button->isEnabled()){
+                index = i;
+                break;
+            }
+        }
+
+        QAbstractButton *dest = NULL;
         if(index == -1){
             dest = list.first();
         }else{

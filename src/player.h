@@ -90,8 +90,7 @@ public:
     QString getRole() const;    
     Role getRoleEnum() const;
 
-    void flip();
-    void setGeneral(const General *general, bool full_state);
+    void setGeneral(const General *general);
     void setGeneralName(const QString &general_name);
     QString getGeneralName() const;    
 

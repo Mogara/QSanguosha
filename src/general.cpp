@@ -4,8 +4,8 @@
 #include "package.h"
 #include "client.h"
 
-General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hyde(this)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hidden(hidden)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -37,6 +37,10 @@ bool General::isFemale() const{
 
 bool General::isLord() const{
     return lord;
+}
+
+bool General::isHidden() const{
+    return hidden;
 }
 
 QString General::getPixmapPath(const QString &category) const{
@@ -86,13 +90,3 @@ void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 }
-
-void General::setHyde(General *hyde){
-    this->hyde = hyde;
-    hyde->hyde = this;
-}
-
-const General *General::getHyde() const{
-    return hyde;
-}
-
