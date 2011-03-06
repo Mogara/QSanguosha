@@ -233,6 +233,9 @@ bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     if(to_select->objectName() == slash_source)
         return false;
 
+    if(to_select == Self)
+        return false;
+
     if(is_weapon)
         return Self->distanceTo(to_select) <= 1;
     else

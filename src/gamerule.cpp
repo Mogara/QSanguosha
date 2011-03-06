@@ -349,9 +349,10 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 if(!killer_name.isEmpty()){
                     ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
 
-                    if(player->getRole() == "rebel" && killer != player)
-                        killer->drawCards(3);
-                    else if(player->getRole() == "loyalist" && killer->getRole() == "lord"){
+                    if(player->getRole() == "rebel" && killer != player){
+                        if(killer->isAlive())
+                            killer->drawCards(3);
+                    }else if(player->getRole() == "loyalist" && killer->getRole() == "lord"){
                         killer->throwAllEquips();
                         killer->throwAllHandCards();
                     }
