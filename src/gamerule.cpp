@@ -111,6 +111,29 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
     }
 }
 
+void GameRule::setGameProcess(Room *room) const{
+    int good = 0, bad = 0;
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+    foreach(ServerPlayer *player, players){
+        switch(player->getRoleEnum()){
+        case Player::Lord:
+        case Player::Loyalist: good ++; break;
+        case Player::Rebel: bad++; break;
+        case Player::Renegade: break;
+        }
+    }
+
+    QString process;
+    if(good == bad)
+        process = "Balance";
+    else if(good > bad)
+        process = "LordSuperior";
+    else
+        process = "RebelSuperior";
+
+    room->setTag("GameProcess", process);
+}
+
 bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
 
@@ -128,7 +151,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 room->sendLog(log);
             }
 
+            if(player->isLord())
+                setGameProcess(room);
+
             player->drawCards(4, false);
+
             break;
         }
 
@@ -329,6 +356,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                         killer->throwAllHandCards();
                     }
                 }
+
+                setGameProcess(room);
             }else{
                 room->gameOver(winner);
                 return true;

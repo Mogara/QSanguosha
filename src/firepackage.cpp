@@ -207,8 +207,8 @@ public:
         if(selected.isEmpty())
             return !to_select->isEquipped();
         else if(selected.length() == 1){
-            const Card *card = selected.first()->getCard();
-            return !to_select->isEquipped() && to_select->getCard()->getSuit() == card->getSuit();
+            const Card *card = selected.first()->getFilteredCard();
+            return !to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == card->getSuit();
         }else
             return false;
     }
@@ -240,9 +240,9 @@ public:
 
         int value = Self->getMark("shuangxiong");
         if(value == 1)
-            return to_select->getCard()->isBlack();
+            return to_select->getFilteredCard()->isBlack();
         else if(value == 2)
-            return to_select->getCard()->isRed();
+            return to_select->getFilteredCard()->isRed();
 
         return false;
     }

@@ -156,9 +156,6 @@ void RoomThread::run(){
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    foreach(AI *ai, room->ais)
-        ai->filterEvent(event, target, data);
-
     QList<const TriggerSkill *> skills = skill_table[event];
     QMutableListIterator<const TriggerSkill *> itor(skills);
     while(itor.hasNext()){
@@ -170,12 +167,18 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
     TriggerSkillSorter sorter;
     sorter.sort(skills);
 
+    bool broken = false;
     foreach(const TriggerSkill *skill, skills){
-        if(skill->trigger(event, target, data))
-            return true;
+        if(skill->trigger(event, target, data)){
+            broken = true;
+            break;
+        }
     }
 
-    return false;
+    foreach(AI *ai, room->ais)
+        ai->filterEvent(event, target, data);
+
+    return broken;
 }
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){

@@ -4,14 +4,7 @@
 #include "standard.h"
 #include "settings.h"
 #include "maneuvering.h"
-
-extern "C"{
-
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-}
+#include "lua.hpp"
 
 AI::AI(ServerPlayer *player)
     :self(player)
@@ -19,60 +12,66 @@ AI::AI(ServerPlayer *player)
     room = player->getRoom();
 }
 
-AI::Relation AI::relationTo(const ServerPlayer *other) const{
-    /*static QMap<Player::Role, int> group_map;
-    if(group_map.isEmpty()){
-        group_map.insert(Player::Lord, 1);
-        group_map.insert(Player::Loyalist, 1);
-        group_map.insert(Player::Rebel, -1);
-        group_map.insert(Player::Renegade, 0);
+typedef QPair<QString, QString> RolePair;
+
+struct RoleMapping: public QMap<RolePair, AI::Relation> {
+    void set(const QString &role1, const QString &role2, AI::Relation relation, bool reverse = false){
+        insert(qMakePair(role1, role2), relation);
+        if(reverse)
+            insert(qMakePair(role2, role1), relation);
     }
 
-    Player::Role self_role = self->getRoleEnum();
-    Player::Role other_role = other->getRoleEnum();
+    AI::Relation get(const QString &role1, const QString &role2){
+        return value(qMakePair(role1, role2), AI::Neutrality);
+    }
+};
 
-    int self_group = group_map.value(self_role);
-    int other_group = group_map.value(other_role);
-
-    if(self_group == other_group)
-        return Friend;
-    else if(self_group + other_group == 0)
-        return Enemy;
-    else if(room->getTag("GameProcess").toString() == "ZN")
-        return Enemy;
-    else
-        return Neutrality;*/
-
+AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if(self == other)
         return Friend;
 
-    typedef QPair<Player::Role, Player::Role> RolePair;
-    static QMap<RolePair, Relation> map;
+    RoleMapping map, map_good, map_bad;
     if(map.isEmpty()){
-        map[qMakePair(Player::Lord, Player::Lord)] = Friend;
-        map[qMakePair(Player::Lord, Player::Rebel)] = Enemy;
-        map[qMakePair(Player::Lord, Player::Loyalist)] = Friend;
-        map[qMakePair(Player::Lord, Player::Renegade)] = Neutrality;
+        map.set("lord", "lord", Friend);
+        map.set("lord", "rebel", Enemy);
+        map.set("lord", "loyalist", Friend);
+        map.set("lord", "renegade", Neutrality);
 
-        map[qMakePair(Player::Loyalist, Player::Loyalist)] = Friend;
-        map[qMakePair(Player::Loyalist, Player::Lord)] = Friend;
-        map[qMakePair(Player::Loyalist, Player::Rebel)] = Enemy;
-        map[qMakePair(Player::Loyalist, Player::Renegade)] =Neutrality;
+        map.set("loyalist", "loyalist", Friend);
+        map.set("loyalist", "lord", Friend);
+        map.set("loyalist", "rebel", Enemy);
+        map.set("loyalist", "renegade", Neutrality);
 
-        map[qMakePair(Player::Rebel, Player::Rebel)] = Friend;
-        map[qMakePair(Player::Rebel, Player::Lord)] = Enemy;
-        map[qMakePair(Player::Rebel, Player::Loyalist)] = Enemy;
-        map[qMakePair(Player::Rebel, Player::Renegade)] =Neutrality;
+        map.set("rebel", "rebel", Friend);
+        map.set("rebel", "lord", Enemy);
+        map.set("rebel", "loyalist", Enemy);
+        map.set("rebel", "renegade", Neutrality);
 
-        map[qMakePair(Player::Renegade, Player::Lord)] = Neutrality;
-        map[qMakePair(Player::Renegade, Player::Loyalist)] = Neutrality;
-        map[qMakePair(Player::Renegade, Player::Rebel)] = Neutrality;
-        map[qMakePair(Player::Renegade, Player::Renegade)] =Neutrality;
+        map.set("renegade", "lord", Friend);
+        map.set("renegade", "loyalist", Neutrality);
+        map.set("renegade", "rebel", Neutrality);
+        map.set("renegade", "renegade", Neutrality);
+
+        map_good = map;
+        map_good.set("renegade", "loyalist", Enemy, true);
+        map_good.set("renegade", "rebel", Friend, true);
+
+        map_bad = map;
+        map_bad.set("renegade", "loyalist", Friend, true);
+        map_bad.set("renegade", "rebel", Enemy, true);
     }
 
-    RolePair pair(self->getRoleEnum(), other->getRoleEnum());
+    if(room->getTag("RenegadeInFinalPK").toBool()){
+        return Enemy;
+    }
 
-    return map.value(pair, Neutrality);
+    QString process = room->getTag("GameProcess").toString();
+    if(process == "Balance")
+        return map.get(self->getRole(), other->getRole());
+    else if(process == "LordSuperior")
+        return map_good.get(self->getRole(), other->getRole());
+    else
+        return map_bad.get(self->getRole(), other->getRole());
 }
 
 bool AI::isFriend(const ServerPlayer *other) const{

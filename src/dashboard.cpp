@@ -110,7 +110,8 @@ void Dashboard::createRight(){
 }
 
 void Dashboard::setFilter(const FilterSkill *filter){
-    this->filter = filter;
+    if(this->filter == NULL)
+        this->filter = filter;
 }
 
 void Dashboard::setTrust(bool trust){

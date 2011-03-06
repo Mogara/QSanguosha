@@ -469,7 +469,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();
+        const Card *card = to_select->getFilteredCard();
 
         if(!card->isRed())
             return false;

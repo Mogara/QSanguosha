@@ -249,7 +249,7 @@ public:
             return false;
 
         foreach(CardItem *item, selected){
-            if(to_select->getCard()->getSuit() == item->getCard()->getSuit())
+            if(to_select->getFilteredCard()->getSuit() == item->getFilteredCard()->getSuit())
                 return false;
         }
 

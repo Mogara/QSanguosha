@@ -134,7 +134,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();
+        const Card *card = to_select->getFilteredCard();
         return card->isBlack() && !card->inherits("TrickCard");
     }
 
@@ -607,6 +607,7 @@ LuanwuCard::LuanwuCard(){
 }
 
 void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    source->loseMark("@chaos");
     room->broadcastInvoke("animate", "lightbox:$luanwu");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
@@ -618,8 +619,6 @@ void LuanwuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
 void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-
-    effect.from->loseMark("@chaos");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(effect.to);
     QList<int> distance_list;
