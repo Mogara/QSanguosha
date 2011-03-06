@@ -777,13 +777,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         log_box->appendLog(type, from_general, tos, card_str);
     }else if(src){
         // src throw card
-        if(dest_place == Player::DiscardedPile){
-            if(src->getPhase() == Player::Discard){
-                QString type = "$DiscardCard";
-                QString from_general = src->getGeneralName();
-                log_box->appendLog(type, from_general, QStringList(), card_str);
-            }
-        }else if(dest_place == Player::DrawPile){
+        if(dest_place == Player::DrawPile){
             QString type = "$PutCard";
             QString from_general = src->getGeneralName();
             log_box->appendLog(type, from_general, QStringList(), card_str);
@@ -1972,6 +1966,8 @@ void RoomScene::saveReplayRecord(){
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     static QStringList labels;
     if(labels.isEmpty())
         labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");

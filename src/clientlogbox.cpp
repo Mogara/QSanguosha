@@ -59,17 +59,21 @@ void ClientLogBox::appendLog(
 
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());
-            if(card->inherits("SkillCard")){
-                log = tr("%from use skill [%1]").arg(skill_name);
-            }else{
-                QList<int> card_ids = card->getSubcards();
-                QStringList subcard_list;
-                foreach(int card_id, card_ids){
-                    const Card *subcard = Sanguosha->getCard(card_id);
-                    subcard_list << subcard->getLogName();
-                }
 
-                QString subcard_str = subcard_list.join(",");
+            QList<int> card_ids = card->getSubcards();
+            QStringList subcard_list;
+            foreach(int card_id, card_ids){
+                const Card *subcard = Sanguosha->getCard(card_id);
+                subcard_list << subcard->getLogName();
+            }
+
+            QString subcard_str = subcard_list.join(",");
+            if(card->getTypeId() == Card::Skill){
+                if(subcard_list.isEmpty())
+                    log = tr("%from use skill [%1]").arg(skill_name);
+                else
+                    log = tr("%from use skill [%1], and the cost is %2").arg(skill_name).arg(subcard_str);
+            }else{
                 if(subcard_list.isEmpty())
                     log = tr("%from use skill [%1], played [%2]").arg(skill_name).arg(card_name);
                 else

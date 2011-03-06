@@ -2070,8 +2070,15 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     if(to_discard.isEmpty())
         return false;
 
-    foreach(int card_id, to_discard)
+    foreach(int card_id, to_discard){
         throwCard(card_id);
+
+        LogMessage log;
+        log.type = "$DiscardCard";
+        log.from = target;
+        log.card_str = QString::number(card_id);
+        sendLog(log);
+    }
 
     int length = to_discard.length();
 
