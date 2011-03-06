@@ -1206,10 +1206,10 @@ void LexueCard::onEffect(const CardEffectStruct &effect) const{
 
     if(card->inherits("BasicCard") || card->isNDTrick()){
         room->setPlayerMark(effect.from, "lexue", card_id);
-        room->setPlayerFlag(effect.from, "-lexue");
+        room->setPlayerFlag(effect.from, "lexue");
     }else{
         effect.from->obtainCard(card);
-        room->setPlayerFlag(effect.from, "lexue");
+        room->setPlayerFlag(effect.from, "-lexue");
     }
 }
 
@@ -1220,7 +1220,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        if(ClientInstance->hasUsed("LexueCard")){
+        if(ClientInstance->hasUsed("LexueCard") && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
             return card->isAvailable();
@@ -1251,6 +1251,9 @@ public:
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(ClientInstance->hasUsed("LexueCard")){
+            if(!Self->hasFlag("lexue"))
+                return false;
+
             if(cards.length() != 1)
                 return NULL;
 
