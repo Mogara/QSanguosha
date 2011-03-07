@@ -1021,6 +1021,7 @@ void Room::prepareForStart(){
         QStringList generals, roles;
         scenario->assign(generals, roles);
 
+        bool expose_roles = scenario->exposeRoles();
         int i;
         for(i=0; i<players.length(); i++){
             ServerPlayer *player = players.at(i);
@@ -1028,7 +1029,14 @@ void Room::prepareForStart(){
             player->setRole(roles.at(i));
 
             broadcastProperty(player, "general");
-            broadcastProperty(player, "role");
+
+            if(player->isLord())
+                broadcastProperty(player, "role");
+
+            if(expose_roles)
+                broadcastProperty(player, "role");
+            else
+                player->sendProperty("role");
         }
     }else
         assignRoles();

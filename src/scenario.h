@@ -16,6 +16,7 @@ public:
     explicit Scenario(const QString &name);    
     const ScenarioRule *getRule() const;    
 
+    virtual bool exposeRoles() const;
     virtual int getPlayerCount() const;
     virtual void getRoles(char *roles) const;
     virtual void assign(QStringList &generals, QStringList &roles) const;

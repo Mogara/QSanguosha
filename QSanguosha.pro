@@ -68,7 +68,8 @@ SOURCES += src/main.cpp \
     swig/sanguosha_wrap.cxx \
     src/lua-wrapper.cpp \
     src/window.cpp \
-    src/contestdb.cpp
+    src/contestdb.cpp \
+    src/hongyan-scenario.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -134,7 +135,8 @@ HEADERS += src/mainwindow.h \
     src/structs.h \
     src/lua-wrapper.h \
     src/window.h \
-    src/contestdb.h
+    src/contestdb.h \
+    src/hongyan-scenario.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

@@ -14,6 +14,10 @@ const ScenarioRule *Scenario::getRule() const{
     return rule;
 }
 
+bool Scenario::exposeRoles() const{
+    return true;
+}
+
 void Scenario::getRoles(char *roles) const{
     qstrcpy(roles, "Z");
 

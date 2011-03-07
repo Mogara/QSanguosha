@@ -52,18 +52,20 @@ function xunyu_ai:activate(use)
 		self:sort(self.enemies, "handcard")
 
 		for _, enemy in ipairs(self.enemies) do
-			local enemy_max_card = self:getMaxCard(enemy)
-			if enemy_max_card and max_point > enemy_max_card:getNumber() then
-				for _, enemy2 in ipairs(self.enemies) do
-					if enemy ~= enemy2 and enemy:inMyAttackRange(enemy2) then
-						local card_id = max_card:getEffectiveId()
-						local card_str = "@QuhuCard=" .. card_id
-						use.card = sgs.Card_Parse(card_str)
-						use.to:append(enemy)
+			if enemy:getHp() > self.player:getHp() then
+				local enemy_max_card = self:getMaxCard(enemy)
+				if enemy_max_card and max_point > enemy_max_card:getNumber() then
+					for _, enemy2 in ipairs(self.enemies) do
+						if enemy ~= enemy2 and enemy:inMyAttackRange(enemy2) then
+							local card_id = max_card:getEffectiveId()
+							local card_str = "@QuhuCard=" .. card_id
+							use.card = sgs.Card_Parse(card_str)
+							use.to:append(enemy)
 
-						self.quhu_used = true
+							self.quhu_used = true
 
-						return
+							return
+						end
 					end
 				end
 			end
