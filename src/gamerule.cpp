@@ -9,7 +9,7 @@ GameRule::GameRule(QObject *parent)
     setParent(parent);
 
     events << GameStart << PhaseChange << CardUsed
-            << CardEffected << HpRecover
+            << CardEffected << HpRecover << AskForPeachesDone
             << AskForPeaches << Death << Dying
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete;
@@ -182,6 +182,14 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
+    case Dying:{
+            DyingStruct dying = data.value<DyingStruct>();
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            room->askForPeaches(dying, players);
+
+            break;
+        }
+
     case AskForPeaches:{
             DyingStruct dying = data.value<DyingStruct>();
             int got = room->askForPeach(player, dying.who, dying.peaches);
@@ -192,10 +200,18 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
-    case Dying:{
-            DyingStruct dying = data.value<DyingStruct>();
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            room->askForPeaches(dying, players);
+    case AskForPeachesDone:{
+            DyingStruct dying_data = data.value<DyingStruct>();
+
+            if(dying_data.peaches <= 0)
+                room->setPlayerProperty(player, "hp", 1 - dying_data.peaches);
+            else{
+                ServerPlayer *killer = NULL;
+                if(dying_data.damage)
+                    killer = dying_data.damage->from;
+
+                room->killPlayer(player, killer);
+            }
 
             break;
         }
@@ -211,6 +227,17 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 dying.who = player;
                 dying.damage = &damage;
                 dying.peaches = 1 - new_hp;
+
+                room->setTag("FatalPoint", dying.peaches);
+
+                // buqu special case
+                if(player->hasSkill("buqu")){
+                    int length = player->getPile("buqu").length();
+                    if(length > 0){
+                        room->setTag("FatalPoint", damage.damage);
+                        dying.peaches += length;
+                    }
+                }
 
                 QVariant dying_data = QVariant::fromValue(dying);
                 room->getThread()->trigger(Dying, player, dying_data);

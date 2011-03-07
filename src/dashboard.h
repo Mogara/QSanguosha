@@ -69,7 +69,6 @@ private:
 
     QList<CardItem*> card_items;
     CardItem *selected;
-    const Player *player;
     Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
     QGraphicsTextItem *mark_item;

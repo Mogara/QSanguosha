@@ -109,6 +109,16 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
     return mark_doc;
 }
 
+void ClientPlayer::changePile(const QString &name, bool add, int card_id){
+    QList<int> &pile = getPile(name);
+    if(add)
+        pile.append(card_id);
+    else
+        pile.removeOne(card_id);
+
+    emit pile_changed(name);
+}
+
 QList<int> ClientPlayer::nullifications() const{
     QList<int> card_ids;
 

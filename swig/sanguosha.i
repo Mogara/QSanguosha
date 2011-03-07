@@ -305,6 +305,7 @@ enum TriggerEvent{
 
     Dying,
     AskForPeaches,
+    AskForPeachesDone, 
     Death,
 
     SlashEffect,
@@ -523,7 +524,7 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target, QVariant &data);
     bool trigger(TriggerEvent event, ServerPlayer *target);
 
-    void addPlayerSkills(ServerPlayer *player);
+    void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
     void removePlayerSkills(ServerPlayer *player);
 
     void addTriggerSkill(const TriggerSkill *skill);

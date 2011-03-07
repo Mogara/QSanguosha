@@ -733,15 +733,11 @@ void Room::askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &
             break;
     }
 
-    if(dying_data.peaches <= 0)
-        setPlayerProperty(dying.who, "hp", 1 - dying_data.peaches);
-    else{
-        ServerPlayer *killer = NULL;
-        if(dying.damage)
-            killer = dying.damage->from;
+    int got = dying.peaches - dying_data.peaches;
+    setTag("PeachesGot", got);
 
-        killPlayer(dying.who, killer);
-    }
+    QVariant data = QVariant::fromValue(dying_data);
+    thread->trigger(AskForPeachesDone, dying.who, data);
 }
 
 int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
@@ -951,7 +947,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
 
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
-    thread->addPlayerSkills(player);
+    thread->addPlayerSkills(player, true);
 
     player->setMaxHP(player->getGeneralMaxHP());
     broadcastProperty(player, "maxhp");
@@ -1528,6 +1524,17 @@ void Room::loseHp(ServerPlayer *victim, int lose){
         dying.who = victim;
         dying.damage = NULL;
         dying.peaches = 1 - new_hp;
+
+        setTag("FatalPoint", dying.peaches);
+
+        // buqu special case
+        if(victim->hasSkill("buqu")){
+            int length = victim->getPile("buqu").length();
+            if(length > 0){
+                setTag("FatalPoint", lose);
+                dying.peaches += length;
+            }
+        }
 
         QVariant dying_data = QVariant::fromValue(dying);
         thread->trigger(Dying, victim, dying_data);

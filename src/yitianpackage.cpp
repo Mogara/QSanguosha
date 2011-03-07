@@ -1229,6 +1229,9 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
+        if(Self->getPhase() == Player::NotActive)
+            return false;
+
         if(!Self->hasFlag("lexue"))
             return false;
 
@@ -1275,7 +1278,9 @@ XunzhiCard::XunzhiCard(){
     target_fixed = true;
 }
 
-void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    source->drawCards(3);
+
     QList<ServerPlayer *> players = room->getAlivePlayers();
     QStringList all_generals = Sanguosha->getLimitedGeneralNames();
     QStringList shu_generals;
@@ -1327,8 +1332,8 @@ public:
         if(target->getPhase() == Player::Finish &&
            !target->getGeneral()->hasSkill(objectName()))
         {
-            Room *room = target->getRoom();
-            room->transfigure(target, parent()->objectName(), false);
+            Room *room = target->getRoom();           
+            room->transfigure(target, parent()->objectName(), false);            
             room->killPlayer(target);
         }
 

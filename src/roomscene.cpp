@@ -77,6 +77,8 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
         connect(sort_combobox, SIGNAL(currentIndexChanged(int)), dashboard, SLOT(sortCards(int)));
     }
 
+    connect(Self, SIGNAL(pile_changed(QString)), this, SLOT(updatePileButton(QString)));
+
     // add role combobox
     role_combobox = new QComboBox;
     role_combobox->addItem(tr("Your role"));
@@ -888,6 +890,7 @@ void RoomScene::addSkillButton(const Skill *skill){
         case Skill::NotFrequent:{
                 const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
                 button = new QPushButton(skill_name);
+                button->setEnabled(false);
                 if(view_as_skill){
                     button2skill.insert(button, view_as_skill);
                     connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
@@ -987,7 +990,7 @@ void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
 
-    if(general->isHidden() || !skill_buttons.isEmpty())
+    if(general->isHidden())
         return;
 
     skill_buttons.clear();
@@ -1518,7 +1521,7 @@ void RoomScene::updateStatus(Client::Status status){
         const ViewAsSkill *skill = button2skill.value(button, NULL);
         if(skill)
             button->setEnabled(skill->isAvailable());
-        else if(button->inherits("QCheckBox"))
+        else
             button->setEnabled(true);
     }
 
@@ -1582,6 +1585,58 @@ void RoomScene::updateTrustButton(){
         trust_button->setText(tr("Trust"));
 
     dashboard->setTrust(trusting);
+}
+
+static bool CompareByNumber(const Card *card1, const Card *card2){
+    return card1->getNumber() < card2->getNumber();
+}
+
+void RoomScene::updatePileButton(const QString &pile_name){
+    QPushButton *button = NULL;
+    foreach(QAbstractButton *pile_button, skill_buttons){
+        if(pile_button->objectName() == pile_name){
+            button = qobject_cast<QPushButton *>(pile_button);
+            break;
+        }
+    }
+
+    QMenu *menu = NULL;
+    if(button == NULL){
+        QPushButton *push_button = new QPushButton;
+        push_button->setObjectName(pile_name);
+
+        skill_buttons << push_button;
+        addWidgetToSkillDock(push_button);
+
+        menu = new QMenu(push_button);
+        push_button->setMenu(menu);
+        button = push_button;
+    }else{
+        QPushButton *push_button = qobject_cast<QPushButton *>(button);
+        menu = push_button->menu();
+        if(menu == NULL){
+            menu = new QMenu(push_button);
+            push_button->setMenu(menu);
+        }
+    }
+
+    QList<int> pile = Self->getPile(pile_name);
+    button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+
+    menu->clear();
+
+    QList<const Card *> cards;
+    foreach(int card_id, pile){
+        const Card *card = Sanguosha->getCard(card_id);
+        cards << card;
+    }
+
+    qSort(cards.begin(), cards.end(), CompareByNumber);
+    foreach(const Card *card, cards){
+        menu->addAction(card->getSuitIcon(), card->getFullName());
+    }
+
+    button->showMenu();
 }
 
 void RoomScene::doOkButton(){

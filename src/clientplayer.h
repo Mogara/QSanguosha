@@ -17,6 +17,7 @@ public:
     QList<const Card *> getCards() const;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
+    void changePile(const QString &name, bool add, int card_id);
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
@@ -32,6 +33,9 @@ private:
     int handcard_num;
     QList<const Card *> known_cards;
     QTextDocument *mark_doc;
+
+signals:
+    void pile_changed(const QString &name);
 };
 
 extern ClientPlayer *Self;

@@ -16,6 +16,8 @@
 #include <QGraphicsProxyWidget>
 #include <QTimer>
 #include <QPropertyAnimation>
+#include <QPushButton>
+#include <QMenu>
 
 Photo::Photo(int order)
     :Pixmap("image/system/photo-back.png"),
@@ -186,6 +188,7 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
         connect(player, SIGNAL(drank_changed(bool)), this, SLOT(setDrankState(bool)));
+        connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
 
         mark_item->setDocument(player->getMarkDoc());
     }
@@ -417,6 +420,55 @@ void Photo::updatePhase(){
         setFrame(Playing);
     else
         setFrame(NoFrame);
+}
+
+static bool CompareByNumber(const Card *card1, const Card *card2){
+    return card1->getNumber() < card2->getNumber();
+}
+
+void Photo::updatePile(const QString &pile_name){
+    QPushButton *button = NULL;
+    foreach(QPushButton *pile_button, pile_buttons){
+        if(pile_button->objectName() == pile_name){
+            button = pile_button;
+            break;
+        }
+    }
+
+    if(button == NULL){
+        button = new QPushButton;
+        button->setObjectName(pile_name);
+
+        QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(this);
+        button_widget->setWidget(button);
+        button_widget->setPos(5, 15);
+        button_widget->moveBy(0, pile_buttons.length() * 10);
+        button_widget->resize(80, 20);
+
+        pile_buttons << button;
+
+        QMenu *menu = new QMenu;
+        button->setMenu(menu);
+    }
+
+    QList<int> &pile = Self->getPile(pile_name);
+    button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+
+    QMenu *menu = button->menu();
+    menu->clear();
+
+    QList<const Card *> cards;
+    foreach(int card_id, pile){
+        const Card *card = Sanguosha->getCard(card_id);
+        cards << card;
+    }
+
+    qSort(cards.begin(), cards.end(), CompareByNumber);
+    foreach(const Card *card, cards){
+        menu->addAction(card->getSuitIcon(), card->getFullName());
+    }
+
+    button->showMenu();
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

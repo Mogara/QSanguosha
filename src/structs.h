@@ -95,6 +95,7 @@ enum TriggerEvent{
 
     Dying,
     AskForPeaches,
+    AskForPeachesDone,
     Death,
 
     SlashEffect,

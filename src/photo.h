@@ -12,6 +12,7 @@
 
 class ClientPlayer;
 class RoleCombobox;
+class QPushButton;
 
 class Photo : public Pixmap
 {
@@ -48,6 +49,7 @@ public slots:
     void updateAvatar();
     void updateSmallAvatar();
     void updatePhase();
+    void updatePile(const QString &pile_name);
     void refresh();
     void hideEmotion();
     void hideSkillName();
@@ -67,6 +69,7 @@ private:
     QPixmap handcard;
     QPixmap chain;
     RoleCombobox *role_combobox;
+    QList<QPushButton *> pile_buttons;
 
     QGraphicsTextItem *mark_item;
 

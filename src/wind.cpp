@@ -343,48 +343,82 @@ public:
 class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
-        events << Dying << HpRecover;
-    }
-
-    bool HasDuplicated(ServerPlayer *zhoutai) const{
-        const QList<int> &buqu = zhoutai->getPile("buqu");
-        return buqu.toSet().size() < buqu.size();
+        events << Dying << HpRecover << AskForPeachesDone;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
         Room *room = zhoutai->getRoom();
+        QList<int> &buqu = zhoutai->getPile("buqu");
         if(event == Dying){
-            DyingStruct dying = data.value<DyingStruct>();
-            if(room->askForSkillInvoke(zhoutai, objectName(), data)){
-                room->playSkillEffect(objectName());
-
-                return true;
-            }else
-                return false;
+            int fatal_point = room->getTag("FatalPoint").toInt();
+            QList<int> buqu_cards = room->getNCards(fatal_point);
+            foreach(int card_id, buqu_cards){
+                room->moveCardTo(card_id, zhoutai, Player::Special, true);
+                buqu.append(card_id);
+                room->broadcastInvoke("pile", QString("%1:buqu+%2").arg(zhoutai->objectName()).arg(card_id));
+            }
         }else if(event == HpRecover){
-            if(zhoutai->getHp() > 0)
+            if(buqu.isEmpty())
                 return false;
 
             int recover = data.toInt();
-            QList<int> &buqu = zhoutai->getPile("buqu");
             if(buqu.length() > recover){
                 room->fillAG(buqu);
 
                 int i;
                 for(i=0; i<recover; i++){
                     int card_id = room->askForAG(zhoutai, buqu);
-                    buqu.removeOne(card_id);
                     room->throwCard(card_id);
+                    buqu.removeOne(card_id);
+                    room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
                 }
 
                 room->broadcastInvoke("clearAG");
             }else{
+                int new_hp = recover - buqu.length() + 1;
+                room->setPlayerProperty(zhoutai, "hp", new_hp);
+
+                // remove all buqu cards
                 foreach(int card_id, buqu){
                     room->throwCard(card_id);
+                    room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
                 }
-
                 buqu.clear();
             }
+
+            return true;
+        }else if(event == AskForPeachesDone){
+            DyingStruct dying_data = data.value<DyingStruct>();
+            int got = room->getTag("PeachesGot").toInt();
+            if(got > 0){
+                room->recover(zhoutai, got);
+            }
+
+            if(zhoutai->getHp() >= 1)
+                return true;
+
+            QSet<int> numbers;
+            foreach(int card_id, buqu){
+                const Card *card = Sanguosha->getCard(card_id);
+                numbers << card->getNumber();
+            }
+            bool duplicated =  numbers.size() < buqu.size();
+
+            if(!duplicated){
+                QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
+                if(choice == "alive"){
+                    room->playSkillEffect(objectName());
+                    return true;
+                }
+            }
+
+            ServerPlayer *killer = NULL;
+            if(dying_data.damage)
+                killer = dying_data.damage->from;
+
+            room->killPlayer(zhoutai, killer);
+
+            return true;
         }
 
         return false;
@@ -394,8 +428,8 @@ public:
 WindPackage::WindPackage()
     :Package("wind")
 {
-    // xiaoqiao, zhoutai and yuji is omitted
-    General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao; // *zhoutai;
+    // xiaoqiao and yuji is not in this package
+    General *xiahouyuan, *caoren, *huangzhong, *weiyan, *zhangjiao, *zhoutai;
 
     xiahouyuan = new General(this, "xiahouyuan", "wei");
     xiahouyuan->addSkill(new Shensu);
@@ -414,8 +448,8 @@ WindPackage::WindPackage()
     zhangjiao->addSkill(new Leiji);
     zhangjiao->addSkill(new Huangtian);
 
-    //zhoutai = new General(this, "zhoutai", "wu");
-    //zhoutai->addSkill(new Buqu);
+    zhoutai = new General(this, "zhoutai", "wu");
+    zhoutai->addSkill(new Buqu);
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();

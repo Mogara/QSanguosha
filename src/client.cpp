@@ -57,6 +57,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
+    callbacks["pile"] = &Client::pile;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -1452,4 +1453,20 @@ void Client::setScreenName(const QString &set_str){
     QString base64 = words.at(1);
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toAscii()));
     player->setScreenName(screen_name);
+}
+
+void Client::pile(const QString &pile_str){
+    QRegExp rx("(\\w+):(\\w+)([+-])(\\d+)");
+    if(!rx.exactMatch(pile_str)){
+        return;
+    }
+
+    QStringList texts = rx.capturedTexts();
+    ClientPlayer *player = getPlayer(texts.at(1));
+    QString name = texts.at(2);
+    bool add = texts.at(3) == "+";
+    int card_id = texts.at(4).toInt();
+
+    if(player)
+        player->changePile(name, add, card_id);
 }

@@ -9,10 +9,11 @@
 #include <QGraphicsScene>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
+#include <QMenu>
 
 Dashboard::Dashboard()
     :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
-    selected(NULL), player(NULL), avatar(NULL),
+    selected(NULL), avatar(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     view_as_skill(NULL), filter(NULL)
 {
@@ -143,8 +144,6 @@ void Dashboard::addCardItem(CardItem *card_item){
 }
 
 void Dashboard::setPlayer(const ClientPlayer *player){
-    this->player = player;
-
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
@@ -155,11 +154,11 @@ void Dashboard::setPlayer(const ClientPlayer *player){
 }
 
 void Dashboard::updateAvatar(){
-    const General *general = player->getAvatarGeneral();
+    const General *general = Self->getAvatarGeneral();
     avatar->setToolTip(general->getSkillDescription());
     avatar->changePixmap(general->getPixmapPath("big"));
 
-    kingdom->setPixmap(QPixmap(player->getKingdomIcon()));
+    kingdom->setPixmap(QPixmap(Self->getKingdomIcon()));
 
     avatar->show();
     kingdom->show();
@@ -168,7 +167,7 @@ void Dashboard::updateAvatar(){
 }
 
 void Dashboard::updateSmallAvatar(){
-    const General *general2 = player->getGeneral2();
+    const General *general2 = Self->getGeneral2();
     if(general2){
         small_avatar->setToolTip(general2->getSkillDescription());
         small_avatar->changePixmap(general2->getPixmapPath("tiny"));
@@ -370,12 +369,12 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     QRectF name_rect(24 + right->x(), 42 + right->y(), 90, 12);
     painter->drawText(name_rect, Config.UserName, QTextOption(Qt::AlignHCenter));
 
-    if(!player)
+    if(!Self)
         return;
 
-    if(player->isDead()){
+    if(Self->isDead()){
         if(death_pixmap.isNull())
-            death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
+            death_pixmap.load(QString("image/system/death/%1.png").arg(Self->getRole()));
 
         painter->drawPixmap(397, 82, death_pixmap);
         return;
@@ -398,8 +397,8 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     drawHp(painter);
 
-    chain_icon->setVisible(player->isChained());
-    back_icon->setVisible(!player->faceUp());
+    chain_icon->setVisible(Self->isChained());
+    back_icon->setVisible(!Self->faceUp());
 }
 
 void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *){

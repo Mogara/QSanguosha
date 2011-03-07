@@ -63,10 +63,11 @@ RoomThread::RoomThread(Room *room)
 {
 }
 
-void RoomThread::addPlayerSkills(ServerPlayer *player){
+void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     const General *general = player->getGeneral();
 
     Q_ASSERT(general);
+    QVariant void_data;
 
     QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
     foreach(const TriggerSkill *skill, skills){
@@ -74,6 +75,9 @@ void RoomThread::addPlayerSkills(ServerPlayer *player){
             continue;
 
         addTriggerSkill(skill);
+
+        if(invoke_game_start && skill->getTriggerEvents().contains(GameStart))
+            skill->trigger(GameStart, player, void_data);
     }
 }
 
