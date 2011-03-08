@@ -439,19 +439,24 @@ void Photo::updatePile(const QString &pile_name){
         button = new QPushButton;
         button->setObjectName(pile_name);
 
-        QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(this);
+        QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget;
         button_widget->setWidget(button);
-        button_widget->setPos(5, 15);
-        button_widget->moveBy(0, pile_buttons.length() * 10);
+        button_widget->setPos(pos());
+        button_widget->moveBy(5, 15 + pile_buttons.length() * 10);
         button_widget->resize(80, 20);
+        scene()->addItem(button_widget);
 
         pile_buttons << button;
 
-        QMenu *menu = new QMenu;
+        QMenu *menu = new QMenu(button);
         button->setMenu(menu);
     }
 
-    QList<int> &pile = Self->getPile(pile_name);
+    ClientPlayer *who = qobject_cast<ClientPlayer *>(sender());
+    if(who == NULL)
+        return;
+
+    QList<int> &pile = who->getPile(pile_name);
     button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
 
     QMenu *menu = button->menu();

@@ -344,6 +344,7 @@ class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
         events << Dying << HpRecover << AskForPeachesDone;
+        default_choice = "alive";
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
