@@ -938,7 +938,7 @@ void Room::installEquip(ServerPlayer *player, const QString &equip_name){
     thread->delay(800);
 }
 
-void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state){
+void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start){
     LogMessage log;
     log.type = "#Transfigure";
     log.from = player;
@@ -947,7 +947,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
 
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
-    thread->addPlayerSkills(player, true);
+    thread->addPlayerSkills(player, invoke_start);
 
     player->setMaxHP(player->getGeneralMaxHP());
     broadcastProperty(player, "maxhp");

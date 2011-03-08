@@ -10,6 +10,8 @@
 
 static QSet<BanPair> BanPairSet;
 static const QString BanPairFilename = "banpairs.txt";
+static QSet<QString> AllBanSet;
+static QSet<QString> SecondBanSet;
 
 BanPair::BanPair(){
 
@@ -26,11 +28,21 @@ BanPair::BanPair(const QString &first, const QString &second)
 Q_DECLARE_METATYPE(BanPair);
 
 bool BanPair::isBanned(const QString &first, const QString &second){
+    if(SecondBanSet.contains(second))
+        return true;
+
+    if(AllBanSet.contains(first) || AllBanSet.contains(second))
+        return true;
+
     BanPair pair(first, second);
     return BanPairSet.contains(pair);    
 }
 
 void BanPair::loadBanPairs(){
+    // special cases
+    AllBanSet << "shencaocao" << "dongzhuo";
+    SecondBanSet << "jiangboyue" << "luboyan";
+
     QFile file(BanPairFilename);
     if(file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);

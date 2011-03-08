@@ -79,7 +79,7 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        LijianCard *lijian_card = new LijianCard;
+        LesbianLijianCard *lijian_card = new LesbianLijianCard;
         lijian_card->addSubcard(card_item->getCard()->getId());
 
         return lijian_card;

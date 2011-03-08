@@ -993,8 +993,13 @@ public:
         Room *room = player->getRoom();
         if(event == GameStart){
             QString gender = room->askForChoice(player, objectName(), "male+female");
+            bool is_male = player->getGeneral()->isMale();
             if(gender == "female"){
-                room->transfigure(player, "luboyanf", false);
+                if(is_male)
+                    room->transfigure(player, "luboyanf", false, false);
+            }else if(gender == "male"){
+                if(!is_male)
+                    room->transfigure(player, "luboyan", false, false);
             }
 
             LogMessage log;
@@ -1013,7 +1018,7 @@ public:
                 QString new_general = "luboyan";
                 if(player->getGeneral()->isMale())
                     new_general.append("f");
-                room->transfigure(player, new_general, false);
+                room->transfigure(player, new_general, false, false);
             }
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();

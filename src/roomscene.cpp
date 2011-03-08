@@ -870,6 +870,12 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 }
 
 void RoomScene::addSkillButton(const Skill *skill){
+    // check duplication
+    foreach(QAbstractButton *button, skill_buttons){
+        if(button->objectName() == skill->objectName())
+            return;
+    }
+
     QAbstractButton *button = NULL;
     QString skill_name = Sanguosha->translate(skill->objectName());
     if(skill->inherits("TriggerSkill")){
@@ -992,9 +998,6 @@ void RoomScene::updateSkillButtons(){
 
     if(general->isHidden())
         return;
-
-    skill_buttons.clear();
-    button2skill.clear();
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();
     foreach(const Skill* skill, skills){
