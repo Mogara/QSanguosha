@@ -86,6 +86,7 @@ class LexueCard: public SkillCard{
 public:
     Q_INVOKABLE LexueCard();
 
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

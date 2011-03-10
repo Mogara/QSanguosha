@@ -69,7 +69,7 @@ private:
     QPixmap handcard;
     QPixmap chain;
     RoleCombobox *role_combobox;
-    QList<QPushButton *> pile_buttons;
+    QList<QGraphicsProxyWidget *> pile_buttons;
 
     QGraphicsTextItem *mark_item;
 

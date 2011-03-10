@@ -102,6 +102,13 @@ void Photo::updateRoleComboboxPos()
 {
     if(role_combobox)
         role_combobox->setupItems(this);
+
+    int i, n = pile_buttons.length();
+    for(i=0; i<n; i++){
+        QGraphicsProxyWidget *button_widget = pile_buttons.at(i);
+        button_widget->setPos(pos());
+        button_widget->moveBy(5, 15 + i * 10);
+    }
 }
 
 void Photo::showProcessBar(){
@@ -428,9 +435,10 @@ static bool CompareByNumber(const Card *card1, const Card *card2){
 
 void Photo::updatePile(const QString &pile_name){
     QPushButton *button = NULL;
-    foreach(QPushButton *pile_button, pile_buttons){
-        if(pile_button->objectName() == pile_name){
-            button = pile_button;
+    foreach(QGraphicsProxyWidget *pile_button, pile_buttons){
+        QWidget *widget = pile_button->widget();
+        if(widget->objectName() == pile_name){
+            button = qobject_cast<QPushButton *>(widget);
             break;
         }
     }
@@ -446,7 +454,7 @@ void Photo::updatePile(const QString &pile_name){
         button_widget->resize(80, 20);
         scene()->addItem(button_widget);
 
-        pile_buttons << button;
+        pile_buttons << button_widget;
 
         QMenu *menu = new QMenu(button);
         button->setMenu(menu);

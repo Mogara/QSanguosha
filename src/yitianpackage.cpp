@@ -1202,6 +1202,10 @@ LexueCard::LexueCard(){
     once = true;
 }
 
+bool LexueCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && to_select != Self && !to_select->isKongcheng();
+}
+
 void LexueCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
@@ -1310,6 +1314,9 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
     room->transfigure(source, general, false);
     room->acquireSkill(source, "xunzhi", false);
+
+    // FIXME: temporary solution
+    room->detachSkillFromPlayer(source, "lexue");
 }
 
 class XunzhiViewAsSkill: public ZeroCardViewAsSkill{
