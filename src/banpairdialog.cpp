@@ -27,6 +27,10 @@ BanPair::BanPair(const QString &first, const QString &second)
 
 Q_DECLARE_METATYPE(BanPair);
 
+bool BanPair::isBanned(const QString &general){
+    return AllBanSet.contains(general);
+}
+
 bool BanPair::isBanned(const QString &first, const QString &second){
     if(SecondBanSet.contains(second))
         return true;

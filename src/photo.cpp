@@ -465,7 +465,10 @@ void Photo::updatePile(const QString &pile_name){
         return;
 
     QList<int> &pile = who->getPile(pile_name);
-    button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+    if(pile.isEmpty())
+        button->setText(Sanguosha->translate(pile_name));
+    else
+        button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
 
     QMenu *menu = button->menu();
     menu->clear();
@@ -480,8 +483,6 @@ void Photo::updatePile(const QString &pile_name){
     foreach(const Card *card, cards){
         menu->addAction(card->getSuitIcon(), card->getFullName());
     }
-
-    button->showMenu();
 }
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

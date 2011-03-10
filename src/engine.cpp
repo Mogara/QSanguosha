@@ -228,6 +228,8 @@ const General *Engine::getGeneral(const QString &name) const{
         return hidden_generals.value(name, NULL);
 }
 
+#include "banpairdialog.h"
+
 int Engine::getGeneralCount(bool include_banned) const{
     if(include_banned)
         return generals.size();
@@ -238,6 +240,9 @@ int Engine::getGeneralCount(bool include_banned) const{
         itor.next();
         const General *general = itor.value();
         if(ban_package.contains(general->getPackage()))
+            total--;
+
+        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
     }
 
@@ -429,8 +434,13 @@ QStringList Engine::getRandomLords() const{
     QStringList nonlord_list;
     foreach(QString nonlord, this->nonlord_list){
         const General *general = generals.value(nonlord);
-        if(!ban_package.contains(general->getPackage()))
-            nonlord_list << nonlord;
+        if(ban_package.contains(general->getPackage()))
+            continue;
+
+        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+            continue;
+
+        nonlord_list << nonlord;
     }
 
     qShuffle(nonlord_list);

@@ -1624,7 +1624,10 @@ void RoomScene::updatePileButton(const QString &pile_name){
     }
 
     QList<int> pile = Self->getPile(pile_name);
-    button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+    if(pile.isEmpty())
+        button->setText(Sanguosha->translate(pile_name));
+    else
+        button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
 
     menu->clear();
 
@@ -1638,8 +1641,6 @@ void RoomScene::updatePileButton(const QString &pile_name){
     foreach(const Card *card, cards){
         menu->addAction(card->getSuitIcon(), card->getFullName());
     }
-
-    button->showMenu();
 }
 
 void RoomScene::doOkButton(){

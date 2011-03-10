@@ -11,6 +11,7 @@ struct BanPair: public QPair<QString, QString>{
 
     static void loadBanPairs();
     static void saveBanPairs();
+    static bool isBanned(const QString &general);
     static bool isBanned(const QString &first, const QString &second);
 };
 
