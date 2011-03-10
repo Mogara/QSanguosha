@@ -230,6 +230,24 @@ public:
     }
 };
 
+class Guhuo: public OneCardViewAsSkill{
+public:
+    Guhuo():OneCardViewAsSkill("guhuo"){
+
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return !Self->isKongcheng() && !ClientInstance->card_pattern.startsWith("@");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        return card_item->getFilteredCard();
+    }
+};
 
 NostalgiaPackage::NostalgiaPackage()
     :Package("nostalgia")
@@ -242,6 +260,9 @@ NostalgiaPackage::NostalgiaPackage()
     yangxiu->addSkill(new Jilei);
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
+
+    General *yuji = new General(this, "yuji", "qun", 3);
+    yuji->addSkill(new Guhuo);
 
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
