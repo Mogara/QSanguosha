@@ -69,7 +69,8 @@ void ClientLogBox::appendLog(
 
             QString subcard_str = subcard_list.join(",");
             if(card->getTypeId() == Card::Skill){
-                if(subcard_list.isEmpty())
+                const SkillCard *skill_card = qobject_cast<const SkillCard *>(card);
+                if(subcard_list.isEmpty() && skill_card->willThrow())
                     log = tr("%from use skill [%1]").arg(skill_name);
                 else
                     log = tr("%from use skill [%1], and the cost is %2").arg(skill_name).arg(subcard_str);
