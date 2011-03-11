@@ -201,7 +201,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *caochong) const{
         if(caochong->getPhase() == Player::Finish && caochong->getHandcardNum() > 13){
-            caochong->throwAllCards();
+            caochong->throwAllHandCards();
             caochong->getRoom()->loseHp(caochong);
         }
 

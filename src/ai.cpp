@@ -61,7 +61,7 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
         map_bad.set("renegade", "rebel", Enemy, true);
     }
 
-    if(room->getTag("RenegadeInFinalPK").toBool()){
+    if(room->alivePlayerCount() == 2){
         return Enemy;
     }
 
