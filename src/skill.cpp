@@ -40,19 +40,19 @@ void Skill::initMediaSource(){
     sources.clear();
 
     if(parent()){
-        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
-        if(QFile::exists(effect_file))
-            sources << effect_file;
-        else{
-            int i=1;
-            forever{
-                QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
-                if(QFile::exists(effect_file))
-                    sources << effect_file;
-                else
-                    break;
-                i++;
-            }
+        int i;
+        for(i=1; ;i++){
+            QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
+            if(QFile::exists(effect_file))
+                sources << effect_file;
+            else
+                break;
+        }
+
+        if(sources.isEmpty()){
+            QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
+            if(QFile::exists(effect_file))
+                sources << effect_file;
         }
     }
 }

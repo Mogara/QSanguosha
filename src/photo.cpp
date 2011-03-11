@@ -435,9 +435,11 @@ static bool CompareByNumber(const Card *card1, const Card *card2){
 
 void Photo::updatePile(const QString &pile_name){
     QPushButton *button = NULL;
+    QGraphicsProxyWidget *button_widget = NULL;
     foreach(QGraphicsProxyWidget *pile_button, pile_buttons){
         QWidget *widget = pile_button->widget();
         if(widget->objectName() == pile_name){
+            button_widget = pile_button;
             button = qobject_cast<QPushButton *>(widget);
             break;
         }
@@ -447,7 +449,7 @@ void Photo::updatePile(const QString &pile_name){
         button = new QPushButton;
         button->setObjectName(pile_name);
 
-        QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget;
+        button_widget = new QGraphicsProxyWidget;
         button_widget->setWidget(button);
         button_widget->setPos(pos());
         button_widget->moveBy(5, 15 + pile_buttons.length() * 10);
@@ -466,9 +468,11 @@ void Photo::updatePile(const QString &pile_name){
 
     QList<int> &pile = who->getPile(pile_name);
     if(pile.isEmpty())
-        button->setText(Sanguosha->translate(pile_name));
-    else
+        button_widget->hide();
+    else{
+        button_widget->show();
         button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+    }
 
     QMenu *menu = button->menu();
     menu->clear();

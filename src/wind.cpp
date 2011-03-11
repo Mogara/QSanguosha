@@ -427,6 +427,8 @@ public:
         }else if(event == Death){
             foreach(int card_id, buqu){
                 room->throwCard(card_id);
+                buqu.removeOne(card_id);
+                room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
             }
         }
 
