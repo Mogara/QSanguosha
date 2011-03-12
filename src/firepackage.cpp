@@ -11,6 +11,7 @@
 QuhuCard::QuhuCard(){
     once = true;
     mute = true;
+    will_throw = false;
 }
 
 bool QuhuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -427,6 +428,7 @@ public:
 
 TianyiCard::TianyiCard(){
     once = true;
+    will_throw = false;
 }
 
 bool TianyiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
