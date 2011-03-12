@@ -16,6 +16,9 @@ qmake QSanguosha.pro
 echo "Compile it"
 make
 
+# Compile the translation file
+lrelease QSanguosha.pro
+
 # copy irrKlang files and update the dynamic library cache
 echo "Copying irrKlang library files to /usr/lib"
 cp lib/libIrrKlang.so /usr/lib

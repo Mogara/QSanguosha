@@ -1200,6 +1200,7 @@ public:
 
 LexueCard::LexueCard(){
     once = true;
+    mute = true;
 }
 
 bool LexueCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -1209,13 +1210,15 @@ bool LexueCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
 void LexueCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
+    room->playSkillEffect("lexue", 1);
     const Card *card = room->askForCardShow(effect.to, effect.from);
     int card_id = card->getEffectiveId();
     room->showCard(effect.to, card_id);
 
-    if(card->inherits("BasicCard") || card->isNDTrick()){
+    if(card->getTypeId() == Card::Basic || card->isNDTrick()){
         room->setPlayerMark(effect.from, "lexue", card_id);
         room->setPlayerFlag(effect.from, "lexue");
+        room->playSkillEffect("lexue", card->getTypeId() == Card::Basic ? 2 : 3);
     }else{
         effect.from->obtainCard(card);
         room->setPlayerFlag(effect.from, "-lexue");
@@ -1273,8 +1276,7 @@ public:
             const Card *card = Sanguosha->getCard(card_id);
             const Card *first = cards.first()->getFilteredCard();
 
-            Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());
-            new_card->setSkillName(objectName());
+            Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());            
             new_card->addSubcards(cards);
             return new_card;
         }else{
