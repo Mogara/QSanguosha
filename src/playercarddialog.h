@@ -4,7 +4,7 @@
 #include "clientplayer.h"
 
 #include <QDialog>
-#include <QSignalMapper>
+#include <QMap>
 
 class PlayerCardDialog : public QDialog{
     Q_OBJECT
@@ -19,7 +19,10 @@ private:
     QWidget *createJudgingArea();
 
     const ClientPlayer *player;
-    QSignalMapper *mapper;
+    QMap<QObject *, int> mapper;
+
+private slots:
+    void emitId();
 
 signals:
     void card_id_chosen(int card_id);
