@@ -26,17 +26,6 @@ ChallengeModeSet::ChallengeModeSet(QObject *parent)
     addMode("@manshow", "liubei+lumeng+zhangliao+daqiao");
     addMode("@greatrange", "machao+pangde+xiahouyuan+taishici");
     addMode("@p4cure", "liubei+menghuo+huatuo+weiyan");
-
-    t["@4lords"] = tr("@4lords");
-    t["@disaster4fr"] = tr("@disaster4fr");
-    t["@p4luoyi"] = tr("@p4luoyi");
-    t["@test4pile"] = tr("@test4pile");
-    t["@mythology"] = tr("@mythology");
-    t["@2strike"] = tr("@2strike");
-    t["@tortoise"] = tr("@tortoise");
-    t["@manshow"] = tr("@manshow");
-    t["@greatrange"] = tr("@greatrange");
-    t["@p4cure"] = tr("@p4cure");
 }
 
 const ChallengeMode *ChallengeModeSet::getMode(const QString &name) const{
@@ -52,5 +41,37 @@ void ChallengeModeSet::addMode(const QString &name, const QString &general_str){
     modes[name] = mode;
 
     mode->setParent(this);
+}
+
+ChallengeModeRule::ChallengeModeRule(QObject *parent)
+    :GameRule(parent)
+{
+    setObjectName("challenge_mode");
+}
+
+bool ChallengeModeRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    if(event == Death){
+        static const QString attack = "rebel+renegade";
+        static const QString defense = "lord+loyalist";
+
+        Room *room = player->getRoom();
+        QStringList alive_roles = room->aliveRoles(player);
+        QString victim_role = player->getRole();
+        if(attack.contains(victim_role)){
+            if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade")){
+                room->gameOver(defense);
+                return true;
+            }
+        }else{
+            if(!alive_roles.contains("lord") && !alive_roles.contains("loyalist")){
+                room->gameOver(attack);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return GameRule::trigger(event, player, data);
 }
 

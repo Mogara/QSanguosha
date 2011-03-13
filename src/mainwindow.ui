@@ -40,7 +40,7 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
-    <addaction name="actionWAN_IP_detect"/>
+    <addaction name="actionScript_editor"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionView_Discarded"/>
@@ -57,7 +57,6 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_irrKlang"/>
-    <addaction name="actionAbout_libircclient"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
@@ -81,8 +80,8 @@
   </action>
   <action name="actionConfigure">
    <property name="icon">
-    <iconset resource="../resource/images/sanguosha.qrc">
-     <normaloff>:/settings.png</normaloff>:/settings.png</iconset>
+    <iconset>
+     <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
    </property>
    <property name="text">
     <string>Configure</string>
@@ -149,14 +148,6 @@
     <string>Ctrl+D</string>
    </property>
   </action>
-  <action name="actionNever_Nullify_My_Trick">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Never Nullify My Trick</string>
-   </property>
-  </action>
   <action name="actionView_distance">
    <property name="enabled">
     <bool>false</bool>
@@ -166,11 +157,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
-   </property>
-  </action>
-  <action name="actionAbout_audiere">
-   <property name="text">
-    <string>About audiere</string>
    </property>
   </action>
   <action name="actionServerInformation">
@@ -226,16 +212,6 @@
     <string>Surrender</string>
    </property>
   </action>
-  <action name="actionAbout_libircclient">
-   <property name="text">
-    <string>About libircclient</string>
-   </property>
-  </action>
-  <action name="actionWAN_IP_detect">
-   <property name="text">
-    <string>WAN IP detect ...</string>
-   </property>
-  </action>
   <action name="actionMinimize_to_system_tray">
    <property name="text">
     <string>Minimize to system tray</string>
@@ -259,10 +235,13 @@
     <string>About irrKlang</string>
    </property>
   </action>
+  <action name="actionScript_editor">
+   <property name="text">
+    <string>Script editor</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../resource/images/sanguosha.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

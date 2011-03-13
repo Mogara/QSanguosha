@@ -18,8 +18,7 @@ public:
     Q_INVOKABLE QuhuCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class JiemingCard: public SkillCard{
@@ -40,7 +39,6 @@ public:
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
 };
 
 class TianyiCard: public SkillCard{
@@ -50,8 +48,7 @@ public:
     Q_INVOKABLE TianyiCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 #endif // FIREPACKAGE_H

@@ -1,4 +1,5 @@
 #include "standard.h"
+#include "standard-equips.h"
 #include "general.h"
 #include "engine.h"
 #include "client.h"
@@ -26,19 +27,7 @@ bool Slash::IsAvailable(){
     if(Self->hasWeapon("crossbow"))
         return true;
     else
-        return IsAvailableWithCrossbow();
-}
-
-bool Slash::IsAvailableWithCrossbow(){
-    if(Self->hasSkill("paoxiao"))
-        return true;
-    else{
-        int slash_count = ClientInstance->turn_tag.value("slash_count", 0).toInt();
-        if(Self->hasFlag("tianyi_success"))
-            return slash_count < 2;
-        else
-            return slash_count < 1;
-    }
+        return ClientInstance->canSlashWithCrossbow();
 }
 
 bool Slash::isAvailable() const{
@@ -47,10 +36,6 @@ bool Slash::isAvailable() const{
 
 QString Slash::getSubtype() const{
     return "attack_card";
-}
-
-void Slash::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->increaseSlashCount();
 }
 
 void Slash::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -124,21 +109,31 @@ QString Peach::getSubtype() const{
     return "recover_card";
 }
 
+QString Peach::getEffectPath(bool is_male) const{
+    return Card::getEffectPath();
+}
+
 void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    room->recover(source, 1);
+    room->cardEffect(this, source, source);
+}
+
+void Peach::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    QString who = effect.to->objectName();
+    room->broadcastInvoke("animate", QString("peach:%1:%2").arg(who).arg(who));
+    room->recover(effect.to);
 }
 
 bool Peach::isAvailable() const{
     return Self->isWounded();
 }
 
-class Crossbow:public Weapon{
-public:
-    Crossbow(Suit suit, int number = 1):Weapon(suit, number, 1){
-        setObjectName("crossbow");
-    }
-};
+Crossbow::Crossbow(Suit suit, int number)
+    :Weapon(suit, number, 1)
+{
+    setObjectName("crossbow");
+}
 
 class DoubleSwordSkill: public WeaponSkill{
 public:
@@ -151,7 +146,7 @@ public:
         Room *room = player->getRoom();
 
         if(effect.from->getGeneral()->isMale() != effect.to->getGeneral()->isMale()){
-            if(room->askForSkillInvoke(effect.from, objectName())){
+            if(effect.from->askForSkillInvoke(objectName())){
                 bool draw_card = false;
 
                 if(effect.to->isKongcheng())
@@ -174,13 +169,12 @@ public:
     }
 };
 
-class DoubleSword:public Weapon{
-public:
-    DoubleSword(Suit suit = Spade, int number = 2):Weapon(suit, number, 2){
-        setObjectName("double_sword");
-        skill = new DoubleSwordSkill;
-    }
-};
+DoubleSword::DoubleSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("double_sword");
+    skill = new DoubleSwordSkill;
+}
 
 class QinggangSwordSkill: public WeaponSkill{
 public:
@@ -197,58 +191,50 @@ public:
     }
 };
 
-class QinggangSword:public Weapon{
-public:
-    QinggangSword(Suit suit = Spade, int number = 6):Weapon(suit, number, 2){
-        setObjectName("qinggang_sword");
+QinggangSword::QinggangSword(Suit suit, int number)
+    :Weapon(suit, number, 2)
+{
+    setObjectName("qinggang_sword");
 
-        skill = new QinggangSwordSkill;
-    }
-};
+    skill = new QinggangSwordSkill;
+}
 
 class BladeSkill : public WeaponSkill{
 public:
     BladeSkill():WeaponSkill("blade"){
-        events << SlashResult;
+        events << SlashMissed;
     }
 
-    virtual int getPriority(ServerPlayer *target) const{
+    virtual int getPriority() const{
         return -1;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success){
-            if(result.to->hasSkill("kongcheng") && result.to->isKongcheng())
-                return false;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            Room *room = player->getRoom();
-            const Card *card = room->askForCard(player, "slash", "blade-slash");
-            if(card){
-                // if player is drank, unset his flag
-                if(player->hasFlag("drank"))
-                    room->setPlayerFlag(player, "-drank");
+        if(effect.to->hasSkill("kongcheng") && effect.to->isKongcheng())
+            return false;
 
-                CardEffectStruct effect;
-                effect.card = card;
-                effect.from = player;
-                effect.to = result.to;
+        Room *room = player->getRoom();
+        const Card *card = room->askForCard(player, "slash", "blade-slash");
+        if(card){
+            // if player is drank, unset his flag
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
 
-                room->cardEffect(effect);
-            }
+            room->cardEffect(card, player, effect.to);
         }
 
         return false;
     }
 };
 
-class Blade:public Weapon{
-public:
-    Blade(Suit suit = Spade, int number = 5):Weapon(suit, number, 3){
-        setObjectName("blade");
-        skill = new BladeSkill;
-    }
-};
+Blade::Blade(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("blade");
+    skill = new BladeSkill;
+}
 
 class SpearSkill: public ViewAsSkill{
 public:
@@ -272,8 +258,8 @@ public:
         if(cards.length() != 2)
             return NULL;
 
-        const Card *first = cards.at(0)->getCard();
-        const Card *second = cards.at(1)->getCard();
+        const Card *first = cards.at(0)->getFilteredCard();
+        const Card *second = cards.at(1)->getFilteredCard();
 
         Card::Suit suit = Card::NoSuit;
         if(first->isBlack() && second->isBlack())
@@ -283,20 +269,19 @@ public:
 
         Slash *slash = new Slash(suit, 0);
         slash->setSkillName(objectName());
-        slash->addSubcard(first->getId());
-        slash->addSubcard(second->getId());
+        slash->addSubcard(first);
+        slash->addSubcard(second);
 
         return slash;
     }
 };
 
-class Spear:public Weapon{
-public:
-    Spear(Suit suit = Spade, int number = 12):Weapon(suit, number, 3){
-        setObjectName("spear");
-        attach_skill = true;
-    }
-};
+Spear::Spear(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("spear");
+    attach_skill = true;
+}
 
 class AxeViewAsSkill: public ViewAsSkill{
 public:
@@ -336,78 +321,72 @@ public:
 class AxeSkill: public WeaponSkill{
 public:
     AxeSkill():WeaponSkill("axe"){
-        events << SlashResult;
+        events << SlashMissed;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success){
-            Room *room = player->getRoom();
-            CardStar card = room->askForCard(player, "@axe-card", "axe-card");
-            if(card){
-                QList<int> card_ids = card->getSubcards();
-                foreach(int card_id, card_ids){
-                    LogMessage log;
-                    log.type = "$DiscardCard";
-                    log.from = player;
-                    log.card_str = QString::number(card_id);
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-                    room->sendLog(log);
-                }
-
+        Room *room = player->getRoom();
+        CardStar card = room->askForCard(player, "@axe-card", "axe-card");
+        if(card){
+            QList<int> card_ids = card->getSubcards();
+            foreach(int card_id, card_ids){
                 LogMessage log;
-                log.type = "#AxeSkill";
+                log.type = "$DiscardCard";
                 log.from = player;
-                log.to << result.to;
-                room->sendLog(log);
+                log.card_str = QString::number(card_id);
 
-                result.success = true;
-                data = QVariant::fromValue(result);
+                room->sendLog(log);
             }
+
+            LogMessage log;
+            log.type = "#AxeSkill";
+            log.from = player;
+            log.to << effect.to;
+            room->sendLog(log);
+
+            room->slashResult(effect, true);
         }
 
         return false;
     }
 };
 
-class Axe:public Weapon{
-public:
-    Axe(Suit suit = Diamond, int number = 5):Weapon(suit, number, 3){
-        setObjectName("axe");
-        skill = new AxeSkill;
-        attach_skill = true;
-    }
-};
+Axe::Axe(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("axe");
+    skill = new AxeSkill;
+    attach_skill = true;
+}
 
-class Halberd:public Weapon{
-public:
-    Halberd(Suit suit = Diamond, int number = 12):Weapon(suit, number, 4){
-        setObjectName("halberd");
-    }
-};
+Halberd::Halberd(Suit suit, int number)
+    :Weapon(suit, number, 4)
+{
+    setObjectName("halberd");
+}
 
 class KylinBowSkill: public WeaponSkill{
 public:
     KylinBowSkill():WeaponSkill("kylin_bow"){
-        events << SlashResult;
+        events << SlashHit;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
-        if(!result.success)
-            return false;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         QStringList horses;
-        if(result.to->getDefensiveHorse())
+        if(effect.to->getDefensiveHorse())
             horses << "dhorse";
-        if(result.to->getOffensiveHorse())
+        if(effect.to->getOffensiveHorse())
             horses << "ohorse";
 
         if(horses.isEmpty())
             return false;
 
         Room *room = player->getRoom();
-        if(!room->askForSkillInvoke(player, objectName()))
+        if(!player->askForSkillInvoke(objectName()))
             return false;
 
         QString horse_type;
@@ -417,21 +396,27 @@ public:
             horse_type = horses.first();
 
         if(horse_type == "dhorse")
-            room->throwCard(result.to->getDefensiveHorse());
+            room->throwCard(effect.to->getDefensiveHorse());
         else if(horse_type == "ohorse")
-            room->throwCard(result.to->getOffensiveHorse());
+            room->throwCard(effect.to->getOffensiveHorse());
 
         return false;
     }
 };
 
-class KylinBow:public Weapon{
-public:
-    KylinBow(Suit suit = Heart, int number = 5):Weapon(suit, number, 5){
-        setObjectName("kylin_bow");
-        skill = new KylinBowSkill;
-    }
-};
+KylinBow::KylinBow(Suit suit, int number)
+    :Weapon(suit, number, 5)
+{
+    setObjectName("kylin_bow");
+    skill = new KylinBowSkill;
+}
+
+static QString EightDiagramCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
 
 class EightDiagramSkill: public ArmorSkill{
 public:
@@ -439,7 +424,7 @@ public:
         events << CardAsked;
     }
 
-    virtual int getPriority(ServerPlayer *) const{
+    virtual int getPriority() const{
         return 2;
     }
 
@@ -447,15 +432,13 @@ public:
         QString asked = data.toString();
         if(asked == "jink"){
             Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName())){
-                const Card *card = room->getJudgeCard(player);
-                if(card->isRed()){
+            if(room->askForSkillInvoke(player, objectName())){                
+                QString result = room->judge(player, EightDiagramCallback);
+                if(result == "good"){
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
                     room->setEmotion(player, Room::Good);
-
-                    return true;
                 }else
                     room->setEmotion(player, Room::Bad);
             }
@@ -464,13 +447,11 @@ public:
     }
 };
 
-class EightDiagram:public Armor{
-public:
-    EightDiagram(Suit suit, int number = 2):Armor(suit, number){
-        setObjectName("eight_diagram");
-        skill = new EightDiagramSkill;
-    }
-};
+EightDiagram::EightDiagram(Suit suit, int number)
+    :Armor(suit, number){
+    setObjectName("eight_diagram");
+    skill = new EightDiagramSkill;
+}
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
     :GlobalEffect(suit, number)
@@ -483,27 +464,39 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
 
     QList<ServerPlayer *> players = room->getAllPlayers();
     QList<int> card_ids = room->getNCards(players.length());
-    QStringList card_str;
+    room->fillAG(card_ids);
+
+    QVariantList ag_list;
     foreach(int card_id, card_ids)
-        card_str << QString::number(card_id);
-    room->broadcastInvoke("fillAG", card_str.join("+"));
+        ag_list << card_id;
+    room->setTag("AmazingGrace", ag_list);
 
-    foreach(ServerPlayer *player, players){
-        bool nullified = room->askForNullification(objectName(), source, player);
-        if(!nullified){
-            int card_id = room->askForAG(player, card_ids);
-            card_ids.removeOne(card_id);
+    GlobalEffect::use(room, source, players);
 
-            room->takeAG(player, card_id);
-        }
-    }
+    ag_list = room->getTag("AmazingGrace").toList();
 
     // throw the rest cards
-    foreach(int card_id, card_ids){
-        room->takeAG(NULL, card_id);
+    foreach(QVariant card_id, ag_list){
+        room->takeAG(NULL, card_id.toInt());
     }
 
     room->broadcastInvoke("clearAG");
+}
+
+void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    QVariantList ag_list = room->getTag("AmazingGrace").toList();
+    QList<int> card_ids;
+    foreach(QVariant card_id, ag_list)
+        card_ids << card_id.toInt();
+
+    int card_id = room->askForAG(effect.to, card_ids);
+    card_ids.removeOne(card_id);
+
+    room->takeAG(effect.to, card_id);
+    ag_list.removeOne(card_id);
+
+    room->setTag("AmazingGrace", ag_list);
 }
 
 GodSalvation::GodSalvation(Suit suit, int number)
@@ -512,15 +505,8 @@ GodSalvation::GodSalvation(Suit suit, int number)
     setObjectName("god_salvation");
 }
 
-void GodSalvation::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
-
-    QList<ServerPlayer *> all_players = room->getAllPlayers();
-    foreach(ServerPlayer *player, all_players){
-        if(player->isWounded()){
-            room->cardEffect(this, source, player);
-        }
-    }
+bool GodSalvation::isCancelable(const CardEffectStruct &effect) const{
+    return effect.to->isWounded();
 }
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{
@@ -532,19 +518,6 @@ SavageAssault::SavageAssault(Suit suit, int number)
     :AOE(suit, number)
 {
     setObjectName("savage_assault");
-}
-
-bool SavageAssault::isAvailable() const{
-    if(isRed())
-        return true;
-
-    QList<ClientPlayer *> players = ClientInstance->getPlayers();
-    foreach(const ClientPlayer *player, players){
-        if(player != Self && player->isAlive() && !player->hasSkill("weimu"))
-            return true;
-    }
-
-    return false;
 }
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
@@ -602,7 +575,7 @@ Collateral::Collateral(Card::Suit suit, int number)
 }
 
 bool Collateral::isAvailable() const{
-    QList<const ClientPlayer*> players = ClientInstance->findChildren<const ClientPlayer*>();
+    QList<const ClientPlayer*> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
         if(player->getWeapon() != NULL && player != Self)
             return true;
@@ -617,6 +590,9 @@ bool Collateral::targetsFeasible(const QList<const ClientPlayer *> &targets) con
 
 bool Collateral::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(targets.isEmpty()){
+        if(to_select->hasSkill("weimu") && isBlack())
+            return false;
+
         return to_select->getWeapon() && to_select != Self;
     }else if(targets.length() == 1){
         const ClientPlayer *first = targets.first();
@@ -791,11 +767,20 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(card_id);
 }
 
+static QString IndulgenceCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Heart)
+        return "good";
+    else
+        return "bad";
+}
+
 Indulgence::Indulgence(Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("indulgence");
     target_fixed = false;
+
+    callback = IndulgenceCallback;
 }
 
 bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
@@ -816,19 +801,36 @@ void Indulgence::takeEffect(ServerPlayer *target) const{
     target->getRoom()->skip(Player::Play);
 }
 
-bool Indulgence::judge(const Card *card) const{
-    return card->getSuit() != Card::Heart;
-}
-
-
-Lightning::Lightning(Suit suit, int number):DelayedTrick(suit, number, true){
-    setObjectName("lightning");
+Disaster::Disaster(Card::Suit suit, int number)
+    :DelayedTrick(suit, number, true)
+{
     target_fixed = true;
 }
 
-void Lightning::takeEffect(ServerPlayer *target) const{
-    target->getRoom()->throwCard(this);
+bool Disaster::isAvailable() const{
+    if(Self->containsTrick(objectName()))
+        return false;
 
+    return !ClientInstance->isProhibited(Self, this);
+}
+
+void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    room->moveCardTo(this, source, Player::Judging);
+}
+
+static QString LightningCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9)
+        return "bad";
+    else
+        return "good";
+}
+
+Lightning::Lightning(Suit suit, int number):Disaster(suit, number){
+    setObjectName("lightning");
+    callback = LightningCallback;
+}
+
+void Lightning::takeEffect(ServerPlayer *target) const{
     DamageStruct damage;
     damage.card = this;
     damage.damage = 3;
@@ -839,28 +841,13 @@ void Lightning::takeEffect(ServerPlayer *target) const{
     target->getRoom()->damage(damage);
 }
 
-bool Lightning::judge(const Card *card) const{
-    return card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9;
-}
 
-bool Lightning::isAvailable() const{
-    if(Self->containsTrick(objectName()))
-        return false;
-
-    if(Self->hasSkill("weimu") && isBlack())
-        return false;
-
-    return true;
-}
-
-void Lightning::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->moveCardTo(this, source, Player::Judging);
-}
+// EX cards
 
 class IceSwordSkill: public TriggerSkill{
 public:
     IceSwordSkill():TriggerSkill("ice_sword"){
-        events << SlashResult;
+        events << SlashHit;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -868,22 +855,20 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        SlashResultStruct result = data.value<SlashResultStruct>();
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-        if(result.success){
-            Room *room = player->getRoom();
+        Room *room = player->getRoom();
 
-            if(!result.to->isNude() && room->askForSkillInvoke(player, "ice_sword")){
-                int card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
+        if(!effect.to->isNude() && player->askForSkillInvoke("ice_sword")){
+            int card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
+            room->throwCard(card_id);
+
+            if(!effect.to->isNude()){
+                card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
                 room->throwCard(card_id);
-
-                if(!result.to->isNude()){
-                    card_id = room->askForCardChosen(player, result.to, "he", "ice_sword");
-                    room->throwCard(card_id);
-                }
-
-                return true;
             }
+
+            return true;
         }
 
         return false;
@@ -1001,16 +986,28 @@ void StandardPackage::addCards(){
           << new KylinBow
 
           << new EightDiagram(Card::Spade)
-          << new EightDiagram(Card::Club)
+          << new EightDiagram(Card::Club);
 
-          << new Horse("jueying", Card::Spade, 5, +1)
-          << new Horse("dilu", Card::Club, 5, +1)
-          << new Horse("zhuahuangfeidian", Card::Heart, 13, +1)
-          << new Horse("chitu", Card::Heart, 5, -1)
-          << new Horse("dayuan", Card::Spade, 13, -1)
-          << new Horse("zixing", Card::Diamond, 13, -1)
+    {
+        QList<Card *> horses;
+        horses << new DefensiveHorse(Card::Spade, 5)
+                << new DefensiveHorse(Card::Club, 5)
+                << new DefensiveHorse(Card::Heart, 13)
+                << new OffensiveHorse(Card::Heart, 5)
+                << new OffensiveHorse(Card::Spade, 13)
+                << new OffensiveHorse(Card::Diamond, 13);
 
-          << new AmazingGrace(Card::Heart, 3)
+        horses.at(0)->setObjectName("jueying");
+        horses.at(1)->setObjectName("dilu");
+        horses.at(2)->setObjectName("zhuahuangfeidian");
+        horses.at(3)->setObjectName("chitu");
+        horses.at(4)->setObjectName("dayuan");
+        horses.at(5)->setObjectName("zixing");
+
+        cards << horses;
+    }
+
+    cards << new AmazingGrace(Card::Heart, 3)
           << new AmazingGrace(Card::Heart, 4)
           << new GodSalvation
           << new SavageAssault(Card::Spade, 7)
@@ -1052,123 +1049,7 @@ void StandardPackage::addCards(){
           << new Nullification(Card::Diamond, 12);
 
     foreach(Card *card, cards)
-        card->setParent(this);
+        card->setParent(this);    
 
-    t["basic"] = tr("basic");
-    t["trick"] = tr("trick");
-    t["equip"] = tr("equip");
-    t["attack_card"] = tr("attack_card");
-    t["defense_card"] = tr("defense_card");
-    t["recover_card"] = tr("recover_card");
-    t["disgusting_card"] = tr("disgusting_card");
-    t["global_effect"] = tr("global_effect");
-    t["aoe"] = tr("aoe");
-    t["single_target_trick"] = tr("single_target_trick");
-    t["delayed_trick"] = tr("delayed_trick");
-    t["weapon"] = tr("weapon");
-    t["armor"] = tr("armor");
-    t["defensive_horse"] = tr("defensive_horse");
-    t["offensive_horse"] = tr("offensive_horse");
-
-    t["slash"] = tr("slash");
-    t["jink"] = tr("jink");
-    t["peach"] = tr("peach");
-
-
-    t["crossbow"] = tr("crossbow");
-    t["double_sword"] = tr("double_sword");
-    t["qinggang_sword"] = tr("qinggang_sword");
-
-    t["blade"] = tr("blade");
-    t["spear"] = tr("spear");
-    t["axe"] = tr("axe");
-    t["halberd"] = tr("halberd");
-    t["kylin_bow"] = tr("kylin_bow");
-
-    t["eight_diagram"] = tr("eight_diagram");
-
-    // ex
-    t["renwang_shield"] = tr("renwang_shield");
-    t["ice_sword"] = tr("ice_sword");
-
-    t["jueying"] = tr("jueying");
-    t["dilu"] = tr("dilu");
-    t["zhuahuangfeidian"] = tr("zhuahuangfeidian");
-    t["chitu"] = tr("chitu");
-    t["dayuan"] = tr("dayuan");
-    t["zixing"] = tr("zixing");
-
-    t["amazing_grace"] = tr("amazing_grace");
-    t["god_salvation"] = tr("god_salvation");
-    t["savage_assault"] = tr("savage_assault");
-    t["archery_attack"] = tr("archery_attack");
-    t["collateral"] = tr("collateral");
-    t["duel"] = tr("duel");
-    t["ex_nihilo"] = tr("ex_nihilo");
-    t["snatch"] = tr("snatch");
-    t["dismantlement"] = tr("dismantlement");
-    t["collateral"] = tr("collateral");
-    t["nullification"] = tr("nullification");
-    t["indulgence"] = tr("indulgence");
-    t["lightning"] = tr("lightning");
-
-    t["eight_diagram:yes"] = tr("eight_diagram:yes");
-
-    t["slash-jink"] = tr("slash-jink");
-    t["duel-slash"] = tr("duel-slash");
-    t["savage-assault-slash"] = tr("savage-assault-slash");
-    t["archery-attack-jink"] = tr("archery-attack-jink");
-    t["collateral-slash"] = tr("collateral-slash");
-    t["blade-slash"] = tr("blade-slash");
-    t["double-sword-card"] = tr("double-sword-card");
-    t["axe-card"] = tr("axe-card");
-
-    // weapon prompt
-    t["double_sword:yes"] = tr("double_sword:yes");
-    t["ice_sword:yes"] = tr("ice_sword:yes");
-    t["kylin_bow:yes"] = tr("kylin_bow:yes");
-    t["kylin_bow:dhorse"] = tr("kylin_bow:dhorse");
-    t["kylin_bow:ohorse"] = tr("kylin_bow:ohorse");
-
-    skills << new SpearSkill << new AxeViewAsSkill;
-
-    // translation for log
-
-    t["#Slash"] = tr("#Slash");
-    t["#Jink"] = tr("#Jink");
-    t["#Peach"] = tr("#Peach");
-    t["#AxeSkill"] = tr("#AxeSkill");
-
-    // description for cards
-    t[":slash"] = tr(":slash");
-    t[":jink"] = tr(":jink");
-    t[":peach"] = tr(":peach");
-
-    t[":duel"] = tr(":duel");
-    t[":dismantlement"] = tr(":dismantlement");
-    t[":snatch"] = tr(":snatch");
-    t[":archery_attack"] = tr(":archery_attack");
-    t[":savage_assault"] = tr(":savage_assault");
-    t[":god_salvation"] = tr(":god_salvation");    
-    t[":ex_nihilo"] = tr(":ex_nihilo");
-    t[":amazing_grace"] = tr(":amazing_grace");
-    t[":collateral"] = tr(":collateral");
-    t[":indulgence"] = tr(":indulgence");
-    t[":lightning"] = tr(":lightning");
-    t[":nullification"] = tr(":nullification");
-
-    t[":crossbow"] = tr(":crossbow");
-    t[":double_sword"] = tr(":double_sword");
-    t[":ice_sword"] = tr(":ice_sword");
-    t[":qinggang_sword"] = tr(":qinggang_sword");
-    t[":blade"] = tr(":blade");
-    t[":spear"] = tr(":spear");
-    t[":axe"] = tr(":axe");
-    t[":halberd"] = tr(":halberd");
-    t[":kylin_bow"] = tr(":kylin_bow");
-    t[":eight_diagram"] = tr(":eight_diagram");
-    t[":renwang_shield"] = tr(":renwang_shield");
-
-    t[":chitu"] = t[":zixing"] = t[":dayuan"] = tr(":-1 horse");
-    t[":jueying"] = t[":zhuahuangfeidian"] = t[":dilu"] = tr(":+1 horse");    
+    skills << new SpearSkill << new AxeViewAsSkill;       
 }

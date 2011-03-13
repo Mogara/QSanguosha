@@ -7,7 +7,6 @@ class QLabel;
 
 #include "socket.h"
 #include "detector.h"
-#include "libircclient.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -34,18 +33,21 @@ private:
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
+    QCheckBox *contest_mode_checkbox;
     QCheckBox *free_choose_checkbox;
     QCheckBox *forbid_same_ip_checkbox;
+    QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
     QComboBox *challenge_combobox;
-    QLabel *challenge_label;
+    QList<QLabel *> challenge_avatars;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
+    QCheckBox *ai_enable_checkbox;
+    QSpinBox *ai_delay_spinbox;
 
-    QButtonGroup *ai_group;
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
 
@@ -63,21 +65,16 @@ class Server : public QObject{
 
 public:
     explicit Server(QObject *parent);
-    ~Server();
 
     bool listen();
     void daemonize();
-    void emitDetectableMessage();
-    void emitServerMessage(const QString &msg);
-    void giveInfo(const char *nick);
-    void removeNick(const char *nick);
-    void tellLack(const char *nick = NULL);
 
 private:
     ServerSocket *server;
     Room *current;
-    QSet<QString> addresses, nicks;
-    irc_session_t *session;
+    QSet<QString> addresses;
+
+    void createNewRoom();
 
 private slots:
     void processNewConnection(ClientSocket *socket);

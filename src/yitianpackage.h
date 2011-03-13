@@ -11,17 +11,6 @@ public:
     YitianPackage();
 };
 
-class Shit:public BasicCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Shit(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual void onMove(const CardMoveStruct &move) const;
-
-    static bool HasShit(const Card *card);
-};
-
 class ChengxiangCard: public SkillCard{
     Q_OBJECT
 
@@ -32,6 +21,82 @@ public:
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class JuejiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JuejiCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class YitianSword:public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YitianSword(Card::Suit suit = Spade, int number = 6);
+
+    virtual void onMove(const CardMoveStruct &move) const;
+};
+
+class LianliCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LianliCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+};
+
+class LianliSlashCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LianliSlashCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class QiaocaiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QiaocaiCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class GuihanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GuihanCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class LexueCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LexueCard();
+
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class XunzhiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XunzhiCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 #endif // YITIANPACKAGE_H

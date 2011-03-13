@@ -7,17 +7,16 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QApplication>
-#include <QCryptographicHash>
 #include <QNetworkInterface>
 #include <QDateTime>
 
-Settings Config("Donghua University", "Sanguosha");
+Settings Config;
 
 static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;
 
-Settings::Settings(const QString &organization, const QString &application) :
-    QSettings(organization, application),
+Settings::Settings()
+    :QSettings("config.ini", QSettings::IniFormat),
     Rect(-ViewWidth/2, -ViewHeight/2, ViewWidth, ViewHeight)
 {
 }
@@ -34,51 +33,31 @@ void Settings::init(){
         QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
     BigFont.setPixelSize(56);
-    SmallFont.setPixelSize(32);
+    SmallFont.setPixelSize(27);
     TinyFont.setPixelSize(18);
+
+    SmallFont.setWeight(QFont::Bold);
 
     AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
     UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
+    TextEditColor = QColor(value("TextEditColor", "white").toString());
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
     BanPackages = value("BanPackages").toStringList();
+    ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
+    DisableChat = value("DisableChat", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
-    AILevel = value("AILevel", 2).toInt();
+    EnableAI = value("EnableAI", false).toBool();
+    AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
-    QString default_host;
-
-#ifndef QT_NO_DEBUG
-    default_host = "localhost";
-#else
-    default_host = "irc.freenode.net";
-#endif
-
-    IrcHost = value("IrcHost", default_host).toString();
-    IrcPort = value("IrcPort", 6667).toUInt();
-    IrcNick = value("IrcNick").toString();
-    if(IrcNick.isEmpty()){
-        QString mac = QNetworkInterface::allInterfaces().first().hardwareAddress();
-        QDateTime now = QDateTime::currentDateTime();
-        QString combined = mac + now.toString();
-        QCryptographicHash::Algorithm algorithm;
-        if(now.toTime_t() % 2 == 0)
-            algorithm = QCryptographicHash::Md5;
-        else
-            algorithm = QCryptographicHash::Sha1;
-
-        QString hash = QCryptographicHash::hash(combined.toAscii(), algorithm).toHex().toUpper().right(10);
-        IrcNick = QString("SGS_%1").arg(hash);
-    }
-    IrcChannel = value("IrcChannel", "#sanguosha").toString();
-
-    UserName = value("UserName", getenv("USERNAME")).toString();
+    UserName = value("UserName", qgetenv("USERNAME")).toString();
     if(UserName == "Admin" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
@@ -87,6 +66,7 @@ void Settings::init(){
     UserAvatar = value("UserAvatar", "zhangliao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
+    MaxCards = value("MaxCards", 15).toInt();
 
     FitInView = value("FitInView", false).toBool();
     EnableHotKey = value("EnableHotKey", true).toBool();
@@ -100,16 +80,5 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    QString bg_path = value("BackgroundBrush", ":/background.png").toString();
-    changeBackground(bg_path);
-}
-
-void Settings::changeBackground(const QString &new_bg){
-    QPixmap bgbrush(new_bg);
-    BackgroundBrush = QBrush(bgbrush);
-    QTransform transform;
-    transform.translate(Rect.x(), Rect.y());
-    BackgroundBrush.setTransform(transform);
-
-    setValue("BackgroundBrush", new_bg);
+    BackgroundBrush = value("BackgroundBrush", "backdrop/new-year.jpg").toString();
 }

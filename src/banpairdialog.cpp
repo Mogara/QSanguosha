@@ -10,6 +10,8 @@
 
 static QSet<BanPair> BanPairSet;
 static const QString BanPairFilename = "banpairs.txt";
+static QSet<QString> AllBanSet;
+static QSet<QString> SecondBanSet;
 
 BanPair::BanPair(){
 
@@ -25,11 +27,26 @@ BanPair::BanPair(const QString &first, const QString &second)
 
 Q_DECLARE_METATYPE(BanPair);
 
-bool BanPair::isBanned(const BanPair &pair){
-    return BanPairSet.contains(pair);
+bool BanPair::isBanned(const QString &general){
+    return AllBanSet.contains(general);
+}
+
+bool BanPair::isBanned(const QString &first, const QString &second){
+    if(SecondBanSet.contains(second))
+        return true;
+
+    if(AllBanSet.contains(first) || AllBanSet.contains(second))
+        return true;
+
+    BanPair pair(first, second);
+    return BanPairSet.contains(pair);    
 }
 
 void BanPair::loadBanPairs(){
+    // special cases
+    AllBanSet << "shencaocao" << "dongzhuo";
+    SecondBanSet << "jiangboyue" << "luboyan";
+
     QFile file(BanPairFilename);
     if(file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);
@@ -109,7 +126,7 @@ void BanPairDialog::addPair(){
 
 void BanPairDialog::addPair(const QString &first, const QString &second){
     BanPair pair(first, second);
-    if(!BanPair::isBanned(pair)){
+    if(!BanPairSet.contains(pair)){
         BanPairSet.insert(pair);
         addPairToList(pair);
     }

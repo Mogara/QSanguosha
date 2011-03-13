@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>297</height>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,82 +22,17 @@
      <x>10</x>
      <y>10</y>
      <width>271</width>
-     <height>251</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="title">
     <string>Connection setup</string>
    </property>
-   <widget class="QLabel" name="nameLabel">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>17</y>
-      <width>30</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Name:</string>
-    </property>
-    <property name="buddy">
-     <cstring>nameLineEdit</cstring>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="nameLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>20</y>
-      <width>211</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="hostLabel">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>43</y>
-      <width>30</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Host:</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="hostComboBox">
-    <property name="geometry">
-     <rect>
-      <x>49</x>
-      <y>43</y>
-      <width>211</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="editable">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="clearHistoryButton">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>100</y>
-      <width>121</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Clear history</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="portLabel">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>120</y>
       <width>24</width>
       <height>16</height>
      </rect>
@@ -110,7 +45,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>100</y>
+      <y>120</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -120,7 +55,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
+      <y>150</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -133,7 +68,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>130</y>
+      <y>160</y>
       <width>100</width>
       <height>100</height>
      </rect>
@@ -155,7 +90,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>130</y>
+      <y>150</y>
       <width>86</width>
       <height>23</height>
      </rect>
@@ -164,24 +99,11 @@
      <string>Change avatar</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="detectWANButton">
-    <property name="geometry">
-     <rect>
-      <x>141</x>
-      <y>70</y>
-      <width>121</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Detect WAN ...</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="detectLANButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>70</y>
+      <x>140</x>
+      <y>120</y>
       <width>121</width>
       <height>23</height>
      </rect>
@@ -190,6 +112,75 @@
      <string>Detect LAN ...</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="clearHistoryButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>90</y>
+      <width>101</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear history</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>17</y>
+      <width>251</width>
+      <height>74</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="nameLabel">
+       <property name="text">
+        <string>Name:</string>
+       </property>
+       <property name="buddy">
+        <cstring>nameLineEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="nameLineEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="hostLabel">
+       <property name="text">
+        <string>Host:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="hostComboBox">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="passwordLabel">
+       <property name="text">
+        <string>Password:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="passwordLineEdit">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+       <property name="placeholderText">
+        <string>Only used in contest</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QListWidget" name="avatarList">
    <property name="geometry">
@@ -197,7 +188,7 @@
      <x>290</x>
      <y>10</y>
      <width>531</width>
-     <height>281</height>
+     <height>301</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -216,8 +207,8 @@
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>270</y>
+     <x>210</x>
+     <y>290</y>
      <width>71</width>
      <height>23</height>
     </rect>
@@ -230,7 +221,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>270</y>
+     <y>290</y>
      <width>75</width>
      <height>23</height>
     </rect>

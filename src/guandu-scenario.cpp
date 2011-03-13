@@ -6,7 +6,7 @@
 #include "engine.h"
 
 ZhanShuangxiongCard::ZhanShuangxiongCard(){
-
+    once = true;
 }
 
 bool ZhanShuangxiongCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -20,17 +20,13 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     damage.from = source;
     damage.to = shuangxiong;
 
-    bool success = room->pindian(source, shuangxiong);
+    bool success = source->pindian(shuangxiong);
     if(!success)
         qSwap(damage.from, damage.to);
 
     room->damage(damage);
 
     room->setTag("ZhanShuangxiong", true);
-}
-
-void ZhanShuangxiongCard::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("zhanshuangxiong", true);
 }
 
 class GreatYiji: public MasochismSkill{
@@ -75,7 +71,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->turn_tag.value(objectName(), false).toBool();
+        return !Self->isKongcheng() && !ClientInstance->hasUsed("ZhanShuangxiongCard");
     }
 
     virtual const Card *viewAs() const{
@@ -272,16 +268,6 @@ GuanduScenario::GuanduScenario()
     renegades << "liubei" << "guanyu";
 
     rule = new GuanduRule(this);
-
-    t["guandu"] = tr("guandu");
-
-    t["smalltuxi"] = tr("smalltuxi");
-    t["zhanshuangxiong"] = tr("zhanshuangxiong");
-    t["greatyiji"] = tr("greatyiji");
-
-    t[":smalltuxi"] = tr(":smalltuxi");
-    t[":zhanshuangxiong"] = tr(":zhanshuangxiong");
-    t[":greatyiji"] = tr(":greatyiji");
 
     skills << new SmallTuxi
             << new ZhanShuangxiong

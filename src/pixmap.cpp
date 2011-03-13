@@ -32,6 +32,7 @@ QRectF Pixmap::boundingRect() const{
 
 void Pixmap::changePixmap(const QString &filename){
     pixmap.load(filename);
+    prepareGeometryChange();
 }
 
 void Pixmap::shift(){

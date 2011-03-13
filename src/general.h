@@ -15,10 +15,11 @@ class General : public QObject
     Q_PROPERTY(int maxhp READ getMaxHp CONSTANT)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
-    Q_PROPERTY(bool lord READ isLord CONSTANT)
+    Q_PROPERTY(bool lord READ isLord CONSTANT)   
+    Q_PROPERTY(bool hidden READ isHidden CONSTANT)
 
 public:
-    explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true);
+    explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true, bool hidden = false);
 
     // property getters/setters
     int getMaxHp() const;
@@ -26,6 +27,7 @@ public:
     bool isMale() const;
     bool isFemale() const;
     bool isLord() const;
+    bool isHidden() const;
 
     void addSkill(Skill* skill);
     bool hasSkill(const QString &skill_name) const;
@@ -34,7 +36,7 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
 
-    void playEffect(const QString &skill_name) const;
+public slots:
     void lastWord() const;
 
 private:
@@ -43,6 +45,7 @@ private:
     bool male;
     bool lord;
     QMap<QString, Skill *> skill_map;
+    bool hidden;
 };
 
 #endif // GENERAL_H

@@ -41,14 +41,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = "dujiang";
     room->sendLog(log);
 
-    // transfiguration
-    room->setPlayerProperty(source, "general", "shenlumeng");
-    room->getThread()->removeTriggerSkill("keji");
-    room->acquireSkill(source, "shelie", false);
-
-    source->setMaxHP(3);
-    room->broadcastProperty(source, "maxhp");
-    room->broadcastProperty(source, "hp");
+    room->transfigure(source, "shenlumeng", false);
 
     room->setTag("Dujiang", true);
 }
@@ -125,13 +118,11 @@ FloodCard::FloodCard(){
     target_fixed = true;
 }
 
-void FloodCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->tag.insert("flood_used", true);
-}
-
 void FloodCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->setTag("Flood", true);
+
+    room->setPlayerFlag(source, "flood");
 
     QList<ServerPlayer *> players = room->getOtherPlayers(source);
     foreach(ServerPlayer *player, players){
@@ -145,7 +136,7 @@ void FloodCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->throwAllEquips();
 
     Room *room = effect.to->getRoom();
-    if(!room->askForDiscard(effect.to, 2, true)){
+    if(!room->askForDiscard(effect.to, "flood", 2, true)){
         DamageStruct damage;
         damage.from = effect.from;
         damage.to = effect.to;
@@ -161,7 +152,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->tag.value("flood_used", false).toBool();
+        return ! Self->hasFlag("flood");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -181,10 +172,7 @@ public:
 
 TaichenCard::TaichenCard(){
     target_fixed = true;
-}
-
-void TaichenCard::use(const QList<const ClientPlayer *> &targets) const{
-    ClientInstance->turn_tag.insert("taichen_used", true);
+    once = true;
 }
 
 void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -192,13 +180,17 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
 
     if(source->isAlive()){
         Duel *duel = new Duel(Card::NoSuit, 0);
+        duel->setCancelable(false);
 
         CardEffectStruct effect;
         effect.card = duel;
         effect.from = source;
         effect.to = room->getLord();
 
-        room->directCardEffect(effect);
+        room->acquireSkill(source, "wushuang", false);
+        room->cardEffect(effect);
+        source->loseSkill("wushuang");
+        room->getThread()->removeTriggerSkill("wushuang");
     }
 }
 
@@ -209,7 +201,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("taichen_used", false).toBool();
+        return ! ClientInstance->hasUsed("TaichenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -232,17 +224,11 @@ public:
         if(guanyu->getPhase() == Player::Start){
             Room *room = guanyu->getRoom();
 
-            if(room->askForSkillInvoke(guanyu, "xiansheng")){
+            if(guanyu->askForSkillInvoke("xiansheng")){
                 guanyu->throwAllEquips();
                 guanyu->throwAllHandCards();
 
-                room->setPlayerProperty(guanyu, "general", "shenguanyu");
-
-                guanyu->setMaxHP(6);
-                guanyu->setHp(6);
-
-                room->broadcastProperty(guanyu, "maxhp");
-                room->broadcastProperty(guanyu, "hp");
+                room->transfigure(guanyu, "shenguanyu", true);
 
                 room->drawCards(guanyu, 3);
             }
@@ -260,24 +246,19 @@ bool ZhiyuanCard::targetFilter(const QList<const ClientPlayer *> &targets, const
     return targets.isEmpty() && to_select != Self && to_select->getRoleEnum() == Player::Rebel;
 }
 
-void ZhiyuanCard::use(const QList<const ClientPlayer *> &) const{
-    int count = ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt();
-    count ++;
-    ClientInstance->turn_tag.insert("zhiyuan_count", count);
-}
-
 void ZhiyuanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     targets.first()->obtainCard(this);
+    room->setPlayerMark(source, "zhiyuan", source->getMark("zhiyuan") - 1);
 }
 
-class Zhiyuan: public OneCardViewAsSkill{
+class ZhiyuanViewAsSkill: public OneCardViewAsSkill{
 public:
-    Zhiyuan():OneCardViewAsSkill("zhiyuan"){
+    ZhiyuanViewAsSkill():OneCardViewAsSkill(""){
 
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ClientInstance->turn_tag.value("zhiyuan_count", 0).toInt() < 2;
+        return Self->getMark("zhiyuan") > 0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -286,9 +267,25 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         ZhiyuanCard *card = new ZhiyuanCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
+    }
+};
+
+class Zhiyuan: public PhaseChangeSkill{
+public:
+    Zhiyuan():PhaseChangeSkill("zhiyuan"){
+        view_as_skill = new ZhiyuanViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Start){
+            Room *room = target->getRoom();
+            room->setPlayerMark(target, "zhiyuan", 2);
+        }
+
+        return false;
     }
 };
 
@@ -370,26 +367,6 @@ FanchengScenario::FanchengScenario()
     addMetaObject<FloodCard>();
     addMetaObject<TaichenCard>();
     addMetaObject<ZhiyuanCard>();
-
-    t["fancheng"] = tr("fancheng");
-
-    t["guagu"] = tr("guagu");
-    t["dujiang"] = tr("dujiang");
-    t["flood"] = tr("flood");
-    t["taichen"] = tr("taichen");
-    t["changqu"] = tr("changqu");
-    t["xiansheng"] = tr("xiansheng");
-    t["zhiyuan"] = tr("zhiyuan");
-
-    t[":guagu"] = tr(":guagu");
-    t[":dujiang"] = tr(":dujiang");
-    t[":flood"] = tr(":flood");
-    t[":taichen"] = tr(":taichen");
-    t[":changqu"] = tr(":changqu");
-    t[":xiansheng"] = tr(":xiansheng");
-    t[":zhiyuan"] = tr(":zhiyuan");
-
-    t["@@dujiang"] = tr("@@dujiang");
 }
 
 void FanchengScenario::onTagSet(Room *room, const QString &key) const{

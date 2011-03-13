@@ -10,7 +10,7 @@
 #include <QHBoxLayout>
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags)
-    :player(player), mapper(new QSignalMapper(this))
+    :player(player)
 {
     QVBoxLayout *vlayout = new QVBoxLayout;
     QHBoxLayout *layout = new QHBoxLayout;
@@ -30,17 +30,14 @@ PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &fl
     if(flags.contains(judging_flag))
         vlayout->addWidget(createJudgingArea());
 
-    connect(mapper, SIGNAL(mapped(int)), this, SIGNAL(card_id_chosen(int)));
-
     layout->addLayout(vlayout);
 
     setLayout(layout);
 }
 
 QWidget *PlayerCardDialog::createAvatar(){
-    const General *general = player->getAvatarGeneral();    
-    QString general_name = Sanguosha->translate(general->objectName());
-    QGroupBox *box = new QGroupBox(QString("%1 [%2]").arg(player->objectName()).arg(general_name));
+    const General *general = player->getAvatarGeneral();
+    QGroupBox *box = new QGroupBox(player->screenName());
 
     QLabel *avatar = new QLabel(box);
     avatar->setPixmap(QPixmap(general->getPixmapPath("big")));
@@ -63,8 +60,8 @@ QWidget *PlayerCardDialog::createHandcardButton(){
     }else{
         button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
 
-        mapper->setMapping(button, -1);
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, -1);
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
     }
 
     return button;
@@ -79,8 +76,8 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(weapon->getFullName());
         button->setIcon(weapon->getSuitIcon());
 
-        mapper->setMapping(button, weapon->getId());
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, weapon->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
     }
 
@@ -89,8 +86,8 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(armor->getFullName());
         button->setIcon(armor->getSuitIcon());
 
-        mapper->setMapping(button, armor->getId());
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, armor->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
     }
 
@@ -99,8 +96,8 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(+1 horse)"));
         button->setIcon(horse->getSuitIcon());
 
-        mapper->setMapping(button, horse->getId());
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, horse->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
     }
 
@@ -109,8 +106,8 @@ QWidget *PlayerCardDialog::createEquipArea(){
         QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(-1 horse)"));
         button->setIcon(horse->getSuitIcon());
 
-        mapper->setMapping(button, horse->getId());
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, horse->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
     }
 
@@ -133,8 +130,8 @@ QWidget *PlayerCardDialog::createJudgingArea(){
         button->setIcon(card->getSuitIcon());
         layout->addWidget(button);
 
-        mapper->setMapping(button, card->getId());
-        connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+        mapper.insert(button, card->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
     }
 
     if(layout->count() == 0){
@@ -145,4 +142,10 @@ QWidget *PlayerCardDialog::createJudgingArea(){
         area->setLayout(layout);
         return area;
     }
+}
+
+void PlayerCardDialog::emitId(){
+    int id = mapper.value(sender(), -2);
+    if(id != -2)
+        emit card_id_chosen(id);
 }

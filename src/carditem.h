@@ -5,29 +5,36 @@
 #include "pixmap.h"
 
 #include <QSize>
-#include <QPropertyAnimation>
+
+class FilterSkill;
 
 class CardItem : public Pixmap
 {
     Q_OBJECT
+
 public:
     CardItem(const Card *card);
 
-    void setRealCard(const Card *real_card);
-    const Card *getRealCard() const;
+    void filter(const FilterSkill *filter_skill);
+    const Card *getFilteredCard() const;
 
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
+    QPointF homePos() const;
     void goBack(bool kieru = false);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
+    void setFrame(const QString &frame);
+    void hideFrame();
 
     void select();
     void unselect();
     bool isPending() const;
     bool isEquipped() const;
 
-    virtual QRectF boundingRect() const;
+    static const int NormalY = 36;
+    static const int PendingY = NormalY - 40;
+    static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -37,16 +44,17 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
 
 private:
-    const Card *card, *real_card;
+    const Card *card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
+    QGraphicsPixmapItem *frame;
 
 signals:
-    void show_discards();
-    void hide_discards();
+    void toggle_discards();
     void clicked();
     void double_clicked();
     void thrown();
+    void grabbed();
 };
 
 class GuanxingCardItem : public CardItem {

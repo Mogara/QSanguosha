@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
-    <height>656</height>
+    <width>905</width>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>441</width>
-     <height>631</height>
+     <width>411</width>
+     <height>581</height>
     </rect>
    </property>
    <property name="editTriggers">
@@ -63,48 +63,10 @@
     </property>
    </column>
   </widget>
-  <widget class="QPushButton" name="okButton">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>620</y>
-     <width>71</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>OK</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="generalPhoto">
-   <property name="geometry">
-    <rect>
-     <x>479</x>
-     <y>10</y>
-     <width>221</width>
-     <height>290</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>200</width>
-     <height>290</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>../standard/generals/card/caocao.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="skillLabel">
    <property name="geometry">
     <rect>
-     <x>480</x>
+     <x>450</x>
      <y>310</y>
      <width>30</width>
      <height>12</height>
@@ -117,73 +79,72 @@
   <widget class="QTextEdit" name="skillTextEdit">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>440</x>
      <y>330</y>
-     <width>241</width>
-     <height>211</height>
+     <width>211</width>
+     <height>261</height>
     </rect>
    </property>
    <property name="readOnly">
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="playEffecButton">
+  <widget class="QLabel" name="generalPhoto">
    <property name="geometry">
     <rect>
-     <x>470</x>
-     <y>620</y>
-     <width>81</width>
-     <height>23</height>
+     <x>450</x>
+     <y>10</y>
+     <width>200</width>
+     <height>290</height>
     </rect>
    </property>
    <property name="text">
-    <string>Play effect</string>
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../image/generals/card/caocao.jpg</pixmap>
    </property>
   </widget>
-  <widget class="QPushButton" name="lastWordButton">
+  <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>620</y>
-     <width>75</width>
-     <height>23</height>
+     <x>670</x>
+     <y>20</y>
+     <width>221</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>221</width>
+      <height>531</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="cvLabel">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>570</y>
+     <width>221</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Last word</string>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="skillGroupBox">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>550</y>
-     <width>241</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Skills</string>
+    <string>CV: official</string>
    </property>
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>okButton</sender>
-   <signal>clicked()</signal>
-   <receiver>GeneralOverview</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>551</x>
-     <y>492</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>459</x>
-     <y>492</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -6,7 +6,7 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    :QObject(parent), general(NULL), general2(NULL),
+    :QObject(parent), owner(false), general(NULL), general2(NULL),
     hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
     attack_range(1), phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
@@ -24,6 +24,17 @@ void Player::setScreenName(const QString &screen_name){
 
 QString Player::screenName() const{
     return screen_name;
+}
+
+bool Player::isOwner() const{
+    return owner;
+}
+
+void Player::setOwner(bool owner){
+    if(this->owner != owner){
+        this->owner = owner;
+        emit owner_changed(owner);
+    }
 }
 
 void Player::setHp(int hp){
@@ -99,8 +110,15 @@ void Player::setFlags(const QString &flag){
         QString copy = flag;
         copy.remove(unset_symbol);
         flags.remove(copy);
-    }else
+
+        if(copy == "drank")
+            emit drank_changed(false);
+    }else{
+        if(flag == "drank")
+            emit drank_changed(true);
+
         flags.insert(flag);
+    }
 }
 
 bool Player::hasFlag(const QString &flag) const{
@@ -180,11 +198,15 @@ int Player::distanceTo(const Player *other) const{
 }
 
 int Player::getGeneralMaxHP() const{
+    if(general2 == NULL)
+        return general->getMaxHp();
+
     int first = general->getMaxHp();
-    int second = general2 ? general2->getMaxHp() : 3;
+    int second = general2->getMaxHp();
 
     int max_hp;
     switch(Config.MaxHpScheme){
+    case 2: max_hp = (first + second)/2; break;
     case 1: max_hp = qMin(first, second); break;
     case 0:
     default:
@@ -194,18 +216,20 @@ int Player::getGeneralMaxHP() const{
     return qMin(max_hp, 8);
 }
 
-void Player::setGeneralName(const QString &general_name){
-    const General *new_general = Sanguosha->getGeneral(general_name);
-
+void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;
         if(new_general){
-            setHp(getMaxHP());
             setKingdom(general->getKingdom());
         }
 
         emit general_changed();
     }
+}
+
+void Player::setGeneralName(const QString &general_name){
+    const General *new_general = Sanguosha->getGeneral(general_name);
+    setGeneral(new_general);
 }
 
 QString Player::getGeneralName() const{
@@ -220,7 +244,7 @@ void Player::setGeneral2Name(const QString &general_name){
     if(general2 != new_general){
         general2 = new_general;
 
-        emit general_changed();
+        emit general2_changed();
     }
 }
 
@@ -294,6 +318,10 @@ void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
 }
 
+void Player::loseSkill(const QString &skill_name){
+    acquired_skills.remove(skill_name);
+}
+
 QString Player::getPhaseString() const{
     switch(phase){
     case Start: return "start";
@@ -339,6 +367,10 @@ void Player::removeEquip(const EquipCard *equip){
     case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
     case EquipCard::OffensiveHorseLocation:offensive_horse = NULL; break;
     }
+}
+
+bool Player::hasEquip(const Card *card) const{
+    return weapon == card || armor == card || defensive_horse == card || offensive_horse == card;
 }
 
 const Weapon *Player::getWeapon() const{
@@ -394,6 +426,8 @@ void Player::setPhase(Phase phase){
         if(phase == Player::Start){
             emit turn_started();
         }
+
+        emit phase_changed();
     }
 }
 
@@ -409,12 +443,15 @@ void Player::setFaceUp(bool face_up){
     }
 }
 
-void Player::turnOver(){
-    face_up = !face_up;
-}
-
 int Player::getMaxCards() const{
-    return hp + xueyi;
+    int extra = 0;
+    if(Config.MaxHpScheme == 2 && general2){
+        int total = general->getMaxHp() + general2->getMaxHp();
+        if(total % 2 != 0)
+            extra = 1;
+    }
+
+    return hp + xueyi + extra;
 }
 
 int Player::getXueyi() const{
@@ -432,8 +469,12 @@ void Player::setKingdom(const QString &kingdom){
     }
 }
 
-QString Player::getKingdomPath() const{
-    return QString(":/kingdom/%1.png").arg(kingdom);
+QString Player::getKingdomIcon() const{
+    return QString("image/kingdom/icon/%1.png").arg(kingdom);
+}
+
+QString Player::getKingdomFrame() const{
+    return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
 void Player::setXueyi(int xueyi){
@@ -515,9 +556,6 @@ void Player::removeMark(const QString &mark){
 void Player::setMark(const QString &mark, int value){
     if(marks[mark] != value){
         marks[mark] = value;
-
-        if(mark.startsWith("@"))
-            emit mark_changed(mark);
     }
 }
 
@@ -556,4 +594,8 @@ int Player::getCardCount(bool include_equip) const{
     }
 
     return count;
+}
+
+QList<int> &Player::getPile(const QString &pile_name){
+    return piles[pile_name];
 }

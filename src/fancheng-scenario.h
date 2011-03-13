@@ -28,7 +28,6 @@ class FloodCard: public SkillCard{
 public:
     Q_INVOKABLE FloodCard();
 
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
@@ -39,7 +38,6 @@ class TaichenCard: public SkillCard{
 public:
     Q_INVOKABLE TaichenCard();
 
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
@@ -50,7 +48,6 @@ public:
     Q_INVOKABLE ZhiyuanCard();
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual void use(const QList<const ClientPlayer *> &targets) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 

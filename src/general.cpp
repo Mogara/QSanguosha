@@ -4,8 +4,8 @@
 #include "package.h"
 #include "client.h"
 
-General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hidden(hidden)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -39,8 +39,16 @@ bool General::isLord() const{
     return lord;
 }
 
+bool General::isHidden() const{
+    return hidden;
+}
+
 QString General::getPixmapPath(const QString &category) const{
-    return QString("%1/generals/%2/%3.png").arg(getPackage()).arg(category).arg(objectName());
+    QString suffix = "png";
+    if(category == "card")
+        suffix = "jpg";
+
+    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
 }
 
 void General::addSkill(Skill *skill){    
@@ -54,13 +62,17 @@ bool General::hasSkill(const QString &skill_name) const{
 }
 
 QString General::getPackage() const{
-    return parent()->objectName();
+    QObject *p = parent();
+    if(p)
+        return p->objectName();
+    else
+        return QString(); // avoid null pointer exception;
 }
 
 QString General::getSkillDescription() const{
     QString description;
 
-    QList<Skill *> skills = skill_map.values();
+    QList<const Skill *> skills = findChildren<const Skill *>();
     foreach(const Skill *skill, skills){
         if(skill->objectName().startsWith("#"))
             continue;
@@ -68,20 +80,13 @@ QString General::getSkillDescription() const{
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
-        description.append(QString("<b>%1</b>: %2 <br/>").arg(skill_name).arg(desc));
+        description.append(QString("<b>%1</b>: %2 <br/> <br/>").arg(skill_name).arg(desc));
     }
 
     return description;
 }
 
-void General::playEffect(const QString &skill_name) const
-{
-    Skill *skill = skill_map.value(skill_name, NULL);
-    if(skill)
-        skill->playEffect();
-}
-
 void General::lastWord() const{
-    QString filename = QString("%1/generals/death/%2.wav").arg(getPackage()).arg(objectName());
+    QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 }

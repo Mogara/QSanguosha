@@ -1,22 +1,26 @@
 #include "roomthread.h"
 #include "room.h"
-#include "gamerule.h"
-#include "bossmode.h"
 #include "engine.h"
+#include "gamerule.h"
 
 bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
-    int x = a->getPriority(target);
-    int y = b->getPriority(target);
+    int x = a->getPriority();
+    int y = b->getPriority();
 
     return x > y;
 }
 
 void TriggerSkillSorter::sort(QList<const TriggerSkill *> &skills){
-    qSort(skills.begin(), skills.end(), *this);
+    qStableSort(skills.begin(), skills.end(), *this);
 }
 
 DamageStruct::DamageStruct()
     :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false)
+{
+}
+
+CardEffectStruct::CardEffectStruct()
+    :card(NULL), from(NULL), to(NULL), multiple(false)
 {
 }
 
@@ -25,24 +29,8 @@ SlashEffectStruct::SlashEffectStruct()
 {
 }
 
-SlashResultStruct::SlashResultStruct()
-    :slash(NULL), from(NULL), to(NULL), nature(DamageStruct::Normal),
-    drank(false), success(false)
-{
-}
-
-void SlashResultStruct::fill(const SlashEffectStruct &effect, bool success)
-{
-    slash = effect.slash;
-    from = effect.from;
-    to = effect.to;
-    nature = effect.nature;
-    drank = effect.drank;
-    this->success = success;
-}
-
 DyingStruct::DyingStruct()
-    :damage(NULL), peaches(0)
+    :who(NULL), damage(NULL), peaches(0)
 {
 
 }
@@ -50,7 +38,6 @@ DyingStruct::DyingStruct()
 CardUseStruct::CardUseStruct()
     :card(NULL), from(NULL)
 {
-
 }
 
 bool CardUseStruct::isValid() const{
@@ -76,25 +63,44 @@ RoomThread::RoomThread(Room *room)
 {
 }
 
-void RoomThread::constructTriggerTable(){
+void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
+    const General *general = player->getGeneral();
+
+    Q_ASSERT(general);
+    QVariant void_data;
+
+    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    foreach(const TriggerSkill *skill, skills){
+        if(skill->isLordSkill() && !player->isLord())
+            continue;
+
+        addTriggerSkill(skill);
+
+        if(invoke_game_start && skill->getTriggerEvents().contains(GameStart))
+            skill->trigger(GameStart, player, void_data);
+    }
+}
+
+void RoomThread::removePlayerSkills(ServerPlayer *player){
+    const General *general = player->getGeneral();
+
+    Q_ASSERT(general);
+
+    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    foreach(const TriggerSkill *skill, skills){
+        if(skill->isLordSkill() && !player->isLord())
+            continue;
+
+        removeTriggerSkill(skill);
+    }
+}
+
+void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
-        const General *general = player->getGeneral();
-
-        QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
-        foreach(const TriggerSkill *skill, skills){
-            if(skill->isLordSkill() && !player->isLord())
-                continue;
-
-            addTriggerSkill(skill);
-        }
+        addPlayerSkills(player);
     }   
 
-    GameRule *game_rule;
-    if(room->mode == "08boss")
-        game_rule = new BossMode(this);
-    else
-        game_rule = new GameRule(this);
-    addTriggerSkill(game_rule);
+    addTriggerSkill(rule);
 
     foreach(ServerPlayer *player, room->players){
         const General *general2 = player->getGeneral2();
@@ -149,6 +155,8 @@ void RoomThread::run(){
     }
 }
 
+#include "ai.h"
+
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
@@ -160,17 +168,21 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
             itor.remove();
     }
 
-    static TriggerSkillSorter sorter;
-
-    sorter.target = target;
+    TriggerSkillSorter sorter;
     sorter.sort(skills);
 
+    bool broken = false;
     foreach(const TriggerSkill *skill, skills){
-        if(skill->trigger(event, target, data))
-            return true;
+        if(skill->trigger(event, target, data)){
+            broken = true;
+            break;
+        }
     }
 
-    return false;
+    foreach(AI *ai, room->ais)
+        ai->filterEvent(event, target, data);
+
+    return broken;
 }
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){

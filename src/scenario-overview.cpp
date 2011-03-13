@@ -28,6 +28,7 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
     setLayout(layout);
 
     QStringList names = Sanguosha->getScenarioNames();
+    names << "bossmode";
     foreach(QString name, names){
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(text, list);
@@ -47,6 +48,7 @@ void ScenarioOverview::loadContent(int row){
     QFile file(filename);
     if(file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);
+        stream.setCodec("UTF-8");
         QString content = stream.readAll();
 
         content_box->setHtml(content);

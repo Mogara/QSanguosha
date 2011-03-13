@@ -35,6 +35,7 @@ class Player : public QObject
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
+    Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
 
     // distance related properties
     Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
@@ -73,18 +74,23 @@ public:
     int getLostHp() const;
     bool isWounded() const;
 
+    bool isOwner() const;
+    void setOwner(bool owner);
+
     int getMaxCards() const;    
     int getXueyi() const;
     void setXueyi(int xueyi);
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
-    QString getKingdomPath() const;
+    QString getKingdomIcon() const;
+    QString getKingdomFrame() const;
 
     void setRole(const QString &role);
     QString getRole() const;    
     Role getRoleEnum() const;
 
+    void setGeneral(const General *general);
     void setGeneralName(const QString &general_name);
     QString getGeneralName() const;    
 
@@ -96,9 +102,7 @@ public:
     QString getState() const;
 
     int getSeat() const;
-    void setSeat(int seat);
-    bool isFocus() const;
-    void setFocus(bool focus);    
+    void setSeat(int seat);  
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
@@ -121,7 +125,6 @@ public:
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
-    void turnOver();
 
     virtual int aliveCount() const = 0;
     int distanceTo(const Player *other) const;
@@ -130,10 +133,12 @@ public:
     const General *getGeneral() const;
 
     void acquireSkill(const QString &skill_name);
+    void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
+    bool hasEquip(const Card *card) const;
 
     QStack<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
@@ -161,7 +166,7 @@ public:
 
     void addMark(const QString &mark);
     void removeMark(const QString &mark);
-    void setMark(const QString &mark, int value);
+    virtual void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
 
     void setChained(bool chained);
@@ -170,8 +175,16 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true) const;
     int getCardCount(bool include_equip) const;
 
+    QList<int> &getPile(const QString &pile_name);
+
+    QVariantMap tag;
+
+protected:
+    QMap<QString, int> marks;
+
 private:    
     QString screen_name;
+    bool owner;
     const General *general, *general2;
     int hp, max_hp, xueyi;
     QString kingdom;
@@ -180,8 +193,8 @@ private:
     int seat;
     bool alive;
     QSet<QString> flags;
-    QMap<QString, int> marks;
     QSet<QString> acquired_skills;
+    QMap<QString, QList<int> > piles;
 
     struct CorrectStruct correct;
     int attack_range;
@@ -197,11 +210,14 @@ private:
 
 signals:
     void general_changed();
+    void general2_changed();
     void role_changed(const QString &new_role);
     void state_changed();
     void turn_started();
     void kingdom_changed();
-    void mark_changed(const QString &mark);
+    void phase_changed();
+    void owner_changed(bool owner);
+    void drank_changed(bool drank);
 };
 
 #endif // PLAYER_H

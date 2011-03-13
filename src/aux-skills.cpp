@@ -1,8 +1,9 @@
 #include "aux-skills.h"
-
+#include "client.h"
 #include "carditem.h"
 #include "standard.h"
 #include "clientplayer.h"
+#include "standard-skillcards.h"
 
 DiscardSkill::DiscardSkill()
     :ViewAsSkill("discard"), card(new DummyCard),
@@ -26,6 +27,9 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
     if(!include_equip && to_select->isEquipped())
         return false;
 
+    if(ClientInstance->isJilei(to_select->getFilteredCard()))
+        return false;
+
     return true;
 }
 
@@ -33,6 +37,34 @@ const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
     if(cards.length() == num){
         card->clearSubcards();
         card->addSubcards(cards);
+        return card;
+    }else
+        return NULL;
+}
+
+// -------------------------------------------
+
+FreeDiscardSkill::FreeDiscardSkill(QObject *parent)
+    :ViewAsSkill("free-discard")
+{
+    setParent(parent);
+    card = new DummyCard;
+}
+
+bool FreeDiscardSkill::isEnabledAtPlay() const{
+    return true;
+}
+
+bool FreeDiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+    return true;
+}
+
+const Card *FreeDiscardSkill::viewAs(const QList<CardItem *> &cards) const{
+    if(!cards.isEmpty()){
+
+        card->clearSubcards();
+        card->addSubcards(cards);
+
         return card;
     }else
         return NULL;

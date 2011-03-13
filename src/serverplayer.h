@@ -4,6 +4,7 @@
 class Room;
 struct CardMoveStruct;
 class AI;
+class Recorder;
 
 #include "player.h"
 #include "socket.h"
@@ -16,6 +17,7 @@ class ServerPlayer : public Player
 
 public:
     explicit ServerPlayer(Room *room);
+
     void setSocket(ClientSocket *socket);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
@@ -24,12 +26,14 @@ public:
     void drawCard(const Card *card);
     Room *getRoom() const;
     void playCardEffect(const Card *card);
-    int getRandomHandCard() const;
+    int getRandomHandCardId() const;
+    const Card *getRandomHandCard() const;
     void obtainCard(const Card *card);
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllCards();
     void drawCards(int n, bool set_emotion = true);
+    bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
     QList<int> handCards() const;
     QList<const Card *> getHandcards() const;
@@ -38,8 +42,12 @@ public:
     bool isLord() const;
     bool hasNullification() const;
     void kick();
+    bool pindian(ServerPlayer *target, const Card *card1 = NULL);
+    void turnOver();
 
-    void setAIByGeneral();
+    void gainMark(const QString &mark, int n = 1);
+    void loseMark(const QString &mark, int n = 1);
+
     void setAI(AI *ai);
     AI *getAI() const;
 
@@ -48,11 +56,20 @@ public:
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
 
+    void addVictim(ServerPlayer *victim);
+    QList<ServerPlayer *> getVictims() const;
+
+    void startRecord();
+    void saveRecord(const QString &filename);
+
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
     AI *ai;
+    AI *trust_ai;
+    QList<ServerPlayer *> victims;
+    Recorder *recorder;
 
 private slots:
     void getMessage(char *message);

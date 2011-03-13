@@ -40,22 +40,19 @@ void Skill::initMediaSource(){
     sources.clear();
 
     if(parent()){
-        const General *general = qobject_cast<const General *>(parent());
-        QString package_name = general->parent()->objectName();
+        int i;
+        for(i=1; ;i++){
+            QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(i);
+            if(QFile::exists(effect_file))
+                sources << effect_file;
+            else
+                break;
+        }
 
-        QString effect_file = QString("%1/generals/effect/%2.wav").arg(package_name).arg(objectName());
-        if(QFile::exists(effect_file))
-            sources << effect_file;
-        else{
-            int i=1;
-            forever{
-                QString effect_file = QString("%1/generals/effect/%2%3.wav").arg(package_name).arg(objectName()).arg(i);
-                if(QFile::exists(effect_file))
-                    sources << effect_file;
-                else
-                    break;
-                i++;
-            }
+        if(sources.isEmpty()){
+            QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
+            if(QFile::exists(effect_file))
+                sources << effect_file;
         }
     }
 }
@@ -67,7 +64,16 @@ void Skill::playEffect(int index) const{
         else
             index--;
 
-        Sanguosha->playEffect(sources.at(index));
+        // check length
+        QString filename;
+        if(index >= 0 && index < sources.length())
+            filename = sources.at(index);
+        else
+            filename = sources.first();
+
+        Sanguosha->playEffect(filename);
+        if(ClientInstance)
+            ClientInstance->setLines(filename);
     }
 }
 
@@ -81,6 +87,10 @@ void Skill::unsetFlag(ServerPlayer *player) const{
 
 Skill::Frequency Skill::getFrequency() const{
     return frequency;
+}
+
+QStringList Skill::getSources() const{
+    return sources;
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
@@ -160,8 +170,11 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
     return events;
 }
 
-int TriggerSkill::getPriority(ServerPlayer *target) const{    
-    return 1;
+int TriggerSkill::getPriority() const{
+    if(frequency == Compulsory)
+        return 2;
+    else
+        return 1;
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
@@ -171,10 +184,10 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
 ScenarioRule::ScenarioRule(Scenario *scenario)
     :TriggerSkill(scenario->objectName())
 {
-    setParent(this);
+    setParent(scenario);
 }
 
-int ScenarioRule::getPriority(ServerPlayer *) const{
+int ScenarioRule::getPriority() const{
     return 3;
 }
 
@@ -188,7 +201,7 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-int MasochismSkill::getPriority(ServerPlayer *) const{
+int MasochismSkill::getPriority() const{
     return -1;
 }
 
@@ -209,6 +222,18 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 
 bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
     return onPhaseChange(player);
+}
+
+DrawCardsSkill::DrawCardsSkill(const QString &name)
+    :TriggerSkill(name)
+{
+    events << DrawNCards;
+}
+
+bool DrawCardsSkill::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    int n = data.toInt();
+    data = getDrawNum(player, n);
+    return false;
 }
 
 SlashBuffSkill::SlashBuffSkill(const QString &name)
@@ -266,4 +291,15 @@ ArmorSkill::ArmorSkill(const QString &name)
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
     return target->hasArmorEffect(objectName()) && target->getArmor()->getSkill() == this;
+}
+
+MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
+    :GameStartSkill("#" + mark), n(n)
+{
+}
+
+void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
+    QString mark_name = objectName();
+    mark_name.remove("#");
+    player->gainMark(mark_name, n);
 }

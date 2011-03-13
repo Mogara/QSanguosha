@@ -4,6 +4,8 @@
 class Room;
 class ServerPlayer;
 
+typedef int LuaFunction;
+
 #include "card.h"
 #include "roomthread.h"
 
@@ -15,8 +17,6 @@ class AI: public QObject{
     Q_ENUMS(Relation);
 
 public:
-    static AI *CreateAI(ServerPlayer *player);
-
     AI(ServerPlayer *player);
 
     enum Relation { Friend, Enemy, Neutrality };
@@ -32,16 +32,19 @@ public:
     virtual QString askForKingdom() = 0;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) = 0;
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) = 0;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
     virtual const Card *askForCard(const QString &pattern)  = 0;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
-    virtual int askForAG(const QList<int> &card_ids) = 0;
-    virtual int askForCardShow(ServerPlayer *requestor) = 0;
+    virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
+    virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian() = 0;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) = 0;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
+
+    virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
 protected:
     Room *room;
@@ -59,35 +62,42 @@ public:
     virtual QString askForKingdom() ;
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
-    virtual QList<int> askForDiscard(int discard_num, bool optional, bool include_equip) ;
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) ;
     virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
     virtual const Card *askForCard(const QString &pattern) ;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
-    virtual int askForAG(const QList<int> &card_ids) ;
-    virtual int askForCardShow(ServerPlayer *requestor) ;
+    virtual int askForAG(const QList<int> &card_ids, bool refsuable);
+    virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian() ;
-    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets) ;
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
 
     virtual bool useCard(const Card *card);
 };
 
-class SmartAI: public TrustAI{
+class LuaAI: public TrustAI{
     Q_OBJECT
 
 public:
-    SmartAI(ServerPlayer *player, bool always_invoke = false);
+    LuaAI(ServerPlayer *player);
 
-    virtual int askForCardShow(ServerPlayer *requestor) ;
-    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
+    virtual const Card *askForCardShow(ServerPlayer *requestor);
+    virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);
+    virtual void activate(CardUseStruct &card_use);
+    virtual QString askForUseCard(const QString &pattern, const QString &prompt);
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
+    virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip);
+    virtual QString askForChoice(const QString &skill_name, const QString &choices);
+    virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
+    virtual const Card *askForCard(const QString &pattern);
+    virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
+    virtual int askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
 
-    virtual void activate(CardUseStruct &card_use) ;
-    virtual bool useCard(const Card *card);
-    virtual void useCard(const Card *card, CardUseStruct &card_use);
+    virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
-private:
-    bool always_invoke;
+    LuaFunction callback;
 };
 
 #endif // AI_H

@@ -12,6 +12,7 @@ class Recorder : public QObject
 public:
     explicit Recorder(QObject *parent);
     bool save(const QString &filename) const;
+    void recordLine(const QString &line);
 
 public slots:
     void record(char *line);

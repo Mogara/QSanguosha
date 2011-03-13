@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>752</width>
-    <height>490</height>
+    <height>561</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>10</x>
      <y>20</y>
      <width>491</width>
-     <height>451</height>
+     <height>521</height>
     </rect>
    </property>
    <property name="editTriggers">
@@ -65,25 +65,6 @@
     </property>
    </column>
   </widget>
-  <widget class="QLabel" name="cardLabel">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>20</y>
-     <width>211</width>
-     <height>281</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>../cards/amazing_grace.png</pixmap>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QTextEdit" name="cardDescriptionBox">
    <property name="geometry">
     <rect>
@@ -92,6 +73,61 @@
      <width>211</width>
      <height>141</height>
     </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="cardLabel">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>10</y>
+     <width>211</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="getCardButton">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>510</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Get this card</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="malePlayButton">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>470</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play (male)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="femalePlayButton">
+   <property name="geometry">
+    <rect>
+     <x>634</x>
+     <y>470</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play (female)</string>
    </property>
   </widget>
  </widget>

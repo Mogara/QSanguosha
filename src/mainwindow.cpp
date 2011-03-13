@@ -6,8 +6,8 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
-#include "libircclient.h"
 #include "scenario-overview.h"
+#include "window.h"
 
 #include <QGraphicsView>
 #include <QGraphicsItem>
@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    scene = NULL;
 
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
@@ -53,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent)
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
-    connect(connection_dialog, SIGNAL(wan_detect()), ui->actionWAN_IP_detect, SIGNAL(triggered()));
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
@@ -61,25 +61,28 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    StartScene *start_scene = new StartScene;    
+    StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
     actions << ui->actionStart_Game            
             << ui->actionStart_Server
             << ui->actionReplay
             << ui->actionConfigure
+            << ui->actionAbout
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview;
+            << ui->actionScenario_Overview
+            << ui->actionExit;
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);    
 
-    scene = start_scene;
     FitView *view = new FitView(scene);
 
     setCentralWidget(view);
     restoreFromConfig();
+
+    gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);   
@@ -99,7 +102,6 @@ void MainWindow::restoreFromConfig(){
         QApplication::setFont(Config.UIFont, "QTextEdit");
 
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
-    ui->actionNever_Nullify_My_Trick->setChecked(Config.NeverNullifyMyTrick);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
@@ -123,6 +125,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
     view->setScene(scene);
     delete this->scene;
     this->scene = scene;
+
+    changeBackground();
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -167,13 +171,15 @@ void MainWindow::startConnection(){
 
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
     connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
-
-    //client->signup();
 }
 
 void MainWindow::on_actionReplay_triggered()
 {
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString last_dir = Config.value("LastReplayDir").toString();
+    if(!last_dir.isEmpty())
+        location = last_dir;
+
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a reply file"),
                                                     location,
@@ -181,6 +187,10 @@ void MainWindow::on_actionReplay_triggered()
 
     if(filename.isEmpty())
         return;
+
+    QFileInfo file_info(filename);
+    last_dir = file_info.absoluteDir().path();
+    Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
 
@@ -190,6 +200,9 @@ void MainWindow::on_actionReplay_triggered()
 }
 
 void MainWindow::restartConnection(){
+    if(scene)
+        scene->clear();
+
     ClientInstance = NULL;
 
     delete Self;
@@ -224,7 +237,7 @@ void MainWindow::enterRoom(){
     ui->actionSurrender->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
 
-    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(viewDiscards()));
+    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
     connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
@@ -264,7 +277,7 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 void MainWindow::on_actionAbout_triggered()
 {
     // Cao Cao's pixmap
-    QString content =  "<center><img src=':/shencc.png'> <br /> </center>";
+    QString content =  "<center><img src='image/system/shencc.png'> <br /> </center>";
 
     // Cao Cao' poem
     QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
@@ -278,7 +291,15 @@ void MainWindow::on_actionAbout_triggered()
                       "totally written in C++ Qt GUI framework <br />"
                       "My Email: moligaloo@gmail.com <br/>"));
 
-    content.append(tr("Current version: %1 <br/>").arg(Sanguosha->getVersion()));
+    QString config;
+
+#ifdef QT_NO_DEBUG
+    config = "release";
+#else
+    config = "debug";
+#endif
+
+    content.append(tr("Current version: %1 %2<br/>").arg(Sanguosha->getVersion()).arg(config));
 
     const char *date = __DATE__;
     const char *time = __TIME__;
@@ -287,18 +308,45 @@ void MainWindow::on_actionAbout_triggered()
     QString project_url = "http://github.com/Moligaloo/QSanguosha";
     content.append(tr("Project home: <a href='%1'>%1</a> <br/>").arg(project_url));
 
-    // FIXME: add acknowledgement
+    QString forum_url = "http://qsanguosha.com";
+    content.append(tr("Forum: <a href='%1'>%1</a> <br/>").arg(forum_url));
 
-    QMessageBox::about(this, tr("About QSanguosha"), content);
+    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::changeBackground(){
-    if(scene)
-        scene->setBackgroundBrush(Config.BackgroundBrush);
+    if(scene){
+        QPixmap pixmap(Config.BackgroundBrush);
+        QBrush brush(pixmap);
+
+        if(pixmap.width() > 100 && pixmap.height() > 100){
+            qreal dx = -width()/2.0;
+            qreal dy = -height()/2.0;
+            qreal sx = width() / qreal(pixmap.width());
+            qreal sy = height() / qreal(pixmap.height());
+
+            QTransform transform;
+            transform.translate(dx, dy);
+            transform.scale(sx, sy);
+            brush.setTransform(transform);
+        }
+
+        scene->setBackgroundBrush(brush);
+    }
 
     if(scene->inherits("RoomScene")){
         RoomScene *room_scene = qobject_cast<RoomScene *>(scene);
         room_scene->changeTextEditBackground();
+    }else if(scene->inherits("StartScene")){
+        StartScene *start_scene = qobject_cast<StartScene *>(scene);
+        start_scene->setServerLogBackground();
     }
 }
 
@@ -316,42 +364,31 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
     menu_bar->setVisible(! menu_bar->isVisible());
 }
 
-void MainWindow::on_actionAbout_libircclient_triggered()
-{
-    QString content = tr("libircclient is a small but powerful library, which implements client-server IRC protocol. <br/>");
-    QString address = "http://libircclient.sourceforge.net";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-
-    char version[255];
-    unsigned int high, low;
-    irc_get_version(&high, &low);
-    sprintf(version, "%d.%02d", high, low);
-    content.append(tr("Current version %1 <br/>").arg(version));
-
-    QMessageBox::about(this, tr("About libircclient"), content);
-}
-
 void MainWindow::on_actionAbout_irrKlang_triggered()
 {
     QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
+    content.append("<p align='center'> <img src='image/system/irrklang.png' /> </p> <br/>");
+
     QString address = "http://www.ambiera.com/irrklang/";
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
     content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 
-    QMessageBox::about(this, tr("About irrKlang"), content);
-}
+    //QMessageBox::about(this, tr("About irrKlang"), content);
 
-void MainWindow::on_actionWAN_IP_detect_triggered()
-{
-    QStringList args;
-    args << "-detect";
-    QProcess::startDetached(QApplication::applicationFilePath(), args);
+    Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if(systray == NULL){
-        QIcon icon(":/magatamas/5.png");
+        QIcon icon("image/system/magatamas/5.png");
         systray = new QSystemTrayIcon(icon, this);
 
         QAction *appear = new QAction(tr("Show main window"), this);
@@ -409,7 +446,14 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    QMessageBox::information(this, tr("Role assign table"), content);
+    Window *window = new Window(tr("Role assign table"), QSize(232, 342));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::on_actionScenario_Overview_triggered()
@@ -417,3 +461,4 @@ void MainWindow::on_actionScenario_Overview_triggered()
     ScenarioOverview *dialog = new ScenarioOverview(this);
     dialog->show();
 }
+

@@ -5,5 +5,7 @@ Makefile*
 object_script*
 *.pro.user
 sanguosha.qm
-.hg
-.hgignore
+config.ini
+swig/sanguosha_wrap.cxx
+records/*
+users.db

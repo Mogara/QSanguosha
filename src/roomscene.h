@@ -6,9 +6,10 @@
 #include "card.h"
 #include "client.h"
 #include "aux-skills.h"
-#include "daqiao.h"
 #include "clientlogbox.h"
-#include "irrKlang.h"
+
+class Window;
+class Button;
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -32,10 +33,9 @@ public slots:
     void removePlayer(const QString &player_name);
     void drawCards(const QList<const Card *> &cards);
     void drawNCards(ClientPlayer *player, int n);
-    void chooseGeneral(const QList<const General*> &generals);   
+    void chooseGeneral(const QStringList &generals);
     void arrangeSeats(const QList<const ClientPlayer*> &seats);
-    void viewDiscards();
-    void hideDiscards();
+    void toggleDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
     void updateStatus(Client::Status status);    
@@ -56,24 +56,28 @@ private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
-
+    QGraphicsPixmapItem *judge_avatar;
+    CardItem *special_card;
+    bool viewing_discards;
     Dashboard *dashboard;
-    Pixmap *pile;
     Pixmap *avatar;
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
-    QProgressBar *progress_bar;
-    int timer_id;
-    QMenu *known_cards_menu;
-    Daqiao *daqiao;
+    QMenu *known_cards_menu;   
+    Window *prompt_box;
+    Button *add_robot;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
+    QComboBox *sort_combobox;
 
-    int pile_number;
-    QGraphicsTextItem *pile_number_item;
+    QProgressBar *progress_bar;
+    int timer_id;
+    int tick;
+
+    QList<QGraphicsPixmapItem *> role_items;
 
     QList<CardItem *> amazing_grace;
     QList<QGraphicsPixmapItem *> taker_avatars;
@@ -97,14 +101,16 @@ private:
     QLineEdit *chat_edit;
 
     QSharedMemory *memory;
-    irrklang::ISoundSource *bgmusic;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
-    void clickSkillButton(int order);
     void useCard(const Card *card);
-    void fillTable(QTableWidget *table, const QList<ClientPlayer *> &players);
+    void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     const ViewAsSkill *getViewAsSkill(const QString &skill_name);
+    void chooseSkillButton();
+
+    void viewDiscards();
+    void hideDiscards();
 
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
@@ -117,7 +123,14 @@ private:
     void freeze();
     void addRestartButton(QDialog *dialog);
     void addSkillButton(const Skill *skill);
-    void addWidgetToSkillDock(QWidget *widget);
+    void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
+    void removeWidgetFromSkillDock(QWidget *widget);
+    QList<QPointF> getPhotoPositions() const;
+    void createStateItem();
+
+    // animation related functions
+    QGraphicsObject *getAnimationObject(const QString &name) const;
+    void moveAndDisappear(QGraphicsObject *item, const QPointF &from, const QPointF &to) const;
 
 private slots:
     void updateSkillButtons();
@@ -125,36 +138,43 @@ private slots:
     void updateRoleComboBox(const QString &new_role);
     void updateSelectedTargets();
     void updateTrustButton();
-    void updateMark(const QString &mark);
+    void updatePileButton(const QString &pile_name);
     void doSkillButton();
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
     void doTimeout();
     void hideAvatars();
-    void changeHp(const QString &who, int delta);
+    void changeHp(const QString &who, int delta, DamageStruct::Nature nature);
     void moveFocus(const QString &who);
     void setEmotion(const QString &who, const QString &emotion);
     void showSkillInvocation(const QString &who, const QString &skill_name);
+    void doAnimation(const QString &name, const QStringList &args);
+    void adjustDashboard();
+    void showOwnerButtons(bool owner);
+    void showJudgeResult(const QString &who, const QString &result);
 
     void clearPile();
-    void setPileNumber(int n);
+    void removeLightBox();
 
     void showCard(const QString &player_name, int card_id);    
     void viewDistance();
 
-    void speak(const QString &who, const QString &text);
     void speak();    
 
     void onGameStart();
     void onGameOver(bool victory, const QList<bool> &result_list);
     void onStandoff();
 
+    void onJoyButtonClicked(int bit);
+    void onJoyDirectionClicked(int direction);
+
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);
 
     void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);
+    void grabCardItem();
     void chooseAmazingGrace();
     void clearAmazingGrace();
 
@@ -162,10 +182,12 @@ private slots:
     void detachSkill(const QString &skill_name);
 
     void doGuanxing(const QList<int> &card_ids);
+    void clearGuanxing();
     void adjustGuanxing();
 
-    void doGongxin(const QList<int> &card_ids);
+    void doGongxin(const QList<int> &card_ids, bool enable_heart);
     void chooseGongxinCard();
+    void clearGongxinCards();
 
 signals:
     void restart();

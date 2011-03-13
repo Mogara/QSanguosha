@@ -34,14 +34,19 @@ Analeptic::Analeptic(Card::Suit suit, int number)
 {
     setObjectName("analeptic");
     target_fixed = true;
+    once = true;
 }
 
 QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
+QString Analeptic::getEffectPath(bool is_male) const{
+    return Card::getEffectPath();
+}
+
 bool Analeptic::IsAvailable(){
-    return ! ClientInstance->turn_tag.value("analeptic_used", false).toBool();
+    return ! ClientInstance->hasUsed("Analeptic");
 }
 
 bool Analeptic::isAvailable() const{
@@ -51,10 +56,6 @@ bool Analeptic::isAvailable() const{
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
     room->cardEffect(this, source, source);
-}
-
-void Analeptic::use(const QList<const ClientPlayer *> &) const{
-    ClientInstance->turn_tag.insert("analeptic_used", true);
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
@@ -95,8 +96,18 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
-            damage.to->isKongcheng() && !damage.chain)
+            damage.to->isKongcheng())
         {
+            Room *room = damage.to->getRoom();
+
+            LogMessage log;
+            log.type = "#GudingBladeEffect";
+            log.from = player;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            room->sendLog(log);
+
             damage.damage ++;
             data = QVariant::fromValue(damage);
         }
@@ -222,10 +233,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->isKongcheng())
         return;
 
-    int card_id = room->askForCardShow(effect.to, effect.from);
-    room->showCard(effect.to, card_id);
+    const Card *card = room->askForCardShow(effect.to, effect.from);
+    room->showCard(effect.to, card->getEffectiveId());
 
-    const Card *card = Sanguosha->getCard(card_id);
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->getGeneralName()).arg(suit_str);
@@ -238,6 +248,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
 
         room->damage(damage);
     }
+
+    if(card->isVirtualCard())
+        delete card;
 }
 
 IronChain::IronChain(Card::Suit suit, int number)
@@ -250,8 +263,12 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
+QString IronChain::getEffectPath(bool is_male) const{
+    return QString();
+}
+
 bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    if(targets.length() > 2)
+    if(targets.length() >= 2)
         return false;
 
     return true;
@@ -261,17 +278,20 @@ bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
     return targets.length() <= 2;
 }
 
+void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
+    if(card_use.to.isEmpty()){
+        room->throwCard(this);
+        room->playCardEffect("@recast", card_use.from->getGeneral()->isMale());
+        card_use.from->drawCards(1);
+    }else
+        TrickCard::onUse(room, card_use);
+}
+
 void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{   
     room->throwCard(this);
 
-    if(targets.isEmpty()){       
-        room->playCardEffect("recast@" + getPackage(), source->getGeneral()->isMale());
-        source->drawCards(1);
-    }else{
-        room->playCardEffect("tiesuo@" + getPackage(), source->getGeneral()->isMale());
-
-        TrickCard::use(room, source, targets);
-    }
+    room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
+    TrickCard::use(room, source, targets);
 }
 
 void IronChain::onEffect(const CardEffectStruct &effect) const{
@@ -281,10 +301,18 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->broadcastProperty(effect.to, "chained");
 }
 
+static QString SupplyShortageCallback(const Card *card, Room *){
+    if(card->getSuit() == Card::Club)
+        return "good";
+    else
+        return "bad";
+}
+
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("supply_shortage");
+    callback = SupplyShortageCallback;
 }
 
 bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -311,30 +339,9 @@ void SupplyShortage::takeEffect(ServerPlayer *target) const{
     target->getRoom()->skip(Player::Draw);
 }
 
-bool SupplyShortage::judge(const Card *card) const{
-    return card->getSuit() != Card::Club;
-}
-
 ManeuveringPackage::ManeuveringPackage()
     :Package("maneuvering")
 {
-    t["maneuvering"] = tr("maneuvering");
-    t["buff_card"] = tr("buff_card");
-    t["damage_spread"] = tr("damage_spread");
-    t["fire_attack"] = tr("fire_attack");
-    t["thunder_slash"] = tr("thunder_slash");
-    t["fire_slash"] = tr("fire_slash");
-    t["analeptic"] = tr("analeptic");
-    t["fan"] = tr("fan");
-    t["hualiu"] = tr("hualiu");
-    t["guding_blade"] = tr("guding_blade");
-    t["vine"] = tr("vine");
-    t["silver_lion"] = tr("silver_lion");
-    t["iron_chain"] = tr("iron_chain");    
-    t["supply_shortage"] = tr("supply_shortage");
-
-    t["fan:yes"] = tr("fan:yes");
-
     QList<Card *> cards;
 
     // spade
@@ -370,8 +377,8 @@ ManeuveringPackage::ManeuveringPackage()
     // heart
     cards << new Nullification(Card::Heart, 1)
             << new FireAttack(Card::Heart, 2)
-            << new FireSlash(Card::Heart, 3)
-            << new FireAttack(Card::Heart, 4)
+            << new FireAttack(Card::Heart, 3)
+            << new FireSlash(Card::Heart, 4)
             << new Peach(Card::Heart, 5)
             << new Peach(Card::Heart, 6)
             << new FireSlash(Card::Heart, 7)
@@ -394,32 +401,15 @@ ManeuveringPackage::ManeuveringPackage()
             << new Analeptic(Card::Diamond, 9)
             << new Jink(Card::Diamond, 10)
             << new Jink(Card::Diamond, 11)
-            << new FireSlash(Card::Diamond, 12)
-            << new Horse("hualiu", Card::Diamond, 13, +1);
+            << new FireAttack(Card::Diamond, 12);
+
+    DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
+    hualiu->setObjectName("hualiu");
+
+    cards << hualiu;
 
     foreach(Card *card, cards)
         card->setParent(this);
-
-    t["fire-attack-card"] = tr("fire-attack-card");
-
-    t[":analeptic"] = tr(":analeptic");
-    t[":fire_slash"] = tr(":fire_slash");
-    t[":thunder_slash"] = tr(":thunder_slash");
-    t[":fire_attack"] = tr(":fire_attack");
-    t[":iron_chain"] = tr(":iron_chain");
-    t[":supply_shortage"] = tr(":supply_shortage");
-
-    t[":guding_blade"] = tr(":guding_blade");
-    t[":fan"] = tr(":fan");
-    t[":vine"] = tr(":vine");
-    t[":silver_lion"] = tr(":silver_lion");
-
-    t[":hualiu"] = tr(":+1 horse");    
-
-    t["#SilverLion"] = tr("#SilverLion");
-    t["#VineDamage"] = tr("#VineDamage");
-
-    t["@fire-attack"] = tr("@fire-attack");
 }
 
 ADD_PACKAGE(Maneuvering)

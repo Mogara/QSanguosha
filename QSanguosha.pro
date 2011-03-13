@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network
+QT += network sql
 TEMPLATE = app
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
@@ -35,7 +35,6 @@ SOURCES += src/main.cpp \
     src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
     src/magatamawidget.cpp \
-    src/daqiao.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
@@ -48,7 +47,6 @@ SOURCES += src/main.cpp \
     src/configdialog.cpp \
     src/clientlogbox.cpp \
     src/ai.cpp \
-    src/standard-ai.cpp \
     src/aux-skills.cpp \
     src/choosegeneraldialog.cpp \
     src/nativesocket.cpp \
@@ -57,12 +55,21 @@ SOURCES += src/main.cpp \
     src/guandu-scenario.cpp \
     src/detector.cpp \
     src/clientstruct.cpp \
-    src/ircdetector.cpp \
     src/banpairdialog.cpp \
     src/fancheng-scenario.cpp \
     src/scenario-overview.cpp \
     src/bossmode.cpp \
-    src/challengemode.cpp
+    src/challengemode.cpp \
+    src/nostalgia.cpp \
+    src/joypackage.cpp \
+    src/rolecombobox.cpp \
+    src/joystick.cpp \
+    src/couple-scenario.cpp \
+    swig/sanguosha_wrap.cxx \
+    src/lua-wrapper.cpp \
+    src/window.cpp \
+    src/contestdb.cpp \
+    src/hongyan-scenario.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -91,7 +98,6 @@ HEADERS += src/mainwindow.h \
     src/nullificationdialog.h \
     src/playercarddialog.h \
     src/magatamawidget.h \
-    src/daqiao.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \
@@ -104,7 +110,6 @@ HEADERS += src/mainwindow.h \
     src/configdialog.h \
     src/clientlogbox.h \
     src/ai.h \
-    src/standard-ai.h \
     src/aux-skills.h \
     src/choosegeneraldialog.h \
     src/socket.h \
@@ -114,12 +119,24 @@ HEADERS += src/mainwindow.h \
     src/guandu-scenario.h \
     src/detector.h \
     src/clientstruct.h \
-    src/ircdetector.h \
     src/banpairdialog.h \
     src/fancheng-scenario.h \
     src/scenario-overview.h \
     src/bossmode.h \
-    src/challengemode.h
+    src/challengemode.h \
+    src/nostalgia.h \
+    src/joypackage.h \
+    src/rolecombobox.h \
+    src/standard-equips.h \
+    src/joystick.h \
+    src/couple-scenario.h \
+    src/standard-commons.h \
+    src/standard-skillcards.h \
+    src/structs.h \
+    src/lua-wrapper.h \
+    src/window.h \
+    src/contestdb.h \
+    src/hongyan-scenario.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -128,17 +145,18 @@ FORMS += src/mainwindow.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
 
-RESOURCES += resource/images/sanguosha.qrc
-INCLUDEPATH += include/libircclient
 INCLUDEPATH += include/irrKlang
+INCLUDEPATH += include/lua
+INCLUDEPATH += include
+INCLUDEPATH += src
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += static-libircclient.lib -lws2_32 irrKlang.lib
+    LIBS += -L. irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
 }
 
 unix {
-    LIBS += -lircclient
+    LIBS += -lm -llua -lIrrKlang -lplibjs -lplibul
 }
 
 TRANSLATIONS += sanguosha.ts

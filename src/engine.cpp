@@ -6,6 +6,7 @@
 #include "scenario.h"
 #include "challengemode.h"
 #include "irrKlang.h"
+#include "lua.hpp"
 
 typedef irrklang::ISound SoundType;
 
@@ -26,15 +27,25 @@ extern "C" {
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
+    Package *NewNostalgia();
+    Package *NewJoy();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
+    Scenario *NewCoupleScenario();
+    Scenario *NewHongyanScenario();
 }
 
 extern irrklang::ISoundEngine *SoundEngine;
 
+extern "C" {
+    int luaopen_sgs(lua_State *);
+}
+
 Engine::Engine()
 {
+    Sanguosha = this;
+
     addPackage(NewStandard());
     addPackage(NewWind());
     addPackage(NewFire());
@@ -42,9 +53,20 @@ Engine::Engine()
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
+    addPackage(NewNostalgia());
+    addPackage(NewJoy());
+
+    {
+        Package *test_package = new Package("test");
+        (new General(test_package, "sujiang", "god", 5, true, true));
+        (new General(test_package, "sujiangf", "god", 5, false, true));
+        addPackage(test_package);
+    }
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());
+    addScenario(NewCoupleScenario());
+    addScenario(NewHongyanScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -62,6 +84,55 @@ Engine::Engine()
 
     challenge_mode_set = new ChallengeModeSet(this);
     addPackage(challenge_mode_set);
+
+    translations.insert("bossmode", tr("Boss mode"));
+
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+
+    QString error_msg;
+    lua = createLuaState(false, error_msg);
+    if(lua == NULL){
+        QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
+        exit(1);
+    }
+}
+
+lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+
+    luaopen_sgs(L);
+
+    int error = luaL_dofile(L, "sanguosha.lua");
+    if(error){
+        error_msg = lua_tostring(L, -1);
+        return NULL;
+    }
+
+    if(load_ai){
+        error = luaL_dofile(L, "lua/ai/smart-ai.lua");
+        if(error){
+            error_msg = lua_tostring(L, -1);
+            return NULL;
+        }
+    }
+
+    return L;
+}
+
+lua_State *Engine::getLuaState() const{
+    return lua;
+}
+
+void Engine::addTranslationEntry(const char *key, const char *value){
+    translations.insert(key, QString::fromUtf8(value));
+}
+
+Engine::~Engine(){
+    lua_close(lua);
+
+    if(SoundEngine)
+        SoundEngine->drop();
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -101,6 +172,11 @@ void Engine::addPackage(Package *package){
 
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
+        if(general->isHidden()){
+            hidden_generals.insert(general->objectName(), general);
+            continue;
+        }
+
         if(general->isLord())
             lord_list << general->objectName();
         else
@@ -116,8 +192,6 @@ void Engine::addPackage(Package *package){
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach(const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
-
-    translations.unite(package->getTranslation());
 
     QList<const Skill *> extra_skills = package->getSkills();
     foreach(const Skill *skill, extra_skills)
@@ -136,28 +210,25 @@ QString Engine::translate(const QString &to_translate) const{
     return translations.value(to_translate, to_translate);
 }
 
-QString Engine::getRoleString(const QString &role) const{
+int Engine::getRoleIndex() const{
     if(ServerInfo.GameMode == "08boss"){
-        if(role == "lord")
-            return tr("boss");
-        else if(role == "renegade")
-            return tr("guardian");
-        else if(role == "loyalist")
-            return tr("citizen");
-        else
-            return tr("hero");
+        return 2;
+    }else if(ServerInfo.GameMode.startsWith("@")){
+        return 3;
     }else if(ServerInfo.GameMode == "06_3v3"){
-        if(role == "lord" || role == "renegade")
-            return tr("marshal");
-        else
-            return tr("vanguard");
+        return 4;
     }else
-        return translate(role);
+        return 1;
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    return generals.value(name, NULL);
+    if(generals.contains(name))
+        return generals.value(name);
+    else
+        return hidden_generals.value(name, NULL);
 }
+
+#include "banpairdialog.h"
 
 int Engine::getGeneralCount(bool include_banned) const{
     if(include_banned)
@@ -169,6 +240,9 @@ int Engine::getGeneralCount(bool include_banned) const{
         itor.next();
         const General *general = itor.value();
         if(ban_package.contains(general->getPackage()))
+            total--;
+
+        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
     }
 
@@ -186,6 +260,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
     const QMetaObject *meta = metaobjects.value(name, NULL);
     if(meta){
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+        card_obj->setObjectName(name);
         return qobject_cast<Card *>(card_obj);
     }else
         return NULL;    
@@ -201,27 +276,22 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return NULL;
 }
 
-AI *Engine::cloneAI(ServerPlayer *player) const{
-    QString general_name = player->getGeneralName();
-    general_name[0] = general_name[0].toUpper();
-    QString ai_name = general_name + "AI";
-    const QMetaObject *meta = metaobjects.value(ai_name, NULL);
-    if(meta){
-        QObject *ai_object = meta->newInstance(Q_ARG(ServerPlayer *, player));
-        AI *ai = qobject_cast<AI *>(ai_object);
-        return ai;
-    }else
-        return NULL;
-}
-
 QString Engine::getVersion() const{
-    return "20101115";
+    return "20110312";
 }
 
 QStringList Engine::getExtensions() const{
-    static QStringList extensions;
-    if(extensions.isEmpty())
-        extensions << "wind" << "fire" << "thicket" << "maneuvering" << "god" << "yitian";
+    QStringList extensions;
+    QList<const Package *> packages = findChildren<const Package *>();
+    foreach(const Package *package, packages){
+        if(package->inherits("Scenario"))
+            continue;
+
+        extensions << package->objectName();
+    }
+
+    extensions.removeOne("standard");
+    extensions.removeOne("challenge_modes");
 
     return extensions;
 }
@@ -241,6 +311,10 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if(Config.Enable2ndGeneral)
         flags.append("S");
+    if(Config.EnableAI)
+        flags.append("A");
+    if(Config.DisableChat)
+        flags.append("M");
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
@@ -289,6 +363,54 @@ int Engine::getPlayerCount(const QString &mode) const{
     return -1;
 }
 
+void Engine::getRoles(const QString &mode, char *roles) const{
+    int n = getPlayerCount(mode);
+
+    if(modes.contains(mode)){
+        static const char *table1[] = {
+            "",
+            "",
+
+            "ZF", // 2
+            "ZFN", // 3
+            "ZNFF", // 4
+            "ZCFFN", // 5
+            "ZCFFFN", // 6
+            "ZCCFFFN", // 7
+            "ZCCFFFFN", // 8
+            "ZCCCFFFFN", // 9
+            "ZCCCFFFFNN" // 10
+        };
+
+        static const char *table2[] = {
+            "",
+            "",
+
+            "ZF", // 2
+            "ZFN", // 3
+            "ZNFF", // 4
+            "ZCFFN", // 5
+            "ZCFFNN", // 6
+            "ZCCFFFN", // 7
+            "ZCCFFFNN", // 8
+            "ZCCCFFFFN", // 9
+            "ZCCCFFFFNN" // 10
+        };
+
+        const char **table = mode.endsWith("d") ? table2 : table1;
+        qstrcpy(roles, table[n]);
+    }else if(mode.startsWith("@")){
+        if(n == 8)
+            qstrcpy(roles, "ZCCCNFFF");
+        else if(n == 6)
+            qstrcpy(roles, "ZCCNFF");
+    }else{
+        const Scenario *scenario = getScenario(mode);
+        if(scenario)
+            scenario->getRoles(roles);
+    }
+}
+
 int Engine::getCardCount() const{
     return cards.length();
 }
@@ -312,8 +434,13 @@ QStringList Engine::getRandomLords() const{
     QStringList nonlord_list;
     foreach(QString nonlord, this->nonlord_list){
         const General *general = generals.value(nonlord);
-        if(!ban_package.contains(general->getPackage()))
-            nonlord_list << nonlord;
+        if(ban_package.contains(general->getPackage()))
+            continue;
+
+        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+            continue;
+
+        nonlord_list << nonlord;
     }
 
     qShuffle(nonlord_list);
@@ -370,8 +497,22 @@ QList<int> Engine::getRandomCards() const{
     return list;
 }
 
-void Engine::playEffect(const QString &filename){
+QString Engine::getRandomGeneralName() const{
+    return generals.keys().at(qrand() % generals.size());
+}
+
+void Engine::playAudio(const QString &name) const{
+    playEffect(QString("audio/system/%1.ogg").arg(name));
+}
+
+void Engine::playEffect(const QString &filename) const{
     if(!Config.EnableEffects)
+        return;
+
+    if(filename.isNull())
+        return;
+
+    if(SoundEngine == NULL)
         return;
 
     if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))
@@ -380,21 +521,23 @@ void Engine::playEffect(const QString &filename){
     SoundEngine->play2D(filename.toAscii());
 }
 
-void Engine::playSkillEffect(const QString &skill_name, int index){
+void Engine::playSkillEffect(const QString &skill_name, int index) const{
     const Skill *skill = skills.value(skill_name, NULL);
     if(skill)
         skill->playEffect(index);
 }
 
-void Engine::playCardEffect(const QString &card_name, bool is_male){
-    const Card *card = findChild<const Card *>(card_name);
-    if(card)
-        playEffect(card->getEffectPath(is_male));
-}
+void Engine::playCardEffect(const QString &card_name, bool is_male) const{
+    QString path;
+    if(card_name.startsWith("@")){
+        QString gender = is_male ? "male" : "female";
+        path = QString("audio/card/%1/%2.ogg").arg(gender).arg(card_name);
+    }else{
+        const Card *card = findChild<const Card *>(card_name);
+        if(card)
+            path = card->getEffectPath(is_male);
+    }
 
-void Engine::playCardEffect(const QString &card_name, const QString &package, bool is_male){
-    QString gender = is_male ? "male" : "female";
-    QString path = QString("%1/cards/effect/%2/%3.mp3").arg(package).arg(gender).arg(card_name);
     playEffect(path);
 }
 

@@ -40,10 +40,12 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     showFont(ui->textEditFontLineEdit, font);
 
     // tab 3
-    ui->ircHostLineEdit->setText(Config.IrcHost);
-    ui->ircPortLineEdit->setText(QString::number(Config.IrcPort));
-    ui->ircNickLineEdit->setText(Config.IrcNick);
-    ui->ircChannelLineEdit->setText(Config.IrcChannel);
+    ui->smtpServerLineEdit->setText(Config.value("Contest/SMTPServer").toString());
+    ui->senderLineEdit->setText(Config.value("Contest/Sender").toString());
+    ui->passwordLineEdit->setText(Config.value("Contest/Password").toString());
+    ui->receiverLineEdit->setText(Config.value("Contest/Receiver").toString());
+
+    ui->onlySaveLordCheckBox->setChecked(Config.value("Contest/OnlySaveLordRecord", true).toBool());
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
@@ -65,7 +67,9 @@ void ConfigDialog::on_browseBgButton_clicked()
 
     if(!filename.isEmpty()){
         ui->bgPathLineEdit->setText(filename);
-        Config.changeBackground(filename);
+
+        Config.BackgroundBrush = filename;
+        Config.setValue("BackgroundBrush", filename);
 
         emit bg_changed();
     }
@@ -74,7 +78,11 @@ void ConfigDialog::on_browseBgButton_clicked()
 void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
-    Config.changeBackground(":/background.png");
+
+    QString filename = "backdrop/new-year.jpg";
+    Config.BackgroundBrush = filename;
+    Config.setValue("BackgroundBrush", filename);
+
     emit bg_changed();
 }
 
@@ -110,15 +118,11 @@ void ConfigDialog::saveConfig()
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 
-    // IRC part
-
-    Config.IrcHost = ui->ircHostLineEdit->text();   
-    Config.IrcChannel = ui->ircChannelLineEdit->text();
-    Config.IrcPort = ui->ircPortLineEdit->text().toUInt();
-
-    Config.setValue("IrcHost", Config.IrcHost);
-    Config.setValue("IrcChannel", Config.IrcChannel);
-    Config.setValue("IrcPort", Config.IrcPort);
+    Config.setValue("Contest/SMTPServer", ui->smtpServerLineEdit->text());
+    Config.setValue("Contest/Sender", ui->senderLineEdit->text());
+    Config.setValue("Contest/Password", ui->passwordLineEdit->text());
+    Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
+    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
@@ -136,7 +140,7 @@ void ConfigDialog::on_browseBgMusicButton_clicked()
 
 void ConfigDialog::on_resetBgMusicButton_clicked()
 {
-    QString default_music = "audio/background.mp3";
+    QString default_music = "audio/system/background.mp3";
     Config.setValue("BackgroundMusic", default_music);
     ui->bgMusicPathLineEdit->setText(default_music);
 }

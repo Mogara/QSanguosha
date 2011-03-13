@@ -8,44 +8,57 @@
 
 StartScene::StartScene()
 {
-    setBackgroundBrush(Config.BackgroundBrush);
-
     // game logo
-    logo = new Pixmap(":/logo.png");
+    logo = new Pixmap("image/system/logo.png");
     logo->shift();
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
 
-    //my e-mail address
-    QFont email_font(Config.SmallFont);
-    email_font.setStyle(QFont::StyleItalic);
-    QGraphicsSimpleTextItem *email_text = addSimpleText("moligaloo@gmail.com", email_font);
-    email_text->setBrush(Qt::white);
-    email_text->setPos(Config.Rect.width()/2 - email_text->boundingRect().width(),
-                       Config.Rect.height()/2 - email_text->boundingRect().height());
+    //the website URL
+    QFont website_font(Config.SmallFont);
+    website_font.setStyle(QFont::StyleItalic);
+    QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.com", website_font);
+    website_text->setBrush(Qt::white);
+    website_text->setPos(Config.Rect.width()/2 - website_text->boundingRect().width(),
+                       Config.Rect.height()/2 - website_text->boundingRect().height());
 
-//    logo = new Pixmap("start.jpg");
-//    logo->shift();
-//    addItem(logo);
+    server_log = NULL;
 }
 
 void StartScene::addButton(QAction *action){
-    //return;
-
-    qreal menu_height = Config.BigFont.pixelSize();
     Button *button = new Button(action->text());
-    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
-    button->setPos(0, (buttons.size()-0.8)*menu_height);
+    button->setMute(false);
 
+    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
     addItem(button);
+
+    QRectF rect = button->boundingRect();
+    int n = buttons.length();
+    if(n < 5){
+        button->setPos(- rect.width() - 5, (n - 1) * (rect.height() * 1.2));
+    }else{
+        button->setPos(5, (n - 6) * (rect.height() * 1.2));
+    }
+
     buttons << button;
+}
+
+void StartScene::setServerLogBackground(){
+    if(server_log){
+        // make its background the same as background, looks transparent
+        QPalette palette;
+        palette.setBrush(QPalette::Base, backgroundBrush());
+        server_log->setPalette(palette);
+    }
 }
 
 extern irrklang::ISoundEngine *SoundEngine;
 
 void StartScene::switchToServer(Server *server){
-    if(SoundEngine)
+    if(SoundEngine){
         SoundEngine->drop();
+        SoundEngine = NULL;
+    }
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
@@ -59,26 +72,18 @@ void StartScene::switchToServer(Server *server){
     group->addAnimation(logo_shrink);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach(Button *button, buttons){
-        removeItem(button);
+    foreach(Button *button, buttons)
         delete button;
-    }
     buttons.clear();
 
     server_log = new QTextEdit();
-
-    // make its background the same as background, looks transparent    
-    QPalette palette;
-    palette.setBrush(QPalette::Base, Config.BackgroundBrush);
-
     server_log->setReadOnly(true);
-    server_log->setPalette(palette);
     server_log->resize(700, 420);
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
-
     server_log->setFont(QFont("Verdana", 12));
     server_log->setTextColor(QColor("white"));
+    setServerLogBackground();
 
     addWidget(server_log);
 
@@ -120,16 +125,25 @@ void StartScene::printServerInfo(){
     else
         server_log->append(tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));    
 
-    server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
-    server_log->append(tr("Secondary general is %1").arg(Config.Enable2ndGeneral ? tr("Enabled") : tr("Disabled")));
+    if(Config.ContestMode)
+        server_log->append(tr("The contest mode is enabled"));
 
-    QString level;
-    switch(Config.AILevel){
-    case 0: level = tr("stupid"); break;
-    case 1: level = tr("normal"); break;
-    case 2:
-    default:
-        level = tr("smart"); break;
-    }
-    server_log->append(tr("The computer AI level is %1").arg(level));
+    server_log->append(tr("Free general choose is %1").arg(Config.FreeChoose ? tr("Enabled") : tr("Disabled")));
+
+    if(Config.Enable2ndGeneral){
+        QString scheme_str;
+        switch(Config.MaxHpScheme){
+        case 0: scheme_str = tr("sum - 3"); break;
+        case 1: scheme_str = tr("minimum"); break;
+        case 2: scheme_str = tr("average"); break;
+        }
+
+        server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
+    }else
+        server_log->append(tr("Seconardary general is disabled"));
+
+    if(Config.EnableAI)
+        server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
+    else
+        server_log->append(tr("This server is AI disabled"));
 }

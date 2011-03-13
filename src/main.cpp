@@ -4,7 +4,6 @@
 #include <QDir>
 
 #include "mainwindow.h"
-#include "ircdetector.h"
 #include "settings.h"
 #include "banpairdialog.h"
 #include "irrKlang.h"
@@ -28,20 +27,14 @@ int main(int argc, char *argv[])
 
     Config.init();
 
-    QWidget *widget;
-    if(a.arguments().contains("-detect")){
-        Sanguosha = new Engine;
-        widget = new IrcDetectorDialog;
-    }else{
-        SoundEngine = irrklang::createIrrKlangDevice();
-        Sanguosha = new Engine;
+    SoundEngine = irrklang::createIrrKlangDevice();
+    Sanguosha = new Engine;
 
-        BanPair::loadBanPairs();
-        widget = new MainWindow;
-    }
+    BanPair::loadBanPairs();
+    MainWindow *main_window = new MainWindow;
 
-    Sanguosha->setParent(widget);
-    widget->show();
+    Sanguosha->setParent(main_window);
+    main_window->show();    
 
     return a.exec();
 }

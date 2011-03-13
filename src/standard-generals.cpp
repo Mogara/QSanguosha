@@ -6,6 +6,8 @@
 #include "carditem.h"
 #include "serverplayer.h"
 #include "room.h"
+#include "standard-skillcards.h"
+#include "standard-commons.h"
 
 class Jianxiong:public MasochismSkill{
 public:
@@ -119,7 +121,7 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
         CardStar card = data.value<CardStar>();
         Room *room = guojia->getRoom();
-        if(room->askForSkillInvoke(guojia, "tiandu")){
+        if(guojia->askForSkillInvoke(objectName(), data)){
             if(card->objectName() == "shit"){
                 QString result = room->askForChoice(guojia, objectName(), "yes+no");
                 if(result == "no")
@@ -156,6 +158,13 @@ public:
     }
 };
 
+static QString GanglieCallback(const Card *card, Room *){
+    if(card->getSuit() != Card::Heart)
+        return "good";
+    else
+        return "bad";
+}
+
 class Ganglie:public MasochismSkill{
 public:
     Ganglie():MasochismSkill("ganglie"){
@@ -167,23 +176,20 @@ public:
         Room *room = xiahou->getRoom();
         QVariant source = QVariant::fromValue(from);
 
-        if(from && room->askForSkillInvoke(xiahou, "ganglie", source)){
+        if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
             room->playSkillEffect(objectName());
 
-            const Card *card = room->getJudgeCard(xiahou);
-            if(card->getSuit() != Card::Heart){
-                if(!room->askForDiscard(from, 2, true)){
+            if(room->judge(xiahou, GanglieCallback) == "good"){
+                if(!room->askForDiscard(from, objectName(), 2, true)){
                     DamageStruct damage;
-                    damage.card = NULL;
-                    damage.damage = 1;
                     damage.from = xiahou;
                     damage.to = from;
 
                     room->setEmotion(xiahou, Room::Good);
                     room->damage(damage);
-                }else
-                    room->setEmotion(xiahou, Room::Bad);
-            }
+                }
+            }else
+                room->setEmotion(xiahou, Room::Bad);
         }
     }
 };
@@ -228,64 +234,82 @@ public:
 
     virtual const Card *viewAs(CardItem *card_item) const{
         Card *card = new GuicaiCard;
-        card->addSubcard(card_item->getCard()->getId());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
     }
 };
 
-class Luoyi:public TriggerSkill{
+class LuoyiBuff: public TriggerSkill{
 public:
-    Luoyi():TriggerSkill("luoyi"){
-        events << PhaseChange << Predamage;
+    LuoyiBuff():TriggerSkill("#luoyi"){
+        events << Predamage;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *xuchu, QVariant &data) const{
-        Room *room = xuchu->getRoom();
+        if(xuchu->hasFlag("luoyi")){
+            DamageStruct damage = data.value<DamageStruct>();
 
-        if(event == PhaseChange){
-            switch(xuchu->getPhase()){
-            case Player::Draw:{
-                    if(room->askForSkillInvoke(xuchu, "luoyi")){
-                        xuchu->drawCards(1);
-                        room->playSkillEffect(objectName());
+            const Card *reason = damage.card;
+            if(reason == NULL)
+                return false;
 
-                        setFlag(xuchu);
-                        return true;
-                    }
-                    break;
-                }
-            case Player::Finish:{
-                    if(xuchu->hasFlag("luoyi"))
-                        unsetFlag(xuchu);
-                    break;
-                }
-            default:
-                ;
+            if(reason->inherits("Slash") || reason->inherits("Duel")){
+                LogMessage log;
+                log.type = "#LuoyiBuff";
+                log.from = xuchu;
+                log.to << damage.to;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(damage.damage + 1);
+                xuchu->getRoom()->sendLog(log);
+
+                damage.damage ++;
+                data = QVariant::fromValue(damage);
             }
-        }else if(event == Predamage){
-            if(xuchu->hasFlag("luoyi")){
-                DamageStruct damage = data.value<DamageStruct>();
-
-                const Card *reason = damage.card;
-                if(reason == NULL)
-                    return false;
-
-                if(damage.chain)
-                    return false;
-
-                if(reason->inherits("Slash") || reason->inherits("Duel")){
-                    damage.damage ++;
-                    data = QVariant::fromValue(damage);
-                }
-            }
-
-            return false;
         }
 
         return false;
     }
 };
+
+class Luoyi: public DrawCardsSkill{
+public:
+    Luoyi():DrawCardsSkill("luoyi"){
+
+    }
+
+    virtual int getDrawNum(ServerPlayer *xuchu, int n) const{
+        Room *room = xuchu->getRoom();
+        if(room->askForSkillInvoke(xuchu, objectName())){
+            room->playSkillEffect(objectName());
+
+            xuchu->setFlags(objectName());
+            return n - 1;
+        }else
+            return n;
+    }
+};
+
+class LuoyiClear:public PhaseChangeSkill{
+public:
+    LuoyiClear():PhaseChangeSkill("#luoyi-clear"){
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *xuchu) const{
+        if(xuchu->getPhase() == Player::Finish && xuchu->hasFlag("luoyi")){
+            xuchu->setFlags("-luoyi");
+        }
+
+        return false;
+    }
+};
+
+static QString LuoshenCallback(const Card *card, Room *){
+    if(card->isBlack())
+        return "good";
+    else
+        return "bad";
+}
 
 class Luoshen:public PhaseChangeSkill{
 public:
@@ -300,8 +324,8 @@ public:
                 if(room->askForSkillInvoke(target, objectName())){
                     room->playSkillEffect(objectName());
 
-                    const Card *card = room->getJudgeCard(target);
-                    if(card->isBlack())
+                    const Card *card;
+                    if(room->judge(target, LuoshenCallback, &card) == "good")
                         target->obtainCard(card);
                     else
                         break;
@@ -420,7 +444,7 @@ public:
 
         room->playSkillEffect(objectName());        
         foreach(ServerPlayer *liege, lieges){
-            const Card *slash = room->askForCard(liege, "slash", "jijiang-slash");
+            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash");
             if(slash){
                 room->provide(slash);
                 return true;
@@ -445,13 +469,13 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();
+        const Card *card = to_select->getFilteredCard();
 
         if(!card->isRed())
             return false;
 
         if(card == Self->getWeapon() && card->objectName() == "crossbow"){
-            return Slash::IsAvailableWithCrossbow();
+            return ClientInstance->canSlashWithCrossbow();
         }else
             return true;
     }
@@ -465,7 +489,6 @@ public:
     }
 };
 
-// should be ViewAsSkill
 class Longdan:public OneCardViewAsSkill{
 public:
     Longdan():OneCardViewAsSkill("longdan"){
@@ -504,21 +527,28 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getCard();
+        const Card *card = card_item->getFilteredCard();
         if(card->inherits("Slash")){
             Jink *jink = new Jink(card->getSuit(), card->getNumber());
-            jink->addSubcard(card->getId());
+            jink->addSubcard(card);
             jink->setSkillName(objectName());
             return jink;
         }else if(card->inherits("Jink")){
             Slash *slash = new Slash(card->getSuit(), card->getNumber());
-            slash->addSubcard(card->getId());
+            slash->addSubcard(card);
             slash->setSkillName(objectName());
             return slash;
         }else
             return NULL;
     }
 };
+
+static QString TiejiCallback(const Card *card, Room *){
+    if(card->isRed())
+        return "good";
+    else
+        return "bad";
+}
 
 class Tieji:public SlashBuffSkill{
 public:
@@ -530,14 +560,11 @@ public:
         ServerPlayer *machao = effect.from;
 
         Room *room = machao->getRoom();
-        if(room->askForSkillInvoke(effect.from, "tieji")){
+        if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue(effect))){
             room->playSkillEffect(objectName());
 
-            const Card *card = room->getJudgeCard(machao);
-            if(card->isRed()){
-                SlashResultStruct result;
-                result.fill(effect, true);
-                room->slashResult(result);
+            if(room->judge(machao, TiejiCallback) == "good"){
+                room->slashResult(effect, true);
                 return true;
             }
         }
@@ -545,17 +572,6 @@ public:
         return false;
     }
 };
-
-Mashu::Mashu()
-    :GameStartSkill("mashu")
-{
-    frequency = Compulsory;
-}
-
-void Mashu::onGameStart(ServerPlayer *player) const
-{
-    player->getRoom()->setPlayerCorrect(player, "M");
-}
 
 class Guanxing:public PhaseChangeSkill{
 public:
@@ -576,9 +592,23 @@ public:
     }
 };
 
-class Kongcheng: public TriggerSkill{
+class Kongcheng: public ProhibitSkill{
 public:
-    Kongcheng():TriggerSkill("kongcheng"){
+    Kongcheng():ProhibitSkill("kongcheng"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(card->inherits("Slash") || card->inherits("Duel"))
+            return to->isKongcheng();
+        else
+            return false;
+    }
+};
+
+class KongchengEffect: public TriggerSkill{
+public:
+    KongchengEffect():TriggerSkill("#kongcheng-effect"){
         frequency = Compulsory;
 
         events << CardLost;
@@ -586,7 +616,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            player->getRoom()->playSkillEffect(objectName());
+            CardMoveStruct move = data.value<CardMoveStruct>();
+            if(move.from_place == Player::Hand)
+                player->getRoom()->playSkillEffect("kongcheng");
         }
 
         return false;
@@ -605,11 +637,6 @@ public:
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
-
-            // special case
-            if(use.card->inherits("IronChain") && use.to.isEmpty())
-                return false;
-
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
@@ -646,28 +673,23 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("zhiheng_used", false).toBool();
+        return ! ClientInstance->hasUsed("ZhihengCard");
     }
 };
 
-class Yingzi:public PhaseChangeSkill{
+class Yingzi:public DrawCardsSkill{
 public:
-    Yingzi():PhaseChangeSkill("yingzi"){
+    Yingzi():DrawCardsSkill("yingzi"){
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhouyu) const{
-        if(zhouyu->getPhase() == Player::Draw){
-            Room *room = zhouyu->getRoom();
-            if(room->askForSkillInvoke(zhouyu, objectName())){
-                zhouyu->drawCards(3);
-                room->playSkillEffect(objectName());
-
-                return true;
-            }
-        }
-
-        return false;
+    virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
+        Room *room = zhouyu->getRoom();
+        if(room->askForSkillInvoke(zhouyu, objectName())){
+            room->playSkillEffect(objectName());
+            return n + 1;
+        }else
+            return n;
     }
 };
 
@@ -678,7 +700,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->turn_tag.value("fanjian_used", false).toBool();
+        return !Self->isKongcheng() && ! ClientInstance->hasUsed("FanjianCard");
     }
 
     virtual const Card *viewAs() const{
@@ -699,8 +721,11 @@ public:
             if(lumeng->getPhase() == Player::Start)
                 lumeng->setMark("slash_count", 0);
             else if(lumeng->getPhase() == Player::Discard){
-                if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName()))
+                if(lumeng->getMark("slash_count") == 0 && lumeng->getRoom()->askForSkillInvoke(lumeng, objectName())) {
+                    lumeng->getRoom()->playSkillEffect(objectName());
                     return true;
+                }
+
             }
         }else if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -715,18 +740,6 @@ public:
         return false;
     }
 };
-
-class Qianxun: public ProhibitSkill{
-public:
-    Qianxun():ProhibitSkill("qianxun"){
-
-    }
-
-    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
-        return card->inherits("Snatch") || card->inherits("Indulgence");
-    }
-};
-
 
 class Lianying: public TriggerSkill{
 public:
@@ -757,7 +770,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getRealCard()->isBlack();
+        return to_select->getFilteredCard()->isBlack();
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -885,7 +898,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("jieyin_used", false).toBool();
+        return ! ClientInstance->hasUsed("JieyinCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -948,9 +961,7 @@ public:
         if(first_jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
             jinked = true;
 
-        SlashResultStruct result;
-        result.fill(effect, !jinked);
-        room->slashResult(result);
+        room->slashResult(effect, !jinked);
 
         return true;
     }
@@ -963,7 +974,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->turn_tag.value("lijian_used", false).toBool();
+        return ! ClientInstance->hasUsed("LijianCard");
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -1004,7 +1015,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->turn_tag.value("qingnang_used", false).toBool();
+        return ! ClientInstance->hasUsed("QingnangCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1034,7 +1045,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->isRed();
+        return to_select->getFilteredCard()->isRed();
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -1069,6 +1080,8 @@ void StandardPackage::addGenerals(){
 
     xuchu = new General(this, "xuchu", "wei");
     xuchu->addSkill(new Luoyi);
+    xuchu->addSkill(new LuoyiClear);
+    xuchu->addSkill(new LuoyiBuff);
 
     zhenji = new General(this, "zhenji", "wei", 3, false);
     zhenji->addSkill(new Luoshen);
@@ -1095,6 +1108,7 @@ void StandardPackage::addGenerals(){
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
     zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
+    zhugeliang->addSkill(new KongchengEffect);
 
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
@@ -1155,165 +1169,5 @@ void StandardPackage::addGenerals(){
     addMetaObject<QingnangCard>();
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
-
-#ifndef QT_NO_DEBUG
-
-    addMetaObject<CheatCard>();
-
-#endif
-    
-    // for translation
-    t["wei"] = tr("wei");
-    t["shu"] = tr("shu");
-    t["wu"] = tr("wu");
-    t["qun"] = tr("qun");
-
-    t["caocao"] = tr("caocao");
-    t["zhangliao"] = tr("zhangliao");
-    t["guojia"] = tr("guojia");
-    t["xiahoudun"] = tr("xiahoudun");
-    t["simayi"] = tr("simayi");
-    t["xuchu"] = tr("xuchu");
-    t["zhenji"] = tr("zhenji");
-
-    t["liubei"] = tr("liubei");
-    t["guanyu"] = tr("guanyu");
-    t["zhangfei"] = tr("zhangfei");
-    t["zhaoyun"] = tr("zhaoyun");
-    t["machao"] = tr("machao");
-    t["zhugeliang"] = tr("zhugeliang");
-    t["huangyueying"] = tr("huangyueying");
-
-    t["sunquan"] = tr("sunquan");
-    t["zhouyu"] = tr("zhouyu");
-    t["lumeng"] = tr("lumeng");
-    t["luxun"] = tr("luxun");
-    t["ganning"] = tr("ganning");
-    t["huanggai"] = tr("huanggai");
-    t["daqiao"] = tr("daqiao");
-    t["sunshangxiang"] = tr("sunshangxiang");
-
-    t["lubu"] = tr("lubu");
-    t["huatuo"] = tr("huatuo");
-    t["diaochan"] = tr("diaochan");
-
-    t["jianxiong"] = tr("jianxiong");
-    t["hujia"] = tr("hujia");
-    t["tuxi"] = tr("tuxi");
-    t["tiandu"] = tr("tiandu");
-    t["yiji"] = tr("yiji");
-    t["ganglie"] = tr("ganglie");
-    t["fankui"] = tr("fankui");
-    t["guicai"] = tr("guicai");
-    t["luoyi"] = tr("luoyi");
-    t["luoshen"] = tr("luoshen");
-    t["qingguo"] = tr("qingguo");
-
-    t["rende"] = tr("rende");
-    t["jijiang"] = tr("jijiang");
-    t["wusheng"] = tr("wusheng");
-    t["paoxiao"] = tr("paoxiao");
-    t["longdan"] = tr("longdan");
-    t["tieji"] = tr("tieji");
-    t["mashu"] = tr("mashu");
-    t["guanxing"] = tr("guanxing");
-    t["kongcheng"] = tr("kongcheng");
-    t["jizhi"] = tr("jizhi");
-    t["qicai"] = tr("qicai");
-
-    t["zhiheng"] = tr("zhiheng");
-    t["jiuyuan"] = tr("jiuyuan");
-    t["yingzi"] = tr("yingzi");
-    t["fanjian"] = tr("fanjian");
-    t["keji"] = tr("keji");
-    t["qianxun"] = tr("qianxun");
-    t["lianying"] = tr("lianying");
-    t["qixi"] = tr("qixi");
-    t["kurou"] = tr("kurou");
-    t["guose"] = tr("guose");
-    t["liuli"] = tr("liuli");
-    t["jieyin"] = tr("jieyin");
-    t["xiaoji"] = tr("xiaoji");
-
-    t["wushuang"] = tr("wushuang");
-    t["qingnang"] = tr("qingnang");
-    t["jijiu"] = tr("jijiu");
-    t["lijian"] = tr("lijian");
-    t["biyue"] = tr("biyue");
-
-    t[":jianxiong"] = tr(":jianxiong");
-    t[":hujia"] = tr(":hujia");
-    t[":tuxi"] = tr(":tuxi");
-    t[":tiandu"] = tr(":tiandu");
-    t[":yiji"] = tr(":yiji");
-    t[":ganglie"] = tr(":ganglie");
-    t[":fankui"] = tr(":fankui");
-    t[":guicai"] = tr(":guicai");
-    t[":luoyi"] = tr(":luoyi");
-    t[":luoshen"] = tr(":luoshen");
-    t[":qingguo"] = tr(":qingguo");
-
-    t[":rende"] = tr(":rende");
-    t[":jijiang"] = tr(":jijiang");
-    t[":wusheng"] = tr(":wusheng");
-    t[":paoxiao"] = tr(":paoxiao");
-    t[":longdan"] = tr(":longdan");
-    t[":tieji"] = tr(":tieji");
-    t[":mashu"] = tr(":mashu");
-    t[":guanxing"] = tr(":guanxing");
-    t[":kongcheng"] = tr(":kongcheng");
-    t[":jizhi"] = tr(":jizhi");
-    t[":qicai"] = tr(":qicai");
-
-    t[":zhiheng"] = tr(":zhiheng");
-    t[":jiuyuan"] = tr(":jiuyuan");
-    t[":yingzi"] = tr(":yingzi");
-    t[":fanjian"] = tr(":fanjian");
-    t[":keji"] = tr(":keji");
-    t[":qianxun"] = tr(":qianxun");
-    t[":lianying"] = tr(":lianying");
-    t[":qixi"] = tr(":qixi");
-    t[":kurou"] = tr(":kurou");
-    t[":guose"] = tr(":guose");
-    t[":liuli"] = tr(":liuli");
-    t[":jieyin"] = tr(":jieyin");
-    t[":xiaoji"] = tr(":xiaoji");
-
-    t[":wushuang"] = tr(":wushuang");
-    t[":qingnang"] = tr(":qingnang");
-    t[":jijiu"] = tr(":jijiu");
-    t[":lijian"] = tr(":lijian");
-    t[":biyue"] = tr(":biyue");
-
-    // passive skill description
-    t["yingzi:yes"] = tr("yingzi:yes");
-    t["jianxiong:yes"] = tr("jianxiong:yes");
-    t["fankui:yes"] = tr("fankui:yes");
-    t["biyue:yes"] = tr("biyue:yes");
-    t["luoyi:yes"] = tr("luoyi:yes");
-    t["tieji:yes"] = tr("tieji:yes");
-    t["ganglie:yes"] = tr("ganglie:yes");
-    t["hujia:yes"] = tr("hujia:yes");
-    t[":hujia:"] = tr(":hujia:");
-    t["hujia:accept"] = tr("hujia:accept");
-    t["hujia:ignore"] = tr("hujia:ignore");
-    t[":jijiang:"] = tr(":jijiang:");
-    t["jijiang:accept"] = tr("jijiang:accept");
-    t["jijiang:ignore"] = tr("jijiang:ignore");
-    t["tiandu:yes"] = tr("tiandu:yes");
-    t["tiandu:no"] = tr("tiandu:no");
-
-    t["@jijiang-slash"] = tr("@jijiang-slash");
-    t["@hujia-jink"] = tr("@hujia-jink");
-    t["@wushuang-slash-1"] = tr("@wushuang-slash-1");
-    t["@wushuang-slash-2"] = tr("@wushuang-slash-2");
-    t["@wushuang-jink-1"] = tr("@wushuang-jink-1");
-    t["@wushuang-jink-2"] = tr("@wushuang-jink-2");
-    t["@guicai-card"] = tr("@guicai-card");
-    t["@guidao-card"] = tr("@guidao-card");
-    t["@liuli-card"] = tr("@liuli-card");
-    t["@tuxi-card"] = tr("@tuxi-card");
-    t["@leiji"] = tr("@leiji");
-
-    t["#GuanxingResult"] = tr("#GuanxingResult");
+    addMetaObject<CheatCard>();    
 }

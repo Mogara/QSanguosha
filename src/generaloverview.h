@@ -2,11 +2,13 @@
 #define GENERALOVERVIEW_H
 
 class General;
+class Skill;
+class QCommandLinkButton;
 
 #include <QDialog>
 #include <QTableWidgetItem>
 #include <QButtonGroup>
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 namespace Ui {
     class GeneralOverview;
@@ -20,15 +22,15 @@ public:
 
 private:
     Ui::GeneralOverview *ui;
-    QHBoxLayout *button_layout;
-    QButtonGroup *button_group;
+    QVBoxLayout *button_layout;
 
     void resetButtons();
-    const General *currentGeneral();
+    void addLines(const Skill *skill);
+    void addCopyAction(QCommandLinkButton *button);
 
 private slots:
-    void on_lastWordButton_clicked();
-    void on_playEffecButton_clicked();
+    void playEffect();
+    void copyLines();
     void on_tableWidget_itemSelectionChanged();
 };
 

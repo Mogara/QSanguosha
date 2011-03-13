@@ -21,6 +21,21 @@ private:
     bool include_equip;
 };
 
+class FreeDiscardSkill: public ViewAsSkill{
+    Q_OBJECT
+
+public:
+    explicit FreeDiscardSkill(QObject *parent);
+
+    virtual bool isEnabledAtPlay() const;
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+
+private:
+    DummyCard *card;
+};
+
 class YijiViewAsSkill : public ViewAsSkill{
     Q_OBJECT
 

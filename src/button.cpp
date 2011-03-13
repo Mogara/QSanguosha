@@ -3,26 +3,48 @@
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsRotation>
+#include <QPropertyAnimation>
 
 extern irrklang::ISoundEngine *SoundEngine;
 
-Button::Button(const QString &label)
-    :label(label){
+static QRectF ButtonRect(0, 0, 189, 46);
 
-    QFontMetrics metrics(Config.BigFont);
-    width = metrics.width(label);
-    height = metrics.height();
+Button::Button(const QString &label, qreal scale)
+    :label(label), size(ButtonRect.size() * scale),
+    mute(true), font(Config.SmallFont)
+{
 
-    setFlags(QGraphicsItem::ItemIsFocusable);
+    init();
+}
+
+Button::Button(const QString &label, const QSizeF &size)
+    :label(label), size(size), mute(true), font(Config.SmallFont)
+{
+    init();
+}
+
+void Button::init()
+{
+    setFlags(ItemIsFocusable);
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
+void Button::setMute(bool mute){
+    this->mute = mute;
+}
+
+void Button::setFont(const QFont &font){
+    this->font = font;
+}
+
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
     setFocus(Qt::MouseFocusReason);
 
-    SoundEngine->play2D("audio/button-hover.wav");
+    if(SoundEngine && !mute)
+        SoundEngine->play2D("audio/system/button-hover.ogg");
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -30,30 +52,35 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    SoundEngine->play2D("audio/button-down.wav");
+    if(SoundEngine && !mute)
+        SoundEngine->play2D("audio/system/button-down.ogg");
 
     emit clicked();
 }
 
 QRectF Button::boundingRect() const{
-    return QRectF(-width/2 -2, -height/2 -8, width + 10, height + 10);
+    return QRectF(QPointF(), size);
 }
 
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    painter->setFont(Config.BigFont);
-    qreal font_size = Config.BigFont.pixelSize();
+    QRectF rect = boundingRect();
 
-    if(hasFocus()){
-        painter->setPen(QPen(Qt::black));
-        painter->drawText(QPointF(8 - width/2, 8 + font_size/2), label);
+    QPainterPath path;
+    path.addRoundedRect(rect, 5, 5);
 
-        painter->setPen(QPen(Qt::white));
-        painter->drawText(QPointF(-2 - width/2,-2 + font_size/2),label);
-    }else{
-        painter->setPen(QPen(Qt::black));
-        painter->drawText(QPointF(5 - width/2, 5 + font_size/2), label);
+    QColor rect_color(Qt::black);
+    if(hasFocus())
+        rect_color = QColor("orange");
 
-        painter->setPen(QPen(Qt::white));
-        painter->drawText(QPointF(-width/2, font_size/2),label);
-    }
+    rect_color.setAlpha(0.43 * 255);
+    painter->fillPath(path, rect_color);
+
+    QPen pen(Qt::white);
+    pen.setWidth(3);
+    painter->setPen(pen);
+    painter->drawPath(path);
+
+    painter->setFont(font);
+    painter->setPen(Qt::white);
+    painter->drawText(rect, Qt::AlignCenter, label);
 }

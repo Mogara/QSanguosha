@@ -10,20 +10,34 @@ QString BasicCard::getType() const{
     return "basic";
 }
 
-int BasicCard::getTypeId() const{
-    return 0;
+Card::CardType BasicCard::getTypeId() const{
+    return Basic;
+}
+
+TrickCard::TrickCard(Suit suit, int number, bool aggressive)
+    :Card(suit, number), aggressive(aggressive),
+    cancelable(true)
+{
 }
 
 bool TrickCard::isAggressive() const{
     return aggressive;
 }
 
+void TrickCard::setCancelable(bool cancelable){
+    this->cancelable = cancelable;
+}
+
 QString TrickCard::getType() const{
     return "trick";
 }
 
-int TrickCard::getTypeId() const{
-    return 1;
+Card::CardType TrickCard::getTypeId() const{
+    return Trick;
+}
+
+bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
+    return cancelable;
 }
 
 TriggerSkill *EquipCard::getSkill() const{
@@ -34,8 +48,25 @@ QString EquipCard::getType() const{
     return "equip";
 }
 
-int EquipCard::getTypeId() const{
-    return 2;
+Card::CardType EquipCard::getTypeId() const{
+    return Equip;
+}
+
+QString EquipCard::getEffectPath(bool is_male) const{
+    return "audio/card/common/equip.ogg";
+}
+
+void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    if(card_use.to.isEmpty()){
+        ServerPlayer *player = card_use.from;
+
+        QVariant data = QVariant::fromValue(card_use);
+        RoomThread *thread = room->getThread();
+        thread->trigger(CardUsed, player, data);
+
+        thread->trigger(CardFinished, player, data);
+    }else
+        Card::onUse(room, card_use);
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -49,6 +80,12 @@ void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     if(equipped)
         room->throwCard(equipped);
+
+    LogMessage log;
+    log.from = source;
+    log.type = "$Install";
+    log.card_str = QString::number(getEffectiveId());
+    room->sendLog(log);
 
     room->moveCardTo(this, source, Player::Equip, true);
 }
@@ -72,57 +109,54 @@ QString GlobalEffect::getSubtype() const{
 }
 
 void GlobalEffect::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
-
     QList<ServerPlayer *> all_players = room->getAllPlayers();
-    foreach(ServerPlayer *player, all_players){
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = player;
-
-        room->cardEffect(effect);
-    }
+    TrickCard::use(room, source, all_players);
 }
 
 QString AOE::getSubtype() const{
     return "aoe";
 }
 
-void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->throwCard(this);
+#include "client.h"
 
-    bool is_savage_assault = inherits("SavageAssault");
-
-    QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
-    foreach(ServerPlayer *player, other_players){
-        if(isBlack() && player->hasSkill("weimu")){
-            LogMessage log;
-            log.type = "#WeimuAvoid";
-            log.from = player;
-            room->sendLog(log);
-
+bool AOE::isAvailable() const{
+    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+    int count = 0;
+    foreach(const ClientPlayer *player, players){
+        if(player == Self)
             continue;
-        }
-
-        if(is_savage_assault){
-            if(player->hasSkill("huoshou") || player->hasSkill("juxiang")){
-                LogMessage log;
-                log.type = "#SkillNullify";
-                log.from = player;
-                log.arg = player->hasSkill("huoshou") ? "huoshou" : "juxiang";
-                log.arg2 = "savage_assault";
-                room->sendLog(log);
-
-                continue;
-            }
-        }
 
         if(player->isDead())
             continue;
 
-        room->cardEffect(this, source, player);
+        if(ClientInstance->isProhibited(player, this))
+            continue;
+
+        count ++;
     }
+
+    return count > 0;
+}
+
+void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    QList<ServerPlayer *> targets;
+    QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
+    foreach(ServerPlayer *player, other_players){
+        const ProhibitSkill *skill = room->isProhibited(source, player, this);
+        if(skill){
+            LogMessage log;
+            log.type = "#SkillAvoid";
+            log.from = player;
+            log.arg = skill->objectName();
+            log.arg2 = objectName();
+            room->sendLog(log);
+
+            room->playSkillEffect(skill->objectName());
+        }else
+            targets << player;
+    }
+
+    TrickCard::use(room, source, targets);
 }
 
 QString SingleTargetTrick::getSubtype() const{
@@ -134,13 +168,17 @@ bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets,
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    :TrickCard(suit, number, true), movable(movable)
+    :TrickCard(suit, number, true), callback(NULL), movable(movable)
 {
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
-    room->moveCardTo(this, target, Player::Judging, true);
+    if(target_fixed)
+        room->moveCardTo(this, source, Player::Judging, true);
+    else{
+        ServerPlayer *target = targets.first();
+        room->moveCardTo(this, target, Player::Judging, true);
+    }
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -159,8 +197,10 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     log.arg = effect.card->objectName();
     room->sendLog(log);
 
-    const Card *card = room->getJudgeCard(effect.to);
-    if(judge(card)){
+    Q_ASSERT(callback != NULL);
+
+    if(room->judge(effect.to, callback) == "bad"){
+        room->throwCard(this);
         takeEffect(effect.to);
     }else if(movable){
         onNullified(effect.to);
@@ -175,6 +215,9 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
         foreach(ServerPlayer *player, players){            
             if(player->containsTrick(objectName()))
+                continue;
+
+            if(room->isProhibited(target, player, this))
                 continue;
 
             room->moveCardTo(this, player, Player::Judging, true);
@@ -204,6 +247,10 @@ const DelayedTrick *DelayedTrick::CastFrom(const Card *card){
 Weapon::Weapon(Suit suit, int number, int range)
     :EquipCard(suit, number), range(range), attach_skill(false)
 {
+}
+
+int Weapon::getRange() const{
+    return range;
 }
 
 QString Weapon::getSubtype() const{
@@ -248,17 +295,13 @@ QString Armor::label() const{
     return getName();
 }
 
-Horse::Horse(const QString &name, Suit suit, int number, int correct)
+Horse::Horse(Suit suit, int number, int correct)
     :EquipCard(suit, number), correct(correct)
 {
-    setObjectName(name);
 }
 
-QString Horse::getSubtype() const{
-    if(correct > 0)
-        return "defensive_horse";
-    else
-        return "offensive_horse";
+QString Horse::getEffectPath(bool) const{
+    return "audio/card/common/horse.ogg";
 }
 
 void Horse::onInstall(ServerPlayer *player) const{
@@ -288,6 +331,26 @@ QString Horse::label() const{
     return format.arg(getName()).arg(correct);
 }
 
+OffensiveHorse::OffensiveHorse(Card::Suit suit, int number)
+    :Horse(suit, number, -1)
+{
+
+}
+
+QString OffensiveHorse::getSubtype() const{
+    return "offensive_horse";
+}
+
+DefensiveHorse::DefensiveHorse(Card::Suit suit, int number)
+    :Horse(suit, number, +1)
+{
+
+}
+
+QString DefensiveHorse::getSubtype() const{
+    return "defensive_horse";
+}
+
 EquipCard::Location Horse::location() const{
     if(correct > 0)
         return DefensiveHorseLocation;
@@ -298,89 +361,8 @@ EquipCard::Location Horse::location() const{
 StandardPackage::StandardPackage()
     :Package("standard")
 {
-    // package name
-    t["standard"] = tr("standard");
-
-    // role names
-    t["lord"] = tr("lord");
-    t["loyalist"] = tr("loyalist");
-    t["rebel"] = tr("rebel");
-    t["renegade"] = tr("renegade");
-
-    // card suit
-    t["spade"] = tr("spade");
-    t["club"] = tr("club");
-    t["heart"] = tr("heart");
-    t["diamond"] = tr("diamond");
-
-    t["spade_char"] = tr("spade_char");
-    t["club_char"] = tr("club_char");
-    t["heart_char"] = tr("heart_char");
-    t["diamond_char"] = tr("diamond_char");
-    t["no_suit_char"] = tr("no_suit_char");
-
-    // phase names
-    t["start"] = tr("start");
-    t["judge"] = tr("judge");
-    t["draw"] = tr("draw");
-    t["play"] = tr("play");
-    t["discard"] = tr("discard");
-    t["finish"] = tr("finish");
-
-    // states
-    t["online"] = tr("online");
-    t["offline"] = tr("offline");
-    t["trust"] = tr("trust");
-
-    // normal phrases
-    t["yes"] = tr("yes");
-    t["no"] = tr("no");
-
-    // damage nature
-    t["normal_nature"] = tr("normal_nature");
-    t["fire_nature"] = tr("fire_nature");
-    t["thunder_nature"] = tr("thunder_nature");
-
-    // log translation
-    t["#ChooseSuit"] = tr("#ChooseSuit");
-    t["#Contingency"] = tr("#Contingency");
-    t["#Murder"] = tr("#Murder");
-    t["#Suicide"] = tr("#Suicide");
-    t["#InvokeSkill"] = tr("#InvokeSkill");
-    t["#Pindian"] = tr("#Pindian");
-    t["#PindianSuccess"] = tr("#PindianSuccess");
-    t["#PindianFailure"] = tr("#PindianFailure");
-    t["#Damage"] = tr("#Damage");
-    t["#DamageNoSource"] = tr("#DamageNoSource");
-    t["#Recover"] = tr("#Recover");
-    t["#DelayedTrick"] = tr("#DelayedTrick");
-    t["#SkillNullify"] = tr("#SkillNullify");
-    t["#ArmorNullify"] = tr("#ArmorNullify");
-    t["#DrawNCards"] = tr("#DrawNCards");
-    t["#MoveNCards"] = tr("#MoveNCards");    
-    t["#AskForPeaches"] = tr("#AskForPeaches");
-    t["#ChooseKingdom"] = tr("#ChooseKingdom");
-    t["#NullificationDetails"] = tr("#NullificationDetails");
-    t["#WeimuAvoid"] = tr("#WeimuAvoid");
-
-    t["$JudgeResult"] = tr("$JudgeResult");
-    t["$InitialJudge"] = tr("$InitialJudge");
-    t["$ChangedJudge"] = tr("$ChangedJudge");
-
-    t["$TakeAG"] = tr("$TakeAG");
-    t["$Uninstall"] = tr("$Uninstall");
-    t["$PindianResult"] = tr("$PindianResult");
-    t["$MoveCard"] = tr("$MoveCard");
-    t["$PasteCard"] = tr("$PasteCard");
-    t["$LightningMove"] = tr("$LightningMove");
-    t["$DiscardCard"] = tr("$DiscardCard");
-    t["$RecycleCard"] = tr("$RecycleCard");
-    t["$ShowCard"] = tr("$ShowCard");
-    t["$PutCard"] = tr("$PutCard");
-
     addCards();
     addGenerals();
-    addAIs();
 }
 
 ADD_PACKAGE(Standard)

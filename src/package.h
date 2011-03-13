@@ -15,10 +15,6 @@ public:
         setObjectName(name);
     }
 
-    const QHash<QString,QString> &getTranslation() const{
-        return t;
-    }
-
     QList<const QMetaObject *> getMetaObjects() const{
         return metaobjects;
     }
@@ -33,7 +29,6 @@ public:
     }
 
 protected:
-    QHash<QString,QString> t;
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
 };

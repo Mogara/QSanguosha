@@ -4,9 +4,10 @@
 #include "standard.h"
 #include "ai.h"
 #include "settings.h"
+#include "recorder.h"
 
 ServerPlayer::ServerPlayer(Room *room)
-    : Player(room), socket(NULL), room(room), ai(NULL)
+    : Player(room), socket(NULL), room(room), ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL)
 {
 }
 
@@ -19,15 +20,19 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::playCardEffect(const Card *card){
-    if(card->isVirtualCard() && !card->getSkillName().isEmpty())
-        room->playSkillEffect(card->getSkillName());
-    else
+    if(card->isVirtualCard() && !card->isMute()){
+        room->playSkillEffect(card->getSkillName());        
+    }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
 }
 
-int ServerPlayer::getRandomHandCard() const{
+int ServerPlayer::getRandomHandCardId() const{
+    return getRandomHandCard()->getEffectiveId();
+}
+
+const Card *ServerPlayer::getRandomHandCard() const{
     int index = qrand() % handcards.length();
-    return handcards.at(index)->getId();
+    return handcards.at(index);
 }
 
 void ServerPlayer::obtainCard(const Card *card){
@@ -60,6 +65,11 @@ void ServerPlayer::drawCards(int n, bool set_emotion){
 
     if(set_emotion)
         room->setEmotion(this, Room::DrawCard);
+}
+
+// a convenient way to ask player
+bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data){
+    return room->askForSkillInvoke(this, skill_name, data);
 }
 
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip){
@@ -108,6 +118,18 @@ void ServerPlayer::getMessage(char *message){
 
 void ServerPlayer::unicast(const QString &message){
     emit message_cast(message);
+
+    if(recorder)
+        recorder->recordLine(message);
+}
+
+void ServerPlayer::startRecord(){
+    recorder = new Recorder(this);
+}
+
+void ServerPlayer::saveRecord(const QString &filename){
+    if(recorder)
+        recorder->save(filename);
 }
 
 void ServerPlayer::castMessage(const QString &message){
@@ -220,13 +242,18 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::isLord() const{
-    return room->getLord() == this;
+    return getRole() == "lord";
 }
 
-bool ServerPlayer::hasNullification() const{
+bool ServerPlayer::hasNullification() const{    
     if(hasSkill("kanpo")){
         foreach(const Card *card, handcards){
             if(card->isBlack() || card->objectName() == "nullification")
+                return true;
+        }
+    }else if(hasSkill("wushen")){
+        foreach(const Card *card, handcards){
+            if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
                 return true;
         }
     }else{
@@ -245,11 +272,85 @@ void ServerPlayer::kick(){
     }
 }
 
-void ServerPlayer::setAIByGeneral(){
-    if(getGeneral()){
-        delete ai;
-        ai = AI::CreateAI(this);
+bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
+    QString ask_str = QString("%1->%2").arg(getGeneralName()).arg(target->getGeneralName());
+
+    LogMessage log;
+    log.type = "#Pindian";
+    log.from = this;
+    log.to << target;
+    room->sendLog(log);
+
+    if(card1 == NULL)
+        card1 = room->askForPindian(this, ask_str);
+    else if(card1->isVirtualCard()){
+        Q_ASSERT(card1->subcardsLength() >= 1);
+        card1 = Sanguosha->getCard(card1->getSubcards().first());
     }
+
+    const Card *card2 = room->askForPindian(target, ask_str);
+
+    room->throwCard(card1);
+    log.type = "$PindianResult";
+    log.from = this;
+    log.card_str = card1->getEffectIdString();
+    room->sendLog(log);
+    room->getThread()->delay();
+
+    room->throwCard(card2);
+    log.type = "$PindianResult";
+    log.from = target;
+    log.card_str = card2->getEffectIdString();
+    room->sendLog(log);
+    room->getThread()->delay();
+
+    bool success = card1->getNumber() > card2->getNumber();
+    log.type = success ? "#PindianSuccess" : "#PindianFailure";
+    log.from = this;
+    log.to.clear();
+    log.to << target;
+    log.card_str.clear();
+    room->sendLog(log);
+
+    if(success)
+        room->setEmotion(this, Room::Good);
+    else
+        room->setEmotion(this, Room::Bad);
+
+    return success;
+}
+
+void ServerPlayer::turnOver(){
+    setFaceUp(!faceUp());
+    room->broadcastProperty(this, "faceup");
+}
+
+void ServerPlayer::gainMark(const QString &mark, int n){
+    int value = getMark(mark) + n;
+
+    LogMessage log;
+    log.type = "#GetMark";
+    log.from = this;
+    log.arg = mark;
+    log.arg2 = QString::number(n);
+
+    room->sendLog(log);
+
+    room->setPlayerMark(this, mark, value);
+}
+
+void ServerPlayer::loseMark(const QString &mark, int n){
+    int value = getMark(mark) - n;
+
+    LogMessage log;
+    log.type = "#LoseMark";
+    log.from = this;
+    log.arg = mark;
+    log.arg2 = QString::number(n);
+
+    room->sendLog(log);
+
+    room->setPlayerMark(this, mark, value);
 }
 
 void ServerPlayer::setAI(AI *ai) {
@@ -259,6 +360,16 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if(getState() == "online")
         return NULL;
+    else if(getState() == "trust" && !Config.FreeChoose)
+        return trust_ai;
     else
         return ai;
+}
+
+void ServerPlayer::addVictim(ServerPlayer *victim){
+    victims.append(victim);
+}
+
+QList<ServerPlayer *> ServerPlayer::getVictims() const{
+    return victims;
 }

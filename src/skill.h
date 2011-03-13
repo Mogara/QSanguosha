@@ -33,6 +33,7 @@ public:
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
+    QStringList getSources() const;
 
 protected:
     Frequency frequency;
@@ -99,7 +100,7 @@ public:
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;    
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
 
@@ -116,7 +117,7 @@ class ScenarioRule: public TriggerSkill{
 public:
     ScenarioRule(Scenario *scenario);
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
@@ -126,7 +127,7 @@ class MasochismSkill: public TriggerSkill{
 public:
     MasochismSkill(const QString &name);
 
-    virtual int getPriority(ServerPlayer *target) const;
+    virtual int getPriority() const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
@@ -139,6 +140,16 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
     virtual bool onPhaseChange(ServerPlayer *target) const =0;
+};
+
+class DrawCardsSkill: public TriggerSkill{
+    Q_OBJECT
+
+public:
+    DrawCardsSkill(const QString &name);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
 };
 
 class SlashBuffSkill: public TriggerSkill{
@@ -187,6 +198,18 @@ public:
     ArmorSkill(const QString &name);
 
     virtual bool triggerable(const ServerPlayer *target) const;
+};
+
+class MarkAssignSkill: public GameStartSkill{
+    Q_OBJECT
+
+public:
+    MarkAssignSkill(const QString &mark, int n);
+
+    virtual void onGameStart(ServerPlayer *player) const;
+
+private:
+    int n;
 };
 
 #endif // SKILL_H

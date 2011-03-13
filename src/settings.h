@@ -11,9 +11,8 @@ class Settings : public QSettings{
     Q_OBJECT
 
 public:
-    explicit Settings(const QString &organization, const QString &application);
+    explicit Settings();
     void init();
-    void changeBackground(const QString &new_bg);
 
     const QRectF Rect;
     QFont BigFont;
@@ -22,32 +21,33 @@ public:
 
     QFont AppFont;
     QFont UIFont;
+    QColor TextEditColor;
 
     // server side
     QString ServerName;
     int CountDownSeconds;
     QString GameMode;
     QStringList BanPackages;
+    bool ContestMode;
     bool FreeChoose;
     bool ForbidSIMC;
+    bool DisableChat;
     bool Enable2ndGeneral;
     int MaxHpScheme;
     bool AnnounceIP;
     QString Address;
-    int AILevel;
+    bool EnableAI;
+    int AIDelay;
     ushort ServerPort;
-
-    QString IrcHost;
-    ushort IrcPort;
-    QString IrcNick;
-    QString IrcChannel;
 
     // client side
     QString HostAddress;
     QString UserName;
     QString UserAvatar;
+    QString Password;
     QStringList HistoryIPs;
     ushort DetectorPort;
+    int MaxCards;
 
     bool FitInView;
     bool EnableHotKey;
@@ -61,7 +61,7 @@ public:
     bool EnableBgMusic;
     float Volume;
 
-    QBrush BackgroundBrush;
+    QString BackgroundBrush;
 };
 
 extern Settings Config;
