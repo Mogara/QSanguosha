@@ -166,5 +166,16 @@ return {
 	["cv:luboyan"] = "",
 	["cv:zhongshiji"] = "",
 	["cv:jiangboyue"] = "Jr. Wakaran",
+	
+	["designer:shencc"] = "官方内测第三版",
+	["designer:caochong"] = "太阳神上",
+	["designer:zhangjunyi"] = "孔孟老庄胡",
+	["designer:lukang"] = "三国杀吧天罡地煞帖",
+	["designer:jinxuandi"] = "赛克洛",
+	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
+	["designer:caizhaoji"] = "冢冢的青藤",
+	["designer:luboyan"] = "太阳神上、冢冢的青藤",
+	["designer:zhongshiji"] = "Jr. Wakaran",
+	["designer:jiangboyue"] = "Jr. Wakaran",
 }
 

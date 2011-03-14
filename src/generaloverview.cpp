@@ -179,11 +179,17 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         addCopyAction(death_button);
     }
 
+    QString designer_text = Sanguosha->translate("designer:" + general->objectName());
+    if(!designer_text.startsWith("designer:"))
+        ui->designerLineEdit->setText(designer_text);
+    else
+        ui->designerLineEdit->setText(tr("Official"));
+
     QString cv_text = Sanguosha->translate("cv:" + general->objectName());
-    if(!cv_text.startsWith("cv:")){
-        ui->cvLabel->setText(tr("CV: ") + cv_text);
-    }else
-        ui->cvLabel->setText(tr("CV: official"));
+    if(!cv_text.startsWith("cv:"))
+        ui->cvLineEdit->setText(cv_text);
+    else
+        ui->cvLineEdit->setText(tr("Official"));
 
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription());
