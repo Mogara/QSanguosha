@@ -596,6 +596,8 @@ public:
             room->setCardMapping(card_id, shenzhuge, Player::Hand);
             QString take_str = QString("%1:%2").arg(shenzhuge->objectName()).arg(card_id);
             shenzhuge->invoke("takeAG", take_str);
+
+            shenzhuge->invoke("pile", QString("%1:stars-%2").arg(shenzhuge->objectName()).arg(card_id));
         }
 
         shenzhuge->invoke("clearAG");
@@ -605,6 +607,10 @@ public:
 
         int n = to_exchange.length();
         const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", n);
+
+        foreach(int card_id, exchange_card->getSubcards()){
+            shenzhuge->invoke("pile", QString("%1:stars+%2").arg(shenzhuge->objectName()).arg(card_id));
+        }
 
         LogMessage log;
         log.type = "#QixingExchange";
@@ -630,7 +636,9 @@ public:
             int card_id = room->askForAG(shenzhuge, stars);
 
             stars.removeOne(card_id);
-            room->throwCard(card_id);           
+            room->throwCard(card_id);
+
+            shenzhuge->invoke("pile", QString("%1:stars-%2").arg(shenzhuge->objectName()).arg(card_id));
         }
 
         shenzhuge->invoke("clearAG");
@@ -663,6 +671,10 @@ public:
         foreach(int star, stars)
             room->setCardMapping(star, shenzhuge, Player::Special);
         shenzhuge->getPile("stars") = stars;
+
+        foreach(int star, stars){
+            shenzhuge->invoke("pile", QString("%1:stars+%2").arg(shenzhuge->objectName()).arg(star));
+        }
 
         Qixing::Exchange(shenzhuge);
     }
@@ -732,51 +744,6 @@ public:
     }
 };
 
-class QixingClear: public TriggerSkill{
-public:
-    QixingClear():TriggerSkill("#qixing-clear"){
-        events << Death;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-
-        Clear(room);
-        Clear(player);
-
-        QList<int> &stars = player->getPile("stars");
-        if(!stars.isEmpty()){
-            foreach(int star, stars){
-                room->throwCard(star);
-            }
-
-            stars.clear();
-
-            player->loseMark("@star", player->getMark("@star"));
-        }
-
-        return false;
-    }
-
-    static void Clear(ServerPlayer *player){
-        if(player->getMark("@gale") > 0)
-            player->loseMark("@gale");
-        if(player->getMark("@fog") > 0)
-            player->loseMark("@fog");
-    }
-
-    static void Clear(Room *room){
-        QList<ServerPlayer *> players = room->getAllPlayers();
-        foreach(ServerPlayer *player, players){
-            Clear(player);
-        }
-    }
-};
-
 class QixingAsk: public PhaseChangeSkill{
 public:
     QixingAsk():PhaseChangeSkill("#qixing-ask"){
@@ -792,7 +759,13 @@ public:
             if(target->getMark("@star") > 0)
                 room->askForUseCard(target, "@dawu", "@@dawu-card");
         }else if(target->getPhase() == Player::Start){
-            QixingClear::Clear(room);
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            foreach(ServerPlayer *player, players){
+                if(player->getMark("@gale") > 0)
+                    player->loseMark("@gale");
+                if(player->getMark("@fog") > 0)
+                    player->loseMark("@fog");
+            }
         }
 
         return false;
@@ -895,7 +868,6 @@ GodPackage::GodPackage()
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3);
     shenzhugeliang->addSkill(new Qixing);
     shenzhugeliang->addSkill(new QixingStart);
-    shenzhugeliang->addSkill(new QixingClear);
     shenzhugeliang->addSkill(new QixingAsk);
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);

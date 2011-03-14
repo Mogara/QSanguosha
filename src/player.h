@@ -181,6 +181,7 @@ public:
 
 protected:
     QMap<QString, int> marks;
+    QMap<QString, QList<int> > piles;
 
 private:    
     QString screen_name;
@@ -194,7 +195,6 @@ private:
     bool alive;
     QSet<QString> flags;
     QSet<QString> acquired_skills;
-    QMap<QString, QList<int> > piles;
 
     struct CorrectStruct correct;
     int attack_range;

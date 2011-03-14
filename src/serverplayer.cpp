@@ -58,6 +58,31 @@ void ServerPlayer::throwAllCards(){
     QStack<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
         room->throwCard(trick);
+
+    // throw all marks
+    foreach(QString mark_name, marks.keys()){
+        if(!mark_name.startsWith("@"))
+            continue;
+
+        int n = marks.value(mark_name, 0);
+        if(n != 0){
+            room->setPlayerMark(this, mark_name, 0);
+        }
+    }
+
+    marks.clear();
+
+    // throw private piles
+    foreach(QString pile_name, piles.keys()){
+        QList<int> &pile = piles[pile_name];
+
+        foreach(int card_id, pile){
+            room->throwCard(card_id);
+            QString pile_command = QString("%1:%2-%3").arg(objectName()).arg(pile_name).arg(card_id);
+            room->broadcastInvoke("pile", pile_command);
+        }
+    }
+    piles.clear();
 }
 
 void ServerPlayer::drawCards(int n, bool set_emotion){

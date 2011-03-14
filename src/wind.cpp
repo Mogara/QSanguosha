@@ -343,7 +343,7 @@ public:
 class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
-        events << Dying << HpRecover << AskForPeachesDone << Death;
+        events << Dying << HpRecover << AskForPeachesDone;
         default_choice = "alive";
     }
 
@@ -424,12 +424,6 @@ public:
             room->killPlayer(zhoutai, killer);
 
             return true;
-        }else if(event == Death){
-            foreach(int card_id, buqu){
-                room->throwCard(card_id);
-                buqu.removeOne(card_id);
-                room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
-            }
         }
 
         return false;
