@@ -26,6 +26,7 @@ ContestDB::ContestDB(QObject *parent) :
         QMessageBox::warning(NULL, tr("Database open error"), tr("The database can not be opened:\n %1").arg(error.text()));
     }
 
+
     QSqlQuery query;
     query.exec("CREATE TABLE IF NOT EXISTS results"
                "(start_time TEXT PRIMARY KEY,"
@@ -35,6 +36,12 @@ ContestDB::ContestDB(QObject *parent) :
                "score INTEGER,"
                "victims TEXT,"
                "alive INTEGER)");
+
+    QSqlQuery query2;
+    query2.exec("CREATE TABLE IF NOT EXISTS rooms"
+               "(start_time TEXT PROMARY KEY"
+               "end_time TEXT,"
+               "winner TEXT)");
 }
 
 ContestDB *ContestDB::GetInstance(){

@@ -620,7 +620,6 @@ public:
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
-    ServerPlayer *getCardOwner(const Card *card) const;
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 
     void drawCards(ServerPlayer *player, int n);
@@ -631,7 +630,6 @@ public:
     void throwCard(int card_id);
     int throwSpecialCard();
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
-    void moveCardTo(int card_id, ServerPlayer *to, Player::Place place, bool open);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);

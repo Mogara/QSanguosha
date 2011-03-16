@@ -67,6 +67,7 @@ struct CardMoveStruct{
     int card_id;
     Player::Place from_place, to_place;
     ServerPlayer *from, *to;
+    bool open;
 
     QString toString() const;
 };

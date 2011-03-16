@@ -151,6 +151,13 @@ return {
 	["$xunzhi2"] = "蜀汉英烈,忠魂佑我!",
 	["~jiangboyue"] = "吾计不成,乃天命也!",
 	
+	-- 贾文和
+	["jiawenhe"] = "贾文和",
+	["dongcha"] = "洞察",
+	[":dongcha"] = "回合开始阶段，你可以指定其他任意一名角色：该角色的所有手牌对你处于可见状态，直到你的本回合结束。其他任何角色都不知道你对谁发动了洞察技能，包括被洞察的角色本身",	
+	["dushi"] = "毒士",
+	[":dushi"] = "锁定技，杀死你的角色获得崩坏技能直到游戏结束",
+	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
@@ -166,16 +173,18 @@ return {
 	["cv:luboyan"] = "",
 	["cv:zhongshiji"] = "",
 	["cv:jiangboyue"] = "Jr. Wakaran",
+	["cv:jiawenhe"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["designer:lukang"] = "三国杀吧天罡地煞帖",
-	["designer:jinxuandi"] = "赛克洛",
+	["designer:jinxuandi"] = "title2009",
 	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
 	["designer:caizhaoji"] = "冢冢的青藤",
 	["designer:luboyan"] = "太阳神上、冢冢的青藤",
 	["designer:zhongshiji"] = "Jr. Wakaran",
 	["designer:jiangboyue"] = "Jr. Wakaran",
+	["designer:jiawenhe"] = "氢弹",
 }
 

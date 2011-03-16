@@ -1335,47 +1335,52 @@
 <context>
     <name>PlayerCardDialog</name>
     <message>
-        <location filename="src/playercarddialog.cpp" line="55"/>
+        <location filename="src/playercarddialog.cpp" line="56"/>
+        <source>Handcard area</source>
+        <translation>手牌区域</translation>
+    </message>
+    <message>
+        <location filename="src/playercarddialog.cpp" line="72"/>
         <source>Handcard</source>
         <translation>手牌</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="58"/>
+        <location filename="src/playercarddialog.cpp" line="75"/>
         <source>This guy has no any hand cards</source>
         <translation>这个家伙空城了</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="61"/>
+        <location filename="src/playercarddialog.cpp" line="78"/>
         <source>This guy has %1 hand card(s)</source>
         <translation>这家伙有 %1 张牌</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="71"/>
+        <location filename="src/playercarddialog.cpp" line="88"/>
         <source>Equip area</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="96"/>
+        <location filename="src/playercarddialog.cpp" line="113"/>
         <source>(+1 horse)</source>
         <translation>(+1 马)</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="106"/>
+        <location filename="src/playercarddialog.cpp" line="123"/>
         <source>(-1 horse)</source>
         <translation>(-1 马)</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="115"/>
+        <location filename="src/playercarddialog.cpp" line="132"/>
         <source>No equip</source>
         <translation>没有装备</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="125"/>
+        <location filename="src/playercarddialog.cpp" line="142"/>
         <source>Judging Area</source>
         <translation>判定区</translation>
     </message>
     <message>
-        <location filename="src/playercarddialog.cpp" line="138"/>
+        <location filename="src/playercarddialog.cpp" line="155"/>
         <source>No judging cards</source>
         <translation>没有判定牌</translation>
     </message>
@@ -1383,37 +1388,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="1054"/>
+        <location filename="src/room.cpp" line="1057"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1171"/>
+        <location filename="src/room.cpp" line="1174"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1199"/>
+        <location filename="src/room.cpp" line="1202"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1163"/>
+        <location filename="src/room.cpp" line="1166"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1203"/>
+        <location filename="src/room.cpp" line="1206"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1231"/>
+        <location filename="src/room.cpp" line="1234"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2003"/>
+        <location filename="src/room.cpp" line="2006"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2072,7 +2077,7 @@
 <context>
     <name>ServerPlayer</name>
     <message>
-        <location filename="src/serverplayer.cpp" line="151"/>
+        <location filename="src/serverplayer.cpp" line="176"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>

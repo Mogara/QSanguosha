@@ -15,6 +15,10 @@ public:
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         CardMoveStruct move = data.value<CardMoveStruct>();
+
+        if(!move.open)
+            return false;
+
         const Card *card = Sanguosha->getCard(move.card_id);
         Room *room = player->getRoom();
         if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand){
@@ -1355,6 +1359,75 @@ public:
     }
 };
 
+class Dongcha: public PhaseChangeSkill{
+public:
+    Dongcha():PhaseChangeSkill("dongcha"){
+
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *jiawenhe) const{
+        switch(jiawenhe->getPhase()){
+        case Player::Start:{
+                if(jiawenhe->askForSkillInvoke(objectName())){
+                    Room *room = jiawenhe->getRoom();
+                    QList<ServerPlayer *> players = room->getOtherPlayers(jiawenhe);
+                    ServerPlayer *dongchaee = room->askForPlayerChosen(jiawenhe, players, objectName());
+                    room->setPlayerFlag(dongchaee, "dongchaee");
+                    room->setTag("Dongchaee", dongchaee->objectName());
+                    room->setTag("Dongchaer", jiawenhe->objectName());
+
+                    room->showAllCards(dongchaee, jiawenhe);
+                }
+
+                break;
+            }
+
+        case Player::Finish:{
+                Room *room = jiawenhe->getRoom();
+                QString dongchaee_name = room->getTag("Dongchaee").toString();
+                if(!dongchaee_name.isEmpty()){
+                    ServerPlayer *dongchaee = room->findChild<ServerPlayer *>(dongchaee_name);
+                    room->setPlayerFlag(dongchaee, "-dongchaee");
+
+                    room->setTag("Dongchaee", QVariant());
+                    room->setTag("Dongchaer", QVariant());
+                }
+
+                break;
+            }
+
+        default:
+            break;
+        }
+
+        return false;
+    }
+};
+
+class Dushi: public TriggerSkill{
+public:
+    Dushi():TriggerSkill("dushi"){
+        events << Death;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        QString killer_name = data.toString();
+        if(!killer_name.isEmpty()){
+            Room *room = player->getRoom();
+            ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+            if(killer != player && !killer->hasSkill("benghuai"))
+                room->acquireSkill(killer, "benghuai");
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1419,6 +1492,10 @@ YitianPackage::YitianPackage()
     General *jiangboyue = new General(this, "jiangboyue", "shu");
     jiangboyue->addSkill(new Lexue);
     jiangboyue->addSkill(new Xunzhi);
+
+    General *jiawenhe = new General(this, "jiawenhe", "qun");
+    jiawenhe->addSkill(new Dongcha);
+    jiawenhe->addSkill(new Dushi);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

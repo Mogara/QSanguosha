@@ -82,11 +82,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
 
                 if(jilei_cards.length() > player->getMaxCards()){
                     // show all his cards
-                    QStringList handcards_str;
-                    foreach(const Card *card, handcards)
-                        handcards_str << QString::number(card->getId());
-                    QString gongxin_str = QString("%1!:%2").arg(player->objectName()).arg(handcards_str.join("+"));
-                    room->broadcastInvoke("doGongxin", gongxin_str, player);
+                    room->showAllCards(player);
 
                     QList<const Card *> other_cards = handcards.toSet().subtract(jilei_cards.toSet()).toList();
                     foreach(const Card *card, other_cards){

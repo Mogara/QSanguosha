@@ -14,8 +14,7 @@ GuidaoCard::GuidaoCard(){
 void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
     room->obtainCard(zhangjiao, room->throwSpecialCard());
 
-    int card_id = subcards.first();
-    room->moveCardTo(card_id, NULL, Player::Special, true);
+    room->moveCardTo(this, NULL, Player::Special, true);
     room->setEmotion(zhangjiao, Room::Normal);
 }
 
@@ -358,7 +357,7 @@ public:
             int fatal_point = room->getTag("FatalPoint").toInt();
             QList<int> buqu_cards = room->getNCards(fatal_point);
             foreach(int card_id, buqu_cards){
-                room->moveCardTo(card_id, zhoutai, Player::Special, true);
+                room->moveCardTo(Sanguosha->getCard(card_id), zhoutai, Player::Special, true);
                 buqu.append(card_id);
                 room->broadcastInvoke("pile", QString("%1:buqu+%2").arg(zhoutai->objectName()).arg(card_id));
             }

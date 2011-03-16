@@ -68,9 +68,9 @@ bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const Cl
 }
 
 void TuxiCard::onEffect(const CardEffectStruct &effect) const{
-    int card_id = effect.to->getRandomHandCardId();
-    const Card *card = Sanguosha->getCard(card_id);
     Room *room = effect.from->getRoom();
+    int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
+    const Card *card = Sanguosha->getCard(card_id);
     room->moveCardTo(card, effect.from, Player::Hand, false);
 
     room->setEmotion(effect.to, Room::Bad);
@@ -203,9 +203,7 @@ GuicaiCard::GuicaiCard(){
 void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwSpecialCard();
 
-    int card_id = subcards.first();
-
-    room->moveCardTo(card_id, NULL, Player::Special, true);
+    room->moveCardTo(this, NULL, Player::Special, true);
     room->setEmotion(source, Room::Normal);
 }
 

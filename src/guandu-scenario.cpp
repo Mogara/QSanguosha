@@ -216,8 +216,6 @@ public:
                     tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
 
                     foreach(QString name, tos){
-                        qDebug("duanliang against %s", qPrintable(name));
-
                         ServerPlayer *to = room->findPlayer(name);
                         if(to == NULL || to->containsTrick("supply_shortage"))
                             continue;
@@ -227,7 +225,7 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(card_id, to, Player::Judging, true);
+                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
                     }
                 }
 

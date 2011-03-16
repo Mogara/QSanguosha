@@ -52,6 +52,23 @@ QWidget *PlayerCardDialog::createAvatar(){
 }
 
 QWidget *PlayerCardDialog::createHandcardButton(){
+    if(Self->hasSkill("dongcha") && player->hasFlag("dongchaee") && !player->isKongcheng()){
+        QGroupBox *area = new QGroupBox(tr("Handcard area"));
+        QVBoxLayout *layout =  new QVBoxLayout;
+        QList<const Card *> cards = player->getCards();
+        foreach(const Card *card, cards){
+            QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
+            button->setIcon(card->getSuitIcon());
+
+            mapper.insert(button, card->getId());
+            connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
+            layout->addWidget(button);
+        }
+
+        area->setLayout(layout);
+        return area;
+    }
+
     QCommandLinkButton *button = new QCommandLinkButton(tr("Handcard"));
     int num = player->getHandcardNum();
     if(num == 0){
@@ -69,7 +86,7 @@ QWidget *PlayerCardDialog::createHandcardButton(){
 
 QWidget *PlayerCardDialog::createEquipArea(){
     QGroupBox *area = new QGroupBox(tr("Equip area"));
-    QVBoxLayout *layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout;
 
     const Weapon *weapon = player->getWeapon();
     if(weapon){

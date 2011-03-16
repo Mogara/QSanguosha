@@ -260,7 +260,7 @@ public:
 
                 for(i=0; i<x; i++){
                     int card_id = room->drawCard();
-                    room->moveCardTo(card_id, NULL, Player::Special, true);
+                    room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
 
                     room->getThread()->delay();
 
