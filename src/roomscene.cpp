@@ -2512,7 +2512,7 @@ void RoomScene::onGameStart(){
     foreach(Photo *photo, photos)
         photo->createRoleCombobox();
 
-    if(!Config.EnableBgMusic)
+    if(!Config.EnableBgMusic || SoundEngine == NULL)
         return;
 
     bool play_music = false;

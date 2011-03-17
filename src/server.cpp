@@ -456,8 +456,9 @@ Server::Server(QObject *parent)
 
 void Server::broadcast(const QString &msg){
     QString to_sent = msg.toUtf8().toBase64();
+    to_sent = ".:" + to_sent;
     foreach(Room *room, rooms)
-        room->broadcastInvoke("serverMessage", to_sent);
+        room->broadcastInvoke("speak", to_sent);
 }
 
 bool Server::listen(){

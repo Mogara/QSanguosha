@@ -98,7 +98,8 @@ void ConfigDialog::saveConfig()
     Config.Volume = volume;
     Config.setValue("Volume", volume);
 
-    SoundEngine->setSoundVolume(Config.Volume);
+    if(SoundEngine)
+        SoundEngine->setSoundVolume(Config.Volume);
 
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;

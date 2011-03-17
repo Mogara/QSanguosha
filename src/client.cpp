@@ -1372,7 +1372,14 @@ void Client::speak(const QString &speak_data){
     QByteArray data = QByteArray::fromBase64(base64.toAscii());
     QString text = QString::fromUtf8(data);
 
+    if(who == "."){
+        QString line = tr("<font color='red'>System: %1</font>").arg(text);
+        emit words_spoken(line);
+        return;
+    }
+
     const ClientPlayer *from = getPlayer(who);
+
     QString title;
     if(from){
         title = from->getGeneralName();

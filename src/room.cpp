@@ -1857,9 +1857,11 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             else if(dongchaee == to)
                 invoke_dongcha = (place == Player::Hand);
 
-            QString dongchaer_name = tag.value("Dongchaer").toString();
-            ServerPlayer *dongchaer = findChild<ServerPlayer *>(dongchaer_name);
-            scope.insert(dongchaer);
+            if(invoke_dongcha){
+                QString dongchaer_name = tag.value("Dongchaer").toString();
+                ServerPlayer *dongchaer = findChild<ServerPlayer *>(dongchaer_name);
+                scope.insert(dongchaer);
+            }
         }
 
         int n = card->isVirtualCard() ? card->subcardsLength() : 1;
@@ -1870,7 +1872,7 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
 
         foreach(ServerPlayer *player, players){
-            if(player != from && player != to)
+            if(!scope.contains(player))
                 player->invoke("moveNCards", private_move);
         }
     }

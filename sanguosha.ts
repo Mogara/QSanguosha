@@ -257,7 +257,12 @@
         <translation>%1 要求你打出一张卡牌已用于拼点</translation>
     </message>
     <message>
-        <location filename="src/client.cpp" line="1385"/>
+        <location filename="src/client.cpp" line="1376"/>
+        <source>&lt;font color=&apos;red&apos;&gt;System: %1&lt;/font&gt;</source>
+        <translation>&lt;font color=&apos;red&apos;&gt;系统: %1&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1392"/>
         <source>&lt;font color=&apos;%1&apos;&gt;[%2] said: %3 &lt;/font&gt;</source>
         <translation>&lt;font color=&apos;%1&apos;&gt;[%2] 说: %3 &lt;/font&gt;</translation>
     </message>
@@ -1816,17 +1821,17 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="477"/>
+        <location filename="src/server.cpp" line="479"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="488"/>
+        <location filename="src/server.cpp" line="490"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="501"/>
+        <location filename="src/server.cpp" line="503"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
