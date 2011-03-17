@@ -41,6 +41,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionScript_editor"/>
+    <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionView_Discarded"/>
@@ -79,6 +80,9 @@
    </property>
   </action>
   <action name="actionConfigure">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
@@ -238,6 +242,11 @@
   <action name="actionScript_editor">
    <property name="text">
     <string>Script editor</string>
+   </property>
+  </action>
+  <action name="actionBroadcast">
+   <property name="text">
+    <string>Broadcast ...</string>
    </property>
   </action>
  </widget>

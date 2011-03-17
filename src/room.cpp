@@ -1762,13 +1762,16 @@ void Room::drawCards(ServerPlayer *player, int n){
     if(n <= 0)
         return;
 
+    QList<int> card_ids;
     QStringList cards_str;
 
     int i;
     for(i=0; i<n; i++){
         int card_id = drawCard();
+        card_ids << card_id;
         const Card *card = Sanguosha->getCard(card_id);
         player->drawCard(card);
+
         cards_str << QString::number(card_id);
 
         // update place_map & owner_map
@@ -1776,7 +1779,31 @@ void Room::drawCards(ServerPlayer *player, int n){
     }
 
     player->invoke("drawCards", cards_str.join("+"));
-    broadcastInvoke("drawNCards", QString("%1:%2").arg(player->objectName()).arg(n), player);
+
+    QString draw_str = QString("%1:%2").arg(player->objectName()).arg(n);
+
+    QString dongchaee = tag.value("Dongchaee").toString();
+    if(player->objectName() == dongchaee){
+        QString dongchaer_name = tag.value("Dongchaer").toString();
+        ServerPlayer *dongchaer = findChild<ServerPlayer *>(dongchaer_name);
+
+        CardMoveStruct move;
+        foreach(int card_id, card_ids){
+            move.card_id = card_id;
+            move.from = NULL;
+            move.from_place = Player::DrawPile;
+            move.to = player;
+            move.to_place = Player::Hand;
+
+            dongchaer->invoke("moveCard", move.toString());
+        }
+
+        foreach(ServerPlayer *p, players){
+            if(p != player && p != dongchaer)
+                p->invoke("drawNCards", draw_str);
+        }
+    }else
+        broadcastInvoke("drawNCards", draw_str, player);
 }
 
 void Room::throwCard(const Card *card){

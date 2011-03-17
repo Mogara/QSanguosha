@@ -454,6 +454,12 @@ Server::Server(QObject *parent)
     current = NULL;
 }
 
+void Server::broadcast(const QString &msg){
+    QString to_sent = msg.toUtf8().toBase64();
+    foreach(Room *room, rooms)
+        room->broadcastInvoke("serverMessage", to_sent);
+}
+
 bool Server::listen(){
     return server->listen();
 }
@@ -466,6 +472,7 @@ void Server::daemonize(){
 
 void Server::createNewRoom(){
     current = new Room(this, Config.GameMode);
+    rooms.insert(current);
     QString error_msg = current->createLuaState();
     if(!error_msg.isEmpty()){
         QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);

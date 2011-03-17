@@ -21,6 +21,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
+#include <QInputDialog>
 
 class FitView : public QGraphicsView
 {
@@ -462,3 +463,14 @@ void MainWindow::on_actionScenario_Overview_triggered()
     dialog->show();
 }
 
+void MainWindow::on_actionBroadcast_triggered()
+{
+    Server *server = findChild<Server *>();
+    if(server == NULL){
+        QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
+        return;
+    }
+
+    QString msg = QInputDialog::getText(this, tr("Broadcast"), tr("Please input the message to broadcast"));
+    server->broadcast(msg);
+}

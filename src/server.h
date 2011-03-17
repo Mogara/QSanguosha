@@ -66,12 +66,14 @@ class Server : public QObject{
 public:
     explicit Server(QObject *parent);
 
+    void broadcast(const QString &msg);
     bool listen();
     void daemonize();
 
 private:
     ServerSocket *server;
     Room *current;
+    QSet<Room *> rooms;
     QSet<QString> addresses;
 
     void createNewRoom();
