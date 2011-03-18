@@ -798,7 +798,7 @@ bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const 
 }
 
 void Indulgence::takeEffect(ServerPlayer *target) const{
-    target->getRoom()->skip(Player::Play);
+    target->skip(Player::Play);
 }
 
 Disaster::Disaster(Card::Suit suit, int number)

@@ -102,10 +102,6 @@ public:
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
 
-    void skip(Player::Phase phase);
-    bool isSkipped(Player::Phase phase);
-    void resetSkipSet();
-
     enum TargetType{
         Killer,
         Victim,
@@ -201,8 +197,6 @@ private:
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer*> owner_map;
-
-    QSet<Player::Phase> skip_set;
 
     const Card *provided;
 

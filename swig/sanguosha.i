@@ -599,10 +599,6 @@ public:
     void setTag(const char *key, const QVariant &value);
     QVariant getTag(const char *key) const;
 
-    void skip(Player::Phase phase);
-    bool isSkipped(Player::Phase phase);
-    void resetSkipSet();
-
     enum TargetType{
         Killer,
         Victim,

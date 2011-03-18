@@ -190,10 +190,10 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *caochong) const{
-        if(caochong->getPhase() == Player::Discard)
-            return true;
-        else
-            return false;
+        if(caochong->getPhase() == Player::Start)
+            caochong->skip(Player::Discard);
+
+        return false;
     }
 };
 

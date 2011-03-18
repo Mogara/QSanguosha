@@ -336,7 +336,7 @@ bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, co
 }
 
 void SupplyShortage::takeEffect(ServerPlayer *target) const{
-    target->getRoom()->skip(Player::Draw);
+    target->skip(Player::Draw);
 }
 
 ManeuveringPackage::ManeuveringPackage()

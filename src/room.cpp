@@ -2205,18 +2205,6 @@ Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
 }
 
-void Room::skip(Player::Phase phase){
-    skip_set << phase;
-}
-
-bool Room::isSkipped(Player::Phase phase){
-    return skip_set.contains(phase);
-}
-
-void Room::resetSkipSet(){
-    skip_set.clear();
-}
-
 ServerPlayer *Room::getLord() const{
     ServerPlayer *the_lord = players.first();
     if(the_lord->getRole() == "lord")

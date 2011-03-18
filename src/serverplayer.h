@@ -70,6 +70,7 @@ private:
     AI *trust_ai;
     QList<ServerPlayer *> victims;
     Recorder *recorder;
+    QList<Phase> phases;
 
 private slots:
     void getMessage(char *message);

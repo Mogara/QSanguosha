@@ -2,6 +2,7 @@
 #include "room.h"
 #include "engine.h"
 #include "gamerule.h"
+#include "ai.h"
 
 bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
     int x = a->getPriority();
@@ -127,8 +128,8 @@ void RoomThread::run(){
         trigger(GameStart, player);
     }
 
-    QList<Player::Phase> phases;
-    phases << Player::Start << Player::Judge << Player::Draw
+    QList<Player::Phase> all_phases;
+    all_phases << Player::Start << Player::Judge << Player::Draw
             << Player::Play << Player::Discard << Player::Finish
             << Player::NotActive;
 
@@ -137,25 +138,22 @@ void RoomThread::run(){
 
     forever{
         ServerPlayer *player = room->getCurrent();
-        room->resetSkipSet();
+        QList<Player::Phase> &phases = player->getPhases();
+        phases = all_phases;
 
-        foreach(Player::Phase phase, phases){
-            if(!room->isSkipped(phase)){
-                player->setPhase(phase);
-                room->broadcastProperty(player, "phase");
+        while(!phases.isEmpty()){
+            Player::Phase phase = phases.takeFirst();
+            player->setPhase(phase);
+            room->broadcastProperty(player, "phase");
+            trigger(PhaseChange, player);
 
-                trigger(PhaseChange, player);
-
-                if(!player->isAlive())
-                    break;
-            }
+            if(player->isDead())
+                break;
         }
 
         room->nextPlayer();
     }
 }
-
-#include "ai.h"
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);

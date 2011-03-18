@@ -47,7 +47,8 @@ void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlaye
         damage.nature = DamageStruct::Thunder;
 
         room->damage(damage);
-    }
+    }else
+        room->setEmotion(zhangjiao, Room::Bad);
 }
 
 HuangtianCard::HuangtianCard(){
@@ -173,6 +174,7 @@ public:
 };
 
 ShensuCard::ShensuCard(){
+    mute = true;
 }
 
 bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -182,22 +184,23 @@ bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
         return false;
 
+    if(to_select == Self)
+        return false;
+
     return true;
 }
 
 void ShensuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
-    room->cardEffect(this, source, targets.first());
-}
 
-void ShensuCard::onEffect(const CardEffectStruct &card_effect) const{
-    SlashEffectStruct effect;
-    effect.slash = new Slash(Card::NoSuit, 0);
-    effect.from = card_effect.from;
-    effect.to = card_effect.to;
-    effect.nature = DamageStruct::Normal;
+    Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->setSkillName("shensu");
+    CardUseStruct use;
+    use.card = slash;
+    use.from = source;
+    use.to = targets;
 
-    card_effect.from->getRoom()->slashEffect(effect);
+    room->useCard(use);
 }
 
 class ShensuViewAsSkill: public ViewAsSkill{
@@ -249,8 +252,8 @@ public:
 
         if(xiahouyuan->getPhase() == Player::Start){
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
-                room->skip(Player::Judge);
-                room->skip(Player::Draw);
+                xiahouyuan->skip(Player::Judge);
+                xiahouyuan->skip(Player::Draw);
             }
         }else if(xiahouyuan->getPhase() == Player::Play){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){
