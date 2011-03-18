@@ -1320,6 +1320,7 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 
     room->transfigure(source, general, false);
     room->acquireSkill(source, "xunzhi", false);
+    source->setFlags("xunzhi");
 
     // FIXME: temporary solution
     room->detachSkillFromPlayer(source, "lexue");
@@ -1348,10 +1349,10 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Finish &&
-           !target->getGeneral()->hasSkill(objectName()))
+           target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();           
-            room->transfigure(target, parent()->objectName(), false);            
+            room->transfigure(target, parent()->objectName(), false);
             room->killPlayer(target);
         }
 
