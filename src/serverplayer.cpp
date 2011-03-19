@@ -21,7 +21,13 @@ Room *ServerPlayer::getRoom() const{
 
 void ServerPlayer::playCardEffect(const Card *card){
     if(card->isVirtualCard() && !card->isMute()){
-        room->playSkillEffect(card->getSkillName());        
+        QString skill_name = card->getSkillName();
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        int index = -1;
+        if(skill)
+            index = skill->getEffectIndex(this, card);
+
+        room->playSkillEffect(skill_name, index);
     }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());
 }

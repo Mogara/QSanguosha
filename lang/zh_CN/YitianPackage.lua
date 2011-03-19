@@ -57,6 +57,8 @@ return {
 	["lukang_weiyan:normal"] = "正常顺序",
 	["lukang_weiyan:choice1"] = "弃牌-摸牌-出牌",
 	["lukang_weiyan:choice2"] = "出牌-弃牌-摸牌",
+	["#WeiyanChoice1"] = "%from 选择的行动顺序是<b>弃牌-摸牌-出牌</b>",
+	["#WeiyanChoice2"] = "%from 选择的行动顺序是<b>出牌-弃牌-摸牌</b>",
 	
 	-- 夏侯涓
 	["xiahoujuan"] = "夏侯涓",

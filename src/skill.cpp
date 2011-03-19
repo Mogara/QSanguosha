@@ -36,6 +36,10 @@ QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
 }
 
+int Skill::getEffectIndex(ServerPlayer *, const Card *) const{
+    return -1;
+}
+
 void Skill::initMediaSource(){
     sources.clear();
 

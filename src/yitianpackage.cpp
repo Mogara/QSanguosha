@@ -428,18 +428,27 @@ public:
             if(choice == "normal")
                 return false;
 
+            LogMessage log;
+            log.from = target;
+
             QList<Player::Phase> &phases = target->getPhases();
             if(choice == "choice1"){
                 // discard phase is before draw phase
                 phases.removeOne(Player::Discard);
                 int index = phases.indexOf(Player::Draw);
                 phases.insert(index, Player::Discard);
+
+                log.type = "#WeiyanChoice1";
             }else{
                 // drawing phase is after discard phase
                 phases.removeOne(Player::Draw);
                 int index = phases.indexOf(Player::Discard);
                 phases.insert(index+1, Player::Draw);
+
+                log.type = "#WeiyanChoice2";
             }
+
+            room->sendLog(log);
         }
 
         return false;
@@ -1210,7 +1219,6 @@ void LexueCard::onEffect(const CardEffectStruct &effect) const{
     if(card->getTypeId() == Card::Basic || card->isNDTrick()){
         room->setPlayerMark(effect.from, "lexue", card_id);
         room->setPlayerFlag(effect.from, "lexue");
-        room->playSkillEffect("lexue", card->getTypeId() == Card::Basic ? 2 : 3);
     }else{
         effect.from->obtainCard(card);
         room->setPlayerFlag(effect.from, "-lexue");
@@ -1221,6 +1229,13 @@ class Lexue: public ViewAsSkill{
 public:
     Lexue():ViewAsSkill("lexue"){
 
+    }
+
+    virtual int getEffectIndex(ServerPlayer *, const Card *card) const{
+        if(card->getTypeId() == Card::Basic)
+            return 2;
+        else
+            return 3;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -1270,6 +1285,7 @@ public:
 
             Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());            
             new_card->addSubcards(cards);
+            new_card->setSkillName(objectName());
             return new_card;
         }else{
             return new LexueCard;
