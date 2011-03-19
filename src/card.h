@@ -152,7 +152,7 @@ protected:
     bool will_throw;
 };
 
-class DummyCard: public Card{
+class DummyCard: public SkillCard{
     Q_OBJECT
 
 public:
@@ -160,7 +160,6 @@ public:
 
     virtual QString getSubtype() const;
     virtual QString getType() const;
-    virtual CardType getTypeId() const;
     virtual QString toString() const;
 };
 

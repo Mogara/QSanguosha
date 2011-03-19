@@ -483,9 +483,9 @@ QString SkillCard::toString() const{
 
 // ---------- Dummy card      -------------------
 
-DummyCard::DummyCard()
-    :Card(NoSuit, 0, true)
+DummyCard::DummyCard()   
 {
+    target_fixed = true;
     setObjectName("dummy");
 }
 
@@ -495,10 +495,6 @@ QString DummyCard::getType() const{
 
 QString DummyCard::getSubtype() const{
     return "dummy_card";
-}
-
-Card::CardType DummyCard::getTypeId() const{
-    return Skill;
 }
 
 QString DummyCard::toString() const{
