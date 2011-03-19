@@ -467,7 +467,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     if(result == "."){
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill)
-            return skill->getDefaultChoice();
+            return skill->getDefaultChoice(player);
     }
 
     return result;

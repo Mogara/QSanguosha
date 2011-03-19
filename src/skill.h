@@ -26,7 +26,7 @@ public:
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
-    QString getDefaultChoice() const;
+    virtual QString getDefaultChoice(ServerPlayer *player) const;
 
     void initMediaSource();
     void playEffect(int index = -1) const;

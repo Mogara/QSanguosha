@@ -168,7 +168,7 @@ bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data)
 
 QString TrustAI::askForChoice(const QString &skill_name, const QString &){
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    return skill->getDefaultChoice();
+    return skill->getDefaultChoice(self);
 }
 
 QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){

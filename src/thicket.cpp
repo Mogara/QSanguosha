@@ -777,7 +777,13 @@ class Benghuai: public PhaseChangeSkill{
 public:
     Benghuai():PhaseChangeSkill("benghuai"){
         frequency = Compulsory;
-        default_choice = "hp";
+    }
+
+    virtual QString getDefaultChoice(ServerPlayer *player) const{
+        if(player->getMaxHP() >= player->getHp() + 2)
+            return "maxhp";
+        else
+            return "hp";
     }
 
     virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{

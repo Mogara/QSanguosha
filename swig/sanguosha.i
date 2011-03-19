@@ -494,7 +494,7 @@ public:
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     QString getDescription() const;
-    QString getDefaultChoice() const;
+    QString getDefaultChoice(ServerPlayer *player) const;
 
     void initMediaSource();
     void playEffect(int index = -1) const;

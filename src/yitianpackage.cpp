@@ -407,51 +407,39 @@ public:
     }
 };
 
-class FanjiGet: public TriggerSkill{
+class LukangWeiyan: public PhaseChangeSkill{
 public:
-    FanjiGet():TriggerSkill("#fanji-get"){
-        events << CardFinished;
+    LukangWeiyan():PhaseChangeSkill("lukang_weiyan"){
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasSkill(objectName());
+    virtual QString getDefaultChoice(ServerPlayer *player) const{
+        if(player->getHandcardNum() > player->getMaxCards()){
+            return "choice2";
+        }else{
+            return "choice1";
+        }
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        QVariant card_data = room->getTag("FanjiCard");
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Start){
+            Room *room = target->getRoom();
+            QString choice = room->askForChoice(target, objectName(), "normal+choice1+choice2");
 
-        if(!card_data.isValid())
-            return false;
+            if(choice == "normal")
+                return false;
 
-        CardStar card = card_data.value<CardStar>();
-        room->setTag("FanjiCard", QVariant());
-
-        ServerPlayer *lukang = room->findPlayerBySkillName(objectName());
-        if(lukang == NULL)
-            return false;
-
-        if(!room->obtainable(card, lukang))
-            return false;
-
-        if(lukang->askForSkillInvoke("fanji", data))
-            lukang->obtainCard(card);
-
-        return false;
-    }
-};
-
-class Fanji: public TriggerSkill{
-public:
-    Fanji():TriggerSkill("fanji"){
-        events << CardEffected;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *lukang, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if(!effect.multiple && effect.card->isNDTrick() && effect.from != lukang){
-            Room *room = effect.to->getRoom();
-            room->setTag("FanjiCard", QVariant::fromValue(effect.card));
+            QList<Player::Phase> &phases = target->getPhases();
+            if(choice == "choice1"){
+                // discard phase is before draw phase
+                phases.removeOne(Player::Discard);
+                int index = phases.indexOf(Player::Draw);
+                phases.insert(index, Player::Discard);
+            }else{
+                // drawing phase is after discard phase
+                phases.removeOne(Player::Draw);
+                int index = phases.indexOf(Player::Discard);
+                phases.insert(index+1, Player::Draw);
+            }
         }
 
         return false;
@@ -1454,8 +1442,9 @@ YitianPackage::YitianPackage()
 
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill(new Qianxun);
-    lukang->addSkill(new Fanji);
-    lukang->addSkill(new FanjiGet);
+    //lukang->addSkill(new Fanji);
+    //lukang->addSkill(new FanjiGet);
+    lukang->addSkill(new LukangWeiyan);
 
     General *jinxuandi = new General(this, "jinxuandi", "god");
     jinxuandi->addSkill(new Wuling);

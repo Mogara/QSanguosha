@@ -798,7 +798,7 @@ function SmartAI:askForChoice(skill_name, choices)
 		return choice(self, choices)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		return skill:getDefaultChoice()
+		return skill:getDefaultChoice(self.player)
 	end		
 end
 

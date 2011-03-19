@@ -32,7 +32,7 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
-QString Skill::getDefaultChoice() const{
+QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
 }
 

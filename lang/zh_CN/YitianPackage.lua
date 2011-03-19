@@ -14,7 +14,7 @@ return {
 	["caochong"] = "曹冲", 
 	["caozhi"] = "曹植", 
 	["zhangjunyi"] = "张儁乂", 
-	["lukang"] = "陆抗", 
+
 	["guixin2"] = "归心", 
 	["chengxiang"] = "称象", 
 	["conghui"] = "聪慧", 
@@ -49,6 +49,14 @@ return {
 	["@chengxiang-card"] = "请打出点数之和为 %arg 的卡牌以发动【称象】技能", 
 	["@yitian-sword"] = "您在回合外获得了一张【杀】，您可以此时将此【杀】打出",
 	["@jueji"] = "绝汲",	
+	
+	-- 陆抗
+	["lukang"] = "陆抗", 
+	["lukang_weiyan"] = "围堰",
+	[":lukang_weiyan"] = "回合开始阶段，你可执行下列两项中的一项：              1.本回合弃牌阶段在摸牌阶段之前执行；              2.本回合摸牌阶段在弃牌阶段之后执行。              （不发动则默认正常顺序执行）" ,
+	["lukang_weiyan:normal"] = "正常顺序",
+	["lukang_weiyan:choice1"] = "弃牌-摸牌-出牌",
+	["lukang_weiyan:choice2"] = "出牌-弃牌-摸牌",
 	
 	-- 夏侯涓
 	["xiahoujuan"] = "夏侯涓",
@@ -178,7 +186,7 @@ return {
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
 	["designer:zhangjunyi"] = "孔孟老庄胡",
-	["designer:lukang"] = "三国杀吧天罡地煞帖",
+	["designer:lukang"] = "冢冢的青藤",
 	["designer:jinxuandi"] = "title2009",
 	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
 	["designer:caizhaoji"] = "冢冢的青藤",
