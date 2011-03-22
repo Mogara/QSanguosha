@@ -439,6 +439,8 @@ public:
                     jink->setSkillName(objectName());
                     room->provide(jink);
                     room->setEmotion(player, Room::Good);
+
+                    return true;
                 }else
                     room->setEmotion(player, Room::Bad);
             }

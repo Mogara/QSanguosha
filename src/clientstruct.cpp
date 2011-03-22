@@ -35,7 +35,10 @@ bool ServerInfoStruct::parse(const QString &str){
             continue;
 
         QString package_name = package->objectName();
-        Extensions.insert(package_name, ! ban_packages.contains(package_name));
+        if(ban_packages.contains(package_name))
+            package_name = "!" + package_name;
+
+        Extensions << package_name;
     }
 
     QString flags = texts.at(5);
@@ -104,14 +107,12 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     static QIcon enabled_icon("image/system/enabled.png");
     static QIcon disabled_icon("image/system/disabled.png");
 
-    QMap<QString, bool> extensions = info.Extensions;
-    QMapIterator<QString, bool> itor(extensions);
-    while(itor.hasNext()){
-        itor.next();
+    foreach(QString extension, info.Extensions){
+        bool checked = ! extension.startsWith("!");
+        if(!checked)
+            extension.remove("!");
 
-        QString package_name = Sanguosha->translate(itor.key());
-        bool checked = itor.value();
-
+        QString package_name = Sanguosha->translate(extension);
         QCheckBox *checkbox = new QCheckBox(package_name);
         checkbox->setChecked(checked);
 

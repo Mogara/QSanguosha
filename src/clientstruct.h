@@ -12,7 +12,7 @@ struct ServerInfoStruct{
     QString Name;
     QString GameMode;
     int OperationTimeout;
-    QMap<QString, bool> Extensions;
+    QStringList Extensions;
     bool FreeChoose;
     bool Enable2ndGeneral;   
     bool EnableAI;
