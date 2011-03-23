@@ -213,10 +213,7 @@ void Client::processReply(char *reply){
         sscanf(reply, "#%s %s %s", object_name, property, value);
         ClientPlayer *player = getPlayer(object_name);
         if(player){
-            bool declared = player->setProperty(property, value);
-            if(!declared){
-                QMessageBox::warning(NULL, tr("Warning"), tr("There is no such property named %1").arg(property));
-            }
+            player->setProperty(property, value);
         }else
             QMessageBox::warning(NULL, tr("Warning"), tr("There is no player named %1").arg(object_name));
 
