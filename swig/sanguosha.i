@@ -105,8 +105,6 @@ public:
 
     void setAttackRange(int attack_range);
     int getAttackRange() const;
-    QString getCorrect() const;
-    void setCorrect(const char *correct_str);
     bool inMyAttackRange(const Player *other) const;
 
     bool isAlive() const;
@@ -557,7 +555,6 @@ public:
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const char *prompt_str);
     void setPlayerFlag(ServerPlayer *player, const char *flag);
-    void setPlayerCorrect(ServerPlayer *player, const char *correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const char *mark, int value);
     void useCard(const CardUseStruct &card_use);

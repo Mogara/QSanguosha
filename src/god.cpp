@@ -374,15 +374,9 @@ public:
 };
 
 Feiying::Feiying()
-    :GameStartSkill("feiying")
+    :Skill("feiying", Skill::Compulsory)
 {
-    frequency = Compulsory;
 }
-
-void Feiying::onGameStart(ServerPlayer *player) const
-{
-    player->getRoom()->setPlayerCorrect(player, "F");
-};
 
 class Kuangbao: public TriggerSkill{
 public:

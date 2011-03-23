@@ -36,10 +36,7 @@ class Player : public QObject
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
-
-    // distance related properties
     Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
-    Q_PROPERTY(QString correct READ getCorrect WRITE setCorrect)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
@@ -53,13 +50,6 @@ public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
     enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
     enum Role {Lord, Loyalist, Rebel, Renegade};
-
-    struct CorrectStruct{
-        int equip_src;
-        int equip_dest;
-        int skill_src;
-        int skill_dest;
-    };
 
     explicit Player(QObject *parent);
 
@@ -110,10 +100,7 @@ public:
 
     void setAttackRange(int attack_range);
     int getAttackRange() const;
-    QString getCorrect() const;
-    void setCorrect(const QString &correct_str);
     bool inMyAttackRange(const Player *other) const;
-    CorrectStruct getCorrectStruct() const;
 
     bool isAlive() const;
     bool isDead() const;
@@ -199,7 +186,6 @@ private:
     QSet<QString> flags;
     QSet<QString> acquired_skills;
 
-    struct CorrectStruct correct;
     int attack_range;
 
     Phase phase;

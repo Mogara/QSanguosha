@@ -87,11 +87,9 @@ public:
     Q_INVOKABLE WushenSlash(Card::Suit suit, int number);
 };
 
-class Feiying: public GameStartSkill{
+class Feiying: public Skill{
 public:
     Feiying();
-
-    virtual void onGameStart(ServerPlayer *player) const;
 };
 
 class KuangfengCard: public SkillCard{

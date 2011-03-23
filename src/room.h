@@ -56,7 +56,6 @@ public:
     bool obtainable(const Card *card, ServerPlayer *player);
     void promptUser(ServerPlayer *to, const QString &prompt_str);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
-    void setPlayerCorrect(ServerPlayer *player, const QString &correct_str);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void useCard(const CardUseStruct &card_use);

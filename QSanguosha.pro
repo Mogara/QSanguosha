@@ -69,7 +69,8 @@ SOURCES += src/main.cpp \
     src/lua-wrapper.cpp \
     src/window.cpp \
     src/contestdb.cpp \
-    src/hongyan-scenario.cpp
+    src/hongyan-scenario.cpp \
+    src/sp-package.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -136,7 +137,8 @@ HEADERS += src/mainwindow.h \
     src/lua-wrapper.h \
     src/window.h \
     src/contestdb.h \
-    src/hongyan-scenario.h
+    src/hongyan-scenario.h \
+    src/sp-package.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

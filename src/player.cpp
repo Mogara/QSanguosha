@@ -12,10 +12,6 @@ Player::Player(QObject *parent)
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true), chained(false)
 {
-    correct.equip_dest = 0;
-    correct.equip_src = 0;
-    correct.skill_src = 0;
-    correct.skill_dest = 0;
 }
 
 void Player::setScreenName(const QString &screen_name){
@@ -133,46 +129,8 @@ int Player::getAttackRange() const{
     return attack_range;
 }
 
-QString Player::getCorrect() const{
-    return QString("%1:%2:%3:%4")
-            .arg(correct.equip_src)
-            .arg(correct.equip_dest)
-            .arg(correct.skill_src)
-            .arg(correct.skill_dest);
-}
-
-void Player::setCorrect(const QString &correct_str){
-    // F : feiying
-    // M : mashu
-    // P : plus, +1 horse
-    // S : subtract, -1 horse
-
-    QRegExp rx("(-?)([FMPS])");
-    if(!rx.exactMatch(correct_str)){
-        qFatal("Unknown correct string!");
-        return;
-    }
-
-    QStringList texts = rx.capturedTexts();
-    bool uninstall = texts.at(1) == "-";
-    QString field_name = texts.at(2);
-
-    if(field_name == "F")
-        correct.skill_dest = +1;
-    else if(field_name == "M")
-        correct.skill_src = -1;
-    else if(field_name == "P")
-        correct.equip_dest = uninstall ? 0 : +1;
-    else if(field_name == "S")
-        correct.equip_src = uninstall ? 0 : -1;
-}
-
 bool Player::inMyAttackRange(const Player *other) const{
     return distanceTo(other) <= attack_range;
-}
-
-Player::CorrectStruct Player::getCorrectStruct() const{
-    return correct;
 }
 
 int Player::distanceTo(const Player *other) const{
@@ -186,11 +144,17 @@ int Player::distanceTo(const Player *other) const{
     int left = aliveCount() - right;
     int distance = qMin(left, right);
 
-    distance += correct.equip_src;
-    distance += correct.skill_src;
+    if(getOffensiveHorse())
+        distance --;
 
-    distance += other->correct.equip_dest;
-    distance += other->correct.skill_dest;
+    if(hasSkill("mashu") || (hasSkill("yicong") && getHp() > 2))
+        distance --;
+
+    if(other->getDefensiveHorse())
+        distance ++;
+
+    if(other->hasSkill("feiying") || (other->hasSkill("yicong") && other->getHp() <= 2))
+        distance ++;
 
     if(distance < 1)
         distance = 1;

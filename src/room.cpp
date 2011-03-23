@@ -844,11 +844,6 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
     broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
 }
 
-void Room::setPlayerCorrect(ServerPlayer *player, const QString &correct_str){
-    player->setCorrect(correct_str);
-    broadcastProperty(player, "correct", correct_str);
-}
-
 void Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);

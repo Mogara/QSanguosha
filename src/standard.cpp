@@ -304,20 +304,12 @@ QString Horse::getEffectPath(bool) const{
     return "audio/card/common/horse.ogg";
 }
 
-void Horse::onInstall(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    if(correct > 0)
-        room->setPlayerCorrect(player, "P");
-    else
-        room->setPlayerCorrect(player, "S");
+void Horse::onInstall(ServerPlayer *) const{
+
 }
 
-void Horse::onUninstall(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    if(correct > 0)
-        room->setPlayerCorrect(player, "-P");
-    else
-        room->setPlayerCorrect(player, "-S");
+void Horse::onUninstall(ServerPlayer *) const{
+
 }
 
 QString Horse::label() const{

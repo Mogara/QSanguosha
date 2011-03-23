@@ -14,15 +14,10 @@ public:
     }
 };
 
-class Mashu: public GameStartSkill{
+class Mashu: public Skill{
 public:
-    Mashu():GameStartSkill("mashu")
+    Mashu():Skill("mashu", Skill::Compulsory)
     {
-        frequency = Compulsory;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        player->getRoom()->setPlayerCorrect(player, "M");
     }
 };
 

@@ -47,17 +47,30 @@ void DistanceViewDialog::showDistance()
     ui->rightDistanceLineEdit->setText(QString::number(right_distance));    
     ui->attackRangeLineEdit->setText(QString::number(from->getAttackRange()));
 
-    Player::CorrectStruct from_correct = from->getCorrectStruct();
-    ui->fromSkillSource->setText(QString::number(from_correct.skill_src));
-    ui->fromEquipSource->setText(QString::number(from_correct.equip_src));
-    ui->fromSkillDest->setText(QString::number(from_correct.skill_dest));
-    ui->fromEquipDest->setText(QString::number(from_correct.equip_dest));
 
-    Player::CorrectStruct to_correct = to->getCorrectStruct();
-    ui->toSkillSource->setText(QString::number(to_correct.skill_src));
-    ui->toEquipSource->setText(QString::number(to_correct.equip_src));
-    ui->toSkillDest->setText(QString::number(to_correct.skill_dest));
-    ui->toEquipDest->setText(QString::number(to_correct.equip_dest));
+    if(from->hasSkill("mashu") || (from->hasSkill("yicong") && from->getHp()>2))
+        ui->fromSkillSource->setText("-1");
+
+    if(from->getOffensiveHorse())
+        ui->fromEquipSource->setText("-1");
+
+    if(from->hasSkill("feiying") || (from->hasSkill("feiying") && from->getHp()<=2))
+        ui->fromSkillDest->setText("+1");
+
+    if(from->getDefensiveHorse())
+        ui->fromEquipDest->setText("+1");
+
+    if(to->hasSkill("mashu") || (to->hasSkill("yicong") && to->getHp()>2))
+        ui->toSkillSource->setText("-1");
+
+    if(to->getOffensiveHorse())
+        ui->toEquipSource->setText("-1");
+
+    if(to->hasSkill("feiying") || (to->hasSkill("yicong") && to->getHp()<=2))
+        ui->toSkillDest->setText("+1");
+
+    if(to->getDefensiveHorse())
+        ui->toEquipDest->setText("+1");
 
     ui->finalResultLineEdit->setText(QString::number(from->distanceTo(to)));
     QString result = from->inMyAttackRange(to) ? tr("Yes") : tr("No");
