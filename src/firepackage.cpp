@@ -490,6 +490,11 @@ public:
         frequency = Compulsory;
     }
 
+    virtual int getPriority() const{
+        return 3;
+        // promote the priority in order to avoid the conflict with Yongsi
+    }
+
     virtual bool onPhaseChange(ServerPlayer *yuanshao) const{
         if(yuanshao->getPhase() == Player::Discard){
             Room *room = yuanshao->getRoom();
