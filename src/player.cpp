@@ -144,20 +144,30 @@ int Player::distanceTo(const Player *other) const{
     int left = aliveCount() - right;
     int distance = qMin(left, right);
 
+    // the shorten ways of distance
     if(getOffensiveHorse())
         distance --;
 
-    if(hasSkill("mashu") || (hasSkill("yicong") && getHp() > 2))
+    if(hasSkill("mashu"))
         distance --;
 
+    if(hasSkill("yicong") && getHp() > 2)
+        distance --;
+
+    // the lengthen ways of distance
     if(other->getDefensiveHorse())
         distance ++;
 
-    if(other->hasSkill("feiying") || (other->hasSkill("yicong") && other->getHp() <= 2))
+    if(other->hasSkill("feiying"))
         distance ++;
 
+    if(other->hasSkill("yicong") && other->getHp() <= 2)
+        distance ++;
+
+    // keep the distance >=1
     if(distance < 1)
         distance = 1;
+
     return distance;
 }
 

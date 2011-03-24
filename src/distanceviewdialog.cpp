@@ -45,32 +45,27 @@ void DistanceViewDialog::showDistance()
 
     ui->leftDistanceLineEdit->setText(QString::number(left_distance));
     ui->rightDistanceLineEdit->setText(QString::number(right_distance));    
+    ui->minorValueLineEdit->setText(QString::number(qMin(left_distance, right_distance)));
     ui->attackRangeLineEdit->setText(QString::number(from->getAttackRange()));
 
-
-    if(from->hasSkill("mashu") || (from->hasSkill("yicong") && from->getHp()>2))
-        ui->fromSkillSource->setText("-1");
-
     if(from->getOffensiveHorse())
-        ui->fromEquipSource->setText("-1");
+        ui->ohorseLineEdit->setText("-1");
 
-    if(from->hasSkill("feiying") || (from->hasSkill("feiying") && from->getHp()<=2))
-        ui->fromSkillDest->setText("+1");
+    if(from->hasSkill("mashu"))
+        ui->mashuLineEdit->setText("-1");
 
-    if(from->getDefensiveHorse())
-        ui->fromEquipDest->setText("+1");
-
-    if(to->hasSkill("mashu") || (to->hasSkill("yicong") && to->getHp()>2))
-        ui->toSkillSource->setText("-1");
-
-    if(to->getOffensiveHorse())
-        ui->toEquipSource->setText("-1");
-
-    if(to->hasSkill("feiying") || (to->hasSkill("yicong") && to->getHp()<=2))
-        ui->toSkillDest->setText("+1");
+    if(from->hasSkill("yicong") && from->getHp() >2)
+        ui->ohorseYicongLineEdit->setText("-1");
 
     if(to->getDefensiveHorse())
-        ui->toEquipDest->setText("+1");
+        ui->dhorseLineEdit->setText("+1");
+
+    if(to->hasSkill("feiying"))
+        ui->feiyingLineEdit->setText("+1");
+
+    if(to->hasSkill("yicong") && to->getHp()<=2)
+        ui->dhorseYicongLineEdit->setText("+1");
+
 
     ui->finalResultLineEdit->setText(QString::number(from->distanceTo(to)));
     QString result = from->inMyAttackRange(to) ? tr("Yes") : tr("No");

@@ -1,4 +1,4 @@
--- translation for WindPackage
+-- translation for SP Package
 
 return {
 	["sp"] = "SP", 
