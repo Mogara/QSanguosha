@@ -677,6 +677,25 @@ public:
     }
 };
 
+class Jiuyuan: public TriggerSkill{
+public:
+    Jiuyuan():TriggerSkill("jiuyuan$"){
+        events << Dying << HpRecover;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == Dying){
+            player->getRoom()->playSkillEffect("jiuyuan", 1);
+        }else if(event == HpRecover){
+            if(player->getHp() == 0)
+                player->getRoom()->playSkillEffect("jiuyuan", 4);
+        }
+
+        return false;
+    }
+};
+
 class Yingzi:public DrawCardsSkill{
 public:
     Yingzi():DrawCardsSkill("yingzi"){
@@ -1117,7 +1136,7 @@ void StandardPackage::addGenerals(){
     General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
     sunquan->addSkill(new Zhiheng);
-    sunquan->addSkill(new Skill("jiuyuan$", Skill::Compulsory));
+    sunquan->addSkill(new Jiuyuan);
 
     zhouyu = new General(this, "zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);

@@ -320,7 +320,10 @@ local t = {
 	["$jieyin2"] = "他好，我也好", 
 	["$jijiu1"] = "别紧张，有老夫呢", 
 	["$jijiu2"] = "救人一命，胜造七级浮屠", 
-	["$jiuyuan1"] = "吴将何在", 
+	["$jiuyuan1"] = "吴将何在？", 
+	["$jiuyuan2"] = "主公别怕，我来救你",
+	["$jiuyuan3"] = "主公，我来救你了",
+	["$jiuyuan4"] = "大难不死，必有后福啊",
 	["$keji1"] = "我忍", 
 	["$keji2"] = "君子藏器于身，待时而动", 
 	["$kurou"] = "请鞭挞我吧 ，公瑾！", 
@@ -411,6 +414,7 @@ local t = {
 	["~diaochan"] = "父亲大人，对不起",	
 	
 	["cv:lumeng"] = "腾讯英雄杀勾践",
+	["cv:sunquan"] = "官方，宇文天启",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

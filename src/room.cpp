@@ -758,7 +758,7 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
                     can_invoke = dying->hasSkill("guixin2");
 
                 if(can_invoke){
-                    playSkillEffect("jiuyuan");
+                    playSkillEffect("jiuyuan", player->getGeneral()->isMale() ? 2 : 3);
 
                     got ++;
                     peaches --;
