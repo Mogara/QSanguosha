@@ -490,6 +490,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasLordSkill("xueyi");
+    }
+
     virtual int getPriority() const{
         return 3;
         // promote the priority in order to avoid the conflict with Yongsi

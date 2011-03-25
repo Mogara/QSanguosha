@@ -102,7 +102,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "wei" && !target->hasSkill(objectName());
+        return target->getKingdom() == "wei" && ! target->hasLordSkill("songwei");
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -110,15 +110,12 @@ public:
 
         if(card->isBlack()){
             Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName())){
-                room->playSkillEffect(objectName());
-
-                QList<ServerPlayer *> players = room->getOtherPlayers(player);
-                foreach(ServerPlayer *p, players){
-                    if(p->hasSkill(objectName())){                        
-                        p->drawCards(1);
-                        break;
-                    }
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            foreach(ServerPlayer *p, players){
+                QVariant who = QVariant::fromValue(p);
+                if(p->hasLordSkill("songwei") && p->askForSkillInvoke("songwei", who)){
+                    room->playSkillEffect(objectName(), 1);
+                    p->drawCards(1);
                 }
             }
         }
@@ -837,22 +834,24 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "qun" && !target->hasSkill(objectName());
+        return target->getKingdom() == "qun" && !target->hasLordSkill("baonue");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        ServerPlayer *dongzhuo = NULL;
-        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        QList<ServerPlayer *> dongzhuos;
+        QList<ServerPlayer *> players = room->getOtherPlayers(room->getCurrent());
         foreach(ServerPlayer *p, players){
-            if(p->hasSkill(objectName())){
-                dongzhuo = p;
-                break;
+            if(p->hasLordSkill("baonue")){
+                dongzhuos << p;
             }
         }
 
-        if(dongzhuo && dongzhuo->isWounded() && room->askForSkillInvoke(player, objectName())){
-            if(room->judge(player, BaonueCallback) == "good"){
+        foreach(ServerPlayer *dongzhuo, dongzhuos){
+            QVariant who = QVariant::fromValue(dongzhuo);
+            if(dongzhuo->isWounded() && player->askForSkillInvoke(objectName(), who) &&
+               room->judge(player, BaonueCallback) == "good")
+            {
                 room->playSkillEffect(objectName());
                 room->recover(dongzhuo);
             }

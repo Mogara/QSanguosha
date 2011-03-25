@@ -34,7 +34,7 @@ void Player::setOwner(bool owner){
 }
 
 void Player::setHp(int hp){
-    if(hp >= 0 && hp <= max_hp && this->hp != hp){
+    if(hp <= max_hp && this->hp != hp){
         this->hp = hp;
         emit state_changed();
     }
@@ -60,7 +60,7 @@ void Player::setMaxHP(int max_hp){
 }
 
 int Player::getLostHp() const{
-    return max_hp - hp;
+    return max_hp - qMax(hp, 0);
 }
 
 bool Player::isWounded() const{
@@ -286,6 +286,13 @@ bool Player::hasSkill(const QString &skill_name) const{
         return general->hasSkill(skill_name) || acquired_skills.contains(skill_name);
     else
         return false;
+}
+
+bool Player::hasLordSkill(const QString &skill_name) const{
+    if(acquired_skills.contains(skill_name))
+        return true;
+    else
+        return general->hasSkill(skill_name) && role == "lord";
 }
 
 void Player::acquireSkill(const QString &skill_name){

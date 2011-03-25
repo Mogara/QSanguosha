@@ -35,6 +35,10 @@ public:
         default_choice = "ignore";
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasLordSkill("hujia");
+    }
+
     virtual bool trigger(TriggerEvent, ServerPlayer *caocao, QVariant &data) const{
         QString pattern = data.toString();
         if(pattern != "jink")
@@ -405,10 +409,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        if(Self->hasSkill("guixin2"))
-            return Slash::IsAvailable();
-        else
-            return Self->getRoleEnum() == Player::Lord && Slash::IsAvailable();
+        return Self->hasLordSkill("jijiang");
     }
 
     virtual const Card *viewAs() const{
@@ -426,7 +427,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->isLord() && target->hasSkill(objectName());
+        return target->hasLordSkill("jijiang");
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *liubei, QVariant &data) const{
@@ -680,15 +681,16 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << HpRecover;
+        events << Dying << AskForPeachesDone;
         frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == Dying){
             player->getRoom()->playSkillEffect("jiuyuan", 1);
-        }else if(event == HpRecover){
-            if(player->getHp() == 0)
+        }else if(event == AskForPeachesDone){
+            DyingStruct dying = data.value<DyingStruct>();
+            if(dying.peaches <= 0)
                 player->getRoom()->playSkillEffect("jiuyuan", 4);
         }
 

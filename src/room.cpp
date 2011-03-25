@@ -752,17 +752,12 @@ int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
             peaches --;
 
             // jiuyuan process
-            if(dying->hasSkill("jiuyuan") && player != dying  && player->getKingdom() == "wu"){
-                bool can_invoke = true;
-                if(!dying->isLord())
-                    can_invoke = dying->hasSkill("guixin2");
+            if(dying->hasLordSkill("jiuyuan") && player != dying  && player->getKingdom() == "wu"){
+                playSkillEffect("jiuyuan", player->getGeneral()->isMale() ? 2 : 3);
+                thread->delay(2000);
 
-                if(can_invoke){
-                    playSkillEffect("jiuyuan", player->getGeneral()->isMale() ? 2 : 3);
-
-                    got ++;
-                    peaches --;
-                }
+                got ++;
+                peaches --;
             }
         }else
             break;

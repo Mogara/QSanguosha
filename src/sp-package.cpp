@@ -21,25 +21,65 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *yuanshu, QVariant &data) const{
         if(event == DrawNCards){
-            data = data.toInt() + getKingdoms(yuanshu);
-            return false;
-        }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
-            int to_discard = yuanshu->getHandcardNum() - yuanshu->getMaxCards();
             int x = getKingdoms(yuanshu);
-            if(to_discard < x){
-                if(x >= yuanshu->getHandcardNum())
-                    yuanshu->throwAllHandCards();
-                else{
-                    Room *room = yuanshu->getRoom();
-                    room->askForDiscard(yuanshu, "yongsi", x);
-                }
+            data = data.toInt() + x;
 
-                return true;
-            }else
-                return false;
+            Room *room = yuanshu->getRoom();
+            LogMessage log;
+            log.type = "#YongsiGood";
+            log.from = yuanshu;
+            log.arg = QString::number(x);
+            room->sendLog(log);
+
+        }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
+            int x = getKingdoms(yuanshu);
+            int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();
+            Room *room = yuanshu->getRoom();
+
+            if(total <= x){
+                yuanshu->throwAllHandCards();
+                yuanshu->throwAllEquips();
+
+                LogMessage log;
+                log.type = "#YongsiWorst";
+                log.from = yuanshu;
+                log.arg = QString::number(total);
+                room->sendLog(log);
+
+            }else{
+                room->askForDiscard(yuanshu, "yongsi", x, false, true);
+
+                LogMessage log;
+                log.type = "#YongsiBad";
+                log.from = yuanshu;
+                log.arg = QString::number(x);
+                room->sendLog(log);
+            }
         }
 
         return false;
+    }
+};
+
+class Weidi: public GameStartSkill{
+public:
+    Weidi():GameStartSkill("weidi"){
+        frequency = Compulsory;
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        ServerPlayer *lord = room->getLord();
+        if(lord != player){
+            const General *general = lord->getGeneral();
+            QList<const Skill *> skills = general->findChildren<const Skill *>();
+            foreach(const Skill *skill, skills){
+                if(skill->isLordSkill()){
+                    room->acquireSkill(player, skill->objectName());
+                    return;
+                }
+            }
+        }
     }
 };
 
@@ -51,6 +91,7 @@ SPPackage::SPPackage()
 
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);
+    yuanshu->addSkill(new Weidi);
 }
 
 ADD_PACKAGE(SP);

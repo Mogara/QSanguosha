@@ -64,7 +64,7 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
 }
 
 bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return to_select->hasSkill("huangtian");
+    return targets.isEmpty() && to_select->hasLordSkill("huangtian");
 }
 
 class Guidao:public ViewAsSkill{
