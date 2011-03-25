@@ -317,18 +317,14 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             room->damage(damage);
 
-
-            if(effect.to->hasFlag("armor_nullified"))
-                room->setPlayerFlag(effect.to, "-armor_nullified");
+            effect.to->removeMark("qinggang");
 
             break;
         }
 
     case SlashMissed:{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
-            if(effect.to->hasFlag("armor_nullified"))
-                room->setPlayerFlag(effect.to, "-armor_nullified");
+            effect.to->removeMark("qinggang");
 
             break;
         }

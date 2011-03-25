@@ -399,8 +399,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return !target->hasFlag("armor_nullified") && target->getArmor() == NULL
-                && target->hasSkill(objectName()) && target->isAlive();
+        return TriggerSkill::triggerable(target) && !target->getArmor() && target->getMark("qinggang") == 0;
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *wolong, QVariant &data) const{

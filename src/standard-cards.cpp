@@ -184,8 +184,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        Room *room = player->getRoom();
-        room->setPlayerFlag(effect.to, "armor_nullified");
+        effect.to->addMark("qinggang");
 
         return false;
     }

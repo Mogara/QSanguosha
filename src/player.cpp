@@ -389,7 +389,7 @@ bool Player::hasWeapon(const QString &weapon_name) const{
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
-    return armor && !hasFlag("armor_nullified") && armor->objectName() == armor_name;
+    return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
 }
 
 QStack<const Card *> Player::getJudgingArea() const{
@@ -530,7 +530,7 @@ void Player::addMark(const QString &mark){
 void Player::removeMark(const QString &mark){
     int value = marks.value(mark, 0);
     value--;
-    value = qMin(0, value);
+    value = qMax(0, value);
     setMark(mark, value);
 }
 
