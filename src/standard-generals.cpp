@@ -685,6 +685,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasLordSkill("jiuyuan");
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == Dying){
             player->getRoom()->playSkillEffect("jiuyuan", 1);

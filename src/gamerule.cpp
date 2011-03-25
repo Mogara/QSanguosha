@@ -137,8 +137,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case GameStart: {
             if(player->getKingdom() == "god"){
                 QString new_kingdom = room->askForKingdom(player);
-                if(new_kingdom != "god")
-                    room->setPlayerProperty(player, "kingdom", new_kingdom);
+                room->setPlayerProperty(player, "kingdom", new_kingdom);
 
                 LogMessage log;
                 log.type = "#ChooseKingdom";
