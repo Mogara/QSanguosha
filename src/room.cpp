@@ -380,6 +380,9 @@ void Room::gameOver(const QString &winner){
 void Room::slashEffect(const SlashEffectStruct &effect){
     effect.from->addMark("SlashCount");
 
+    if(effect.from->getMark("SlashCount") > 1 && effect.from->hasSkill("paoxiao"))
+        playSkillEffect("paoxiao");
+
     QVariant data = QVariant::fromValue(effect);
 
     setEmotion(effect.from, Killer);
