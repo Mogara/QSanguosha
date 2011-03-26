@@ -772,9 +772,7 @@ bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peac
     if(player->hasSkill("jijiu")){
         ServerPlayer *huatuo = player;
         if(huatuo->isKongcheng()){
-            QList<const Card *> equips;
-            equips << huatuo->getWeapon() << huatuo->getArmor()
-                    << huatuo->getDefensiveHorse() << huatuo->getOffensiveHorse();
+            QList<const Card *> equips = huatuo->getEquips();
             bool has_red = false;
             foreach(const Card *equip, equips){
                 if(equip && equip->isRed()){

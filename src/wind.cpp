@@ -411,21 +411,21 @@ public:
             }
             bool duplicated =  numbers.size() < buqu.size();
 
-            if(!duplicated){
+            if(duplicated){
+                ServerPlayer *killer = NULL;
+                if(dying_data.damage)
+                    killer = dying_data.damage->from;
+
+                room->killPlayer(zhoutai, killer);
+
+                return true;
+            }else{
                 QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
                 if(choice == "alive"){
                     room->playSkillEffect(objectName());
                     return true;
                 }
             }
-
-            ServerPlayer *killer = NULL;
-            if(dying_data.damage)
-                killer = dying_data.damage->from;
-
-            room->killPlayer(zhoutai, killer);
-
-            return true;
         }
 
         return false;
