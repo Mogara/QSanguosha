@@ -34,7 +34,7 @@ TianxiangCard::TianxiangCard()
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    DamageStruct damage = room->getTag("TianxiangDamage").value<DamageStruct>();
+    DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
     damage.chain = true;
     room->damage(damage);
@@ -86,7 +86,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             Room *room = xiaoqiao->getRoom();
 
-            room->setTag("TianxiangDamage", QVariant::fromValue(damage));
+            xiaoqiao->tag["TianxiangDamage"] = QVariant::fromValue(damage);
             if(room->askForUseCard(xiaoqiao, "@tianxiang", "@@tianxiang-card"))
                 return true;
         }

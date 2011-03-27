@@ -451,10 +451,12 @@ public:
         if(lusu->getPhase() == Player::Draw && lusu->hasFlag("haoshi")){
             lusu->setFlags("-haoshi");
 
-            if(lusu->getHandcardNum() <= 5)
-                return false;
-
             Room *room = lusu->getRoom();
+            if(lusu->getHandcardNum() <= 5){
+                room->playSkillEffect("haoshi");
+                return false;
+            }
+
             QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
             int least = 1000;
             foreach(ServerPlayer *player, other_players)
