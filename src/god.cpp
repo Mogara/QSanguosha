@@ -385,8 +385,15 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
+
+        LogMessage log;
+        log.type = event == Damage ? "#KuangbaoDamage" : "#KuangbaoDamaged";
+        log.from = player;
+        log.arg = QString::number(damage.damage);
+        player->getRoom()->sendLog(log);
+
         player->gainMark("@wrath", damage.damage);
 
         return false;
