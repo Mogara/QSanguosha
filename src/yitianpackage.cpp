@@ -1466,6 +1466,8 @@ public:
                 room->sendLog(log);
                 room->loseHp(elai, x);
             }
+
+            elai->setFlags("-shenli");
         }
 
         return false;
@@ -1480,7 +1482,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *elai, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card && damage.card->inherits("Slash")){
+        if(damage.card && damage.card->inherits("Slash") &&
+           elai->getPhase() == Player::Play && !elai->hasFlag("shenli"))
+        {
             int x = elai->getMark("@struggle");
             if(x > 0){
                 x = qMin(3, x);
@@ -1493,6 +1497,8 @@ public:
                 log.arg = QString::number(x);
                 log.arg2 = QString::number(damage.damage);
                 elai->getRoom()->sendLog(log);
+
+                elai->setFlags("shenli");
             }
         }
 
