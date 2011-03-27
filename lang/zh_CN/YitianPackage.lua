@@ -168,6 +168,18 @@ return {
 	["dushi"] = "毒士",
 	[":dushi"] = "锁定技，杀死你的角色获得崩坏技能直到游戏结束",
 	
+	-- 古恶来
+	["guelai"] = "古恶来",
+	["sizhan"] = "死战",
+	[":sizhan"] = 
+	"锁定技,你每受到1点伤害,防止该伤害并获得1个死战标记.回合结束阶段须弃掉所有的X个死战标记并流失X点体力",
+	["shenli"] = "神力",
+	[":shenli"] = "锁定技,出牌阶段,你使用【杀】造成的伤害+X,X为当前死战标记数且最大为3",
+	["#SizhanPrevent"] = "%from 的锁定技【死战】被触发，防止了当前的 %arg 点伤害",
+	["#SizhanLoseHP"] = "%from 的锁定技【死战】被触发，流失了 %arg 点体力",
+	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
+	["@struggle"] = "死战",
+	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
@@ -184,6 +196,7 @@ return {
 	["cv:zhongshiji"] = "",
 	["cv:jiangboyue"] = "Jr. Wakaran",
 	["cv:jiawenhe"] = "",
+	["cv:guelai"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -196,5 +209,6 @@ return {
 	["designer:zhongshiji"] = "Jr. Wakaran",
 	["designer:jiangboyue"] = "Jr. Wakaran",
 	["designer:jiawenhe"] = "氢弹",
+	["designer:guelai"] = "Jr. Wakaran, 太阳神上",
 }
 

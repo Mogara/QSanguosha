@@ -1433,6 +1433,73 @@ public:
     }
 };
 
+class Sizhan: public TriggerSkill{
+public:
+    Sizhan():TriggerSkill("sizhan"){
+        events << Predamaged << PhaseChange;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *elai, QVariant &data) const{
+        if(event == Predamaged){
+            DamageStruct damage = data.value<DamageStruct>();
+
+            LogMessage log;
+            log.type = "#SizhanPrevent";
+            log.from = elai;
+            log.arg = QString::number(damage.damage);
+            elai->getRoom()->sendLog(log);
+
+            elai->gainMark("@struggle", damage.damage);
+
+            return true;
+        }else if(event == PhaseChange && elai->getPhase() == Player::Finish){
+            int x = elai->getMark("@struggle");
+            if(x > 0){
+                elai->loseMark("@struggle", x);
+
+                LogMessage log;
+                log.type = "#SizhanLoseHP";
+                log.from = elai;
+                log.arg = QString::number(x);
+
+                Room *room = elai->getRoom();
+                room->sendLog(log);
+                room->loseHp(elai, x);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Shenli: public TriggerSkill{
+public:
+    Shenli():TriggerSkill("shenli"){
+        events << Predamage;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *elai, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card && damage.card->inherits("Slash")){
+            int x = elai->getMark("@struggle");
+            if(x > 0){
+                x = qMin(3, x);
+                damage.damage += x;
+                data = QVariant::fromValue(damage);
+
+                LogMessage log;
+                log.type = "#ShenliBuff";
+                log.from = elai;
+                log.arg = QString::number(x);
+                log.arg2 = QString::number(damage.damage);
+                elai->getRoom()->sendLog(log);
+            }
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1502,6 +1569,10 @@ YitianPackage::YitianPackage()
     General *jiawenhe = new General(this, "jiawenhe", "qun");
     jiawenhe->addSkill(new Dongcha);
     jiawenhe->addSkill(new Dushi);
+
+    General *elai = new General(this, "guelai", "wei");
+    elai->addSkill(new Sizhan);
+    elai->addSkill(new Shenli);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

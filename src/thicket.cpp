@@ -113,7 +113,7 @@ public:
             QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
-                if(p->hasLordSkill("songwei") && p->askForSkillInvoke("songwei", who)){
+                if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
                     room->playSkillEffect(objectName(), 1);
                     p->drawCards(1);
                 }
