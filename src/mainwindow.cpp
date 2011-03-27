@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
+            << ui->actionAcknowledgement
             << ui->actionExit;
 
     foreach(QAction *action, actions)
@@ -124,7 +125,8 @@ MainWindow::~MainWindow()
 void MainWindow::gotoScene(QGraphicsScene *scene){
     QGraphicsView *view = qobject_cast<QGraphicsView *>(centralWidget());
     view->setScene(scene);
-    delete this->scene;
+    if(this->scene)
+        this->scene->deleteLater();
     this->scene = scene;
 
     changeBackground();
@@ -201,13 +203,11 @@ void MainWindow::on_actionReplay_triggered()
 }
 
 void MainWindow::restartConnection(){
-    if(scene)
-        scene->clear();
+    Self->deleteLater();
+    ClientInstance->deleteLater();
 
-    ClientInstance = NULL;
-
-    delete Self;
     Self = NULL;
+    ClientInstance = NULL;
 
     startConnection();
 }
@@ -473,4 +473,10 @@ void MainWindow::on_actionBroadcast_triggered()
 
     QString msg = QInputDialog::getText(this, tr("Broadcast"), tr("Please input the message to broadcast"));
     server->broadcast(msg);
+}
+
+
+void MainWindow::on_actionAcknowledgement_triggered()
+{
+
 }

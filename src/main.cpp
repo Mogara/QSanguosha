@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
     Config.init();
 
     SoundEngine = irrklang::createIrrKlangDevice();
+    if(SoundEngine)
+        SoundEngine->setSoundVolume(Config.Volume);
+
     Sanguosha = new Engine;
 
     BanPair::loadBanPairs();

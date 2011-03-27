@@ -58,6 +58,7 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_irrKlang"/>
+    <addaction name="actionAcknowledgement"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
@@ -247,6 +248,11 @@
   <action name="actionBroadcast">
    <property name="text">
     <string>Broadcast ...</string>
+   </property>
+  </action>
+  <action name="actionAcknowledgement">
+   <property name="text">
+    <string>Acknowledgement</string>
    </property>
   </action>
  </widget>

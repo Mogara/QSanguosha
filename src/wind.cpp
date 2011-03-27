@@ -40,7 +40,7 @@ void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlaye
 
     if(room->judge(target, LeijiCallback) == "bad"){
         DamageStruct damage;
-        damage.card = this;
+        damage.card = NULL;
         damage.damage = 2;
         damage.from = zhangjiao;
         damage.to = target;
@@ -128,7 +128,7 @@ public:
 
     virtual void onGameStart(ServerPlayer *zhangjiao) const{
         Room *room = zhangjiao->getRoom();
-        QList<ServerPlayer *> players = room->getOtherPlayers(zhangjiao);
+        QList<ServerPlayer *> players = room->getAlivePlayers();
         foreach(ServerPlayer *player, players){
             room->attachSkillToPlayer(player, "huangtianv");
         }

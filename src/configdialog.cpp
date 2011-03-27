@@ -96,7 +96,7 @@ void ConfigDialog::saveConfig()
 
     float volume = ui->volumeSlider->value() / 100.0;
     Config.Volume = volume;
-    Config.setValue("Volume", volume);
+    Config.setValue("Volume", volume);    
 
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
