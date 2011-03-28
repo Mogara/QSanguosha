@@ -59,7 +59,17 @@ void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
+    Room *room = effect.to->getRoom();
+    if(effect.to->hasFlag("dying")){
+        // do animation
+        QString who = effect.to->objectName();
+        QString animation_str = QString("peach:%1:%2").arg(who).arg(who);
+        room->broadcastInvoke("animate", animation_str);
+
+        // recover hp
+        room->recover(effect.to);
+    }else
+        room->setPlayerFlag(effect.to, "drank");
 }
 
 class FanSkill: public WeaponSkill{

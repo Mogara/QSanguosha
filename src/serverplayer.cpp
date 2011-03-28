@@ -384,6 +384,24 @@ void ServerPlayer::loseMark(const QString &mark, int n){
     room->setPlayerMark(this, mark, value);
 }
 
+void ServerPlayer::addCardToPile(const QString &pile_name, int card_id){
+    getPile(pile_name).append(card_id);
+
+    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special);
+
+    QString pile_str = QString("%1:%2+%3").arg(objectName()).arg(pile_name).arg(card_id);
+    room->broadcastInvoke("pile", pile_str);
+}
+
+void ServerPlayer::removeCardFromPile(const QString &pile_name, int card_id){
+    getPile(pile_name).removeOne(card_id);
+
+    room->throwCard(card_id);
+
+    QString pile_str = QString("%1:%2-%3").arg(objectName()).arg(pile_name).arg(card_id);
+    room->broadcastInvoke("pile", pile_str);
+}
+
 void ServerPlayer::setAI(AI *ai) {
     this->ai = ai;
 }

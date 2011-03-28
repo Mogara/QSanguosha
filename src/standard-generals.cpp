@@ -681,7 +681,7 @@ public:
 class Jiuyuan: public TriggerSkill{
 public:
     Jiuyuan():TriggerSkill("jiuyuan$"){
-        events << Dying << AskForPeachesDone;
+        events << Dying << AskForPeachesDone << CardEffected;
         frequency = Compulsory;
     }
 
@@ -689,13 +689,41 @@ public:
         return target->hasLordSkill("jiuyuan");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == Dying){
-            player->getRoom()->playSkillEffect("jiuyuan", 1);
-        }else if(event == AskForPeachesDone){
-            DyingStruct dying = data.value<DyingStruct>();
-            if(dying.peaches <= 0)
-                player->getRoom()->playSkillEffect("jiuyuan", 4);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *sunquan, QVariant &data) const{
+        Room *room =  sunquan->getRoom();
+        switch(event){
+        case Dying: room->playSkillEffect("jiuyuan", 1); break;
+        case CardEffected: {
+                CardEffectStruct effect = data.value<CardEffectStruct>();
+                if(effect.card->inherits("Peach") && effect.from->getKingdom() == "wu"
+                   && sunquan != effect.from)
+                {
+                    int index = effect.from->getGeneral()->isMale() ? 2 : 3;
+                    room->playSkillEffect("jiuyuan", index);
+
+                    LogMessage log;
+                    log.type = "#JiuyuanExtraRecover";
+                    log.from = sunquan;
+                    log.to << effect.from;
+                    room->sendLog(log);
+
+                    room->recover(sunquan);
+
+                    room->getThread()->delay(2000);
+                }
+
+                break;
+            }
+
+        case AskForPeachesDone:{
+                if(sunquan->getHp() > 0)
+                    room->playSkillEffect("jiuyuan", 4);
+
+                break;
+            }
+
+        default:
+            break;
         }
 
         return false;

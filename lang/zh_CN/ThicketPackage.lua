@@ -23,6 +23,8 @@ return {
 	["dimeng"] = "缔盟", 
 	["wansha"] = "完杀", 
 	["weimu"] = "帷幕", 
+	["#WanshaOne"] = "%from 的锁定技【完杀】被触发，只能 %from 自救",
+	["#WanshaTwo"] = "%from 的锁定技【完杀】被触发，只有 %from 和 %to 自己才能救 %to",
 	["luanwu"] = "乱武", 
 	["jiuchi"] = "酒池", 
 	["roulin"] = "肉林", 

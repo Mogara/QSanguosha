@@ -48,6 +48,9 @@ public:
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);
 
+    void addCardToPile(const QString &pile_name, int card_id);
+    void removeCardFromPile(const QString &pile_name, int card_id);
+
     void setAI(AI *ai);
     AI *getAI() const;
 

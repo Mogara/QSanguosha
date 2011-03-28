@@ -719,110 +719,43 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
     return Card::Parse(result);
 }
 
-void Room::askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players){
-    LogMessage log;
-    log.type = "#AskForPeaches";
-    log.from = dying.who;
-    log.arg = QString::number(dying.peaches);
-    sendLog(log);
-
-    DyingStruct dying_data = dying;
-    foreach(ServerPlayer *player, players){
-        QVariant data = QVariant::fromValue(dying_data);
-
-        bool broken = thread->trigger(AskForPeaches, player, data);
-        if(broken)
-            return;
-
-        dying_data = data.value<DyingStruct>();
-        if(dying_data.peaches <= 0)
-            break;
-    }
-
-    int got = dying.peaches - dying_data.peaches;
-    setTag("PeachesGot", got);
-
-    QVariant data = QVariant::fromValue(dying_data);
-    thread->trigger(AskForPeachesDone, dying.who, data);
-}
-
-int Room::askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
-    int got = 0;
-    while(peaches > 0){
-        bool provided = askForSinglePeach(player, dying, peaches);
-        if(provided){
-            got ++;
-            peaches --;
-
-            // jiuyuan process
-            if(dying->hasLordSkill("jiuyuan") && player != dying  && player->getKingdom() == "wu"){
-                playSkillEffect("jiuyuan", player->getGeneral()->isMale() ? 2 : 3);
-                thread->delay(2000);
-
-                got ++;
-                peaches --;
-            }
-        }else
-            break;
-    }
-
-    return got;
-}
-
-bool Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches){
-    const Card *peach = NULL;
-
-    if(player->hasSkill("jijiu")){
+const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
+    // jijiu special case
+    if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
         ServerPlayer *huatuo = player;
         if(huatuo->isKongcheng()){
             QList<const Card *> equips = huatuo->getEquips();
             bool has_red = false;
             foreach(const Card *equip, equips){
-                if(equip && equip->isRed()){
+                if(equip->isRed()){
                     has_red = true;
                     break;
                 }
             }
 
             if(!has_red)
-                return false;
+                return NULL;
         }
     }else{
         if(player->isKongcheng())
-            return false;
+            return NULL;
     }
 
     AI *ai = player->getAI();
     if(ai)
-        peach = ai->askForSinglePeach(dying);
-    else{
-        player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
-        getResult("responseCardCommand", player);
+        return ai->askForSinglePeach(dying);
 
-        if(result.isEmpty())
-            return askForSinglePeach(player, dying, peaches);
+    int peaches = 1 - player->getHp();
+    player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
+    getResult("responseCardCommand", player);
 
-        if(result == ".")
-            return false;
+    if(result.isEmpty())
+        return askForSinglePeach(player, dying);
 
-        peach = Card::Parse(result);
-    }
+    if(result == ".")
+        return NULL;
 
-    if(!peach)
-        return false;
-
-    throwCard(peach);
-    player->playCardEffect(peach);
-
-    broadcastInvoke("animate", QString("peach:%1:%2").arg(player->objectName()).arg(dying->objectName()));
-
-    LogMessage log;
-    log.type = "#Peach";
-    log.card_str = peach->toString();
-    log.from = player;
-    sendLog(log);
-
-    return true;
+    return Card::Parse(result);
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
@@ -1516,27 +1449,13 @@ void Room::useCard(const CardUseStruct &card_use){
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
-    int new_hp = victim->getHp() - lose;
-
-    setPlayerProperty(victim, "hp", qMax(0, new_hp));
+    setPlayerProperty(victim, "hp", victim->getHp() - lose);
     broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
 
-    if(new_hp <= 0){
+    if(victim->getHp() <= 0){
         DyingStruct dying;
         dying.who = victim;
         dying.damage = NULL;
-        dying.peaches = 1 - new_hp;
-
-        setTag("FatalPoint", dying.peaches);
-
-        // buqu special case
-        if(victim->hasSkill("buqu")){
-            int length = victim->getPile("buqu").length();
-            if(length > 0){
-                setTag("FatalPoint", lose);
-                dying.peaches += length;
-            }
-        }
 
         QVariant dying_data = QVariant::fromValue(dying);
         thread->trigger(Dying, victim, dying_data);
@@ -1555,7 +1474,6 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose){
 
 void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage){
     int new_hp = victim->getHp() - damage.damage;
-    new_hp = qMax(0, new_hp);
 
     setPlayerProperty(victim, "hp", new_hp);
     QString change_str = QString("%1:%2").arg(victim->objectName()).arg(-damage.damage);

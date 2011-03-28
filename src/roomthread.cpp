@@ -31,7 +31,7 @@ SlashEffectStruct::SlashEffectStruct()
 }
 
 DyingStruct::DyingStruct()
-    :who(NULL), damage(NULL), peaches(0)
+    :who(NULL), damage(NULL)
 {
 
 }

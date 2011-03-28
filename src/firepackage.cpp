@@ -339,7 +339,7 @@ public:
         return TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *pangtong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *pangtong, QVariant &data) const{
         DyingStruct dying_data = data.value<DyingStruct>();
         if(dying_data.who != pangtong)
             return false;
@@ -351,18 +351,17 @@ public:
 
             pangtong->loseMark("@nirvana");
 
-            pangtong->throwAllCards();
             room->setPlayerProperty(pangtong, "hp", 3);
+            pangtong->throwAllCards();
             pangtong->drawCards(3);
 
             if(pangtong->isChained()){
                 if(dying_data.damage == NULL || dying_data.damage->nature == DamageStruct::Normal)
                     room->setPlayerProperty(pangtong, "chained", false);
             }
+        }
 
-            return true;
-        }else
-            return false;
+        return false;
     }
 };
 

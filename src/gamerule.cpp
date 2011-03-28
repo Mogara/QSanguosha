@@ -178,32 +178,76 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case Dying:{
-            DyingStruct dying = data.value<DyingStruct>();
-            QList<ServerPlayer *> players = room->getAllPlayers();
-            room->askForPeaches(dying, players);
+            player->setFlags("dying");
+
+            QList<ServerPlayer *> savers;
+            ServerPlayer *current = room->getCurrent();
+            if(current->hasSkill("wansha") && current->isAlive()){
+                room->playSkillEffect("wansha");
+
+                savers << current;
+
+                LogMessage log;
+                log.from = current;
+                if(current != player){
+                    savers << player;
+                    log.type = "#WanshaTwo";
+                    log.to << player;
+                }else{
+                    log.type = "#WanshaOne";
+                }
+
+                room->sendLog(log);
+
+            }else
+                savers = room->getAllPlayers();
+
+            LogMessage log;
+            log.type = "#AskForPeaches";
+            log.from = player;
+            log.to = savers;
+            log.arg = QString::number(1 - player->getHp());
+            room->sendLog(log);
+
+            RoomThread *thread = room->getThread();
+            foreach(ServerPlayer *saver, savers){
+                if(player->getHp() > 0)
+                    break;
+
+                thread->trigger(AskForPeaches, saver, data);
+            }
+
+            player->setFlags("-dying");
+            thread->trigger(AskForPeachesDone, player, data);
 
             break;
         }
 
     case AskForPeaches:{
             DyingStruct dying = data.value<DyingStruct>();
-            int got = room->askForPeach(player, dying.who, dying.peaches);
-            dying.peaches -= got;
 
-            data = QVariant::fromValue(dying);
+            while(dying.who->getHp() <= 0){
+                const Card *peach = room->askForSinglePeach(player, dying.who);
+                if(peach == NULL)
+                    break;
+
+                CardUseStruct use;
+                use.card = peach;
+                use.from = player;
+                if(player != dying.who)
+                    use.to << dying.who;
+                room->useCard(use);
+            }
 
             break;
         }
 
     case AskForPeachesDone:{
-            DyingStruct dying_data = data.value<DyingStruct>();
-
-            if(dying_data.peaches <= 0)
-                room->setPlayerProperty(player, "hp", 1 - dying_data.peaches);
-            else{
+            if(player->getHp() <= 0){
+                DyingStruct dying = data.value<DyingStruct>();
                 ServerPlayer *killer = NULL;
-                if(dying_data.damage)
-                    killer = dying_data.damage->from;
+                if(dying.damage)
+                    killer = dying.damage->from;
 
                 room->killPlayer(player, killer);
             }
@@ -215,24 +259,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             DamageStruct damage = data.value<DamageStruct>();
             room->sendDamageLog(damage);
 
-            int new_hp = player->getHp() - damage.damage;
             room->applyDamage(player, damage);
-            if(new_hp <= 0){
+            if(player->getHp() <= 0){
                 DyingStruct dying;
                 dying.who = player;
                 dying.damage = &damage;
-                dying.peaches = 1 - new_hp;
-
-                room->setTag("FatalPoint", dying.peaches);
-
-                // buqu special case
-                if(player->hasSkill("buqu")){
-                    int length = player->getPile("buqu").length();
-                    if(length > 0){
-                        room->setTag("FatalPoint", damage.damage);
-                        dying.peaches += length;
-                    }
-                }
 
                 QVariant dying_data = QVariant::fromValue(dying);
                 room->getThread()->trigger(Dying, player, dying_data);

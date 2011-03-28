@@ -342,15 +342,13 @@ public:
     }
 };
 
+/*
+
 class Buqu: public TriggerSkill{
 public:
     Buqu():TriggerSkill("buqu"){
         events << Dying << HpRecover << AskForPeachesDone;
         default_choice = "alive";
-    }
-
-    virtual int getPriority() const{
-        return 3;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
@@ -432,6 +430,101 @@ public:
     }
 };
 
+*/
+
+class BuquRemove: public TriggerSkill{
+public:
+    BuquRemove():TriggerSkill("#buqu_remove"){
+        events << HpRecover;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    static void Remove(ServerPlayer *zhoutai){
+        Room *room = zhoutai->getRoom();
+        QList<int> &buqu = zhoutai->getPile("buqu");
+
+        int need = 1 - zhoutai->getHp();
+        if(need <= 0){
+            // clear all the buqu cards
+            while(!buqu.isEmpty()){
+                zhoutai->removeCardFromPile("buqu", buqu.takeFirst());
+            }
+        }else{
+            int to_remove = buqu.length() - need;
+
+            room->fillAG(buqu);
+
+            int i;
+            for(i=0; i<to_remove; i++){
+                int card_id = room->askForAG(zhoutai, buqu);
+                zhoutai->removeCardFromPile("buqu", card_id);
+            }
+
+            room->broadcastInvoke("clearAG");
+        }
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *zhoutai, QVariant &) const{
+        if(!zhoutai->hasFlag("dying"))
+            Remove(zhoutai);
+
+        return false;
+    }
+};
+
+class Buqu: public TriggerSkill{
+public:
+    Buqu():TriggerSkill("buqu"){
+        events << Dying << AskForPeachesDone;
+        default_choice = "alive";
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
+        Room *room = zhoutai->getRoom();
+        QList<int> &buqu = zhoutai->getPile("buqu");
+
+        if(event == Dying){
+            int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
+            int n = need - buqu.length();
+            if(n > 0){
+                QList<int> card_ids = room->getNCards(n);
+                foreach(int card_id, card_ids){
+                    zhoutai->addCardToPile("buqu", card_id);
+                }
+            }
+        }else if(event == HpRecover){
+            if(!zhoutai->hasFlag("dying")){
+                BuquRemove::Remove(zhoutai);
+            }
+        }else if(event == AskForPeachesDone){
+            BuquRemove::Remove(zhoutai);
+
+            if(zhoutai->getHp() > 0)
+                return false;
+
+            QSet<int> numbers;
+            foreach(int card_id, buqu){
+                const Card *card = Sanguosha->getCard(card_id);
+                numbers << card->getNumber();
+            }
+
+            bool duplicated =  numbers.size() < buqu.size();
+            if(!duplicated){
+                QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
+                if(choice == "alive"){
+                    room->playSkillEffect(objectName());
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
 WindPackage::WindPackage()
     :Package("wind")
 {
@@ -457,6 +550,7 @@ WindPackage::WindPackage()
 
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);
+    zhoutai->addSkill(new BuquRemove);
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();

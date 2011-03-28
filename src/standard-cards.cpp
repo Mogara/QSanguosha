@@ -113,15 +113,24 @@ QString Peach::getEffectPath(bool is_male) const{
     return Card::getEffectPath();
 }
 
-void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
-    room->cardEffect(this, source, source);
+
+    if(targets.isEmpty())
+        room->cardEffect(this, source, source);
+    else
+        room->cardEffect(this, source, targets.first());
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    QString who = effect.to->objectName();
-    room->broadcastInvoke("animate", QString("peach:%1:%2").arg(who).arg(who));
+
+    // do animation
+    room->broadcastInvoke("animate", QString("peach:%1:%2")
+                          .arg(effect.from->objectName())
+                          .arg(effect.to->objectName()));
+
+    // recover hp
     room->recover(effect.to);
 }
 

@@ -649,38 +649,6 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         room->loseHp(effect.to);
 }
 
-class Wansha: public TriggerSkill{
-public:
-    Wansha():TriggerSkill("wansha"){
-        frequency = Compulsory;
-
-        events << Dying;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        ServerPlayer *current = target->getRoom()->getCurrent();
-        return current->hasSkill(objectName()) && current->isAlive();
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        DyingStruct dying = data.value<DyingStruct>();
-
-        Room *room = player->getRoom();
-        room->playSkillEffect(objectName());
-
-        QList<ServerPlayer *> players;
-
-        ServerPlayer *current = room->getCurrent();
-        players << current;
-        if(dying.who != current)
-            players << dying.who;
-
-        room->askForPeaches(dying, players);
-
-        return true;
-    }
-};
-
 class Weimu: public ProhibitSkill{
 public:
     Weimu():ProhibitSkill("weimu"){
@@ -896,7 +864,7 @@ ThicketPackage::ThicketPackage()
     lusu->addSkill(new Dimeng);
 
     jiaxu = new General(this, "jiaxu", "qun", 3);
-    jiaxu->addSkill(new Wansha);
+    jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);

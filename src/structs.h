@@ -77,7 +77,6 @@ struct DyingStruct{
 
     ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
-    int peaches; // peaches that needs
 };
 
 enum TriggerEvent{

@@ -200,6 +200,9 @@ public:
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);
 
+	void addCardToPile(const char *pile_name, int card_id);
+    void removeCardFromPile(const char *pile_name, int card_id);
+
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
@@ -284,7 +287,6 @@ struct DyingStruct{
 
     ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
-    int peaches; // peaches that needs
 };
 
 enum TriggerEvent{
@@ -641,10 +643,7 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, const char *ask_str);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
-
-    void askForPeaches(const DyingStruct &dying, const QList<ServerPlayer *> &players);
-    int askForPeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
-    bool askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, int peaches);
+    const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = QString());
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
