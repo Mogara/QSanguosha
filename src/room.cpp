@@ -728,7 +728,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     if(ai)
         return ai->askForSinglePeach(dying);
 
-    int peaches = 1 - player->getHp();
+    int peaches = 1 - dying->getHp();
     player->invoke("askForSinglePeach", QString("%1:%2").arg(dying->objectName()).arg(peaches));
     getResult("responseCardCommand", player);
 

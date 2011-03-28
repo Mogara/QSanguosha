@@ -432,7 +432,7 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    return hp + xueyi + extra;
+    return qMax(hp,0) + xueyi + extra;
 }
 
 int Player::getXueyi() const{

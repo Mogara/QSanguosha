@@ -12,7 +12,7 @@ local pangtong_ai = SmartAI:newSubclass "pangtong"
 -- niepan
 sgs.ai_skill_invoke.niepan = function(self, data)
 	local dying = data:toDying()
-	local peaches = dying.peaches
+	local peaches = 1 - dying.who:getHp()
 
 	local cards = self.player:getHandcards()
 	local n = 0

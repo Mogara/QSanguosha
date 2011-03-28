@@ -645,9 +645,8 @@ void Client::askForSkillInvoke(const QString &skill_name){
     connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
     connect(dialog, SIGNAL(finished(int)), this, SLOT(invokeSkill(int)));
 
-    setStatus(ExecDialog);
     Sanguosha->playAudio("pop-up");
-    dialog->exec();
+    setStatus(ExecDialog);
 }
 
 void Client::selectChoice(){
@@ -691,10 +690,8 @@ void Client::askForChoice(const QString &ask_str){
     dialog->setLayout(layout);
 
     ask_dialog = dialog;
-    setStatus(ExecDialog);
-
     Sanguosha->playAudio("pop-up");
-    dialog->exec();
+    setStatus(ExecDialog);
 }
 
 void Client::playSkillEffect(const QString &play_str){
@@ -769,8 +766,6 @@ void Client::askForCardChosen(const QString &ask_str){
 
     ask_dialog = dialog;
     setStatus(ExecDialog);
-
-    dialog->exec();
 }
 
 void Client::playCardEffect(const QString &play_str){
@@ -1072,7 +1067,6 @@ void Client::askForSuit(const QString &){
     dialog->setLayout(layout);
 
     setStatus(ExecDialog);
-    dialog->exec();
 }
 
 void Client::askForKingdom(const QString &){
@@ -1110,7 +1104,6 @@ void Client::askForKingdom(const QString &){
     dialog->setLayout(layout);
 
     setStatus(ExecDialog);
-    dialog->exec();
 }
 
 void Client::setMark(const QString &mark_str){
