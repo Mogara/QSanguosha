@@ -250,10 +250,10 @@ public:
     virtual bool onPhaseChange(ServerPlayer *xiahouyuan) const{
         Room *room = xiahouyuan->getRoom();
 
-        if(xiahouyuan->getPhase() == Player::Start){
+        if(xiahouyuan->getPhase() == Player::Judge){
             if(room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1")){
-                xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
+                return true;
             }
         }else if(xiahouyuan->getPhase() == Player::Play){
             if(room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2")){

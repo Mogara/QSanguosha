@@ -1480,7 +1480,7 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *elai, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *elai, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("Slash") &&
            elai->getPhase() == Player::Play && !elai->hasFlag("shenli"))

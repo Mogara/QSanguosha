@@ -265,6 +265,59 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
     }
 }
 
+class GrabPeach: public TriggerSkill{
+public:
+    GrabPeach():TriggerSkill("grab_peach"){
+        events << CardUsed;
+    }
+
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->inherits("Peach")){
+            Room *room = player->getRoom();
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+
+            foreach(ServerPlayer *p, players){
+                if(p->getOffensiveHorse() == parent() &&
+                   p->askForSkillInvoke("grab_peach", data))
+                {
+                    room->throwCard(p->getOffensiveHorse());
+                    p->obtainCard(use.card);
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
+Monkey::Monkey(Card::Suit suit, int number)
+    :OffensiveHorse(suit, number)
+{
+    setObjectName("monkey");
+
+    grab_peach = new GrabPeach;
+    grab_peach->setParent(this);
+}
+
+void Monkey::onInstall(ServerPlayer *player) const{
+    player->getRoom()->getThread()->addTriggerSkill(grab_peach);
+}
+
+void Monkey::onUninstall(ServerPlayer *player) const{
+    player->getRoom()->getThread()->removeTriggerSkill(grab_peach);
+}
+
+QString Monkey::getEffectPath(bool ) const{
+    return "audio/card/common/monkey.ogg";
+}
+
 JoyPackage::JoyPackage()
     :Package("joy")
 {
@@ -279,6 +332,8 @@ JoyPackage::JoyPackage()
             << new Earthquake(Card::Club, 10)
             << new Volcano(Card::Heart, 13)
             << new MudSlide(Card::Heart, 7);
+
+    cards << new Monkey(Card::Diamond, 13);
 
     foreach(Card *card, cards)
         card->setParent(this);
