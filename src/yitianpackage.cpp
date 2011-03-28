@@ -1485,6 +1485,8 @@ public:
         if(damage.card && damage.card->inherits("Slash") &&
            elai->getPhase() == Player::Play && !elai->hasFlag("shenli"))
         {
+            elai->setFlags("shenli");
+
             int x = elai->getMark("@struggle");
             if(x > 0){
                 x = qMin(3, x);
@@ -1497,8 +1499,6 @@ public:
                 log.arg = QString::number(x);
                 log.arg2 = QString::number(damage.damage);
                 elai->getRoom()->sendLog(log);
-
-                elai->setFlags("shenli");
             }
         }
 
