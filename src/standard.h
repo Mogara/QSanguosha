@@ -222,6 +222,7 @@ class Nullification:public SingleTargetTrick{
 public:
     Q_INVOKABLE Nullification(Card::Suit suit, int number);
 
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     virtual bool isAvailable() const;
 };
 

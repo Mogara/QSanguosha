@@ -196,7 +196,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
     {
-        prompt_box = new Window(tr("Sanguosha"), QSize(480, 177));
+        prompt_box = new Window(tr("Sanguosha"), QSize(480, 200));
         prompt_box->setOpacity(0.8);
         prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
         prompt_box->shift();
@@ -556,6 +556,10 @@ void RoomScene::timerEvent(QTimerEvent *event){
     int timeout = ServerInfo.OperationTimeout;
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
         timeout = 20;
+
+    if(ClientInstance->getStatus() == Client::Responsing &&
+       ClientInstance->card_pattern == "nullification")
+       timeout = Config.NullificationCountDown;
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;

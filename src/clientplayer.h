@@ -27,8 +27,6 @@ public:
     virtual bool isLastHandCard(const Card *card) const;
     virtual void setMark(const QString &mark, int value);
 
-    QList<int> nullifications() const;
-
 private:
     int handcard_num;
     QList<const Card *> known_cards;

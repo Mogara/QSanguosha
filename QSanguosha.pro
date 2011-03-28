@@ -32,7 +32,6 @@ SOURCES += src/main.cpp \
     src/standard.cpp \
     src/standard-skillcards.cpp \
     src/gamerule.cpp \
-    src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
     src/magatamawidget.cpp \
     src/roomthread.cpp \
@@ -96,7 +95,6 @@ HEADERS += src/mainwindow.h \
     src/standard.h \
     src/package.h \
     src/gamerule.h \
-    src/nullificationdialog.h \
     src/playercarddialog.h \
     src/magatamawidget.h \
     src/roomthread.h \

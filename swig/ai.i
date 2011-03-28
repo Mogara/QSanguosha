@@ -23,7 +23,7 @@ public:
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const char *skill_name, const char *choices) = 0;
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) = 0;
-    virtual int askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
+    virtual const Card *askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason)  = 0;
     virtual const Card *askForCard(const char *pattern)  = 0;
     virtual QString askForUseCard(const char *pattern, const char *prompt)  = 0;
@@ -44,7 +44,7 @@ public:
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data) ;
     virtual QString askForChoice(const char *skill_name, const char *choices);
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
-    virtual int askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to) ;
+    virtual const Card *askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to) ;
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason) ;
     virtual const Card *askForCard(const char *pattern) ;
     virtual QString askForUseCard(const char *pattern, const char *prompt) ;
@@ -292,6 +292,11 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
     }
 }
 
+/************************************************************************/
+/*  Lua's askForNullification is not not enabled yet!                   */
+/************************************************************************/
+
+/*
 int LuaAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
     Q_ASSERT(callback);
 
@@ -326,5 +331,7 @@ int LuaAI::askForNullification(const QString &trick_name, ServerPlayer *from, Se
 
     return TrustAI::askForNullification(trick_name, from, to);
 }
+
+*/
 
 %}

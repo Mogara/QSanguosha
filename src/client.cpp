@@ -709,39 +709,41 @@ void Client::playSkillEffect(const QString &play_str){
     Sanguosha->playSkillEffect(skill_name, index);
 }
 
-void Client::replyNullification(int card_id){
-    request(QString("replyNullification %1").arg(card_id));
-    delete nullification_dialog;
-    nullification_dialog = NULL;
-}
-
 void Client::askForNullification(const QString &ask_str){
-    QList<int> card_ids = Self->nullifications();
-    if(card_ids.isEmpty()){
-        replyNullification(-1);
+    QRegExp rx("(\\w+):(.+)->(.+)");
+    if(!rx.exactMatch(ask_str))
         return;
-    }
 
-    QRegExp pattern("(\\w+):(.+)->(.+)");
-    pattern.indexIn(ask_str);
-    QStringList texts = pattern.capturedTexts();
+    QStringList texts = rx.capturedTexts();
     QString trick_name = texts.at(1);
+    const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
+
     QString source_name = texts.at(2);
     ClientPlayer *source = NULL;
     if(source_name != ".")
         source = getPlayer(source_name);
-    ClientPlayer *target = getPlayer(texts.at(3));
 
     if(Config.NeverNullifyMyTrick && source == Self){
-        const TrickCard *trick_card = Sanguosha->findChild<const TrickCard *>(trick_name);
         if(trick_card->inherits("SingleTargetTrick")){
-            replyNullification(-1);
+            responseCard(NULL);
             return;
         }
     }
 
-    nullification_dialog = new NullificationDialog(trick_name, source, target, card_ids);
-    nullification_dialog->exec();
+    QString trick_path = trick_card->getPixmapPath();
+    QString to = getPlayer(texts.at(3))->getGeneral()->getPixmapPath("big");
+    if(source == NULL){
+        prompt_doc->setHtml(QString("<img src='%1' /> ==&gt; <img src='%2' />").arg(trick_path).arg(to));
+    }else{
+        QString from = source->getGeneral()->getPixmapPath("big");
+        prompt_doc->setHtml(QString("<img src='%1' /> <img src='%2'/> ==&gt; <img src='%3' />").arg(trick_path).arg(from).arg(to));
+    }
+
+    card_pattern = "nullification";
+    refusable = true;
+    use_card = false;
+
+    setStatus(Responsing);
 }
 
 void Client::playAudio(const QString &name){

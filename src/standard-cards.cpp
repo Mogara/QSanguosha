@@ -639,6 +639,11 @@ Nullification::Nullification(Suit suit, int number)
     setObjectName("nullification");
 }
 
+void Nullification::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &) const{
+    // does nothing, just throw it
+    room->throwCard(this);
+}
+
 bool Nullification::isAvailable() const{
     return false;
 }

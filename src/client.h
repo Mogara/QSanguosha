@@ -151,7 +151,6 @@ public slots:
     void chooseItem(const QString &_name);
     void selectChoice();
     void updateFrequentFlags(int state);
-    void replyNullification(int card_id = -1);
     void chooseCard(int card_id = -2);
     void choosePlayer(const ClientPlayer *player);
     void trust();

@@ -505,12 +505,11 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         if(!player->hasNullification())
             continue;
 
-        int card_id = -1;
-
         trust:
         AI *ai = player->getAI();
+        const Card *card = NULL;
         if(ai){
-            card_id = ai->askForNullification(trick_name, from, to);
+            card = ai->askForNullification(trick_name, from, to);
         }else{
             QString ask_str = QString("%1:%2->%3")
                               .arg(trick_name)
@@ -518,48 +517,32 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
                               .arg(to->objectName());
 
             player->invoke("askForNullification", ask_str);
-            getResult("replyNullificationCommand", player, false);
+            getResult("responseCardCommand", player, false);
 
             if(result.isEmpty())
                 goto trust;
 
-            card_id = result.toInt();
+            if(result != ".")
+                card = Card::Parse(result);
         }
 
-        if(card_id == -1)
+        if(card == NULL)
             continue;
 
-        throwCard(card_id);
-
-        CardStar card = Sanguosha->getCard(card_id);
-        if(!card->inherits("Nullification")){
-            Card *vcard = new Nullification(card->getSuit(), card->getNumber());
-            vcard->addSubcard(card_id);
-            vcard->setSkillName("kanpo");
-            card = vcard;            
-        }
-        player->playCardEffect(card);
+        CardUseStruct use;
+        use.card = card;
+        use.from = player;
+        useCard(use);
 
         LogMessage log;
-        log.type = "#UseCard";
-        log.from = player;
-        log.card_str = card->toString();
+        log.type = "#NullificationDetails";
+        log.from = from;
+        log.to << to;
+        log.arg = trick_name;
         sendLog(log);
 
-        LogMessage log2;
-        log2.type = "#NullificationDetails";
-        log2.from = from;
-        log2.to << to;
-        log2.arg = trick_name;
-        sendLog(log2);
-
-        broadcastInvoke("animate", QString("nullification:%1:%2").arg(player->objectName()).arg(to->objectName()));
-
-        QVariant data = QVariant::fromValue(card);
-        thread->trigger(CardResponsed, player, data);
-
-        if(card->isVirtualCard())
-            delete card;
+        broadcastInvoke("animate", QString("nullification:%1:%2")
+                        .arg(player->objectName()).arg(to->objectName()));
 
         return !askForNullification("nullification", player, to);
     }

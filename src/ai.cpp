@@ -180,25 +180,30 @@ QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool o
         return self->forceToDiscard(discard_num, include_equip);
 }
 
-int TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) {
+const Card *TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) {
     const TrickCard *card = Sanguosha->findChild<const TrickCard *>(trick_name);
     if(to == self && card->isAggressive()){
         QList<const Card *> cards = self->getHandcards();
+
+        foreach(const Card *card, cards){
+            if(card->objectName() == "nullification")
+                return card;
+        }
+
         if(self->hasSkill("kanpo")){
             foreach(const Card *card, cards){
-                if(card->isBlack() || card->objectName() == "nullification"){
-                    return card->getId();
+                if(card->isBlack()){
+                    Nullification *ncard = new Nullification(card->getSuit(), card->getNumber());
+                    ncard->addSubcard(card);
+                    ncard->setSkillName("kanpo");
+
+                    return ncard;
                 }
-            }
-        }else{
-            foreach(const Card *card, cards){
-                if(card->objectName() == "nullification")
-                    return card->getId();
             }
         }
     }
 
-    return -1;
+    return NULL;
 }
 
 int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &) {

@@ -421,7 +421,34 @@ public:
 
         return false;
     }
+};
 
+class Kanpo: public OneCardViewAsSkill{
+public:
+    Kanpo():OneCardViewAsSkill("kanpo"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->isBlack() && !to_select->isEquipped();
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse() const{
+        return ClientInstance->card_pattern == "nullification";
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *first = card_item->getFilteredCard();
+        Card *ncard = new Nullification(first->getSuit(), first->getNumber());
+        ncard->addSubcard(first);
+        ncard->setSkillName("kanpo");
+
+        return ncard;
+    }
 };
 
 TianyiCard::TianyiCard(){
@@ -523,7 +550,7 @@ FirePackage::FirePackage()
 
     wolong = new General(this, "wolong", "shu", 3);
     wolong->addSkill(new Huoji);
-    wolong->addSkill(new Skill("kanpo"));
+    wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
 
     pangtong = new General(this, "pangtong", "shu", 3);
