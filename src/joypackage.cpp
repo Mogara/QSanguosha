@@ -286,6 +286,7 @@ public:
                    p->askForSkillInvoke("grab_peach", data))
                 {
                     room->throwCard(p->getOffensiveHorse());
+                    room->playCardEffect(objectName(), p->getGeneral()->isMale());
                     p->obtainCard(use.card);
 
                     return true;
