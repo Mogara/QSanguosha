@@ -200,7 +200,7 @@ void ServerDialog::updateChallengeLabel(int index){
 QLayout *ServerDialog::createRight(){
     QGroupBox *extension_box = new QGroupBox;
     {
-        extension_box->setTitle(tr("Extension package selection"));
+        extension_box->setTitle(tr("Game package selection"));
         QGridLayout *extension_layout = new QGridLayout;
         extension_box->setLayout(extension_layout);
         extension_group = new QButtonGroup;

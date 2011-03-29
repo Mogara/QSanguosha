@@ -292,7 +292,6 @@ QStringList Engine::getExtensions() const{
         extensions << package->objectName();
     }
 
-    extensions.removeOne("standard");
     extensions.removeOne("challenge_modes");
 
     return extensions;

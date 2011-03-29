@@ -817,12 +817,12 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="340"/>
+        <location filename="src/engine.cpp" line="339"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="342"/>
+        <location filename="src/engine.cpp" line="341"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1968,8 +1968,9 @@
     </message>
     <message>
         <location filename="src/server.cpp" line="203"/>
-        <source>Extension package selection</source>
-        <translation>扩展包选择</translation>
+        <source>Game package selection</source>
+        <oldsource>Extension package selection</oldsource>
+        <translation>游戏包选择</translation>
     </message>
     <message>
         <location filename="src/server.cpp" line="69"/>
