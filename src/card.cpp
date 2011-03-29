@@ -237,14 +237,17 @@ bool Card::isVirtualCard() const{
 const Card *Card::Parse(const QString &str){
     if(str.startsWith(QChar('@'))){
         // skill card
-        static QRegExp pattern("@(\\w+)=(.+)");
-        pattern.indexIn(str);
+        static QRegExp pattern("@(\\w+)=(.+)(:.+)?");
+        if(!pattern.exactMatch(str))
+            return NULL;
+
         QStringList texts = pattern.capturedTexts();
         QString card_name = texts.at(1);
         QStringList subcard_ids;
         QString subcard_str = texts.at(2);
         if(subcard_str != ".")
            subcard_ids = subcard_str.split("+");
+        QString user_string = texts.at(3);
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
         if(card == NULL)
@@ -256,8 +259,9 @@ const Card *Card::Parse(const QString &str){
         // skill name
         QString skill_name = card_name.remove("Card").toLower();
         card->setSkillName(skill_name);
+        card->setUserString(user_string);
 
-        return card;        
+        return card;
     }else if(str.startsWith(QChar('$'))){
         QString copy = str;
         copy.remove(QChar('$'));
@@ -465,6 +469,10 @@ bool SkillCard::willThrow() const{
     return will_throw;
 }
 
+void SkillCard::setUserString(const QString &user_string){
+    this->user_string = user_string;
+}
+
 QString SkillCard::getType() const{
     return "skill_card";
 }
@@ -478,7 +486,11 @@ Card::CardType SkillCard::getTypeId() const{
 }
 
 QString SkillCard::toString() const{
-    return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+    QString str = QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+    if(!user_string.isEmpty())
+        return QString("%1:%2").arg(str).arg(user_string);
+    else
+        return str;
 }
 
 // ---------- Dummy card      -------------------

@@ -881,12 +881,12 @@ void RoomScene::addSkillButton(const Skill *skill){
     }
 
     QAbstractButton *button = NULL;
-    QString skill_name = Sanguosha->translate(skill->objectName());
+
     if(skill->inherits("TriggerSkill")){
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         switch(trigger_skill->getFrequency()){
         case Skill::Frequent:{
-                QCheckBox *checkbox = new QCheckBox(skill_name);
+                QCheckBox *checkbox = new QCheckBox();
 
                 checkbox->setObjectName(skill->objectName());
                 checkbox->setChecked(false);
@@ -899,8 +899,7 @@ void RoomScene::addSkillButton(const Skill *skill){
         case Skill::Limited:
         case Skill::NotFrequent:{
                 const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-                button = new QPushButton(skill_name);
-                button->setEnabled(false);
+                button = new QPushButton();
                 if(view_as_skill){
                     button2skill.insert(button, view_as_skill);
                     connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
@@ -910,8 +909,7 @@ void RoomScene::addSkillButton(const Skill *skill){
         }
 
         case Skill::Compulsory:{
-                button = new QPushButton(skill_name + tr(" [Compulsory]"));
-                button->setEnabled(false);
+                button = new QPushButton();
                 break;
             }
 
@@ -922,31 +920,23 @@ void RoomScene::addSkillButton(const Skill *skill){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
         if(filter){
             dashboard->setFilter(filter);
-            button = new QPushButton(skill_name + tr(" [Compulsory]"));
-            button->setEnabled(false);
+            button = new QPushButton();
         }
     }else if(skill->inherits("ViewAsSkill")){
-        button = new QPushButton(skill_name);
+        button = new QPushButton();
         button2skill.insert(button, qobject_cast<const ViewAsSkill *>(skill));
         connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
     }else{
-        button = new QPushButton(skill_name);
-        if(skill->getFrequency() == Skill::Compulsory){
-            button->setText(skill_name + tr(" [Compulsory]"));
-            button->setEnabled(false);
-        }
+        button = new QPushButton;
     }
 
     button->setObjectName(skill->objectName());
-    if(skill->isLordSkill())
-        button->setText(button->text() + tr(" [Lord Skill]"));
-    if(skill->getFrequency() == Skill::Limited)
-        button->setText(button->text() + tr(" [Limited]"));
-
-    addWidgetToSkillDock(button);
+    button->setText(skill->getText());
+    button->setToolTip(skill->getDescription());
+    button->setDisabled(skill->getFrequency() == Skill::Compulsory);
 
     skill_buttons << button;
-    button->setToolTip(skill->getDescription());
+    addWidgetToSkillDock(button);
 }
 
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){

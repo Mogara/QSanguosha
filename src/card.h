@@ -142,14 +142,16 @@ class SkillCard: public Card{
 public:
     SkillCard();
     bool willThrow() const;
+    void setUserString(const QString &user_string);
 
     virtual QString getSubtype() const;    
     virtual QString getType() const;
     virtual CardType getTypeId() const;
-    virtual QString toString() const;
+    virtual QString toString() const;    
 
 protected:
     bool will_throw;
+    QString user_string;
 };
 
 class DummyCard: public SkillCard{

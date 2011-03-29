@@ -32,6 +32,22 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
+QString Skill::getText() const{
+    QString skill_name = Sanguosha->translate(objectName());
+
+    switch(frequency){
+    case Skill::NotFrequent:
+    case Skill::Frequent: break;
+    case Skill::Limited: skill_name.append(tr(" [Limited]")); break;
+    case Skill::Compulsory: skill_name.append(tr(" [Compulsory]")); break;
+    }
+
+    if(isLordSkill())
+        skill_name.append(tr(" [Lord Skill]"));
+
+    return skill_name;
+}
+
 QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
 }
