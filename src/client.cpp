@@ -23,7 +23,7 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), refusable(true), status(NotActive), alive_count(1),
-    nullification_dialog(NULL), slash_count(0)
+    slash_count(0)
 {
     ClientInstance = this;    
 
@@ -335,8 +335,7 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
             request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
         if(status == Playing){
-            if(card->isOnce())
-                used.insert(card->metaObject()->className());
+            ++ used[card->metaObject()->className()];
 
             if(card->inherits("Slash"))
                 increaseSlashCount();
@@ -1443,8 +1442,12 @@ void Client::animate(const QString &animate_str){
     emit animated(name, args);
 }
 
-bool Client::hasUsed(const QString &card_class){
+bool Client::hasUsed(const QString &card_class) const{
     return used.contains(card_class);
+}
+
+int Client::usedTimes(const QString &card_class) const{
+    return used.value(card_class, 0);
 }
 
 void Client::setScreenName(const QString &set_str){

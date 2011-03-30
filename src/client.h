@@ -59,7 +59,8 @@ public:
     bool isJilei(const Card *card) const;
     bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
-    bool hasUsed(const QString &card_class);
+    bool hasUsed(const QString &card_class) const;
+    int usedTimes(const QString &card_class) const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -164,7 +165,6 @@ private:
     int alive_count;
     QHash<QString, Callback> callbacks;
     QList<const ClientPlayer*> players;
-    NullificationDialog *nullification_dialog;
     bool use_card;
     QStringList ban_packages;
     Recorder *recorder;
@@ -174,7 +174,7 @@ private:
     int pile_num;
     QString skill_title, skill_line;
     QString jilei_flags;
-    QSet<QString> used;
+    QHash<QString,int> used;
     int slash_count;
     QString choose_command;
 

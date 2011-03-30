@@ -990,7 +990,7 @@ void RoomScene::updateSkillButtons(){
     const Player *player = qobject_cast<const Player *>(sender());
     const General *general = player->getGeneral();
 
-    if(general->isHidden())
+    if(general->isHidden() && trust_button->isEnabled())
         return;
 
     const QList<const Skill*> &skills = general->findChildren<const Skill *>();

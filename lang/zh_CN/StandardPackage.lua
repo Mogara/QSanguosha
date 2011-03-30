@@ -378,6 +378,10 @@ local t = {
 	["cv:sunquan"] = "官方，宇文天启",
 	
 	["#JiuyuanExtraRecover"] = "%from 的锁定技【救援】被触发，额外恢复一点体力",
+	
+	["zhibasunquan"] = "制霸孙权",
+	["wuxingzhuge"] = "五星诸葛",
+	["zhiba"] = "制霸",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

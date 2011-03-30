@@ -576,8 +576,8 @@ public:
 
 class Guanxing:public PhaseChangeSkill{
 public:
-    Guanxing():PhaseChangeSkill("guanxing"){
-        frequency = Frequent;
+    Guanxing(int stars):PhaseChangeSkill("guanxing"), stars(stars){
+        frequency = Frequent;       
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhuge) const{
@@ -585,13 +585,20 @@ public:
             Room *room = zhuge->getRoom();
             if(room->askForSkillInvoke(zhuge, objectName())){
                 room->playSkillEffect(objectName());
-                int n = qMin(5, room->alivePlayerCount());
-                room->doGuanxing(zhuge, n);
+
+                if(stars == 0){
+                    int n = qMin(5, room->alivePlayerCount());
+                    room->doGuanxing(zhuge, n);
+                }else
+                    room->doGuanxing(zhuge, stars);
             }
         }
 
         return false;
     }
+
+private:
+    int stars;
 };
 
 class Kongcheng: public ProhibitSkill{
@@ -1110,6 +1117,17 @@ public:
     }
 };
 
+class Zhiba: public Zhiheng{
+public:
+    Zhiba(){
+        setObjectName("zhiba");
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ClientInstance->usedTimes("ZhihengCard") < (Self->getLostHp() + 1);
+    }
+};
+
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
@@ -1159,7 +1177,7 @@ void StandardPackage::addGenerals(){
     machao->addSkill(new Mashu);
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
-    zhugeliang->addSkill(new Guanxing);
+    zhugeliang->addSkill(new Guanxing(0));
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
 
@@ -1209,6 +1227,16 @@ void StandardPackage::addGenerals(){
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
+
+    // for test only
+    General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
+    zhiba_sunquan->addSkill(new Zhiba);
+    zhiba_sunquan->addSkill(new Jiuyuan);
+
+    General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
+    wuxing_zhuge->addSkill(new Guanxing(5));
+    wuxing_zhuge->addSkill(new Kongcheng);
+    wuxing_zhuge->addSkill(new KongchengEffect);
 
     // for skill cards    
     addMetaObject<ZhihengCard>();
