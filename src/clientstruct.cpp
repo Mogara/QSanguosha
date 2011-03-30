@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSAM]*)");
+    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSAM12]*)");
     if(!rx.exactMatch(str)){        
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -48,6 +48,13 @@ bool ServerInfoStruct::parse(const QString &str){
     EnableAI = flags.contains("A");
     DisableChat = flags.contains("M");
 
+    if(flags.contains("1"))
+        MaxHPScheme = 1;
+    else if(flags.contains("2"))
+        MaxHPScheme = 2;
+    else
+        MaxHPScheme = 0;
+
     return true;
 }
 
@@ -62,6 +69,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     free_choose_label = new QLabel;
     enable_ai_label = new QLabel;
     time_limit_label = new QLabel;
+    max_hp_label = new QLabel;
 
     list_widget = new QListWidget;
 
@@ -72,6 +80,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Game mode"), game_mode_label);
     layout->addRow(tr("Player count"), player_count_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
+    layout->addRow(tr("Max HP scheme"), max_hp_label);
     layout->addRow(tr("Free choose"), free_choose_label);
     layout->addRow(tr("Enable AI"), enable_ai_label);
     layout->addRow(tr("Operation time"), time_limit_label);
@@ -94,6 +103,18 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
+
+    if(info.Enable2ndGeneral){
+        switch(info.MaxHPScheme){
+        case 0: max_hp_label->setText(tr("Sum - 3")); break;
+        case 1: max_hp_label->setText(tr("Minimum")); break;
+        case 2: max_hp_label->setText(tr("Average")); break;
+        }
+    }else{
+        max_hp_label->setText(tr("2nd general is disabled"));
+        max_hp_label->setEnabled(false);
+    }
+
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
     enable_ai_label->setText(info.EnableAI ? tr("Enabled") : tr("Disabled"));
 

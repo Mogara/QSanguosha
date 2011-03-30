@@ -817,12 +817,12 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="339"/>
+        <location filename="src/engine.cpp" line="344"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="341"/>
+        <location filename="src/engine.cpp" line="346"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1390,37 +1390,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="964"/>
+        <location filename="src/room.cpp" line="963"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1081"/>
+        <location filename="src/room.cpp" line="1080"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1109"/>
+        <location filename="src/room.cpp" line="1108"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1073"/>
+        <location filename="src/room.cpp" line="1072"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1113"/>
+        <location filename="src/room.cpp" line="1112"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1141"/>
+        <location filename="src/room.cpp" line="1140"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1955"/>
+        <location filename="src/room.cpp" line="1954"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -1981,81 +1981,106 @@
 <context>
     <name>ServerInfoWidget</name>
     <message>
-        <location filename="src/clientstruct.cpp" line="69"/>
+        <location filename="src/clientstruct.cpp" line="77"/>
         <source>Server name</source>
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="70"/>
+        <location filename="src/clientstruct.cpp" line="78"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="71"/>
+        <location filename="src/clientstruct.cpp" line="79"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="72"/>
+        <location filename="src/clientstruct.cpp" line="80"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="73"/>
+        <location filename="src/clientstruct.cpp" line="81"/>
         <source>Player count</source>
         <translation>玩家人数</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="74"/>
+        <location filename="src/clientstruct.cpp" line="82"/>
         <source>2nd general mode</source>
         <translation>双将模式</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="76"/>
+        <location filename="src/clientstruct.cpp" line="83"/>
+        <source>Max HP scheme</source>
+        <translation>体力上限分配方案</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="85"/>
         <source>Enable AI</source>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="82"/>
+        <location filename="src/clientstruct.cpp" line="91"/>
         <source>Lack</source>
         <translation>缺人</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="96"/>
-        <location filename="src/clientstruct.cpp" line="97"/>
-        <location filename="src/clientstruct.cpp" line="98"/>
+        <location filename="src/clientstruct.cpp" line="105"/>
+        <location filename="src/clientstruct.cpp" line="116"/>
+        <location filename="src/clientstruct.cpp" line="117"/>
         <source>Enabled</source>
         <translation>启用</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="96"/>
-        <location filename="src/clientstruct.cpp" line="97"/>
-        <location filename="src/clientstruct.cpp" line="98"/>
+        <location filename="src/clientstruct.cpp" line="105"/>
+        <location filename="src/clientstruct.cpp" line="116"/>
+        <location filename="src/clientstruct.cpp" line="117"/>
         <source>Disabled</source>
         <translation>未启用</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="75"/>
+        <location filename="src/clientstruct.cpp" line="84"/>
         <source>Free choose</source>
         <translation>自由选将</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="101"/>
+        <location filename="src/clientstruct.cpp" line="109"/>
+        <source>Sum - 3</source>
+        <translation>上限之和减3</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="110"/>
+        <source>Minimum</source>
+        <translation>较小值</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="111"/>
+        <source>Average</source>
+        <translation>平均值</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="114"/>
+        <source>2nd general is disabled</source>
+        <translation>双将未启用</translation>
+    </message>
+    <message>
+        <location filename="src/clientstruct.cpp" line="120"/>
         <source>No limit</source>
         <translation>没有限制</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="103"/>
+        <location filename="src/clientstruct.cpp" line="122"/>
         <source>%1 seconds</source>
         <translation>%1 秒</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="77"/>
+        <location filename="src/clientstruct.cpp" line="86"/>
         <source>Operation time</source>
         <translation>操作时间</translation>
     </message>
     <message>
-        <location filename="src/clientstruct.cpp" line="78"/>
+        <location filename="src/clientstruct.cpp" line="87"/>
         <source>Extension packages</source>
         <translation>扩展包</translation>
     </message>

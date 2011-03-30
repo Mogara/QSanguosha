@@ -317,6 +317,11 @@ QString Engine::getSetupString() const{
     if(Config.DisableChat)
         flags.append("M");
 
+    if(Config.MaxHpScheme == 1)
+        flags.append("1");
+    else if(Config.MaxHpScheme == 2)
+        flags.append("2");
+
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
     setup_items << server_name

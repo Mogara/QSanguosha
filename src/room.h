@@ -71,7 +71,7 @@ public:
     QString judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr = NULL);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void doGuanxing(ServerPlayer *zhuge);
+    void doGuanxing(ServerPlayer *zhuge, int n);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();
     const Card *peek();    

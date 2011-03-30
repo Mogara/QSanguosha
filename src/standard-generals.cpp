@@ -585,7 +585,8 @@ public:
             Room *room = zhuge->getRoom();
             if(room->askForSkillInvoke(zhuge, objectName())){
                 room->playSkillEffect(objectName());
-                room->doGuanxing(zhuge);
+                int n = qMin(5, room->alivePlayerCount());
+                room->doGuanxing(zhuge, n);
             }
         }
 

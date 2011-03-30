@@ -2109,12 +2109,10 @@ ServerPlayer *Room::getLord() const{
     return NULL;
 }
 
-void Room::doGuanxing(ServerPlayer *zhuge){
+void Room::doGuanxing(ServerPlayer *zhuge, int n){
     // if Zhuge Liang is not online, just return immediately
     if(zhuge->getState() != "online")
         return;
-
-    int n = qMin(5, alive_players.length());
 
     QList<int> cards = getNCards(n, false);
     QStringList cards_str;
