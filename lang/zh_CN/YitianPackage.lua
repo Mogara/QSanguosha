@@ -168,8 +168,8 @@ return {
 	["dushi"] = "毒士",
 	[":dushi"] = "锁定技，杀死你的角色获得崩坏技能直到游戏结束",
 	
-	-- 古恶来
-	["guelai"] = "古恶来",
+	-- 古之恶来
+	["guzhielai"] = "古之恶来",
 	["sizhan"] = "死战",
 	[":sizhan"] = "锁定技,你每受到1点伤害时,防止该伤害并获得1个死战标记.回合结束阶段须弃掉所有的X个死战标记 并流失X点体力.",
 	["shenli"] = "神力",
@@ -195,7 +195,7 @@ return {
 	["cv:zhongshiji"] = "",
 	["cv:jiangboyue"] = "Jr. Wakaran",
 	["cv:jiawenhe"] = "",
-	["cv:guelai"] = "",
+	["cv:guzhielai"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -208,6 +208,6 @@ return {
 	["designer:zhongshiji"] = "Jr. Wakaran",
 	["designer:jiangboyue"] = "Jr. Wakaran",
 	["designer:jiawenhe"] = "氢弹",
-	["designer:guelai"] = "Jr. Wakaran, 太阳神上",
+	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 }
 

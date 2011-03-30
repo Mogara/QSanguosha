@@ -1576,7 +1576,7 @@ YitianPackage::YitianPackage()
     jiawenhe->addSkill(new Dongcha);
     jiawenhe->addSkill(new Dushi);
 
-    General *elai = new General(this, "guelai", "wei");
+    General *elai = new General(this, "guzhielai", "wei");
     elai->addSkill(new Sizhan);
     elai->addSkill(new Shenli);
 

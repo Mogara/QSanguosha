@@ -58,7 +58,6 @@ Room::Room(QObject *parent, const QString &mode)
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
-    callbacks["replyNullificationCommand"] = &Room::commonCommand;
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["signupCommand"] = &Room::signupCommand;
