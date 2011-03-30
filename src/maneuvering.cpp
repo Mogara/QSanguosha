@@ -162,7 +162,7 @@ public:
 
                 return true;
             }
-        }if(event == Predamaged){
+        }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
                 LogMessage log;
