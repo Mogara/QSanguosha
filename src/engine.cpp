@@ -7,6 +7,7 @@
 #include "challengemode.h"
 #include "irrKlang.h"
 #include "lua.hpp"
+#include "banpairdialog.h"
 
 typedef irrklang::ISound SoundType;
 
@@ -231,8 +232,6 @@ const General *Engine::getGeneral(const QString &name) const{
     else
         return hidden_generals.value(name, NULL);
 }
-
-#include "banpairdialog.h"
 
 int Engine::getGeneralCount(bool include_banned) const{
     if(include_banned)

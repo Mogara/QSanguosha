@@ -43,12 +43,17 @@ bool General::isHidden() const{
     return hidden;
 }
 
+bool NoAprilFool;
+
 QString General::getPixmapPath(const QString &category) const{
     QString suffix = "png";
     if(category == "card")
         suffix = "jpg";
 
-    return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
+    if(NoAprilFool)
+        return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
+    else
+        return QString("image/generals/%1/%2.%3").arg(category).arg("yuji").arg(suffix);
 }
 
 void General::addSkill(Skill *skill){    
