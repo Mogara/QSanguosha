@@ -178,7 +178,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case Dying:{
-            player->setFlags("dying");
+            if(player->getHp() > 0)
+                break;
 
             QList<ServerPlayer *> savers;
             ServerPlayer *current = room->getCurrent();
@@ -261,12 +262,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             room->applyDamage(player, damage);
             if(player->getHp() <= 0){
-                DyingStruct dying;
-                dying.who = player;
-                dying.damage = &damage;
-
-                QVariant dying_data = QVariant::fromValue(dying);
-                room->getThread()->trigger(Dying, player, dying_data);
+                room->enterDying(player, &damage);
             }
 
             break;

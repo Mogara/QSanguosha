@@ -30,6 +30,7 @@ extern "C" {
     Package *NewNostalgia();
     Package *NewJoy();
     Package *NewSP();
+    Package *NewYJCM();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
@@ -57,6 +58,7 @@ Engine::Engine()
     addPackage(NewNostalgia());
     addPackage(NewJoy());
     addPackage(NewSP());
+    addPackage(NewYJCM());
 
     {
         Package *test_package = new Package("test");

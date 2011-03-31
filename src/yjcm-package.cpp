@@ -213,6 +213,185 @@ public:
     }
 };
 
+class Jiejiu: public FilterSkill{
+public:
+    Jiejiu():FilterSkill("jiejiu"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped() && to_select->getCard()->objectName() == "analeptic";
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *c = card_item->getCard();
+        Slash *slash = new Slash(c->getSuit(), c->getNumber());
+        slash->setSkillName(objectName());
+        slash->addSubcard(card_item->getCard());
+
+        return slash;
+    }
+};
+
+MingceCard::MingceCard(){
+    once = true;
+    will_throw = false;
+}
+
+void MingceCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->obtainCard(this);
+
+    Room *room = effect.to->getRoom();
+    QString choice = room->askForChoice(effect.to, "mingce", "nothing+use+draw");
+    if(choice == "use"){
+        room->throwCard(this);
+        QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
+        foreach(ServerPlayer *player, players){
+            if(effect.to->canSlash(player))
+                targets << player;
+        }
+
+        if(!targets.isEmpty()){
+            ServerPlayer *target = room->askForPlayerChosen(effect.to, targets, "mingce");
+            room->cardEffect(new Slash(Card::NoSuit, 0), effect.to, target);
+        }
+    }else if(choice == "draw"){
+        room->throwCard(this);
+        effect.to->drawCards(1, true);
+    }
+}
+
+class Mingce: public OneCardViewAsSkill{
+public:
+    Mingce():OneCardViewAsSkill("mingce"){
+        default_choice = "nothing";
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("MingceCard");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        const Card *c = to_select->getCard();
+        return c->getTypeId() == Card::Equip || c->inherits("Slash");
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        MingceCard *card = new MingceCard;
+        card->addSubcard(card_item->getFilteredCard());
+
+        return card;
+    }
+};
+
+class DongchaClear: public TriggerSkill{
+public:
+    DongchaClear():TriggerSkill("#dongcha-clear"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
+        player->getRoom()->setTag("ChengongDongcha", QVariant());
+
+        return false;
+    }
+};
+
+class ChengongDongcha: public TriggerSkill{
+public:
+    ChengongDongcha():TriggerSkill("chengong_dongcha"){
+        events << Damaged << CardEffected;
+
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        if(event == Damaged){
+            room->setTag("ChengongDongcha", player->objectName());
+        }else if(event == CardEffected){
+            Room *room = player->getRoom();
+            if(room->getTag("ChengongDongcha").toString() != player->objectName())
+                return false;
+
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick)
+                return true;
+        }
+
+        return false;
+    }
+};
+
+GanluCard::GanluCard(){
+    once = true;
+}
+
+bool GanluCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    return targets.length() == 2;
+}
+
+bool GanluCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.length() < 2 && to_select->getEquips().isEmpty();
+}
+
+void GanluCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
+    //ServerPlayer *first = targets.first();
+    //ServerPlayer *second = targets.at(1);
+}
+
+class Ganlu: public ZeroCardViewAsSkill{
+public:
+    Ganlu():ZeroCardViewAsSkill("ganlu"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("GanluCard");
+    }
+
+    virtual const Card *viewAs() const{
+        return new GanluCard;
+    }
+};
+
+static QString BuyiCallback(const Card *card, Room *){
+    return card->isRed() ? "good" : "bad";
+}
+
+class Buyi: public TriggerSkill{
+public:
+    Buyi():TriggerSkill("buyi"){
+        events << Dying;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        if(player->askForSkillInvoke(objectName(), data)){
+            Room *room = player->getRoom();
+
+            if(room->judge(player, BuyiCallback) == "good"){
+                DyingStruct dying = data.value<DyingStruct>();
+
+                CardUseStruct use;
+                Peach *peach = new Peach(Card::NoSuit, 0);
+                peach->setSkillName(objectName());
+                use.card = peach;
+                use.from = player;
+                use.to << dying.who;
+
+                room->useCard(use);
+            }
+        }
+
+        return false;
+    }
+};
+
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
@@ -226,8 +405,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     xushu->addSkill(new Wuyan);
     xushu->addSkill(new Jujian);
 
-    General *mashu = new General(this, "mashu", "shu", 3);
-    mashu->addSkill(new Huilei);
+    General *masu = new General(this, "masu", "shu", 3);
+    masu->addSkill(new Huilei);
 
     // General *fazheng = new General(this, "fazheng", "shu", 3);
 
@@ -236,4 +415,21 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *xusheng = new General(this, "xusheng", "wu");
     xusheng->addSkill(new Pojun);
+
+    General *wuguotai = new General(this, "wuguotai", "wu", 3, false);
+    wuguotai->addSkill(new Ganlu);
+    wuguotai->addSkill(new Buyi);
+
+    General *chengong = new General(this, "chengong", "qun", 3);
+    chengong->addSkill(new ChengongDongcha);
+    chengong->addSkill(new Mingce);
+
+    General *gaoshun = new General(this, "gaoshun", "qun");
+    gaoshun->addSkill(new Jiejiu);
+
+    addMetaObject<JujianCard>();
+    addMetaObject<MingceCard>();
+    addMetaObject<GanluCard>();
 }
+
+ADD_PACKAGE(YJCM)

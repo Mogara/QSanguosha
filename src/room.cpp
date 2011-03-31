@@ -162,6 +162,17 @@ void Room::output(const QString &message){
     emit room_message(message);
 }
 
+void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
+    DyingStruct dying;
+    dying.who = player;
+    dying.damage = reason;
+
+    player->setFlags("dying");
+
+    QVariant dying_data = QVariant::fromValue(dying);
+    thread->trigger(Dying, player, dying_data);
+}
+
 void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     if(Config.ContestMode && killer){
         killer->addVictim(victim);
@@ -1434,14 +1445,8 @@ void Room::loseHp(ServerPlayer *victim, int lose){
     setPlayerProperty(victim, "hp", victim->getHp() - lose);
     broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
 
-    if(victim->getHp() <= 0){
-        DyingStruct dying;
-        dying.who = victim;
-        dying.damage = NULL;
-
-        QVariant dying_data = QVariant::fromValue(dying);
-        thread->trigger(Dying, victim, dying_data);
-    }
+    if(victim->getHp() <= 0)
+        enterDying(victim, NULL);
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose){

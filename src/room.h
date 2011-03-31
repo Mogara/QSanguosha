@@ -46,6 +46,7 @@ public:
     QList<ServerPlayer *> getAlivePlayers() const;
     void nextPlayer();
     void output(const QString &message);
+    void enterDying(ServerPlayer *player, DamageStruct *reason);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
