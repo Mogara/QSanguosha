@@ -167,7 +167,7 @@ public:
                 recover.who->drawCards(recover.recover);
 
                 LogMessage log;
-                log.type = "EnyuanRecover";
+                log.type = "#EnyuanRecover";
                 log.from = player;
                 log.to << recover.who;
                 log.arg = recover.recover;
@@ -452,7 +452,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     General *masu = new General(this, "masu", "shu", 3);
     masu->addSkill(new Huilei);
 
-    // General *fazheng = new General(this, "fazheng", "shu", 3);
+    General *fazheng = new General(this, "fazheng", "shu", 3);
+    fazheng->addSkill(new Enyuan);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);
