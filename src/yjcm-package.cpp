@@ -87,14 +87,35 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->getTypeId() == Card::Trick){
-            if((effect.from && effect.from->hasSkill(objectName())))
-                return true;
+            Room *room = player->getRoom();
 
-            if(effect.to->hasSkill(objectName()))
+            if((effect.from && effect.from->hasSkill(objectName()))){
+                LogMessage log;
+                log.type = "#WuyanBad";
+                log.from = effect.from;
+                log.to << effect.to;
+                log.arg = effect.card->objectName();
+
+                room->sendLog(log);
+
                 return true;
+            }
+
+            if(effect.to->hasSkill(objectName())){
+                LogMessage log;
+                log.type = effect.from ? "#WuyanGood" : "#WuyanGoodNoSource";
+                log.from = effect.to;
+                if(effect.from)
+                    log.to << effect.from;
+                log.arg = effect.card->objectName();
+
+                room->sendLog(log);
+
+                return true;
+            }
         }
 
         return false;
