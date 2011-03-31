@@ -576,29 +576,43 @@ public:
 
 class Guanxing:public PhaseChangeSkill{
 public:
-    Guanxing(int stars):PhaseChangeSkill("guanxing"), stars(stars){
+    Guanxing():PhaseChangeSkill("guanxing"){
         frequency = Frequent;       
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhuge) const{
-        if(zhuge->getPhase() == Player::Start){
+        if(zhuge->getPhase() == Player::Start &&
+           zhuge->askForSkillInvoke(objectName()))
+        {
             Room *room = zhuge->getRoom();
-            if(room->askForSkillInvoke(zhuge, objectName())){
-                room->playSkillEffect(objectName());
+            room->playSkillEffect(objectName());
 
-                if(stars == 0){
-                    int n = qMin(5, room->alivePlayerCount());
-                    room->doGuanxing(zhuge, n);
-                }else
-                    room->doGuanxing(zhuge, stars);
-            }
+            int n = qMin(5, room->alivePlayerCount());
+            room->doGuanxing(zhuge, n);
         }
 
         return false;
     }
+};
 
-private:
-    int stars;
+class SuperGuanxing: public Guanxing{
+public:
+    SuperGuanxing():Guanxing(){
+        setObjectName("super_guanxing");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhuge) const{
+        if(zhuge->getPhase() == Player::Start &&
+           zhuge->askForSkillInvoke(objectName()))
+        {
+            Room *room = zhuge->getRoom();
+            room->playSkillEffect("guanxing");
+
+            room->doGuanxing(zhuge, 5);
+        }
+
+        return false;
+    }
 };
 
 class Kongcheng: public ProhibitSkill{
@@ -1177,7 +1191,7 @@ void StandardPackage::addGenerals(){
     machao->addSkill(new Mashu);
 
     zhugeliang = new General(this, "zhugeliang", "shu", 3);
-    zhugeliang->addSkill(new Guanxing(0));
+    zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
 
@@ -1234,7 +1248,7 @@ void StandardPackage::addGenerals(){
     zhiba_sunquan->addSkill(new Jiuyuan);
 
     General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
-    wuxing_zhuge->addSkill(new Guanxing(5));
+    wuxing_zhuge->addSkill(new SuperGuanxing);
     wuxing_zhuge->addSkill(new Kongcheng);
     wuxing_zhuge->addSkill(new KongchengEffect);
 

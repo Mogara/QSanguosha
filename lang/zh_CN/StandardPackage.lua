@@ -382,6 +382,7 @@ local t = {
 	["zhibasunquan"] = "制霸孙权",
 	["wuxingzhuge"] = "五星诸葛",
 	["zhiba"] = "制霸",
+	["super_guanxing"] = "超级观星",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

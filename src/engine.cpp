@@ -174,6 +174,10 @@ void Engine::addPackage(Package *package){
 
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
+        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
+        foreach(const Skill *skill, all_skills)
+            skills.insert(skill->objectName(), skill);
+
         if(general->isHidden()){
             hidden_generals.insert(general->objectName(), general);
             continue;
@@ -185,10 +189,6 @@ void Engine::addPackage(Package *package){
             nonlord_list << general->objectName();
 
         generals.insert(general->objectName(), general);
-
-        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, all_skills)
-            skills.insert(skill->objectName(), skill);
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();

@@ -69,7 +69,8 @@ SOURCES += src/main.cpp \
     src/window.cpp \
     src/contestdb.cpp \
     src/hongyan-scenario.cpp \
-    src/sp-package.cpp
+    src/sp-package.cpp \
+    src/yjcm-package.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -136,7 +137,8 @@ HEADERS += src/mainwindow.h \
     src/window.h \
     src/contestdb.h \
     src/hongyan-scenario.h \
-    src/sp-package.h
+    src/sp-package.h \
+    src/yjcm-package.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
