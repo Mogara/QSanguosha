@@ -257,7 +257,7 @@ public:
                 log.type = "#EnyuanRecover";
                 log.from = player;
                 log.to << recover.who;
-                log.arg = recover.recover;
+                log.arg = QString::number(recover.recover);
 
                 room->sendLog(log);
             }
@@ -276,6 +276,60 @@ public:
         }
 
         return false;
+    }
+};
+
+XuanhuoCard::XuanhuoCard(){
+    once = true;
+    will_throw = false;
+}
+
+void XuanhuoCard::xuanhuo(ServerPlayer *from, ServerPlayer *to) const{
+    Room *room = from->getRoom();
+
+    int card_id = room->askForCardChosen(from, to, "he", "xuanhuo");
+    const Card *card = Sanguosha->getCard(card_id);
+    room->moveCardTo(card, from, Player::Hand, false);
+
+    QList<ServerPlayer *> targets = room->getOtherPlayers(to);
+    ServerPlayer *to_give = room->askForPlayerChosen(from, targets, "xuanhuo");
+
+    if(to_give != from)
+        room->moveCardTo(card, to_give, Player::Hand, false);
+}
+
+void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
+    int card_id = subcards.first();
+
+    Room *room = effect.from->getRoom();
+    room->showCard(effect.from, card_id);
+
+    effect.to->obtainCard(this);
+
+    xuanhuo(effect.from, effect.to);
+
+    if(!effect.to->isNude())
+        xuanhuo(effect.from, effect.to);
+}
+
+class Xuanhuo: public OneCardViewAsSkill{
+public:
+    Xuanhuo():OneCardViewAsSkill("xuanhuo"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("XuanhuoCard");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return ! to_select->isEquipped() && to_select->getFilteredCard()->getSuit() == Card::Heart;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        XuanhuoCard *card = new XuanhuoCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
     }
 };
 
@@ -597,6 +651,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *fazheng = new General(this, "fazheng", "shu", 3);
     fazheng->addSkill(new Enyuan);
+    fazheng->addSkill(new Xuanhuo);
 
     General *lingtong = new General(this, "lingtong", "wu");
     lingtong->addSkill(new Xuanfeng);
@@ -619,6 +674,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
+    addMetaObject<XuanhuoCard>();
 }
 
 ADD_PACKAGE(YJCM)

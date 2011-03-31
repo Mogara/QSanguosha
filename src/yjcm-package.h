@@ -50,4 +50,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class XuanhuoCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XuanhuoCard();
+    void xuanhuo(ServerPlayer *from, ServerPlayer *to) const;
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // YJCMPACKAGE_H

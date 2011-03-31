@@ -82,4 +82,5 @@ return {
 	["#WuyanGood"] = "%from 的锁定技【无言】被触发， %to 的锦囊【%arg】对其无效",
 	["#EnyuanRecover"] = "%from 的锁定技【恩怨】被触发，对其恢复体力的角色 %to 将摸 %arg 张牌",
 	["@enyuan"] = "请展示一张红桃手牌并交给对方",
+	["#GanluSwap"] = "%from 交换了 %to 之间的装备",
 }
