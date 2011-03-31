@@ -83,6 +83,8 @@ public:
             const Card *card = data.value<CardStar>();
             if(card->subcardsLength() == 0)
                 return false;
+
+            clubs = getClubs(card);
         }
 
         if(clubs.isEmpty())
@@ -152,6 +154,10 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         CardEffectStruct effect = data.value<CardEffectStruct>();
+
+        if(effect.to == effect.from)
+            return false;
+
         if(effect.card->getTypeId() == Card::Trick){
             Room *room = player->getRoom();
 
@@ -167,12 +173,11 @@ public:
                 return true;
             }
 
-            if(effect.to->hasSkill(objectName())){
+            if(effect.to->hasSkill(objectName()) && effect.from){
                 LogMessage log;
-                log.type = effect.from ? "#WuyanGood" : "#WuyanGoodNoSource";
+                log.type = "#WuyanGood";
                 log.from = effect.to;
-                if(effect.from)
-                    log.to << effect.from;
+                log.to << effect.from;
                 log.arg = effect.card->objectName();
 
                 room->sendLog(log);
