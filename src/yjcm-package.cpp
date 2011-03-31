@@ -5,6 +5,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "carditem.h"
+#include "engine.h"
 
 class Yizhong: public TriggerSkill{
 public:
@@ -37,10 +38,62 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
+        events << CardDiscarded << CardUsed;
+        frequency = Frequent;
+    }
 
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return ! target->hasSkill(objectName());
+    }
+
+    QList<const Card *> getClubs(const Card *card) const{
+        QList<const Card *> clubs;
+
+        if(!card->isVirtualCard()){
+            if(card->getSuit() == Card::Club)
+                clubs << card;
+
+            return clubs;
+        }
+
+        foreach(int card_id, card->getSubcards()){
+            const Card *c = Sanguosha->getCard(card_id);
+            if(c->getSuit() == Card::Club)
+                clubs << c;
+        }
+
+        return clubs;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        QList<const Card *> clubs;
+
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            const SkillCard *skill_card = qobject_cast<const SkillCard *>(use.card);
+            if(skill_card && skill_card->subcardsLength() > 0 && skill_card->willThrow()){
+                clubs = getClubs(skill_card);
+            }
+        }else if(event == CardDiscarded){
+            const Card *card = data.value<CardStar>();
+            if(card->subcardsLength() == 0)
+                return false;
+        }
+
+        if(clubs.isEmpty())
+            return false;
+
+        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
+        if(caozhi && caozhi->askForSkillInvoke(objectName(), data)){
+            foreach(const Card *club, clubs)
+                caozhi->obtainCard(club);
+        }
+
         return false;
     }
 };
@@ -56,23 +109,33 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.contains("analeptic");
+        return ClientInstance->card_pattern.contains("analeptic") && Self->faceUp();
     }
 
     virtual const Card *viewAs() const{
-        return new Analeptic(Card::NoSuit, 0);
+        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+        analeptic->setSkillName("jiushi");
+        return analeptic;
     }
 };
 
-class JiushiFlip: public MasochismSkill{
+class JiushiFlip: public TriggerSkill{
 public:
-    JiushiFlip():MasochismSkill("#jiushi-flip"){
-
+    JiushiFlip():TriggerSkill("#jiushi-flip"){
+        events << CardUsed << Damaged;
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &) const{
-        if(!target->faceUp() && target->askForSkillInvoke("jiushi"))
-            target->turnOver();
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->getSkillName() == "jiushi")
+                player->turnOver();
+        }else if(event == Damaged){
+            if(!player->faceUp() && player->askForSkillInvoke("jiushi"))
+                player->turnOver();
+        }
+
+        return false;
     }
 };
 
@@ -125,8 +188,6 @@ public:
 JujianCard::JujianCard(){
     once = true;
 }
-
-#include "engine.h"
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
     int n = effect.card->subcardsLength();
@@ -275,6 +336,36 @@ public:
         }
 
         return false;
+    }
+};
+
+XianzhenCard::XianzhenCard(){
+    once = true;
+}
+
+void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
+
+}
+
+class Xianzhen: public OneCardViewAsSkill{
+public:
+    Xianzhen():OneCardViewAsSkill("xianzhen"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("XianzhenCard");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        XianzhenCard *card = new XianzhenCard;
+        card->addSubcard(card_item->getCard());
+
+        return card;
     }
 };
 
@@ -496,6 +587,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<JujianCard>();
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
+    addMetaObject<XianzhenCard>();
 }
 
 ADD_PACKAGE(YJCM)

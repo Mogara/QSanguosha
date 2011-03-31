@@ -714,10 +714,10 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
 }
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
-    // jijiu special case
-    if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
-        ServerPlayer *huatuo = player;
-        if(huatuo->isKongcheng()){
+    if(player->isKongcheng()){
+        // jijiu special case
+        if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
+            ServerPlayer *huatuo = player;
             QList<const Card *> equips = huatuo->getEquips();
             bool has_red = false;
             foreach(const Card *equip, equips){
@@ -729,9 +729,10 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
 
             if(!has_red)
                 return NULL;
-        }
-    }else{
-        if(player->isKongcheng())
+        }else if(player->hasSkill("jiushi")){
+            if(!player->faceUp())
+                return NULL;
+        }else
             return NULL;
     }
 
@@ -2052,10 +2053,15 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
         sendLog(log);
     }
 
-    int length = to_discard.length();
+    DummyCard *dummy_card = new DummyCard;
+    foreach(int card_id, to_discard)
+        dummy_card->addSubcard(card_id);
 
-    QVariant data = length;
+    CardStar card_star = dummy_card;
+    QVariant data = QVariant::fromValue(card_star);
     thread->trigger(CardDiscarded, target, data);
+
+    dummy_card->deleteLater();
 
     return true;
 }

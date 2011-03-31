@@ -40,4 +40,13 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class XianzhenCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XianzhenCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 #endif // YJCMPACKAGE_H

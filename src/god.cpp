@@ -307,7 +307,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *shenzhouyu, QVariant &data) const{
-        int discard_num = data.toInt();
+        CardStar dummy_card = data.value<CardStar>();
+        int discard_num = dummy_card->subcardsLength();
 
         if(shenzhouyu->getPhase() == Player::Discard && discard_num >= 2){
             Room *room = shenzhouyu->getRoom();

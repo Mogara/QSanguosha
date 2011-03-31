@@ -354,6 +354,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
 void ServerPlayer::turnOver(){
     setFaceUp(!faceUp());
     room->broadcastProperty(this, "faceup");
+
+    LogMessage log;
+    log.type = "#TurnOver";
+    log.from = this;
+    log.arg = faceUp() ? "face_up" : "face_down";
+    room->sendLog(log);
 }
 
 void ServerPlayer::gainMark(const QString &mark, int n){

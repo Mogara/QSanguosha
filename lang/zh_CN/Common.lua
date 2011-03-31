@@ -77,4 +77,7 @@ return {
 	["$JudgeResult"] = "%from 最终判定结果为 %card", 
 	["$PindianResult"] = "%from 的拼点结果为 %card", 
 	["#ChooseSuit"] = "%from 选择了花色 %arg", 
+	["#TurnOver"] = "%from 将自己的武将牌翻面，现在是 %arg",
+	["face_up"] = "面朝上",
+	["face_down"] = "面朝下",
 }

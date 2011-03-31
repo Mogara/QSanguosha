@@ -1129,9 +1129,106 @@ void RoomScene::updateSelectedTargets(){
 }
 
 void RoomScene::useSelectedCard(){
-    const Card *card = dashboard->getSelected();
-    if(card)
-        useCard(card);
+    switch(ClientInstance->getStatus()){
+    case Client::Playing:{
+            const Card *card = dashboard->getSelected();
+            if(card)
+                useCard(card);
+            break;
+        }
+    case Client::Responsing:{
+            const Card *card = dashboard->getSelected();
+            if(card){
+                if(ClientInstance->noTargetResponsing())
+                    ClientInstance->responseCard(card);
+                else
+                    ClientInstance->useCard(card, selected_targets);
+                prompt_box->disappear();
+            }
+
+            dashboard->unselectAll();
+            break;
+        }
+
+    case Client::Discarding: {
+            const Card *card = dashboard->pendingCard();
+            if(card){
+                ClientInstance->discardCards(card);
+                dashboard->stopPending();
+                prompt_box->disappear();
+            }
+            break;
+        }
+
+    case Client::NotActive: {
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("The OK button should be disabled when client is not active!"));
+            return;
+        }
+    case Client::AskForAG:{
+            ClientInstance->chooseAG(-1);
+            return;
+        }
+
+    case Client::AskForCardShow:{
+            const Card *card = dashboard->getSelected();
+            if(card){
+                ClientInstance->responseCard(card);
+                dashboard->unselectAll();
+            }
+
+            break;
+        }
+
+    case Client::ExecDialog:{
+            QMessageBox::warning(main_window, tr("Warning"),
+                                 tr("The OK button should be disabled when client is in executing dialog"));
+            return;
+        }
+
+    case Client::AskForPlayerChoose:{
+            ClientInstance->choosePlayer(selected_targets.first());
+            prompt_box->disappear();
+
+            break;
+        }
+
+    case Client::AskForYiji:{
+            const Card *card = dashboard->pendingCard();
+            if(card){
+                ClientInstance->replyYiji(card, selected_targets.first());
+                dashboard->stopPending();
+                prompt_box->disappear();
+            }
+
+            break;
+        }
+
+    case Client::AskForGuanxing:{
+            QList<int> up_cards, down_cards;
+            foreach(CardItem *card_item, up_items)
+                up_cards << card_item->getCard()->getId();
+
+            foreach(CardItem *card_item, down_items)
+                down_cards << card_item->getCard()->getId();
+
+            ClientInstance->replyGuanxing(up_cards, down_cards);
+            clearGuanxing();
+
+            break;
+        }
+
+    case Client::AskForGongxin:{
+            ClientInstance->replyGongxin();
+            clearGongxinCards();
+
+            break;
+        }
+    }
+
+    const ViewAsSkill *skill = dashboard->currentSkill();
+    if(skill)
+        dashboard->stopPending();
 }
 
 void RoomScene::useCard(const Card *card){
@@ -1572,7 +1669,6 @@ void RoomScene::doSkillButton(){
         const Card *card = dashboard->pendingCard();
         if(card && card->targetFixed()){
             useSelectedCard();
-            dashboard->stopPending();
         }
     }
 }
@@ -1644,104 +1740,7 @@ void RoomScene::doOkButton(){
     if(!ok_button->isEnabled())
         return;
 
-    switch(ClientInstance->getStatus()){
-    case Client::Playing:{
-            useSelectedCard();
-            break;
-        }
-    case Client::Responsing:{
-            const Card *card = dashboard->getSelected();
-            if(card){
-                if(ClientInstance->noTargetResponsing())
-                    ClientInstance->responseCard(card);
-                else
-                    ClientInstance->useCard(card, selected_targets);
-                prompt_box->disappear();
-            }
-
-            dashboard->unselectAll();
-            break;
-        }
-
-    case Client::Discarding: {
-            const Card *card = dashboard->pendingCard();
-            if(card){
-                ClientInstance->discardCards(card);
-                dashboard->stopPending();
-                prompt_box->disappear();
-            }
-            break;
-        }        
-
-    case Client::NotActive: {
-            QMessageBox::warning(main_window, tr("Warning"),
-                                 tr("The OK button should be disabled when client is not active!"));
-            return;
-        }
-    case Client::AskForAG:{
-            ClientInstance->chooseAG(-1);
-            return;
-        }
-
-    case Client::AskForCardShow:{
-            const Card *card = dashboard->getSelected();
-            if(card){
-                ClientInstance->responseCard(card);
-                dashboard->unselectAll();
-            }
-
-            break;
-        }
-
-    case Client::ExecDialog:{
-            QMessageBox::warning(main_window, tr("Warning"),
-                                 tr("The OK button should be disabled when client is in executing dialog"));
-            return;
-        }
-
-    case Client::AskForPlayerChoose:{
-            ClientInstance->choosePlayer(selected_targets.first());
-            prompt_box->disappear();
-
-            break;
-        }
-
-    case Client::AskForYiji:{
-            const Card *card = dashboard->pendingCard();
-            if(card){
-                ClientInstance->replyYiji(card, selected_targets.first());
-                dashboard->stopPending();
-                prompt_box->disappear();
-            }
-
-            break;
-        }
-
-    case Client::AskForGuanxing:{
-            QList<int> up_cards, down_cards;
-            foreach(CardItem *card_item, up_items)
-                up_cards << card_item->getCard()->getId();
-
-            foreach(CardItem *card_item, down_items)
-                down_cards << card_item->getCard()->getId();
-
-            ClientInstance->replyGuanxing(up_cards, down_cards);
-            clearGuanxing();
-
-            break;
-        }
-
-    case Client::AskForGongxin:{
-            ClientInstance->replyGongxin();
-            clearGongxinCards();
-
-            break;
-        }
-    }
-
-    const ViewAsSkill *skill = dashboard->currentSkill();
-    if(skill)
-        dashboard->stopPending();
+    useSelectedCard();
 }
 
 void RoomScene::clearGuanxing()
