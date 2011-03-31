@@ -289,6 +289,14 @@ struct DyingStruct{
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
 };
 
+struct RecoverStruct{
+    RecoverStruct();
+
+    int recover;
+    ServerPlayer *who;
+    const Card *card;
+};
+
 enum TriggerEvent{
     GameStart,
     PhaseChange,
@@ -565,7 +573,7 @@ public:
     void loseHp(ServerPlayer *victim, int lose = 1);
 	void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
-    void recover(ServerPlayer *player, int recover = 1, bool set_emotion = false);
+    void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
     void playCardEffect(const char *card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
@@ -636,7 +644,7 @@ public:
 	bool askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason);
-    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt);
+    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, bool throw_it = true);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);

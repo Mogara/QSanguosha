@@ -65,7 +65,7 @@ public:
     void loseHp(ServerPlayer *victim, int lose = 1);
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
-    void recover(ServerPlayer *player, int recover = 1, bool set_emotion = false);
+    void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
@@ -142,7 +142,7 @@ public:
     bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it = true);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);

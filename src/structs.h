@@ -79,6 +79,14 @@ struct DyingStruct{
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
 };
 
+struct RecoverStruct{
+    RecoverStruct();
+
+    int recover;
+    ServerPlayer *who;
+    const Card *card;
+};
+
 enum TriggerEvent{
     GameStart,
     PhaseChange,
@@ -127,5 +135,6 @@ Q_DECLARE_METATYPE(CardMoveStruct);
 Q_DECLARE_METATYPE(CardStar);
 Q_DECLARE_METATYPE(PlayerStar);
 Q_DECLARE_METATYPE(DyingStruct);
+Q_DECLARE_METATYPE(RecoverStruct);
 
 #endif // STRUCTS_H

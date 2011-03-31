@@ -263,7 +263,10 @@ public:
 
                     const Card *card = Sanguosha->getCard(card_id);
                     if(card->getSuit() == Card::Heart){
-                        room->recover(menghuo);
+                        RecoverStruct recover;
+                        recover.card = card;
+                        recover.who = menghuo;
+                        room->recover(menghuo, recover);
                         room->throwCard(card_id);
                         has_heart = true;
                     }else
@@ -823,7 +826,10 @@ public:
                room->judge(player, BaonueCallback) == "good")
             {
                 room->playSkillEffect(objectName());
-                room->recover(dongzhuo);
+
+                RecoverStruct recover;
+                recover.who = player;
+                room->recover(dongzhuo, recover);
             }
         }
 

@@ -119,8 +119,12 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
             types << card->getTypeId();
         }
 
-        if(types.size() == 1)
-            effect.from->getRoom()->recover(effect.from);
+        if(types.size() == 1){
+            RecoverStruct recover;
+            recover.card = this;
+            recover.who = effect.from;
+            effect.from->getRoom()->recover(effect.from, recover);
+        }
     }
 }
 
@@ -145,6 +149,46 @@ public:
         JujianCard *card = new JujianCard;
         card->addSubcards(cards);
         return card;
+    }
+};
+
+class Enyuan: public TriggerSkill{
+public:
+    Enyuan():TriggerSkill("enyuan"){
+        events << HpRecover << Damaged;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        if(event == HpRecover){
+            RecoverStruct recover = data.value<RecoverStruct>();
+            if(recover.who){
+                recover.who->drawCards(recover.recover);
+
+                LogMessage log;
+                log.type = "EnyuanRecover";
+                log.from = player;
+                log.to << recover.who;
+                log.arg = recover.recover;
+
+                room->sendLog(log);
+            }
+        }else if(event == Damaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            ServerPlayer *source = damage.from;
+            if(source){
+                const Card *card = room->askForCard(source, ".H", "@enyuan", false);
+                if(card){
+                    room->showCard(source, card->getEffectiveId());
+                    player->obtainCard(card);
+                }else{
+                    room->loseHp(source);
+                }
+            }
+        }
+
+        return false;
     }
 };
 

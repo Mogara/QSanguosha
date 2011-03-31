@@ -67,7 +67,10 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
         room->broadcastInvoke("animate", animation_str);
 
         // recover hp
-        room->recover(effect.to);
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        room->recover(effect.to, recover);
     }else
         room->setPlayerFlag(effect.to, "drank");
 }
@@ -215,8 +218,11 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    if(player->isAlive())
-        player->getRoom()->recover(player);
+    if(player->isAlive()){
+        RecoverStruct recover;
+        recover.card = this;
+        player->getRoom()->recover(player, recover);
+    }
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)

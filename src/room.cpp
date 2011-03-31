@@ -593,7 +593,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -619,7 +619,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     if(card){
-        throwCard(card);
+        if(throw_it)
+            throwCard(card);
 
         if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
@@ -1473,11 +1474,11 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage){
     broadcastInvoke("hpChange", change_str);
 }
 
-void Room::recover(ServerPlayer *player, int recover, bool set_emotion){
+void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion){
     if(player->getLostHp() == 0 || player->isDead())
         return;
 
-    QVariant data = recover;
+    QVariant data = QVariant::fromValue(recover);
     thread->trigger(HpRecover, player, data);
 
     if(set_emotion){

@@ -729,7 +729,9 @@ public:
                     log.to << effect.from;
                     room->sendLog(log);
 
-                    room->recover(sunquan);
+                    RecoverStruct recover;
+                    recover.who = sunquan;
+                    room->recover(sunquan, recover);
 
                     room->getThread()->delay(2000);
                 }

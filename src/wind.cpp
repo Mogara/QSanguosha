@@ -334,103 +334,16 @@ public:
                 log.arg = QString::number(damage.damage);
                 room->sendLog(log);
 
-                room->recover(player, damage.damage);
+                RecoverStruct recover;
+                recover.who = player;
+                recover.recover = damage.damage;
+                room->recover(player, recover);
             }
         }
 
         return false;
     }
 };
-
-/*
-
-class Buqu: public TriggerSkill{
-public:
-    Buqu():TriggerSkill("buqu"){
-        events << Dying << HpRecover << AskForPeachesDone;
-        default_choice = "alive";
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
-        Room *room = zhoutai->getRoom();
-        QList<int> &buqu = zhoutai->getPile("buqu");
-        if(event == Dying){
-            int fatal_point = room->getTag("FatalPoint").toInt();
-            QList<int> buqu_cards = room->getNCards(fatal_point);
-            foreach(int card_id, buqu_cards){
-                room->moveCardTo(Sanguosha->getCard(card_id), zhoutai, Player::Special, true);
-                buqu.append(card_id);
-                room->broadcastInvoke("pile", QString("%1:buqu+%2").arg(zhoutai->objectName()).arg(card_id));
-            }
-        }else if(event == HpRecover){
-            if(buqu.isEmpty())
-                return false;
-
-            int recover = data.toInt();
-            if(buqu.length() > recover){
-                room->fillAG(buqu);
-
-                int i;
-                for(i=0; i<recover; i++){
-                    int card_id = room->askForAG(zhoutai, buqu);
-                    room->throwCard(card_id);
-                    buqu.removeOne(card_id);
-                    room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
-                }
-
-                room->broadcastInvoke("clearAG");
-            }else{
-                int new_hp = recover - buqu.length() + 1;
-                room->setPlayerProperty(zhoutai, "hp", new_hp);
-
-                // remove all buqu cards
-                foreach(int card_id, buqu){
-                    room->throwCard(card_id);
-                    room->broadcastInvoke("pile", QString("%1:buqu-%2").arg(zhoutai->objectName()).arg(card_id));
-                }
-                buqu.clear();
-            }
-
-            return true;
-        }else if(event == AskForPeachesDone){
-            DyingStruct dying_data = data.value<DyingStruct>();
-            int got = room->getTag("PeachesGot").toInt();
-            if(got > 0){
-                room->recover(zhoutai, got);
-            }
-
-            if(zhoutai->getHp() >= 1)
-                return true;
-
-            QSet<int> numbers;
-            foreach(int card_id, buqu){
-                const Card *card = Sanguosha->getCard(card_id);
-                numbers << card->getNumber();
-            }
-            bool duplicated =  numbers.size() < buqu.size();
-
-            if(duplicated){
-                ServerPlayer *killer = NULL;
-                if(dying_data.damage)
-                    killer = dying_data.damage->from;
-
-                room->killPlayer(zhoutai, killer);
-
-                return true;
-            }else{
-                QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
-                if(choice == "alive"){
-                    room->playSkillEffect(objectName());
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-};
-
-*/
 
 class BuquRemove: public TriggerSkill{
 public:
@@ -494,10 +407,6 @@ public:
                 foreach(int card_id, card_ids){
                     zhoutai->addCardToPile("buqu", card_id);
                 }
-            }
-        }else if(event == HpRecover){
-            if(!zhoutai->hasFlag("dying")){
-                BuquRemove::Remove(zhoutai);
             }
         }else if(event == AskForPeachesDone){
             BuquRemove::Remove(zhoutai);

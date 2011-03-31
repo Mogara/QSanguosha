@@ -114,7 +114,10 @@ void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPla
 void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
-    room->recover(effect.to);
+    RecoverStruct recover;
+    recover.card = this;
+    recover.who = effect.from;
+    room->recover(effect.to, recover);
 }
 
 class ChengxiangViewAsSkill: public ViewAsSkill{
@@ -784,7 +787,10 @@ public:
         if(event == CardEffected && wuling == "water"){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card && effect.card->inherits("Peach")){
-                room->recover(player);
+                RecoverStruct recover;
+                recover.card = effect.card;
+                recover.who = effect.from;
+                room->recover(player, recover);
 
                 LogMessage log;
                 log.type = "#WulingWater";

@@ -15,12 +15,17 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.to->isLord()){
             int x = damage.damage;
             Room *room = player->getRoom();
-            room->recover(damage.to, x*2);
+
+            RecoverStruct recover;
+            recover.card = damage.card;
+            recover.who = damage.from;
+            recover.recover = x*2;
+            room->recover(damage.to, recover);
             player->drawCards(x);
         }
 

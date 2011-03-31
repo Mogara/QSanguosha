@@ -32,8 +32,12 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     int new_value = old_value + subcards.length();
     source->setMark("rende", new_value);
 
-    if(old_value < 2 && new_value >= 2)
-        room->recover(source);
+    if(old_value < 2 && new_value >= 2){
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = source;
+        room->recover(source, recover);
+    }
 }
 
 JieyinCard::JieyinCard(){
@@ -50,8 +54,12 @@ bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
 void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    room->recover(effect.from, 1, true);
-    room->recover(effect.to, 1, true);
+    RecoverStruct recover;
+    recover.card = this;
+    recover.who = effect.from;
+
+    room->recover(effect.from, recover, true);
+    room->recover(effect.to, recover, true);
 }
 
 TuxiCard::TuxiCard(){
@@ -193,7 +201,10 @@ void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
 }
 
 void QingnangCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->recover(effect.to, 1);
+    RecoverStruct recover;
+    recover.card = this;
+    recover.who = effect.from;
+    effect.to->getRoom()->recover(effect.to, recover);
 }
 
 GuicaiCard::GuicaiCard(){

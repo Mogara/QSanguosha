@@ -320,7 +320,9 @@ public:
             if(result == "up"){
                 room->playSkillEffect(objectName(), 2);
                 foreach(ServerPlayer *player, all_players){
-                    room->recover(player);
+                    RecoverStruct recover;
+                    recover.who = shenzhouyu;
+                    room->recover(player, recover);
                 }
             }else if(result == "down"){
                 foreach(ServerPlayer *player, all_players){

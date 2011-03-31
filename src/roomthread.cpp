@@ -33,6 +33,11 @@ SlashEffectStruct::SlashEffectStruct()
 DyingStruct::DyingStruct()
     :who(NULL), damage(NULL)
 {
+}
+
+RecoverStruct::RecoverStruct()
+    :recover(1), who(NULL), card(NULL)
+{
 
 }
 
