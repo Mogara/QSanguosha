@@ -384,6 +384,19 @@ QList<const Card *> Player::getEquips() const{
     return equips;
 }
 
+const EquipCard *Player::getEquip(int index) const{
+    switch(index){
+    case 0: return weapon; break;
+    case 1: return armor; break;
+    case 2: return defensive_horse; break;
+    case 3: return offensive_horse; break;
+    default:
+        break;
+    }
+
+    return NULL;
+}
+
 bool Player::hasWeapon(const QString &weapon_name) const{
     return weapon && weapon->objectName() == weapon_name;
 }

@@ -493,17 +493,43 @@ GanluCard::GanluCard(){
     once = true;
 }
 
+void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second, int index) const{
+    const EquipCard *e1 = first->getEquip(index);
+    const EquipCard *e2 = second->getEquip(index);
+
+    Room *room = first->getRoom();
+
+    if(e1)
+        first->obtainCard(e1);
+
+    if(e2)
+        room->moveCardTo(e2, first, Player::Equip);
+
+    if(e1)
+        room->moveCardTo(e1, second, Player::Equip);
+}
+
 bool GanluCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
     return targets.length() == 2;
 }
 
 bool GanluCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.length() < 2 && to_select->getEquips().isEmpty();
+    return targets.length() < 2 && ! to_select->getEquips().isEmpty();
 }
 
-void GanluCard::use(Room *, ServerPlayer *, const QList<ServerPlayer *> &) const{
-    //ServerPlayer *first = targets.first();
-    //ServerPlayer *second = targets.at(1);
+void GanluCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *first = targets.first();
+    ServerPlayer *second = targets.at(1);
+
+    int i;
+    for(i=0; i<4; i++)
+        swapEquip(first, second, i);
+
+    LogMessage log;
+    log.type = "#GanluSwap";
+    log.from = source;
+    log.to = targets;
+    room->sendLog(log);
 }
 
 class Ganlu: public ZeroCardViewAsSkill{

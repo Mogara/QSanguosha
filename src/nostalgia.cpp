@@ -261,8 +261,8 @@ NostalgiaPackage::NostalgiaPackage()
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
 
-    //General *yuji = new General(this, "yuji", "qun", 3);
-    //yuji->addSkill(new Guhuo);
+    General *yuji = new General(this, "yuji", "qun", 3);
+    yuji->addSkill(new Guhuo);
 
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
