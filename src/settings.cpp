@@ -21,12 +21,7 @@ Settings::Settings()
 {
 }
 
-extern bool NoAprilFool;
-
 void Settings::init(){
-    // April fool
-    NoAprilFool = value("NoAprilFool", false).toBool();
-
     QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
     int font_id = QFontDatabase::addApplicationFont(font_path);
     if(font_id!=-1){
