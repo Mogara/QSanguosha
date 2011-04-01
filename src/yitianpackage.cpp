@@ -904,6 +904,8 @@ public:
 
             xuandi->gainMark("@" + choice);
             xuandi->tag["wuling"] = choice;
+
+            room->playSkillEffect(objectName(), effects.indexOf(choice) + 1);
         }
 
         return false;
