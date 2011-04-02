@@ -105,10 +105,13 @@ end
 function SmartAI:updatePlayers()
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
+	self.friends = sgs.reverse(self.friends)
 
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
+	self.friends_noself = sgs.reverse(self.friends_noself)
 
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
+	self.enemies = sgs.reverse(self.enemies)
 
 	self.has_wizard = self:hasWizard(self.friends) and not self:hasWizard(self.enemies)
 end
@@ -174,6 +177,16 @@ sgs.ai_skill_invoke = {
 	eight_diagram = true,
 	double_sword = true,
 	fan = true,
+	
+	kylin_bow = function(self, data)	
+		local effect = data:toSlashEffect()
+		
+		if effect.to:hasSkill("xiaoji") then
+			return false
+		end
+		
+		return self:isEnemy(effect.to)
+	end
 }
 
 function SmartAI:askForSkillInvoke(skill_name, data)

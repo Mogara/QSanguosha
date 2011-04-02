@@ -385,7 +385,7 @@ public:
         events << SlashHit;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         QStringList horses;
@@ -398,7 +398,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        if(!player->askForSkillInvoke(objectName()))
+        if(!player->askForSkillInvoke(objectName(), data))
             return false;
 
         QString horse_type;

@@ -133,7 +133,16 @@ function sgs.list(list)
 	else
 		return sgs.qlist(list)
 	end
-end		
+end	
+
+function sgs.reverse(list)
+	local new = {}
+	for i=#list, 1, -1 do
+		table.insert(new, list[i])
+	end
+	
+	return new
+end
 
 -- copied from "Well House Consultants"
 -- used to split string into a table, similar with php' explode function

@@ -49,7 +49,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     // create photos
     int i;
     for(i=0;i<player_count-1;i++){
-        Photo *photo = new Photo(i);
+        Photo *photo = new Photo;
         photos << photo;
         addItem(photo);
     }
@@ -345,7 +345,10 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 
     QList<QPointF> positions = getPhotoPositions();
     for(i=0; i<positions.length(); i++){
-        QPropertyAnimation *translation = new QPropertyAnimation(photos.at(i), "pos");
+        Photo *photo = photos.at(i);
+        photo->setOrder(i+1);
+
+        QPropertyAnimation *translation = new QPropertyAnimation(photo, "pos");
         translation->setEndValue(positions.at(i));
         translation->setEasingCurve(QEasingCurve::OutBounce);
 

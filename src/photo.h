@@ -19,7 +19,7 @@ class Photo : public Pixmap
     Q_OBJECT
 
 public:
-    explicit Photo(int order);
+    explicit Photo();
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
@@ -34,7 +34,8 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
-    void createRoleCombobox();    
+    void createRoleCombobox();
+    void setOrder(int order);
 
     enum FrameType{
         Playing,

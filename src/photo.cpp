@@ -19,18 +19,15 @@
 #include <QPushButton>
 #include <QMenu>
 
-Photo::Photo(int order)
+Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
     chain("image/system/chain.png"),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    order_item(new QGraphicsPixmapItem(QPixmap(QString("image/system/number/%1.png").arg(order+1)),this)),
-    hide_avatar(false)
+    order_item(NULL), hide_avatar(false)
 {
     setAcceptHoverEvents(true);
-
-    order_item->setVisible(false);
 
     back_icon = new Pixmap("image/system/small-back.png");
     back_icon->setParentItem(this);
@@ -86,6 +83,17 @@ Photo::Photo(int order)
     mark_item->setDefaultTextColor(Qt::white);
 
     role_combobox = NULL;
+}
+
+void Photo::setOrder(int order){
+    QPixmap pixmap(QString("image/system/number/%1.png").arg(order));
+    if(order_item)
+        order_item->setPixmap(pixmap);
+    else{
+        order_item = new QGraphicsPixmapItem(pixmap, this);
+        order_item->setVisible(false);
+        order_item->moveBy(15, 0);
+    }
 }
 
 void Photo::createRoleCombobox(){
