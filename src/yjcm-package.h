@@ -47,6 +47,7 @@ class XianzhenCard: public SkillCard{
 public:
     Q_INVOKABLE XianzhenCard();
 
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -58,6 +59,15 @@ public:
     void xuanhuo(ServerPlayer *from, ServerPlayer *to) const;
 
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class XinzhanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XinzhanCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 #endif // YJCMPACKAGE_H

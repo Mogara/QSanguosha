@@ -1511,10 +1511,10 @@ bool Room::cardEffect(const CardEffectStruct &effect){
     if(effect.from)
         broken = thread->trigger(CardEffect, effect.from, data);
 
-    if(!broken)
-        return !thread->trigger(CardEffected, effect.to, data);
-    else
-        return true;
+    if(broken)
+        return false;
+
+    return !thread->trigger(CardEffected, effect.to, data);
 }
 
 void Room::damage(const DamageStruct &damage_data){

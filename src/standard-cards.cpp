@@ -634,7 +634,11 @@ void Collateral::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
         QString prompt = QString("collateral-slash:%1:%2").arg(source->getGeneralName()).arg(victim->getGeneralName());
         const Card *slash = room->askForCard(killer, "slash", prompt);
         if(slash){
-            room->cardEffect(slash, killer, victim);
+            CardUseStruct use;
+            use.card = slash;
+            use.from = killer;
+            use.to << victim;
+            room->useCard(use);
         }else{
             source->obtainCard(weapon);
         }

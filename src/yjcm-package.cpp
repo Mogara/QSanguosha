@@ -400,10 +400,29 @@ public:
 
 XianzhenCard::XianzhenCard(){
     once = true;
+    will_throw = false;
+}
+
+bool XianzhenCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return targets.isEmpty() && to_select != Self && ! to_select->isKongcheng();
 }
 
 void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
 
+    const Card *card = Sanguosha->getCard(subcards.first());
+    if(effect.from->pindian(effect.to, card)){
+        room->setPlayerFlag(effect.to, "xianzhen");
+    }else{
+        int n = effect.from->getHandcardNum();
+        if(n == 0)
+            return;
+
+        if(n == 1)
+            effect.from->throwAllHandCards();
+        else
+            room->askForDiscard(effect.from, "xianzhen", 1);
+    }
 }
 
 class Xianzhen: public OneCardViewAsSkill{
@@ -633,6 +652,30 @@ public:
     }
 };
 
+XinzhanCard::XinzhanCard(){
+    target_fixed = true;
+    once = true;
+}
+
+void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+
+}
+
+class Xinzhan: public ZeroCardViewAsSkill{
+public:
+    Xinzhan():ZeroCardViewAsSkill("xinzhan"){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        return ! ClientInstance->hasUsed("XinzhanCard") && Self->getHandcardNum() >= Self->getMaxHP();
+    }
+
+    virtual const Card *viewAs() const{
+        return new XinzhanCard;
+    }
+};
+
 YJCMPackage::YJCMPackage():Package("YJCM"){
     General *caozhi = new General(this, "caozhi", "wei", 3);
     caozhi->addSkill(new Luoying);
@@ -647,6 +690,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     xushu->addSkill(new Jujian);
 
     General *masu = new General(this, "masu", "shu", 3);
+    masu->addSkill(new Xinzhan);
     masu->addSkill(new Huilei);
 
     General *fazheng = new General(this, "fazheng", "shu", 3);
@@ -668,6 +712,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     chengong->addSkill(new Mingce);
 
     General *gaoshun = new General(this, "gaoshun", "qun");
+    gaoshun->addSkill(new Xianzhen);
     gaoshun->addSkill(new Jiejiu);
 
     addMetaObject<JujianCard>();
@@ -675,6 +720,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
     addMetaObject<XuanhuoCard>();
+    addMetaObject<XinzhanCard>();
 }
 
 ADD_PACKAGE(YJCM)
