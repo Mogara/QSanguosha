@@ -31,6 +31,8 @@ public:
             log.arg = QString::number(x);
             room->sendLog(log);
 
+            room->playSkillEffect("yongsi", x);
+
         }else if(event == PhaseChange && yuanshu->getPhase() == Player::Discard){
             int x = getKingdoms(yuanshu);
             int total = yuanshu->getEquips().length() + yuanshu->getHandcardNum();

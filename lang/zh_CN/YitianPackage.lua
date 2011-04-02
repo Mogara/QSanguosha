@@ -186,6 +186,13 @@ return {
 	["#ShenliBuff"] = "%from 的锁定技【神力】被触发，【杀】的伤害增加了 %arg, 达到了 %arg2 点",
 	["@struggle"] = "死战",
 	
+	-- 邓士载
+	["dengshizai"] = "邓士载",
+	["zhenggong"] = "争功",
+	[":zhenggong"] = "任意其他角色的回合开始前，若你的武将牌正面向上，你可以将你的武将牌翻面并立即进入你的回合，你的回合结束后，进入该角色的回合。",
+	["toudu"] = "偷渡",
+	[":toudu"] = "当你的武将牌背面向上时，若你受到伤害，你可以立即将武将牌翻面且视为对任意角色使用一张杀。",
+	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
@@ -203,12 +210,13 @@ return {
 	["cv:jiangboyue"] = "Jr. Wakaran",
 	["cv:jiawenhe"] = "",
 	["cv:guzhielai"] = "",
+	["cv:dengshizai"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["designer:lukang"] = "冢冢的青藤",
-	["designer:jinxuandi"] = "title2009",
+	["designer:jinxuandi"] = "title2009,塞克洛",
 	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
 	["designer:caizhaoji"] = "冢冢的青藤",
 	["designer:luboyan"] = "太阳神上、冢冢的青藤",
@@ -216,5 +224,6 @@ return {
 	["designer:jiangboyue"] = "Jr. Wakaran",
 	["designer:jiawenhe"] = "氢弹",
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
+	["designer:dengshizai"] = "Bu懂",
 }
 

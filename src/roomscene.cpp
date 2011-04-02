@@ -2505,7 +2505,7 @@ void RoomScene::onGameStart(){
 
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
-        connect(player, SIGNAL(turn_started()), log_box, SLOT(appendSeparator()));
+        connect(player, SIGNAL(phase_changed()), log_box, SLOT(appendSeparator()));
     }
 
     foreach(Photo *photo, photos)

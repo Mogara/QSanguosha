@@ -141,5 +141,7 @@ void ClientLogBox::appendLog(const QString &log_str){
 }
 
 void ClientLogBox::appendSeparator(){
-    append("------------------------");
+    const Player *player = qobject_cast<const Player *>(sender());
+    if(player->getPhase() == Player::Start)
+        append("------------------------");
 }

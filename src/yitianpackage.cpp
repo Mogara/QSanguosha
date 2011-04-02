@@ -282,46 +282,6 @@ public:
     }
 };
 
-class Ganzhen: public TriggerSkill{
-public:
-    Ganzhen():TriggerSkill("ganzhen"){
-        events << CardUsed << CardResponsed;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        CardStar card = NULL;
-        if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        }else if(event == CardResponsed)
-            card = data.value<CardStar>();
-
-        if(card && card->isBlack() && card->inherits("BasicCard")){
-            Room *room = player->getRoom();
-            QList<ServerPlayer *> players = room->getAllPlayers();
-
-            // find Cao Zhi
-            ServerPlayer *caozhi = NULL;
-            foreach(ServerPlayer *player, players){
-                if(player->hasSkill(objectName())){
-                    caozhi = player;
-                    break;
-                }
-            }
-
-            if(caozhi && room->askForSkillInvoke(caozhi, objectName(), data)){
-                player->drawCards(1);
-            }
-        }
-
-        return false;
-    }
-};
-
 JuejiCard::JuejiCard(){
     once = true;
 }
@@ -1514,6 +1474,53 @@ public:
     }
 };
 
+class Zhenggong: public TriggerSkill{
+public:
+    Zhenggong():TriggerSkill("zhenggong"){
+
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &) const{
+        return false;
+    }
+};
+
+class Toudu: public MasochismSkill{
+public:
+    Toudu():MasochismSkill("toudu"){
+
+    }
+
+    virtual void onDamaged(ServerPlayer *dengshizai, const DamageStruct &) const{
+        if(dengshizai->faceUp())
+            return;
+
+        if(!dengshizai->askForSkillInvoke("toudu"))
+            return;
+
+        Room *room = dengshizai->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(dengshizai), targets;
+        foreach(ServerPlayer *player, players){
+            if(dengshizai->canSlash(player, false)){
+                targets << player;
+            }
+        }
+
+        if(!targets.isEmpty()){
+            ServerPlayer *target = room->askForPlayerChosen(dengshizai, targets, "toudu");
+
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("toudu");
+
+            CardUseStruct use;
+            use.card = slash;
+            use.from = dengshizai;
+            use.to << target;
+            room->useCard(use);
+        }
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1530,17 +1537,12 @@ YitianPackage::YitianPackage()
     caochong->addSkill(new Conghui);
     caochong->addSkill(new Zaoyao);
 
-    //General *caozhi = new General(this, "caozhi", "wei", 3);
-    //caozhi->addSkill(new Ganzhen);
-
     General *zhangjunyi = new General(this, "zhangjunyi", "wei");
     zhangjunyi->addSkill(new Jueji);
     zhangjunyi->addSkill(new JuejiClear);
 
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill(new Qianxun);
-    //lukang->addSkill(new Fanji);
-    //lukang->addSkill(new FanjiGet);
     lukang->addSkill(new LukangWeiyan);
 
     General *jinxuandi = new General(this, "jinxuandi", "god");
@@ -1587,6 +1589,10 @@ YitianPackage::YitianPackage()
     General *elai = new General(this, "guzhielai", "wei");
     elai->addSkill(new Sizhan);
     elai->addSkill(new Shenli);
+
+    General *dengshizai = new General(this, "dengshizai", "wei", 3);
+    dengshizai->addSkill(new Zhenggong);
+    dengshizai->addSkill(new Toudu);
 
     skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
 

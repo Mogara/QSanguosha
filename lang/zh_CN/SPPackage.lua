@@ -18,4 +18,10 @@ return {
 	
 	["cv:gongsunzan"] = "",
 	["cv:yuanshu"] = "",
+	
+	["$yongsi1"] = "嘿呀，还不错",
+	["$yongsi2"] = "呐~哈哈哈哈哈",
+	["$yongsi3"] = "呀呀呀呀呀呀",
+	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
+	["~yuanshu"] = "呃呀~~~~~~~",
 }
