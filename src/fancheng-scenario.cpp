@@ -350,23 +350,6 @@ public:
     }
 };
 
-class Changqu: public DistanceSkill{
-public:
-    Changqu():DistanceSkill("changqu"){
-
-    }
-
-    virtual int distanceTo(const Player *from, const Player *to, bool *ok) const{
-        if(from->hasSkill(objectName()) && to->getRole() == "lord"){
-            *ok = true;
-            return 1;
-        }else{
-            *ok = false;
-            return 0;
-        }
-    }
-};
-
 FanchengScenario::FanchengScenario()
     :Scenario("fancheng")
 {
@@ -382,7 +365,6 @@ FanchengScenario::FanchengScenario()
             << new Flood
             << new Taichen
             << new Xiansheng
-            << new Changqu;
             << new Zhiyuan;
 
     addMetaObject<DujiangCard>();
@@ -394,8 +376,10 @@ FanchengScenario::FanchengScenario()
 void FanchengScenario::onTagSet(Room *room, const QString &key) const{
     if(key == "Flood"){
         ServerPlayer *xuhuang = room->findPlayer("xuhuang");
-        if(xuhuang)
-            room->acquireSkill(xuhuang, "changqu");
+        if(xuhuang){
+            ServerPlayer *lord = room->getLord();
+            room->setFixedDistance(xuhuang, lord, 1);
+        }
 
         ServerPlayer *caoren = room->findPlayer("caoren");
         if(caoren)

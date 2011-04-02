@@ -412,7 +412,9 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
 
     const Card *card = Sanguosha->getCard(subcards.first());
     if(effect.from->pindian(effect.to, card)){
-        room->setPlayerFlag(effect.to, "xianzhen");
+        PlayerStar target = effect.to;
+        effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
+        room->setFixedDistance(effect.from, effect.to, 1);
     }else{
         int n = effect.from->getHandcardNum();
         if(n == 0)
@@ -425,9 +427,9 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class Xianzhen: public OneCardViewAsSkill{
+class XianzhenViewAsSkill: public OneCardViewAsSkill{
 public:
-    Xianzhen():OneCardViewAsSkill("xianzhen"){
+    XianzhenViewAsSkill():OneCardViewAsSkill(""){
 
     }
 
@@ -444,6 +446,25 @@ public:
         card->addSubcard(card_item->getCard());
 
         return card;
+    }
+};
+
+class Xianzhen: public PhaseChangeSkill{
+public:
+    Xianzhen():PhaseChangeSkill("xianzhen"){
+        view_as_skill = new XianzhenViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *gaoshun) const{
+        if(gaoshun->getPhase() == Player::Finish){
+            ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
+            if(target){
+                Room *room = gaoshun->getRoom();
+                room->setFixedDistance(gaoshun, target, -1);
+            }
+        }
+
+        return false;
     }
 };
 
@@ -630,19 +651,22 @@ public:
         events << Dying;
     }
 
+    virtual bool triggerable(const ServerPlayer *) const{
+        return true;
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        if(player->askForSkillInvoke(objectName(), data)){
-            Room *room = player->getRoom();
+        Room *room = player->getRoom();
+        ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
 
+        if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
             if(room->judge(player, BuyiCallback) == "good"){
-                DyingStruct dying = data.value<DyingStruct>();
-
                 CardUseStruct use;
                 Peach *peach = new Peach(Card::NoSuit, 0);
                 peach->setSkillName(objectName());
                 use.card = peach;
-                use.from = player;
-                use.to << dying.who;
+                use.from = wuguotai;
+                use.to << player;
 
                 room->useCard(use);
             }

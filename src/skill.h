@@ -215,13 +215,4 @@ private:
     int n;
 };
 
-class DistanceSkill: public Skill{
-    Q_OBJECT
-
-public:
-    DistanceSkill(const QString &name);
-
-    virtual int distanceTo(const Player *from, const Player *to, bool *ok) const = 0;
-};
-
 #endif // SKILL_H

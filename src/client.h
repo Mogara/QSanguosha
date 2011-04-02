@@ -105,7 +105,8 @@ public:
     void jilei(const QString &jilei_str);
     void judgeResult(const QString &result_str);    
     void setScreenName(const QString &set_str);
-    void pile(const QString &pile_str);
+    void setFixedDistance(const QString &set_str);
+    void pile(const QString &pile_str);    
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);

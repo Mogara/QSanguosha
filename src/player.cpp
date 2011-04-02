@@ -137,16 +137,19 @@ bool Player::inMyAttackRange(const Player *other) const{
     return distanceTo(other) <= attack_range;
 }
 
+void Player::setFixedDistance(const Player *player, int distance){
+    if(distance == -1)
+        fixed_distance.remove(player);
+    else
+        fixed_distance.insert(player, distance);
+}
+
 int Player::distanceTo(const Player *other) const{
     if(this == other)
         return 0;
 
-    foreach(const DistanceSkill *skill, distance_skills){
-        bool ok;
-        int distance = skill->distanceTo(this, other, &ok);
-        if(ok)
-            return distance;
-    }
+    if(fixed_distance.contains(other))
+        return fixed_distance.value(other);
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
@@ -305,12 +308,6 @@ bool Player::hasLordSkill(const QString &skill_name) const{
 
 void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
-
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(skill->inherits("DistanceSkill")){
-        const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
-        distance_skills.append(distance_skill);
-    }
 }
 
 void Player::loseSkill(const QString &skill_name){

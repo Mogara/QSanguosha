@@ -323,9 +323,3 @@ void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
     mark_name.remove("#");
     player->gainMark(mark_name, n);
 }
-
-DistanceSkill::DistanceSkill(const QString &name)
-    :Skill(name, Skill::Compulsory)
-{
-
-}

@@ -57,6 +57,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
+    callbacks["setFixedDistance"] = &Client::setFixedDistance;
     callbacks["pile"] = &Client::pile;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
@@ -1468,6 +1469,20 @@ void Client::setScreenName(const QString &set_str){
     QString base64 = words.at(1);
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(base64.toAscii()));
     player->setScreenName(screen_name);
+}
+
+void Client::setFixedDistance(const QString &set_str){
+    QRegExp rx("(\\w+)~(\\w+)=(-?\\d+)");
+    if(!rx.exactMatch(set_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    ClientPlayer *from = getPlayer(texts.at(1));
+    ClientPlayer *to = getPlayer(texts.at(2));
+    int distance = texts.at(3).toInt();
+
+    if(from && to)
+        from->setFixedDistance(to, distance);
 }
 
 void Client::pile(const QString &pile_str){

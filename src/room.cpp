@@ -883,6 +883,14 @@ lua_State *Room::getLuaState() const{
     return L;
 }
 
+void Room::setFixedDistance(Player *from, const Player *to, int distance){
+    QString a = from->objectName();
+    QString b = to->objectName();
+    QString set_str = QString("%1~%2=%3").arg(a).arg(b).arg(distance);
+    from->setFixedDistance(to, distance);
+    broadcastInvoke("setFixedDistance", set_str);
+}
+
 void Room::addProhibitSkill(const ProhibitSkill *skill){
     if(!prohibit_skills.contains(skill)){
         prohibit_skills << skill;

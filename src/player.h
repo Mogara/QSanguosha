@@ -116,6 +116,7 @@ public:
     void setFaceUp(bool face_up);
 
     virtual int aliveCount() const = 0;
+    void setFixedDistance(const Player *player, int distance);
     int distanceTo(const Player *other) const;
     int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
@@ -201,7 +202,7 @@ private:
     bool chained;
     QStack<const Card *> judging_area;
     QStack<const DelayedTrick *> delayed_tricks;
-    QList<const DistanceSkill *> distance_skills;
+    QHash<const Player *, int> fixed_distance;
 
 signals:
     void general_changed();
