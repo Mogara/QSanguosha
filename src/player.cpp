@@ -121,6 +121,10 @@ bool Player::hasFlag(const QString &flag) const{
     return flags.contains(flag);
 }
 
+void Player::clearFlags(){
+    flags.clear();
+}
+
 void Player::setAttackRange(int attack_range){
     this->attack_range = attack_range;
 }
@@ -137,8 +141,12 @@ int Player::distanceTo(const Player *other) const{
     if(this == other)
         return 0;
 
-    if(hasSkill("changqu") && other->getRoleEnum() == Player::Lord)
-        return 1;
+    foreach(const DistanceSkill *skill, distance_skills){
+        bool ok;
+        int distance = skill->distanceTo(this, other, &ok);
+        if(ok)
+            return distance;
+    }
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
@@ -297,6 +305,12 @@ bool Player::hasLordSkill(const QString &skill_name) const{
 
 void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
+
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill->inherits("DistanceSkill")){
+        const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
+        distance_skills.append(distance_skill);
+    }
 }
 
 void Player::loseSkill(const QString &skill_name){
@@ -416,10 +430,6 @@ Player::Phase Player::getPhase() const{
 void Player::setPhase(Phase phase){
     if(this->phase != phase){
         this->phase = phase;
-
-        if(phase == Player::Start){
-            emit turn_started();
-        }
 
         emit phase_changed();
     }

@@ -350,6 +350,23 @@ public:
     }
 };
 
+class Changqu: public DistanceSkill{
+public:
+    Changqu():DistanceSkill("changqu"){
+
+    }
+
+    virtual int distanceTo(const Player *from, const Player *to, bool *ok) const{
+        if(from->hasSkill(objectName()) && to->getRole() == "lord"){
+            *ok = true;
+            return 1;
+        }else{
+            *ok = false;
+            return 0;
+        }
+    }
+};
+
 FanchengScenario::FanchengScenario()
     :Scenario("fancheng")
 {
@@ -365,7 +382,7 @@ FanchengScenario::FanchengScenario()
             << new Flood
             << new Taichen
             << new Xiansheng
-            << new Skill("changqu", Skill::Compulsory)
+            << new Changqu;
             << new Zhiyuan;
 
     addMetaObject<DujiangCard>();

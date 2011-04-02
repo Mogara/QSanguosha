@@ -102,7 +102,7 @@ Client::Client(QObject *parent, const QString &filename)
     Self = new ClientPlayer(this);
     Self->setScreenName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
-    connect(Self, SIGNAL(turn_started()), this, SLOT(clearTurnTag()));
+    connect(Self, SIGNAL(phase_changed()), this, SLOT(clearTurnTag()));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
 
     if(!filename.isEmpty()){
@@ -1225,10 +1225,22 @@ QList<const ClientPlayer*> Client::getPlayers() const{
 }
 
 void Client::clearTurnTag(){
-    Sanguosha->playAudio("your-turn");
+    switch(Self->getPhase()){
+    case Player::Start:{
+            Sanguosha->playAudio("your-turn");
+            used.clear();
+            slash_count = 0;
+            break;
+    }
 
-    used.clear();
-    slash_count = 0;
+    case Player::Finish:{
+            Self->clearFlags();
+            break;
+        }
+
+    default:
+        break;
+    }
 }
 
 void Client::showCard(const QString &show_str){

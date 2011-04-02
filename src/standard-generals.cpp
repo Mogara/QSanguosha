@@ -294,20 +294,6 @@ public:
     }
 };
 
-class LuoyiClear:public PhaseChangeSkill{
-public:
-    LuoyiClear():PhaseChangeSkill("#luoyi-clear"){
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *xuchu) const{
-        if(xuchu->getPhase() == Player::Finish && xuchu->hasFlag("luoyi")){
-            xuchu->setFlags("-luoyi");
-        }
-
-        return false;
-    }
-};
-
 static QString LuoshenCallback(const Card *card, Room *){
     if(card->isBlack())
         return "good";
@@ -1167,7 +1153,6 @@ void StandardPackage::addGenerals(){
 
     xuchu = new General(this, "xuchu", "wei");
     xuchu->addSkill(new Luoyi);
-    xuchu->addSkill(new LuoyiClear);
     xuchu->addSkill(new LuoyiBuff);
 
     zhenji = new General(this, "zhenji", "wei", 3, false);

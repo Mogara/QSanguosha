@@ -13,6 +13,7 @@ class Weapon;
 class Armor;
 class Horse;
 class DelayedTrick;
+class DistanceSkill;
 
 class Player : public QObject
 {
@@ -109,6 +110,7 @@ public:
     QString getFlags() const;
     void setFlags(const QString &flag);
     bool hasFlag(const QString &flag) const;
+    void clearFlags();
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
@@ -199,13 +201,13 @@ private:
     bool chained;
     QStack<const Card *> judging_area;
     QStack<const DelayedTrick *> delayed_tricks;
+    QList<const DistanceSkill *> distance_skills;
 
 signals:
     void general_changed();
     void general2_changed();
     void role_changed(const QString &new_role);
     void state_changed();
-    void turn_started();
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);
