@@ -83,4 +83,8 @@ return {
 	["#EnyuanRecover"] = "%from 的锁定技【恩怨】被触发，对其恢复体力的角色 %to 将摸 %arg 张牌",
 	["@enyuan"] = "请展示一张红桃手牌并交给对方",
 	["#GanluSwap"] = "%from 交换了 %to 之间的装备",
+	["@xianzhen-slash"] = "你可以对陷阵目标不限次数出杀",
+	["mingce:nothing"] = "收下此牌",
+	["mingce:use"] = "弃掉此牌相当于对攻击范围内的角色出杀",
+	["mingce:draw"] = "弃掉此牌，并再摸一张牌",
 }

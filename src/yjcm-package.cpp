@@ -432,21 +432,17 @@ XianzhenSlashCard::XianzhenSlashCard(){
 }
 
 void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *target = room->getTag("XianzhenTarget").value<PlayerStar>();
+    ServerPlayer *target = card_use.from->tag["XianzhenTarget"].value<PlayerStar>();
     if(target == NULL)
         return;
 
     const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash");
     if(slash){
-        target->addMark("qinggang");
-
         CardUseStruct use;
         use.card = slash;
         use.from = card_use.from;
         use.to << target;
         room->useCard(use);
-
-        target->removeMark("qinggang");
     }
 }
 
@@ -488,18 +484,31 @@ public:
     }
 };
 
-class Xianzhen: public PhaseChangeSkill{
+class Xianzhen: public TriggerSkill{
 public:
-    Xianzhen():PhaseChangeSkill("xianzhen"){
+    Xianzhen():TriggerSkill("xianzhen"){
         view_as_skill = new XianzhenViewAsSkill;
+
+        events << PhaseChange << SlashEffect << SlashHit << SlashMissed;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *gaoshun) const{
-        if(gaoshun->getPhase() == Player::Finish){
-            ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
-            if(target){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *gaoshun, QVariant &data) const{
+        ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
+
+        if(event == PhaseChange){
+            if(gaoshun->getPhase() == Player::Finish && target){
                 Room *room = gaoshun->getRoom();
                 room->setFixedDistance(gaoshun, target, -1);
+                gaoshun->tag.remove("XianzhenTarget");
+            }
+        }else{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+
+            if(effect.to == target){
+                if(event == SlashEffect)
+                    target->addMark("qinggang");
+                else
+                    target->removeMark("qinggang");
             }
         }
 
@@ -721,7 +730,7 @@ XinzhanCard::XinzhanCard(){
 }
 
 void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-
+    room->doGuanxing(source, 3);
 }
 
 class Xinzhan: public ZeroCardViewAsSkill{
