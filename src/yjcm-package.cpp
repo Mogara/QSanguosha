@@ -337,6 +337,11 @@ class Huilei: public TriggerSkill{
 public:
     Huilei():TriggerSkill("huilei"){
         events << Death;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -344,6 +349,13 @@ public:
         if(!killer_name.isEmpty()){
             Room *room = player->getRoom();
             ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+
+            LogMessage log;
+            log.type = "#HuileiThrow";
+            log.from = player;
+            log.to << killer;
+            room->sendLog(log);
+
             killer->throwAllEquips();
             killer->throwAllHandCards();
         }
@@ -386,10 +398,12 @@ public:
         events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(player->askForSkillInvoke(objectName(), data)){
-            DamageStruct damage = data.value<DamageStruct>();
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.to->isDead())
+            return false;
 
+        if(player->askForSkillInvoke(objectName(), data)){
             damage.to->drawCards(damage.to->getLostHp());
             damage.to->turnOver();
         }

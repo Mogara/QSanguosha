@@ -89,4 +89,5 @@ return {
 	["mingce:nothing"] = "收下此牌",
 	["mingce:use"] = "弃掉此牌相当于对攻击范围内的角色出杀",
 	["mingce:draw"] = "弃掉此牌，并再摸一张牌",
+	["#HuileiThrow"] = "%from 的锁定技【挥泪】被触发，凶手 %to 需要弃掉所有的装备和手牌",
 }
