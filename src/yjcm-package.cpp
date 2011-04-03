@@ -729,9 +729,21 @@ XinzhanCard::XinzhanCard(){
     once = true;
 }
 
-void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->doGuanxing(source, 3);
-}
+void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    QList<int> cards = room->getNCards(3), left;
+
+    foreach(int card_id, cards){
+        const Card *card = Sanguosha->getCard(card_id);
+        if(card->getSuit() == Card::Heart){
+            source->obtainCard(card);
+            room->showCard(source, card_id);
+        }else
+            left << card_id;
+    }
+
+    if(left.length() > 1)
+        room->doGuanxing(source, left.length());
+ }
 
 class Xinzhan: public ZeroCardViewAsSkill{
 public:

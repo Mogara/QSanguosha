@@ -122,6 +122,8 @@ public:
     static const Card *Parse(const QString &str);
     static Card * Clone(const Card *card);
     static QString Suit2String(Suit suit);
+    static QStringList IdsToStrings(const QList<int> &ids);
+    static QList<int> StringsToIds(const QStringList &strings);
 
 protected:
     QList<int> subcards;

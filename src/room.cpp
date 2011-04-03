@@ -2135,11 +2135,8 @@ void Room::doGuanxing(ServerPlayer *zhuge, int n){
         return;
 
     QList<int> cards = getNCards(n, false);
-    QStringList cards_str;
-    foreach(int card_id, cards)
-        cards_str << QString::number(card_id);
 
-    zhuge->invoke("doGuanxing", cards_str.join("+"));
+    zhuge->invoke("doGuanxing", Card::IdsToStrings(cards).join("+"));
     getResult("replyGuanxingCommand", zhuge);
 
     if(result.isEmpty()){
@@ -2173,13 +2170,8 @@ void Room::doGuanxing(ServerPlayer *zhuge, int n){
     log.arg2 = QString::number(bottom_list.length());
     sendLog(log);
 
-    QList<int> top_cards;
-    foreach(QString top, top_list)
-        top_cards << top.toInt();
-
-    QList<int> bottom_cards;
-    foreach(QString bottom, bottom_list)
-        bottom_cards << bottom.toInt();
+    QList<int> top_cards = Card::StringsToIds(top_list);
+    QList<int> bottom_cards = Card::StringsToIds(bottom_list);
 
     QListIterator<int> i(top_cards);
     i.toBack();

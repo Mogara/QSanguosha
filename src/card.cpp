@@ -34,6 +34,26 @@ QString Card::Suit2String(Suit suit){
     }
 }
 
+QStringList Card::IdsToStrings(const QList<int> &ids){
+    QStringList strings;
+    foreach(int card_id, ids)
+        strings << QString::number(card_id);
+    return strings;
+}
+
+QList<int> Card::StringsToIds(const QStringList &strings){
+    QList<int> ids;
+    foreach(QString str, strings){
+        bool ok;
+        ids << str.toInt(&ok);
+
+        if(!ok)
+            break;
+    }
+
+    return ids;
+}
+
 bool Card::isRed() const{
     return suit == Heart || suit == Diamond;
 }
