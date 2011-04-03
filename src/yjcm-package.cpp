@@ -427,25 +427,64 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class XianzhenViewAsSkill: public OneCardViewAsSkill{
+XianzhenSlashCard::XianzhenSlashCard(){
+    target_fixed = true;
+}
+
+void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *target = room->getTag("XianzhenTarget").value<PlayerStar>();
+    if(target == NULL)
+        return;
+
+    const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash");
+    if(slash){
+        target->addMark("qinggang");
+
+        CardUseStruct use;
+        use.card = slash;
+        use.from = card_use.from;
+        use.to << target;
+        room->useCard(use);
+
+        target->removeMark("qinggang");
+    }
+}
+
+class XianzhenViewAsSkill: public ViewAsSkill{
 public:
-    XianzhenViewAsSkill():OneCardViewAsSkill(""){
+    XianzhenViewAsSkill():ViewAsSkill(""){
 
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("XianzhenCard");
+        return ! ClientInstance->hasUsed("XianzhenCard") || Self->hasFlag("xianzhen_success");
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(!selected.isEmpty())
+            return false;
+
+        if(ClientInstance->hasUsed("XianzhenCard"))
+            return false;
+
         return !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(CardItem *card_item) const{
-        XianzhenCard *card = new XianzhenCard;
-        card->addSubcard(card_item->getCard());
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(! ClientInstance->hasUsed("XianzhenCard")){
+            if(cards.length() != 1)
+                return NULL;
 
-        return card;
+            XianzhenCard *card = new XianzhenCard;
+            card->addSubcards(cards);
+            return card;
+        }else if(Self->hasFlag("xianzhen_sucess")){
+            if(!cards.isEmpty())
+                return NULL;
+
+            return new XianzhenSlashCard;
+        }else
+            return NULL;
     }
 };
 
@@ -743,6 +782,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
+    addMetaObject<XianzhenSlashCard>();
     addMetaObject<XuanhuoCard>();
     addMetaObject<XinzhanCard>();
 }

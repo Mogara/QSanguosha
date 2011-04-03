@@ -17,7 +17,7 @@ return {
 	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",	
 	
 	["cv:gongsunzan"] = "",
-	["cv:yuanshu"] = "",
+	["cv:yuanshu"] = "名将三国",
 	
 	["$yongsi1"] = "嘿呀，还不错",
 	["$yongsi2"] = "呐~哈哈哈哈哈",
