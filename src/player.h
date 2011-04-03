@@ -169,9 +169,6 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
-    QList<Player::Phase> &getPhases();
-    void skip(Player::Phase phase);
-
     QVariantMap tag;
 
 protected:
@@ -194,7 +191,6 @@ private:
     int attack_range;
 
     Phase phase;
-    QList<Player::Phase> phases;
     const Weapon *weapon;
     const Armor *armor;
     const Horse *defensive_horse, *offensive_horse;

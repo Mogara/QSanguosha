@@ -386,12 +386,10 @@ void Photo::drawMagatama(QPainter *painter, int index, const QPixmap &pixmap){
 
 void Photo::drawHp(QPainter *painter){
     int hp = player->getHp();
-    if(hp <= 0)
-        return;
 
     int index = 5;
     if(player->isWounded())
-        index = qMin(hp, 5);
+        index = qBound(0, hp, 5);
 
     QPixmap *magatama = MagatamaWidget::GetSmallMagatama(index);
     QPixmap *zero_magatama = MagatamaWidget::GetSmallMagatama(0);
@@ -403,8 +401,8 @@ void Photo::drawHp(QPainter *painter){
     for(i=hp; i< max_hp; i++)
         drawMagatama(painter, i, *zero_magatama);
 
-    QString text = QString("%1/%2").arg(hp).arg(max_hp);
-    painter->drawText(25, 80, text);
+    //QString text = QString("%1/%2").arg(hp).arg(max_hp);
+    //painter->drawText(25, 80, text);
 }
 
 void Photo::setFrame(FrameType type){

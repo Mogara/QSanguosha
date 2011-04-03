@@ -600,11 +600,3 @@ int Player::getCardCount(bool include_equip) const{
 QList<int> &Player::getPile(const QString &pile_name){
     return piles[pile_name];
 }
-
-QList<Player::Phase> &Player::getPhases(){
-    return phases;
-}
-
-void Player::skip(Player::Phase phase){
-    phases.removeOne(phase);
-}

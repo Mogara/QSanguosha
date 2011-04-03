@@ -381,6 +381,26 @@ void ServerPlayer::play(){
     }
 }
 
+QList<Player::Phase> &ServerPlayer::getPhases(){
+    return phases;
+}
+
+void ServerPlayer::skip(Player::Phase phase){
+    phases.removeOne(phase);
+
+    Phase backup = phase;
+    setPhase(phase);
+
+    LogMessage log;
+    log.type = "#SkipPhase";
+    log.from = this;
+    log.arg = getPhaseString();
+    room->sendLog(log);
+
+    setPhase(backup);
+}
+
+
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
 

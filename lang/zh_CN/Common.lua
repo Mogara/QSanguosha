@@ -80,4 +80,5 @@ return {
 	["#TurnOver"] = "%from 将自己的武将牌翻面，现在是 %arg",
 	["face_up"] = "面朝上",
 	["face_down"] = "面朝下",
+	["#SkipPhase"] = "%from 跳过了 %arg 阶段",
 }
