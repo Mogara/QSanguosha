@@ -45,22 +45,11 @@ function sunjian_ai:askForUseCard(pattern, prompt)
     end
 end
 
--- benghuai
-
-sgs.ai_skill_choice.benghuai = function(self, choices)
-	if self.player:getLostHp() >= 2 then
-		return "maxhp"
-	else
-		return "hp"
-	end
-end
-
 -- xingshang, allways invoke 
 sgs.ai_skill_invoke.xingshang = true
 
 -- fangzhu, fangzhu 
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
-
 	self:sort(self.friends_noself)
 	local target
 	for _, friend in ipairs(self.friends_noself) do

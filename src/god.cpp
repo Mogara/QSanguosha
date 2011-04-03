@@ -518,7 +518,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *shenlubu) const{
-        if(shenlubu->getPhase() == Player::Finish){
+        if(shenlubu->getPhase() == Player::NotActive){
             Room *room = shenlubu->getRoom();
             if(shenlubu->hasFlag("wuqian_used")){
                 shenlubu->setFlags("-wuqian_used");

@@ -376,8 +376,10 @@ void ServerPlayer::play(){
         room->broadcastProperty(this, "phase");
         room->getThread()->trigger(PhaseChange, this);
 
-        if(isDead())
-            return;
+        if(isDead()){
+            phases.clear();
+            phases << NotActive;
+        }
     }
 }
 
@@ -388,16 +390,19 @@ QList<Player::Phase> &ServerPlayer::getPhases(){
 void ServerPlayer::skip(Player::Phase phase){
     phases.removeOne(phase);
 
-    Phase backup = phase;
-    setPhase(phase);
+    static QStringList phase_strings;
+    if(phase_strings.isEmpty()){
+        phase_strings << "start" << "judge" << "draw"
+                << "play" << "discard" << "finish" << "not_active";
+    }
+
+    int index = static_cast<int>(phase);
 
     LogMessage log;
     log.type = "#SkipPhase";
     log.from = this;
-    log.arg = getPhaseString();
+    log.arg = phase_strings.at(index);
     room->sendLog(log);
-
-    setPhase(backup);
 }
 
 

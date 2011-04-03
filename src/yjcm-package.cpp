@@ -605,7 +605,7 @@ public:
 class DongchaClear: public TriggerSkill{
 public:
     DongchaClear():TriggerSkill("#dongcha-clear"){
-
+        events << PhaseChange;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -613,7 +613,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
-        player->getRoom()->setTag("ChengongDongcha", QVariant());
+        if(player->getPhase() == Player::NotActive)
+            player->getRoom()->setTag("ChengongDongcha", QVariant());
 
         return false;
     }
