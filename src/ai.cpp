@@ -159,7 +159,16 @@ Card::Suit TrustAI::askForSuit(){
 }
 
 QString TrustAI::askForKingdom(){
-    return self->getKingdom();
+    QString role;
+    switch(self->getRoleEnum()){
+    case Player::Lord:
+    case Player::Rebel: role = "wei"; break;
+    case Player::Loyalist:
+    case Player::Renegade:
+        role = self->getRoom()->getLord()->getRole(); break;
+    }
+
+    return role;
 }
 
 bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data){

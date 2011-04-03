@@ -133,30 +133,12 @@ void RoomThread::run(){
         trigger(GameStart, player);
     }
 
-    QList<Player::Phase> all_phases;
-    all_phases << Player::Start << Player::Judge << Player::Draw
-            << Player::Play << Player::Discard << Player::Finish
-            << Player::NotActive;
-
     if(setjmp(env) == GameOver)
         return;
 
     forever{
-        ServerPlayer *player = room->getCurrent();
-        QList<Player::Phase> &phases = player->getPhases();
-        phases = all_phases;
-
-        while(!phases.isEmpty()){
-            Player::Phase phase = phases.takeFirst();
-            player->setPhase(phase);
-            room->broadcastProperty(player, "phase");
-            trigger(PhaseChange, player);
-
-            if(player->isDead())
-                break;
-        }
-
-        room->nextPlayer();
+        trigger(TurnStart, room->getCurrent());
+        room->setCurrent(room->nextPlayer());
     }
 }
 

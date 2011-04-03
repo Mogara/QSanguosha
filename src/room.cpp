@@ -80,6 +80,10 @@ ServerPlayer *Room::getCurrent() const{
     return current;
 }
 
+void Room::setCurrent(ServerPlayer *current){
+    this->current = current;
+}
+
 int Room::alivePlayerCount() const{
     return alive_players.count();
 }
@@ -138,7 +142,7 @@ QList<ServerPlayer *> Room::getAlivePlayers() const{
     return alive_players;
 }
 
-void Room::nextPlayer(){
+ServerPlayer *Room::nextPlayer(){
     ServerPlayer *next = current;
 
     forever{
@@ -146,15 +150,10 @@ void Room::nextPlayer(){
         int next_index = (index + 1) % players.length();
         next = players.at(next_index);
 
-        if(!next->isAlive())
+        if(next->isDead())
             continue;
-
-        if(!next->faceUp()){
-            next->turnOver();
-        }else{
-            current = next;
-            return;
-        }
+        else
+            return next;
     }
 }
 

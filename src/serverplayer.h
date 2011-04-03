@@ -44,6 +44,7 @@ public:
     void kick();
     bool pindian(ServerPlayer *target, const Card *card1 = NULL);
     void turnOver();
+    void play();
 
     void gainMark(const QString &mark, int n = 1);
     void loseMark(const QString &mark, int n = 1);

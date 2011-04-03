@@ -84,6 +84,8 @@ return {
 	["@enyuan"] = "请展示一张红桃手牌并交给对方",
 	["#GanluSwap"] = "%from 交换了 %to 之间的装备",
 	["@xianzhen-slash"] = "你可以对陷阵目标不限次数出杀",
+	["#DongchaDamaged"] = "%from 受到了伤害，本回合内【杀】和非延时锦囊都将对其无效",
+	["#DongchaAvoid"] = "%from 的锁定技【洞察】被触发，【杀】和非延时锦囊对其无效",
 	["mingce:nothing"] = "收下此牌",
 	["mingce:use"] = "弃掉此牌相当于对攻击范围内的角色出杀",
 	["mingce:draw"] = "弃掉此牌，并再摸一张牌",

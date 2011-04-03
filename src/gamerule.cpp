@@ -8,7 +8,7 @@ GameRule::GameRule(QObject *parent)
 {
     setParent(parent);
 
-    events << GameStart << PhaseChange << CardUsed
+    events << GameStart << TurnStart << PhaseChange << CardUsed
             << CardEffected << HpRecover << AskForPeachesDone
             << AskForPeaches << Death << Dying
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
@@ -150,6 +150,16 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 setGameProcess(room);
 
             player->drawCards(4, false);
+
+            break;
+        }
+
+    case TurnStart:{
+            player = room->getCurrent();
+            if(!player->faceUp())
+                player->turnOver();
+            else
+                player->play();
 
             break;
         }

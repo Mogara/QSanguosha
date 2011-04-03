@@ -89,6 +89,7 @@ struct RecoverStruct{
 
 enum TriggerEvent{
     GameStart,
+    TurnStart,
     PhaseChange,
     DrawNCards,
     JudgeOnEffect,

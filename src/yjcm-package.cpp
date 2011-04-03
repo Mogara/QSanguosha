@@ -414,6 +414,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     if(effect.from->pindian(effect.to, card)){
         PlayerStar target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
+        room->setPlayerFlag(effect.from, "xianzhen_success");
         room->setFixedDistance(effect.from, effect.to, 1);
     }else{
         int n = effect.from->getHandcardNum();
@@ -474,7 +475,7 @@ public:
             XianzhenCard *card = new XianzhenCard;
             card->addSubcards(cards);
             return card;
-        }else if(Self->hasFlag("xianzhen_sucess")){
+        }else if(Self->hasFlag("xianzhen_success")){
             if(!cards.isEmpty())
                 return NULL;
 
@@ -617,14 +618,25 @@ public:
 
         if(event == Damaged){
             room->setTag("ChengongDongcha", player->objectName());
+
+            LogMessage log;
+            log.type = "#DongchaDamaged";
+            log.from = player;
+            room->sendLog(log);
+
         }else if(event == CardEffected){
-            Room *room = player->getRoom();
             if(room->getTag("ChengongDongcha").toString() != player->objectName())
-                return false;
+                return false;            
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick)
+            if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick){
+                LogMessage log;
+                log.type = "#DongchaAvoid";
+                log.from = player;
+                room->sendLog(log);
+
                 return true;
+            }
         }
 
         return false;
@@ -793,6 +805,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *chengong = new General(this, "chengong", "qun", 3);
     chengong->addSkill(new ChengongDongcha);
+    chengong->addSkill(new DongchaClear);
     chengong->addSkill(new Mingce);
 
     General *gaoshun = new General(this, "gaoshun", "qun");

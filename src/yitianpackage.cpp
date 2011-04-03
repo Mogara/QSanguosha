@@ -1477,10 +1477,40 @@ public:
 class Zhenggong: public TriggerSkill{
 public:
     Zhenggong():TriggerSkill("zhenggong"){
-
+        events << TurnStart;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &) const{
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return ! target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        Room *room = player->getRoom();
+        ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
+
+        if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
+            dengshizai->turnOver();
+
+            if(player->getMark("@zhenggong") == 0){
+                PlayerStar p = player;
+                room->setTag("Zhenggong", QVariant::fromValue(p));
+                player->gainMark("@zhenggong");
+            }
+
+            room->setCurrent(dengshizai);
+            dengshizai->play();
+
+            return true;
+
+        }else{
+            PlayerStar p = room->getTag("Zhenggong").value<PlayerStar>();
+            if(p){
+                p->loseMark("@zhenggong");
+                room->setCurrent(p);
+                room->setTag("Zhenggong", QVariant());
+            }
+        }
+
         return false;
     }
 };
@@ -1497,6 +1527,8 @@ public:
 
         if(!dengshizai->askForSkillInvoke("toudu"))
             return;
+
+        dengshizai->turnOver();
 
         Room *room = dengshizai->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(dengshizai), targets;

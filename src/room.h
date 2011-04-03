@@ -39,11 +39,12 @@ public:
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
+    void setCurrent(ServerPlayer *current);
     int alivePlayerCount() const;
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    void nextPlayer();
+    ServerPlayer *nextPlayer();
     void output(const QString &message);
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);

@@ -196,6 +196,7 @@ public:
     bool hasNullification() const;
     bool pindian(ServerPlayer *target, const Card *card1 = NULL);
 	void turnOver();
+	void play();
 
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);
@@ -299,6 +300,7 @@ struct RecoverStruct{
 
 enum TriggerEvent{
     GameStart,
+	TurnStart,
     PhaseChange,
     DrawNCards,
     JudgeOnEffect,
@@ -552,7 +554,7 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    void nextPlayer();
+    ServerPlayer *nextPlayer();
     void output(const char *message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;

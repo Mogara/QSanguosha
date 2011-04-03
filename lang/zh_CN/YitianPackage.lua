@@ -221,7 +221,7 @@ return {
 	["designer:caizhaoji"] = "冢冢的青藤",
 	["designer:luboyan"] = "太阳神上、冢冢的青藤",
 	["designer:zhongshiji"] = "Jr. Wakaran",
-	["designer:jiangboyue"] = "Jr. Wakaran",
+	["designer:jiangboyue"] = "Jr. Wakaran, 太阳神上",
 	["designer:jiawenhe"] = "氢弹",
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["designer:dengshizai"] = "Bu懂",

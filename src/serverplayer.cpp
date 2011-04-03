@@ -362,6 +362,25 @@ void ServerPlayer::turnOver(){
     room->sendLog(log);
 }
 
+void ServerPlayer::play(){
+    static QList<Phase> all_phases;
+    if(all_phases.isEmpty()){
+        all_phases << Start << Judge << Draw << Play
+                << Discard << Finish << NotActive;
+    }
+
+    phases = all_phases;
+    while(!phases.isEmpty()){
+        Phase phase = phases.takeFirst();
+        setPhase(phase);
+        room->broadcastProperty(this, "phase");
+        room->getThread()->trigger(PhaseChange, this);
+
+        if(isDead())
+            return;
+    }
+}
+
 void ServerPlayer::gainMark(const QString &mark, int n){
     int value = getMark(mark) + n;
 
