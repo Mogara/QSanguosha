@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QFontDialog>
+#include <QColorDialog>
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
@@ -39,6 +40,10 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     font = Config.UIFont;
     showFont(ui->textEditFontLineEdit, font);
 
+    QPalette palette;
+    palette.setColor(QPalette::Text, Config.TextEditColor);
+    ui->textEditFontLineEdit->setPalette(palette);
+
     // tab 3
     ui->smtpServerLineEdit->setText(Config.value("Contest/SMTPServer").toString());
     ui->senderLineEdit->setText(Config.value("Contest/Sender").toString());
@@ -49,6 +54,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
+    lineedit->setFont(font);
     lineedit->setText(QString("%1 %2").arg(font.family()).arg(font.pointSize()));
 }
 
@@ -170,5 +176,17 @@ void ConfigDialog::on_setTextEditFontButton_clicked()
 
         Config.setValue("UIFont", font);
         QApplication::setFont(font, "QTextEdit");
+    }
+}
+
+void ConfigDialog::on_setTextEditColorButton_clicked()
+{
+    QColor color = QColorDialog::getColor(Config.TextEditColor, this);
+    if(color.isValid()){
+        Config.TextEditColor = color;
+        Config.setValue("TextEditColor", color);
+        QPalette palette;
+        palette.setColor(QPalette::Text, color);
+        ui->textEditFontLineEdit->setPalette(palette);
     }
 }

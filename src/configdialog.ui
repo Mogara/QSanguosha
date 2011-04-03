@@ -286,9 +286,9 @@
      <widget class="QPushButton" name="changeAppFontButton">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>270</x>
         <y>20</y>
-        <width>128</width>
+        <width>161</width>
         <height>23</height>
        </rect>
       </property>
@@ -299,8 +299,8 @@
      <widget class="QLabel" name="appFontLabel">
       <property name="geometry">
        <rect>
-        <x>22</x>
-        <y>22</y>
+        <x>10</x>
+        <y>20</y>
         <width>96</width>
         <height>16</height>
        </rect>
@@ -320,7 +320,7 @@
        <rect>
         <x>124</x>
         <y>23</y>
-        <width>161</width>
+        <width>131</width>
         <height>20</height>
        </rect>
       </property>
@@ -336,7 +336,7 @@
        <rect>
         <x>120</x>
         <y>50</y>
-        <width>161</width>
+        <width>131</width>
         <height>20</height>
        </rect>
       </property>
@@ -347,21 +347,21 @@
      <widget class="QPushButton" name="setTextEditFontButton">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>270</x>
         <y>50</y>
-        <width>131</width>
+        <width>71</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
-       <string>Set text edit font</string>
+       <string>Font ...</string>
       </property>
      </widget>
      <widget class="QLabel" name="textEditFontLabel">
       <property name="geometry">
        <rect>
-        <x>22</x>
-        <y>53</y>
+        <x>10</x>
+        <y>50</y>
         <width>91</width>
         <height>16</height>
        </rect>
@@ -371,6 +371,19 @@
       </property>
       <property name="buddy">
        <cstring>textEditFontLineEdit</cstring>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="setTextEditColorButton">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>50</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Color ...</string>
       </property>
      </widget>
     </widget>

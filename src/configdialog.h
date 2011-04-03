@@ -20,6 +20,7 @@ private:
     void showFont(QLineEdit *lineedit, const QFont &font);
 
 private slots:
+    void on_setTextEditColorButton_clicked();
     void on_setTextEditFontButton_clicked();
     void on_changeAppFontButton_clicked();
     void on_resetBgMusicButton_clicked();

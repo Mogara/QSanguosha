@@ -867,6 +867,10 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             case Player::Judging:
                 photo->installDelayedTrick(card_item);
                 break;
+            case Player::Special:
+                card_item->setHomePos(photo->pos());
+                card_item->goBack(true);
+                break;
             default:
                 ;
             }
