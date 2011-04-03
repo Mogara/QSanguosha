@@ -123,7 +123,7 @@ RoomScene::RoomScene(int player_count, QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
-    connect(ClientInstance, SIGNAL(guanxing(QList<int>)), this, SLOT(doGuanxing(QList<int>)));
+    connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), this, SLOT(doGuanxing(QList<int>,bool)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
@@ -2283,12 +2283,13 @@ void RoomScene::detachSkill(const QString &skill_name){
     }
 }
 
-void RoomScene::doGuanxing(const QList<int> &card_ids){
+void RoomScene::doGuanxing(const QList<int> &card_ids, bool up_only){
     if(card_ids.isEmpty()){
         clearGuanxing();
         return;
     }
 
+    this->up_only = up_only;
     up_items.clear();
     foreach(int card_id, card_ids){
         GuanxingCardItem *card_item = new GuanxingCardItem(Sanguosha->getCard(card_id));
@@ -2334,13 +2335,18 @@ void RoomScene::adjustGuanxing(){
     static qreal card_width = rect.width();
     static qreal card_height = rect.height();
 
-    int r = (item->y() - guanxing_origin.y()) / card_height;
-    r = qBound(0, r, 1);
-    QList<GuanxingCardItem *> &items = r == 0 ? up_items : down_items;
-    int c = (item->x() - guanxing_origin.x()) / card_width;
+    QList<GuanxingCardItem *> *items = NULL;
+    if(up_only)
+        items = &up_items;
+    else{
+        int r = (item->y() - guanxing_origin.y()) / card_height;
+        r = qBound(0, r, 1);
+        items = r == 0 ? &up_items : &down_items;
+    }
 
-    c = qBound(0, c, items.length());
-    items.insert(c, item);
+    int c = (item->x() - guanxing_origin.x()) / card_width;
+    c = qBound(0, c, items->length());
+    items->insert(c, item);
 
     int i;
     for(i=0; i<up_items.length(); i++){

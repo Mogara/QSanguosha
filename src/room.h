@@ -36,7 +36,6 @@ public:
     bool isFull() const;
     bool isFinished() const;
     int getLack() const;
-    void broadcast(const QString &message, ServerPlayer *except = NULL);
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
@@ -55,7 +54,6 @@ public:
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
-    void promptUser(ServerPlayer *to, const QString &prompt_str);
     void setPlayerFlag(ServerPlayer *player, const QString &flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
@@ -72,7 +70,7 @@ public:
     QString judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr = NULL);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void doGuanxing(ServerPlayer *zhuge, int n);
+    void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();
     const Card *peek();    
@@ -209,6 +207,7 @@ private:
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     const Card *getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result);
     void judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step);
+    void broadcast(const QString &message, ServerPlayer *except = NULL);
 
 private slots:
     void reportDisconnection();

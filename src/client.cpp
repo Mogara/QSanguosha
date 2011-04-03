@@ -1269,15 +1269,20 @@ void Client::detachSkill(const QString &skill_name){
 }
 
 void Client::doGuanxing(const QString &guanxing_str){
-    QList<int> card_ids;
-    if(guanxing_str != "."){
-        QStringList cards = guanxing_str.split("+");
+    QRegExp rx("([\\d+]*)(!?)");
+    if(!rx.exactMatch(guanxing_str))
+        return;
 
-        foreach(QString card, cards)
-            card_ids << card.toInt();
+    QStringList texts = rx.capturedTexts();
+    QString card_str = texts.at(1);
+    bool up_only = ! texts.at(2).isEmpty();
+    QList<int> card_ids;
+    if(card_str != "."){
+        QStringList cards = card_str.split("+");
+        card_ids = Card::StringsToIds(cards);
     }
 
-    emit guanxing(card_ids);
+    emit guanxing(card_ids, up_only);
     setStatus(AskForGuanxing);
 }
 

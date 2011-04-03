@@ -545,7 +545,6 @@ public:
 class Room : public QObject{
 public:
     explicit Room(QObject *parent, const char *mode);
-    void broadcast(const char *message, ServerPlayer *except = NULL);
     RoomThread *getThread() const;
     void playSkillEffect(const char *skill_name, int index = -1);
     ServerPlayer *getCurrent() const;
@@ -563,7 +562,6 @@ public:
     void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
-    void promptUser(ServerPlayer *to, const char *prompt_str);
     void setPlayerFlag(ServerPlayer *player, const char *flag);
     void setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
     void setPlayerMark(ServerPlayer *player, const char *mark, int value);
@@ -579,7 +577,7 @@ public:
     bool cardEffect(const CardEffectStruct &effect);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void doGuanxing(ServerPlayer *zhuge, int n);
+    void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
     void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard(); 
 	const Card *peek();

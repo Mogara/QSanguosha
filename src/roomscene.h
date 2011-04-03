@@ -93,6 +93,7 @@ private:
 
     QList<GuanxingCardItem *> up_items, down_items;
     QPointF guanxing_origin;
+    bool up_only;
 
     QList<CardItem *> gongxin_items;
 
@@ -181,7 +182,7 @@ private slots:
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
 
-    void doGuanxing(const QList<int> &card_ids);
+    void doGuanxing(const QList<int> &card_ids, bool up_only);
     void clearGuanxing();
     void adjustGuanxing();
 

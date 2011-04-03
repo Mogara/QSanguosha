@@ -438,10 +438,6 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
     return true;
 }
 
-void Room::promptUser(ServerPlayer *to, const QString &prompt_str){
-    to->invoke("prompt", prompt_str);
-}
-
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data){
     bool invoked;
     AI *ai = player->getAI();
@@ -2129,17 +2125,20 @@ ServerPlayer *Room::getLord() const{
     return NULL;
 }
 
-void Room::doGuanxing(ServerPlayer *zhuge, int n){
+void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only){
     // if Zhuge Liang is not online, just return immediately
     if(zhuge->getState() != "online")
         return;
 
-    QList<int> cards = getNCards(n, false);
-
-    zhuge->invoke("doGuanxing", Card::IdsToStrings(cards).join("+"));
+    QString guanxing_str = Card::IdsToStrings(cards).join("+");
+    if(up_only)
+        guanxing_str.append("!");
+    zhuge->invoke("doGuanxing", guanxing_str);
     getResult("replyGuanxingCommand", zhuge);
 
     if(result.isEmpty()){
+        // the method "doGuanxing" without any arguments
+        // means to clear all the guanxing items
         zhuge->invoke("doGuanxing");
         foreach(int card_id, cards)
             draw_pile->prepend(card_id);
@@ -2161,7 +2160,7 @@ void Room::doGuanxing(ServerPlayer *zhuge, int n){
     if(!bottom_str.isEmpty())
         bottom_list = bottom_str.split("+");
 
-    Q_ASSERT(top_list.length() + bottom_list.length() == n);
+    Q_ASSERT(top_list.length() + bottom_list.length() == cards.length());
 
     LogMessage log;
     log.type = "#GuanxingResult";

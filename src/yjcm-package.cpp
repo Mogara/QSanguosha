@@ -741,8 +741,8 @@ void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
             left << card_id;
     }
 
-    if(left.length() > 1)
-        room->doGuanxing(source, left.length());
+    if(!left.isEmpty())
+        room->doGuanxing(source, left, true);
  }
 
 class Xinzhan: public ZeroCardViewAsSkill{
