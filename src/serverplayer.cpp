@@ -376,7 +376,7 @@ void ServerPlayer::play(){
         room->broadcastProperty(this, "phase");
         room->getThread()->trigger(PhaseChange, this);
 
-        if(isDead()){
+        if(isDead() && phase != NotActive){
             phases.clear();
             phases << NotActive;
         }
@@ -432,6 +432,13 @@ void ServerPlayer::loseMark(const QString &mark, int n){
     room->sendLog(log);
 
     room->setPlayerMark(this, mark, value);
+}
+
+void ServerPlayer::loseAllMarks(const QString &mark_name){
+    int n = getMark(mark_name);
+    if(n > 0){
+        loseMark(mark_name, n);
+    }
 }
 
 void ServerPlayer::addCardToPile(const QString &pile_name, int card_id){

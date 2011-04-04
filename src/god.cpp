@@ -775,6 +775,26 @@ public:
     }
 };
 
+class QixingClear: public TriggerSkill{
+public:
+    QixingClear():TriggerSkill("#qixing-clear"){
+        events << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        foreach(ServerPlayer *player, players){
+            player->loseAllMarks("@gale");
+            player->loseAllMarks("@fog");
+        }
+    }
+};
+
 DawuCard::DawuCard(){
 
 }
@@ -872,6 +892,7 @@ GodPackage::GodPackage()
     shenzhugeliang->addSkill(new Qixing);
     shenzhugeliang->addSkill(new QixingStart);
     shenzhugeliang->addSkill(new QixingAsk);
+    shenzhugeliang->addSkill(new QixingClear);
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);
 

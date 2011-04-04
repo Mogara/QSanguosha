@@ -222,7 +222,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.length() < 3 && !to_select->isEquipped();
+        return selected.length() < 3;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -250,7 +250,7 @@ public:
 
         if(event == HpRecover){
             RecoverStruct recover = data.value<RecoverStruct>();
-            if(recover.who){
+            if(recover.who && recover.who != player){
                 recover.who->drawCards(recover.recover);
 
                 LogMessage log;
@@ -264,7 +264,7 @@ public:
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
-            if(source){
+            if(source && source != player){
                 const Card *card = room->askForCard(source, ".H", "@enyuan", false);
                 if(card){
                     room->showCard(source, card->getEffectiveId());
