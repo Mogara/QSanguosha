@@ -163,7 +163,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             player = room->getCurrent();
             if(!player->faceUp())
                 player->turnOver();
-            else
+            else if(player->isAlive())
                 player->play();
 
             break;

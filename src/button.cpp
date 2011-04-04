@@ -75,12 +75,12 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     rect_color.setAlpha(0.43 * 255);
     painter->fillPath(path, rect_color);
 
-    QPen pen(Qt::white);
+    QPen pen(Config.TextEditColor);
     pen.setWidth(3);
     painter->setPen(pen);
     painter->drawPath(path);
 
     painter->setFont(font);
-    painter->setPen(Qt::white);
+    painter->setPen(Config.TextEditColor);
     painter->drawText(rect, Qt::AlignCenter, label);
 }

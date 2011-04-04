@@ -1491,7 +1491,8 @@ public:
         if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
             dengshizai->turnOver();
 
-            if(player->getMark("@zhenggong") == 0){
+            PlayerStar zhenggong = room->getTag("Zhenggong").value<PlayerStar>();
+            if(zhenggong == NULL){
                 PlayerStar p = player;
                 room->setTag("Zhenggong", QVariant::fromValue(p));
                 player->gainMark("@zhenggong");
