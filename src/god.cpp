@@ -479,10 +479,10 @@ void ShenfenCard::use(Room *room, ServerPlayer *shenlubu, const QList<ServerPlay
 }
 
 WuqianCard::WuqianCard(){
-
+    once = true;
 }
 
-bool WuqianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool WuqianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *) const{
     return targets.isEmpty();
 }
 
@@ -503,7 +503,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 2;
+        return Self->getMark("@wrath") >= 2 && !ClientInstance->hasUsed("WuqianCard");
     }
 
     virtual const Card *viewAs() const{

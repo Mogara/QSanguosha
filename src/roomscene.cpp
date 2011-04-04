@@ -395,7 +395,7 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
         ugoku->setStartValue(DrawPilePos);
         ugoku->setDuration(500);
         ugoku->setEasingCurve(QEasingCurve::OutBounce);
-        ugoku->setEndValue(photo->pos() + QPointF(10 *i, 0));
+        ugoku->setEndValue(photo->pos() + QPointF(20 *i, 0));
 
         QPropertyAnimation *kieru = new QPropertyAnimation(pixmap, "opacity");
         kieru->setDuration(900);

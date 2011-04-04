@@ -343,9 +343,9 @@
     </message>
     <message>
         <location filename="src/clientlogbox.cpp" line="124"/>
-        <source>Log string is not well formatted: %1, error string is %2</source>
-        <oldsource>Log string is not well formatted</oldsource>
-        <translation>提示信息没有格式化好: %1, 错误提示为 %2</translation>
+        <source>Log string is not well formatted: %1</source>
+        <oldsource>Log string is not well formatted: %1, error string is %2</oldsource>
+        <translation>提示信息没有格式化好: %1</translation>
     </message>
 </context>
 <context>
