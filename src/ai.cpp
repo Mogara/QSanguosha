@@ -175,9 +175,14 @@ bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &data)
     return false;
 }
 
-QString TrustAI::askForChoice(const QString &skill_name, const QString &){
+QString TrustAI::askForChoice(const QString &skill_name, const QString &choice){
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    return skill->getDefaultChoice(self);
+    if(skill)
+        return skill->getDefaultChoice(self);
+    else{
+        QStringList choices = choice.split("+");
+        return choices.at(qrand() % choices.length());
+    }
 }
 
 QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
@@ -300,14 +305,22 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
                 return card;
         }
 
-        if(self->hasSkill("jiuchi") && dying == self){
-            foreach(const Card *card, cards){
-                if(card->getSuit() == Card::Spade){
-                    Analeptic *analeptic = new Analeptic(Card::Spade, card->getNumber());
-                    analeptic->addSubcard(card);
-                    analeptic->setSkillName("jiuchi");
-                    return analeptic;
+        if(dying == self){
+            if(self->hasSkill("jiuchi")){
+                foreach(const Card *card, cards){
+                    if(card->getSuit() == Card::Spade){
+                        Analeptic *analeptic = new Analeptic(Card::Spade, card->getNumber());
+                        analeptic->addSubcard(card);
+                        analeptic->setSkillName("jiuchi");
+                        return analeptic;
+                    }
                 }
+            }
+
+            if(self->hasSkill("jiushi") && self->faceUp()){
+                Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+                analeptic->setSkillName("jiushi");
+                return analeptic;
             }
         }
 
