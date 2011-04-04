@@ -785,13 +785,15 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getAllPlayers();
         foreach(ServerPlayer *player, players){
             player->loseAllMarks("@gale");
             player->loseAllMarks("@fog");
         }
+
+        return false;
     }
 };
 

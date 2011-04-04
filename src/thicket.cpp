@@ -102,7 +102,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "wei" && ! target->hasLordSkill("songwei");
+        return target->getKingdom() == "wei";
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -110,7 +110,7 @@ public:
 
         if(card->isBlack()){
             Room *room = player->getRoom();
-            QList<ServerPlayer *> players = room->getAllPlayers();
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
                 if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
