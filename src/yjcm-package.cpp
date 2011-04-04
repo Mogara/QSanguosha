@@ -631,6 +631,9 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
 
+        if(player->getPhase() != Player::NotActive)
+            return false;
+
         if(event == Damaged){
             room->setTag("ChengongDongcha", player->objectName());
 

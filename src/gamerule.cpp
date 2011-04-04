@@ -301,6 +301,11 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     if(chained_player->isChained()){
                         room->getThread()->delay();
 
+                        LogMessage log;
+                        log.type = "#IronChainDamage";
+                        log.from = chained_player;
+                        room->sendLog(log);
+
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
                         chain_damage.chain = true;

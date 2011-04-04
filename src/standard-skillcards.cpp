@@ -282,6 +282,7 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
 
 CheatCard::CheatCard(){
     target_fixed = true;
+    will_throw = false;
 }
 
 void CheatCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
