@@ -103,7 +103,12 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
 
-    case Player::NotActive: return;
+    case Player::NotActive:{
+            if(player->hasFlag("drank"))
+                room->setPlayerFlag(player, "-drank");
+
+            return;
+        }
     }
 }
 

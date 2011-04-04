@@ -807,13 +807,13 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getKingdom() == "qun" && !target->hasLordSkill("baonue");
+        return target->getKingdom() == "qun";
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
         Room *room = player->getRoom();
         QList<ServerPlayer *> dongzhuos;
-        QList<ServerPlayer *> players = room->getOtherPlayers(room->getCurrent());
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
         foreach(ServerPlayer *p, players){
             if(p->hasLordSkill("baonue")){
                 dongzhuos << p;
