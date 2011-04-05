@@ -397,6 +397,7 @@ public:
             QList<Player::Phase> &phases = target->getPhases();
             if(choice == "choice1"){
                 // discard phase is before draw phase
+                // that is: discard -> draw -> play
                 phases.removeOne(Player::Discard);
                 int index = phases.indexOf(Player::Draw);
                 phases.insert(index, Player::Discard);
@@ -404,6 +405,7 @@ public:
                 log.type = "#WeiyanChoice1";
             }else{
                 // drawing phase is after discard phase
+                // that is: play -> discard -> draw
                 phases.removeOne(Player::Draw);
                 int index = phases.indexOf(Player::Discard);
                 phases.insert(index+1, Player::Draw);

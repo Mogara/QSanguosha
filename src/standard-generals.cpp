@@ -700,11 +700,15 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *sunquan, QVariant &data) const{
         Room *room =  sunquan->getRoom();
         switch(event){
-        case Dying: room->playSkillEffect("jiuyuan", 1); break;
+        case Dying: {
+                room->playSkillEffect("jiuyuan", 1);
+                break;
+            }
+
         case CardEffected: {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
                 if(effect.card->inherits("Peach") && effect.from->getKingdom() == "wu"
-                   && sunquan != effect.from)
+                   && sunquan != effect.from && sunquan->hasFlag("dying"))
                 {
                     int index = effect.from->getGeneral()->isMale() ? 2 : 3;
                     room->playSkillEffect("jiuyuan", index);
@@ -716,7 +720,7 @@ public:
                     room->sendLog(log);
 
                     RecoverStruct recover;
-                    recover.who = sunquan;
+                    recover.who = effect.from;
                     room->recover(sunquan, recover);
 
                     room->getThread()->delay(2000);
@@ -1232,7 +1236,6 @@ void StandardPackage::addGenerals(){
     // for test only
     General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
     zhiba_sunquan->addSkill(new Zhiba);
-    zhiba_sunquan->addSkill(new Jiuyuan);
 
     General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
     wuxing_zhuge->addSkill(new SuperGuanxing);
