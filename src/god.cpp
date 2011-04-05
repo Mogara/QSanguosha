@@ -56,13 +56,10 @@ public:
     virtual bool trigger(TriggerEvent, ServerPlayer *shenguanyu, QVariant &) const{
         Room *room = shenguanyu->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(shenguanyu);
-        players << shenguanyu;
 
         int max = 0;
         foreach(ServerPlayer *player, players){
-            int value = player->getMark("@nightmare");
-            if(value > max)
-                max = value;
+            max = qMax(max, player->getMark("@nightmare"));
         }
 
         if(max == 0)
@@ -83,8 +80,16 @@ public:
         else
             foe = room->askForPlayerChosen(shenguanyu, foes, "wuhun");
 
-        if(room->judge(foe, WuhunCallback) == "bad" && foe != shenguanyu)
+        if(room->judge(foe, WuhunCallback) == "bad"){
+            LogMessage log;
+            log.type = "#WuhunRevenge";
+            log.from = shenguanyu;
+            log.to << foe;
+            log.arg = QString::number(max);
+            room->sendLog(log);
+
             room->killPlayer(foe);
+        }
 
         return false;
     }

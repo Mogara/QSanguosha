@@ -104,4 +104,5 @@ return {
 	
 	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
 	["#KuangbaoDamaged"] = "%from 的锁定技【狂暴】被触发，受到 %arg 点伤害获得 %arg 枚暴怒标记",
+	["#WuhunRevenge"] = "%from 的锁定技【武魂】被触发，持有最多梦魇标记的角色( %arg 个)将立即死亡",
 }

@@ -738,7 +738,7 @@ public:
         ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
 
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
-            if(room->judge(player, BuyiCallback) == "good"){
+            if(room->judge(wuguotai, BuyiCallback) == "good"){
                 CardUseStruct use;
                 Peach *peach = new Peach(Card::NoSuit, 0);
                 peach->setSkillName(objectName());
