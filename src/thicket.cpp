@@ -149,7 +149,7 @@ public:
 class SavageAssaultAvoid: public TriggerSkill{
 public:
     SavageAssaultAvoid(const QString &avoid_skill)
-        :TriggerSkill("#sa_avoid"), avoid_skill(avoid_skill)
+        :TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill)
     {
         events << CardEffected;
     }

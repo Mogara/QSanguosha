@@ -387,10 +387,10 @@ QList<const Card *> Player::getEquips() const{
         equips << weapon;
     if(armor)
         equips << armor;
-    if(offensive_horse)
-        equips << offensive_horse;
     if(defensive_horse)
         equips << defensive_horse;
+    if(offensive_horse)
+        equips << offensive_horse;
 
     return equips;
 }

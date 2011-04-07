@@ -600,7 +600,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         AI *ai = player->getAI();
         if(ai){
             thread->delay(Config.AIDelay);
-            card = ai->askForCard(pattern);
+            card = ai->askForCard(pattern, prompt);
         }else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
             getResult("responseCardCommand", player);

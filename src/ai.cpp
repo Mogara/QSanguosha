@@ -226,13 +226,13 @@ int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QSt
     return cards.at(r)->getId();
 }
 
-const Card *TrustAI::askForCard(const QString &pattern) {
+const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt){
     static QRegExp id_rx("\\d+");
 
     if(pattern.contains("+")){
         QStringList subpatterns = pattern.split("+");
         foreach(QString subpattern, subpatterns){
-            const Card *result = askForCard(subpattern);
+            const Card *result = askForCard(subpattern, prompt);
             if(result)
                 return result;
         }
@@ -477,7 +477,7 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
     return result;
 }
 
-const Card *LuaAI::askForCard(const QString &pattern){
+const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
     Q_ASSERT(callback);
 
     lua_State *L = room->getLuaState();
@@ -488,16 +488,18 @@ const Card *LuaAI::askForCard(const QString &pattern){
 
     lua_pushstring(L, pattern.toAscii());
 
-    int error = lua_pcall(L, 2, 1, 0);
+    lua_pushstring(L, prompt.toAscii());
+
+    int error = lua_pcall(L, 3, 1, 0);
     const char *result = lua_tostring(L, -1);
     lua_pop(L, 1);
     if(error){
         room->output(result);
-        return TrustAI::askForCard(pattern);
+        return TrustAI::askForCard(pattern, prompt);
     }
 
     if(result == NULL)
-        return TrustAI::askForCard(pattern);
+        return TrustAI::askForCard(pattern, prompt);
 
     return Card::Parse(result);
 }
