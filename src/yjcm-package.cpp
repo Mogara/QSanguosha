@@ -719,10 +719,6 @@ public:
     }
 };
 
-static QString BuyiCallback(const Card *card, Room *){
-    return card->isRed() ? "good" : "bad";
-}
-
 class Buyi: public TriggerSkill{
 public:
     Buyi():TriggerSkill("buyi"){
@@ -738,7 +734,15 @@ public:
         ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
 
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
-            if(room->judge(wuguotai, BuyiCallback) == "good"){
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = wuguotai;
+
+            room->judge(judge);
+
+            if(judge.isGood()){
                 CardUseStruct use;
                 Peach *peach = new Peach(Card::NoSuit, 0);
                 peach->setSkillName(objectName());

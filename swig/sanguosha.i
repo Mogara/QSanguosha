@@ -298,13 +298,30 @@ struct RecoverStruct{
     const Card *card;
 };
 
+struct JudgeStruct{
+    JudgeStruct();
+    bool isGood() const;
+    bool isBad() const;
+
+	ServerPlayer *who;
+    const Card *card;
+    QRegExp pattern;
+    bool good;
+    QString reason;
+};
+
+typedef JudgeStruct *JudgeStar;
+
 enum TriggerEvent{
     GameStart,
 	TurnStart,
     PhaseChange,
     DrawNCards,
-    JudgeOnEffect,
     HpRecover,
+
+	StartJudge,
+	AskForRetrial,
+    FinishJudge,
 
     Predamage,
     Predamaged,
@@ -577,6 +594,7 @@ public:
     void playCardEffect(const char *card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
+	void judge(JudgeStruct &judge_struct);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
@@ -631,7 +649,6 @@ public:
 
     void throwCard(const Card *card);
     void throwCard(int card_id);
-    int throwSpecialCard();
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
 
     // interactive methods

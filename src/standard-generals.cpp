@@ -119,10 +119,10 @@ public:
     Tiandu():TriggerSkill("tiandu"){
         frequency = Frequent;
 
-        events << JudgeOnEffect;
+        events << FinishJudge;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *guojia, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *guojia, QVariant &data) const{
         CardStar card = data.value<CardStar>();
         Room *room = guojia->getRoom();
         if(guojia->askForSkillInvoke(objectName(), data)){
@@ -162,13 +162,6 @@ public:
     }
 };
 
-static QString GanglieCallback(const Card *card, Room *){
-    if(card->getSuit() != Card::Heart)
-        return "good";
-    else
-        return "bad";
-}
-
 class Ganglie:public MasochismSkill{
 public:
     Ganglie():MasochismSkill("ganglie"){
@@ -183,7 +176,14 @@ public:
         if(from && from->isAlive() && room->askForSkillInvoke(xiahou, "ganglie", source)){
             room->playSkillEffect(objectName());
 
-            if(room->judge(xiahou, GanglieCallback) == "good"){
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart):(.*)");
+            judge.good = false;
+            judge.reason = objectName();
+            judge.who = xiahou;
+
+            room->judge(judge);
+            if(judge.isGood()){
                 if(!room->askForDiscard(from, objectName(), 2, true)){
                     DamageStruct damage;
                     damage.from = xiahou;
@@ -219,9 +219,9 @@ public:
     }
 };
 
-class Guicai:public OneCardViewAsSkill{
+class GuicaiViewAsSkill:public OneCardViewAsSkill{
 public:
-    Guicai():OneCardViewAsSkill("guicai"){
+    GuicaiViewAsSkill():OneCardViewAsSkill(""){
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -241,6 +241,39 @@ public:
         card->addSubcard(card_item->getFilteredCard());
 
         return card;
+    }
+};
+
+class Guicai: public TriggerSkill{
+public:
+    Guicai():TriggerSkill("guicai"){
+        view_as_skill = new GuicaiViewAsSkill;
+
+        events << AskForRetrial;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        const Card *card = room->askForCard(player, "@guicai", "@guicai-card", false);
+
+        if(card){
+            JudgeStar judge = data.value<JudgeStar>();
+            room->throwCard(judge->card);
+            judge->card = Sanguosha->getCard(card->getEffectiveId());
+
+            room->moveCardTo(judge->card, NULL, Player::Special);
+
+            LogMessage log;
+            log.type = "$ChangedJudge";
+            log.from = player;
+            log.to << judge->who;
+            log.card_str = card->getEffectIdString();
+            room->sendLog(log);
+
+            room->sendJudgeResult(judge);
+        }
+
+        return false;
     }
 };
 
@@ -294,29 +327,28 @@ public:
     }
 };
 
-static QString LuoshenCallback(const Card *card, Room *){
-    if(card->isBlack())
-        return "good";
-    else
-        return "bad";
-}
-
 class Luoshen:public PhaseChangeSkill{
 public:
     Luoshen():PhaseChangeSkill("luoshen"){
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Start){
-            Room *room = target->getRoom();
+    virtual bool onPhaseChange(ServerPlayer *zhenji) const{
+        if(zhenji->getPhase() == Player::Start){
+            Room *room = zhenji->getRoom();
             forever{
-                if(room->askForSkillInvoke(target, objectName())){
+                if(room->askForSkillInvoke(zhenji, objectName())){
                     room->playSkillEffect(objectName());
 
-                    const Card *card;
-                    if(room->judge(target, LuoshenCallback, &card) == "good")
-                        target->obtainCard(card);
+                    JudgeStruct judge;
+                    judge.pattern = QRegExp("(.*):(spade|club):(.*)");
+                    judge.good = true;
+                    judge.reason = objectName();
+                    judge.who = zhenji;
+
+                    room->judge(judge);
+                    if(judge.isGood())
+                        zhenji->obtainCard(judge.card);
                     else
                         break;
                 }else
@@ -530,13 +562,6 @@ public:
     }
 };
 
-static QString TiejiCallback(const Card *card, Room *){
-    if(card->isRed())
-        return "good";
-    else
-        return "bad";
-}
-
 class Tieji:public SlashBuffSkill{
 public:
     Tieji():SlashBuffSkill("tieji"){
@@ -550,7 +575,14 @@ public:
         if(effect.from->askForSkillInvoke("tieji", QVariant::fromValue(effect))){
             room->playSkillEffect(objectName());
 
-            if(room->judge(machao, TiejiCallback) == "good"){
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = machao;
+
+            room->judge(judge);
+            if(judge.isGood()){
                 room->slashResult(effect, true);
                 return true;
             }

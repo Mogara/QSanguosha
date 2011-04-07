@@ -317,18 +317,14 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->broadcastProperty(effect.to, "chained");
 }
 
-static QString SupplyShortageCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Club)
-        return "good";
-    else
-        return "bad";
-}
-
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("supply_shortage");
-    callback = SupplyShortageCallback;
+
+    judge.pattern = QRegExp("(.*):(club):(.*)");
+    judge.good = true;
+    judge.reason = objectName();
 }
 
 bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{

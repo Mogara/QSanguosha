@@ -37,7 +37,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    special_card(-1), L(NULL), thread(NULL), sem(NULL), provided(NULL)
+    L(NULL), thread(NULL), sem(NULL), provided(NULL)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -215,6 +215,8 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     thread->trigger(Death, victim, killer_name);
 }
 
+/*
+
 QString Room::judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr){
     QString result;
     const Card *card = getJudgeCard(player, callback, result);
@@ -261,8 +263,11 @@ void Room::judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step){
 const Card *Room::getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result){
     tag["CurrentJudge"] = QVariant::fromValue(player);
 
+    // start judge
     int card_id = drawCard();
-    moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
+    CardStar card = Sanguosha->getCard(card_id);
+    QVariant data = QVariant::fromValue(card);
+    thread->trigger(StartJudge, player, data);
     judgeResult(NULL, callback, 0);
 
     QList<ServerPlayer *> all_players = getAllPlayers();
@@ -311,12 +316,36 @@ const Card *Room::getJudgeCard(ServerPlayer *player, JudgeCallback callback, QSt
     }
 
     QVariant card_data = QVariant::fromValue(card);
-    thread->trigger(JudgeOnEffect, player, card_data);
+    thread->trigger(FinishJudge, player, card_data);
 
     if(callback)
         result = callback(card, this);
 
     return card;
+}
+*/
+
+void Room::judge(JudgeStruct &judge_struct){
+    Q_ASSERT(judge_struct.who != NULL);
+
+    JudgeStar judge_star = &judge_struct;
+
+    QVariant data = QVariant::fromValue(judge_star);
+
+    thread->trigger(StartJudge, judge_star->who, data);
+
+    QList<ServerPlayer *> players = getAllPlayers();
+    foreach(ServerPlayer *player, players){
+        thread->trigger(AskForRetrial, player, data);
+    }
+
+    thread->trigger(FinishJudge, judge_star->who, data);
+}
+
+void Room::sendJudgeResult(const JudgeStar judge){
+    QString who = judge->who->objectName();
+    QString result = judge->isGood() ? "good" : "bad";
+    broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
 }
 
 QList<int> Room::getNCards(int n, bool update_pile_number){
@@ -1723,17 +1752,6 @@ void Room::throwCard(int card_id){
     moveCardTo(Sanguosha->getCard(card_id), NULL, Player::DiscardedPile, true);
 }
 
-int Room::throwSpecialCard(){
-    Q_ASSERT(special_card != -1);
-
-    int card_id = special_card;
-    throwCard(special_card);
-
-    Q_ASSERT(special_card == -1);
-
-    return card_id;
-}
-
 RoomThread *Room::getThread() const{
     return thread;
 }
@@ -1813,7 +1831,7 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         else if(move.from_place == Player::DrawPile)
             draw_pile->removeOne(move.card_id);
         else if(move.from_place == Player::Special)
-            special_card = -1;
+            table_cards.removeOne(move.card_id);
     }
 
     if(move.to){
@@ -1824,7 +1842,7 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         else if(move.to_place == Player::DrawPile)
             draw_pile->prepend(move.card_id);
         else if(move.to_place == Player::Special)
-            special_card = move.card_id;
+            table_cards.append(move.card_id);
     }
 
     setCardMapping(move.card_id, move.to, move.to_place);

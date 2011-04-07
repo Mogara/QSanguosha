@@ -32,13 +32,6 @@ public:
     }
 };
 
-static QString WuhunCallback(const Card *card, Room *){
-    if(card->inherits("Peach") || card->inherits("GodSalvation"))
-        return "good";
-    else
-        return "bad";
-}
-
 class WuhunRevenge: public TriggerSkill{
 public:
     WuhunRevenge():TriggerSkill("#wuhun"){
@@ -80,7 +73,15 @@ public:
         else
             foe = room->askForPlayerChosen(shenguanyu, foes, "wuhun");
 
-        if(room->judge(foe, WuhunCallback) == "bad"){
+        JudgeStruct judge;
+        judge.pattern = QRegExp("(Peach|GodSalvation):(.*):(.*)");
+        judge.good = false;
+        judge.reason = "wuhun";
+        judge.who = foe;
+
+        room->judge(judge);
+
+        if(judge.isBad()){
             LogMessage log;
             log.type = "#WuhunRevenge";
             log.from = shenguanyu;

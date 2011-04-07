@@ -28,6 +28,33 @@ public:
     }
 };
 
+class HongyanRetrial: public TriggerSkill{
+public:
+    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
+        frequency = Compulsory;
+
+        events << FinishJudge;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        JudgeStar judge = data.value<JudgeStar>();
+        if(judge->card->getSuit() == Card::Spade){
+            LogMessage log;
+            log.type = "#HongyanJudge";
+            log.from = player;
+
+            Card *new_card = Card::Clone(judge->card);
+            new_card->setSuit(Card::Heart);
+            new_card->setSkillName("hongyan");
+            judge->card = new_card;
+
+            player->getRoom()->sendLog(log);
+        }
+
+        return false;
+    }
+};
+
 TianxiangCard::TianxiangCard()
 {
 }
@@ -254,6 +281,7 @@ NostalgiaPackage::NostalgiaPackage()
 {
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Hongyan);
+    xiaoqiao->addSkill(new HongyanRetrial);
     xiaoqiao->addSkill(new Tianxiang);
 
     General *yangxiu = new General(this, "yangxiu", "wei", 3);

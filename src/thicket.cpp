@@ -98,7 +98,7 @@ public:
 class Songwei: public TriggerSkill{
 public:
     Songwei():TriggerSkill("songwei$"){
-        events << JudgeOnEffect;
+        events << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -793,13 +793,6 @@ public:
     }
 };
 
-static QString BaonueCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Spade)
-        return "good";
-    else
-        return "bad";
-}
-
 class Baonue: public TriggerSkill{
 public:
     Baonue():TriggerSkill("baonue$"){
@@ -822,14 +815,22 @@ public:
 
         foreach(ServerPlayer *dongzhuo, dongzhuos){
             QVariant who = QVariant::fromValue(dongzhuo);
-            if(dongzhuo->isWounded() && player->askForSkillInvoke(objectName(), who) &&
-               room->judge(player, BaonueCallback) == "good")
-            {
-                room->playSkillEffect(objectName());
+            if(dongzhuo->isWounded() && player->askForSkillInvoke(objectName(), who)){
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(spade):(.*)");
+                judge.good = true;
+                judge.reason = "baonue";
+                judge.who = player;
 
-                RecoverStruct recover;
-                recover.who = player;
-                room->recover(dongzhuo, recover);
+                room->judge(judge);
+
+                if(judge.isGood()){
+                    room->playSkillEffect(objectName());
+
+                    RecoverStruct recover;
+                    recover.who = player;
+                    room->recover(dongzhuo, recover);
+                }
             }
         }
 

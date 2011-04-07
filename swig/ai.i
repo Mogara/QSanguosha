@@ -25,7 +25,7 @@ public:
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) = 0;
     virtual const Card *askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason)  = 0;
-    virtual const Card *askForCard(const char *pattern)  = 0;
+    virtual const Card *askForCard(const char *pattern, const char *prompt)  = 0;
     virtual QString askForUseCard(const char *pattern, const char *prompt)  = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
@@ -46,7 +46,7 @@ public:
     virtual QList<int> askForDiscard(const char *reason, int discard_num, bool optional, bool include_equip) ;
     virtual const Card *askForNullification(const char *trick_name, ServerPlayer *from, ServerPlayer *to) ;
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason) ;
-    virtual const Card *askForCard(const char *pattern) ;
+    virtual const Card *askForCard(const char *pattern, const char *prompt) ;
     virtual QString askForUseCard(const char *pattern, const char *prompt) ;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
@@ -68,6 +68,7 @@ public:
 	virtual QString askForChoice(const char *skill_name, const char *choices);
     virtual int askForCardChosen(ServerPlayer *who, const char *flags, const char *reason);
 	virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason) ;
+	virtual const Card *askForCard(const char *pattern, const char *prompt);
 	
     LuaFunction callback;
 };

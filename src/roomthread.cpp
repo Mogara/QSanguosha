@@ -41,6 +41,30 @@ RecoverStruct::RecoverStruct()
 
 }
 
+JudgeStruct::JudgeStruct()
+    :who(NULL), card(NULL), good(true)
+{
+
+}
+
+bool JudgeStruct::isGood() const{
+    Q_ASSERT(card != NULL);
+
+    QString class_name = card->metaObject()->className();
+    QString suit = card->getSuitString();
+    QString number = card->getNumberString();
+    QString card_str = QString("%1:%2:%3").arg(class_name).arg(suit).arg(number);
+
+    if(good)
+        return pattern.exactMatch(card_str);
+    else
+        return !pattern.exactMatch(card_str);
+}
+
+bool JudgeStruct::isBad() const{
+    return ! isGood();
+}
+
 CardUseStruct::CardUseStruct()
     :card(NULL), from(NULL)
 {

@@ -50,19 +50,14 @@ bool Shit::HasShit(const Card *card){
 
 // -----------  Deluge -----------------
 
-static QString DelugeCallback(const Card *card, Room *){
-    int number = card->getNumber();
-    if(number == 1 || number == 13)
-        return "bad";
-    else
-        return "good";
-}
-
 Deluge::Deluge(Card::Suit suit, int number)
     :Disaster(suit, number)
 {
-    callback = DelugeCallback;
     setObjectName("deluge");
+
+    judge.pattern = QRegExp("():():(AK)");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void Deluge::takeEffect(ServerPlayer *target) const{
@@ -104,20 +99,14 @@ void Deluge::takeEffect(ServerPlayer *target) const{
 
 // -----------  Typhoon -----------------
 
-static QString TyphoonCallback(const Card *card, Room *)
-{
-    int number = card->getNumber();
-    if(card->getSuit() == Card::Diamond && number >= 2 && number <= 9)
-        return "bad";
-    else
-        return "good";
-}
-
 Typhoon::Typhoon(Card::Suit suit, int number)
     :Disaster(suit, number)
 {
-    callback = TyphoonCallback;
     setObjectName("typhoon");
+
+    judge.pattern = QRegExp("(.*)(diamond)([2-9])");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void Typhoon::takeEffect(ServerPlayer *target) const{
@@ -144,20 +133,14 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
 
 // -----------  Earthquake -----------------
 
-static QString EarthquakeCallback(const Card *card, Room *)
-{
-    int number = card->getNumber();
-    if(card->getSuit() == Card::Club && number >= 2 && number <= 9)
-        return "bad";
-    else
-        return "good";
-}
-
 Earthquake::Earthquake(Card::Suit suit, int number)
     :Disaster(suit, number)
 {
-    callback = EarthquakeCallback;
     setObjectName("earthquake");
+
+    judge.pattern = QRegExp("(.*):(club):([2-9])");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void Earthquake::takeEffect(ServerPlayer *target) const{
@@ -180,20 +163,14 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
 
 // -----------  Volcano -----------------
 
-static QString VolcanoCallback(const Card *card, Room *)
-{
-    int number = card->getNumber();
-    if(card->getSuit() == Card::Heart && number >= 2 && number <= 9){
-        return "bad";
-    }else
-        return "good";
-}
-
 Volcano::Volcano(Card::Suit suit, int number)
     :Disaster(suit, number)
 {
-    callback = VolcanoCallback;
     setObjectName("volcano");
+
+    judge.pattern = QRegExp("(.*):(heart):([2-9])");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void Volcano::takeEffect(ServerPlayer *target) const{
@@ -216,27 +193,15 @@ void Volcano::takeEffect(ServerPlayer *target) const{
     }
 }
 
-static QString MudSlideCallback(const Card *card, Room *){
-    if(!card->isBlack())
-        return "good";
-
-    switch(card->getNumber()){
-    case 1:
-    case 4:
-    case 7:
-    case 13: return "bad";
-    default:
-        return "good";
-    }
-}
-
 // -----------  MudSlide -----------------
 MudSlide::MudSlide(Card::Suit suit, int number)
     :Disaster(suit, number)
 {
-    callback = MudSlideCallback;
     setObjectName("mudslide");
-    target_fixed = true;
+
+    judge.pattern = QRegExp("(.*):(spade|club):(AK47)");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void MudSlide::takeEffect(ServerPlayer *target) const{

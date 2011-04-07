@@ -12,10 +12,7 @@ GuidaoCard::GuidaoCard(){
 }
 
 void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
-    room->obtainCard(zhangjiao, room->throwSpecialCard());
 
-    room->moveCardTo(this, NULL, Player::Special, true);
-    room->setEmotion(zhangjiao, Room::Normal);
 }
 
 LeijiCard::LeijiCard(){
@@ -26,19 +23,20 @@ bool LeijiCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     return targets.isEmpty();
 }
 
-static QString LeijiCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Spade)
-        return "bad";
-    else
-        return "good";
-}
-
 void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     room->setEmotion(zhangjiao, Room::Normal);
     room->setEmotion(target, Room::Bad);
 
-    if(room->judge(target, LeijiCallback) == "bad"){
+    JudgeStruct judge;
+    judge.pattern = QRegExp("(.*):(spade):(.*)");
+    judge.good = false;
+    judge.reason = "leiji";
+    judge.who = target;
+
+    room->judge(judge);
+
+    if(judge.isBad()){
         DamageStruct damage;
         damage.card = NULL;
         damage.damage = 2;
@@ -67,9 +65,9 @@ bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, con
     return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self;
 }
 
-class Guidao:public ViewAsSkill{
+class GuidaoViewAsSkill:public ViewAsSkill{
 public:
-    Guidao():ViewAsSkill("guidao"){
+    GuidaoViewAsSkill():ViewAsSkill(""){
 
     }
 
@@ -93,6 +91,39 @@ public:
         card->addSubcard(cards.first()->getFilteredCard());
 
         return card;
+    }
+};
+
+class Guidao: public TriggerSkill{
+public:
+    Guidao():TriggerSkill("guidao"){
+        view_as_skill = new GuidaoViewAsSkill;
+
+        events << AskForRetrial;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        const Card *card = room->askForCard(player, "@guidao", "@guidao-card", false);
+
+        if(card){
+            JudgeStar judge = data.value<JudgeStar>();
+            player->obtainCard(judge->card);
+            judge->card = Sanguosha->getCard(card->getEffectiveId());
+
+            room->moveCardTo(judge->card, NULL, Player::Special);
+
+            LogMessage log;
+            log.type = "$ChangedJudge";
+            log.from = player;
+            log.to << judge->who;
+            log.card_str = card->getEffectIdString();
+            room->sendLog(log);
+
+            room->sendJudgeResult(judge);
+        }
+
+        return false;
     }
 };
 

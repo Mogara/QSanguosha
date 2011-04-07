@@ -423,13 +423,6 @@ KylinBow::KylinBow(Suit suit, int number)
     skill = new KylinBowSkill;
 }
 
-static QString EightDiagramCallback(const Card *card, Room *){
-    if(card->isRed())
-        return "good";
-    else
-        return "bad";
-}
-
 class EightDiagramSkill: public ArmorSkill{
 public:
     EightDiagramSkill():ArmorSkill("eight_diagram"){
@@ -444,9 +437,15 @@ public:
         QString asked = data.toString();
         if(asked == "jink"){
             Room *room = player->getRoom();
-            if(room->askForSkillInvoke(player, objectName())){                
-                QString result = room->judge(player, EightDiagramCallback);
-                if(result == "good"){
+            if(room->askForSkillInvoke(player, objectName())){
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = player;
+
+                room->judge(judge);
+                if(judge.isGood()){
                     Jink *jink = new Jink(Card::NoSuit, 0);
                     jink->setSkillName(objectName());
                     room->provide(jink);
@@ -794,20 +793,15 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(card_id);
 }
 
-static QString IndulgenceCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Heart)
-        return "good";
-    else
-        return "bad";
-}
-
 Indulgence::Indulgence(Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("indulgence");
     target_fixed = false;
 
-    callback = IndulgenceCallback;
+    judge.pattern = QRegExp("(.*):(heart):(.*)");
+    judge.good = true;
+    judge.reason = objectName();
 }
 
 bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
@@ -845,16 +839,12 @@ void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
     room->moveCardTo(this, source, Player::Judging);
 }
 
-static QString LightningCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Spade && card->getNumber() >= 2 && card->getNumber() <= 9)
-        return "bad";
-    else
-        return "good";
-}
-
 Lightning::Lightning(Suit suit, int number):Disaster(suit, number){
     setObjectName("lightning");
-    callback = LightningCallback;
+
+    judge.pattern = QRegExp("(.*)(spade)([2-9])");
+    judge.good = false;
+    judge.reason = objectName();
 }
 
 void Lightning::takeEffect(ServerPlayer *target) const{

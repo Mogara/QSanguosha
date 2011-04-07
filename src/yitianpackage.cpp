@@ -916,13 +916,6 @@ public:
     }
 };
 
-static QString Hujia2Callback(const Card *card, Room *){
-    if(card->isRed())
-        return "good";
-    else
-        return "bad";
-}
-
 class CaizhaojiHujia: public PhaseChangeSkill{
 public:
     CaizhaojiHujia():PhaseChangeSkill("caizhaoji_hujia"){
@@ -941,9 +934,16 @@ public:
                     target->turnOver();
                 }
 
-                CardStar card;
-                if(room->judge(target, Hujia2Callback, &card) == "good"){
-                    target->obtainCard(card);
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = target;
+
+                room->judge(judge);
+
+                if(judge.isGood()){
+                    target->obtainCard(judge.card);
                 }else
                     break;
             }
@@ -1034,13 +1034,6 @@ public:
     }
 };
 
-static QString ShaoyingCallback(const Card *card, Room *){
-    if(card->isRed())
-        return "good";
-    else
-        return "bad";
-}
-
 class Shaoying: public TriggerSkill{
 public:
     Shaoying():TriggerSkill("shaoying"){
@@ -1065,7 +1058,16 @@ public:
            && luboyan->askForSkillInvoke(objectName(), data))
         {
             Room *room = luboyan->getRoom();
-            if(room->judge(luboyan, ShaoyingCallback) == "good"){
+
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = luboyan;
+
+            room->judge(judge);
+
+            if(judge.isGood()){
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;

@@ -21,8 +21,6 @@ struct LogMessage{
     QString arg2;
 };
 
-typedef QString (* JudgeCallback)(const Card *card, Room *room);
-
 class Room : public QObject{
     Q_OBJECT
 
@@ -30,7 +28,7 @@ public:
     friend class RoomThread;
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
-    explicit Room(QObject *parent, const QString &mode);
+    explicit Room(QObject *parent, const QString &mode);    
     QString createLuaState();
     void addSocket(ClientSocket *socket);
     bool isFull() const;
@@ -68,7 +66,8 @@ public:
     void playCardEffect(const QString &card_name, bool is_male);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
     bool cardEffect(const CardEffectStruct &effect);
-    QString judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr = NULL);
+    void judge(JudgeStruct &judge_struct);
+    void sendJudgeResult(const JudgeStar judge);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
@@ -127,7 +126,6 @@ public:
 
     void throwCard(const Card *card);
     void throwCard(int card_id);
-    int throwSpecialCard();
     void moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, bool open = true);
     void doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope);
 
@@ -175,13 +173,13 @@ private:
     ServerPlayer *current;
     ServerPlayer *reply_player;
     QList<int> pile1, pile2;
+    QList<int> table_cards;
     QList<int> *draw_pile, *discard_pile;
     int left_seconds;
     int chosen_generals;
     bool game_started;
     bool game_finished;
     int signup_count;
-    int special_card;
     lua_State *L;
     QList<AI *> ais;
 
@@ -206,8 +204,6 @@ private:
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
-    const Card *getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result);
-    void judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
 
 private slots:

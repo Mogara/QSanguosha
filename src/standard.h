@@ -182,7 +182,7 @@ public:
     static const DelayedTrick *CastFrom(const Card *card);
 
 protected:
-    JudgeCallback callback;
+    JudgeStruct judge;
 
 private:
     bool movable;

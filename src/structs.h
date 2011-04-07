@@ -87,13 +87,28 @@ struct RecoverStruct{
     const Card *card;
 };
 
+struct JudgeStruct{
+    JudgeStruct();
+    bool isGood() const;
+    bool isBad() const;
+
+    ServerPlayer *who;
+    const Card *card;
+    QRegExp pattern;
+    bool good;
+    QString reason;
+};
+
 enum TriggerEvent{
     GameStart,
     TurnStart,
     PhaseChange,
     DrawNCards,
-    JudgeOnEffect,
     HpRecover,
+
+    StartJudge,
+    AskForRetrial,
+    FinishJudge,
 
     Predamage,
     Predamaged,
@@ -127,6 +142,7 @@ enum TriggerEvent{
 
 typedef const Card *CardStar;
 typedef ServerPlayer *PlayerStar;
+typedef JudgeStruct *JudgeStar;
 
 Q_DECLARE_METATYPE(DamageStruct);
 Q_DECLARE_METATYPE(CardEffectStruct);
@@ -137,5 +153,6 @@ Q_DECLARE_METATYPE(CardStar);
 Q_DECLARE_METATYPE(PlayerStar);
 Q_DECLARE_METATYPE(DyingStruct);
 Q_DECLARE_METATYPE(RecoverStruct);
+Q_DECLARE_METATYPE(JudgeStar);
 
 #endif // STRUCTS_H

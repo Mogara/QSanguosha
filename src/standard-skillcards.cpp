@@ -212,10 +212,7 @@ GuicaiCard::GuicaiCard(){
 }
 
 void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwSpecialCard();
 
-    room->moveCardTo(this, NULL, Player::Special, true);
-    room->setEmotion(source, Room::Normal);
 }
 
 LiuliCard::LiuliCard()

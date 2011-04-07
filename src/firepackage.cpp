@@ -263,19 +263,26 @@ public:
         view_as_skill = new ShuangxiongViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        Room *room = target->getRoom();
-        if(target->getPhase() == Player::Start){
-            room->setPlayerMark(target, "shuangxiong", 0);
-        }else if(target->getPhase() == Player::Draw){
-            if(target->askForSkillInvoke(objectName())){
-                const Card *card;
-                room->judge(target, NULL, &card);
-                target->obtainCard(card);
-                if(card->isRed())
-                    room->setPlayerMark(target, "shuangxiong", 1);
+    virtual bool onPhaseChange(ServerPlayer *shuangxiong) const{
+        Room *room = shuangxiong->getRoom();
+        if(shuangxiong->getPhase() == Player::Start){
+            room->setPlayerMark(shuangxiong, "shuangxiong", 0);
+        }else if(shuangxiong->getPhase() == Player::Draw){
+            if(shuangxiong->askForSkillInvoke(objectName())){
+
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = shuangxiong;
+
+                room->judge(judge);
+
+                shuangxiong->obtainCard(judge.card);
+                if(judge.card->isRed())
+                    room->setPlayerMark(shuangxiong, "shuangxiong", 1);
                 else
-                    room->setPlayerMark(target, "shuangxiong", 2);
+                    room->setPlayerMark(shuangxiong, "shuangxiong", 2);
 
                 return true;
             }
@@ -383,13 +390,6 @@ public:
     }
 };
 
-static QString BazhenCallback(const Card *card, Room *){
-    if(card->isRed())
-        return "good";
-    else
-        return "bad";
-}
-
 class Bazhen: public TriggerSkill{
 public:
     Bazhen():TriggerSkill("bazhen"){
@@ -409,7 +409,15 @@ public:
 
         Room *room = wolong->getRoom();
         if(wolong->askForSkillInvoke(objectName())){
-            if(room->judge(wolong, BazhenCallback) == "good"){
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
+            judge.good = true;
+            judge.reason = objectName();
+            judge.who = wolong;
+
+            room->judge(judge);
+
+            if(judge.isGood()){
                 Jink *jink = new Jink(Card::NoSuit, 0);
                 jink->setSkillName(objectName());
                 room->provide(jink);

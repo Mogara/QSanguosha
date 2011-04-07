@@ -2,6 +2,7 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "standard.h"
+#include "engine.h"
 
 GameRule::GameRule(QObject *parent)
     :TriggerSkill("game_rule")
@@ -12,7 +13,8 @@ GameRule::GameRule(QObject *parent)
             << CardEffected << HpRecover << AskForPeachesDone
             << AskForPeaches << Death << Dying
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
-            << DamageDone << DamageComplete;
+            << DamageDone << DamageComplete
+            << StartJudge << FinishJudge;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -434,6 +436,44 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             break;
         }
+
+    case StartJudge:{
+            int card_id = room->drawCard();
+
+            JudgeStar judge = data.value<JudgeStar>();
+            judge->card = Sanguosha->getCard(card_id);
+            room->moveCardTo(judge->card, NULL, Player::Special);
+
+            LogMessage log;
+            log.type = "$InitialJudge";
+            log.from = player;
+            log.card_str = judge->card->toString();
+            room->sendLog(log);
+
+            room->sendJudgeResult(judge);
+
+            room->getThread()->delay();
+
+            break;
+        }
+
+    case FinishJudge:{
+            JudgeStar judge = data.value<JudgeStar>();
+            room->throwCard(judge->card);
+
+            LogMessage log;
+            log.type = "$JudgeResult";
+            log.from = player;
+            log.card_str = judge->card->toString();
+            room->sendLog(log);
+
+            room->sendJudgeResult(judge);
+
+            room->getThread()->delay();
+
+            break;
+        }
+
     default:
         ;
     }
