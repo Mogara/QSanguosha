@@ -1031,7 +1031,13 @@ function SmartAI:askForChoice(skill_name, choices)
 		return choice(self, choices)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		return skill:getDefaultChoice()
+		if skill then
+			return skill:getDefaultChoice(self.player)
+		else
+			local choices_table = choices:split("+")
+			local r = math.random(1, #choices_table)
+			return choices_table[r]
+		end
 	end		
 end
 
@@ -1179,4 +1185,4 @@ dofile "lua/ai/god-ai.lua"
 dofile "lua/ai/yitian-ai.lua"
 dofile "lua/ai/nostalgia-ai.lua"
 
-dofile "lua/ai/general_config.lua"
+-- dofile "lua/ai/general_config.lua"
