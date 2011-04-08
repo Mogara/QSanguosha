@@ -36,8 +36,46 @@ sgs.ai_compare_funcs = {
 		else
 			return c1 > c2
 		end
-	end
+	end,
+
+	defense = function(a,b)
+		local d1=a:getHp() * 2 + a:getHandcardNum()
+		if(d1>a:getHp()*3) then d1=a:getHp()*3 end
+		if a:getArmor() then d1=d1+2 end
+		local d2=b:getHp() * 2 + b:getHandcardNum()
+		if(d2>b:getHp()*3) then d2=b:getHp()*3 end
+		if b:getArmor() then d2=d2+2 end
+		
+		local c1 = sgs.ai_chaofeng[a:getGeneralName()]	or 0
+		local c2 = sgs.ai_chaofeng[b:getGeneralName()] or 0
+		
+		return d1<d2
+	end,
+
+	threat = function ( a, b)
+		local players=sgs.QList2Table(a:getRoom():getOtherPlayers(a))
+		local d1=a:getHandcardNum()
+		for _, player in ipairs(players) do
+			if a:canSlash(player,true) then
+				d1=d1+10/(getDefense(player))
+			end
+		end
+		players=sgs.QList2Table(b:getRoom():getOtherPlayers(b))
+		local d2=b:getHandcardNum()
+		for _, player in ipairs(players) do
+			if b:canSlash(player,true) then
+				d2=d2+10/(getDefense(player))
+			end
+		end
+		local c1 = sgs.ai_chaofeng[a:getGeneralName()]	or 0
+		local c2 = sgs.ai_chaofeng[b:getGeneralName()] or 0
+		 return d1+c1/2>d2+c2/2
+	end,
+
+		
 }
+
+
 
 -- this table stores the chaofeng value for some generals
 -- all other generals' chaofeng value should be 0
@@ -83,13 +121,43 @@ function CloneAI(player)
 	end
 end
 
+sgs.ai_round={}
+sgs.ai_knownSlash={}
+sgs.ai_knownJink={}
+sgs.ai_knownPeach={}
+sgs.ai_character_parameters={}
+
+function getCount(name)
+	if sgs.ai_round[name] then 
+                sgs.ai_round[name]=sgs.ai_round[name]+1
+	else 
+		sgs.ai_round[name]=1 
+	end
+        return sgs.ai_round[name]
+end
+
+--defense is defined as hp*2 + hand + (2)(if armor present)
+function getDefense(player)
+	local d=player:getHp() * 2 + player:getHandcardNum()
+	if(d>player:getHp()*3) then d=player:getHp()*3 end
+	if player:getArmor() then d=d+2 end
+	return d
+end
+
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
+
 -- the "initialize" function is just the "constructor"
 function SmartAI:initialize(player)
+
 	self.player = player
 	self.room = player:getRoom()
+	
+	
+	self.room.astring="yes"
+	
+	
 	self.lua_ai = sgs.LuaAI(player)
 	self.lua_ai.callback = function(method_name, ...)
 		local method = self[method_name]
@@ -105,13 +173,10 @@ end
 function SmartAI:updatePlayers()
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
-	self.friends = sgs.reverse(self.friends)
 
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
-	self.friends_noself = sgs.reverse(self.friends_noself)
 
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
-	self.enemies = sgs.reverse(self.enemies)
 
 	self.has_wizard = self:hasWizard(self.friends) and not self:hasWizard(self.enemies)
 end
@@ -126,7 +191,9 @@ end
 
 function SmartAI:sort(players, key)
 	key = key or "chaofeng" -- the default compare key is "chaofeng"
-	local func = sgs.ai_compare_funcs[key]
+
+	local func= sgs.ai_compare_funcs[key]
+
 	assert(func)
 
 	table.sort(players, func)
@@ -186,7 +253,7 @@ sgs.ai_skill_invoke = {
 		end
 		
 		return self:isEnemy(effect.to)
-	end
+	end,
 }
 
 function SmartAI:askForSkillInvoke(skill_name, data)
@@ -201,7 +268,8 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	end
 end
 
-function SmartAI:askForYiji(card_ids)
+function SmartAI:askForYiji(cards)
+
 	return nil, 0
 end
 
@@ -210,6 +278,7 @@ sgs.ai_skill_use = {}
 
 function SmartAI:askForUseCard(pattern, prompt)
 	local use_func = sgs.ai_skill_use[pattern]
+	if string.find(pattern,"@@liuli") then use_func = sgs.ai_skill_use["@@liuli"] end
 	if use_func then
 		return use_func(self, prompt) or "."
 	else
@@ -250,13 +319,16 @@ function SmartAI:slashIsAvailable()
 	end
 end
 
+
+	
+
 function SmartAI:useBasicCard(card, use)
 	if card:inherits("Slash") and self:slashIsAvailable() then
-		self:sort(self.enemies, "chaofeng")
+		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy, true) and
 				self:slashIsEffective(card, enemy) then
-
+				if (getDefense(self.player)<getDefense(enemy) and self.player:getHandcardNum()<(1+self.player:getHp())) then return end
 				-- fill the card use struct
 				use.card = card
 				use.to:append(enemy)
@@ -265,7 +337,20 @@ function SmartAI:useBasicCard(card, use)
 			end
 		end
 	elseif card:inherits("Peach") and self.player:isWounded() then
+		self:sort(self.friends, "defense")
+		if getDefense(self.player)>6 and getDefense(self.friends[1])<4 then return end
 		use.card = card
+	elseif card:inherits("Analeptic") and self:slashIsAvailable() and self:getSlashNumber(self.player)>0 and not self.player:hasFlag("drank")then
+		self:sort(self.enemies, "defense")		
+		for _, enemy in ipairs(self.enemies) do 
+			if self.player:canSlash(enemy, true) and
+				self:slashIsEffective(card, enemy) then
+				if (getDefense(self.player)-1)<getDefense(enemy) and self.player:getHandcardNum()<2+self.player:getHp()  then return end
+					if enemy:getArmor() then if enemy:getArmor():objectName()=="eight_diagram" or enemy:getArmor():objectName()=="silver_lion" then return end end
+					use.card = card
+					return 
+			end
+		end
 	end
 end
 
@@ -337,7 +422,7 @@ function SmartAI:exclude(players, card)
 end
 
 function SmartAI:useCardDismantlement(dismantlement, use)
-	if not self.has_wizard then
+	if (not self.has_wizard) and self:hasWizard(self.enemies) then
 		-- find lightning
 		local players = self.room:getOtherPlayers(self.player)
 		players = self:exclude(players, dismantlement)
@@ -350,7 +435,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		end
 	end
 
-	self:sort(self.friends_noself)
+	self:sort(self.friends_noself,"defense")
 	local friends = self:exclude(self.friends_noself, dismantlement)
 	for _, friend in ipairs(friends) do
 		if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
@@ -361,22 +446,21 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		end			
 	end		
 	
-	self:sort(self.enemies)
+	self:sort(self.enemies,"threat")
 	local enemies = self:exclude(self.enemies, dismantlement)
 	for _, enemy in ipairs(enemies) do
 		local equips = enemy:getEquips()
-		if not equips:isEmpty() then
-			use.card = dismantlement
-			use.to:append(enemy)
-
-			return
+		if  not enemy:isNude() then
+				use.card = dismantlement
+				use.to:append(enemy)
+				return 
 		end
 	end
 end
 
 -- very similar with SmartAI:useCardDismantlement
 function SmartAI:useCardSnatch(snatch, use)
-	if not self.has_wizard then
+	if not self.has_wizard and self:hasWizard(self.enemies)  then
 		-- find lightning
 		local players = self.room:getOtherPlayers(self.player)
 		players = self:exclude(players, snatch)
@@ -390,7 +474,7 @@ function SmartAI:useCardSnatch(snatch, use)
 		end
 	end
 
-	self:sort(self.friends_noself)
+	self:sort(self.friends_noself,"defense")
 	local friends = self:exclude(self.friends_noself, snatch)
 	for _, friend in ipairs(friends) do
 		if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then
@@ -401,14 +485,16 @@ function SmartAI:useCardSnatch(snatch, use)
 		end			
 	end		
 	
-	self:sort(self.enemies)
+	self:sort(self.enemies,"threat")
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do
-		if not enemy:isNude() then
-			use.card = snatch
-			use.to:append(enemy)
-
-			return
+		if  not enemy:isNude() then
+			
+				use.card = snatch
+				use.to:append(enemy)
+	
+				return
+			
 		end
 	end
 end
@@ -428,7 +514,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		end
 	end	
 
-	self:sort(self.enemies)
+	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
 		if not enemy:isKongcheng() then
 			local cards = enemy:getHandcards()
@@ -549,7 +635,7 @@ function SmartAI:getJinkNumber(player)
 end
 
 function SmartAI:useCardDuel(duel, use)
-	self:sort(self.enemies)
+	self:sort(self.enemies,"defense")
 	local enemies = self:exclude(self.enemies, duel)
 	for _, enemy in ipairs(enemies) do
 		local n1 = self:getSlashNumber(self.player)
@@ -607,7 +693,7 @@ function SmartAI:useCardIndulgence(card, use)
 end
 
 function SmartAI:useCardCollateral(card, use)
-	self:sort(self.enemies)
+	self:sort(self.enemies,"threat")
 
 	for _, enemy in ipairs(self.enemies) do
 		if not self.room:isProhibited(self.player, enemy, card)
@@ -628,14 +714,14 @@ end
 
 function SmartAI:useCardIronChain(card, use)
 	local targets = {}
-	self:sort(self.friends)
+	self:sort(self.friends,"defense")
 	for _, friend in ipairs(self.friends) do
 		if friend:isChained() then
 			table.insert(targets, friend)
 		end
 	end
 
-	self:sort(self.enemies)
+	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
 		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) 
 			and not enemy:hasSkill("danlao") then
@@ -668,15 +754,14 @@ end
 
 function SmartAI:useCardGodSalvation(card, use)
 	local good, bad = 0, 0
-	for _, friend in ipairs(self.friends) do
-		if friend:isWounded() then
-			good = good + 1
+	for _, friend in ipairs(self.friends) do if friend:isWounded() then
+		
+			good = good + 10/getDefense(friend)
 		end
 	end
 
-	for _, enemy in ipairs(self.enemies) do
-		if enemy:isWounded() then
-			bad = bad + 1
+	for _, enemy in ipairs(self.enemies) do if enemy:isWounded() then
+		bad = bad + 10/getDefense(enemy)
 		end
 	end
 
@@ -696,13 +781,14 @@ function SmartAI:useTrickCard(card, use)
 		local good, bad = 0, 0
 		for _, friend in ipairs(self.friends) do
 			if self:aoeIsEffective(card, friend) then
-				bad = bad + 1
+				bad = bad + 20/(getDefense(friend))
+				
 			end
 		end
 
 		for _, enemy in ipairs(self.enemies) do
 			if self:aoeIsEffective(card, enemy) then
-				good = good + 1
+				good = good + 20/(getDefense(enemy))
 			end
 		end
 
@@ -714,29 +800,99 @@ function SmartAI:useTrickCard(card, use)
 	end
 end
 
+
+sgs.weapon_range =
+{	
+	Crossbow = 1,
+	Blade = 3,
+	Spear = 3,
+	DoubleSword =2,
+	QinggangSword=2,
+	Axe=3,
+	KylinBow=5,
+	Halberd=4,
+	IceSword=2,
+	Fan=4,
+	GudingBlade=2,
+	
+}
+
+function SmartAI:evaluateEquip(card)
+
+		local deltaSelfThreat = 0
+		local currentRange 
+		if card==nil then return 0
+                else
+                currentRange = sgs.weapon_range[card:className()]
+		end
+		for _,enemy in ipairs(self.enemies) do
+			if self.player:distanceTo(enemy) <= currentRange then
+					deltaSelfThreat=deltaSelfThreat+6/getDefense(enemy)
+			end
+		end
+		
+		if card:inherits("Crossbow") and deltaSelfThreat~=0 then 
+			deltaSelfThreat = deltaSelfThreat + self:getSlashNumber(self.player)*2-2
+		elseif card:inherits("Blade") then 
+			deltaSelfThreat = deltaSelfThreat + self:getSlashNumber(self.player)
+		elseif card:inherits("Spear") and 
+			self.player:getHandcardNum()/2 - self:getSlashNumber(self.player)>0 then 
+				deltaSelfThreat = deltaSelfThreat + self.player:getHandcardNum()/2 - self:getSlashNumber(self.player)
+		else
+			for _,enemy in ipairs(self.enemies) do
+				if self.player:distanceTo(enemy) <= currentRange then
+					if card:inherits("DoubleSword") and 
+						enemy:getGeneral():isMale() ~= self.player:getGeneral():isMale() then
+							deltaSelfThreat=deltaSelfThreat+1
+					elseif card:inherits("QinggangSword") and enemy:getArmor() then
+						deltaSelfThreat=deltaSelfThreat+1
+					elseif card:inherits("Axe") and enemy:getHp()<3 then
+						deltaSelfThreat=deltaSelfThreat+3-enemy:getHp()
+					elseif card:inherits("KylinBow") and (enemy:getDefensiveHorse() or enemy:getDefensiveHorse())then
+						deltaSelfThreat=deltaSelfThreat+1
+						break
+					elseif card:inherits("GudingBlade") and enemy:getHandcardNum()<3 then
+						deltaSelfThreat=deltaSelfThreat+1
+					end
+				end
+			end
+		end
+		return deltaSelfThreat
+end
+
 function SmartAI:useEquipCard(card, use)
-	if self.lua_ai:useCard(card) then
+	
+	if card:inherits("Weapon") then
+		if self:evaluateEquip(card) > self:evaluateEquip(self.player:getWeapon()) then
+		use.card = card		
+		end
+	elseif self.lua_ai:useCard(card) then
 		use.card = card
 	end
 end
 
 function SmartAI:activate(use)
+
+        --self.room:output(getCount(self.player:objectName()))
+	
 	local cards = self.player:getHandcards()
-	for _, card in sgs.qlist(cards) do
-		local type = card:getTypeId()
+	cards=sgs.QList2Table(cards)
+	self:sortByUseValue(cards)
+	for _, card in ipairs(cards) do
+	
+			local type = card:getTypeId()
 
-		if type == sgs.Card_Basic then
-			self:useBasicCard(card, use)
-		elseif type == sgs.Card_Trick then
-			self:useTrickCard(card, use)
-		else
-			self:useEquipCard(card, use)
+			if type == sgs.Card_Basic then
+				self:useBasicCard(card, use)
+			elseif type == sgs.Card_Trick then
+				self:useTrickCard(card, use)
+			else
+				self:useEquipCard(card, use)
+			end
+			if use:isValid() then
+				return
+			end
 		end
-
-		if use:isValid() then
-			return
-		end
-	end
 end
 
 sgs.ai_keep_value = {
@@ -752,11 +908,60 @@ sgs.ai_keep_value = {
 	Slash = 2,
 	ThunderSlash = 2.5,
 	FireSlash = 2.6,
+
+
+	AmazingGrace=-1,
+	lightning=-1,
+	
+}
+
+sgs.ai_use_value = {
+--priority of using an active card
+
+	Peach = 5,
+
+	Dismantlement=4.5,
+	Snatch=4.3,
+	ExNihilo=4.1,
+
+	AmazingGrace=4.0,
+
+	ArcheryAttack=3.5,
+	SavageAssault=3.5,
+
+	Collateral=3,
+	Duel=2.9,
+	IronChain = 2.8,
+	
+	Analeptic = 2.7,
+
+	FireSlash = 2.6,
+	ThunderSlash = 2.5,
+	Slash = 2.4,
+
+	FireAttack=2,
+	
+	
+	
+	--god_salvation
+	--deluge
+	--supply_shortage
+	--earthquake
+	--indulgence
+	--mudslide
+	--lightning
+	--typhoon
 }
 
 function SmartAI:getKeepValue(card)
 	local class_name = card:className()
 	return sgs.ai_keep_value[class_name] or 0
+end
+
+function SmartAI:getUseValue(card)
+	local class_name = card:className()
+	if card:inherits("EquipCard") then return 6 end
+	return sgs.ai_use_value[class_name] or 0
 end
 
 function SmartAI:sortByKeepValue(cards)
@@ -768,6 +973,21 @@ function SmartAI:sortByKeepValue(cards)
 			return value1 < value2
 		else
 			return a:getNumber() < b:getNumber()
+		end
+	end
+
+	table.sort(cards, compare_func)
+end
+
+function SmartAI:sortByUseValue(cards)
+	local compare_func = function(a,b)
+		local value1 = self:getUseValue(a)
+		local value2 = self:getUseValue(b)
+
+		if value1 ~= value2 then
+			return value1 > value2
+		else
+			return a:getNumber() > b:getNumber()
 		end
 	end
 
@@ -811,13 +1031,7 @@ function SmartAI:askForChoice(skill_name, choices)
 		return choice(self, choices)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		if skill then
-			return skill:getDefaultChoice(self.player)
-		else
-			local choice_list = choices:split("+")
-			local r = math.random(1, #choice_list)
-			return choice_list[r]
-		end
+		return skill:getDefaultChoice()
 	end		
 end
 
@@ -829,6 +1043,7 @@ function SmartAI:getCardRandomly(who, flags)
 end
 
 function SmartAI:askForCardChosen(who, flags, reason)
+
 	if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
@@ -866,20 +1081,57 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			end
 		end
 	else
-		if flags:match("e") then
-			local equips = who:getEquips()
-			if not equips:isEmpty() then
-				return equips:at(0):getId()
+		if who:getHandcardNum()<3 and not who:isKongcheng() then return -1
+		
+		elseif flags:match("e") and who:getEquips() then
+		
+			if who:getDefensiveHorse() then
+				for _,friend in ipairs(self.friends) do
+					if friend:distanceTo(who)==friend:getAttackRange()+1 then 
+					 	return who:getDefensiveHorse():getId()
+					end
+				end
+			end
+			
+		
+			if who:getOffensiveHorse() then
+				for _,friend in ipairs(self.friends) do
+					if who:distanceTo(friend)==who:getAttackRange() and
+					 who:getAttackRange()>1 then 
+					 	return who:getOffensiveHorse():getId() 
+					end
+				end
+			end
+			
+			if who:getArmor() then 
+				if who:getArmor():objectName()~="silver_lion" then return who:getArmor():getId() end
+			end
+			
+			if who:getWeapon() then 
+				for _,friend in ipairs(self.friends) do
+					if who:distanceTo(friend)<who:getAttackRange() and who:distanceTo(friend)>1 then 
+					 	return who:getWeapon():getId()
+					end
+				end
 			end
 		elseif flags:match("h") and not who:isKongcheng() then
 			return -1
+		elseif flags:match("e") and who:getEquips() then
+			return who:getEquips():at(0):getId()
 		end
 	end
 
 	return self:getCardRandomly(who, flags)
 end
 
-function SmartAI:askForCard(pattern)
+function SmartAI:askForCard(pattern,prompt)
+        if prompt then
+            local description=string.sub(prompt,0,prompt:find(":")-1)
+            local source=string.sub(prompt,prompt:find(":")+1)
+            if description == "duel-slash" then return "." end
+        end
+        if pattern == "@guicai" then self.room:output(prompt) end
+        if pattern == "@guidao" then self.room:output(prompt) end
 	return nil
 end
 
@@ -926,3 +1178,5 @@ dofile "lua/ai/thicket-ai.lua"
 dofile "lua/ai/god-ai.lua"
 dofile "lua/ai/yitian-ai.lua"
 dofile "lua/ai/nostalgia-ai.lua"
+
+dofile "lua/ai/general_config.lua"
