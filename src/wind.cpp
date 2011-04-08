@@ -4,6 +4,7 @@
 #include "client.h"
 #include "carditem.h"
 #include "engine.h"
+#include "ai.h"
 
 // skill cards
 
@@ -102,12 +103,22 @@ public:
         events << AskForRetrial;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && !target->isNude();
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        const Card *card = room->askForCard(player, "@guidao", "@guidao-card", false);
+        JudgeStar judge = data.value<JudgeStar>();
+
+        const Card *card = NULL;
+        AI *ai = player->getAI();
+        if(ai)
+            card = ai->askForRetrial(judge->who, judge->card, judge->reason);
+        else
+            card = room->askForCard(player, "@guidao", "@guidao-card", false);
 
         if(card){
-            JudgeStar judge = data.value<JudgeStar>();
             player->obtainCard(judge->card);
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 

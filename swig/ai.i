@@ -293,6 +293,36 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
     }
 }
 
+const Card *LuaAI::askForRetrial(ServerPlayer *player, const Card *card, const QString &reason){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+	SWIG_NewPointerObj(L, &player, SWIGTYPE_p_ServerPlayer, 0);
+
+	SWIG_NewPointerObj(L, &card, SWIGTYPE_p_Card, 0);
+
+	lua_pushstring(L, reason.toAscii());
+
+	int error = lua_pcall(L, 4, 1, 0);
+	if(error){
+		const char *error_msg = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		room->output(error_msg);
+
+		return NULL;
+	}
+
+	QString card_str = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+	return Card::Parse(card_str);
+}
+
 /************************************************************************/
 /*  Lua's askForNullification is not not enabled yet!                   */
 /************************************************************************/

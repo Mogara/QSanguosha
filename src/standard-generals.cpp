@@ -8,6 +8,7 @@
 #include "room.h"
 #include "standard-skillcards.h"
 #include "standard-commons.h"
+#include "ai.h"
 
 class Jianxiong:public MasochismSkill{
 public:
@@ -252,12 +253,22 @@ public:
         events << AskForRetrial;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && !target->isKongcheng();
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        const Card *card = room->askForCard(player, "@guicai", "@guicai-card", false);
+        JudgeStar judge = data.value<JudgeStar>();
+
+        const Card *card = NULL;
+        AI *ai = player->getAI();
+        if(ai)
+            card = ai->askForRetrial(judge->who, judge->card, judge->reason);
+        else
+            card = room->askForCard(player, "@guicai", "@guicai-card", false);
 
         if(card){
-            JudgeStar judge = data.value<JudgeStar>();
             room->throwCard(judge->card);
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
