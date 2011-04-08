@@ -106,7 +106,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        CardStar card = data.value<CardStar>();
+        JudgeStar judge = data.value<JudgeStar>();
+        CardStar card = judge->card;
 
         if(card->isBlack()){
             Room *room = player->getRoom();
