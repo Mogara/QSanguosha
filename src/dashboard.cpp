@@ -336,7 +336,7 @@ QProgressBar *Dashboard::addProgressBar(){
 }
 
 void Dashboard::drawHp(QPainter *painter) const{
-    int hp = Self->getHp();
+    int hp = qMax(0, Self->getHp());
     int max_hp = Self->getMaxHP();
     QPixmap *magatama, *zero_magatama;
     int index = Self->isWounded() ? qMin(hp, 5) : 5;
