@@ -813,18 +813,17 @@ sgs.weapon_range =
 	Halberd=4,
 	IceSword=2,
 	Fan=4,
-	GudingBlade=2,
-	
+	GudingBlade=2,	
 }
 
 function SmartAI:evaluateEquip(card)
-
+		if card==nil then
+			return 0
+		end		
+		
 		local deltaSelfThreat = 0
-		local currentRange 
-		if card==nil then return 0
-                else
-                currentRange = sgs.weapon_range[card:className()]
-		end
+		local currentRange = sgs.weapon_range[card:className()] or 1	
+		
 		for _,enemy in ipairs(self.enemies) do
 			if self.player:distanceTo(enemy) <= currentRange then
 					deltaSelfThreat=deltaSelfThreat+6/getDefense(enemy)

@@ -2167,21 +2167,17 @@ void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
         item->setPos(to_take->pos());
         item->setEnabled(false);
 
-        QPixmap avatar_pixmap;
         if(taker){
             putCardItem(taker, Player::Hand, item);
-            avatar_pixmap.load(taker->getGeneral()->getPixmapPath("tiny"));
+            QPixmap avatar_pixmap(taker->getGeneral()->getPixmapPath("tiny"));
+            QGraphicsPixmapItem *taker_avatar = addPixmap(avatar_pixmap);
+            taker_avatar->setPos(to_take->homePos() + TinyAvatarOffset);
+            taker_avatar->setZValue(1.1);
+
+            taker_avatars << taker_avatar;
         }else{
             putCardItem(NULL, Player::DiscardedPile, item);
-            avatar_pixmap.load("image/system/card-back.png");
-            avatar_pixmap = avatar_pixmap.scaled(avatar_pixmap.size() / 2);
         }
-
-        QGraphicsPixmapItem *taker_avatar = addPixmap(avatar_pixmap);
-        taker_avatar->setPos(to_take->homePos() + TinyAvatarOffset);
-        taker_avatar->setZValue(1.1);
-
-        taker_avatars << taker_avatar;
     }
 }
 
