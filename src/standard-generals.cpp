@@ -123,9 +123,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *guojia, QVariant &data) const{
-        CardStar card = data.value<CardStar>();
+        JudgeStar judge = data.value<JudgeStar>();
+        CardStar card = judge->card;
+
+        QVariant data_card = QVariant::fromValue(card);
         Room *room = guojia->getRoom();
-        if(guojia->askForSkillInvoke(objectName(), data)){
+        if(guojia->askForSkillInvoke(objectName(), data_card)){
             if(card->objectName() == "shit"){
                 QString result = room->askForChoice(guojia, objectName(), "yes+no");
                 if(result == "no")
@@ -254,10 +257,11 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        const Card *card = room->askForCard(player, "@guicai", "@guicai-card", false);
+        JudgeStar judge = data.value<JudgeStar>();
+        const Card *card = room->askForCard(player, "@guicai", "@guicai-card:"+judge->reason+"->"+judge->who->objectName(), false);
 
         if(card){
-            JudgeStar judge = data.value<JudgeStar>();
+           
             room->throwCard(judge->card);
             judge->card = Sanguosha->getCard(card->getEffectiveId());
 
