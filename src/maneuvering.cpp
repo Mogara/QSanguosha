@@ -71,8 +71,14 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
         recover.card = this;
         recover.who = effect.from;
         room->recover(effect.to, recover);
-    }else
+    }else{
+        LogMessage log;
+        log.type = "#Drank";
+        log.from = effect.from;
+        room->sendLog(log);
+
         room->setPlayerFlag(effect.to, "drank");
+    }
 }
 
 class FanSkill: public WeaponSkill{
