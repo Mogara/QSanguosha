@@ -229,10 +229,13 @@ function ganning_ai:activate(use)
 end
 
 local huanggai_ai = SmartAI:newSubclass "huanggai"
-huanggai_ai:setOnceSkill "kurou"
 
 function huanggai_ai:activate(use)
-    --if self.player:getHp()>2 then return "KurouCard=."end
+    if self.player:getHp() >= 3 then
+		use.card = sgs.Card_Parse("@KurouCard=.")
+		return
+	end
+	
     super.activate(self, use)
 end
 
