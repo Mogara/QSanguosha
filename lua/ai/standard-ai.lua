@@ -1,7 +1,7 @@
 
 -- jianxiong
 sgs.ai_skill_invoke.jianxiong = function(self, data)
-	return not sgs.Shit_HasShit(data:toCard())
+        return not sgs.Shit_HasShit(data:toCard())
 end
 
 -- hujia
@@ -58,6 +58,8 @@ local zhenji_ai = SmartAI:newSubclass "zhenji"
 
 function zhenji_ai:askForCard(pattern)
 	if pattern == "jink" then
+		local card = super.askForCard(self, pattern)
+		if card then return card end
 		local cards = self.player:getHandcards()		
 		for _, card in sgs.qlist(cards) do			
 			if card:isBlack() then
@@ -175,6 +177,7 @@ function sunshangxiang_ai:activate(use)
 
 	if not self.jieyin_used and target and self.player:getHandcardNum()>=2 then
 		local cards = self.player:getHandcards()
+		
 		local first = cards:at(0):getEffectiveId()
 		local second = cards:at(1):getEffectiveId()
 
@@ -194,6 +197,11 @@ local ganning_ai = SmartAI:newSubclass "ganning"
 
 function ganning_ai:activate(use)
 	local cards = self.player:getCards("he")	
+	if self.player:getHandcardNum()<3 then 
+		super.activate(self, use)	
+		return
+	end
+	
 	local black_card
 	for _, card in sgs.qlist(cards) do
 		if card:isBlack() then
@@ -220,7 +228,45 @@ function ganning_ai:activate(use)
 	super.activate(self, use)	
 end
 
+local huanggai_ai = SmartAI:newSubclass "huanggai"
+huanggai_ai:setOnceSkill "kurou"
+
+function huanggai_ai:activate(use)
+    --if self.player:getHp()>2 then return "KurouCard=."end
+    super.activate(self, use)
+end
+
 local daqiao_ai = SmartAI:newSubclass "daqiao"
+
+sgs.ai_skill_use["@@liuli"] = function(self, prompt)
+	
+	local others=self.room:getOtherPlayers(self.player)
+	others=sgs.QList2Table(others)
+	local source
+	for _, enemy in ipairs(others) do 
+		if enemy:objectName()==prompt then 
+			 source=enemy
+			 break
+		end
+	end
+	
+	
+
+	for _, enemy in ipairs(self.enemies) do
+
+		if self.player:canSlash(enemy,true) and not (prompt==("@liuli-card:"..enemy:getGeneralName())) then
+
+			local cards=self.player:getHandcards()
+			
+                        if not cards then
+				eq=self.player:getEquips():at(0)
+			end
+			
+			return "@LiuliCard="..cards:at(0):getEffectiveId().."->"..enemy:objectName()
+		end
+	end
+	return "."
+end
 
 function daqiao_ai:activate(use)
 	super.activate(self, use)
@@ -318,3 +364,92 @@ function diaochan_ai:activate(use)
 	super.activate(self, use)
 end
 
+local liubei_ai=SmartAI:newSubclass "liubei"
+liubei_ai:setOnceSkill("rende")
+
+function liubei_ai:activate(use)
+	
+	
+        if ((self.player:getHandcardNum()+2>self.player:getHp()) or self.player:isWounded()) and not self.rendesecond_used then
+		if self.player:getHandcardNum()==0 then return end
+		self:sort(self.friends_noself,"defense")
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:getHandcardNum()<2 or friend:getHandcardNum()<friend:getHp() or self.player:isWounded() then
+				--local card_id = self:getCardRandomly(self.player, "h")
+				
+				local card_id = self:getCardRandomly(self.player, "h")
+				use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+				use.to:append(friend)
+                                if self.rende_used then self.rendesecond_used=true end
+			 	self.rende_used=true
+				return
+			end
+		end
+	end
+	super.activate(self, use)
+end
+
+local sunquan_ai = SmartAI:newSubclass "sunquan"
+sunquan_ai:setOnceSkill("zhiheng")
+
+function sunquan_ai:activate(use)
+	if not self.zhiheng_used then 
+		
+		local unpreferedCards={}
+		local cards=sgs.QList2Table(self.player:getHandcards())
+		
+		if self:getSlashNumber(self.player)>1 then 
+			self:sortByKeepValue(cards)
+			for _,card in ipairs(cards) do
+				if card:inherits("Slash") then table.insert(unpreferedCards,card:getEffectiveId()) end
+			end
+			table.remove(unpreferedCards,1)
+		end
+		
+		local num=self:getJinkNumber(self.player)-2
+		if self.player:getArmor() then num=num+1 end
+		if num>0 then
+			for _,card in ipairs(cards) do
+				if card:inherits("Jink") and num>0 then 
+					table.insert(unpreferedCards,card:getEffectiveId())
+					num=num-1
+				end
+			end
+		end
+                for _,card in ipairs(cards) do
+                    if card:inherits("EquipCard") then
+                        if (card:inherits("Weapon") and self.player:getWeapon()) or
+                        (card:inherits("DefensiveHorse") and self.player:getDefensiveHorse()) or
+                        (card:inherits("OffensiveHorse") and self.player:getOffensiveHorse()) or
+                        (card:inherits("Armor") and self.player:getArmor()) then
+                        table.insert(unpreferedCards,card:getEffectiveId())
+                        end
+                    end
+                end
+	
+		if #unpreferedCards>0 then 
+			use.card = sgs.Card_Parse("@ZhihengCard="..table.concat(unpreferedCards,"+")) 
+			self.zhiheng_used=true
+			return 
+		end
+	end
+		super.activate(self,use)
+end
+
+sgs.ai_skill_invoke["luoyi"]=function(self,data)
+    local cards=self.player:getHandcards()
+    cards=sgs.QList2Table(cards)
+
+    for _,card in ipairs(cards) do
+        if card:inherits("Slash") then
+
+            for _,enemy in ipairs(self.enemies) do
+                if self.player:canSlash(enemy, true) and
+                self:slashIsEffective(card, enemy) then
+                return true
+                end
+            end
+        end
+    end
+    return false
+end
