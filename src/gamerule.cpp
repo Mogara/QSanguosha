@@ -101,6 +101,10 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             break;
         }
     case Player::Finish: {
+            break;
+        }
+
+    case Player::NotActive:{
             if(player->hasFlag("drank")){
                 LogMessage log;
                 log.type = "#UnsetDrankEndOfTurn";
@@ -111,10 +115,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
-            break;
-        }
 
-    case Player::NotActive:{
             return;
         }
     }
@@ -145,6 +146,11 @@ void GameRule::setGameProcess(Room *room) const{
 
 bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
+
+    if(room->getTag("SkipGameRule").toBool()){
+        room->removeTag("SkipGameRule");
+        return false;
+    }
 
     switch(event){
     case GameStart: {

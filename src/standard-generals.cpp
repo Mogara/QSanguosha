@@ -136,8 +136,10 @@ public:
                     return false;
             }
 
-            guojia->obtainCard(card);
+            guojia->obtainCard(judge->card);
             room->playSkillEffect(objectName());
+
+            room->setTag("SkipGameRule", true);
         }
 
         return false;

@@ -1942,6 +1942,10 @@ QVariant Room::getTag(const QString &key) const{
     return tag.value(key);
 }
 
+void Room::removeTag(const QString &key){
+    tag.remove(key);
+}
+
 void Room::setEmotion(ServerPlayer *target, TargetType type){
     QString emotion;
     switch(type){
@@ -2426,7 +2430,6 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
             card_str << QString::number(card_id);
 
         guojia->invoke("askForYiji", card_str.join("+"));
-
         getResult("replyYijiCommand", guojia);
 
         if(result.isEmpty() || result == ".")
@@ -2436,12 +2439,11 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
             rx.exactMatch(result);
 
             QStringList texts = rx.capturedTexts();
-            QStringList ids = texts.at(1).split("+");
+            QList<int> ids = Card::StringsToIds(texts.at(1).split("+"));
             ServerPlayer *who = findChild<ServerPlayer *>(texts.at(2));
 
             DummyCard *dummy_card = new DummyCard;
-            foreach(QString id, ids){
-                int card_id = id.toInt();
+            foreach(int card_id, ids){
                 cards.removeOne(card_id);
                 dummy_card->addSubcard(card_id);
             }

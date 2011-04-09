@@ -100,6 +100,7 @@ public:
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
+    void removeTag(const QString &key);
 
     enum TargetType{
         Killer,
