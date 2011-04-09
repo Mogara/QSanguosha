@@ -75,7 +75,7 @@ public:
 
         JudgeStruct judge;
         judge.pattern = QRegExp("(Peach|GodSalvation):(.*):(.*)");
-        judge.good = false;
+        judge.good = true;
         judge.reason = "wuhun";
         judge.who = foe;
 

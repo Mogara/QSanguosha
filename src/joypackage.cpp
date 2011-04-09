@@ -55,7 +55,7 @@ Deluge::Deluge(Card::Suit suit, int number)
 {
     setObjectName("deluge");
 
-    judge.pattern = QRegExp("():():(AK)");
+    judge.pattern = QRegExp("(.*):(.*):([AK])");
     judge.good = false;
     judge.reason = objectName();
 }
@@ -104,7 +104,7 @@ Typhoon::Typhoon(Card::Suit suit, int number)
 {
     setObjectName("typhoon");
 
-    judge.pattern = QRegExp("(.*)(diamond)([2-9])");
+    judge.pattern = QRegExp("(.*):(diamond):([2-9])");
     judge.good = false;
     judge.reason = objectName();
 }
@@ -199,7 +199,7 @@ MudSlide::MudSlide(Card::Suit suit, int number)
 {
     setObjectName("mudslide");
 
-    judge.pattern = QRegExp("(.*):(spade|club):(AK47)");
+    judge.pattern = QRegExp("(.*):(spade|club):([AK47])");
     judge.good = false;
     judge.reason = objectName();
 }

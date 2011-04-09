@@ -848,7 +848,7 @@ void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *>
 Lightning::Lightning(Suit suit, int number):Disaster(suit, number){
     setObjectName("lightning");
 
-    judge.pattern = QRegExp("(.*)(spade)([2-9])");
+    judge.pattern = QRegExp("(.*):(spade):([2-9])");
     judge.good = false;
     judge.reason = objectName();
 }
