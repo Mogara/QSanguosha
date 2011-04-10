@@ -382,10 +382,8 @@ void Photo::drawMagatama(QPainter *painter, int index, const QPixmap &pixmap){
     }
 }
 
-
-
 void Photo::drawHp(QPainter *painter){
-    int hp = player->getHp();
+    int hp = qMax(0, player->getHp());
 
     int index = 5;
     if(player->isWounded())

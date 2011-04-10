@@ -344,10 +344,6 @@ ServerPlayer *TrustAI::askForYiji(const QList<int> &, int &){
     return NULL;
 }
 
-const Card *TrustAI::askForRetrial(ServerPlayer *, const Card *, const QString &){
-    return NULL;
-}
-
 LuaAI::LuaAI(ServerPlayer *player)
     :TrustAI(player), callback(0)
 {

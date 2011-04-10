@@ -559,22 +559,30 @@ QString Client::getSkillLine() const{
     return skill_line;
 }
 
+QString Client::getPlayerName(const QString &str){
+    QRegExp rx("sgs\\d+");
+    QString general_name;
+    if(rx.exactMatch(str)){
+        ClientPlayer *player = getPlayer(str);
+        general_name = player->getGeneralName();
+    }else
+        general_name = str;
+
+    return Sanguosha->translate(general_name);
+}
+
 void Client::setPromptList(const QStringList &texts){
     QString prompt = Sanguosha->translate(texts.at(0));
-    if(texts.length() >= 2){
-        QString src = Sanguosha->translate(texts.at(1));
-        prompt.replace("%src", src);
-    }
+    if(texts.length() >= 2)
+        prompt.replace("%src", getPlayerName(texts.at(1)));
 
-    if(texts.length() >= 3){
-        QString dest = Sanguosha->translate(texts.at(2));
-        prompt.replace("%dest", dest);
-    }
+    if(texts.length() >= 3)
+        prompt.replace("%dest", getPlayerName(texts.at(2)));
 
     if(texts.length() >= 4){
         QString arg = Sanguosha->translate(texts.at(3));
         prompt.replace("%arg", arg);
-    }
+    }   
 
     prompt_doc->setHtml(prompt);
 }

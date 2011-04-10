@@ -111,17 +111,18 @@ public:
         Room *room = player->getRoom();
         JudgeStar judge = data.value<JudgeStar>();
 
-        const Card *card = NULL;
-        AI *ai = player->getAI();
-        if(ai)
-            card = ai->askForRetrial(judge->who, judge->card, judge->reason);
-        else
-            card = room->askForCard(player, "@guidao", "@guidao-card", false);
+        QStringList prompt_list;
+        prompt_list << "@guidao-card" << judge->who->objectName()
+                << "" << judge->reason << judge->card->getEffectIdString();
+        QString prompt = prompt_list.join(":");
+
+        const Card *card = room->askForCard(player, "@guidao", prompt);
 
         if(card){
+            // the only difference for Guicai & Guidao
             player->obtainCard(judge->card);
-            judge->card = Sanguosha->getCard(card->getEffectiveId());
 
+            judge->card = Sanguosha->getCard(card->getEffectiveId());
             room->moveCardTo(judge->card, NULL, Player::Special);
 
             LogMessage log;

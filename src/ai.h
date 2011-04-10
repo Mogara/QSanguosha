@@ -43,7 +43,6 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
-    virtual const Card *askForRetrial(ServerPlayer *player, const Card *card, const QString &reason) = 0;
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
@@ -74,7 +73,6 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
-    virtual const Card *askForRetrial(ServerPlayer *player, const Card *card, const QString &reason);
 
     virtual bool useCard(const Card *card);
 };
@@ -95,7 +93,6 @@ public:
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
     virtual const Card *askForCard(const QString &pattern, const QString &prompt);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
-    virtual const Card *askForRetrial(ServerPlayer *player, const Card *card, const QString &reason);
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 

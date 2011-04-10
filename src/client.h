@@ -181,6 +181,7 @@ private:
 
     void updatePileNum();
     void setPromptList(const QStringList &text);
+    QString getPlayerName(const QString &str);
 
 private slots:
     void processCommand(const QString &cmd);
