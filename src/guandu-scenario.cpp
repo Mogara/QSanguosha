@@ -71,7 +71,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->hasUsed("ZhanShuangxiongCard");
+        return !Self->isKongcheng() && !Self->hasUsed("ZhanShuangxiongCard");
     }
 
     virtual const Card *viewAs() const{

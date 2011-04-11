@@ -2493,6 +2493,8 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
 static irrklang::ISound *BackgroundMusic;
 
 void RoomScene::onGameStart(){
+    log_box->append(tr("------- Game Start --------"));
+
     // add free discard button
     if(ServerInfo.FreeChoose){
         QPushButton *free_discard = new QPushButton(tr("Free discard"));

@@ -169,6 +169,11 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
+    void addHistory(const Card *card);
+    void clearHistory();
+    bool hasUsed(const QString &card_class);
+    int usedTimes(const QString &card_class);
+
     QVariantMap tag;
 
 protected:
@@ -199,6 +204,8 @@ private:
     QStack<const Card *> judging_area;
     QStack<const DelayedTrick *> delayed_tricks;
     QHash<const Player *, int> fixed_distance;
+
+    QHash<QString, int> history;
 
 signals:
     void general_changed();

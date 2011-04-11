@@ -301,7 +301,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("JuejiCard");
+        return ! Self->hasUsed("JuejiCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -706,7 +706,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@tied") == 0 && ! ClientInstance->hasUsed("QiaocaiCard");
+        return Self->getMark("@tied") == 0 && ! Self->hasUsed("QiaocaiCard");
     }
 
     virtual const Card *viewAs() const{
@@ -890,7 +890,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("GuihanCard");
+        return ! Self->hasUsed("GuihanCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1211,7 +1211,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        if(ClientInstance->hasUsed("LexueCard") && Self->hasFlag("lexue")){
+        if(Self->hasUsed("LexueCard") && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
             return card->isAvailable();
@@ -1226,7 +1226,7 @@ public:
         if(!Self->hasFlag("lexue"))
             return false;
 
-        if(ClientInstance->hasUsed("LexueCard")){
+        if(Self->hasUsed("LexueCard")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
             return ClientInstance->card_pattern.contains(card->objectName());
@@ -1235,7 +1235,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(ClientInstance->hasUsed("LexueCard") && selected.isEmpty() && Self->hasFlag("lexue")){
+        if(Self->hasUsed("LexueCard") && selected.isEmpty() && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
             return to_select->getFilteredCard()->getSuit() == card->getSuit();
@@ -1244,7 +1244,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(ClientInstance->hasUsed("LexueCard")){
+        if(Self->hasUsed("LexueCard")){
             if(!Self->hasFlag("lexue"))
                 return false;
 

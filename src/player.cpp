@@ -600,3 +600,19 @@ int Player::getCardCount(bool include_equip) const{
 QList<int> &Player::getPile(const QString &pile_name){
     return piles[pile_name];
 }
+
+void Player::addHistory(const Card *card){
+    ++ history[card->metaObject()->className()];
+}
+
+void Player::clearHistory(){
+    history.clear();
+}
+
+bool Player::hasUsed(const QString &card_class){
+    return history.value(card_class, 0) > 0;
+}
+
+int Player::usedTimes(const QString &card_class){
+    return history.value(card_class, 0);
+}

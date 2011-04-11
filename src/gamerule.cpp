@@ -56,9 +56,10 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             while(player->isAlive()){
                 CardUseStruct card_use;
                 room->activate(player, card_use);
-                if(card_use.isValid())
+                if(card_use.isValid()){
+                    player->addHistory(card_use.card);
                     room->useCard(card_use);
-                else
+                }else
                     break;
             }
             break;
@@ -115,6 +116,7 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
+            player->clearHistory();
 
             return;
         }

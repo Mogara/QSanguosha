@@ -336,7 +336,7 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
             request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
         if(status == Playing){
-            ++ used[card->metaObject()->className()];
+            Self->addHistory(card);
 
             if(card->inherits("Slash"))
                 increaseSlashCount();
@@ -1237,12 +1237,12 @@ void Client::clearTurnTag(){
     switch(Self->getPhase()){
     case Player::Start:{
             Sanguosha->playAudio("your-turn");
-            used.clear();
-            slash_count = 0;
             break;
     }
 
-    case Player::Finish:{
+    case Player::NotActive:{
+            slash_count = 0;
+            Self->clearHistory();
             Self->clearFlags();
             break;
         }
@@ -1468,14 +1468,6 @@ void Client::animate(const QString &animate_str){
     QString name = args.takeFirst();
 
     emit animated(name, args);
-}
-
-bool Client::hasUsed(const QString &card_class) const{
-    return used.contains(card_class);
-}
-
-int Client::usedTimes(const QString &card_class) const{
-    return used.value(card_class, 0);
 }
 
 void Client::setScreenName(const QString &set_str){

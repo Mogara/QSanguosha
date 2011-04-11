@@ -46,7 +46,7 @@ QString Analeptic::getEffectPath(bool is_male) const{
 }
 
 bool Analeptic::IsAvailable(){
-    return ! ClientInstance->hasUsed("Analeptic");
+    return ! Self->hasUsed("Analeptic");
 }
 
 bool Analeptic::isAvailable() const{

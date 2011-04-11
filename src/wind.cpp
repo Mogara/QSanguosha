@@ -146,7 +146,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->hasUsed("HuangtianCard") && Self->getKingdom() == "qun";
+        return !Self->hasUsed("HuangtianCard") && Self->getKingdom() == "qun";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

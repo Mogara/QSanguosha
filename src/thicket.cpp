@@ -585,7 +585,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("DimengCard");
+        return ! Self->hasUsed("DimengCard");
     }
 };
 

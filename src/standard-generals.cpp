@@ -730,7 +730,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("ZhihengCard");
+        return ! Self->hasUsed("ZhihengCard");
     }
 };
 
@@ -815,7 +815,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && ! ClientInstance->hasUsed("FanjianCard");
+        return !Self->isKongcheng() && ! Self->hasUsed("FanjianCard");
     }
 
     virtual const Card *viewAs() const{
@@ -1012,7 +1012,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("JieyinCard");
+        return ! Self->hasUsed("JieyinCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1088,7 +1088,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("LijianCard");
+        return ! Self->hasUsed("LijianCard");
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -1129,7 +1129,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("QingnangCard");
+        return ! Self->hasUsed("QingnangCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1178,7 +1178,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ClientInstance->usedTimes("ZhihengCard") < (Self->getLostHp() + 1);
+        return Self->usedTimes("ZhihengCard") < (Self->getLostHp() + 1);
     }
 };
 

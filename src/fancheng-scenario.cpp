@@ -206,7 +206,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("TaichenCard");
+        return ! Self->hasUsed("TaichenCard");
     }
 
     virtual const Card *viewAs() const{

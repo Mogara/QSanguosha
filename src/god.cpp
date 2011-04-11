@@ -162,7 +162,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !ClientInstance->hasUsed("GongxinCard");
+        return !Self->hasUsed("GongxinCard");
     }
 };
 
@@ -443,7 +443,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 6 && !ClientInstance->hasUsed("ShenfenCard");
+        return Self->getMark("@wrath") >= 6 && !Self->hasUsed("ShenfenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -509,7 +509,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 2 && !ClientInstance->hasUsed("WuqianCard");
+        return Self->getMark("@wrath") >= 2 && !Self->hasUsed("WuqianCard");
     }
 
     virtual const Card *viewAs() const{

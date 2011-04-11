@@ -226,7 +226,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("JujianCard");
+        return ! Self->hasUsed("JujianCard");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
@@ -319,7 +319,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("XuanhuoCard");
+        return ! Self->hasUsed("XuanhuoCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -468,21 +468,21 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("XianzhenCard") || Self->hasFlag("xianzhen_success");
+        return ! Self->hasUsed("XianzhenCard") || Self->hasFlag("xianzhen_success");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         if(!selected.isEmpty())
             return false;
 
-        if(ClientInstance->hasUsed("XianzhenCard"))
+        if(Self->hasUsed("XianzhenCard"))
             return false;
 
         return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(! ClientInstance->hasUsed("XianzhenCard")){
+        if(! Self->hasUsed("XianzhenCard")){
             if(cards.length() != 1)
                 return NULL;
 
@@ -586,7 +586,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("MingceCard");
+        return ! Self->hasUsed("MingceCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -711,7 +711,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("GanluCard");
+        return ! Self->hasUsed("GanluCard");
     }
 
     virtual const Card *viewAs() const{
@@ -786,7 +786,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("XinzhanCard") && Self->getHandcardNum() >= Self->getMaxHP();
+        return ! Self->hasUsed("XinzhanCard") && Self->getHandcardNum() >= Self->getMaxHP();
     }
 
     virtual const Card *viewAs() const{
