@@ -303,9 +303,7 @@ void ServerPlayer::kick(){
     }
 }
 
-bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
-    QString ask_str = QString("%1->%2").arg(getGeneralName()).arg(target->getGeneralName());
-
+bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Card *card1){
     LogMessage log;
     log.type = "#Pindian";
     log.from = this;
@@ -313,13 +311,14 @@ bool ServerPlayer::pindian(ServerPlayer *target, const Card *card1){
     room->sendLog(log);
 
     if(card1 == NULL)
-        card1 = room->askForPindian(this, ask_str);
+        card1 = room->askForPindian(this, this, target, reason);
     else if(card1->isVirtualCard()){
-        Q_ASSERT(card1->subcardsLength() >= 1);
-        card1 = Sanguosha->getCard(card1->getSubcards().first());
+        int card_id = card1->getEffectiveId();
+        delete card1;
+        card1 = Sanguosha->getCard(card_id);
     }
 
-    const Card *card2 = room->askForPindian(target, ask_str);
+    const Card *card2 = room->askForPindian(target, this, target, reason);
 
     room->throwCard(card1);
     log.type = "$PindianResult";

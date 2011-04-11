@@ -32,7 +32,7 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
 
     room->playSkillEffect("quhu", 1);
 
-    bool success = xunyu->pindian(tiger, this);
+    bool success = xunyu->pindian(tiger, "quhu", this);
     if(success){
         room->playSkillEffect("quhu", 2);
 
@@ -469,7 +469,7 @@ bool TianyiCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
 }
 
 void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlayer *> &targets) const{
-    bool success = taishici->pindian(targets.first(), this);
+    bool success = taishici->pindian(targets.first(), "tianyi", this);
     if(success){
         room->setPlayerFlag(taishici, "tianyi_success");
     }else{

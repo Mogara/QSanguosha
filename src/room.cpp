@@ -2242,27 +2242,35 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
     }
 }
 
-const Card *Room::askForPindian(ServerPlayer *player, const QString &ask_str){
+const Card *Room::askForPindian(ServerPlayer *player,
+                                ServerPlayer *from,
+                                ServerPlayer *to,
+                                const QString &reason)
+{
     if(player->getHandcardNum() == 1){
         return player->getHandcards().first();
     }
 
     AI *ai = player->getAI();
     if(ai)
-        return ai->askForPindian();
+        return ai->askForPindian(from, reason);
+
+    QString ask_str = QString("%1->%2")
+                       .arg(from->objectName())
+                       .arg(to->objectName());
 
     player->invoke("askForPindian", ask_str);
     getResult("responseCardCommand", player);
 
     if(result.isEmpty())
-        return askForPindian(player, ask_str);
+        return askForPindian(player, from, to, reason);
     else if(result == "."){
         int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }else{
         const Card *card = Card::Parse(result);
         if(card->isVirtualCard()){
-            const Card *real_card = Sanguosha->getCard(card->getSubcards().first());
+            const Card *real_card = Sanguosha->getCard(card->getEffectiveId());
             delete card;
             return real_card;
         }else

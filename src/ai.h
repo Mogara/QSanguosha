@@ -39,7 +39,7 @@ public:
     virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
-    virtual const Card *askForPindian() = 0;
+    virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason) = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
@@ -69,7 +69,7 @@ public:
     virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
     virtual int askForAG(const QList<int> &card_ids, bool refsuable);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
-    virtual const Card *askForPindian() ;
+    virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);

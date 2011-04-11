@@ -194,7 +194,7 @@ public:
     DummyCard *wholeHandCards() const;
     bool isLord() const;
     bool hasNullification() const;
-    bool pindian(ServerPlayer *target, const Card *card1 = NULL);
+    bool pindian(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
 	void turnOver();
 	void play();
 
@@ -666,12 +666,18 @@ public:
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
-    const Card *askForPindian(ServerPlayer *player, const char *ask_str);    
+    const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = QString());
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
+};
+
+class QRegExp{
+public:
+	QRegExp(const char *);
+	bool exactMatch(const char *);
 };
 
 %include "luaskills.i"

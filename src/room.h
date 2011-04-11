@@ -146,7 +146,7 @@ public:
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
-    const Card *askForPindian(ServerPlayer *player, const QString &ask_str);    
+    const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
     QString askForGeneral(ServerPlayer *player, const QStringList &generals);
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);

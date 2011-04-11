@@ -1326,10 +1326,12 @@ void Client::askForPindian(const QString &ask_str){
     QStringList words = ask_str.split("->");
     QString from = words.at(0);
 
-    if(from == Self->getGeneralName())
+    if(from == objectName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
-    else
-        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(Sanguosha->translate(from)));
+    else{
+        QString requestor = getPlayerName(from);
+        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requestor));
+    }
 
     use_card = false;
     card_pattern = ".";    

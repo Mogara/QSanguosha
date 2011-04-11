@@ -278,15 +278,18 @@ const Card *TrustAI::askForCardShow(ServerPlayer *) {
     return self->getRandomHandCard();
 }
 
-const Card *TrustAI::askForPindian() {
-    QList<const Card *> cards = self->getHandcards();
-    const Card *highest = cards.first();
-    foreach(const Card *card, cards){
-        if(card->getNumber() > highest->getNumber())
-            highest = card;
-    }
+static bool CompareByNumber(const Card *c1, const Card *c2){
+    return c1->getNumber() < c2->getNumber();
+}
 
-    return highest;
+const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &){
+    QList<const Card *> cards = self->getHandcards();
+    qSort(cards.begin(), cards.end(), CompareByNumber);
+
+    if(requestor != self && isFriend(requestor))
+        return cards.first();
+    else
+        return cards.last();
 }
 
 ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason){

@@ -42,7 +42,7 @@ public:
     bool isLord() const;
     bool hasNullification() const;
     void kick();
-    bool pindian(ServerPlayer *target, const Card *card1 = NULL);
+    bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
     void turnOver();
     void play();
 

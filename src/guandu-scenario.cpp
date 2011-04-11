@@ -20,7 +20,7 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     damage.from = source;
     damage.to = shuangxiong;
 
-    bool success = source->pindian(shuangxiong);
+    bool success = source->pindian(shuangxiong, "zhanshuangxiong");
     if(!success)
         qSwap(damage.from, damage.to);
 

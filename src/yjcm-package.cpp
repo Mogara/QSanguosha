@@ -425,7 +425,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
     const Card *card = Sanguosha->getCard(subcards.first());
-    if(effect.from->pindian(effect.to, card)){
+    if(effect.from->pindian(effect.to, "xianzhen", card)){
         PlayerStar target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "xianzhen_success");

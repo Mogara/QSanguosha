@@ -209,7 +209,7 @@ public:
         events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zhurong, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.card && damage.card->inherits("Slash") && damage.to->isAlive()
@@ -218,8 +218,7 @@ public:
             if(room->askForSkillInvoke(zhurong, objectName())){
                 room->playSkillEffect(objectName(), 1);
 
-                //bool success = room->pindian(zhurong, damage.to);
-                bool success = zhurong->pindian(damage.to);
+                bool success = zhurong->pindian(damage.to, "lieren", NULL);
                 if(success)
                     room->playSkillEffect(objectName(), 2);
                 else{
