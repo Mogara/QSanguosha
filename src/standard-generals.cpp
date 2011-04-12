@@ -443,7 +443,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("jijiang");
+        return Self->hasLordSkill("jijiang") && Slash::IsAvailable();
     }
 
     virtual const Card *viewAs() const{
