@@ -60,6 +60,7 @@ Room::Room(QObject *parent, const QString &mode)
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
+    callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
@@ -1158,6 +1159,13 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
     speakCommand(robot, greeting);
 
     broadcastProperty(robot, "state");
+}
+
+void Room::fillRobotsCommand(ServerPlayer *player, const QString &){
+    int left = player_count - signup_count, i;
+    for(i=0; i<left; i++){
+        addRobotCommand(player, QString());
+    }
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){

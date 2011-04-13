@@ -156,6 +156,7 @@ public slots:
     void trust();
     void requestCard(int card_id);
     void addRobot();
+    void fillRobots();
 
 private:
     ClientSocket *socket;

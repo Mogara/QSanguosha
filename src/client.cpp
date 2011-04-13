@@ -322,6 +322,10 @@ void Client::addRobot(){
     request("addRobot .");
 }
 
+void Client::fillRobots(){
+    request("fillRobots .");
+}
+
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
     if(card == NULL){
         request("useCard .");

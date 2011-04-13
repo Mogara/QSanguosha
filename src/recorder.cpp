@@ -75,9 +75,6 @@ void Replayer::run(){
             }
         }
 
-        if(cmd.startsWith("startInXs"))
-            continue;
-
         if(delayed)
             msleep(delay);
         emit command_parsed(cmd);

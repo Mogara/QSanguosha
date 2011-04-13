@@ -68,7 +68,7 @@ private:
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu;   
     Window *prompt_box;
-    Button *add_robot;
+    QGraphicsItem *control_panel;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
     QDockWidget *skill_dock;
     QComboBox *sort_combobox;

@@ -1834,8 +1834,8 @@ void RoomScene::doDiscardButton(){
 }
 
 void RoomScene::hideAvatars(){
-    if(add_robot)
-        add_robot->hide();
+    if(control_panel)
+        control_panel->hide();
 
     foreach(Photo *photo, photos)
         photo->hideAvatar();
@@ -2464,20 +2464,30 @@ void RoomScene::createStateItem(){
     text_item->setDefaultTextColor(Qt::white);
 
     if(ServerInfo.EnableAI){
-        add_robot = new Button(tr("Add robot"));
-        add_robot->setPos(state_item->x() + 10, state_item->y() + state_item->boundingRect().height() + 10);
-        addItem(add_robot);
-        add_robot->hide();
+        QRectF state_rect = state_item->boundingRect();
+        control_panel = addRect(0, 0, state_rect.width(), 150, Qt::NoPen);
+        control_panel->setX(state_item->x());
+        control_panel->setY(state_item->y() + state_rect.height() + 10);
+        control_panel->hide();
+
+        Button *add_robot = new Button(tr("Add a robot"));
+        add_robot->setParentItem(control_panel);
+        add_robot->setPos(15, 5);
+
+        Button *fill_robots = new Button(tr("Fill robots"));
+        fill_robots->setParentItem(control_panel);
+        fill_robots->setPos(15, 55);
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
+        connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
     }else
-        add_robot = NULL;
+        control_panel = NULL;
 }
 
 void RoomScene::showOwnerButtons(bool owner){
-    if(add_robot && !trust_button->isEnabled())
-        add_robot->setVisible(owner);
+    if(control_panel && !trust_button->isEnabled())
+        control_panel->setVisible(owner);
 }
 
 void RoomScene::showJudgeResult(const QString &who, const QString &result){
