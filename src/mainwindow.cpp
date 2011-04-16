@@ -228,8 +228,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
-    RoomScene *room_scene = new RoomScene(player_count, this);
+    RoomScene *room_scene = new RoomScene(this);
 
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);

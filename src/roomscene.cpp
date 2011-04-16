@@ -40,10 +40,11 @@ static const QPointF DiscardedPos(-6, -2);
 static const QPointF DrawPilePos(-102, -2);
 static const QPointF TinyAvatarOffset(44, 87);
 
-RoomScene::RoomScene(int player_count, QMainWindow *main_window)
+RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
     main_window(main_window)
 {
+    int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
     ClientInstance->setParent(this);
 
     // create photos
@@ -2476,7 +2477,7 @@ void RoomScene::createStateItem(){
 
         Button *fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
-        fill_robots->setPos(15, 55);
+        fill_robots->setPos(15, 60);
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));

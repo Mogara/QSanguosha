@@ -24,7 +24,7 @@ class RoomScene : public QGraphicsScene{
     Q_OBJECT
 
 public:
-    RoomScene(int player_count, QMainWindow *main_window);
+    RoomScene(QMainWindow *main_window);
     void changeTextEditBackground();
     void adjustItems();
 
