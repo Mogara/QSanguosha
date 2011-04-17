@@ -291,8 +291,21 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
     };
 
+    static int indices_table_3v3[][5] = {
+        {0, 3, 4, 5, 8}, // lord
+        {0, 1, 4, 5, 6}, // loyalist (right), same with rebel (right)
+        {2, 3, 4, 7, 8}, // rebel (left), same with loyalist (left)
+        {0, 3, 4, 5, 8}, // renegade, same with lord
+        {0, 1, 4, 5, 6}, // rebel (right)
+        {2, 3, 4, 7, 8}, // loyalist (left)
+    };
+
     QList<QPointF> positions;
-    int *indices = indices_table[photos.length() - 1];
+    int *indices;
+    if(ServerInfo.GameMode == "06_3v3" && !Self->getRole().isEmpty())
+        indices = indices_table_3v3[Self->getSeat() - 1];
+    else
+        indices = indices_table[photos.length() - 1];
 
     int i;
     for(i=0; i<photos.length(); i++){
@@ -2301,7 +2314,8 @@ void RoomScene::doGuanxing(const QList<int> &card_ids, bool up_only){
     this->up_only = up_only;
     up_items.clear();
     foreach(int card_id, card_ids){
-        GuanxingCardItem *card_item = new GuanxingCardItem(Sanguosha->getCard(card_id));
+        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setAutoBack(false);
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
         connect(card_item, SIGNAL(released()), this, SLOT(adjustGuanxing()));
 
@@ -2332,7 +2346,7 @@ void RoomScene::doGuanxing(const QList<int> &card_ids, bool up_only){
 }
 
 void RoomScene::adjustGuanxing(){
-    GuanxingCardItem *item = qobject_cast<GuanxingCardItem*>(sender());
+    CardItem *item = qobject_cast<CardItem*>(sender());
 
     if(item == NULL)
         return;
@@ -2344,7 +2358,7 @@ void RoomScene::adjustGuanxing(){
     static qreal card_width = rect.width();
     static qreal card_height = rect.height();
 
-    QList<GuanxingCardItem *> *items = NULL;
+    QList<CardItem *> *items = NULL;
     if(up_only)
         items = &up_items;
     else{
@@ -2878,7 +2892,11 @@ void RoomScene::selectGeneral(){
 
     if(item){
         ClientInstance->request("takeGeneral " + item->objectName());
-        item->disconnect(this);
+
+        foreach(CardItem *item, general_items){
+            item->setFlag(QGraphicsItem::ItemIsFocusable, false);
+            item->disconnect(this);
+        }
     }
 }
 
@@ -2887,7 +2905,22 @@ void RoomScene::startArrange(){
 
     foreach(CardItem *item, down_generals){
         item->setFlag(QGraphicsItem::ItemIsFocusable);
-        connect(item, SIGNAL(double_clicked()), this, SLOT(toggleArrange()));
+        item->setAutoBack(false);
+        connect(item, SIGNAL(released()), this, SLOT(toggleArrange()));
+    }
+
+    QList<QPointF> positions;
+    positions << QPointF(233, 291)
+            << QPointF(361, 291)
+            << QPointF(489, 291);
+
+    QRect rect(0, 0, 80, 120);
+
+    foreach(QPointF pos, positions){
+        QGraphicsRectItem *rect_item = new QGraphicsRectItem(rect, selector_box);
+        rect_item->setPos(pos);
+        rect_item->setPen(Qt::NoPen);
+        arrange_rects << rect_item;
     }
 }
 
@@ -2895,6 +2928,30 @@ void RoomScene::toggleArrange(){
     CardItem *item = qobject_cast<CardItem *>(sender());
 
     if(item){
-        // adjust arrange
+        QGraphicsItem *arrange_rect = NULL;
+        int index = -1, i;
+        for(i=0; i<3; i++){
+            QGraphicsItem *rect = arrange_rects.at(i);
+            if(item->collidesWithItem(rect)){
+                arrange_rect = rect;
+                index = i;
+            }
+        }
+
+        arrange_items.removeOne(item);
+        if(arrange_rect){
+            arrange_items.insert(index, item);
+        }else{
+            item->goBack();
+        }
+
+        int n = qMin(arrange_items.length(), 3);
+        for(i=0; i<n; i++)
+            arrange_items.at(i)->setPos(arrange_rects.at(i)->pos());
+
+        while(arrange_items.length() > 3){
+            CardItem *last = arrange_items.takeLast();
+            last->goBack();
+        }
     }
 }

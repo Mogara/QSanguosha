@@ -12,7 +12,7 @@
 #include <QPropertyAnimation>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true)
 {
     Q_ASSERT(card != NULL);
 
@@ -30,7 +30,7 @@ CardItem::CardItem(const Card *card)
 
 CardItem::CardItem(const QString &general_name)
     :Pixmap(Sanguosha->getGeneral(general_name)->getPixmapPath("card"), false),
-    card(NULL), filtered_card(NULL)
+    card(NULL), filtered_card(NULL), auto_back(true)
 {
 }
 
@@ -109,6 +109,10 @@ void CardItem::hideFrame(){
     frame->hide();
 }
 
+void CardItem::setAutoBack(bool auto_back){
+    this->auto_back = auto_back;
+}
+
 static inline bool IsMultilayer(){
     return Self && Self->getHandcardNum() > Config.MaxCards;
 }
@@ -151,22 +155,26 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
     return NULL;
 }
 
-void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
+void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){
     if(hasFocus())
         emit clicked();
     else
         emit toggle_discards();
 }
 
-void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(parentItem()){
-        if(y() < -80)
-            emit thrown();
-    }else{
-        emit grabbed();
-    }
+void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
+    if(auto_back){
+        if(parentItem()){
+            if(y() < -80)
+                emit thrown();
+        }else{
+            emit grabbed();
+        }
 
-    goBack();
+        goBack();
+    }else{
+        emit released();
+    }
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -199,12 +207,4 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     }
 }
 
-GuanxingCardItem::GuanxingCardItem(const Card *card)
-    :CardItem(card)
-{
-}
-
-void GuanxingCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    emit released();
-}
 

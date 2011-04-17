@@ -27,6 +27,7 @@ public:
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);
     void hideFrame();
+    void setAutoBack(bool auto_back);
 
     void select();
     void unselect();
@@ -49,6 +50,7 @@ private:
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame;
+    bool auto_back;
 
 signals:
     void toggle_discards();
@@ -56,18 +58,6 @@ signals:
     void double_clicked();
     void thrown();
     void grabbed();
-};
-
-class GuanxingCardItem : public CardItem {
-    Q_OBJECT
-
-public:
-    GuanxingCardItem(const Card *card);
-
-protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
     void released();
 };
 

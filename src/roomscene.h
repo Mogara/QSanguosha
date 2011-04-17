@@ -91,7 +91,7 @@ private:
 
     QList<const ClientPlayer *> selected_targets;
 
-    QList<GuanxingCardItem *> up_items, down_items;
+    QList<CardItem *> up_items, down_items;
     QPointF guanxing_origin;
     bool up_only;
 
@@ -106,6 +106,8 @@ private:
     // for 3v3 mode use only
     Pixmap *selector_box;
     QList<CardItem *> general_items, up_generals, down_generals;
+    QList<QGraphicsRectItem *> arrange_rects;
+    QList<CardItem *> arrange_items;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);

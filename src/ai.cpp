@@ -30,6 +30,14 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if(self == other)
         return Friend;
 
+    if(Config.GameMode == "06_3v3"){
+        QChar c = self->getRole().at(0);
+        if(other->getRole().startsWith(c))
+            return Friend;
+        else
+            return Enemy;
+    }
+
     RoleMapping map, map_good, map_bad;
     if(map.isEmpty()){
         map.set("lord", "lord", Friend);
