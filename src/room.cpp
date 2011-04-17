@@ -7,6 +7,8 @@
 #include "gamerule.h"
 #include "bossmode.h"
 #include "contestdb.h"
+#include "banpairdialog.h"
+#include "roomthread3v3.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -37,7 +39,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    L(NULL), thread(NULL), sem(NULL), provided(NULL)
+    L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -64,6 +66,9 @@ Room::Room(QObject *parent, const QString &mode)
     callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
+
+    callbacks["arrangeCommand"] = &Room::arrangeCommand;
+    callbacks["takeGeneralCommand"] = &Room::takeGeneralCommand;
 
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
@@ -215,116 +220,6 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
 
     thread->trigger(Death, victim, killer_name);
 }
-
-/*
-
-QString Room::judge(ServerPlayer *player, JudgeCallback callback, CardStar *card_ptr){
-    QString result;
-    const Card *card = getJudgeCard(player, callback, result);
-    if(card_ptr)
-        *card_ptr = card;
-
-    return result;
-}
-
-void Room::judgeResult(ServerPlayer *wizard, JudgeCallback callback, int step){
-    ServerPlayer *player = tag["CurrentJudge"].value<PlayerStar>();
-
-    LogMessage log;
-    switch(step){
-    case 0: {
-            log.type = "$InitialJudge";
-            log.from = player;
-            break;
-        }
-    case 1: {
-            log.type = "$ChangedJudge";
-            log.from = wizard;
-            log.to << player;
-            break;
-        }
-    case 2: {
-            log.type = "$JudgeResult";
-            log.from = player;
-            break;
-        }
-    }
-
-    const Card *card = Sanguosha->getCard(special_card);
-    log.card_str = card->toString();
-    sendLog(log);
-
-    if(callback){
-        QString who = player->objectName();
-        QString result = callback(card, this);
-        broadcastInvoke("judgeResult", QString("%1:%2").arg(who).arg(result));
-    }
-}
-
-const Card *Room::getJudgeCard(ServerPlayer *player, JudgeCallback callback, QString &result){
-    tag["CurrentJudge"] = QVariant::fromValue(player);
-
-    // start judge
-    int card_id = drawCard();
-    CardStar card = Sanguosha->getCard(card_id);
-    QVariant data = QVariant::fromValue(card);
-    thread->trigger(StartJudge, player, data);
-    judgeResult(NULL, callback, 0);
-
-    QList<ServerPlayer *> all_players = getAllPlayers();
-    foreach(ServerPlayer *p, all_players){
-        if(p->hasSkill("guicai")){
-            ServerPlayer *simayi = p;
-            if(simayi->isKongcheng())
-                continue;
-
-            bool used = askForUseCard(simayi, "@guicai", "@guicai-card");
-            if(used)
-                judgeResult(simayi, callback, 1);
-        }
-
-        if(p->hasSkill("guidao")){
-            ServerPlayer *zhangjiao = p;
-            if(zhangjiao->isNude())
-                continue;
-
-            bool used = askForUseCard(zhangjiao, "@guidao", "@guidao-card");
-            if(used)
-                judgeResult(zhangjiao, callback, 1);
-        }
-    }
-
-    card_id = special_card;
-    judgeResult(NULL, callback, 2);
-
-    // judge delay
-    thread->delay();
-    throwSpecialCard();    
-
-    // hongyan special case
-    CardStar card = Sanguosha->getCard(card_id);
-    if(player->hasSkill("hongyan") && card->getSuit() == Card::Spade){
-        LogMessage log;
-        log.type = "#HongyanJudge";
-        log.from = player;
-
-        Card *new_card = Card::Clone(card);
-        new_card->setSuit(Card::Heart);
-        new_card->setSkillName("hongyan");
-        card = new_card;
-
-        sendLog(log);
-    }
-
-    QVariant card_data = QVariant::fromValue(card);
-    thread->trigger(FinishJudge, player, card_data);
-
-    if(callback)
-        result = callback(card, this);
-
-    return card;
-}
-*/
 
 void Room::judge(JudgeStruct &judge_struct){
     Q_ASSERT(judge_struct.who != NULL);
@@ -957,7 +852,12 @@ void Room::timerEvent(QTimerEvent *event){
 
         if(scenario)
             startGame();
-        else{
+        else if(mode == "06_3v3"){
+            thread_3v3 = new RoomThread3v3(this);
+            thread_3v3->start();
+
+            connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
+        }else{
             QStringList lord_list = Sanguosha->getRandomLords();
             QString default_lord = lord_list[qrand() % lord_list.length()];
             ServerPlayer *the_lord = getLord();
@@ -993,8 +893,22 @@ void Room::prepareForStart(){
             else
                 player->sendProperty("role");
         }
-    }else
+    }else if(mode == "06_3v3"){
+        qShuffle(players);
+        static QStringList roles;
+        if(roles.isEmpty()){
+            roles << "lord" << "loyalist" << "rebel"
+                    << "renegade" << "rebel" << "loyalist";
+        }
+
+        int i;
+        for(i=0; i<6; i++){
+            players.at(i)->setRole(roles.at(i));
+            broadcastProperty(players.at(i), "role");
+        }
+    }else{
         assignRoles();
+    }
 
     adjustSeats();
 }
@@ -1375,8 +1289,6 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     }
 }
 
-#include "banpairdialog.h"
-
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getGeneral()){
         // the player has chosen player, should ignore it
@@ -1617,15 +1529,14 @@ void Room::sendDamageLog(const DamageStruct &data){
     sendLog(log);
 }
 
-#include <QDateTime>
-
 void Room::startGame(){    
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
 
     int i;
     if(scenario == NULL){
-        for(i=1; i<players.count(); i++)
+        int start_index = (mode == "06_3v3") ? 0 : 1;
+        for(i = start_index; i < players.count(); i++)
             broadcastProperty(players.at(i), "general");
     }
 
@@ -1650,6 +1561,9 @@ void Room::startGame(){
         broadcastProperty(player, "maxhp");
         broadcastProperty(player, "hp");
 
+        if(mode == "06_3v3")
+            broadcastProperty(player, "role");
+
         // setup AI
         AI *ai = cloneAI(player);
         ais << ai;
@@ -1668,7 +1582,6 @@ void Room::startGame(){
 
     broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
 
-    sem = new QSemaphore;
     thread = new RoomThread(this);
 
     GameRule *game_rule;
@@ -1963,7 +1876,6 @@ void Room::setEmotion(ServerPlayer *target, TargetType type){
     case DuelB: emotion = "duel-b"; break;
     case Good: emotion = "good"; break;
     case Bad: emotion = "bad"; break;
-    case Normal: emotion = "normal"; break;
     case Recover: emotion = "recover"; break;
     case DrawCard: emotion = "draw-card"; break;
     }
@@ -2333,6 +2245,7 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
     if(Config.ContestMode)
         return;
 
+    // only the lord can kick others
     if(player != getLord())
         return;
 
@@ -2478,4 +2391,16 @@ QString Room::generatePlayerName(){
     static int id = 0;
     id ++;
     return QString("sgs%1").arg(id);
+}
+
+void Room::arrangeCommand(ServerPlayer *player, const QString &arg){
+    Q_ASSERT(thread_3v3);
+
+    thread_3v3->arrange(player, arg.split("+"));
+}
+
+void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
+    Q_ASSERT(thread_3v3);
+
+    thread_3v3->takeGeneral(player, arg);
 }

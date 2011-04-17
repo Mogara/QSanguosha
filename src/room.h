@@ -4,6 +4,8 @@
 class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
+class RoomThread3v3;
+
 struct lua_State;
 
 #include "serverplayer.h"
@@ -26,6 +28,8 @@ class Room : public QObject{
 
 public:
     friend class RoomThread;
+    friend class RoomThread3v3;
+
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
     explicit Room(QObject *parent, const QString &mode);    
@@ -109,7 +113,6 @@ public:
         DuelB,
         Good,
         Bad,
-        Normal,
         Recover,
         DrawCard,
     };
@@ -148,7 +151,7 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
-    QString askForGeneral(ServerPlayer *player, const QStringList &generals);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals);    
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
 
     void speakCommand(ServerPlayer *player, const QString &arg);
@@ -162,7 +165,7 @@ public:
     void chooseCommand(ServerPlayer *player, const QString &general_name);
     void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
-    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
+    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);   
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -186,6 +189,7 @@ private:
     QList<AI *> ais;
 
     RoomThread *thread;
+    RoomThread3v3 *thread_3v3;
     QSemaphore *sem;
     QString result;
     QString reply_func;
@@ -207,12 +211,14 @@ private:
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
+    void arrangeCommand(ServerPlayer *player, const QString &arg);
+    void takeGeneralCommand(ServerPlayer *player, const QString &arg);
 
 private slots:
     void reportDisconnection();
     void processRequest(const QString &request);
     void assignRoles();
-    void startGame();
+    void startGame();    
 
 signals:
     void room_message(const QString &);

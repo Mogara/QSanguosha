@@ -150,13 +150,14 @@ bool LijianCard::targetsFeasible(const QList<const ClientPlayer *> &targets) con
     return targets.length() == 2;
 }
 
-void LijianCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
     ServerPlayer *to = targets.at(0);
     ServerPlayer *from = targets.at(1);
 
     Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->setSkillName("lijian");
     duel->setCancelable(false);
 
     CardEffectStruct effect;

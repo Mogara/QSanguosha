@@ -70,7 +70,8 @@ SOURCES += src/main.cpp \
     src/contestdb.cpp \
     src/hongyan-scenario.cpp \
     src/sp-package.cpp \
-    src/yjcm-package.cpp
+    src/yjcm-package.cpp \
+    src/roomthread3v3.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -138,7 +139,8 @@ HEADERS += src/mainwindow.h \
     src/contestdb.h \
     src/hongyan-scenario.h \
     src/sp-package.h \
-    src/yjcm-package.h
+    src/yjcm-package.h \
+    src/roomthread3v3.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

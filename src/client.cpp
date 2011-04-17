@@ -67,7 +67,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
     callbacks["drawCards"] = &Client::drawCards;
-    callbacks["drawNCards"] = &Client::drawNCards;
+    callbacks["drawNCards"] = &Client::drawNCards;   
 
     // interactive methods
     callbacks["activate"] = &Client::activate;
@@ -96,6 +96,12 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForAG"] = &Client::askForAG;
     callbacks["takeAG"] = &Client::takeAG;
     callbacks["clearAG"] = &Client::clearAG;
+
+    // 3v3 mode use only
+    callbacks["fillGenerals"] = &Client::fillGenerals;
+    callbacks["askForGeneral3v3"] = &Client::askForGeneral3v3;
+    callbacks["takeGeneral"] = &Client::takeGeneral;
+    callbacks["startArrange"] = &Client::startArrange;
 
     ask_dialog = NULL;
     use_card = false;
@@ -324,6 +330,12 @@ void Client::addRobot(){
 
 void Client::fillRobots(){
     request("fillRobots .");
+}
+
+void Client::arrange(const QStringList &order){
+    Q_ASSERT(order.length() == 3);
+
+    request(QString("arrange %1").arg(order.join("+")));
 }
 
 void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
@@ -1510,4 +1522,24 @@ void Client::pile(const QString &pile_str){
 
     if(player)
         player->changePile(name, add, card_id);
+}
+
+void Client::fillGenerals(const QString &generals){
+    emit generals_filled(generals.split("+"));
+}
+
+void Client::askForGeneral3v3(const QString &){
+    emit general_asked();
+}
+
+void Client::takeGeneral(const QString &take_str){
+    QStringList texts = take_str.split(":");
+    QString who = texts.at(0);
+    QString name = texts.at(1);
+
+    emit general_taken(who, name);
+}
+
+void Client::startArrange(const QString &){
+    emit arrange_started();
 }

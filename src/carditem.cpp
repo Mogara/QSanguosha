@@ -28,6 +28,13 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 }
 
+CardItem::CardItem(const QString &general_name)
+    :Pixmap(), card(NULL), filtered_card(NULL)
+{
+    const General *general = Sanguosha->getGeneral(general_name);
+    changePixmap(general->getPixmapPath("card"));
+}
+
 const Card *CardItem::getCard() const{
     return card;
 }
@@ -180,16 +187,17 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
-    static QFont card_number_font("Times", 20, QFont::Bold);
+    if(card){
+        static QFont card_number_font("Times", 20, QFont::Bold);
+        painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
 
-    painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
-
-    painter->setFont(card_number_font);
-    if(card->isRed())
-        painter->setPen(Qt::red);
-    else
-        painter->setPen(Qt::black);
-    painter->drawText(8, 50, card->getNumberString());
+        painter->setFont(card_number_font);
+        if(card->isRed())
+            painter->setPen(Qt::red);
+        else
+            painter->setPen(Qt::black);
+        painter->drawText(8, 50, card->getNumberString());
+    }
 }
 
 GuanxingCardItem::GuanxingCardItem(const Card *card)

@@ -163,6 +163,14 @@ void ServerPlayer::saveRecord(const QString &filename){
         recorder->save(filename);
 }
 
+void ServerPlayer::addToSelected(const QString &general){
+    selected.append(general);
+}
+
+QStringList ServerPlayer::getSelected() const{
+    return selected;
+}
+
 void ServerPlayer::castMessage(const QString &message){
     if(socket){
         socket->send(message);

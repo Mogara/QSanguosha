@@ -134,6 +134,12 @@ public:
     void askForPlayerChosen(const QString &ask_str);
     void askForGeneral(const QString &generals);
 
+    // 3v3 methods
+    void fillGenerals(const QString &generals);
+    void askForGeneral3v3(const QString &);
+    void takeGeneral(const QString &take_str);
+    void startArrange(const QString &);
+
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
 
@@ -157,6 +163,7 @@ public slots:
     void requestCard(int card_id);
     void addRobot();
     void fillRobots();
+    void arrange(const QStringList &order);
 
 private:
     ClientSocket *socket;
@@ -230,6 +237,11 @@ signals:
     void ag_filled(const QList<int> &card_ids);
     void ag_taken(const ClientPlayer *taker, int card_id);
     void ag_cleared();
+
+    void generals_filled(const QStringList &general_names);
+    void general_taken(const QString &who, const QString &name);
+    void general_asked();
+    void arrange_started();
 };
 
 extern Client *ClientInstance;

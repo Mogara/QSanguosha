@@ -14,6 +14,7 @@ class CardItem : public Pixmap
 
 public:
     CardItem(const Card *card);
+    CardItem(const QString &general_name);
 
     void filter(const FilterSkill *filter_skill);
     const Card *getFilteredCard() const;

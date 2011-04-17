@@ -103,6 +103,10 @@ private:
 
     QSharedMemory *memory;
 
+    // for 3v3 mode use only
+    Pixmap *selector_box;
+    QList<CardItem *> general_items, up_generals, down_generals;
+
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
     void useCard(const Card *card);
@@ -189,6 +193,13 @@ private slots:
     void doGongxin(const QList<int> &card_ids, bool enable_heart);
     void chooseGongxinCard();
     void clearGongxinCards();
+
+    // 3v3 mode use only
+    void fillGenerals(const QStringList &names);
+    void takeGeneral(const QString &who, const QString &name);
+    void startGeneralSelection();
+    void selectGeneral();
+    void startArrange();
 
 signals:
     void restart();

@@ -152,6 +152,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
+    // 3v3 mode use only
+    {
+        connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
+        connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
+        connect(ClientInstance, SIGNAL(general_taken(QString,QString)), this, SLOT(takeGeneral(QString,QString)));
+        connect(ClientInstance, SIGNAL(arrange_started()), this, SLOT(startArrange()));
+    }
+
     int widen_width = 0;
     if(player_count != 6 && player_count <= 8)
         widen_width = 148;
@@ -2504,6 +2512,14 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
 static irrklang::ISound *BackgroundMusic;
 
 void RoomScene::onGameStart(){
+    if(ServerInfo.GameMode == "06_3v3"){
+        selector_box->deleteLater();
+        selector_box = NULL;
+
+        chat_box->show();
+        log_box->show();
+    }
+
     log_box->append(tr("------- Game Start --------"));
 
     // add free discard button
@@ -2779,3 +2795,94 @@ void RoomScene::surrender(){
     }
 }
 
+void RoomScene::fillGenerals(const QStringList &names){
+    chat_box->hide();
+    log_box->hide();
+
+    QString temperature;
+    if(Self->getRole().startsWith("l"))
+        temperature = "warm";
+    else
+        temperature = "cool";
+
+    QString path = QString("image/system/3v3/select-%1.png").arg(temperature);
+    selector_box = new Pixmap(path, true);
+    addItem(selector_box);
+    selector_box->shift();
+
+    const static int start_x = 62;
+    const static int width = 148-62;
+    const static int row_y[4] = {85, 206, 329, 451};
+
+    int i, n=names.length();
+    for(i=0; i<n; i++){
+
+        int row, column;
+        if(i < 8){
+            row = 1;
+            column = i;
+        }else{
+            row = 2;
+            column = i - 8;
+        }
+
+        CardItem *general_item = new CardItem(names.at(i));
+        general_item->setScale(0.4);
+        general_item->setParentItem(selector_box);
+        general_item->setPos(start_x + width * column, row_y[row]);
+        general_item->setHomePos(general_item->pos());
+        general_item->setObjectName(names.at(i));
+
+        general_items << general_item;
+    }
+}
+
+void RoomScene::takeGeneral(const QString &who, const QString &name){
+    bool self_taken;
+    if(who == "warm")
+        self_taken = Self->getRole().startsWith("l");
+    else
+        self_taken = Self->getRole().startsWith("r");
+    QList<CardItem *> *to_add = self_taken ? &down_generals : &up_generals;
+
+    CardItem *general_item = NULL;
+    foreach(CardItem *item, general_items){
+        if(item->objectName() == name){
+            general_item = item;
+            break;
+        }
+    }
+
+    Q_ASSERT(general_item);
+
+    general_item->disconnect(this);
+    general_items.removeOne(general_item);
+    to_add->append(general_item);
+
+    int x = 62 + (to_add->length() - 1) * (148-62);
+    int y = self_taken ? 451 : 85;
+
+    general_item->setHomePos(QPointF(x, y));
+    general_item->goBack();
+}
+
+void RoomScene::startGeneralSelection(){
+    foreach(CardItem *item, general_items){
+        item->setFlag(QGraphicsItem::ItemIsFocusable);
+        connect(item, SIGNAL(double_clicked()), this, SLOT(selectGeneral()));
+    }
+}
+
+void RoomScene::selectGeneral(){
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    if(item){
+        ClientInstance->request("takeGeneral " + item->objectName());
+    }
+}
+
+void RoomScene::startArrange(){
+    selector_box->changePixmap("image/system/3v3/arrange.png");
+
+
+}

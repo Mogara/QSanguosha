@@ -43,7 +43,6 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
-
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
 protected:

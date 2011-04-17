@@ -631,7 +631,6 @@ public:
         DuelB,
         Good,
         Bad,
-        Normal,
         Recover,
         DrawCard,
     };
