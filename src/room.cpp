@@ -1572,6 +1572,13 @@ void Room::sendDamageLog(const DamageStruct &data){
     sendLog(log);
 }
 
+bool Room::hasWelfare(ServerPlayer *player) const{
+    if(mode == "06_3v3")
+        return player->isLord() || player->getRole() == "renegade";
+    else
+        return player->isLord() && player_count > 4;
+}
+
 void Room::startGame(){    
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
@@ -1590,15 +1597,12 @@ void Room::startGame(){
 
     alive_players = players;
 
-    // set hp full state
-    int lord_welfare = player_count > 4 ? 1 : 0;
-    ServerPlayer *the_lord = players.first();
-    the_lord->setMaxHP(the_lord->getGeneralMaxHP() + lord_welfare);
-
-    for(i=1; i<player_count; i++)
-        players[i]->setMaxHP(players[i]->getGeneralMaxHP());
-
     foreach(ServerPlayer *player, players){
+        if(hasWelfare(player))
+            player->setMaxHP(player->getGeneralMaxHP() + 1);
+        else
+            player->setMaxHP(player->getGeneralMaxHP());
+
         player->setHp(player->getMaxHP());
 
         broadcastProperty(player, "maxhp");
@@ -1616,7 +1620,7 @@ void Room::startGame(){
     broadcastInvoke("startGame");
     game_started = true;
 
-    current = the_lord;
+    current = players.first();
 
     // initialize the place_map and owner_map;
     foreach(int card_id, *draw_pile){

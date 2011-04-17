@@ -215,6 +215,7 @@ private:
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
+    bool hasWelfare(ServerPlayer *player) const;
 
 private slots:
     void reportDisconnection();
