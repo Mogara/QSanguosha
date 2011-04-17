@@ -2922,36 +2922,66 @@ void RoomScene::startArrange(){
         rect_item->setPen(Qt::NoPen);
         arrange_rects << rect_item;
     }
+
+    arrange_button = new Button(tr("Complete"), 0.8);
+    arrange_button->setParentItem(selector_box);
+    arrange_button->setPos(600, 330);
+    connect(arrange_button, SIGNAL(clicked()), this, SLOT(finishArrange()));
 }
 
 void RoomScene::toggleArrange(){
     CardItem *item = qobject_cast<CardItem *>(sender());
 
-    if(item){
-        QGraphicsItem *arrange_rect = NULL;
-        int index = -1, i;
-        for(i=0; i<3; i++){
-            QGraphicsItem *rect = arrange_rects.at(i);
-            if(item->collidesWithItem(rect)){
-                arrange_rect = rect;
-                index = i;
-            }
-        }
+    if(item == NULL)
+        return;
 
-        arrange_items.removeOne(item);
-        if(arrange_rect){
-            arrange_items.insert(index, item);
-        }else{
-            item->goBack();
-        }
-
-        int n = qMin(arrange_items.length(), 3);
-        for(i=0; i<n; i++)
-            arrange_items.at(i)->setPos(arrange_rects.at(i)->pos());
-
-        while(arrange_items.length() > 3){
-            CardItem *last = arrange_items.takeLast();
-            last->goBack();
+    QGraphicsItem *arrange_rect = NULL;
+    int index = -1, i;
+    for(i=0; i<3; i++){
+        QGraphicsItem *rect = arrange_rects.at(i);
+        if(item->collidesWithItem(rect)){
+            arrange_rect = rect;
+            index = i;
         }
     }
+
+    arrange_items.removeOne(item);
+    down_generals.removeOne(item);
+
+    if(arrange_rect){
+        arrange_items.insert(index, item);
+    }else{
+        down_generals << item;
+    }
+
+    int n = qMin(arrange_items.length(), 3);
+    for(i=0; i<n; i++){
+        QPointF pos = arrange_rects.at(i)->pos();
+        CardItem *item = arrange_items.at(i);
+        item->setHomePos(pos);
+        item->goBack();
+    }
+
+    while(arrange_items.length() > 3){
+        CardItem *last = arrange_items.takeLast();
+        down_generals << last;
+    }
+
+    for(i=0; i<down_generals.length(); i++){
+        QPointF pos(62 + i*86, 451);
+        CardItem *item = down_generals.at(i);
+        item->setHomePos(pos);
+        item->goBack();
+    }
+}
+
+void RoomScene::finishArrange(){
+    if(arrange_items.length() != 3)
+        return;
+
+    QStringList names;
+    foreach(CardItem *item, arrange_items)
+        names << item->objectName();
+
+    ClientInstance->request("arrange " + names.join("+"));
 }

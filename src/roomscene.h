@@ -108,6 +108,7 @@ private:
     QList<CardItem *> general_items, up_generals, down_generals;
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
+    Button *arrange_button;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
@@ -203,6 +204,7 @@ private slots:
     void selectGeneral();
     void startArrange();
     void toggleArrange();
+    void finishArrange();
 
 signals:
     void restart();
