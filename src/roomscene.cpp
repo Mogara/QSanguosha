@@ -2878,6 +2878,7 @@ void RoomScene::selectGeneral(){
 
     if(item){
         ClientInstance->request("takeGeneral " + item->objectName());
+        item->disconnect(this);
     }
 }
 

@@ -3,6 +3,8 @@
 #include "engine.h"
 #include "ai.h"
 
+#include <QDateTime>
+
 RoomThread3v3::RoomThread3v3(Room *room)
     :QThread(room), room(room)
 {
@@ -43,6 +45,9 @@ RoomThread3v3::RoomThread3v3(Room *room)
 
 void RoomThread3v3::run()
 {
+    // initialize the random seed for this thread
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
 
     //QString order = askForChoice(warm_leader, "3v3", "first+next");
@@ -117,14 +122,10 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
     Q_ASSERT(arranged.length() == 3);
 
     if(player->isLord()){
-        qDebug("warm: %s", qPrintable(arranged.join("+")));
-
         room->players.at(1)->setGeneralName(arranged.at(0));
         room->players.at(0)->setGeneralName(arranged.at(1));
         room->players.at(5)->setGeneralName(arranged.at(2));
     }else{
-        qDebug("cool: %s", qPrintable(arranged.join("+")));
-
         room->players.at(4)->setGeneralName(arranged.at(0));
         room->players.at(3)->setGeneralName(arranged.at(1));
         room->players.at(2)->setGeneralName(arranged.at(2));

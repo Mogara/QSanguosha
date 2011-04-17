@@ -29,10 +29,9 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :Pixmap(), card(NULL), filtered_card(NULL)
+    :Pixmap(Sanguosha->getGeneral(general_name)->getPixmapPath("card"), false),
+    card(NULL), filtered_card(NULL)
 {
-    const General *general = Sanguosha->getGeneral(general_name);
-    changePixmap(general->getPixmapPath("card"));
 }
 
 const Card *CardItem::getCard() const{
@@ -173,7 +172,7 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
         QPointF down_pos = event->buttonDownPos(Qt::LeftButton);
-        setPos(this->mapToParent(event->pos()) - down_pos);
+        setPos(this->mapToParent(event->pos() - down_pos));
     }
 }
 
