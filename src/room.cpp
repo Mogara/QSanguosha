@@ -710,6 +710,10 @@ int Room::getLack() const{
     return player_count - players.length();
 }
 
+QString Room::getMode() const{
+    return mode;
+}
+
 void Room::broadcast(const QString &message, ServerPlayer *except){
     foreach(ServerPlayer *player, players){
         if(player != except){
@@ -809,6 +813,25 @@ void Room::setFixedDistance(Player *from, const Player *to, int distance){
     QString set_str = QString("%1~%2=%3").arg(a).arg(b).arg(distance);
     from->setFixedDistance(to, distance);
     broadcastInvoke("setFixedDistance", set_str);
+}
+
+void Room::reverseFor3v3(ServerPlayer *player, QList<ServerPlayer *> &list){
+    QString choice = askForChoice(player, "3v3", "cw+ccw");
+
+    LogMessage log;
+    log.type = "#TrickDirection";
+    log.from = player;
+    log.arg = choice;
+    sendLog(log);
+
+    if(choice == "cw"){
+        QList<ServerPlayer *> new_list;
+
+        while(!list.isEmpty())
+            new_list << list.takeLast();
+
+        list = new_list;
+    }
 }
 
 void Room::addProhibitSkill(const ProhibitSkill *skill){

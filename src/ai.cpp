@@ -30,7 +30,7 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if(self == other)
         return Friend;
 
-    if(Config.GameMode == "06_3v3"){
+    if(room->getMode() == "06_3v3"){
         QChar c = self->getRole().at(0);
         if(other->getRole().startsWith(c))
             return Friend;

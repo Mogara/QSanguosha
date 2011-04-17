@@ -5,6 +5,7 @@
 #include "maneuvering.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "client.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -116,8 +117,6 @@ void GlobalEffect::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
 QString AOE::getSubtype() const{
     return "aoe";
 }
-
-#include "client.h"
 
 bool AOE::isAvailable() const{
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();

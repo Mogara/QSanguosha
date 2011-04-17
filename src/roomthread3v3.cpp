@@ -50,10 +50,9 @@ void RoomThread3v3::run()
 
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
 
-    //QString order = askForChoice(warm_leader, "3v3", "first+next");
-    QString order = "first";
+    // askForOrder(warm_leader, "select");
     ServerPlayer *first, *next;
-    if(order == "first"){
+    if(order == "warm"){
         first = warm_leader;
         next = cool_leader;
     }else{
@@ -76,6 +75,22 @@ void RoomThread3v3::run()
     startArrange(next);
 
     sem.acquire(2);
+}
+
+void RoomThread3v3::askForOrder(ServerPlayer *player, const QString &reason){
+    if(player->getState() == "online")
+        player->invoke("askForOrder", reason);
+    else{
+        int r = qrand() % 2;
+        setOrder(r % 2 == 0 ? "warm" : "cool");
+    }
+
+    sem.acquire();
+}
+
+void RoomThread3v3::setOrder(const QString &order){
+    this->order = order;
+    sem.release();
 }
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
@@ -122,13 +137,13 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
     Q_ASSERT(arranged.length() == 3);
 
     if(player->isLord()){
-        room->players.at(1)->setGeneralName(arranged.at(0));
+        room->players.at(5)->setGeneralName(arranged.at(0));
         room->players.at(0)->setGeneralName(arranged.at(1));
-        room->players.at(5)->setGeneralName(arranged.at(2));
+        room->players.at(1)->setGeneralName(arranged.at(2));
     }else{
-        room->players.at(4)->setGeneralName(arranged.at(0));
+        room->players.at(2)->setGeneralName(arranged.at(0));
         room->players.at(3)->setGeneralName(arranged.at(1));
-        room->players.at(2)->setGeneralName(arranged.at(2));
+        room->players.at(4)->setGeneralName(arranged.at(2));
     }
 
     sem.release();

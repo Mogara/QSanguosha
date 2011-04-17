@@ -14,6 +14,7 @@ class RoomThread3v3 : public QThread
 
 public:
     explicit RoomThread3v3(Room *room);
+    void setOrder(const QString &order);
     void takeGeneral(ServerPlayer *player, const QString &name);
     void arrange(ServerPlayer *player, const QStringList &arranged);
 
@@ -27,7 +28,9 @@ private:
     QStringList general_names;
     QString result;
     QSemaphore sem;
+    QString order;
 
+    void askForOrder(ServerPlayer *player, const QString &reason);
     void askForTakeGeneral(ServerPlayer *player);
     void startArrange(ServerPlayer *player);
 };
