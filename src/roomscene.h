@@ -200,6 +200,7 @@ private slots:
     void startGeneralSelection();
     void selectGeneral();
     void startArrange();
+    void toggleArrange();
 
 signals:
     void restart();

@@ -2885,5 +2885,16 @@ void RoomScene::selectGeneral(){
 void RoomScene::startArrange(){
     selector_box->changePixmap("image/system/3v3/arrange.png");
 
+    foreach(CardItem *item, down_generals){
+        item->setFlag(QGraphicsItem::ItemIsFocusable);
+        connect(item, SIGNAL(double_clicked()), this, SLOT(toggleArrange()));
+    }
+}
 
+void RoomScene::toggleArrange(){
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    if(item){
+        // adjust arrange
+    }
 }
