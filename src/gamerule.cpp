@@ -401,45 +401,12 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(room->getTag("SkipNormalDeathProcess").toBool())
                 return false;
 
-            QString winner;
-            QStringList alive_roles = room->aliveRoles(player);
-
-            switch(player->getRoleEnum()){
-            case Player::Lord:{
-                    if(alive_roles.length() == 1 && alive_roles.first() == "renegade")
-                        winner = "renegade";
-                    else
-                        winner = "rebel";
-                    break;
-                }
-
-            case Player::Rebel:
-            case Player::Renegade:
-                {
-                    if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade")){
-                        winner = "lord+loyalist";
-                        if(player->getRole() == "renegade" && !alive_roles.contains("loyalist"))
-                            room->setTag("RenegadeInFinalPK", true);
-                    }
-                    break;
-                }
-
-            default:
-                break;
-            }
-
+            QString winner = getWinner(player);
             if(winner.isNull()){
                 QString killer_name = data.toString();
                 if(!killer_name.isEmpty()){
                     ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
-
-                    if(player->getRole() == "rebel" && killer != player){
-                        if(killer->isAlive())
-                            killer->drawCards(3);
-                    }else if(player->getRole() == "loyalist" && killer->getRole() == "lord"){
-                        killer->throwAllEquips();
-                        killer->throwAllHandCards();
-                    }
+                    rewardAndPunish(killer, player);
                 }
 
                 setGameProcess(room);
@@ -495,4 +462,59 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     return false;
 }
 
+void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
+    if(killer->isDead())
+        return;
 
+    if(killer->getRoom()->getMode() == "06_3v3"){
+        killer->drawCards(3);
+    }else{
+        if(victim->getRole() == "rebel" && killer != victim){
+            killer->drawCards(3);
+        }else if(victim->getRole() == "loyalist" && killer->getRole() == "lord"){
+            killer->throwAllEquips();
+            killer->throwAllHandCards();
+        }
+    }
+}
+
+QString GameRule::getWinner(ServerPlayer *victim) const{
+    Room *room = victim->getRoom();
+    QString winner;
+
+    if(room->getMode() == "06_3v3"){
+        switch(victim->getRoleEnum()){
+        case Player::Lord: winner = "renegade+rebel"; break;
+        case Player::Renegade: winner = "lord+loyalist"; break;
+        default:
+            break;
+        }
+    }else{
+        QStringList alive_roles = room->aliveRoles(victim);
+        switch(victim->getRoleEnum()){
+        case Player::Lord:{
+                if(alive_roles.length() == 1 && alive_roles.first() == "renegade")
+                    winner = room->getAlivePlayers().first()->objectName();
+                else
+                    winner = "rebel";
+                break;
+            }
+
+        case Player::Rebel:
+        case Player::Renegade:
+            {
+                if(!alive_roles.contains("rebel") && !alive_roles.contains("renegade")){
+                    winner = "lord+loyalist";
+                    if(victim->getRole() == "renegade" && !alive_roles.contains("loyalist"))
+                        room->setTag("RenegadeInFinalPK", true);
+                }
+                break;
+            }
+
+        default:
+            break;
+        }
+    }
+
+    return winner;
+}

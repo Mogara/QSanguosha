@@ -16,6 +16,8 @@ public:
 
 private:
     void onPhaseChange(ServerPlayer *player) const;
+    void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
+    QString getWinner(ServerPlayer *victim) const;
 };
 
 #endif // GAMERULE_H
