@@ -425,7 +425,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
 
         if(room->getMode() == "06_3v3"){
            if(inherits("AOE") || inherits("GlobalEffect"))
-               room->reverseFor3v3(source, players);
+               room->reverseFor3v3(this, source, players);
         }
 
         foreach(ServerPlayer *target, players){            

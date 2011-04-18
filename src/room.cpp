@@ -816,13 +816,26 @@ void Room::setFixedDistance(Player *from, const Player *to, int distance){
     broadcastInvoke("setFixedDistance", set_str);
 }
 
-void Room::reverseFor3v3(ServerPlayer *player, QList<ServerPlayer *> &list){
-    QString choice = askForChoice(player, "3v3", "cw+ccw");
+void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list){
+    QString choice;
+
+    if(player->getState() == "online"){
+        player->invoke("askForDirection");
+        getResult("selectChoiceCommand", player);
+
+        if(result.isEmpty() || result == ".")
+            choice = "ccw";
+        else
+            choice = result;
+    }else{
+        choice = "ccw";
+    }
 
     LogMessage log;
     log.type = "#TrickDirection";
     log.from = player;
     log.arg = choice;
+    log.arg2 = card->objectName();
     sendLog(log);
 
     if(choice == "cw"){

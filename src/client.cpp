@@ -103,6 +103,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["takeGeneral"] = &Client::takeGeneral;
     callbacks["startArrange"] = &Client::startArrange;
     callbacks["askForOrder"] = &Client::askForOrder;
+    callbacks["askForDirection"] = &Client::askForDirection;
 
     ask_dialog = NULL;
     use_card = false;
@@ -1573,6 +1574,35 @@ void Client::askForOrder(const QString &reason){
     connect(warm_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(cool_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(dialog, SIGNAL(rejected()), this, SLOT(selectOrder()));
+
+    ask_dialog = dialog;
+
+    setStatus(ExecDialog);
+}
+
+void Client::askForDirection(const QString &){
+    QDialog *dialog = new QDialog;
+
+    QLabel *prompt = new QLabel(tr("Please select the direction"));
+    OptionButton *ccw_button = new OptionButton("image/system/3v3/ccw.png", tr("CCW"));
+    ccw_button->setObjectName("ccw");
+    OptionButton *cw_button = new OptionButton("image/system/3v3/cw.png", tr("CW"));
+    cw_button->setObjectName("cw");
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(ccw_button);
+    hlayout->addWidget(cw_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(prompt);
+    layout->addLayout(hlayout);
+    dialog->setLayout(layout);
+
+    dialog->setObjectName("ccw");
+    connect(ccw_button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+    connect(ccw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(cw_button, SIGNAL(clicked()), this, SLOT(selectChoice()));
+    connect(cw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
 
     ask_dialog = dialog;
 

@@ -99,7 +99,7 @@ public:
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);
-    void reverseFor3v3(ServerPlayer *player, QList<ServerPlayer *> &list);
+    void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;

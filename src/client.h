@@ -140,6 +140,7 @@ public:
     void takeGeneral(const QString &take_str);
     void startArrange(const QString &);
     void askForOrder(const QString &reason);
+    void askForDirection(const QString &);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);

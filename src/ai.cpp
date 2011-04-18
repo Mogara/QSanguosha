@@ -26,17 +26,20 @@ struct RoleMapping: public QMap<RolePair, AI::Relation> {
     }
 };
 
+AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b){
+    QChar c = a->getRole().at(0);
+    if(b->getRole().startsWith(c))
+        return Friend;
+    else
+        return Enemy;
+}
+
 AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if(self == other)
         return Friend;
 
-    if(room->getMode() == "06_3v3"){
-        QChar c = self->getRole().at(0);
-        if(other->getRole().startsWith(c))
-            return Friend;
-        else
-            return Enemy;
-    }
+    if(room->getMode() == "06_3v3")
+        return GetRelation3v3(self, other);
 
     RoleMapping map, map_good, map_bad;
     if(map.isEmpty()){
