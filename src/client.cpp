@@ -102,6 +102,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForGeneral3v3"] = &Client::askForGeneral3v3;
     callbacks["takeGeneral"] = &Client::takeGeneral;
     callbacks["startArrange"] = &Client::startArrange;
+    callbacks["askForOrder"] = &Client::askForOrder;
 
     ask_dialog = NULL;
     use_card = false;
@@ -1542,4 +1543,56 @@ void Client::takeGeneral(const QString &take_str){
 
 void Client::startArrange(const QString &){
     emit arrange_started();
+}
+
+void Client::askForOrder(const QString &reason){
+    QDialog *dialog = new QDialog;
+
+    if(reason == "select")
+        dialog->setWindowTitle(tr("The order who first choose general"));
+    else if(reason == "turn")
+        dialog->setWindowTitle(tr("The order who first in turn"));
+
+    QLabel *prompt = new QLabel(tr("Please select the order"));
+    OptionButton *warm_button = new OptionButton("image/system/3v3/warm.png", tr("Warm"));
+    warm_button->setObjectName("warm");
+    OptionButton *cool_button = new OptionButton("image/system/3v3/cool.png", tr("Cool"));
+    cool_button->setObjectName("cool");
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(warm_button);
+    hlayout->addWidget(cool_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(prompt);
+    layout->addLayout(hlayout);
+    dialog->setLayout(layout);
+
+    connect(warm_button, SIGNAL(clicked()), this, SLOT(selectOrder()));
+    connect(cool_button, SIGNAL(clicked()), this, SLOT(selectOrder()));
+    connect(warm_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(cool_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(selectOrder()));
+
+    ask_dialog = dialog;
+
+    setStatus(ExecDialog);
+}
+
+void Client::selectOrder(){
+    OptionButton *button = qobject_cast<OptionButton *>(sender());
+
+    QString order;
+    if(button){
+        order = button->objectName();
+    }else{
+        if(qrand() % 2 == 0)
+            order = "warm";
+        else
+            order = "cool";
+    }
+
+    request("selectOrder " + order);
+
+    setStatus(NotActive);
 }

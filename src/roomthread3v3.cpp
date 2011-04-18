@@ -50,7 +50,7 @@ void RoomThread3v3::run()
 
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
 
-    // askForOrder(warm_leader, "select");
+    askForOrder(warm_leader, "select");
     ServerPlayer *first, *next;
     if(order == "warm"){
         first = warm_leader;

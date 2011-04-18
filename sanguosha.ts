@@ -37,7 +37,7 @@
         <translation>&lt;b&gt;【%1】&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="src/card.cpp" line="452"/>
+        <location filename="src/card.cpp" line="457"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -265,6 +265,31 @@
         <location filename="src/client.cpp" line="1428"/>
         <source>&lt;font color=&apos;%1&apos;&gt;[%2] said: %3 &lt;/font&gt;</source>
         <translation>&lt;font color=&apos;%1&apos;&gt;[%2] 说: %3 &lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1551"/>
+        <source>The order who first choose general</source>
+        <translation>选择武将的顺序</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1553"/>
+        <source>The order who first in turn</source>
+        <translation>先手顺序</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1555"/>
+        <source>Please select the order</source>
+        <translation>请选择对应的阵营</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1556"/>
+        <source>Warm</source>
+        <translation>暖色</translation>
+    </message>
+    <message>
+        <location filename="src/client.cpp" line="1558"/>
+        <source>Cool</source>
+        <translation>冷色</translation>
     </message>
     <message>
         <location filename="src/client.cpp" line="177"/>
@@ -1405,37 +1430,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="923"/>
+        <location filename="src/room.cpp" line="967"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1040"/>
+        <location filename="src/room.cpp" line="1084"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1068"/>
+        <location filename="src/room.cpp" line="1112"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1032"/>
+        <location filename="src/room.cpp" line="1076"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1072"/>
+        <location filename="src/room.cpp" line="1116"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1107"/>
+        <location filename="src/room.cpp" line="1151"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1906"/>
+        <location filename="src/room.cpp" line="1954"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:

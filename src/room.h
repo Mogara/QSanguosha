@@ -213,9 +213,10 @@ private:
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
+    bool hasWelfare(ServerPlayer *player) const;
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
-    bool hasWelfare(ServerPlayer *player) const;
+    void selectOrderCommand(ServerPlayer *player, const QString &arg);
 
 private slots:
     void reportDisconnection();

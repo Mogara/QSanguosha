@@ -69,6 +69,7 @@ Room::Room(QObject *parent, const QString &mode)
 
     callbacks["arrangeCommand"] = &Room::arrangeCommand;
     callbacks["takeGeneralCommand"] = &Room::takeGeneralCommand;
+    callbacks["selectOrderCommand"] = &Room::selectOrderCommand;
 
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
@@ -2450,4 +2451,10 @@ void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
     Q_ASSERT(thread_3v3);
 
     thread_3v3->takeGeneral(player, arg);
+}
+
+void Room::selectOrderCommand(ServerPlayer *, const QString &arg){
+    Q_ASSERT(thread_3v3);
+
+    thread_3v3->setOrder(arg);
 }

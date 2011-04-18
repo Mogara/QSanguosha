@@ -139,6 +139,7 @@ public:
     void askForGeneral3v3(const QString &);
     void takeGeneral(const QString &take_str);
     void startArrange(const QString &);
+    void askForOrder(const QString &reason);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -196,6 +197,7 @@ private slots:
     void chooseKingdom();
     void clearTurnTag();
     void invokeSkill(int result);
+    void selectOrder();
 
 signals:
     void server_connected();
