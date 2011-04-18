@@ -149,21 +149,6 @@ QList<ServerPlayer *> Room::getAlivePlayers() const{
     return alive_players;
 }
 
-ServerPlayer *Room::nextPlayer(){
-    ServerPlayer *next = current;
-
-    forever{
-        int index = players.indexOf(next);
-        int next_index = (index + 1) % players.length();
-        next = players.at(next_index);
-
-        if(next->isDead())
-            continue;
-        else
-            return next;
-    }
-}
-
 void Room::output(const QString &message){
     emit room_message(message);
 }
@@ -844,6 +829,11 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
         while(!list.isEmpty())
             new_list << list.takeLast();
 
+        if(inherits("GlobalEffect")){
+            new_list.removeLast();
+            new_list.prepend(player);
+        }
+
         list = new_list;
     }
 }
@@ -1282,6 +1272,8 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b){
         }
 
         broadcastProperty(player, "seat");
+
+        player->setNext(players.at((i+1) % players.length()));
     }
 }
 
@@ -1610,6 +1602,9 @@ void Room::startGame(){
     }
 
     alive_players = players;
+    for(i=0; i<player_count-1; i++)
+        players.at(i)->setNext(players.at(i+1));
+    players.last()->setNext(players.first());
 
     foreach(ServerPlayer *player, players){
         if(hasWelfare(player))

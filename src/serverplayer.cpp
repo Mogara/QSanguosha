@@ -7,7 +7,8 @@
 #include "recorder.h"
 
 ServerPlayer::ServerPlayer(Room *room)
-    : Player(room), socket(NULL), room(room), ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL)
+    : Player(room), socket(NULL), room(room),
+    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL), next(NULL)
 {
 }
 
@@ -485,4 +486,20 @@ void ServerPlayer::addVictim(ServerPlayer *victim){
 
 QList<ServerPlayer *> ServerPlayer::getVictims() const{
     return victims;
+}
+
+void ServerPlayer::setNext(ServerPlayer *next){
+    this->next = next;
+}
+
+ServerPlayer *ServerPlayer::getNext() const{
+    return next;
+}
+
+ServerPlayer *ServerPlayer::getNextAlive() const{
+    ServerPlayer *next = this->next;
+    while(next->isDead())
+        next = next->getNext();
+
+    return next;
 }

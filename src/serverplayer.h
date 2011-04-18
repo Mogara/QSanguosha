@@ -70,6 +70,10 @@ public:
     void startRecord();
     void saveRecord(const QString &filename);
 
+    void setNext(ServerPlayer *next);
+    ServerPlayer *getNext() const;
+    ServerPlayer *getNextAlive() const;
+
     // 3v3 methods
     void addToSelected(const QString &general);
     QStringList getSelected() const;
@@ -83,6 +87,7 @@ private:
     QList<ServerPlayer *> victims;
     Recorder *recorder;
     QList<Phase> phases;
+    ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
 
 private slots:

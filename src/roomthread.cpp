@@ -166,7 +166,7 @@ void RoomThread::run(){
 
     forever{
         trigger(TurnStart, room->getCurrent());
-        room->setCurrent(room->nextPlayer());
+        room->setCurrent(room->getCurrent()->getNextAlive());
     }
 }
 

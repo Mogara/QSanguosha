@@ -47,7 +47,6 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    ServerPlayer *nextPlayer();
     void output(const QString &message);
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);

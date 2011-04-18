@@ -571,7 +571,6 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    ServerPlayer *nextPlayer();
     void output(const char *message);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
