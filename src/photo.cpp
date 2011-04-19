@@ -599,3 +599,29 @@ QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
 
     return Pixmap::itemChange(change, value);
 }
+
+void Photo::makeGrayAvatar(){
+    if(!avatar.isNull())
+        makeGrayAvatar(avatar);
+
+    if(!small_avatar.isNull())
+        makeGrayAvatar(small_avatar);
+}
+
+void Photo::makeGrayAvatar(QPixmap &pixmap){
+    QImage img = pixmap.toImage();
+    int width = img.width();
+    int height = img.height();
+
+    int i,j;
+    for(i=0; i<width; i++){
+        for(j=0; j<height; j++){
+            QRgb pixel = img.pixel(i,j);
+            int gray = qGray(pixel);
+            pixel = qRgb(gray, gray, gray);
+            img.setPixel(i, j, pixel);
+        }
+    }
+
+    pixmap = QPixmap::fromImage(img);
+}

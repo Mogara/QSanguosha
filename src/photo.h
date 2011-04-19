@@ -57,6 +57,7 @@ public slots:
     void setDrankState();
     void setActionState();
     void updateRoleComboboxPos();
+    void makeGrayAvatar();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -99,6 +100,7 @@ private:
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawHp(QPainter *painter);
     void drawMagatama(QPainter *painter, int index, const QPixmap &pixmap);
+    void makeGrayAvatar(QPixmap &pixmap);
 };
 
 #endif // PHOTOBACK_H

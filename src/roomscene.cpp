@@ -2097,6 +2097,7 @@ void RoomScene::killPlayer(const QString &who){
         general = Self->getGeneral();
     }else{
         Photo *photo = name2photo[who];
+        photo->makeGrayAvatar();
         photo->setFrame(Photo::NoFrame);
         photo->setEnabled(false);
         photo->update();
