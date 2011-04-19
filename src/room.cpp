@@ -700,6 +700,10 @@ QString Room::getMode() const{
     return mode;
 }
 
+const Scenario *Room::getScenario() const{
+    return scenario;
+}
+
 void Room::broadcast(const QString &message, ServerPlayer *except){
     foreach(ServerPlayer *player, players){
         if(player != except){

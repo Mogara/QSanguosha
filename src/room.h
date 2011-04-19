@@ -39,6 +39,7 @@ public:
     bool isFinished() const;
     int getLack() const;
     QString getMode() const;
+    const Scenario *getScenario() const;
     RoomThread *getThread() const;
     void playSkillEffect(const QString &skill_name, int index = -1);
     ServerPlayer *getCurrent() const;

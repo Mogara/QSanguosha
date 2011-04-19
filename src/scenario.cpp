@@ -47,3 +47,7 @@ void Scenario::assign(QStringList &generals, QStringList &roles) const{
             roles << "renegade";
     }
 }
+
+AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    return AI::GetRelation(a, b);
+}

@@ -2,6 +2,7 @@
 #define SCENARIO_H
 
 #include "package.h"
+#include "ai.h"
 
 class Room;
 class ScenarioRule;
@@ -20,6 +21,7 @@ public:
     virtual int getPlayerCount() const;
     virtual void getRoles(char *roles) const;
     virtual void assign(QStringList &generals, QStringList &roles) const;
+    virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
     virtual void onTagSet(Room *room, const QString &key) const = 0;
 
 protected:

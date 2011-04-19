@@ -2535,6 +2535,9 @@ void RoomScene::onGameStart(){
         log_box->show();
     }
 
+    if(control_panel)
+        control_panel->hide();
+
     log_box->append(tr("------- Game Start --------"));
 
     // add free discard button

@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "maneuvering.h"
 #include "lua.hpp"
+#include "scenario.h"
 
 AI::AI(ServerPlayer *player)
     :self(player)
@@ -34,13 +35,25 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b){
         return Enemy;
 }
 
-AI::Relation AI::relationTo(const ServerPlayer *other) const{
-    if(self == other)
+AI::Relation AI::GetRelationBoss(const ServerPlayer *a, const ServerPlayer *b){
+    static const int Justice = 1;
+    static const int Evil = -1;
+
+    static QMap<Player::Role, int> map;
+    if(map.isEmpty()){
+        map[Player::Loyalist] = Justice;
+        map[Player::Rebel] = Justice;
+        map[Player::Lord] = Evil;
+        map[Player::Renegade] = Evil;
+    }
+
+    if(map.value(a->getRoleEnum()) + map.value(b->getRoleEnum()) == 0)
+        return Enemy;
+    else
         return Friend;
+}
 
-    if(room->getMode() == "06_3v3")
-        return GetRelation3v3(self, other);
-
+AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
     RoleMapping map, map_good, map_bad;
     if(map.isEmpty()){
         map.set("lord", "lord", Friend);
@@ -72,17 +85,34 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
         map_bad.set("renegade", "rebel", Enemy, true);
     }
 
-    if(room->alivePlayerCount() == 2){
+    if(a->aliveCount() == 2){
         return Enemy;
     }
 
+    Room *room = a->getRoom();
     QString process = room->getTag("GameProcess").toString();
     if(process == "Balance")
-        return map.get(self->getRole(), other->getRole());
+        return map.get(a->getRole(), b->getRole());
     else if(process == "LordSuperior")
-        return map_good.get(self->getRole(), other->getRole());
+        return map_good.get(a->getRole(), b->getRole());
     else
-        return map_bad.get(self->getRole(), other->getRole());
+        return map_bad.get(a->getRole(), b->getRole());
+}
+
+AI::Relation AI::relationTo(const ServerPlayer *other) const{
+    if(self == other)
+        return Friend;
+
+    const Scenario *scenario = room->getScenario();
+    if(scenario)
+        return scenario->relationTo(self, other);
+
+    if(room->getMode() == "06_3v3")
+        return GetRelation3v3(self, other);
+    else if(room->getMode() == "08_boss")
+        return GetRelationBoss(self, other);
+
+    return GetRelation(self, other);
 }
 
 bool AI::isFriend(const ServerPlayer *other) const{
