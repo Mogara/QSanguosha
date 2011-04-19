@@ -23,7 +23,7 @@ Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
-    chain("image/system/chain.png"),
+    chain("image/system/chain.png"), action_item(NULL),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     order_item(NULL), hide_avatar(false)
 {
@@ -169,11 +169,21 @@ void Photo::hideSkillName(){
     skill_name_item->hide();
 }
 
-void Photo::setDrankState(bool drank){
-    if(drank)
+void Photo::setDrankState(){
+    if(player->hasFlag("drank"))
         avatar_area->setBrush(QColor(0xFF, 0x00, 0x00, 255 * 0.45));
     else
         avatar_area->setBrush(Qt::NoBrush);
+}
+
+void Photo::setActionState(){
+    if(action_item == NULL){
+        action_item = new QGraphicsPixmapItem(this);
+        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPos(75, 40);
+    }
+
+    action_item->setVisible(player->hasFlag("actioned"));
 }
 
 void Photo::hideEmotion(){
@@ -202,7 +212,8 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
-        connect(player, SIGNAL(drank_changed(bool)), this, SLOT(setDrankState(bool)));
+        connect(player, SIGNAL(drank_changed()), this, SLOT(setDrankState()));
+        connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
 
         mark_item->setDocument(player->getMarkDoc());

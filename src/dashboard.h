@@ -72,6 +72,7 @@ private:
     Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
     QGraphicsTextItem *mark_item;
+    QGraphicsPixmapItem *action_item;
 
     int sort_type;
     QGraphicsSimpleTextItem *handcard_num;
@@ -109,6 +110,7 @@ private slots:
     void onCardItemClicked();
     void onCardItemThrown();
     void onMarkChanged();
+    void setActionState();
 
 signals:
     void card_selected(const Card *card);

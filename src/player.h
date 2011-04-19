@@ -108,7 +108,7 @@ public:
     void setAlive(bool alive);
 
     QString getFlags() const;
-    void setFlags(const QString &flag);
+    virtual void setFlags(const QString &flag);
     bool hasFlag(const QString &flag) const;
     void clearFlags();
 
@@ -215,7 +215,6 @@ signals:
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);
-    void drank_changed(bool drank);
 };
 
 #endif // PLAYER_H

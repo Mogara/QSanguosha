@@ -108,6 +108,18 @@ void Dashboard::createRight(){
     mark_item = new QGraphicsTextItem(right);
     mark_item->setPos(-128, 0);
     mark_item->setDefaultTextColor(Qt::white);
+
+    action_item = NULL;
+}
+
+void Dashboard::setActionState(){
+    if(action_item == NULL){
+        action_item = new QGraphicsPixmapItem(this);
+        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPos(64, 138);
+    }
+
+    action_item->setVisible(Self->hasFlag("actioned"));
 }
 
 void Dashboard::setFilter(const FilterSkill *filter){
@@ -147,6 +159,7 @@ void Dashboard::setPlayer(const ClientPlayer *player){
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+    connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
 
     mark_item->setDocument(player->getMarkDoc());
 

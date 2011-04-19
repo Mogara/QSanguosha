@@ -106,13 +106,7 @@ void Player::setFlags(const QString &flag){
         QString copy = flag;
         copy.remove(unset_symbol);
         flags.remove(copy);
-
-        if(copy == "drank")
-            emit drank_changed(false);
     }else{
-        if(flag == "drank")
-            emit drank_changed(true);
-
         flags.insert(flag);
     }
 }

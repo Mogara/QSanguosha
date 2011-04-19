@@ -54,7 +54,8 @@ public slots:
     void refresh();
     void hideEmotion();
     void hideSkillName();
-    void setDrankState(bool drank);
+    void setDrankState();
+    void setActionState();
     void updateRoleComboboxPos();
 
 protected:
@@ -71,6 +72,7 @@ private:
     QPixmap chain;
     RoleCombobox *role_combobox;
     QList<QGraphicsProxyWidget *> pile_buttons;
+    QGraphicsPixmapItem *action_item;
 
     QGraphicsTextItem *mark_item;
 

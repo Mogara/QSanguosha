@@ -119,6 +119,15 @@ void ClientPlayer::changePile(const QString &name, bool add, int card_id){
     emit pile_changed(name);
 }
 
+void ClientPlayer::setFlags(const QString &flag){
+    Player::setFlags(flag);
+
+    if(flag.endsWith("drank"))
+        emit drank_changed();
+    else if(flag.endsWith("actioned"))
+        emit action_taken();
+}
+
 void ClientPlayer::setMark(const QString &mark, int value){
     if(marks[mark] == value)
         return;

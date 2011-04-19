@@ -19,6 +19,7 @@ public:
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, int card_id);
 
+    virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
@@ -34,6 +35,8 @@ private:
 
 signals:
     void pile_changed(const QString &name);
+    void drank_changed();
+    void action_taken();
 };
 
 extern ClientPlayer *Self;
