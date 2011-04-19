@@ -377,7 +377,6 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             death_pixmap.load(QString("image/system/death/%1.png").arg(Self->getRole()));
 
         painter->drawPixmap(397, 82, death_pixmap);
-        return;
     }
 
     // draw player's equip area

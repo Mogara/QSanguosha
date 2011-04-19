@@ -266,7 +266,7 @@ void Photo::updateSmallAvatar(){
 }
 
 void Photo::refresh(){
-    if(player && player->getHp() == 0)
+    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHP() > 0)
         setFrame(SOS);
     else
         updatePhase();
@@ -398,9 +398,6 @@ void Photo::drawHp(QPainter *painter){
         drawMagatama(painter, i, *magatama);
     for(i=hp; i< max_hp; i++)
         drawMagatama(painter, i, *zero_magatama);
-
-    //QString text = QString("%1/%2").arg(hp).arg(max_hp);
-    //painter->drawText(25, 80, text);
 }
 
 void Photo::setFrame(FrameType type){

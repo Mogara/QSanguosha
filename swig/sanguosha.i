@@ -204,6 +204,10 @@ public:
 	void addCardToPile(const char *pile_name, int card_id);
     void removeCardFromPile(const char *pile_name, int card_id);
 
+	void setNext(ServerPlayer *next);
+    ServerPlayer *getNext() const;
+    ServerPlayer *getNextAlive() const;
+
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);

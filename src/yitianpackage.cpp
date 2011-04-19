@@ -1071,7 +1071,7 @@ public:
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;
-                shaoying_damage.to = room->getOtherPlayers(damage.to).first();
+                shaoying_damage.to = luboyan->getNextAlive();
 
                 room->damage(shaoying_damage);
             }
