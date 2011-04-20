@@ -189,8 +189,6 @@ private slots:
     void adjustGuanxing();
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart);
-    void chooseGongxinCard();
-    void clearGongxinCards();
 
     // 3v3 mode use only
     void fillGenerals(const QStringList &names);

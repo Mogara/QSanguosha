@@ -47,7 +47,6 @@ public:
     void discardCards(const Card *card);
     void replyYiji(const Card *card, const ClientPlayer *to);
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
-    void replyGongxin(int card_id = -1);
     QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);    
     ClientPlayer *getPlayer(const QString &name);
@@ -166,6 +165,7 @@ public slots:
     void fillRobots();
     void arrange(const QStringList &order);
     void chooseAG(int card_id);
+    void replyGongxin(int card_id = -1);
 
 private:
     ClientSocket *socket;

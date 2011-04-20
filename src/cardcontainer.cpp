@@ -82,11 +82,18 @@ void CardContainer::fillCards(const QList<int> &card_ids){
             addCardItem(card_ids.at(i), pos);
         }
     }else{
-        int half = n/2;
+        int half = n/2 + 1;
         qreal real_skip = whole_width / half;
         for(i=0; i<n; i++){
-            QPointF pos = i < half ? pos1 : pos2;
-            pos.setX(pos.x() + i * real_skip);
+            QPointF pos;
+            if(i < half){
+                pos = pos1;
+                pos.setX(pos.x() + i * real_skip);
+            }else{
+                pos = pos2;
+                pos.setX(pos.x() + (i-half) * real_skip);
+            }
+
             addCardItem(card_ids.at(i), pos);
         }
     }
@@ -146,6 +153,14 @@ void CardContainer::startChoose(){
     }
 }
 
+void CardContainer::startGongxin(){
+    foreach(GrabCardItem *item, items){
+        if(item->getCard()->getSuit() == Card::Heart){
+            connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
+        }
+    }
+}
+
 void CardContainer::grabItem(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if(card_item && !collidesWithItem(card_item)){
@@ -171,4 +186,12 @@ void CardContainer::addCardItem(int card_id, const QPointF &pos){
     item->setFlag(QGraphicsItem::ItemIsFocusable);
 
     items << item;
+}
+
+void CardContainer::gongxinItem(){
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if(card_item){
+        emit item_gongxined(card_item->getCard()->getId());
+        clear();
+    }
 }

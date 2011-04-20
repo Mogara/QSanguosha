@@ -28,6 +28,7 @@ public:
     CardItem *take(const ClientPlayer *taker, int card_id);
     int getFirstEnabled() const;
     void startChoose();
+    void startGongxin();
 
 public slots:
     void fillCards(const QList<int> &card_ids);
@@ -41,9 +42,11 @@ private:
 private slots:
     void grabItem();
     void chooseItem();
+    void gongxinItem();
 
 signals:
     void item_chosen(int card_id);
+    void item_gongxined(int card_id);
 };
 
 #endif // CARDCONTAINER_H

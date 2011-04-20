@@ -153,6 +153,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
         card_container->setZValue(9.0);
 
         connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(chooseAG(int)));
+        connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(replyGongxin(int)));
+
         connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
         connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
@@ -1251,7 +1253,7 @@ void RoomScene::useSelectedCard(){
 
     case Client::AskForGongxin:{
             ClientInstance->replyGongxin();
-            clearGongxinCards();
+            card_container->clear();
 
             break;
         }
@@ -1780,12 +1782,6 @@ void RoomScene::clearGuanxing()
     down_items.clear();
 }
 
-void RoomScene::clearGongxinCards(){
-    foreach(CardItem *card_item, gongxin_items)
-        delete card_item;
-
-    gongxin_items.clear();
-}
 
 void RoomScene::doCancelButton(){
     switch(ClientInstance->getStatus()){
@@ -2310,55 +2306,11 @@ void RoomScene::speak(){
 }
 
 void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
-    gongxin_items.clear();
-
-    foreach(int card_id, card_ids){
-        const Card *card = Sanguosha->getCard(card_id);
-        CardItem *card_item = new CardItem(card);
-        if(enable_heart && card->getSuit() == Card::Heart){
-            card_item->setEnabled(true);
-            card_item->setFlag(QGraphicsItem::ItemIsFocusable);
-            connect(card_item, SIGNAL(double_clicked()), this, SLOT(chooseGongxinCard()));
-        }else
-            card_item->setEnabled(false);
-
-        addItem(card_item);
-        gongxin_items << card_item;
-    }
-
-    QRectF rect = gongxin_items.first()->boundingRect();
-    qreal card_width = rect.width();
-    qreal card_height = rect.height();
-
-    qreal width = card_width * gongxin_items.length();
-    qreal start_x = - width / 2;
-    qreal start_y = - card_height / 2;
-
-    int i;
-    for(i=0; i<gongxin_items.length(); i++){
-        QPoint pos;
-        pos.setX(start_x + i * card_width);
-        pos.setY(start_y);
-
-        gongxin_items.at(i)->setPos(pos);
-        gongxin_items.at(i)->setHomePos(pos);
-    }
-
-    if(!enable_heart)
-        QTimer::singleShot(4000, this, SLOT(clearGongxinCards()));
-}
-
-void RoomScene::chooseGongxinCard(){
-    CardItem *item = qobject_cast<CardItem *>(sender());
-
-    if(item){
-        ClientInstance->replyGongxin(item->getCard()->getId());
-
-        foreach(CardItem *card_item, gongxin_items)
-            delete card_item;
-
-        gongxin_items.clear();
-    }
+    card_container->fillCards(card_ids);
+    if(enable_heart)
+        card_container->startGongxin();
+    else
+        QTimer::singleShot(4000, card_container, SLOT(clear()));
 }
 
 void RoomScene::createStateItem(){
