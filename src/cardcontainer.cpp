@@ -4,6 +4,7 @@
 #include "engine.h"
 
 #include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 
 GrabCardItem::GrabCardItem(const Card *card)
     :CardItem(card)
@@ -23,43 +24,6 @@ CardContainer::CardContainer() :
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids){
-    /*
-    static const int columns = 5;
-
-    int i;
-    for(i=0; i<card_ids.length(); i++){
-        int card_id = card_ids.at(i);
-        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
-
-        QRectF rect = card_item->boundingRect();
-        int row = i / columns;
-        int column = i % columns;
-        QPointF pos(column * rect.width(), row * rect.height());
-
-        card_item->setPos(pos);
-        card_item->setHomePos(pos);
-        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
-        card_item->setZValue(1.0);
-
-        amazing_grace << card_item;
-        addItem(card_item);
-    }
-
-    int row_count = (amazing_grace.length() - 1) / columns + 1;
-    int column_count = amazing_grace.length() > columns ? columns : amazing_grace.length();
-    QRectF rect = amazing_grace.first()->boundingRect();
-
-    int width = rect.width() * column_count;
-    int height = rect.height() * row_count;
-    qreal dx = - width/2;
-    qreal dy = - height/2;
-
-    foreach(CardItem *card_item, amazing_grace){
-        card_item->moveBy(dx, dy);
-        card_item->setHomePos(card_item->pos());
-    }
-    */
-
     static const QPointF pos1(30, 40);
     static const QPointF pos2(30, 184);
     static const int card_width = 93;
@@ -161,6 +125,17 @@ void CardContainer::startGongxin(){
     }
 }
 
+void CardContainer::addCloseButton(bool dispose){
+    CloseButton *close_button = new CloseButton;
+    close_button->setParentItem(this);
+    close_button->setPos(524, 21);
+
+    if(dispose)
+        connect(close_button, SIGNAL(clicked()), this, SLOT(deleteLater()));
+    else
+        connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
+}
+
 void CardContainer::grabItem(){
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if(card_item && !collidesWithItem(card_item)){
@@ -194,4 +169,33 @@ void CardContainer::gongxinItem(){
         emit item_gongxined(card_item->getCard()->getId());
         clear();
     }
+}
+
+CloseButton::CloseButton()
+    :Pixmap("image/system/close.png", false)
+{
+    setFlag(ItemIsFocusable);
+
+    setAcceptedMouseButtons(Qt::LeftButton);
+}
+
+void CloseButton::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    event->accept();
+}
+
+void CloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
+    emit clicked();
+}
+
+void CardContainer::view(const ClientPlayer *player){
+    QList<int> card_ids;
+    QList<const Card *> cards = player->getCards();
+    foreach(const Card *card, cards)
+        card_ids << card->getEffectiveId();
+
+    fillCards(card_ids);
+
+    QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
+    avatar->setPixmap(QPixmap(player->getGeneral()->getPixmapPath("tiny")));
+    avatar->setPos(496, 288);
 }

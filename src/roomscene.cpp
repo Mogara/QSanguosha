@@ -568,6 +568,12 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         menu->clear();
         menu->setTitle(player->objectName());
 
+        QAction *view = menu->addAction(tr("View in popup window ..."));
+        view->setData(player->objectName());
+        connect(view, SIGNAL(triggered()), this, SLOT(showPlayerCards()));
+
+        menu->addSeparator();
+
         if(cards.isEmpty()){
             menu->addAction(tr("There is no known cards"));
         }else{
@@ -2310,7 +2316,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
     if(enable_heart)
         card_container->startGongxin();
     else
-        QTimer::singleShot(4000, card_container, SLOT(clear()));
+        card_container->addCloseButton();
 }
 
 void RoomScene::createStateItem(){
@@ -2383,6 +2389,22 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
 
         special_card->showAvatar(player->getGeneral());
         special_card->setFrame(result);
+    }
+}
+
+void RoomScene::showPlayerCards(){
+    QAction *action = qobject_cast<QAction *>(sender());
+
+    if(action){
+        QString name = action->data().toString();
+        const ClientPlayer *player = ClientInstance->getPlayer(name);
+
+        CardContainer *viewer = new CardContainer();
+        viewer->addCloseButton(true);
+        addItem(viewer);
+        viewer->shift();
+        viewer->view(player);
+        viewer->setZValue(card_container->zValue());
     }
 }
 

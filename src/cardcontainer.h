@@ -29,6 +29,8 @@ public:
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin();
+    void addCloseButton(bool dispose = false);
+    void view(const ClientPlayer *player);
 
 public slots:
     void fillCards(const QList<int> &card_ids);
@@ -47,6 +49,20 @@ private slots:
 signals:
     void item_chosen(int card_id);
     void item_gongxined(int card_id);
+};
+
+class CloseButton: public Pixmap{
+    Q_OBJECT
+
+public:
+    CloseButton();
+
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+signals:
+    void clicked();
 };
 
 #endif // CARDCONTAINER_H

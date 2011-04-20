@@ -160,6 +160,7 @@ private slots:
     void adjustDashboard();
     void showOwnerButtons(bool owner);
     void showJudgeResult(const QString &who, const QString &result);
+    void showPlayerCards();
 
     void clearPile();
     void removeLightBox();
