@@ -2209,7 +2209,7 @@ void RoomScene::detachSkill(const QString &skill_name){
         QPushButton *push_button = qobject_cast<QPushButton *>(button);
         removeWidgetFromSkillDock(push_button);
 
-        delete button;
+        button->deleteLater();
     }
 }
 

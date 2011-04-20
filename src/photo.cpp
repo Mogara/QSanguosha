@@ -606,6 +606,9 @@ void Photo::makeGrayAvatar(){
 
     if(!small_avatar.isNull())
         makeGrayAvatar(small_avatar);
+
+    kingdom_frame = QPixmap();
+    role_combobox->hide();
 }
 
 void Photo::makeGrayAvatar(QPixmap &pixmap){
