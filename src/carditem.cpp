@@ -26,6 +26,8 @@ CardItem::CardItem(const Card *card)
     frame = new QGraphicsPixmapItem(frame_pixmap, this);
     frame->setPos(-6, -6);
     frame->hide();
+
+    avatar = NULL;
 }
 
 CardItem::CardItem(const QString &general_name)
@@ -105,6 +107,21 @@ void CardItem::setFrame(const QString &result){
     }
 }
 
+void CardItem::showAvatar(const General *general){
+    if(general){
+        if(avatar == NULL){
+            avatar = new QGraphicsPixmapItem(this);
+            avatar->setPos(44, 87);
+        }
+
+        avatar->setPixmap(QPixmap(general->getPixmapPath("tiny")));
+        avatar->show();
+    }else{
+        if(avatar)
+            avatar->hide();
+    }
+}
+
 void CardItem::hideFrame(){
     frame->hide();
 }
@@ -167,8 +184,6 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
         if(parentItem()){
             if(y() < -80)
                 emit thrown();
-        }else{
-            emit grabbed();
         }
 
         goBack();

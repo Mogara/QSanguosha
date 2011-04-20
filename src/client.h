@@ -111,7 +111,6 @@ public:
 
     void fillAG(const QString &cards_str);
     void askForAG(const QString &);
-    void chooseAG(int card_id);
     void takeAG(const QString &take_str);
     void clearAG(const QString &);
 
@@ -166,6 +165,7 @@ public slots:
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);
+    void chooseAG(int card_id);
 
 private:
     ClientSocket *socket;

@@ -9,6 +9,7 @@
 #include "irrKlang.h"
 #include "window.h"
 #include "button.h"
+#include "cardcontainer.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -38,7 +39,6 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 static const QPointF DiscardedPos(-6, -2);
 static const QPointF DrawPilePos(-102, -2);
-static const QPointF TinyAvatarOffset(44, 87);
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
@@ -145,9 +145,18 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
     connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
-    connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), this, SLOT(fillAmazingGrace(QList<int>)));
-    connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
-    connect(ClientInstance, SIGNAL(ag_cleared()), this, SLOT(clearAmazingGrace()));
+    {
+        card_container = new CardContainer();
+        card_container->hide();
+        addItem(card_container);
+        card_container->shift();
+        card_container->setZValue(9.0);
+
+        connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(chooseAG(int)));
+        connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
+        connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
+        connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
+    }
 
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
@@ -192,7 +201,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
         if(ServerInfo.DisableChat)
             chat_edit_widget->hide();
     }
-
 
     // log box
     log_box = new ClientLogBox;
@@ -244,12 +252,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     js->start();
 
     createStateItem();
-
-    judge_avatar = new QGraphicsPixmapItem;
-    judge_avatar->setPos(DrawPilePos + TinyAvatarOffset);
-    judge_avatar->setZValue(10.0);
-
-    addItem(judge_avatar);
 }
 
 void RoomScene::adjustItems(){
@@ -660,13 +662,13 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
         // from players
         if(src == Self){
             if(src_place == Player::Special){
-                if(amazing_grace.isEmpty()){
-                    CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+                CardItem *card_item = card_container->take(NULL, card_id);
+                if(card_item)
+                    return card_item;
+                else{
+                    card_item = new CardItem(Sanguosha->getCard(card_id));
                     card_item->setPos(avatar->scenePos());
                     return card_item;
-                }else{
-                    takeAmazingGrace(NULL, card_id);
-                    return NULL;
                 }
             }
 
@@ -699,7 +701,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
     if(src_place == Player::Special){
         card_item = special_card;
         card_item->hideFrame();
-        judge_avatar->hide();
+        card_item->showAvatar(NULL);
         special_card = NULL;
         return card_item;
     }
@@ -1469,12 +1471,9 @@ void RoomScene::doTimeout(){
         }
 
     case Client::AskForAG:{
-            foreach(CardItem *item, amazing_grace){
-                if(item->isEnabled()){
-                    ClientInstance->chooseAG(item->getCard()->getId());
-                    break;
-                }
-            }
+            int card_id = card_container->getFirstEnabled();
+            if(card_id != -1)
+                ClientInstance->chooseAG(card_id);
 
             break;
         }
@@ -1597,10 +1596,7 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            foreach(CardItem *item, amazing_grace){
-                connect(item, SIGNAL(double_clicked()), this, SLOT(chooseAmazingGrace()));
-                connect(item, SIGNAL(grabbed()), this, SLOT(grabCardItem()));
-            }
+            card_container->startChoose();
 
             break;
         }
@@ -2119,107 +2115,22 @@ void RoomScene::killPlayer(const QString &who){
         general->lastWord();
 }
 
-void RoomScene::fillAmazingGrace(const QList<int> &card_ids){
-    static const int columns = 5;
-
-    int i;
-    for(i=0; i<card_ids.length(); i++){
-        int card_id = card_ids.at(i);
-        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
-
-        QRectF rect = card_item->boundingRect();
-        int row = i / columns;
-        int column = i % columns;
-        QPointF pos(column * rect.width(), row * rect.height());
-
-        card_item->setPos(pos);
-        card_item->setHomePos(pos);
-        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
-        card_item->setZValue(1.0);
-
-        amazing_grace << card_item;
-        addItem(card_item);
-    }
-
-    int row_count = (amazing_grace.length() - 1) / columns + 1;
-    int column_count = amazing_grace.length() > columns ? columns : amazing_grace.length();
-    QRectF rect = amazing_grace.first()->boundingRect();
-
-    int width = rect.width() * column_count;
-    int height = rect.height() * row_count;
-    qreal dx = - width/2;
-    qreal dy = - height/2;
-
-    foreach(CardItem *card_item, amazing_grace){
-        card_item->moveBy(dx, dy);
-        card_item->setHomePos(card_item->pos());
-    }
-}
-
-void RoomScene::clearAmazingGrace(){
-    foreach(CardItem *item, amazing_grace){
-        removeItem(item);
-        delete item;
-    }
-
-    foreach(QGraphicsPixmapItem *taker_avatar, taker_avatars){
-        removeItem(taker_avatar);
-        delete taker_avatar;
-    }
-
-    amazing_grace.clear();
-    taker_avatars.clear();
-}
-
 void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){
+    CardItem *copy = card_container->take(taker, card_id);
+    if(copy == NULL)
+        return;
+
+    addItem(copy);
+
     if(taker){
         QString type = "$TakeAG";
         QString from_general = taker->getGeneralName();
         QString card_str = QString::number(card_id);
         log_box->appendLog(type, from_general, QStringList(), card_str);
-    }
 
-
-    CardItem *to_take = CardItem::FindItem(amazing_grace, card_id);
-    if(to_take){
-        to_take->setEnabled(false);
-
-        // make a copy on the amazing grace item and put it to dashboard later
-        CardItem *item = new CardItem(to_take->getCard());
-        addItem(item);
-        item->setPos(to_take->pos());
-        item->setEnabled(false);
-
-        if(taker){
-            putCardItem(taker, Player::Hand, item);
-            QPixmap avatar_pixmap(taker->getGeneral()->getPixmapPath("tiny"));
-            QGraphicsPixmapItem *taker_avatar = addPixmap(avatar_pixmap);
-            taker_avatar->setPos(to_take->homePos() + TinyAvatarOffset);
-            taker_avatar->setZValue(1.1);
-
-            taker_avatars << taker_avatar;
-        }else{
-            putCardItem(NULL, Player::DiscardedPile, item);
-        }
-    }
-}
-
-void RoomScene::chooseAmazingGrace(){
-    CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if(card_item){
-        ClientInstance->chooseAG(card_item->getCard()->getId());
-        foreach(CardItem *item, amazing_grace)
-            item->disconnect(this);
-    }
-}
-
-void RoomScene::grabCardItem(){
-    CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if(card_item && card_item->collidesWithItem(dashboard)){
-        ClientInstance->chooseAG(card_item->getCard()->getId());
-        foreach(CardItem *item, amazing_grace)
-            item->disconnect(this);
-    }
+        putCardItem(taker, Player::Hand, copy);
+    }else
+        putCardItem(NULL, Player::DiscardedPile, copy);
 }
 
 void RoomScene::showCard(const QString &player_name, int card_id){
@@ -2517,9 +2428,8 @@ void RoomScene::showOwnerButtons(bool owner){
 void RoomScene::showJudgeResult(const QString &who, const QString &result){
     if(special_card){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
-        QString path = player->getGeneral()->getPixmapPath("tiny");
-        judge_avatar->setPixmap(QPixmap(path));
-        judge_avatar->show();
+
+        special_card->showAvatar(player->getGeneral());
         special_card->setFrame(result);
     }
 }

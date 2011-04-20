@@ -7,6 +7,7 @@
 #include <QSize>
 
 class FilterSkill;
+class General;
 
 class CardItem : public Pixmap
 {
@@ -26,6 +27,7 @@ public:
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);
+    void showAvatar(const General *general);
     void hideFrame();
     void setAutoBack(bool auto_back);
 
@@ -49,7 +51,7 @@ private:
     const Card *card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
-    QGraphicsPixmapItem *frame;
+    QGraphicsPixmapItem *frame, *avatar;
     bool auto_back;
 
 signals:
@@ -57,7 +59,6 @@ signals:
     void clicked();
     void double_clicked();
     void thrown();
-    void grabbed();
     void released();
 };
 

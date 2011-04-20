@@ -71,7 +71,8 @@ SOURCES += src/main.cpp \
     src/hongyan-scenario.cpp \
     src/sp-package.cpp \
     src/yjcm-package.cpp \
-    src/roomthread3v3.cpp
+    src/roomthread3v3.cpp \
+    src/cardcontainer.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -140,7 +141,8 @@ HEADERS += src/mainwindow.h \
     src/hongyan-scenario.h \
     src/sp-package.h \
     src/yjcm-package.h \
-    src/roomthread3v3.h
+    src/roomthread3v3.h \
+    src/cardcontainer.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

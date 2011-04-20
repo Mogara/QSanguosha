@@ -10,6 +10,7 @@
 
 class Window;
 class Button;
+class CardContainer;
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -56,7 +57,6 @@ private:
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
-    QGraphicsPixmapItem *judge_avatar;
     CardItem *special_card;
     bool viewing_discards;
     Dashboard *dashboard;
@@ -79,8 +79,7 @@ private:
 
     QList<QGraphicsPixmapItem *> role_items;
 
-    QList<CardItem *> amazing_grace;
-    QList<QGraphicsPixmapItem *> taker_avatars;
+    CardContainer *card_container;
 
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
@@ -180,11 +179,7 @@ private slots:
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);
 
-    void fillAmazingGrace(const QList<int> &card_ids);    
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);
-    void grabCardItem();
-    void chooseAmazingGrace();
-    void clearAmazingGrace();
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
