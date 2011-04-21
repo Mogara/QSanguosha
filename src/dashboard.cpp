@@ -114,7 +114,7 @@ void Dashboard::createRight(){
 
 void Dashboard::setActionState(){
     if(action_item == NULL){
-        action_item = new QGraphicsPixmapItem(this);
+        action_item = new QGraphicsPixmapItem(right);
         action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
         action_item->setPos(64, 138);
     }

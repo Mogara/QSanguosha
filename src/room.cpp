@@ -2465,8 +2465,26 @@ void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
     thread_3v3->takeGeneral(player, arg);
 }
 
-void Room::selectOrderCommand(ServerPlayer *, const QString &arg){
-    Q_ASSERT(thread_3v3);
+QString Room::askForOrder(ServerPlayer *player){
+    QString reason;
+    if(thread_3v3->isFinished())
+        reason = "turn";
+    else
+        reason = "select";
 
-    thread_3v3->setOrder(arg);
+    if(player->getState() == "online"){
+        player->invoke("askForOrder", reason);
+        reply_player = player;
+        reply_func = "selectOrderCommand";
+        sem->acquire();
+    }else{
+        result = qrand() % 2 == 0 ? "warm" : "cool";
+    }
+
+    return result;
+}
+
+void Room::selectOrderCommand(ServerPlayer *, const QString &arg){
+    result = arg;
+    sem->release();
 }

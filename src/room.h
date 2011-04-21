@@ -216,6 +216,7 @@ private:
     bool hasWelfare(ServerPlayer *player) const;
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
+    QString askForOrder(ServerPlayer *player);
     void selectOrderCommand(ServerPlayer *player, const QString &arg);
 
 private slots:

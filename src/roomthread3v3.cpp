@@ -50,7 +50,7 @@ void RoomThread3v3::run()
 
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
 
-    askForOrder(warm_leader, "select");
+    QString order = room->askForOrder(warm_leader);
     ServerPlayer *first, *next;
     if(order == "warm"){
         first = warm_leader;
@@ -75,22 +75,6 @@ void RoomThread3v3::run()
     startArrange(next);
 
     sem.acquire(2);
-}
-
-void RoomThread3v3::askForOrder(ServerPlayer *player, const QString &reason){
-    if(player->getState() == "online")
-        player->invoke("askForOrder", reason);
-    else{
-        int r = qrand() % 2;
-        setOrder(r % 2 == 0 ? "warm" : "cool");
-    }
-
-    sem.acquire();
-}
-
-void RoomThread3v3::setOrder(const QString &order){
-    this->order = order;
-    sem.release();
 }
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){

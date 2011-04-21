@@ -31,6 +31,8 @@ public:
     void removeTriggerSkill(const QString &skill_name);
     void delay(unsigned long msecs = 1000);
     void end();
+    void run3v3();
+    void action3v3(ServerPlayer *player);
 
 protected:
     virtual void run();
@@ -38,6 +40,7 @@ protected:
 private:
     Room *room;
     jmp_buf env;
+    QString order;
 
     QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
     QMap<const TriggerSkill *, int> refcount;

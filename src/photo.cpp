@@ -531,7 +531,16 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     if(!player->isAlive()){
         if(death_pixmap.isNull()){
-            death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
+            QString basename;
+            if(ServerInfo.GameMode == "06_3v3"){
+                if(player->getRole() == "lord" || player->getRole() == "renegade")
+                    basename = "marshal";
+                else
+                    basename = "guard";
+            }else
+                basename = player->getRole();
+
+            death_pixmap.load(QString("image/system/death/%1.png").arg(basename));
             death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
         }
 

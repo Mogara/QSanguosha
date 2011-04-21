@@ -155,6 +155,77 @@ void RoomThread::constructTriggerTable(const GameRule *rule){
 
 static const int GameOver = 1;
 
+void RoomThread::run3v3(){
+    QList<ServerPlayer *> warm, cool;
+    foreach(ServerPlayer *player, room->players){
+        switch(player->getRoleEnum()){
+        case Player::Lord: warm.prepend(player); break;
+        case Player::Loyalist: warm.append(player); break;
+        case Player::Renegade: cool.prepend(player); break;
+        case Player::Rebel: cool.append(player); break;
+        }
+    }
+
+    QString order = room->askForOrder(cool.first());
+    QList<ServerPlayer *> *first, *second;
+
+    if(order == "warm"){
+        first = &warm;
+        second = &cool;
+    }else{
+        first = &cool;
+        second = &warm;
+    }
+
+    action3v3(first->first());
+
+    forever{
+        qSwap(first, second);
+
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *player, *first){
+            if(!player->hasFlag("actioned") && player->isAlive())
+                targets << player;
+        }
+
+        ServerPlayer *to_action = room->askForPlayerChosen(first->first(), targets, "3v3-action");
+        if(to_action){
+            action3v3(to_action);
+
+            if(to_action != first->first()){
+                ServerPlayer *another;
+                if(to_action == first->last())
+                    another = first->at(1);
+                else
+                    another = first->last();
+
+                if(!another->hasFlag("actioned") && another->isAlive())
+                    action3v3(another);
+            }
+        }
+    }
+}
+
+void RoomThread::action3v3(ServerPlayer *player){
+    room->setCurrent(player);
+    trigger(TurnStart, room->getCurrent());
+    room->setPlayerFlag(player, "actioned");
+
+    bool all_actioned = true;
+    foreach(ServerPlayer *player, room->alive_players){
+        if(!player->hasFlag("actioned")){
+            all_actioned = false;
+            break;
+        }
+    }
+
+    if(all_actioned){
+        foreach(ServerPlayer *player, room->alive_players){
+            room->setPlayerFlag(player, "-actioned");
+        }
+    }
+}
+
 void RoomThread::run(){
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
@@ -164,9 +235,13 @@ void RoomThread::run(){
     if(setjmp(env) == GameOver)
         return;
 
-    forever{
-        trigger(TurnStart, room->getCurrent());
-        room->setCurrent(room->getCurrent()->getNextAlive());
+    if(room->mode == "06_3v3"){
+        run3v3();
+    }else{
+        forever{
+            trigger(TurnStart, room->getCurrent());
+            room->setCurrent(room->getCurrent()->getNextAlive());
+        }
     }
 }
 
