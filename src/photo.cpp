@@ -23,7 +23,7 @@ Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
-    chain("image/system/chain.png"), action_item(NULL),
+    chain("image/system/chain.png"), action_item(NULL), permanent(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     order_item(NULL), hide_avatar(false)
 {
@@ -138,6 +138,8 @@ void Photo::hideProcessBar(){
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
+    this->permanent = permanent;
+
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
     emotion_item->setPixmap(QPixmap(path));
     emotion_item->show();
@@ -187,7 +189,8 @@ void Photo::setActionState(){
 }
 
 void Photo::hideEmotion(){
-    emotion_item->hide();
+    if(!permanent)
+        emotion_item->hide();
 }
 
 void Photo::timerEvent(QTimerEvent *event){

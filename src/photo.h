@@ -74,6 +74,7 @@ private:
     RoleCombobox *role_combobox;
     QList<QGraphicsProxyWidget *> pile_buttons;
     QGraphicsPixmapItem *action_item;
+    bool permanent;
 
     QGraphicsTextItem *mark_item;
 
