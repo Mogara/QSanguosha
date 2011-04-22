@@ -5,7 +5,6 @@
 #include "ai.h"
 #include "scenario.h"
 #include "gamerule.h"
-#include "bossmode.h"
 #include "contestdb.h"
 #include "banpairdialog.h"
 #include "roomthread3v3.h"
