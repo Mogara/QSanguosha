@@ -1582,16 +1582,19 @@ void Client::askForOrder(const QString &reason){
 
 void Client::askForDirection(const QString &){
     QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Please select the direction"));
 
-    QLabel *prompt = new QLabel(tr("Please select the direction"));
-    OptionButton *ccw_button = new OptionButton("image/system/3v3/ccw.png", tr("CCW"));
-    ccw_button->setObjectName("ccw");
+    QLabel *prompt = new QLabel(dialog->windowTitle());
+
     OptionButton *cw_button = new OptionButton("image/system/3v3/cw.png", tr("CW"));
     cw_button->setObjectName("cw");
 
+    OptionButton *ccw_button = new OptionButton("image/system/3v3/ccw.png", tr("CCW"));
+    ccw_button->setObjectName("ccw");
+
     QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(ccw_button);
     hlayout->addWidget(cw_button);
+    hlayout->addWidget(ccw_button);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(prompt);

@@ -833,7 +833,7 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
         while(!list.isEmpty())
             new_list << list.takeLast();
 
-        if(inherits("GlobalEffect")){
+        if(card->inherits("GlobalEffect")){
             new_list.removeLast();
             new_list.prepend(player);
         }
