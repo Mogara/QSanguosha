@@ -1606,6 +1606,7 @@ void Client::askForDirection(const QString &){
     connect(ccw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(cw_button, SIGNAL(clicked()), this, SLOT(selectChoice()));
     connect(cw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(dialog, SIGNAL(rejected()), this, SLOT(selectChoice()));
 
     ask_dialog = dialog;
 
