@@ -1,7 +1,7 @@
 
 -- jianxiong
 sgs.ai_skill_invoke.jianxiong = function(self, data)
-        return not sgs.Shit_HasShit(data:toCard())
+	return not sgs.Shit_HasShit(data:toCard())
 end
 
 -- hujia
@@ -42,7 +42,9 @@ end
 sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
 
 -- ganglie
-sgs.ai_skill_invoke.ganglie = function(self, data) return not self:isFriend(data:toPlayer()) end
+sgs.ai_skill_invoke.ganglie = function(self, data)
+	return not self:isFriend(data:toPlayer())
+end
 
 -- fankui 
 sgs.ai_skill_invoke.fankui = function(self, data) 

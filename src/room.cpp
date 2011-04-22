@@ -17,23 +17,6 @@
 #include <QTimerEvent>
 #include <QDateTime>
 
-LogMessage::LogMessage()
-    :from(NULL)
-{
-}
-
-QString LogMessage::toString() const{
-    QStringList tos;
-    foreach(ServerPlayer *player, to)
-        tos << player->getGeneralName();
-
-    return QString("%1:%2->%3:%4:%5:%6")
-            .arg(type)
-            .arg(from ? from->getGeneralName() : "")
-            .arg(tos.join("+"))
-            .arg(card_str).arg(arg).arg(arg2);
-}
-
 Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
@@ -43,6 +26,10 @@ Room::Room(QObject *parent, const QString &mode)
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
 
+    initCallbacks();
+}
+
+void Room::initCallbacks(){
     // init callback table
     callbacks["useCardCommand"] = &Room::commonCommand;
     callbacks["invokeSkillCommand"] = &Room::commonCommand;

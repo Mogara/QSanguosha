@@ -74,7 +74,7 @@ void RoomThread3v3::run()
     startArrange(first);
     startArrange(next);
 
-    sem.acquire(2);
+    room->sem->acquire(2);
 }
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
@@ -93,7 +93,7 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
         takeGeneral(player, name);
     }
 
-    sem.acquire();
+    room->sem->acquire();
 }
 
 void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name){
@@ -103,7 +103,7 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name){
     QString group = player->isLord() ? "warm" : "cool";
     room->broadcastInvoke("takeGeneral", QString("%1:%2").arg(group).arg(name));
 
-    sem.release();
+    room->sem->release();
 }
 
 void RoomThread3v3::startArrange(ServerPlayer *player){
@@ -130,5 +130,5 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
         room->players.at(4)->setGeneralName(arranged.at(2));
     }
 
-    sem.release();
+    room->sem->release();
 }

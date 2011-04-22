@@ -7,21 +7,10 @@ class Scenario;
 class RoomThread3v3;
 
 struct lua_State;
+struct LogMessage;
 
 #include "serverplayer.h"
 #include "roomthread.h"
-
-struct LogMessage{
-    LogMessage();
-    QString toString() const;
-
-    QString type;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
-    QString card_str;
-    QString arg;
-    QString arg2;
-};
 
 class Room : public QObject{
     Q_OBJECT
@@ -213,11 +202,12 @@ private:
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
-    bool hasWelfare(ServerPlayer *player) const;
+    void initCallbacks();
+    bool hasWelfare(ServerPlayer *player) const;    
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);
-    void selectOrderCommand(ServerPlayer *player, const QString &arg);
+    void selectOrderCommand(ServerPlayer *player, const QString &arg);    
 
 private slots:
     void reportDisconnection();

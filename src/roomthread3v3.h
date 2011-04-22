@@ -26,7 +26,6 @@ private:
     QList<const General *> generals;
     QStringList general_names;
     QString result;
-    QSemaphore sem;
 
     void askForTakeGeneral(ServerPlayer *player);
     void startArrange(ServerPlayer *player);
