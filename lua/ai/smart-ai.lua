@@ -287,6 +287,10 @@ function SmartAI:askForUseCard(pattern, prompt)
 end
 
 function SmartAI:slashIsEffective(slash, to)
+	if to:hasSkill("yizhong") and to:getArmor() and slash:isBlack() then
+		return false
+	end
+
 	if self.player:hasWeapon("qinggang_sword") then
 		return true
 	end

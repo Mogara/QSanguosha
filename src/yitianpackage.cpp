@@ -1397,8 +1397,10 @@ public:
         if(!killer_name.isEmpty()){
             Room *room = player->getRoom();
             ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
-            if(killer != player && !killer->hasSkill("benghuai"))
+            if(killer != player && !killer->hasSkill("benghuai")){
+                killer->gainMark("@collapse");
                 room->acquireSkill(killer, "benghuai");
+            }
         }
 
         return false;
