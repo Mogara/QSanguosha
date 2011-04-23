@@ -167,6 +167,9 @@ public:
     int getCardCount(bool include_equip) const;
 
     QList<int> &getPile(const char *pile_name);
+
+	bool hasUsed(const QString &card_class);
+    int usedTimes(const QString &card_class);
 	
 	QVariantMap tag;
 };
@@ -674,6 +677,12 @@ public:
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = QString());
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
+};
+
+%extend Room {
+	ServerPlayer *nextPlayer() const{
+		return $self->getCurrent()->getNextAlive();
+	}
 };
 
 class QRegExp{

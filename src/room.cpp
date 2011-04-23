@@ -803,7 +803,18 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
         else
             choice = result;
     }else{
-        choice = "ccw";
+        const TrickCard *trick = qobject_cast<const TrickCard *>(card);
+        if(trick->isAggressive()){
+            if(AI::GetRelation3v3(player, player->getNextAlive()) == AI::Enemy)
+                choice = "ccw";
+            else
+                choice = "cw";
+        }else{
+            if(AI::GetRelation3v3(player, player->getNextAlive()) == AI::Friend)
+                choice = "ccw";
+            else
+                choice = "cw";
+        }
     }
 
     LogMessage log;
