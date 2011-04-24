@@ -2092,14 +2092,14 @@ void RoomScene::killPlayer(const QString &who){
     const General *general = NULL;
 
     if(who == Self->objectName()){
-        dashboard->update();
+        dashboard->killPlayer();
 
         general = Self->getGeneral();
 
         item2player.remove(avatar);
     }else{
         Photo *photo = name2photo[who];
-        photo->makeGrayAvatar();
+        photo->killPlayer();
         photo->setFrame(Photo::NoFrame);
         photo->setEnabled(false);
         photo->update();
@@ -2123,11 +2123,11 @@ void RoomScene::killPlayer(const QString &who){
 
 void RoomScene::revivePlayer(const QString &who){
     if(who == Self->objectName()){
-        dashboard->update();
+        dashboard->revivePlayer();
         item2player.insert(avatar, Self);
     }else{
         Photo *photo = name2photo[who];
-        photo->updateAvatar();
+        photo->revivePlayer();
 
         item2player.insert(photo, photo->getPlayer());
     }

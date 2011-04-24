@@ -52,6 +52,9 @@ public:
     const ViewAsSkill *currentSkill() const;    
     const Card *pendingCard() const;
 
+    void killPlayer();
+    void revivePlayer();
+
 public slots:
     void updateAvatar();
     void updateSmallAvatar();
@@ -78,7 +81,7 @@ private:
     QGraphicsSimpleTextItem *handcard_num;
     QStack<CardItem *> judging_area;
     QStack<QPixmap> delayed_tricks;
-    QPixmap death_pixmap;
+    QGraphicsPixmapItem *death_item;
     Pixmap *chain_icon, *back_icon;
 
     QGraphicsRectItem *equip_rects[4];

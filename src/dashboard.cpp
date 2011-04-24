@@ -21,6 +21,8 @@ Dashboard::Dashboard()
     createMiddle();
     createRight();
 
+    death_item = NULL;
+
     int left_width = left_pixmap.width();
     int middle_width = middle->rect().width();
     int right_width = right->rect().width();
@@ -372,7 +374,24 @@ void Dashboard::drawHp(QPainter *painter) const{
         painter->drawPixmap(start_x + skip *(i+1) + i * magatama->width(), 5, *zero_magatama);
 }
 
-void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void Dashboard::killPlayer(){
+    if(death_item){
+        delete death_item;
+        death_item = NULL;
+    }
+
+    death_item = new QGraphicsPixmapItem(QPixmap(Self->getDeathPixmapPath()), this);
+    death_item->setPos(397, 82);
+}
+
+void Dashboard::revivePlayer(){
+    if(death_item){
+        delete death_item;
+        death_item = NULL;
+    }
+}
+
+void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     // draw the left side and right side
     painter->drawPixmap(left->pos(), left_pixmap);
     painter->drawPixmap(right->pos(), right_pixmap);
@@ -384,13 +403,6 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     if(!Self)
         return;
-
-    if(Self->isDead()){
-        if(death_pixmap.isNull())
-            death_pixmap.load(QString("image/system/death/%1.png").arg(Self->getRole()));
-
-        painter->drawPixmap(397, 82, death_pixmap);
-    }
 
     // draw player's equip area
     painter->setPen(Qt::white);

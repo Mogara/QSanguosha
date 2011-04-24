@@ -45,6 +45,11 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
     case Player::Draw: {
             QVariant num = 2;
+            if(room->getTag("FirstRound").toBool() && room->getMode() == "02_1v1"){
+                room->setTag("FirstRound", false);
+                num = 1;
+            }
+
             room->getThread()->trigger(DrawNCards, player, num);
             int n = num.toInt();
             if(n > 0)
@@ -171,6 +176,9 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 setGameProcess(room);
 
             player->drawCards(4, false);
+
+            if(room->getMode() == "02_1v1")
+                room->setTag("FirstRound", true);
 
             break;
         }
@@ -408,6 +416,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     room->revivePlayer(player, general);
 
                     player->drawCards(4);
+
                     player->tag["1v1Arrange"] = list;
 
                     return false;

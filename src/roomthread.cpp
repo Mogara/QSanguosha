@@ -255,6 +255,9 @@ void RoomThread::run(){
     if(room->mode == "06_3v3"){
         run3v3();
     }else{
+        if(room->getMode() == "02_1v1")
+            room->setCurrent(room->players.at(1));
+
         forever{
             trigger(TurnStart, room->getCurrent());
             room->setCurrent(room->getCurrent()->getNextAlive());

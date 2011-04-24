@@ -36,6 +36,7 @@ public:
     void showSkillName(const QString &skill_name);
     void createRoleCombobox();
     void setOrder(int order);
+    void revivePlayer();
 
     enum FrameType{
         Playing,
@@ -57,7 +58,7 @@ public slots:
     void setDrankState();
     void setActionState();
     void updateRoleComboboxPos();
-    void makeGrayAvatar();
+    void killPlayer();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -101,7 +102,7 @@ private:
     void drawEquip(QPainter *painter, CardItem *equip, int order);
     void drawHp(QPainter *painter);
     void drawMagatama(QPainter *painter, int index, const QPixmap &pixmap);
-    void makeGrayAvatar(QPixmap &pixmap);
+    void killPlayer(QPixmap &pixmap);
 };
 
 #endif // PHOTOBACK_H

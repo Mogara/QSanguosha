@@ -119,6 +119,23 @@ void ClientPlayer::changePile(const QString &name, bool add, int card_id){
     emit pile_changed(name);
 }
 
+QString ClientPlayer::getDeathPixmapPath() const{
+    QString basename;
+    if(ServerInfo.GameMode == "06_3v3"){
+        if(getRole() == "lord" || getRole() == "renegade")
+            basename = "marshal";
+        else
+            basename = "guard";
+    }else
+        basename = getRole();
+
+    if(basename.isEmpty()){
+        basename = "unknown";
+    }
+
+    return QString("image/system/death/%1.png").arg(basename);
+}
+
 void ClientPlayer::setFlags(const QString &flag){
     Player::setFlags(flag);
 

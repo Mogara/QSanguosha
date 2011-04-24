@@ -18,6 +18,7 @@ public:
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, int card_id);
+    QString getDeathPixmapPath() const;
 
     virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;

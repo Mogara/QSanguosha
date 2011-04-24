@@ -96,6 +96,13 @@ void Photo::setOrder(int order){
     }
 }
 
+void Photo::revivePlayer(){
+    updateAvatar();
+    updateSmallAvatar();
+
+    role_combobox->show();
+}
+
 void Photo::createRoleCombobox(){
     role_combobox = new RoleCombobox(this);
 
@@ -529,22 +536,20 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // kingdom related
     painter->drawPixmap(3, 13, kingdom_frame);
 
-    if(!player->isAlive()){
-        if(death_pixmap.isNull()){
-            QString basename;
-            if(ServerInfo.GameMode == "06_3v3"){
-                if(player->getRole() == "lord" || player->getRole() == "renegade")
-                    basename = "marshal";
-                else
-                    basename = "guard";
-            }else
-                basename = player->getRole();
+    if(player->isDead()){
+        int death_x = 5;
 
-            death_pixmap.load(QString("image/system/death/%1.png").arg(basename));
-            death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
+        if(death_pixmap.isNull()){
+            QString path = player->getDeathPixmapPath();
+            death_pixmap.load(path);
+
+            if(path.contains("unknown"))
+                death_x = 23;
+            else
+                death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
         }
 
-        painter->drawPixmap(5, 30, death_pixmap);
+        painter->drawPixmap(death_x, 30, death_pixmap);
         return;
     }
 
@@ -612,18 +617,18 @@ QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
     return Pixmap::itemChange(change, value);
 }
 
-void Photo::makeGrayAvatar(){
+void Photo::killPlayer(){
     if(!avatar.isNull())
-        makeGrayAvatar(avatar);
+        killPlayer(avatar);
 
     if(!small_avatar.isNull())
-        makeGrayAvatar(small_avatar);
+        killPlayer(small_avatar);
 
     kingdom_frame = QPixmap();
     role_combobox->hide();
 }
 
-void Photo::makeGrayAvatar(QPixmap &pixmap){
+void Photo::killPlayer(QPixmap &pixmap){
     QImage img = pixmap.toImage();
     int width = img.width();
     int height = img.height();
