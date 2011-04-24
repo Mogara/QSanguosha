@@ -401,6 +401,19 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(room->getTag("SkipNormalDeathProcess").toBool())
                 return false;
 
+            if(room->getMode() == "02_1v1"){
+                QStringList list = player->tag["1v1Arrange"].toStringList();
+                if(!list.isEmpty()){
+                    const General *general = Sanguosha->getGeneral(list.takeFirst());
+                    room->revivePlayer(player, general);
+
+                    player->drawCards(4);
+                    player->tag["1v1Arrange"] = list;
+
+                    return false;
+                }
+            }
+
             QString winner = getWinner(player);
             if(winner.isNull()){
                 QString killer_name = data.toString();

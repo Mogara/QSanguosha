@@ -84,6 +84,7 @@ public:
     void setPileNumber(const QString &pile_num);
     void gameOver(const QString &result_str);
     void killPlayer(const QString &player_name);
+    void revivePlayer(const QString &player_name);
     void warn(const QString &);
     void setMark(const QString &mark_str);
     void showCard(const QString &show_str);
@@ -213,6 +214,7 @@ signals:
     void avatars_hiden();
     void pile_cleared();
     void player_killed(const QString &who);
+    void player_revived(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QString &log_str);
     void guanxing(const QList<int> &card_ids, bool up_only);

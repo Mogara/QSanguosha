@@ -151,6 +151,37 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     thread->trigger(Dying, player, dying_data);
 }
 
+void Room::revivePlayer(ServerPlayer *player, const General *general){
+    player->setAlive(true);
+    broadcastProperty(player, "alive");
+
+    alive_players.clear();
+    foreach(ServerPlayer *player, players){
+        if(player->isAlive())
+            alive_players << player;
+    }
+
+    int i;
+    for(i=0; i<alive_players.length(); i++){
+        alive_players.at(i)->setSeat(i+1);
+        broadcastProperty(alive_players.at(i), "seat");
+    }
+
+    broadcastInvoke("revivePlayer", player->objectName());
+
+    if(general){
+        player->setGeneral(general);
+        broadcastProperty(player, "general");
+    }
+
+    int maxhp = player->getGeneralMaxHP();
+    player->setMaxHP(maxhp);
+    broadcastProperty(player, "maxhp");
+
+    player->setHp(maxhp);
+    broadcastProperty(player, "hp");
+}
+
 void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     if(Config.ContestMode && killer){
         killer->addVictim(victim);

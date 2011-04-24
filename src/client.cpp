@@ -39,6 +39,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setPileNumber"] = &Client::setPileNumber;    
     callbacks["gameOver"] = &Client::gameOver;
     callbacks["killPlayer"] = &Client::killPlayer;
+    callbacks["revivePlayer"] = &Client::revivePlayer;
     callbacks["warn"] = &Client::warn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
@@ -1048,6 +1049,12 @@ void Client::killPlayer(const QString &player_name){
     updatePileNum();
 
     emit player_killed(player_name);
+}
+
+void Client::revivePlayer(const QString &player_name){
+    alive_count ++;
+
+    emit player_revived(player_name);
 }
 
 void Client::warn(const QString &reason){

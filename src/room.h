@@ -42,6 +42,7 @@ public:
     void output(const QString &message);
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
+    void revivePlayer(ServerPlayer *player, const General *general);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);

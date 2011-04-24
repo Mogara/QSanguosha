@@ -87,9 +87,7 @@ bool Player::isDead() const{
 }
 
 void Player::setAlive(bool alive){
-    if(this->alive && alive == false){
-        this->alive = alive;
-    }
+    this->alive = alive;
 }
 
 QString Player::getFlags() const{

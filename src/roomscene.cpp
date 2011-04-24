@@ -123,6 +123,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(hp_changed(QString,int,DamageStruct::Nature)), SLOT(changeHp(QString,int,DamageStruct::Nature)));
     connect(ClientInstance, SIGNAL(pile_cleared()), this, SLOT(clearPile()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
+    connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
     connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), this, SLOT(doGuanxing(QList<int>,bool)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
@@ -2094,6 +2095,8 @@ void RoomScene::killPlayer(const QString &who){
         dashboard->update();
 
         general = Self->getGeneral();
+
+        item2player.remove(avatar);
     }else{
         Photo *photo = name2photo[who];
         photo->makeGrayAvatar();
@@ -2102,20 +2105,32 @@ void RoomScene::killPlayer(const QString &who){
         photo->update();
 
         general = photo->getPlayer()->getGeneral();
-    }
 
-    QMutableMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
-    while(itor.hasNext()){
-        itor.next();
-        if(itor.value()->objectName() == who){
-            itor.key()->setEnabled(false);
-            itor.remove();
-            break;
+        QMutableMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
+        while(itor.hasNext()){
+            itor.next();
+            if(itor.value()->objectName() == who){
+                itor.key()->setEnabled(false);
+                itor.remove();
+                break;
+            }
         }
     }
 
     if(Config.EnableLastWord)
         general->lastWord();
+}
+
+void RoomScene::revivePlayer(const QString &who){
+    if(who == Self->objectName()){
+        dashboard->update();
+        item2player.insert(avatar, Self);
+    }else{
+        Photo *photo = name2photo[who];
+        photo->updateAvatar();
+
+        item2player.insert(photo, photo->getPlayer());
+    }
 }
 
 void RoomScene::takeAmazingGrace(const ClientPlayer *taker, int card_id){

@@ -41,6 +41,7 @@ public slots:
     void useSelectedCard();
     void updateStatus(Client::Status status);    
     void killPlayer(const QString &who);
+    void revivePlayer(const QString &who);
     void showServerInformation();
     void kick();
     void surrender();

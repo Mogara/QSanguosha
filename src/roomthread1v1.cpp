@@ -112,7 +112,8 @@ void RoomThread1v1::startArrange(ServerPlayer *player){
 void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged){
     Q_ASSERT(arranged.length() == 3);
 
-    player->tag["1v1Arrange"] = QVariant::fromValue(arranged);
+    QStringList left = arranged.mid(1, 2);
+    player->tag["1v1Arrange"] = QVariant::fromValue(left);
     player->setGeneralName(arranged.first());
 
     room->sem->release();
