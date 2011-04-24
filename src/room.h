@@ -5,6 +5,7 @@ class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
 class RoomThread3v3;
+class RoomThread1v1;
 
 struct lua_State;
 struct LogMessage;
@@ -18,6 +19,7 @@ class Room : public QObject{
 public:
     friend class RoomThread;
     friend class RoomThread3v3;
+    friend class RoomThread1v1;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
 
@@ -181,6 +183,7 @@ private:
 
     RoomThread *thread;
     RoomThread3v3 *thread_3v3;
+    RoomThread1v1 *thread_1v1;
     QSemaphore *sem;
     QString result;
     QString reply_func;

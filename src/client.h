@@ -132,13 +132,14 @@ public:
     void askForPlayerChosen(const QString &ask_str);
     void askForGeneral(const QString &generals);
 
-    // 3v3 methods
+    // 3v3 & 1v1 methods
     void fillGenerals(const QString &generals);
     void askForGeneral3v3(const QString &);
     void takeGeneral(const QString &take_str);
     void startArrange(const QString &);
     void askForOrder(const QString &reason);
     void askForDirection(const QString &);
+    void recoverGeneral(const QString &);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -245,6 +246,7 @@ signals:
     void general_taken(const QString &who, const QString &name);
     void general_asked();
     void arrange_started();
+    void general_recovered(int index, const QString &name);
 };
 
 extern Client *ClientInstance;

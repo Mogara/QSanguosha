@@ -81,4 +81,10 @@ void Settings::init(){
     Volume = value("Volume", 1.0f).toFloat();
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-year.jpg").toString();
+
+    if(!contains("BanList1v1")){
+        QStringList banlist;
+        banlist << "sunquan" << "huatuo" << "liubei" << "zhangliao";
+        setValue("BanList1v1", banlist);
+    }
 }

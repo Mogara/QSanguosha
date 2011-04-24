@@ -76,6 +76,7 @@ Engine::Engine()
     // available game modes
     modes["02p"] = tr("2 players");
     modes["02pbb"] = tr("2 players (using blance beam)");
+    modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
     modes["05p"] = tr("5 players");
@@ -374,6 +375,11 @@ int Engine::getPlayerCount(const QString &mode) const{
 
 void Engine::getRoles(const QString &mode, char *roles) const{
     int n = getPlayerCount(mode);
+
+    if(mode == "02_1v1"){
+        qstrcpy(roles, "ZN");
+        return;
+    }
 
     if(modes.contains(mode)){
         static const char *table1[] = {

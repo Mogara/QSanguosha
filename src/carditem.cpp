@@ -31,9 +31,13 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :Pixmap(Sanguosha->getGeneral(general_name)->getPixmapPath("card"), false),
-    card(NULL), filtered_card(NULL), auto_back(true)
+    :card(NULL), filtered_card(NULL), auto_back(true)
 {
+    const General *general = Sanguosha->getGeneral(general_name);
+    if(general)
+        changePixmap(general->getPixmapPath("card"));
+    else
+        changePixmap("image/system/unknown.png");
 }
 
 const Card *CardItem::getCard() const{

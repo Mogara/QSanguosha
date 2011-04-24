@@ -8,6 +8,7 @@
 #include "contestdb.h"
 #include "banpairdialog.h"
 #include "roomthread3v3.h"
+#include "roomthread1v1.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -885,6 +886,11 @@ void Room::timerEvent(QTimerEvent *event){
             thread_3v3->start();
 
             connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
+        }else if(mode == "02_1v1"){
+            thread_1v1 = new RoomThread1v1(this);
+            thread_1v1->start();
+
+            connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
             QStringList lord_list = Sanguosha->getRandomLords();
             QString default_lord = lord_list[qrand() % lord_list.length()];
@@ -954,6 +960,18 @@ void Room::prepareForStart(){
             players.at(i)->setRole(roles.at(i));
             broadcastProperty(players.at(i), "role");
         }
+    }else if(mode == "02_1v1"){
+        if(qrand() % 2 == 0)
+            players.swap(0, 1);
+
+        players.at(0)->setRole("lord");
+        players.at(1)->setRole("renegade");
+
+        int i;
+        for(i=0; i<2; i++){
+            broadcastProperty(players.at(i), "role");
+        }
+
     }else{
         assignRoles();
     }
@@ -1592,7 +1610,10 @@ void Room::startGame(){
 
     int i;
     if(scenario == NULL){
-        int start_index = (mode == "06_3v3") ? 0 : 1;
+        int start_index = 1;
+        if(mode == "06_3v3" || mode == "02_1v1")
+            start_index = 0;
+
         for(i = start_index; i < players.count(); i++)
             broadcastProperty(players.at(i), "general");
     }
@@ -2451,15 +2472,17 @@ QString Room::generatePlayerName(){
 }
 
 void Room::arrangeCommand(ServerPlayer *player, const QString &arg){
-    Q_ASSERT(thread_3v3);
-
-    thread_3v3->arrange(player, arg.split("+"));
+    if(mode == "06_3v3")
+        thread_3v3->arrange(player, arg.split("+"));
+    else if(mode == "02_1v1")
+        thread_1v1->arrange(player, arg.split("+"));
 }
 
 void Room::takeGeneralCommand(ServerPlayer *player, const QString &arg){
-    Q_ASSERT(thread_3v3);
-
-    thread_3v3->takeGeneral(player, arg);
+    if(mode == "06_3v3")
+        thread_3v3->takeGeneral(player, arg);
+    else if(mode == "02_1v1")
+        thread_1v1->takeGeneral(player, arg);
 }
 
 QString Room::askForOrder(ServerPlayer *player){

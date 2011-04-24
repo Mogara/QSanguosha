@@ -1532,12 +1532,18 @@ public:
         if(dengshizai->faceUp())
             return;
 
+        if(dengshizai->isKongcheng())
+            return;
+
         if(!dengshizai->askForSkillInvoke("toudu"))
+            return;
+
+        Room *room = dengshizai->getRoom();
+        if(!room->askForDiscard(dengshizai, "toudu", 1, true, false))
             return;
 
         dengshizai->turnOver();
 
-        Room *room = dengshizai->getRoom();
         QList<ServerPlayer *> players = room->getOtherPlayers(dengshizai), targets;
         foreach(ServerPlayer *player, players){
             if(dengshizai->canSlash(player, false)){

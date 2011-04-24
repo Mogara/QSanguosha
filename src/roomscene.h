@@ -135,6 +135,9 @@ private:
     QList<QPointF> getPhotoPositions() const;
     void createStateItem();
 
+    void fillGenerals1v1(const QStringList &names);
+    void fillGenerals3v3(const QStringList &names);
+
     // animation related functions
     QGraphicsObject *getAnimationObject(const QString &name) const;
     void moveAndDisappear(QGraphicsObject *item, const QPointF &from, const QPointF &to) const;
@@ -191,9 +194,10 @@ private slots:
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart);
 
-    // 3v3 mode use only
+    // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);
     void takeGeneral(const QString &who, const QString &name);
+    void recoverGeneral(int index, const QString &name);
     void startGeneralSelection();
     void selectGeneral();
     void startArrange();

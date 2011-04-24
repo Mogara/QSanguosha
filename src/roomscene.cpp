@@ -163,12 +163,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
-    // 3v3 mode use only
     {
+        // 1v1 & 3v3 mode
         connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
         connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
         connect(ClientInstance, SIGNAL(general_taken(QString,QString)), this, SLOT(takeGeneral(QString,QString)));
         connect(ClientInstance, SIGNAL(arrange_started()), this, SLOT(startArrange()));
+        connect(ClientInstance, SIGNAL(general_recovered(int,QString)), this, SLOT(recoverGeneral(int,QString)));
     }
 
     int widen_width = 0;
@@ -2411,7 +2412,7 @@ void RoomScene::showPlayerCards(){
 static irrklang::ISound *BackgroundMusic;
 
 void RoomScene::onGameStart(){
-    if(ServerInfo.GameMode == "06_3v3"){
+    if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         selector_box->deleteLater();
         selector_box = NULL;
 
@@ -2697,10 +2698,44 @@ void RoomScene::surrender(){
     }
 }
 
-void RoomScene::fillGenerals(const QStringList &names){
-    chat_box->hide();
-    log_box->hide();
+void RoomScene::fillGenerals1v1(const QStringList &names){
+    selector_box = new Pixmap("image/system/1v1/select.png", true);
+    addItem(selector_box);
+    selector_box->shift();
 
+    const static int start_x = 43;
+    const static int width = 86;
+    const static int row_y[4] = {60, 60+120, 60+120*2, 60+120*3};
+
+    foreach(QString name, names){
+        CardItem *item =  new CardItem(name);
+        item->setObjectName(name);
+        general_items << item;
+    }
+
+    qShuffle(general_items);
+
+    int i, n=names.length();
+    for(i=0; i<n; i++){
+
+        int row, column;
+        if(i < 5){
+            row = 1;
+            column = i;
+        }else{
+            row = 2;
+            column = i - 5;
+        }
+
+        CardItem *general_item = general_items.at(i);
+        general_item->setScale(0.4);
+        general_item->setParentItem(selector_box);
+        general_item->setPos(start_x + width * column, row_y[row]);
+        general_item->setHomePos(general_item->pos());
+    }
+}
+
+void RoomScene::fillGenerals3v3(const QStringList &names){
     QString temperature;
     if(Self->getRole().startsWith("l"))
         temperature = "warm";
@@ -2739,6 +2774,16 @@ void RoomScene::fillGenerals(const QStringList &names){
     }
 }
 
+void RoomScene::fillGenerals(const QStringList &names){
+    chat_box->hide();
+    log_box->hide();
+
+    if(ServerInfo.GameMode == "06_3v3")
+        fillGenerals3v3(names);
+    else if(ServerInfo.GameMode == "02_1v1")
+        fillGenerals1v1(names);
+}
+
 void RoomScene::takeGeneral(const QString &who, const QString &name){
     bool self_taken;
     if(who == "warm")
@@ -2761,11 +2806,31 @@ void RoomScene::takeGeneral(const QString &who, const QString &name){
     general_items.removeOne(general_item);
     to_add->append(general_item);
 
-    int x = 62 + (to_add->length() - 1) * (148-62);
-    int y = self_taken ? 451 : 85;
+    int x,y;
+    if(ServerInfo.GameMode == "06_3v3"){
+        x = 62 + (to_add->length() - 1) * (148-62);
+        y = self_taken ? 451 : 85;
+    }else{
+        x = 43 + (to_add->length() - 1) * 86;
+        y = self_taken ? 60+120*3 : 60;
+    }
 
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack();
+}
+
+void RoomScene::recoverGeneral(int index, const QString &name){
+    QString obj_name = QString("x%1").arg(index);
+
+    foreach(CardItem *item, general_items){
+        if(item->objectName() == obj_name){
+            item->setObjectName(name);
+            const General *general = Sanguosha->getGeneral(name);
+            item->changePixmap(general->getPixmapPath("card"));
+
+            break;
+        }
+    }
 }
 
 void RoomScene::startGeneralSelection(){
@@ -2789,18 +2854,27 @@ void RoomScene::selectGeneral(){
 }
 
 void RoomScene::startArrange(){
-    selector_box->changePixmap("image/system/3v3/arrange.png");
+    QString mode;
+    QList<QPointF> positions;
+    if(ServerInfo.GameMode == "06_3v3"){
+        mode = "3v3";
+        positions << QPointF(233, 291)
+                << QPointF(361, 291)
+                << QPointF(489, 291);
+    }else{
+        mode = "1v1";
+        positions << QPointF(84, 269)
+                << QPointF(214, 269)
+                << QPointF(344, 269);
+    }
+
+    selector_box->changePixmap(QString("image/system/%1/arrange.png").arg(mode));
 
     foreach(CardItem *item, down_generals){
         item->setFlag(QGraphicsItem::ItemIsFocusable);
         item->setAutoBack(false);
         connect(item, SIGNAL(released()), this, SLOT(toggleArrange()));
     }
-
-    QList<QPointF> positions;
-    positions << QPointF(233, 291)
-            << QPointF(361, 291)
-            << QPointF(489, 291);
 
     QRect rect(0, 0, 80, 120);
 
@@ -2856,7 +2930,12 @@ void RoomScene::toggleArrange(){
     }
 
     for(i=0; i<down_generals.length(); i++){
-        QPointF pos(62 + i*86, 451);
+        QPointF pos;
+        if(ServerInfo.GameMode == "06_3v3")
+            pos = QPointF(62 + i*86, 451);
+        else
+            pos = QPointF(43 + i*86, 60 + 120 * 3);
+
         CardItem *item = down_generals.at(i);
         item->setHomePos(pos);
         item->goBack();

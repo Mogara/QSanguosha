@@ -97,13 +97,15 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["takeAG"] = &Client::takeAG;
     callbacks["clearAG"] = &Client::clearAG;
 
-    // 3v3 mode use only
+    // 3v3 mode & 1v1 mode
     callbacks["fillGenerals"] = &Client::fillGenerals;
     callbacks["askForGeneral3v3"] = &Client::askForGeneral3v3;
+    callbacks["askForGeneral1v1"] = &Client::askForGeneral3v3;
     callbacks["takeGeneral"] = &Client::takeGeneral;
     callbacks["startArrange"] = &Client::startArrange;
     callbacks["askForOrder"] = &Client::askForOrder;
     callbacks["askForDirection"] = &Client::askForDirection;
+    callbacks["recoverGeneral"] = &Client::recoverGeneral;
 
     ask_dialog = NULL;
     use_card = false;
@@ -1611,6 +1613,18 @@ void Client::askForDirection(const QString &){
     ask_dialog = dialog;
 
     setStatus(ExecDialog);
+}
+
+void Client::recoverGeneral(const QString &recover_str){
+    QRegExp rx("(\\d):(\\w+)");
+    if(!rx.exactMatch(recover_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    int index = texts.at(1).toInt();
+    QString name = texts.at(2);
+
+    emit general_recovered(index, name);
 }
 
 void Client::selectOrder(){
