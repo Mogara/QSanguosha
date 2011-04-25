@@ -2863,10 +2863,7 @@ void RoomScene::recoverGeneral(int index, const QString &name){
 
     foreach(CardItem *item, general_items){
         if(item->objectName() == obj_name){
-            item->setObjectName(name);
-            const General *general = Sanguosha->getGeneral(name);
-            item->changePixmap(general->getPixmapPath("card"));
-
+            item->changeGeneral(name);
             break;
         }
     }
@@ -2894,8 +2891,7 @@ void RoomScene::selectGeneral(){
 
 void RoomScene::changeGeneral(const QString &general){
     if(to_change && arrange_button){
-        to_change->setObjectName(general);
-        to_change->changePixmap(Sanguosha->getGeneral(general)->getPixmapPath("card"));
+        to_change->changeGeneral(general);
     }
 }
 

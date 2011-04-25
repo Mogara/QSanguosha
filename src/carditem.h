@@ -30,6 +30,7 @@ public:
     void showAvatar(const General *general);
     void hideFrame();
     void setAutoBack(bool auto_back);
+    void changeGeneral(const QString &general_name);
 
     void select();
     void unselect();

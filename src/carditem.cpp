@@ -33,11 +33,20 @@ CardItem::CardItem(const Card *card)
 CardItem::CardItem(const QString &general_name)
     :card(NULL), filtered_card(NULL), auto_back(true)
 {
+    changeGeneral(general_name);
+}
+
+void CardItem::changeGeneral(const QString &general_name){
+    setObjectName(general_name);
+
     const General *general = Sanguosha->getGeneral(general_name);
-    if(general)
+    if(general){
         changePixmap(general->getPixmapPath("card"));
-    else
+        setToolTip(general->getSkillDescription());
+    }else{
         changePixmap("image/system/unknown.png");
+        setToolTip(QString());
+    }
 }
 
 const Card *CardItem::getCard() const{
