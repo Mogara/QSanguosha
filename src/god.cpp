@@ -254,6 +254,9 @@ public:
         if(selected.length() >= 4)
             return false;
 
+        if(to_select->isEquipped())
+            return false;
+
         foreach(CardItem *item, selected){
             if(to_select->getFilteredCard()->getSuit() == item->getFilteredCard()->getSuit())
                 return false;

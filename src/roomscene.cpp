@@ -110,6 +110,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     known_cards_menu = new QMenu(main_window);
 
+    {
+        change_general_menu = new QMenu(main_window);
+        QAction *action = change_general_menu->addAction(tr("Change general ..."));
+        FreeChooseDialog *general_changer = new FreeChooseDialog(main_window);
+        connect(action, SIGNAL(triggered()), general_changer, SLOT(exec()));
+        connect(general_changer, SIGNAL(general_chosen(QString)), this, SLOT(changeGeneral(QString)));
+        to_change = NULL;
+    }
+
     // get dashboard's avatar
     avatar = dashboard->getAvatar();
 
@@ -171,6 +180,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(ClientInstance, SIGNAL(general_taken(QString,QString)), this, SLOT(takeGeneral(QString,QString)));
         connect(ClientInstance, SIGNAL(arrange_started()), this, SLOT(startArrange()));
         connect(ClientInstance, SIGNAL(general_recovered(int,QString)), this, SLOT(recoverGeneral(int,QString)));
+
+        arrange_button = NULL;
     }
 
     int widen_width = 0;
@@ -564,7 +575,10 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         return;
 
     const ClientPlayer *player = item2player.value(item, NULL);
-    if(player && player != Self){
+    if(player){
+        if(player == Self)
+            return;
+
         QList<const Card *> cards = player->getCards();
         QMenu *menu = known_cards_menu;
         menu->clear();
@@ -584,6 +598,12 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         }
 
         menu->popup(event->screenPos());
+    }else if(ServerInfo.FreeChoose && arrange_button){
+        QGraphicsObject *obj = item->toGraphicsObject();
+        if(obj && Sanguosha->getGeneral(obj->objectName())){
+            to_change = qobject_cast<CardItem *>(obj);
+            change_general_menu->popup(event->screenPos());
+        }
     }
 }
 
@@ -2872,6 +2892,13 @@ void RoomScene::selectGeneral(){
     }
 }
 
+void RoomScene::changeGeneral(const QString &general){
+    if(to_change && arrange_button){
+        to_change->setObjectName(general);
+        to_change->changePixmap(Sanguosha->getGeneral(general)->getPixmapPath("card"));
+    }
+}
+
 void RoomScene::startArrange(){
     QString mode;
     QList<QPointF> positions;
@@ -2926,14 +2953,15 @@ void RoomScene::toggleArrange(){
         }
     }
 
+    if(index == -1){
+        item->goBack();
+        return;
+    }
+
     arrange_items.removeOne(item);
     down_generals.removeOne(item);
 
-    if(arrange_rect){
-        arrange_items.insert(index, item);
-    }else{
-        down_generals << item;
-    }
+    arrange_items.insert(index, item);
 
     int n = qMin(arrange_items.length(), 3);
     for(i=0; i<n; i++){
@@ -2964,6 +2992,9 @@ void RoomScene::toggleArrange(){
 void RoomScene::finishArrange(){
     if(arrange_items.length() != 3)
         return;
+
+    arrange_button->deleteLater();
+    arrange_button = NULL;
 
     QStringList names;
     foreach(CardItem *item, arrange_items)

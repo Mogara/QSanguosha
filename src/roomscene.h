@@ -67,7 +67,7 @@ private:
     QComboBox *role_combobox;
     QPushButton *trust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
-    QMenu *known_cards_menu;   
+    QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
@@ -103,9 +103,10 @@ private:
 
     QSharedMemory *memory;
 
-    // for 3v3 mode use only
+    // for 3v3 & 1v1 mode
     Pixmap *selector_box;
     QList<CardItem *> general_items, up_generals, down_generals;
+    CardItem *to_change;
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
     Button *arrange_button;
@@ -204,6 +205,7 @@ private slots:
     void startArrange();
     void toggleArrange();
     void finishArrange();
+    void changeGeneral(const QString &general);
 
 signals:
     void restart();
