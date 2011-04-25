@@ -48,6 +48,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
+    callbacks["detachAllSkills"] = &Client::detachAllSkills;
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
@@ -1301,6 +1302,14 @@ void Client::attachSkill(const QString &skill_name){
 
 void Client::detachSkill(const QString &skill_name){
     emit skill_detached(skill_name);
+}
+
+void Client::detachAllSkills(const QString &){
+    QList<const Skill *> skills = Self->getGeneral()->findChildren<const Skill *>();
+    foreach(const Skill *skill, skills){
+        if(!skill->objectName().startsWith("#"))
+            emit skill_detached(skill->objectName());
+    }
 }
 
 void Client::doGuanxing(const QString &guanxing_str){

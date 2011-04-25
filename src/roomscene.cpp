@@ -2222,16 +2222,12 @@ void RoomScene::attachSkill(const QString &skill_name){
 }
 
 void RoomScene::detachSkill(const QString &skill_name){
-    const ViewAsSkill *skill = getViewAsSkill(skill_name);
-
-    QAbstractButton *button = button2skill.key(skill, NULL);
-    if(button){
-        skill_buttons.removeOne(button);
-        button2skill.remove(button);
-        QPushButton *push_button = qobject_cast<QPushButton *>(button);
-        removeWidgetFromSkillDock(push_button);
-
-        button->deleteLater();
+    foreach(QAbstractButton *button, skill_buttons){
+        if(button->objectName() == skill_name){
+            removeWidgetFromSkillDock(button);
+            button->deleteLater();
+            return;
+        }
     }
 }
 

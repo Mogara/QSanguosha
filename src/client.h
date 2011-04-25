@@ -144,6 +144,7 @@ public:
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
+    void detachAllSkills(const QString &);
 
     // public fields
     QString card_pattern;

@@ -170,16 +170,8 @@ void Room::revivePlayer(ServerPlayer *player, const General *general){
     broadcastInvoke("revivePlayer", player->objectName());
 
     if(general){
-        player->setGeneral(general);
-        broadcastProperty(player, "general");
+        transfigure(player, general->objectName(), true, true);
     }
-
-    int maxhp = player->getGeneralMaxHP();
-    player->setMaxHP(maxhp);
-    broadcastProperty(player, "maxhp");
-
-    player->setHp(maxhp);
-    broadcastProperty(player, "hp");
 }
 
 void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
@@ -798,6 +790,8 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.from = player;
     log.arg = new_general;
     sendLog(log);
+
+    player->invoke("detachAllSkills");
 
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
