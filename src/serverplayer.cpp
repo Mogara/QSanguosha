@@ -480,6 +480,10 @@ AI *ServerPlayer::getAI() const{
         return ai;
 }
 
+AI *ServerPlayer::getSmartAI() const{
+    return ai;
+}
+
 void ServerPlayer::addVictim(ServerPlayer *victim){
     victims.append(victim);
 }

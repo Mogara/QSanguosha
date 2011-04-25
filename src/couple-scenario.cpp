@@ -80,9 +80,9 @@ public:
                 }
 
                 // reward and punishment
-                QString killer_name = data.toString();
-                if(!killer_name.isEmpty()){
-                    ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+                DamageStar damage = data.value<DamageStar>();
+                if(damage && damage->from){
+                    ServerPlayer *killer = damage->from;
 
                     if(killer == player)
                         return false;

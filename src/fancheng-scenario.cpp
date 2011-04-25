@@ -332,11 +332,12 @@ public:
             }
 
         case Death:{
-                QString killer_name = data.toString();
+                DamageStar damage = data.value<DamageStar>();
                 if(player->getGeneralName() == "pangde" &&
-                   killer_name == room->getLord()->objectName())
+                   damage && damage->from && damage->from->isLord())
                 {
-                    data = QString();
+                    damage = NULL;
+                    data = QVariant::fromValue(damage);
                 }
 
                 break;

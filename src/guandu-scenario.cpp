@@ -233,7 +233,7 @@ public:
             }
 
         case Death:{
-                if(player->getRoleEnum() == Player::Lord){
+                if(player->isLord()){
                     QStringList roles = room->aliveRoles(player);
                     if(roles.length() == 2){
                         QString first = roles.at(0);

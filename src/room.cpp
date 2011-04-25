@@ -151,7 +151,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     thread->trigger(Dying, player, dying_data);
 }
 
-void Room::revivePlayer(ServerPlayer *player, const General *general){
+void Room::revivePlayer(ServerPlayer *player){
     player->setAlive(true);
     broadcastProperty(player, "alive");
 
@@ -168,13 +168,10 @@ void Room::revivePlayer(ServerPlayer *player, const General *general){
     }
 
     broadcastInvoke("revivePlayer", player->objectName());
-
-    if(general){
-        transfigure(player, general->objectName(), true, true);
-    }
 }
 
-void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
+void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
+    ServerPlayer *killer = reason ? reason->from : NULL;
     if(Config.ContestMode && killer){
         killer->addVictim(victim);
     }
@@ -200,10 +197,7 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
     log.arg = victim->getRole();
     log.from = killer;
 
-    QVariant killer_name;
     if(killer){
-        killer_name = killer->objectName();
-
         if(killer == victim)
             log.type = "#Suicide";
         else
@@ -214,7 +208,8 @@ void Room::killPlayer(ServerPlayer *victim, ServerPlayer *killer){
 
     sendLog(log);
 
-    thread->trigger(Death, victim, killer_name);
+    QVariant data = QVariant::fromValue(reason);
+    thread->trigger(Death, victim, data);
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -803,6 +798,13 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     if(full_state)
         player->setHp(player->getMaxHP());
     broadcastProperty(player, "hp");
+
+    AI *smart_ai = player->getSmartAI();
+    if(smart_ai){
+        ais.removeOne(smart_ai);
+        smart_ai->deleteLater();
+        player->setAI(cloneAI(player));
+    }
 }
 
 lua_State *Room::getLuaState() const{

@@ -345,10 +345,10 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        QString killer_name = data.toString();
-        if(!killer_name.isEmpty()){
+        DamageStar damage = data.value<DamageStar>();
+        ServerPlayer *killer = damage ? damage->from : NULL;
+        if(killer){
             Room *room = player->getRoom();
-            ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
 
             LogMessage log;
             log.type = "#HuileiThrow";

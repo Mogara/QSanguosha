@@ -579,7 +579,8 @@ public:
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
     void output(const char *message);
-    void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
+    void killPlayer(ServerPlayer *victim, DamageStruct *killer = NULL);
+	void revivePlayer(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const char *winner);
     void slashEffect(const SlashEffectStruct &effect);
@@ -695,3 +696,4 @@ public:
 %include "card.i"
 %include "ai.i"
 
+typedef DamageStruct *DamageStar;

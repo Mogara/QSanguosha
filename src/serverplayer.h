@@ -58,6 +58,7 @@ public:
 
     void setAI(AI *ai);
     AI *getAI() const;
+    AI *getSmartAI() const;
 
     virtual int aliveCount() const;
     virtual int getHandcardNum() const;

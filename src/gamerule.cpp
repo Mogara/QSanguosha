@@ -288,11 +288,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     case AskForPeachesDone:{
             if(player->getHp() <= 0){
                 DyingStruct dying = data.value<DyingStruct>();
-                ServerPlayer *killer = NULL;
-                if(dying.damage)
-                    killer = dying.damage->from;
-
-                room->killPlayer(player, killer);
+                room->killPlayer(player, dying.damage);
             }
 
             break;
@@ -311,6 +307,12 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }        
 
     case DamageComplete:{
+            if(room->getMode() == "02_1v1" && player->isDead()){
+                QString new_general = player->tag["1v1ChangeGeneral"].toString();
+                if(!new_general.isEmpty())
+                    changeGeneral1v1(player);
+            }
+
             bool chained = player->isChained();
             if(!chained)
                 break;
@@ -411,13 +413,15 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             if(room->getMode() == "02_1v1"){
                 QStringList list = player->tag["1v1Arrange"].toStringList();
+
                 if(!list.isEmpty()){
-                    const General *general = Sanguosha->getGeneral(list.takeFirst());
-                    room->revivePlayer(player, general);
-
-                    player->drawCards(4);
-
+                    player->tag["1v1ChangeGeneral"] = list.takeFirst();
                     player->tag["1v1Arrange"] = list;
+
+                    DamageStar damage = data.value<DamageStar>();
+
+                    if(damage == NULL)
+                        changeGeneral1v1(player);
 
                     return false;
                 }
@@ -482,6 +486,19 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
     }
 
     return false;
+}
+
+void GameRule::changeGeneral1v1(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    QString new_general = player->tag["1v1ChangeGeneral"].toString();
+    player->tag.remove("1v1ChangeGeneral");
+    room->revivePlayer(player);
+    room->transfigure(player, new_general, true, true);
+
+    if(!player->faceUp())
+        player->turnOver();
+
+    player->drawCards(4);
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
@@ -567,10 +584,10 @@ bool BossMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 return true;
             }
 
-            QString killer_name = data.toString();
+            DamageStar damage = data.value<DamageStar>();
             ServerPlayer *killer = NULL;
-            if(!killer_name.isEmpty())
-                killer = room->findChild<ServerPlayer *>(killer_name);
+            if(damage)
+                killer = damage->from;
 
             switch(player->getRoleEnum()){
             case Player::Lord:{

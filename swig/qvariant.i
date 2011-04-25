@@ -69,4 +69,8 @@ class QVariant{
 	void setValue(DyingStruct *dying){
 		$self->setValue(QVariant::fromValue(*dying));
 	}
+
+	DamageStar toDamageStar() const{
+		return $self->value<DamageStar>();
+	}
 };

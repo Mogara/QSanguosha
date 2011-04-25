@@ -41,8 +41,8 @@ public:
     QList<ServerPlayer *> getAlivePlayers() const;
     void output(const QString &message);
     void enterDying(ServerPlayer *player, DamageStruct *reason);
-    void killPlayer(ServerPlayer *victim, ServerPlayer *killer = NULL);
-    void revivePlayer(ServerPlayer *player, const General *general);
+    void killPlayer(ServerPlayer *victim, DamageStruct *reason = NULL);
+    void revivePlayer(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);
