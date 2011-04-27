@@ -429,9 +429,9 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             QString winner = getWinner(player);
             if(winner.isNull()){
-                QString killer_name = data.toString();
-                if(!killer_name.isEmpty()){
-                    ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+                DamageStar damage = data.value<DamageStar>();
+                ServerPlayer *killer = damage ? damage->from : NULL;
+                if(killer){
                     rewardAndPunish(killer, player);
                 }
 

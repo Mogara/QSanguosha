@@ -996,6 +996,9 @@ void RoomScene::addSkillButton(const Skill *skill){
     button->setToolTip(skill->getDescription());
     button->setDisabled(skill->getFrequency() == Skill::Compulsory);
 
+    if(skill->isLordSkill())
+        button->setIcon(QIcon("image/system/roles/lord.png"));
+
     skill_buttons << button;
     addWidgetToSkillDock(button);
 }

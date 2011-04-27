@@ -42,9 +42,6 @@ QString Skill::getText() const{
     case Skill::Compulsory: skill_name.append(tr(" [Compulsory]")); break;
     }
 
-    if(isLordSkill())
-        skill_name.append(tr(" [Lord Skill]"));
-
     return skill_name;
 }
 
