@@ -278,6 +278,20 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
     }
 }
 
+HuanzhuangCard::HuanzhuangCard(){
+    target_fixed = true;
+}
+
+void HuanzhuangCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *diaochan = card_use.from;
+
+    if(diaochan->getGeneralName() == "diaochan"){
+        room->setPlayerProperty(diaochan, "general", "sp_diaochan");
+    }else if(diaochan->getGeneralName() == "sp_diaochan"){
+        room->setPlayerProperty(diaochan, "general", "diaochan");
+    }
+}
+
 CheatCard::CheatCard(){
     target_fixed = true;
     will_throw = false;

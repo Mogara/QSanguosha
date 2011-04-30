@@ -1182,6 +1182,24 @@ public:
     }
 };
 
+class Huanzhuang: public ZeroCardViewAsSkill{
+public:
+    Huanzhuang(const QString &name):ZeroCardViewAsSkill(name){
+
+    }
+
+    virtual bool isEnabledAtPlay() const{
+        if(Self->hasUsed("HuanzhuangCard"))
+            return false;
+
+        return (Self->getGeneralName() == "diaochan" || Self->getGeneralName() == "sp_diaochan");
+    }
+
+    virtual const Card *viewAs() const{
+        return new HuanzhuangCard();
+    }
+};
+
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
@@ -1280,6 +1298,12 @@ void StandardPackage::addGenerals(){
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
+    diaochan->addSkill(new Huanzhuang("tuoqiao"));
+
+    General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
+    sp_diaochan->addSkill(new Lijian);
+    sp_diaochan->addSkill(new Biyue);
+    sp_diaochan->addSkill(new Huanzhuang("xuwei"));
 
     // for test only
     General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
@@ -1302,5 +1326,6 @@ void StandardPackage::addGenerals(){
     addMetaObject<QingnangCard>();
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
+    addMetaObject<HuanzhuangCard>();
     addMetaObject<CheatCard>();    
 }

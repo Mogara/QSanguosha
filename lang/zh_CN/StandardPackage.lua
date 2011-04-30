@@ -385,6 +385,12 @@ local t = {
 	[":zhiba"] = "出牌阶段，你可以弃置任意数量的牌，然后摸取等量的牌。每回合可用X+1次，X为你已损失的体力值。",
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底。",
+	
+	["sp_diaochan"] = "SP貂蝉",
+	["tuoqiao"] = "脱壳",
+	["xuwei"] = "续尾",
+	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
+	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

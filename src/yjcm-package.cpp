@@ -38,7 +38,7 @@ public:
 class Luoying: public TriggerSkill{
 public:
     Luoying():TriggerSkill("luoying"){
-        events << CardDiscarded << CardUsed;
+        events << CardDiscarded << CardUsed << FinishJudge;
         frequency = Frequent;
     }
 
@@ -85,6 +85,11 @@ public:
                 return false;
 
             clubs = getClubs(card);
+        }else if(event == FinishJudge){
+            JudgeStar judge = data.value<JudgeStar>();
+            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardedPile
+               && judge->card->getSuit() == Card::Club)
+               clubs << judge->card;
         }
 
         if(clubs.isEmpty())
@@ -370,22 +375,42 @@ public:
         events << CardLost;
     }
 
+    virtual QString getDefaultChoice(ServerPlayer *) const{
+        return "nothing";
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         CardMoveStruct move = data.value<CardMoveStruct>();
 
-        if(move.from_place == Player::Equip && player->askForSkillInvoke(objectName(), data)){
+        if(move.from_place == Player::Equip){
             Room *room = player->getRoom();
 
-            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            QString choice = room->askForChoice(player, objectName(), "slash+damage+nothing");
+            if(choice == "slash"){
+                QList<ServerPlayer *> players = room->getOtherPlayers(player);
 
-            ServerPlayer *target = room->askForPlayerChosen(player, players, objectName());
+                ServerPlayer *target = room->askForPlayerChosen(player, players, "xuanfeng-slash");
 
-            CardEffectStruct effect;
-            effect.card = new Slash(Card::NoSuit, 0);
-            effect.from = player;
-            effect.to = target;
+                CardEffectStruct effect;
+                effect.card = new Slash(Card::NoSuit, 0);
+                effect.from = player;
+                effect.to = target;
 
-            room->cardEffect(effect);
+                room->cardEffect(effect);
+            }else if(choice == "damage"){
+                QList<ServerPlayer *> players = room->getOtherPlayers(player), targets;
+                foreach(ServerPlayer *p, players){
+                    if(player->distanceTo(p) <= 1)
+                        targets << p;
+                }
+
+                ServerPlayer *target = room->askForPlayerChosen(player, targets, "xuanfeng-damage");
+
+                DamageStruct damage;
+                damage.from = player;
+                damage.to = target;
+                room->damage(damage);
+            }
         }
 
         return false;
@@ -404,7 +429,8 @@ public:
             return false;
 
         if(player->askForSkillInvoke(objectName(), data)){
-            damage.to->drawCards(damage.to->getLostHp());
+            int x = qMax(5, damage.to->getHp());
+            damage.to->drawCards(x);
             damage.to->turnOver();
         }
 
@@ -686,7 +712,17 @@ bool GanluCard::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
 }
 
 bool GanluCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
-    return targets.length() < 2 && ! to_select->getEquips().isEmpty();
+    switch(targets.length()){
+    case 0: return true;
+    case 1: {
+            int n1 = targets.at(0)->getEquips().length();
+            int n2 = targets.at(1)->getEquips().length();
+            return qAbs(n1-n2) <= Self->getLostHp();
+        }
+
+    default:
+        return false;
+    }
 }
 
 void GanluCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -725,8 +761,8 @@ public:
         events << Dying;
     }
 
-    virtual bool triggerable(const ServerPlayer *) const{
-        return true;
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return !player->isKongcheng();
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -734,15 +770,11 @@ public:
         ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
 
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
-            JudgeStruct judge;
-            judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
-            judge.good = true;
-            judge.reason = objectName();
-            judge.who = wuguotai;
+            const Card *card = player->getRandomHandCard();
+            room->showCard(player, card->getEffectiveId());
+            room->throwCard(card);
 
-            room->judge(judge);
-
-            if(judge.isGood()){
+            if(card->getTypeId() != Card::Basic){
                 CardUseStruct use;
                 Peach *peach = new Peach(Card::NoSuit, 0);
                 peach->setSkillName(objectName());
