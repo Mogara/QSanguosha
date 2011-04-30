@@ -129,7 +129,7 @@ public:
 class JiushiFlip: public TriggerSkill{
 public:
     JiushiFlip():TriggerSkill("#jiushi-flip"){
-        events << CardUsed << Damaged;
+        events << CardUsed << Predamaged << Damaged;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -137,8 +137,11 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->getSkillName() == "jiushi")
                 player->turnOver();
+        }else if(event == Predamaged){
+            player->tag["PredamagedFace"] = player->faceUp();
         }else if(event == Damaged){
-            if(!player->faceUp() && player->askForSkillInvoke("jiushi"))
+            bool faceup = player->tag.value("PredamagedFace").toBool();
+            if(!faceup && player->askForSkillInvoke("jiushi", data))
                 player->turnOver();
         }
 
@@ -289,32 +292,15 @@ XuanhuoCard::XuanhuoCard(){
     will_throw = false;
 }
 
-void XuanhuoCard::xuanhuo(ServerPlayer *from, ServerPlayer *to) const{
-    Room *room = from->getRoom();
-
-    int card_id = room->askForCardChosen(from, to, "he", "xuanhuo");
-    const Card *card = Sanguosha->getCard(card_id);
-    room->moveCardTo(card, from, Player::Hand, false);
-
-    QList<ServerPlayer *> targets = room->getOtherPlayers(to);
-    ServerPlayer *to_give = room->askForPlayerChosen(from, targets, "xuanhuo");
-
-    if(to_give != from)
-        room->moveCardTo(card, to_give, Player::Hand, false);
-}
-
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
-    int card_id = subcards.first();
-
-    Room *room = effect.from->getRoom();
-    room->showCard(effect.from, card_id);
-
     effect.to->obtainCard(this);
 
-    xuanhuo(effect.from, effect.to);
+    const Card *card = effect.to->getRandomHandCard();
+    Room *room = effect.from->getRoom();
+    QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
+    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
 
-    if(!effect.to->isNude())
-        xuanhuo(effect.from, effect.to);
+    room->moveCardTo(card, target, Player::Hand, false);
 }
 
 class Xuanhuo: public OneCardViewAsSkill{
@@ -457,14 +443,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         room->setPlayerFlag(effect.from, "xianzhen_success");
         room->setFixedDistance(effect.from, effect.to, 1);
     }else{
-        int n = effect.from->getHandcardNum();
-        if(n == 0)
-            return;
-
-        if(n == 1)
-            effect.from->throwAllHandCards();
-        else
-            room->askForDiscard(effect.from, "xianzhen", 1);
+        room->setPlayerFlag(effect.from, "xianzhen_failed");
     }
 }
 
@@ -586,9 +565,8 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
     Room *room = effect.to->getRoom();
-    QString choice = room->askForChoice(effect.to, "mingce", "nothing+use+draw");
+    QString choice = room->askForChoice(effect.to, "mingce", "use+draw");
     if(choice == "use"){
-        room->throwCard(this);
         QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), targets;
         foreach(ServerPlayer *player, players){
             if(effect.to->canSlash(player))
@@ -600,7 +578,6 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
             room->cardEffect(new Slash(Card::NoSuit, 0), effect.to, target);
         }
     }else if(choice == "draw"){
-        room->throwCard(this);
         effect.to->drawCards(1, true);
     }
 }
@@ -646,9 +623,9 @@ public:
     }
 };
 
-class ChengongDongcha: public TriggerSkill{
+class Zhichi: public TriggerSkill{
 public:
-    ChengongDongcha():TriggerSkill("chengong_dongcha"){
+    Zhichi():TriggerSkill("zhichi"){
         events << Damaged << CardEffected;
 
         frequency = Compulsory;
@@ -661,21 +638,21 @@ public:
             return false;
 
         if(event == Damaged){
-            room->setTag("ChengongDongcha", player->objectName());
+            room->setTag("Zhichi", player->objectName());
 
             LogMessage log;
-            log.type = "#DongchaDamaged";
+            log.type = "#ZhichiDamaged";
             log.from = player;
             room->sendLog(log);
 
         }else if(event == CardEffected){
-            if(room->getTag("ChengongDongcha").toString() != player->objectName())
+            if(room->getTag("Zhichi").toString() != player->objectName())
                 return false;            
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick){
                 LogMessage log;
-                log.type = "#DongchaAvoid";
+                log.type = "#ZhichiAvoid";
                 log.from = player;
                 room->sendLog(log);
 
@@ -858,7 +835,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     wuguotai->addSkill(new Buyi);
 
     General *chengong = new General(this, "chengong", "qun", 3);
-    chengong->addSkill(new ChengongDongcha);
+    chengong->addSkill(new Zhichi);
     chengong->addSkill(new DongchaClear);
     chengong->addSkill(new Mingce);
 

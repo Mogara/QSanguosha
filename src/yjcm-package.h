@@ -65,7 +65,6 @@ class XuanhuoCard: public SkillCard{
 
 public:
     Q_INVOKABLE XuanhuoCard();
-    void xuanhuo(ServerPlayer *from, ServerPlayer *to) const;
 
     virtual void onEffect(const CardEffectStruct &effect) const;
 };

@@ -21,7 +21,7 @@ void Slash::setNature(DamageStruct::Nature nature){
 }
 
 bool Slash::IsAvailable(){
-    if(Self->hasFlag("tianyi_failed"))
+    if(Self->hasFlag("tianyi_failed") || Self->hasFlag("xianzhen_failed"))
         return false;
 
     if(Self->hasWeapon("crossbow"))
