@@ -84,9 +84,12 @@ return {
 	["#GanluSwap"] = "%from 交换了 %to 之间的装备",
 	["@xianzhen-slash"] = "你可以对陷阵目标不限次数出杀",
 	["#ZhichiDamaged"] = "%from 受到了伤害，本回合内【杀】和非延时锦囊都将对其无效",
-	["#ZhichiAvoid"] = "%from 的锁定技【洞察】被触发，【杀】和非延时锦囊对其无效",
+	["#ZhichiAvoid"] = "%from 的锁定技【智迟】被触发，【杀】和非延时锦囊对其无效",
 	["mingce:nothing"] = "收下此牌",
 	["mingce:use"] = "弃掉此牌相当于对攻击范围内的角色出杀",
 	["mingce:draw"] = "弃掉此牌，并再摸一张牌",
 	["#HuileiThrow"] = "%from 的锁定技【挥泪】被触发，凶手 %to 需要弃掉所有的装备和手牌",
+	["xuanfeng:nothing"] = "不发动",
+	["xuanfeng:damage"] = "对距离1以内的其他角色造成伤害",
+	["xuanfeng:slash"] = "对任意一名其他角色使用一张【杀】",
 }

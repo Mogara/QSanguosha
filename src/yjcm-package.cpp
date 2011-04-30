@@ -378,7 +378,9 @@ public:
                 ServerPlayer *target = room->askForPlayerChosen(player, players, "xuanfeng-slash");
 
                 CardEffectStruct effect;
-                effect.card = new Slash(Card::NoSuit, 0);
+                Slash *slash = new Slash(Card::NoSuit, 0);
+                slash->setSkillName(objectName());
+                effect.card = slash;
                 effect.from = player;
                 effect.to = target;
 
@@ -605,9 +607,9 @@ public:
     }
 };
 
-class DongchaClear: public TriggerSkill{
+class ZhichiClear: public TriggerSkill{
 public:
-    DongchaClear():TriggerSkill("#dongcha-clear"){
+    ZhichiClear():TriggerSkill("#dongcha-clear"){
         events << PhaseChange;
     }
 
@@ -617,7 +619,7 @@ public:
 
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
         if(player->getPhase() == Player::NotActive)
-            player->getRoom()->setTag("ChengongDongcha", QVariant());
+            player->getRoom()->setTag("Zhichi", QVariant());
 
         return false;
     }
@@ -836,7 +838,7 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
 
     General *chengong = new General(this, "chengong", "qun", 3);
     chengong->addSkill(new Zhichi);
-    chengong->addSkill(new DongchaClear);
+    chengong->addSkill(new ZhichiClear);
     chengong->addSkill(new Mingce);
 
     General *gaoshun = new General(this, "gaoshun", "qun");
