@@ -835,12 +835,6 @@ public:
         if(event == PhaseChange){
             if(lumeng->getPhase() == Player::Start)
                 lumeng->setMark("slash_count", 0);
-            else if(lumeng->getPhase() == Player::Discard){
-                if(lumeng->getMark("slash_count") == 0 && lumeng->askForSkillInvoke(objectName())) {
-                    lumeng->getRoom()->playSkillEffect(objectName());
-                    return true;
-                }
-            }
         }else if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Slash"))
@@ -849,6 +843,28 @@ public:
             CardStar card_star = data.value<CardStar>();
             if(card_star->inherits("Slash"))
                 lumeng->addMark("slash_count");
+        }
+
+        return false;
+    }
+};
+
+class KejiSkip: public PhaseChangeSkill{
+public:
+    KejiSkip():PhaseChangeSkill("#keji-skip"){
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *lumeng) const{
+        if(lumeng->getPhase() == Player::Play &&
+           lumeng->getMark("slash_count") == 0 &&
+           lumeng->askForSkillInvoke("keji"))
+        {
+            lumeng->getRoom()->playSkillEffect("keji");
+            lumeng->skip(Player::Discard);
         }
 
         return false;
@@ -1267,6 +1283,7 @@ void StandardPackage::addGenerals(){
 
     lumeng = new General(this, "lumeng", "wu");
     lumeng->addSkill(new Keji);
+    lumeng->addSkill(new KejiSkip);
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);

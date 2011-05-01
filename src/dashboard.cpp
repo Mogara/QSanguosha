@@ -381,7 +381,7 @@ void Dashboard::killPlayer(){
     }
 
     death_item = new QGraphicsPixmapItem(QPixmap(Self->getDeathPixmapPath()), this);
-    death_item->setPos(397, 82);
+    death_item->setPos(397, 60);
 }
 
 void Dashboard::revivePlayer(){
@@ -467,8 +467,6 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         painter->drawRect(start_x, y , width, height);
     }
 }
-
-
 
 void Dashboard::adjustCards(){
     int MaxCards = Config.MaxCards;
