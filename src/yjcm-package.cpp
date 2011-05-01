@@ -712,8 +712,8 @@ bool GanluCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     switch(targets.length()){
     case 0: return true;
     case 1: {
-            int n1 = targets.at(0)->getEquips().length();
-            int n2 = targets.at(1)->getEquips().length();
+            int n1 = targets.first()->getEquips().length();
+            int n2 = to_select->getEquips().length();
             return qAbs(n1-n2) <= Self->getLostHp();
         }
 
@@ -769,9 +769,10 @@ public:
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
             const Card *card = player->getRandomHandCard();
             room->showCard(player, card->getEffectiveId());
-            room->throwCard(card);
 
             if(card->getTypeId() != Card::Basic){
+                room->throwCard(card);
+
                 RecoverStruct recover;
                 recover.who = wuguotai;
                 room->recover(player, recover);
