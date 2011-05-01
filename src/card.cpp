@@ -14,7 +14,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
         number = 0;
@@ -415,7 +415,9 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    if(will_throw){
+        room->throwCard(this);
+    }
 
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
@@ -483,15 +485,16 @@ bool Card::isMute() const{
     return mute;
 }
 
+
+bool Card::willThrow() const{
+    return will_throw;
+}
+
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()
-    :Card(NoSuit, 0), will_throw(true)
+    :Card(NoSuit, 0)
 {
-}
-
-bool SkillCard::willThrow() const{
-    return will_throw;
 }
 
 void SkillCard::setUserString(const QString &user_string){

@@ -605,7 +605,7 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
 class Mingce: public OneCardViewAsSkill{
 public:
     Mingce():OneCardViewAsSkill("mingce"){
-        default_choice = "nothing";
+        default_choice = "draw";
     }
 
     virtual bool isEnabledAtPlay() const{

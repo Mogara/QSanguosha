@@ -107,6 +107,7 @@ public:
 
     bool isOnce() const;
     bool isMute() const;
+    bool willThrow() const;
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -131,6 +132,7 @@ protected:
     bool once;
     QString skill_name;
     bool mute;
+    bool will_throw;
 
 private:
     Suit suit;
@@ -143,7 +145,6 @@ class SkillCard: public Card{
 
 public:
     SkillCard();
-    bool willThrow() const;
     void setUserString(const QString &user_string);
 
     virtual QString getSubtype() const;    
@@ -152,7 +153,6 @@ public:
     virtual QString toString() const;    
 
 protected:
-    bool will_throw;
     QString user_string;
 };
 
