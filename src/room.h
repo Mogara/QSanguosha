@@ -212,6 +212,7 @@ private:
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);
     void selectOrderCommand(ServerPlayer *player, const QString &arg);    
+    void makeDamage(const QString &damage_str);
 
 private slots:
     void reportDisconnection();

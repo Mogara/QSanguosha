@@ -46,7 +46,7 @@ void Room::initCallbacks(){
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
-    callbacks["replyGongxinCommand"] = &Room::commonCommand;
+    callbacks["replyGongxinCommand"] = &Room::commonCommand;   
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
@@ -1477,7 +1477,7 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg){
     broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
 }
 
-void Room::commonCommand(ServerPlayer *player, const QString &arg){
+void Room::commonCommand(ServerPlayer *, const QString &arg){
     result = arg;
 
     reply_player = NULL;
@@ -2004,6 +2004,12 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         broadcastInvoke("activate", player->objectName());
         getResult("useCardCommand", player);
 
+        if(result.startsWith(":")){
+            makeDamage(result);
+            if(player->isAlive())
+                return activate(player, card_use);
+        }
+
         if(result.isEmpty())
             return activate(player, card_use);
 
@@ -2365,6 +2371,47 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
         return;
 
     to_kick->kick();
+}
+
+void Room::makeDamage(const QString &damage_str){
+    QRegExp rx(":(.+)->(\\w+):([NTF])(-?\\d+)");
+    if(!rx.exactMatch(damage_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    int point = texts.at(4).toInt();
+
+    if(point == 0)
+        return;
+
+    if(point > 0){
+        // damage
+        DamageStruct damage;
+        if(texts.at(1) != ".")
+            damage.from = findChild<ServerPlayer *>(texts.at(1));
+
+        damage.to = findChild<ServerPlayer *>(texts.at(2));
+
+        char nature = texts.at(3).toAscii().at(0);
+        switch(nature){
+        case 'N': damage.nature = DamageStruct::Normal; break;
+        case 'T': damage.nature = DamageStruct::Thunder; break;
+        case 'F': damage.nature = DamageStruct::Fire; break;
+        }
+
+        damage.damage = point;
+
+        this->damage(damage);
+    }else{
+        RecoverStruct recover;
+        if(texts.at(1) != ".")
+            recover.who = findChild<ServerPlayer *>(texts.at(1));
+        ServerPlayer *player = findChild<ServerPlayer *>(texts.at(2));
+
+        recover.recover = -point;
+
+        this->recover(player, recover);
+    }
 }
 
 void Room::surrenderCommand(ServerPlayer *player, const QString &){

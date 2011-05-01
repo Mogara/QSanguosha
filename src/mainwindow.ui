@@ -50,6 +50,7 @@
     <addaction name="actionSurrender"/>
     <addaction name="actionKick"/>
     <addaction name="actionSaveRecord"/>
+    <addaction name="actionDamage_maker"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -253,6 +254,14 @@
   <action name="actionAcknowledgement">
    <property name="text">
     <string>Acknowledgement</string>
+   </property>
+  </action>
+  <action name="actionDamage_maker">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Damage maker</string>
    </property>
   </action>
  </widget>

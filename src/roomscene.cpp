@@ -2072,6 +2072,78 @@ void RoomScene::saveReplayRecord(){
     ClientInstance->save(filename);
 }
 
+#include <QFormLayout>
+
+DamageMakerDialog::DamageMakerDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Damage maker"));
+
+    damage_source = new QComboBox;
+    damage_source->addItem(tr("None"), ".");
+    fillCombobox(damage_source);
+
+    damage_target = new QComboBox;
+    fillCombobox(damage_target);
+
+    damage_nature = new QComboBox;
+    damage_nature->addItem(tr("Normal"), "N");
+    damage_nature->addItem(tr("Thunder"), "T");
+    damage_nature->addItem(tr("Fire"), "F");
+
+    damage_point = new QSpinBox;
+    damage_point->setRange(-1000, 1000);
+    damage_point->setValue(1);
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+
+    QFormLayout *layout = new QFormLayout;
+
+    layout->addWidget(new QLabel(tr("If damage point is negative, it is a hp recover")));
+    layout->addRow(tr("Damage source"), damage_source);
+    layout->addRow(tr("Damage target"), damage_target);
+    layout->addRow(tr("Damage nature"), damage_nature);
+    layout->addRow(tr("Damage point"), damage_point);
+    layout->addRow(ok_button);
+
+    setLayout(layout);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(this, SIGNAL(accepted()), this, SLOT(makeDamage()));
+}
+
+void DamageMakerDialog::fillCombobox(QComboBox *combobox){
+    combobox->setIconSize(QSize(42, 36));
+
+    foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
+        QString general_name = Sanguosha->translate(player->getGeneralName());
+        QIcon icon(player->getGeneral()->getPixmapPath("tiny"));
+        combobox->addItem(icon, QString("%1 [%2]").arg(general_name).arg(player->screenName()), player->objectName());
+    }
+}
+
+void DamageMakerDialog::makeDamage(){
+    int point = damage_point->value();
+    if(point == 0)
+        return;
+
+    ClientInstance->request(QString("useCard :%1->%2:%3%4")
+                            .arg(damage_source->itemData(damage_source->currentIndex()).toString())
+                            .arg(damage_target->itemData(damage_target->currentIndex()).toString())
+                            .arg(damage_nature->itemData(damage_nature->currentIndex()).toString())
+                            .arg(point));
+}
+
+void RoomScene::makeDamage(){
+    if(Self->getPhase() != Player::Play){
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
+        return;
+    }
+
+    DamageMakerDialog *damage_maker = new DamageMakerDialog(main_window);
+    damage_maker->exec();
+}
+
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -2709,7 +2781,7 @@ void RoomScene::kick(){
 
     foreach(const ClientPlayer *player, players){
         QString general_name = Sanguosha->translate(player->getGeneralName());
-        items << QString("%1[%2]").arg(player->screenName()).arg(general_name);
+        items << QString("%1 [%2]").arg(player->screenName()).arg(general_name);
     }
 
     bool ok;

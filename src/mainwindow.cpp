@@ -244,6 +244,11 @@ void MainWindow::enterRoom(){
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
+    if(ServerInfo.FreeChoose){
+        ui->actionDamage_maker->setEnabled(true);
+        connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
+    }
+
     connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
 
     gotoScene(room_scene);

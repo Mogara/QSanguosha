@@ -20,6 +20,26 @@ class CardContainer;
 #include <QProgressBar>
 #include <QTextEdit>
 #include <QDockWidget>
+#include <QSpinBox>
+#include <QDialog>
+
+class DamageMakerDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    DamageMakerDialog(QWidget *parent);
+
+private:
+    QComboBox *damage_source;
+    QComboBox *damage_target;
+    QComboBox *damage_nature;
+    QSpinBox *damage_point;
+
+    void fillCombobox(QComboBox *combobox);
+
+private slots:
+    void makeDamage();
+};
 
 class RoomScene : public QGraphicsScene{    
     Q_OBJECT
@@ -46,6 +66,7 @@ public slots:
     void kick();
     void surrender();
     void saveReplayRecord();
+    void makeDamage();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
