@@ -6,6 +6,7 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
+#include "ai.h"
 
 class Yizhong: public TriggerSkill{
 public:
@@ -361,7 +362,23 @@ public:
         events << CardLost;
     }
 
-    virtual QString getDefaultChoice(ServerPlayer *) const{
+    virtual QString getDefaultChoice(ServerPlayer *player) const{
+        /*
+
+        Room *room = player->getRoom();
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        foreach(ServerPlayer *p, players){
+            if(AI::GetRelation(player, p) != AI::Enemy)
+                continue;
+
+            if(player->distanceTo(p) <= 1)
+                return "damage";
+            else
+                return "slash";
+        }
+
+        */
+
         return "nothing";
     }
 
@@ -417,7 +434,7 @@ public:
             return false;
 
         if(player->askForSkillInvoke(objectName(), data)){
-            int x = qMax(5, damage.to->getHp());
+            int x = qMin(5, damage.to->getHp());
             damage.to->drawCards(x);
             damage.to->turnOver();
         }

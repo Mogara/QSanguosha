@@ -82,6 +82,7 @@ return {
 	["face_down"] = "面朝下",
 	["#SkipPhase"] = "%from 跳过了 %arg 阶段",
 	["#IronChainDamage"] = "%from 处于铁锁连环状态，将受到铁锁的传导伤害",
+	["#LoseHp"] = "%from 流失了 %arg 点体力",
 	
 	["3v3:cw"] = "顺时针",
 	["3v3:ccw"] = "逆时针",

@@ -1491,6 +1491,12 @@ void Room::useCard(const CardUseStruct &card_use){
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
+    LogMessage log;
+    log.type = "#LoseHp";
+    log.from = victim;
+    log.arg = QString::number(lose);
+    sendLog(log);
+
     setPlayerProperty(victim, "hp", victim->getHp() - lose);
     broadcastInvoke("hpChange", QString("%1:%2").arg(victim->objectName()).arg(-lose));
 
