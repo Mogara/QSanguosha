@@ -34,6 +34,7 @@
 #include <QApplication>
 #include <QTimer>
 #include <QCommandLinkButton>
+#include <QFormLayout>
 
 extern irrklang::ISoundEngine *SoundEngine;
 
@@ -2072,8 +2073,6 @@ void RoomScene::saveReplayRecord(){
     ClientInstance->save(filename);
 }
 
-#include <QFormLayout>
-
 DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     :QDialog(parent)
 {
@@ -2117,8 +2116,9 @@ void DamageMakerDialog::fillCombobox(QComboBox *combobox){
 
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         QString general_name = Sanguosha->translate(player->getGeneralName());
-        QIcon icon(player->getGeneral()->getPixmapPath("tiny"));
-        combobox->addItem(icon, QString("%1 [%2]").arg(general_name).arg(player->screenName()), player->objectName());
+        combobox->addItem(QIcon(player->getGeneral()->getPixmapPath("tiny")),
+                          QString("%1 [%2]").arg(general_name).arg(player->screenName()),
+                          player->objectName());
     }
 }
 

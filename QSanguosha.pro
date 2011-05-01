@@ -33,7 +33,6 @@ SOURCES += src/main.cpp \
     src/standard-skillcards.cpp \
     src/gamerule.cpp \
     src/playercarddialog.cpp \
-    src/magatamawidget.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
@@ -99,7 +98,6 @@ HEADERS += src/mainwindow.h \
     src/package.h \
     src/gamerule.h \
     src/playercarddialog.h \
-    src/magatamawidget.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \
