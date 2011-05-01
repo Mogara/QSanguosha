@@ -771,14 +771,9 @@ public:
             room->throwCard(card);
 
             if(card->getTypeId() != Card::Basic){
-                CardUseStruct use;
-                Peach *peach = new Peach(Card::NoSuit, 0);
-                peach->setSkillName(objectName());
-                use.card = peach;
-                use.from = wuguotai;
-                use.to << player;
-
-                room->useCard(use);
+                RecoverStruct recover;
+                recover.who = wuguotai;
+                room->recover(player, recover);
             }
         }
 
