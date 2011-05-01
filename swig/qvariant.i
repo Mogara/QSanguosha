@@ -73,4 +73,12 @@ class QVariant{
 	DamageStar toDamageStar() const{
 		return $self->value<DamageStar>();
 	}
+
+	void setValue(RecoverStruct *recover){
+		$self->setValue(QVariant::fromValue(*recover));
+	}
+
+	RecoverStruct toRecover() const{
+		return $self->value<RecoverStruct>();
+	}
 };
