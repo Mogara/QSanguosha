@@ -406,7 +406,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
         }
 
     case Death:{
-            player->throwAllCards();
+            player->bury();
 
             if(room->getTag("SkipNormalDeathProcess").toBool())
                 return false;
@@ -577,7 +577,8 @@ bool BossMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             const static QString evil = "lord+renegade";
             const static QString justice = "rebel+loyalist";
 
-            player->throwAllCards();
+            player->bury();
+
             QStringList alive_roles = room->aliveRoles(player);
             if(!alive_roles.contains("rebel") && !alive_roles.contains("loyalist")){
                 room->gameOver(evil);

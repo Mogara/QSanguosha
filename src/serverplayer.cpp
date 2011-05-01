@@ -58,14 +58,7 @@ void ServerPlayer::throwAllHandCards(){
         room->throwCard(card);
 }
 
-void ServerPlayer::throwAllCards(){
-    throwAllEquips();
-    throwAllHandCards();
-
-    QStack<const Card *> tricks = getJudgingArea();
-    foreach(const Card *trick, tricks)
-        room->throwCard(trick);
-
+void ServerPlayer::throwAllMarks(){
     // throw all marks
     foreach(QString mark_name, marks.keys()){
         if(!mark_name.startsWith("@"))
@@ -78,7 +71,9 @@ void ServerPlayer::throwAllCards(){
     }
 
     marks.clear();
+}
 
+void ServerPlayer::clearPrivatePiles(){
     // throw private piles
     foreach(QString pile_name, piles.keys()){
         QList<int> &pile = piles[pile_name];
@@ -90,6 +85,21 @@ void ServerPlayer::throwAllCards(){
         }
     }
     piles.clear();
+}
+
+void ServerPlayer::bury(){
+    throwAllCards();
+    throwAllMarks();
+    clearPrivatePiles();
+}
+
+void ServerPlayer::throwAllCards(){
+    throwAllEquips();
+    throwAllHandCards();
+
+    QStack<const Card *> tricks = getJudgingArea();
+    foreach(const Card *trick, tricks)
+        room->throwCard(trick);
 }
 
 void ServerPlayer::drawCards(int n, bool set_emotion){

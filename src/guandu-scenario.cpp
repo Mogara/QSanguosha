@@ -239,7 +239,7 @@ public:
                         QString first = roles.at(0);
                         QString second = roles.at(1);
                         if(first == "renegade" && second == "renegade"){
-                            player->throwAllCards();
+                            player->bury();
                             room->gameOver("renegade");
                             return true;
                         }

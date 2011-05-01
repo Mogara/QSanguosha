@@ -32,6 +32,9 @@ public:
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllCards();
+    void bury();
+    void throwAllMarks();
+    void clearPrivatePiles();
     void drawCards(int n, bool set_emotion = true);
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip);
