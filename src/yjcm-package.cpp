@@ -296,12 +296,13 @@ XuanhuoCard::XuanhuoCard(){
 void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->obtainCard(this);
 
-    const Card *card = effect.to->getRandomHandCard();
     Room *room = effect.from->getRoom();
-    QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
-    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
+    int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
+    const Card *card = Sanguosha->getCard(card_id);
+    room->moveCardTo(card, effect.from, Player::Hand, false);
 
-    room->showCard(effect.to, card->getEffectiveId(), effect.from);
+    QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
+    ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "xuanhuo");    
     room->moveCardTo(card, target, Player::Hand, false);
 }
 
@@ -434,7 +435,9 @@ public:
         if(damage.to->isDead())
             return false;
 
-        if(player->askForSkillInvoke(objectName(), data)){
+        if(damage.card && damage.card->inherits("Slash") &&
+           player->askForSkillInvoke(objectName(), data))
+        {
             int x = qMin(5, damage.to->getHp());
             damage.to->drawCards(x);
             damage.to->turnOver();
@@ -767,8 +770,15 @@ public:
         ServerPlayer *wuguotai = room->findPlayerBySkillName(objectName());
 
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
-            const Card *card = player->getRandomHandCard();
+            const Card *card = NULL;
+            if(player == wuguotai)
+                card = room->askForCardShow(player, wuguotai);
+            else
+                card = player->getRandomHandCard();
+
             room->showCard(player, card->getEffectiveId());
+
+
 
             if(card->getTypeId() != Card::Basic){
                 room->throwCard(card);

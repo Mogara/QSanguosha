@@ -395,6 +395,16 @@ LuaAI::LuaAI(ServerPlayer *player)
 }
 
 const Card *LuaAI::askForCardShow(ServerPlayer *requestor) {
+    if(requestor == self){
+        QList<const Card *> cards = self->getHandcards();
+        foreach(const Card *card, cards){
+            if(card->getTypeId() != Card::Basic)
+                return card;
+        }
+
+        return cards.first();
+    }
+
     QList<const Card *> cards = requestor->getHandcards();
     Card::Suit lack = Card::NoSuit;
     int i;
