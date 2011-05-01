@@ -91,6 +91,35 @@ QGroupBox *ServerDialog::createGameModeBox(){
             layout->addWidget(button);
             mode_group->addButton(button);
 
+            if(itor.key() == "06_3v3"){
+                // add 3v3 options
+
+                QGroupBox *box = new QGroupBox(tr("3v3 options"));
+                QVBoxLayout *vlayout = new QVBoxLayout;
+
+                QRadioButton *standard = new QRadioButton(tr("Standard mode"));
+                QRadioButton *extend = new QRadioButton(tr("Extension mode"));
+                QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
+                extend_edit_button->setEnabled(false);
+                connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
+
+                vlayout->addWidget(standard);
+                vlayout->addWidget(extend);
+                vlayout->addWidget(extend_edit_button);
+                box->setLayout(vlayout);
+
+                layout->addWidget(box);
+
+                box->setEnabled(false);
+                connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+
+                QString mode = Config.value("3v3/Mode", "standard").toString();
+                if(mode == "standard")
+                    standard->setChecked(true);
+                else
+                    extend->setChecked(true);
+            }
+
             if(itor.key() == Config.GameMode)
                 button->setChecked(true);
         }
@@ -364,7 +393,7 @@ void ServerDialog::onHttpDone(bool error){
             address_edit->setText(addr);
         }
 
-        delete http;
+        http->deleteLater();
     }
 }
 

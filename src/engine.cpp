@@ -75,7 +75,7 @@ Engine::Engine()
 
     // available game modes
     modes["02p"] = tr("2 players");
-    modes["02pbb"] = tr("2 players (using blance beam)");
+    //modes["02pbb"] = tr("2 players (using blance beam)");
     modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
