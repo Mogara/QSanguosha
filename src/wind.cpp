@@ -357,14 +357,16 @@ class Kuanggu: public TriggerSkill{
 public:
     Kuanggu():TriggerSkill("kuanggu"){
         frequency = Compulsory;
-        events << Damage;
+        events << Predamage << Damage;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        if(data.canConvert<DamageStruct>()){
-            DamageStruct damage = data.value<DamageStruct>();
-
-            if(player->distanceTo(damage.to) <= 1){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(event == Predamage){
+            player->tag["InvokeKuanggu"] = player->distanceTo(damage.to) <= 1;
+        }else if(event == Damage){
+            bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
+            if(invoke){
                 Room *room = player->getRoom();
 
                 room->playSkillEffect(objectName());
