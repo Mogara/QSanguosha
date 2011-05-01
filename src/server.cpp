@@ -102,10 +102,15 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
                 extend_edit_button->setEnabled(false);
                 connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
+                connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
+
+                QCheckBox *exclude_disaster = new QCheckBox(tr("Exclude disasters"));
+                exclude_disaster->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
 
                 vlayout->addWidget(standard);
                 vlayout->addWidget(extend);
                 vlayout->addWidget(extend_edit_button);
+                vlayout->addWidget(exclude_disaster);
                 box->setLayout(vlayout);
 
                 layout->addWidget(box);
@@ -402,6 +407,65 @@ void ServerDialog::onOkButtonClicked(){
         QMessageBox::warning(this, tr("Warning"), tr("Please fill address when you want to annouce your server's IP"));
     }else
         accept();
+}
+
+Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Select generals in extend 3v3 mode"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    toolbox = new QToolBox;
+    fillToolBox();
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+
+    layout->addWidget(toolbox);
+    layout->addWidget(ok_button);
+
+    setLayout(layout);
+
+    connect(this, SIGNAL(accepted()), this, SLOT(save3v3Generals()));
+}
+
+void Select3v3GeneralDialog::fillToolBox(){
+    QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
+    foreach(const Package *package, packages){
+        switch(package->getType()){
+        case Package::GeneralPack:
+        case Package::MixedPack: {
+                QListWidget *list = new QListWidget;
+                list->setViewMode(QListView::IconMode);
+                toolbox->addItem(list, Sanguosha->translate(package->objectName()));
+                fillListWidget(list, package);
+            }
+        default:
+            break;
+        }
+    }
+}
+
+void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack){
+    QList<const General *> generals = pack->findChildren<const General *>();
+    foreach(const General *general, generals){
+        if(general->isHidden())
+            continue;
+
+        QListWidgetItem *item = new QListWidgetItem(list);
+        item->setIcon(QIcon(general->getPixmapPath("tiny")));
+        item->setCheckState(Qt::Checked);
+    }
+}
+
+void Select3v3GeneralDialog::save3v3Generals(){
+
+}
+
+void ServerDialog::select3v3Generals(){
+    QDialog *dialog = new Select3v3GeneralDialog(this);
+    dialog->exec();
 }
 
 bool ServerDialog::config(){

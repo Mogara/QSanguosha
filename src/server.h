@@ -15,6 +15,27 @@ class QLabel;
 #include <QButtonGroup>
 #include <QComboBox>
 #include <QLayoutItem>
+#include <QListWidget>
+#include <QSplitter>
+#include <QToolBox>
+
+class Package;
+
+class Select3v3GeneralDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    Select3v3GeneralDialog(QDialog *parent);
+
+private:
+    QToolBox *toolbox;
+
+    void fillToolBox();
+    void fillListWidget(QListWidget *list, const Package *pack);
+
+private slots:
+    void save3v3Generals();
+};
 
 class ServerDialog: public QDialog{
     Q_OBJECT
@@ -56,6 +77,7 @@ private slots:
     void onDetectButtonClicked();
     void onHttpDone(bool error);
     void updateChallengeLabel(int index);
+    void select3v3Generals();
 };
 
 class Scenario;

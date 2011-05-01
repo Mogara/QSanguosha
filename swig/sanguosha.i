@@ -612,7 +612,7 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
-    void showCard(ServerPlayer *player, int card_id);   
+    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);   
     void getResult(const char *reply_func, ServerPlayer *reply_player, bool move_focus = true);
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const char *skill_name, bool open = true);

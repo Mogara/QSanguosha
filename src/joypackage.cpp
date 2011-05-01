@@ -303,6 +303,8 @@ JoyPackage::JoyPackage()
 
     foreach(Card *card, cards)
         card->setParent(this);
+
+    type = CardPack;
 }
 
 ADD_PACKAGE(Joy);

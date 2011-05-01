@@ -2434,8 +2434,12 @@ void Room::sendLog(const LogMessage &log){
     broadcastInvoke("log", log.toString());
 }
 
-void Room::showCard(ServerPlayer *player, int card_id){
-    broadcastInvoke("showCard", QString("%1:%2").arg(player->objectName()).arg(card_id));
+void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer){
+    QString show_str = QString("%1:%2").arg(player->objectName()).arg(card_id);
+    if(only_viewer)
+        only_viewer->invoke("showCard", show_str);
+    else
+        broadcastInvoke("showCard", show_str);
 }
 
 void Room::showAllCards(ServerPlayer *player, ServerPlayer *to){

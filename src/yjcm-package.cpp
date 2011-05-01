@@ -301,6 +301,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
     ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "xuanhuo");
 
+    room->showCard(effect.to, card->getEffectiveId(), effect.from);
     room->moveCardTo(card, target, Player::Hand, false);
 }
 

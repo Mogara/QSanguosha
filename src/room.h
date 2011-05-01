@@ -76,7 +76,7 @@ public:
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
-    void showCard(ServerPlayer *player, int card_id);   
+    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus = true);
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);

@@ -90,8 +90,9 @@ Engine::Engine()
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
 
+    //challenge_mode_set = NULL;
     challenge_mode_set = new ChallengeModeSet(this);
-    addPackage(challenge_mode_set);
+    //addPackage(challenge_mode_set);
 
     translations.insert("bossmode", tr("Boss mode"));
 
@@ -501,8 +502,14 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
+    bool exclude_disaters = Config.GameMode == "06_3v3"
+                            && Config.value("3v3/ExcludeDisasters", true).toBool();
+
     QList<int> list;
     foreach(Card *card, cards){
+        if(exclude_disaters && card->inherits("Disaster"))
+            continue;
+
         if(!ban_package.contains(card->getPackage()))
             list << card->getId();
     }
