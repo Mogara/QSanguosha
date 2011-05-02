@@ -2,6 +2,7 @@
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
+#include "client.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -197,5 +198,102 @@ void CardContainer::view(const ClientPlayer *player){
 
     QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
     avatar->setPixmap(QPixmap(player->getGeneral()->getPixmapPath("tiny")));
-    avatar->setPos(496, 288);
+    avatar->setPos(496, 288);    
 }
+
+GuanxingBox::GuanxingBox()
+    :Pixmap("image/system/guanxing-box.png", false)
+{
+    setFlag(ItemIsFocusable);
+    setFlag(ItemIsMovable);
+}
+
+void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only){
+    if(card_ids.isEmpty()){
+        clear();
+        return;
+    }
+
+    this->up_only = up_only;
+    up_items.clear();
+
+    foreach(int card_id, card_ids){
+        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+        card_item->setAutoBack(false);
+        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
+        connect(card_item, SIGNAL(released()), this, SLOT(adjust()));
+
+        up_items << card_item;
+        card_item->setParentItem(this);
+    }
+
+    int i;
+    for(i=0; i<up_items.length(); i++){
+        CardItem *card_item = up_items.at(i);
+        QPointF pos(start_x + i*skip, start_y1);
+        card_item->setPos(pos);
+        card_item->setHomePos(pos);
+    }
+
+    show();
+}
+
+void GuanxingBox::adjust(){
+    CardItem *item = qobject_cast<CardItem*>(sender());
+
+    if(item == NULL)
+        return;
+
+    up_items.removeOne(item);
+    down_items.removeOne(item);
+
+    QList<CardItem *> *items = NULL;
+    if(up_only || item->y() <= middle_y)
+        items = &up_items;
+    else
+        items = &down_items;
+
+    int c = (item->x() - start_x) / card_width;
+    c = qBound(0, c, items->length());
+    items->insert(c, item);
+
+    int i;
+    for(i=0; i<up_items.length(); i++){
+        QPointF pos(start_x + i*skip, start_y1);
+        up_items.at(i)->setHomePos(pos);
+        up_items.at(i)->goBack();
+    }
+
+    for(i=0; i<down_items.length(); i++){
+        QPointF pos(start_x + i*skip, start_y2);
+        down_items.at(i)->setHomePos(pos);
+        down_items.at(i)->goBack();
+    }
+}
+
+void GuanxingBox::clear()
+{
+    foreach(CardItem *card_item, up_items)
+        card_item->deleteLater();
+
+    foreach(CardItem *card_item, down_items)
+        card_item->deleteLater();
+
+    up_items.clear();
+    down_items.clear();
+
+    hide();
+}
+
+void GuanxingBox::reply(){
+    QList<int> up_cards, down_cards;
+    foreach(CardItem *card_item, up_items)
+        up_cards << card_item->getCard()->getId();
+
+    foreach(CardItem *card_item, down_items)
+        down_cards << card_item->getCard()->getId();
+
+    ClientInstance->replyGuanxing(up_cards, down_cards);
+    clear();
+}
+

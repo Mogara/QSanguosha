@@ -51,6 +51,30 @@ signals:
     void item_gongxined(int card_id);
 };
 
+class GuanxingBox: public Pixmap{
+    Q_OBJECT
+
+public:
+    GuanxingBox();
+    void clear();
+    void reply();
+
+public slots:
+    void doGuanxing(const QList<int> &card_ids, bool up_only);
+    void adjust();
+
+private:
+    QList<CardItem *> up_items, down_items;
+    bool up_only;
+
+    static const qreal start_x = 30;
+    static const qreal start_y1 = 40;
+    static const qreal start_y2 = 184;
+    static const qreal middle_y = 157;
+    static const qreal skip = 102;
+    static const qreal card_width = 93;
+};
+
 class CloseButton: public Pixmap{
     Q_OBJECT
 

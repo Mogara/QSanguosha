@@ -11,6 +11,7 @@
 class Window;
 class Button;
 class CardContainer;
+class GuanxingBox;
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -112,9 +113,7 @@ private:
 
     QList<const ClientPlayer *> selected_targets;
 
-    QList<CardItem *> up_items, down_items;
-    QPointF guanxing_origin;
-    bool up_only;
+    GuanxingBox *guanxing_box;
 
     QList<CardItem *> gongxin_items;
 
@@ -210,10 +209,6 @@ private slots:
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
-
-    void doGuanxing(const QList<int> &card_ids, bool up_only);
-    void clearGuanxing();
-    void adjustGuanxing();
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart);
 

@@ -135,7 +135,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString,int)), this, SLOT(showCard(QString,int)));
-    connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), this, SLOT(doGuanxing(QList<int>,bool)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
@@ -157,11 +156,21 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
     {
+        guanxing_box = new GuanxingBox;
+        guanxing_box->hide();
+        guanxing_box->shift();
+        addItem(guanxing_box);
+        guanxing_box->setZValue(9.0);
+
+        connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), guanxing_box, SLOT(doGuanxing(QList<int>,bool)));
+    }
+
+    {
         card_container = new CardContainer();
         card_container->hide();
         addItem(card_container);
         card_container->shift();
-        card_container->setZValue(9.0);
+        card_container->setZValue(guanxing_box->zValue());
 
         connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(chooseAG(int)));
         connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(replyGongxin(int)));
@@ -1270,15 +1279,7 @@ void RoomScene::useSelectedCard(){
         }
 
     case Client::AskForGuanxing:{
-            QList<int> up_cards, down_cards;
-            foreach(CardItem *card_item, up_items)
-                up_cards << card_item->getCard()->getId();
-
-            foreach(CardItem *card_item, down_items)
-                down_cards << card_item->getCard()->getId();
-
-            ClientInstance->replyGuanxing(up_cards, down_cards);
-            clearGuanxing();
+            guanxing_box->reply();
 
             break;
         }
@@ -1802,19 +1803,6 @@ void RoomScene::doOkButton(){
     useSelectedCard();
 }
 
-void RoomScene::clearGuanxing()
-{
-    foreach(CardItem *card_item, up_items)
-        delete card_item;
-
-    foreach(CardItem *card_item, down_items)
-        delete card_item;
-
-    up_items.clear();
-    down_items.clear();
-}
-
-
 void RoomScene::doCancelButton(){
     switch(ClientInstance->getStatus()){
     case Client::Playing:{
@@ -2331,88 +2319,6 @@ void RoomScene::detachSkill(const QString &skill_name){
 
             return;
         }
-    }
-}
-
-void RoomScene::doGuanxing(const QList<int> &card_ids, bool up_only){
-    if(card_ids.isEmpty()){
-        clearGuanxing();
-        return;
-    }
-
-    this->up_only = up_only;
-    up_items.clear();
-    foreach(int card_id, card_ids){
-        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
-        card_item->setAutoBack(false);
-        card_item->setFlag(QGraphicsItem::ItemIsFocusable);
-        connect(card_item, SIGNAL(released()), this, SLOT(adjustGuanxing()));
-
-        up_items << card_item;
-        addItem(card_item);
-    }
-
-    QRectF rect = up_items.first()->boundingRect();
-    static qreal CardWidth = rect.width();
-    static qreal CardHeight = rect.height();
-
-    qreal width = CardWidth * up_items.length();
-    qreal height = CardHeight * 2;
-
-    qreal start_x = - width/2;
-    qreal start_y = - height + 120;
-
-    int i;
-    for(i=0; i<up_items.length(); i++){
-        CardItem *card_item = up_items.at(i);
-        QPointF pos(start_x + i*CardWidth, start_y);
-        card_item->setPos(pos);
-        card_item->setHomePos(pos);
-    }
-
-    guanxing_origin.setX(start_x);
-    guanxing_origin.setY(start_y);
-}
-
-void RoomScene::adjustGuanxing(){
-    CardItem *item = qobject_cast<CardItem*>(sender());
-
-    if(item == NULL)
-        return;
-
-    up_items.removeOne(item);
-    down_items.removeOne(item);
-
-    QRectF rect(item->boundingRect());
-    static qreal card_width = rect.width();
-    static qreal card_height = rect.height();
-
-    QList<CardItem *> *items = NULL;
-    if(up_only)
-        items = &up_items;
-    else{
-        int r = (item->y() - guanxing_origin.y()) / card_height;
-        r = qBound(0, r, 1);
-        items = r == 0 ? &up_items : &down_items;
-    }
-
-    int c = (item->x() - guanxing_origin.x()) / card_width;
-    c = qBound(0, c, items->length());
-    items->insert(c, item);
-
-    int i;
-    for(i=0; i<up_items.length(); i++){
-        QPointF pos = guanxing_origin;
-        pos += QPointF(i * card_width, 0);
-        up_items.at(i)->setHomePos(pos);
-        up_items.at(i)->goBack();
-    }
-
-    for(i=0; i<down_items.length(); i++){
-        QPointF pos = guanxing_origin;
-        pos += QPointF(i * card_width, card_height);
-        down_items.at(i)->setHomePos(pos);
-        down_items.at(i)->goBack();
     }
 }
 
