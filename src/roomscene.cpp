@@ -414,6 +414,7 @@ void RoomScene::drawCards(const QList<const Card *> &cards){
     foreach(const Card * card, cards){
         CardItem *item = new CardItem(card);
         item->setPos(DrawPilePos);
+        item->setEnabled(false);
         dashboard->addCardItem(item);
     }
 
@@ -615,9 +616,11 @@ void RoomScene::timerEvent(QTimerEvent *event){
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
         timeout = 20;
 
+    /*
     if(ClientInstance->getStatus() == Client::Responsing &&
        ClientInstance->card_pattern == "nullification")
        timeout = Config.NullificationCountDown;
+       */
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;
@@ -631,10 +634,6 @@ void RoomScene::timerEvent(QTimerEvent *event){
         doTimeout();
     }else{
         progress_bar->setValue(new_value);
-
-        int left_tick = timeout * 5 - tick;
-        if(left_tick % 5 == 0 && left_tick < 20)
-            Sanguosha->playAudio("count-down");
     }
 }
 
@@ -891,6 +890,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             }
 
         case Player::Hand:{
+                card_item->setEnabled(false);
                 dashboard->addCardItem(card_item);
                 break;
             }

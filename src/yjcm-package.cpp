@@ -14,10 +14,11 @@ public:
         events << SlashEffected;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        if(player->getArmor())
-            return false;
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getArmor() == NULL;
+    }
 
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         if(effect.slash->isBlack()){
@@ -204,7 +205,7 @@ JujianCard::JujianCard(){
 }
 
 void JujianCard::onEffect(const CardEffectStruct &effect) const{
-    int n = effect.card->subcardsLength();
+    int n = subcardsLength();
     effect.to->drawCards(n);
 
     if(n == 3){
@@ -216,10 +217,19 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
         }
 
         if(types.size() == 1){
+            Room *room = effect.from->getRoom();
+
+            LogMessage log;
+            log.type = "#JujianRecover";
+            log.from = effect.from;
+            const Card *card = Sanguosha->getCard(subcards.first());
+            log.arg = card->getType();
+            room->sendLog(log);
+
             RecoverStruct recover;
             recover.card = this;
             recover.who = effect.from;
-            effect.from->getRoom()->recover(effect.from, recover);
+            room->recover(effect.from, recover);
         }
     }
 }
@@ -822,7 +832,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("XinzhanCard") && Self->getHandcardNum() >= Self->getMaxHP();
+        return ! Self->hasUsed("XinzhanCard") && Self->getHandcardNum() > Self->getMaxHP();
     }
 
     virtual const Card *viewAs() const{

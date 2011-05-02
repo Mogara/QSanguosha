@@ -5,7 +5,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "magatamawidget.h"
+#include "playercarddialog.h"
 #include "rolecombobox.h"
 
 #include <QPainter>

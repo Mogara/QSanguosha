@@ -333,7 +333,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         card1 = room->askForPindian(this, this, target, reason);
     else if(card1->isVirtualCard()){
         int card_id = card1->getEffectiveId();
-        delete card1;
         card1 = Sanguosha->getCard(card_id);
     }
 

@@ -3,7 +3,7 @@
 #include "settings.h"
 #include "client.h"
 #include "standard.h"
-#include "magatamawidget.h"
+#include "playercarddialog.h"
 
 #include <QPainter>
 #include <QGraphicsScene>

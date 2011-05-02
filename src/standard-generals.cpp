@@ -343,32 +343,40 @@ public:
     }
 };
 
-class Luoshen:public PhaseChangeSkill{
+class Luoshen:public TriggerSkill{
 public:
-    Luoshen():PhaseChangeSkill("luoshen"){
+    Luoshen():TriggerSkill("luoshen"){
+        events << PhaseChange << FinishJudge;
+
         frequency = Frequent;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhenji) const{
-        if(zhenji->getPhase() == Player::Start){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhenji, QVariant &data) const{
+        if(event == PhaseChange && zhenji->getPhase() == Player::Start){
             Room *room = zhenji->getRoom();
-            forever{
-                if(room->askForSkillInvoke(zhenji, objectName())){
-                    room->playSkillEffect(objectName());
+            while(zhenji->askForSkillInvoke("luoshen")){
+                zhenji->setFlags("luoshen");
+                room->playSkillEffect(objectName());
 
-                    JudgeStruct judge;
-                    judge.pattern = QRegExp("(.*):(spade|club):(.*)");
-                    judge.good = true;
-                    judge.reason = objectName();
-                    judge.who = zhenji;
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(spade|club):(.*)");
+                judge.good = true;
+                judge.reason = objectName();
+                judge.who = zhenji;
 
-                    room->judge(judge);
-                    if(judge.isGood())
-                        zhenji->obtainCard(judge.card);
-                    else
-                        break;
-                }else
+                room->judge(judge);
+                if(judge.isBad())
                     break;
+            }
+
+            zhenji->setFlags("-luoshen");
+        }else if(event == FinishJudge){
+            if(zhenji->hasFlag("luoshen")){
+                JudgeStar judge = data.value<JudgeStar>();
+                if(judge->card->isBlack()){
+                    zhenji->obtainCard(judge->card);
+                    return true;
+                }
             }
         }
 
