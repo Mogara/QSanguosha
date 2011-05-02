@@ -916,36 +916,46 @@ public:
     }
 };
 
-class CaizhaojiHujia: public PhaseChangeSkill{
+class CaizhaojiHujia: public TriggerSkill{
 public:
-    CaizhaojiHujia():PhaseChangeSkill("caizhaoji_hujia"){
-
+    CaizhaojiHujia():TriggerSkill("caizhaoji_hujia"){
+        events << PhaseChange << FinishJudge;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *caizhaoji, QVariant &data) const{
+        if(event == PhaseChange && caizhaoji->getPhase() == Player::Finish){
             int times = 0;
-            Room *room = target->getRoom();
-            while(target->askForSkillInvoke(objectName())){
+            Room *room = caizhaoji->getRoom();
+            while(caizhaoji->askForSkillInvoke(objectName())){
+                caizhaoji->setFlags("caizhaoji_hujia");
+
                 room->playSkillEffect(objectName());
 
                 times ++;
                 if(times == 3){
-                    target->turnOver();
+                    caizhaoji->turnOver();
                 }
 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart|diamond):(.*)");
                 judge.good = true;
                 judge.reason = objectName();
-                judge.who = target;
+                judge.who = caizhaoji;
 
                 room->judge(judge);
 
-                if(judge.isGood()){
-                    target->obtainCard(judge.card);
-                }else
+                if(judge.isBad())
                     break;
+            }
+
+            caizhaoji->setFlags("-caizhaoji_hujia");
+        }else if(event == FinishJudge){
+            if(caizhaoji->hasFlag("caizhaoji_hujia")){
+                JudgeStar judge = data.value<JudgeStar>();
+                if(judge->card->isRed()){
+                    caizhaoji->obtainCard(judge->card);
+                    return true;
+                }
             }
         }
 
