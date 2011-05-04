@@ -257,32 +257,41 @@ public:
     }
 };
 
-class Shuangxiong: public PhaseChangeSkill{
+class Shuangxiong: public TriggerSkill{
 public:
-    Shuangxiong():PhaseChangeSkill("shuangxiong"){
+    Shuangxiong():TriggerSkill("shuangxiong"){
         view_as_skill = new ShuangxiongViewAsSkill;
+
+        events << PhaseChange << FinishJudge;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shuangxiong) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *shuangxiong, QVariant &data) const{
         Room *room = shuangxiong->getRoom();
-        if(shuangxiong->getPhase() == Player::Start){
-            room->setPlayerMark(shuangxiong, "shuangxiong", 0);
-        }else if(shuangxiong->getPhase() == Player::Draw){
-            if(shuangxiong->askForSkillInvoke(objectName())){
 
-                JudgeStruct judge;
-                judge.pattern = QRegExp("(.*)");
-                judge.good = true;
-                judge.reason = objectName();
-                judge.who = shuangxiong;
+        if(event == PhaseChange){
+            if(shuangxiong->getPhase() == Player::Start){
+                room->setPlayerMark(shuangxiong, "shuangxiong", 0);
+            }else if(shuangxiong->getPhase() == Player::Draw){
+                if(shuangxiong->askForSkillInvoke(objectName())){
+                    shuangxiong->setFlags("shuangxiong");
 
-                room->judge(judge);
+                    JudgeStruct judge;
+                    judge.pattern = QRegExp("(.*)");
+                    judge.good = true;
+                    judge.reason = objectName();
+                    judge.who = shuangxiong;
 
-                shuangxiong->obtainCard(judge.card);
-                if(judge.card->isRed())
-                    room->setPlayerMark(shuangxiong, "shuangxiong", 1);
-                else
-                    room->setPlayerMark(shuangxiong, "shuangxiong", 2);
+                    room->judge(judge);
+
+                    return true;
+                }
+            }
+        }else if(event == FinishJudge){
+            JudgeStar judge = data.value<JudgeStar>();
+            if(shuangxiong->hasFlag("shuangxiong")){
+                shuangxiong->obtainCard(judge->card);
+                room->setPlayerMark(shuangxiong, "shuangxiong", judge->card->isRed() ? 1 : 2);
+                shuangxiong->setFlags("-shuangxiong");
 
                 return true;
             }
