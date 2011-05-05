@@ -139,7 +139,7 @@ public:
             guojia->obtainCard(judge->card);
             room->playSkillEffect(objectName());
 
-            room->setTag("SkipGameRule", true);
+            return true;
         }
 
         return false;

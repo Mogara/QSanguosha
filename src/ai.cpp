@@ -307,8 +307,8 @@ QString TrustAI::askForUseCard(const QString &, const QString &) {
     return ".";
 }
 
-int TrustAI::askForAG(const QList<int> &card_ids, bool refsuable){
-    if(refsuable)
+int TrustAI::askForAG(const QList<int> &card_ids, bool refusable){
+    if(refusable)
         return -1;
 
     int r = qrand() % card_ids.length();
@@ -556,4 +556,38 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
         return TrustAI::askForCard(pattern, prompt);
 
     return Card::Parse(result);
+}
+
+int LuaAI::askForAG(const QList<int> &card_ids, bool refusable){
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    lua_createtable(L, card_ids.length(), 0);
+
+    int i;
+    for(i=0; i<card_ids.length(); i++){
+        lua_pushinteger(L, card_ids.at(i));
+        lua_rawseti(L, -2, i+1);
+    }
+
+    lua_pushboolean(L, refusable);
+
+    int error = lua_pcall(L, 3, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        room->output(error_msg);
+        lua_pop(L, 1);
+
+        return TrustAI::askForAG(card_ids, refusable);
+    }
+
+    int card_id = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return card_id;
 }

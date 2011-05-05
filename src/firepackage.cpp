@@ -283,6 +283,9 @@ public:
 
                     room->judge(judge);
 
+                    room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
+                    shuangxiong->setFlags("-shuangxiong");
+
                     return true;
                 }
             }
@@ -290,9 +293,6 @@ public:
             JudgeStar judge = data.value<JudgeStar>();
             if(shuangxiong->hasFlag("shuangxiong")){
                 shuangxiong->obtainCard(judge->card);
-                room->setPlayerMark(shuangxiong, "shuangxiong", judge->card->isRed() ? 1 : 2);
-                shuangxiong->setFlags("-shuangxiong");
-
                 return true;
             }
         }
