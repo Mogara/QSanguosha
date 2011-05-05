@@ -811,17 +811,37 @@ XinzhanCard::XinzhanCard(){
 
 void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<int> cards = room->getNCards(3), left;
+    left = cards;
 
+    QList<int> hearts;
     foreach(int card_id, cards){
         const Card *card = Sanguosha->getCard(card_id);
-        if(card->getSuit() == Card::Heart){
-            source->obtainCard(card);
-            room->showCard(source, card_id);
-        }else
-            left << card_id;
+        if(card->getSuit() == Card::Heart)
+            hearts << card_id;
     }
 
-    if(!left.isEmpty())
+    if(!hearts.isEmpty()){
+        room->fillAG(cards, source);
+
+        while(!hearts.isEmpty()){
+            int card_id = room->askForAG(source, hearts, true);
+            if(card_id == -1)
+                break;
+
+            if(!hearts.contains(card_id))
+                continue;
+
+            hearts.removeOne(card_id);
+            left.removeOne(card_id);
+
+            source->obtainCard(Sanguosha->getCard(card_id));
+            room->showCard(source, card_id);
+        }
+
+        source->invoke("clearAG");
+    }
+
+    if(left.length() >= 2)
         room->doGuanxing(source, left, true);
  }
 

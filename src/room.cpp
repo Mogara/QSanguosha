@@ -582,7 +582,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
 }
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable){
-    if(card_ids.length() == 1)
+    if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
     int card_id;
