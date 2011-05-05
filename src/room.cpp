@@ -2511,7 +2511,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
         ServerPlayer *who = ai->askForYiji(cards, card_id);
         if(who){
             cards.removeOne(card_id);
-            who->obtainCard(Sanguosha->getCard(card_id));
+            moveCardTo(Sanguosha->getCard(card_id), who, Player::Hand, false);
             return true;
         }else
             return false;

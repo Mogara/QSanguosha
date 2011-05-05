@@ -789,8 +789,6 @@ public:
 
             room->showCard(player, card->getEffectiveId());
 
-
-
             if(card->getTypeId() != Card::Basic){
                 room->throwCard(card);
 

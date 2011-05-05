@@ -64,7 +64,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
         dashboard->setPlayer(Self);
         connect(Self, SIGNAL(general_changed()), dashboard, SLOT(updateAvatar()));
         connect(Self, SIGNAL(general2_changed()), dashboard, SLOT(updateSmallAvatar()));
-        connect(Self, SIGNAL(general_changed()), this, SLOT(updateSkillButtons()));
         connect(dashboard, SIGNAL(card_selected(const Card*)), this, SLOT(enableTargets(const Card*)));
         connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
 
@@ -201,7 +200,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // chat box
         chat_box = new QTextEdit;
-        chat_box->resize(230 + widen_width, 213);
+        chat_box->resize(230 + widen_width, 195);
 
         QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
         chat_box_widget->setPos(-343 - widen_width, -83);
@@ -216,10 +215,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
         // chat edit
         chat_edit = new QLineEdit;
         chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
+        chat_edit->setFixedWidth(chat_box->width());
 
         QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
         chat_edit_widget->setWidget(chat_edit);
-        chat_edit_widget->setX(widen_width + 10);
+        chat_edit_widget->setX(0);
         chat_edit_widget->setY(chat_box->height());
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
@@ -229,7 +229,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     // log box
     log_box = new ClientLogBox;
-    log_box->resize(chat_box->size());
+    log_box->resize(chat_box->width(), 213);
     log_box->setTextColor(Config.TextEditColor);
 
     QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
@@ -1061,19 +1061,12 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 }
 
 void RoomScene::updateSkillButtons(){
-    const Player *player = qobject_cast<const Player *>(sender());
-    const General *general = player->getGeneral();
-
-    if(general->isHidden() && trust_button->isEnabled())
-        return;
-
-    const QList<const Skill*> &skills = general->findChildren<const Skill *>();
+    const QList<const Skill*> skills = Self->getVisibleSkills();
     foreach(const Skill* skill, skills){
-        if(skill->objectName().startsWith("#"))
-            continue;
-
-        if(skill->isLordSkill() && Self->getRole() != "lord")
-            continue;
+        if(skill->isLordSkill()){
+            if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
+                continue;
+        }
 
         addSkillButton(skill);
     }
@@ -2440,6 +2433,8 @@ void RoomScene::onGameStart(){
         log_box->show();
     }
 
+    updateSkillButtons();
+
     if(control_panel)
         control_panel->hide();
 
@@ -2595,7 +2590,7 @@ void RoomScene::moveAndDisappear(QGraphicsObject *item, const QPointF &from, con
 }
 
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
-    if(name == "peach" || name == "nullification"){
+    if(name == "peach" || name == "analeptic" || name == "nullification"){
         Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
         addItem(item);
 

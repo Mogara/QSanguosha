@@ -14,6 +14,7 @@ class Armor;
 class Horse;
 class DelayedTrick;
 class DistanceSkill;
+class TriggerSkill;
 
 class Player : public QObject
 {
@@ -173,6 +174,9 @@ public:
     void clearHistory();
     bool hasUsed(const QString &card_class);
     int usedTimes(const QString &card_class);
+
+    QList<const TriggerSkill *> getTriggerSkills() const;
+    QList<const Skill *> getVisibleSkills() const;
 
     QVariantMap tag;
 

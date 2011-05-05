@@ -63,7 +63,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->hasFlag("dying")){
         // do animation
         QString who = effect.to->objectName();
-        QString animation_str = QString("peach:%1:%2").arg(who).arg(who);
+        QString animation_str = QString("analeptic:%1:%2").arg(who).arg(who);
         room->broadcastInvoke("animate", animation_str);
 
         // recover hp

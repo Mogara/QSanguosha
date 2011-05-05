@@ -285,10 +285,13 @@ const General *Player::getGeneral() const{
 }
 
 bool Player::hasSkill(const QString &skill_name) const{
-    if(general)
-        return general->hasSkill(skill_name) || acquired_skills.contains(skill_name);
-    else
-        return false;
+    if(general && general->hasSkill(skill_name))
+        return true;
+
+    if(general2 && general2->hasSkill(skill_name))
+        return true;
+
+    return acquired_skills.contains(skill_name);
 }
 
 bool Player::hasLordSkill(const QString &skill_name) const{
@@ -607,4 +610,43 @@ bool Player::hasUsed(const QString &card_class){
 
 int Player::usedTimes(const QString &card_class){
     return history.value(card_class, 0);
+}
+
+QList<const TriggerSkill *> Player::getTriggerSkills() const{
+    QList<const TriggerSkill *> skills;
+    if(general)
+        skills << general->findChildren<const TriggerSkill *>();
+
+    if(general2)
+        skills << general2->findChildren<const TriggerSkill *>();
+
+    foreach(QString skill_name, acquired_skills){
+        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+        if(skill)
+            skills << skill;
+    }
+
+    return skills;
+}
+
+QList<const Skill *> Player::getVisibleSkills() const{
+    QList<const Skill *> skills;
+    if(general)
+        skills << general->findChildren<const Skill *>();
+
+    if(general2)
+        skills << general2->findChildren<const Skill *>();
+
+    foreach(QString skill_name, acquired_skills)
+        skills << Sanguosha->getSkill(skill_name);
+
+    QMutableListIterator<const Skill *> itor(skills);
+    while(itor.hasNext()){
+        itor.next();
+
+        if(itor.value()->objectName().startsWith("#"))
+            itor.remove();
+    }
+
+    return skills;
 }

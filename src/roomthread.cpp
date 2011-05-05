@@ -111,12 +111,9 @@ RoomThread::RoomThread(Room *room)
 }
 
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
-    const General *general = player->getGeneral();
-
-    Q_ASSERT(general);
     QVariant void_data;
 
-    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    QList<const TriggerSkill *> skills = player->getTriggerSkills();
     foreach(const TriggerSkill *skill, skills){
         if(skill->isLordSkill()){
             if(!player->isLord() || room->mode == "06_3v3")
@@ -131,11 +128,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
 }
 
 void RoomThread::removePlayerSkills(ServerPlayer *player){
-    const General *general = player->getGeneral();
-
-    Q_ASSERT(general);
-
-    QList<const TriggerSkill *> skills = general->findChildren<const TriggerSkill *>();
+    QList<const TriggerSkill *> skills = player->getTriggerSkills();
     foreach(const TriggerSkill *skill, skills){
         if(skill->isLordSkill()){
             if(!player->isLord() || room->mode == "06_3v3")
@@ -148,26 +141,10 @@ void RoomThread::removePlayerSkills(ServerPlayer *player){
 
 void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
-        addPlayerSkills(player);
+        addPlayerSkills(player, false);
     }   
 
     addTriggerSkill(rule);
-
-    foreach(ServerPlayer *player, room->players){
-        const General *general2 = player->getGeneral2();
-        if(general2){
-            QList<const Skill *> skills = general2->findChildren<const Skill *>();
-
-            foreach(const Skill *skill, skills){
-                if(!player->hasSkill(skill->objectName())){
-                    if(player->getRoleEnum() != Player::Lord && skill->isLordSkill())
-                        continue;
-
-                    room->acquireSkill(player, skill);
-                }
-            }
-        }
-    }
 }
 
 static const int GameOver = 1;
