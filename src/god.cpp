@@ -127,7 +127,7 @@ public:
         room->fillAG(card_ids);
 
         while(!card_ids.isEmpty()){
-            int card_id = room->askForAG(shenlumeng, card_ids);
+            int card_id = room->askForAG(shenlumeng, card_ids, false, "shelie");
             card_ids.removeOne(card_id);
             room->takeAG(shenlumeng, card_id);
 
@@ -596,7 +596,7 @@ public:
 
         QList<int> to_exchange;
         while(!stars.isEmpty()){
-            int card_id = room->askForAG(shenzhuge, stars, true);
+            int card_id = room->askForAG(shenzhuge, stars, true, "qixing");
             if(card_id == -1)
                 break;
 
@@ -645,7 +645,7 @@ public:
 
         int i;
         for(i=0; i<n; i++){
-            int card_id = room->askForAG(shenzhuge, stars);
+            int card_id = room->askForAG(shenzhuge, stars, false, "qixing-discard");
 
             stars.removeOne(card_id);
             room->throwCard(card_id);

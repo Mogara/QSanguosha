@@ -581,7 +581,7 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
     return false;
 }
 
-int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable){
+int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason){
     if(card_ids.length() == 1 && !refusable)
         return card_ids.first();
 
@@ -590,13 +590,13 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     AI *ai = player->getAI();
     if(ai){
         thread->delay(Config.AIDelay);
-        card_id = ai->askForAG(card_ids, refusable);
+        card_id = ai->askForAG(card_ids, refusable, reason);
     }else{
         player->invoke("askForAG", refusable ? "?" : ".");
         getResult("chooseAGCommand", player);
 
         if(result.isEmpty())
-            return askForAG(player, card_ids, refusable);
+            return askForAG(player, card_ids, refusable, reason);
 
         card_id = result.toInt();
     }

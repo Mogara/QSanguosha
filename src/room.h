@@ -140,7 +140,7 @@ public:
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it = true);
     bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt);
-    int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable = false);
+    int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);

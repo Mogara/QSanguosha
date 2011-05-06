@@ -509,7 +509,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
     foreach(QVariant card_id, ag_list)
         card_ids << card_id.toInt();
 
-    int card_id = room->askForAG(effect.to, card_ids);
+    int card_id = room->askForAG(effect.to, card_ids, false, objectName());
     card_ids.removeOne(card_id);
 
     room->takeAG(effect.to, card_id);

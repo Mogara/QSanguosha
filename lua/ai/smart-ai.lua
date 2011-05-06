@@ -1148,6 +1148,15 @@ function SmartAI:askForNullification(trick_name, from, to)
 	return nil
 end
 
+function SmartAI:askForAG(card_ids, refusable, reason)
+	if refusable then
+		return -1
+	end
+	
+	local r = math.random(1, #card_ids)
+	return card_ids[r]
+end
+
 function SmartAI:getOneFriend()
 	for _, friend in ipairs(self.friends) do
 		if friend ~= self.player then

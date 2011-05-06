@@ -84,7 +84,7 @@ void Deluge::takeEffect(ServerPlayer *target) const{
     players = players.mid(0, n);
     foreach(ServerPlayer *player, players){
         if(player->isAlive()){
-            int card_id = room->askForAG(player, card_ids);
+            int card_id = room->askForAG(player, card_ids, false, "deluge");
             card_ids.removeOne(card_id);
 
             room->takeAG(player, card_id);

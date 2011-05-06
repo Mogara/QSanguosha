@@ -822,7 +822,7 @@ void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         room->fillAG(cards, source);
 
         while(!hearts.isEmpty()){
-            int card_id = room->askForAG(source, hearts, true);
+            int card_id = room->askForAG(source, hearts, true, "xinzhan");
             if(card_id == -1)
                 break;
 

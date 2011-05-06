@@ -415,7 +415,7 @@ public:
 
             int i;
             for(i=0; i<to_remove; i++){
-                int card_id = room->askForAG(zhoutai, buqu);
+                int card_id = room->askForAG(zhoutai, buqu, false, "buqu");
                 zhoutai->removeCardFromPile("buqu", card_id);
             }
 

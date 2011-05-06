@@ -307,7 +307,7 @@ QString TrustAI::askForUseCard(const QString &, const QString &) {
     return ".";
 }
 
-int TrustAI::askForAG(const QList<int> &card_ids, bool refusable){
+int TrustAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &){
     if(refusable)
         return -1;
 
@@ -558,7 +558,7 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
     return Card::Parse(result);
 }
 
-int LuaAI::askForAG(const QList<int> &card_ids, bool refusable){
+int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &reason){
     Q_ASSERT(callback);
 
     lua_State *L = room->getLuaState();
@@ -577,13 +577,15 @@ int LuaAI::askForAG(const QList<int> &card_ids, bool refusable){
 
     lua_pushboolean(L, refusable);
 
-    int error = lua_pcall(L, 3, 1, 0);
+    lua_pushstring(L, reason.toAscii());
+
+    int error = lua_pcall(L, 4, 1, 0);
     if(error){
         const char *error_msg = lua_tostring(L, -1);
         room->output(error_msg);
         lua_pop(L, 1);
 
-        return TrustAI::askForAG(card_ids, refusable);
+        return TrustAI::askForAG(card_ids, refusable, reason);
     }
 
     int card_id = lua_tointeger(L, -1);

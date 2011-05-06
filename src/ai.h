@@ -40,7 +40,7 @@ public:
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
     virtual const Card *askForCard(const QString &pattern, const QString &prompt)  = 0;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
-    virtual int askForAG(const QList<int> &card_ids, bool refusable) = 0;
+    virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     virtual const Card *askForCardShow(ServerPlayer *requestor) = 0;
     virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason) = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
@@ -69,7 +69,7 @@ public:
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
     virtual const Card *askForCard(const QString &pattern, const QString &prompt);
     virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
-    virtual int askForAG(const QList<int> &card_ids, bool refusable);
+    virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason);
     virtual const Card *askForCardShow(ServerPlayer *requestor) ;
     virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
@@ -95,7 +95,7 @@ public:
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
     virtual const Card *askForCard(const QString &pattern, const QString &prompt);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
-    virtual int askForAG(const QList<int> &card_ids, bool refusable);
+    virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason);
 
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
