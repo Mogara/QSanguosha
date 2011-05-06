@@ -22,10 +22,10 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.from)
+        if(damage.from && damage.from != player)
             damage.from->gainMark("@nightmare", damage.damage);
 
         return false;
@@ -311,40 +311,49 @@ public:
 class Qinyin: public TriggerSkill{
 public:
     Qinyin():TriggerSkill("qinyin"){
-        events << CardDiscarded;
+        events << CardLost << PhaseChange;
         default_choice = "down";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *shenzhouyu, QVariant &data) const{
-        CardStar dummy_card = data.value<CardStar>();
-        int discard_num = dummy_card->subcardsLength();
-
-        if(shenzhouyu->getPhase() == Player::Discard && discard_num >= 2){
-            Room *room = shenzhouyu->getRoom();
-
-            if(!shenzhouyu->askForSkillInvoke(objectName()))
-                return false;
-
-            QString result = room->askForChoice(shenzhouyu, objectName(), "up+down");
-            QList<ServerPlayer *> all_players = room->getAllPlayers();
-            if(result == "up"){
-                room->playSkillEffect(objectName(), 2);
-                foreach(ServerPlayer *player, all_players){
-                    RecoverStruct recover;
-                    recover.who = shenzhouyu;
-                    room->recover(player, recover);
-                }
-            }else if(result == "down"){
-                foreach(ServerPlayer *player, all_players){
-                    room->loseHp(player);
-                }
-
-                int index = 1;
-                if(room->findPlayer("caocao+shencaocao+shencc"))
-                    index = 3;
-
-                room->playSkillEffect(objectName(), index);
+    void perform(ServerPlayer *shenzhouyu) const{
+        Room *room = shenzhouyu->getRoom();
+        QString result = room->askForChoice(shenzhouyu, objectName(), "up+down");
+        QList<ServerPlayer *> all_players = room->getAllPlayers();
+        if(result == "up"){
+            room->playSkillEffect(objectName(), 2);
+            foreach(ServerPlayer *player, all_players){
+                RecoverStruct recover;
+                recover.who = shenzhouyu;
+                room->recover(player, recover);
             }
+        }else if(result == "down"){
+            foreach(ServerPlayer *player, all_players){
+                room->loseHp(player);
+            }
+
+            int index = 1;
+            if(room->findPlayer("caocao+shencaocao+shencc"))
+                index = 3;
+
+            room->playSkillEffect(objectName(), index);
+        }
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *shenzhouyu, QVariant &data) const{
+        if(shenzhouyu->getPhase() != Player::Discard)
+            return false;
+
+        if(event == CardLost){
+            CardMoveStruct move = data.value<CardMoveStruct>();
+            if(move.to_place == Player::DiscardedPile){
+                shenzhouyu->addMark("qinyin");
+                if(shenzhouyu->getMark("qinyin") == 2){
+                    if(shenzhouyu->askForSkillInvoke(objectName()))
+                        perform(shenzhouyu);
+                }
+            }
+        }else if(event == PhaseChange){
+            shenzhouyu->setMark("qinyin", 0);
         }
 
         return false;
