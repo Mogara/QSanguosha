@@ -1041,7 +1041,9 @@ void Client::gameOver(const QString &result_str){
 void Client::killPlayer(const QString &player_name){
     alive_count --;
 
-    QString general_name = getPlayer(player_name)->getGeneralName();
+    ClientPlayer *player = getPlayer(player_name);
+    player->loseAllSkills();
+    QString general_name = player->getGeneralName();
     QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
 
     skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
@@ -1297,18 +1299,19 @@ void Client::showCard(const QString &show_str){
 }
 
 void Client::attachSkill(const QString &skill_name){
+    Self->acquireSkill(skill_name);
     emit skill_attached(skill_name);
 }
 
 void Client::detachSkill(const QString &skill_name){
+    Self->loseSkill(skill_name);
     emit skill_detached(skill_name);
 }
 
 void Client::detachAllSkills(const QString &){
-    QList<const Skill *> skills = Self->getGeneral()->findChildren<const Skill *>();
+    QList<const Skill *> skills = Self->getVisibleSkills();
     foreach(const Skill *skill, skills){
-        if(!skill->objectName().startsWith("#"))
-            emit skill_detached(skill->objectName());
+        emit skill_detached(skill->objectName());
     }
 }
 

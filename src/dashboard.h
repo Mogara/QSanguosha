@@ -21,7 +21,7 @@ public:
     Dashboard();
     virtual QRectF boundingRect() const;
     void setWidth(int width);
-    void addWidget(QWidget *widget, int x, bool from_left);
+    QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
     QPushButton *addButton(const QString &label, int x, bool from_left);
     QProgressBar *addProgressBar();
 

@@ -310,17 +310,14 @@ void Dashboard::setWidth(int width){
     }
 }
 
-void Dashboard::addWidget(QWidget *widget, int x, bool from_left){
+QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_left){
     const int y = -25;
     QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
     proxy_widget->setWidget(widget);
-
-    if(from_left)
-        proxy_widget->setParentItem(left);
-    else
-        proxy_widget->setParentItem(right);
-
+    proxy_widget->setParentItem(from_left ? left : right);
     proxy_widget->setPos(x, y);
+
+    return proxy_widget;
 }
 
 QPushButton *Dashboard::addButton(const QString &label, int x, bool from_left){

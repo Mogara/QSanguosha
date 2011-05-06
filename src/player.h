@@ -125,6 +125,7 @@ public:
 
     void acquireSkill(const QString &skill_name);
     void loseSkill(const QString &skill_name);
+    void loseAllSkills();
     bool hasSkill(const QString &skill_name) const;
     bool hasLordSkill(const QString &skill_name) const;
 

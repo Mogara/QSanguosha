@@ -2442,15 +2442,14 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose){
-        QPushButton *free_discard = new QPushButton(tr("Free discard"));
+        QPushButton *free_discard = dashboard->addButton(tr("Free discard"), 170, true);
         free_discard->setToolTip(tr("Discard cards freely"));
-
-        addWidgetToSkillDock(free_discard, true);
 
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
-        skill_buttons << free_discard;
         connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+
+        skill_buttons << free_discard;
     }
 
     trust_button->setEnabled(true);

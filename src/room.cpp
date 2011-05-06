@@ -179,6 +179,8 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     victim->setAlive(false);
     broadcastProperty(victim, "alive");
 
+    victim->loseAllSkills();
+
     broadcastProperty(victim, "role");
     broadcastInvoke("killPlayer", victim->objectName());
 
@@ -328,10 +330,12 @@ void Room::slashResult(const SlashEffectStruct &effect, bool hit){
 }
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
+    player->acquireSkill(skill_name);
     player->invoke("attachSkill", skill_name);
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name){
+    player->loseSkill(skill_name);
     player->invoke("detachSkill", skill_name);
 }
 
