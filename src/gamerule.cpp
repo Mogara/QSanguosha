@@ -492,8 +492,8 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     Room *room = player->getRoom();
     QString new_general = player->tag["1v1ChangeGeneral"].toString();
     player->tag.remove("1v1ChangeGeneral");
-    room->revivePlayer(player);
     room->transfigure(player, new_general, true, true);
+    room->revivePlayer(player);
 
     if(!player->faceUp())
         player->turnOver();

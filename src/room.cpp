@@ -790,8 +790,6 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.arg = new_general;
     sendLog(log);
 
-    player->invoke("detachAllSkills");
-
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
     thread->addPlayerSkills(player, invoke_start);

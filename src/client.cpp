@@ -48,7 +48,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
-    callbacks["detachAllSkills"] = &Client::detachAllSkills;
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
@@ -1042,7 +1041,14 @@ void Client::killPlayer(const QString &player_name){
     alive_count --;
 
     ClientPlayer *player = getPlayer(player_name);
+    if(player == Self){
+        QList<const Skill *> skills = Self->getVisibleSkills();
+        foreach(const Skill *skill, skills)
+            emit skill_detached(skill->objectName());
+    }
+
     player->loseAllSkills();
+
     QString general_name = player->getGeneralName();
     QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
 
@@ -1306,13 +1312,6 @@ void Client::attachSkill(const QString &skill_name){
 void Client::detachSkill(const QString &skill_name){
     Self->loseSkill(skill_name);
     emit skill_detached(skill_name);
-}
-
-void Client::detachAllSkills(const QString &){
-    QList<const Skill *> skills = Self->getVisibleSkills();
-    foreach(const Skill *skill, skills){
-        emit skill_detached(skill->objectName());
-    }
 }
 
 void Client::doGuanxing(const QString &guanxing_str){

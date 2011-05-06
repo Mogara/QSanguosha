@@ -2169,9 +2169,7 @@ void RoomScene::killPlayer(const QString &who){
 
     if(who == Self->objectName()){
         dashboard->killPlayer();
-
         general = Self->getGeneral();
-
         item2player.remove(avatar);
     }else{
         Photo *photo = name2photo[who];
@@ -2201,6 +2199,7 @@ void RoomScene::revivePlayer(const QString &who){
     if(who == Self->objectName()){
         dashboard->revivePlayer();
         item2player.insert(avatar, Self);
+        updateSkillButtons();
     }else{
         Photo *photo = name2photo[who];
         photo->revivePlayer();
