@@ -82,9 +82,9 @@ void Settings::init(){
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-year.jpg").toString();
 
-    if(!contains("BanList1v1")){
+    if(!contains("1v1/Banlist")){
         QStringList banlist;
-        banlist << "sunquan" << "huatuo" << "liubei" << "zhangliao";
-        setValue("BanList1v1", banlist);
+        banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
+        setValue("1v1/Banlist", banlist);
     }
 }

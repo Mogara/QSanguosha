@@ -37,6 +37,22 @@ private slots:
     void save3v3Generals();
 };
 
+class KOFBanlistDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    KOFBanlistDialog(QDialog *parent);
+
+private:
+    QListWidget *list;
+
+private slots:
+    void addGeneral();
+    void addGeneral(const QString &name);
+    void removeGeneral();
+    void save();
+};
+
 class ServerDialog: public QDialog{
     Q_OBJECT
 
@@ -79,6 +95,7 @@ private slots:
     void onHttpDone(bool error);
     void updateChallengeLabel(int index);
     void select3v3Generals();
+    void edit1v1Banlist();
 };
 
 class Scenario;

@@ -7,6 +7,7 @@
 #include "scenario.h"
 #include "challengemode.h"
 #include "contestdb.h"
+#include "choosegeneraldialog.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -72,6 +73,80 @@ QLayout *ServerDialog::createLeft(){
     return form_layout;
 }
 
+KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Select generals that are excluded in 1v1 mode"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    list = new QListWidget;
+    list->setIconSize(QSize(42, 36));
+
+    QStringList banlist = Config.value("1v1/Banlist").toStringList();
+    foreach(QString name, banlist){
+        addGeneral(name);
+    }
+
+    QPushButton *add = new QPushButton(tr("Add ..."));
+    QPushButton *remove = new QPushButton(tr("Remove"));
+    QPushButton *ok = new QPushButton(tr("OK"));
+
+    connect(add, SIGNAL(clicked()), this, SLOT(addGeneral()));
+    connect(remove, SIGNAL(clicked()), this, SLOT(removeGeneral()));
+    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(this, SIGNAL(accepted()), this, SLOT(save()));
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(add);
+    hlayout->addWidget(remove);
+    hlayout->addWidget(ok);
+
+    layout->addWidget(list);
+    layout->addLayout(hlayout);
+    setLayout(layout);
+}
+
+void KOFBanlistDialog::addGeneral(){
+    FreeChooseDialog *dialog = new FreeChooseDialog(this, false);
+
+    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
+
+    dialog->exec();
+}
+
+void KOFBanlistDialog::addGeneral(const QString &name){
+    const General *general = Sanguosha->getGeneral(name);
+    QIcon icon(general->getPixmapPath("tiny"));
+    QString text = Sanguosha->translate(name);
+    QListWidgetItem *item = new QListWidgetItem(icon, text, list);
+    item->setData(Qt::UserRole, name);
+}
+
+void KOFBanlistDialog::removeGeneral(){
+    int row = list->currentRow();
+    if(row != -1)
+        delete list->takeItem(row);
+}
+
+void KOFBanlistDialog::save(){
+    QSet<QString> banset;
+
+    int i;
+    for(i=0; i<list->count(); i++){
+        banset << list->item(i)->data(Qt::UserRole).toString();
+    }
+
+    QStringList banlist = banset.toList();
+    Config.setValue("1v1/Banlist", QVariant::fromValue(banlist));
+}
+
+void ServerDialog::edit1v1Banlist(){
+    KOFBanlistDialog *dialog = new KOFBanlistDialog(this);
+    dialog->exec();
+}
+
 QGroupBox *ServerDialog::createGameModeBox(){
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
@@ -91,7 +166,13 @@ QGroupBox *ServerDialog::createGameModeBox(){
             layout->addWidget(button);
             mode_group->addButton(button);
 
-            if(itor.key() == "06_3v3"){
+            if(itor.key() == "02_1v1"){
+                // add 1v1 banlist edit button
+                QPushButton *button = new QPushButton(tr("Banlist ..."));
+                connect(button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
+                layout->addWidget(button);
+
+            }else if(itor.key() == "06_3v3"){
                 // add 3v3 options
 
                 QGroupBox *box = new QGroupBox(tr("3v3 options"));
