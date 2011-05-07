@@ -340,6 +340,9 @@ QLayout *ServerDialog::createRight(){
         ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
         ai_enable_checkbox->setChecked(Config.EnableAI);
 
+        role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
+        role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
+
         ai_delay_spinbox = new QSpinBox;
         ai_delay_spinbox->setMinimum(0);
         ai_delay_spinbox->setMaximum(5000);
@@ -347,6 +350,7 @@ QLayout *ServerDialog::createRight(){
         ai_delay_spinbox->setSuffix(tr(" millisecond"));
 
         layout->addWidget(ai_enable_checkbox);
+        layout->addWidget(role_predictable_checkbox);
         layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     }
 
@@ -509,6 +513,7 @@ bool ServerDialog::config(){
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
+    Config.setValue("RolePredictable", Config.value("RolePredictable", true));
     Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);

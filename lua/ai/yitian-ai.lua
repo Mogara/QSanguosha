@@ -25,7 +25,3 @@ end
 
 -- caizhaoji_hujia
 sgs.ai_skill_invoke.caizhaoji_hujia = true
-
--- dengshizia
-sgs.ai_skill_invoke.zhenggong = true
-sgs.ai_skill_invoke.toudu = true

@@ -583,7 +583,6 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    void output(const char *message);
     void killPlayer(ServerPlayer *victim, DamageStruct *killer = NULL);
 	void revivePlayer(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
@@ -688,6 +687,11 @@ public:
 %extend Room {
 	ServerPlayer *nextPlayer() const{
 		return $self->getCurrent()->getNextAlive();
+	}
+
+	void output(const char *msg){
+		if(Config.value("DebugOutput", false).toBool())
+			$self->output(msg);
 	}
 };
 

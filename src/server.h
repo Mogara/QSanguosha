@@ -67,6 +67,7 @@ private:
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QCheckBox *ai_enable_checkbox;
+    QCheckBox *role_predictable_checkbox;
     QSpinBox *ai_delay_spinbox;
 
     QButtonGroup *extension_group;

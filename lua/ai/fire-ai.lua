@@ -5,6 +5,7 @@
 -- bazhen
 sgs.ai_skill_invoke.bazhen = true
 
+
 -- pangtong
 
 local pangtong_ai = SmartAI:newSubclass "pangtong"
@@ -26,7 +27,7 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 end
 
 -- lianhuan
-function pangtong_ai:activate(use)
+function pangtong_ai:activate_dummy(use)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
 		if card:getSuit() == sgs.Card_Club then
@@ -56,7 +57,7 @@ function xunyu_ai:activate(use)
 				local enemy_max_card = self:getMaxCard(enemy)
 				if enemy_max_card and max_point > enemy_max_card:getNumber() then
 					for _, enemy2 in ipairs(self.enemies) do
-						if enemy ~= enemy2 and enemy:inMyAttackRange(enemy2) then
+						if (enemy:objectName() ~= enemy2:objectName()) and enemy:inMyAttackRange(enemy2) then
 							local card_id = max_card:getEffectiveId()
 							local card_str = "@QuhuCard=" .. card_id
 							use.card = sgs.Card_Parse(card_str)
@@ -166,4 +167,15 @@ function dianwei_ai:activate(use)
 	end
 
 	super.activate(self, use)
+end
+
+--shuangxiong
+
+sgs.ai_skill_invoke["shuangxiong"]=function(self,data)
+    local handnum=self.player:getHandcardNum()/2
+    self:sort(self.enemies, "hp")
+    for _, enemy in ipairs(self.enemies) do
+        if (self:getSlashNumber(enemy)+enemy:getHp()<=handnum) and (self:getSlashNumber(self.player)>=self:getSlashNumber(enemy)) then return true end
+    end
+    return false
 end

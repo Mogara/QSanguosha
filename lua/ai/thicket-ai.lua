@@ -88,7 +88,7 @@ end
 
 local xuhuang_ai = SmartAI:newSubclass "xuhuang"
 
-function xuhuang_ai:activate(use)
+function xuhuang_ai:activate_dummy(use)
 	-- find black basic or equip card
 	local cards = self.player:getCards("he")
 	local to_use
