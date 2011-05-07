@@ -989,7 +989,7 @@ void RoomScene::addSkillButton(const Skill *skill){
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
-        if(filter){
+        if(filter && dashboard->getFilter() == NULL){
             dashboard->setFilter(filter);
             button = new QPushButton();
         }
@@ -2286,6 +2286,7 @@ void RoomScene::attachSkill(const QString &skill_name){
     const ViewAsSkill *skill = getViewAsSkill(skill_name);
 
     QPushButton *button = new QPushButton(Sanguosha->translate(skill_name));
+    button->setObjectName(skill_name);
 
     skill_buttons << button;
     button2skill.insert(button, skill);
@@ -2305,8 +2306,8 @@ void RoomScene::detachSkill(const QString &skill_name){
         QAbstractButton *button = itor.value();
         if(button->objectName() == skill_name){
             removeWidgetFromSkillDock(button);
+            button2skill.remove(button);
             button->deleteLater();
-
             itor.remove();
 
             return;

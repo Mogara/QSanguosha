@@ -36,6 +36,7 @@ public:
     void unselectAll();
     void hideAvatar();
     void setFilter(const FilterSkill *filter);
+    const FilterSkill *getFilter() const;
 
     void disableAllCards();
     void enableCards();

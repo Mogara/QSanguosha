@@ -125,8 +125,11 @@ void Dashboard::setActionState(){
 }
 
 void Dashboard::setFilter(const FilterSkill *filter){
-    if(this->filter == NULL)
-        this->filter = filter;
+    this->filter = filter;
+}
+
+const FilterSkill *Dashboard::getFilter() const{
+    return filter;
 }
 
 void Dashboard::setTrust(bool trust){
@@ -379,6 +382,8 @@ void Dashboard::killPlayer(){
 
     death_item = new QGraphicsPixmapItem(QPixmap(Self->getDeathPixmapPath()), this);
     death_item->setPos(397, 55);
+
+    filter = NULL;
 }
 
 void Dashboard::revivePlayer(){
