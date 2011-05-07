@@ -1054,7 +1054,7 @@ public:
         return true;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         if(damage.from == NULL)
@@ -1081,7 +1081,7 @@ public:
                 DamageStruct shaoying_damage;
                 shaoying_damage.nature = DamageStruct::Fire;
                 shaoying_damage.from = luboyan;
-                shaoying_damage.to = luboyan->getNextAlive();
+                shaoying_damage.to = player->getNextAlive();
 
                 room->damage(shaoying_damage);
             }
