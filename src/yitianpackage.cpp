@@ -1307,9 +1307,6 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     room->transfigure(source, general, false);
     room->acquireSkill(source, "xunzhi", false);
     source->setFlags("xunzhi");
-
-    // FIXME: temporary solution
-    room->detachSkillFromPlayer(source, "lexue");
 }
 
 class XunzhiViewAsSkill: public ZeroCardViewAsSkill{

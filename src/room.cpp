@@ -790,6 +790,9 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     log.arg = new_general;
     sendLog(log);
 
+    QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(new_general);
+    player->invoke("transfigure", transfigure_str);
+
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
     thread->addPlayerSkills(player, invoke_start);
@@ -1632,7 +1635,7 @@ void Room::sendDamageLog(const DamageStruct &data){
     sendLog(log);
 }
 
-bool Room::hasWelfare(ServerPlayer *player) const{
+bool Room::hasWelfare(const ServerPlayer *player) const{
     if(mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
     else
@@ -1664,11 +1667,7 @@ void Room::startGame(){
     players.last()->setNext(players.first());
 
     foreach(ServerPlayer *player, players){
-        if(hasWelfare(player))
-            player->setMaxHP(player->getGeneralMaxHP() + 1);
-        else
-            player->setMaxHP(player->getGeneralMaxHP());
-
+        player->setMaxHP(player->getGeneralMaxHP());
         player->setHp(player->getMaxHP());
 
         broadcastProperty(player, "maxhp");

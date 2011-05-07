@@ -174,25 +174,6 @@ int Player::distanceTo(const Player *other) const{
     return distance;
 }
 
-int Player::getGeneralMaxHP() const{
-    if(general2 == NULL)
-        return general->getMaxHp();
-
-    int first = general->getMaxHp();
-    int second = general2->getMaxHp();
-
-    int max_hp;
-    switch(Config.MaxHpScheme){
-    case 2: max_hp = (first + second)/2; break;
-    case 1: max_hp = qMin(first, second); break;
-    case 0:
-    default:
-        max_hp = first + second - 3; break;
-    }
-
-    return qMin(max_hp, 8);
-}
-
 void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;
@@ -636,10 +617,10 @@ QList<const TriggerSkill *> Player::getTriggerSkills() const{
 QList<const Skill *> Player::getVisibleSkills() const{
     QList<const Skill *> skills;
     if(general)
-        skills << general->findChildren<const Skill *>();
+        skills << general->getVisibleSkills();
 
     if(general2)
-        skills << general2->findChildren<const Skill *>();
+        skills << general2->getVisibleSkills();
 
     foreach(QString skill_name, acquired_skills)
         skills << Sanguosha->getSkill(skill_name);

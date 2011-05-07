@@ -105,6 +105,7 @@ public:
     void setScreenName(const QString &set_str);
     void setFixedDistance(const QString &set_str);
     void pile(const QString &pile_str);    
+    void transfigure(const QString &transfigure_tr);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -237,7 +238,7 @@ signals:
     void card_moved(const CardMoveStructForClient &move);
     void n_cards_moved(int n, const QString &from, const QString &to);
 
-    void skill_attached(const QString &skill_name);
+    void skill_attached(const QString &skill_name, bool from_left);
     void skill_detached(const QString &skill_name);
 
     void ag_filled(const QList<int> &card_ids);

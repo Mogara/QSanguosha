@@ -82,6 +82,8 @@ public:
     void addToSelected(const QString &general);
     QStringList getSelected() const;
 
+    int getGeneralMaxHP() const;
+
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;

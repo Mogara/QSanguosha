@@ -119,7 +119,6 @@ public:
     virtual int aliveCount() const = 0;
     void setFixedDistance(const Player *player, int distance);
     int distanceTo(const Player *other) const;
-    int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 

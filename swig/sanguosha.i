@@ -120,7 +120,6 @@ public:
 
     virtual int aliveCount() const = 0;
     int distanceTo(const Player *other) const;
-    int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 
@@ -218,6 +217,8 @@ public:
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
+
+	int getGeneralMaxHP() const;
 };
 
 class ClientPlayer : public Player

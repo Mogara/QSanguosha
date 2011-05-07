@@ -92,6 +92,7 @@ public:
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);
     void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
+    bool hasWelfare(const ServerPlayer *player) const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
@@ -206,8 +207,7 @@ private:
     AI *cloneAI(ServerPlayer *player);
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
-    void initCallbacks();
-    bool hasWelfare(ServerPlayer *player) const;    
+    void initCallbacks();   
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);

@@ -31,6 +31,7 @@ public:
 
     void addSkill(Skill* skill);
     bool hasSkill(const QString &skill_name) const;
+    QList<const Skill *> getVisibleSkills() const;
 
     QString getPixmapPath(const QString &category) const;    
     QString getPackage() const;

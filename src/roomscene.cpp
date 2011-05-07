@@ -179,7 +179,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
     }
 
-    connect(ClientInstance, SIGNAL(skill_attached(QString)), this, SLOT(attachSkill(QString)));
+    connect(ClientInstance, SIGNAL(skill_attached(QString, bool)), this, SLOT(attachSkill(QString,bool)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
     {
@@ -944,7 +944,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
     }
 }
 
-void RoomScene::addSkillButton(const Skill *skill){
+void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     // check duplication
     foreach(QAbstractButton *button, skill_buttons){
         if(button->objectName() == skill->objectName())
@@ -1010,7 +1010,7 @@ void RoomScene::addSkillButton(const Skill *skill){
         button->setIcon(QIcon("image/system/roles/lord.png"));
 
     skill_buttons << button;
-    addWidgetToSkillDock(button);
+    addWidgetToSkillDock(button, from_left);
 }
 
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
@@ -2282,19 +2282,10 @@ void RoomScene::chooseSkillButton(){
     dialog->exec();
 }
 
-void RoomScene::attachSkill(const QString &skill_name){
-    const ViewAsSkill *skill = getViewAsSkill(skill_name);
-
-    QPushButton *button = new QPushButton(Sanguosha->translate(skill_name));
-    button->setObjectName(skill_name);
-
-    skill_buttons << button;
-    button2skill.insert(button, skill);
-
-    button->setEnabled(skill->isAvailable());
-    addWidgetToSkillDock(button, true);
-
-    connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+void RoomScene::attachSkill(const QString &skill_name, bool from_left){
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill)
+        addSkillButton(skill, from_left);
 }
 
 void RoomScene::detachSkill(const QString &skill_name){

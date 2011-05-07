@@ -151,7 +151,7 @@ private:
 
     void freeze();
     void addRestartButton(QDialog *dialog);
-    void addSkillButton(const Skill *skill);
+    void addSkillButton(const Skill *skill, bool from_left = false);
     void addWidgetToSkillDock(QWidget *widget, bool from_left = false);
     void removeWidgetFromSkillDock(QWidget *widget);
     QList<QPointF> getPhotoPositions() const;
@@ -207,7 +207,7 @@ private slots:
 
     void takeAmazingGrace(const ClientPlayer *taker, int card_id);
 
-    void attachSkill(const QString &skill_name);
+    void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name);
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart);

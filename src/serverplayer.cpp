@@ -516,3 +516,30 @@ ServerPlayer *ServerPlayer::getNextAlive() const{
 
     return next;
 }
+
+int ServerPlayer::getGeneralMaxHP() const{
+    int max_hp = 0;
+
+    if(getGeneral2() == NULL)
+        max_hp = getGeneral()->getMaxHp();
+    else{
+        int first = getGeneral()->getMaxHp();
+        int second = getGeneral2()->getMaxHp();
+
+
+        switch(Config.MaxHpScheme){
+        case 2: max_hp = (first + second)/2; break;
+        case 1: max_hp = qMin(first, second); break;
+        case 0:
+        default:
+            max_hp = first + second - 3; break;
+        }
+
+        max_hp = qMin(max_hp, 8);
+    }
+
+    if(room->hasWelfare(this))
+        max_hp++;
+
+    return max_hp;
+}

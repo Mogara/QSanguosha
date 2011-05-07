@@ -60,6 +60,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
     callbacks["pile"] = &Client::pile;
+    callbacks["transfigure"] = &Client::transfigure;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -1306,7 +1307,7 @@ void Client::showCard(const QString &show_str){
 
 void Client::attachSkill(const QString &skill_name){
     Self->acquireSkill(skill_name);
-    emit skill_attached(skill_name);
+    emit skill_attached(skill_name, true);
 }
 
 void Client::detachSkill(const QString &skill_name){
@@ -1544,6 +1545,23 @@ void Client::pile(const QString &pile_str){
 
     if(player)
         player->changePile(name, add, card_id);
+}
+
+void Client::transfigure(const QString &transfigure_tr){
+    QStringList generals = transfigure_tr.split(":");
+
+    if(generals.length() >= 2){
+        const General *furui = Sanguosha->getGeneral(generals.first());
+        const General *atarashi = Sanguosha->getGeneral(generals.last());
+
+        foreach(const Skill *skill, furui->getVisibleSkills()){
+            emit skill_detached(skill->objectName());
+        }
+
+        foreach(const Skill *skill, atarashi->getVisibleSkills()){
+            emit skill_attached(skill->objectName(), false);
+        }
+    }
 }
 
 void Client::fillGenerals(const QString &generals){

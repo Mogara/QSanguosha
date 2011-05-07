@@ -61,6 +61,16 @@ bool General::hasSkill(const QString &skill_name) const{
     return skill_map.contains(skill_name);
 }
 
+QList<const Skill *> General::getVisibleSkills() const{
+    QList<const Skill *> skills;
+    foreach(const Skill *skill, findChildren<const Skill *>()){
+        if(!skill->objectName().startsWith("#"))
+            skills << skill;
+    }
+
+    return skills;
+}
+
 QString General::getPackage() const{
     QObject *p = parent();
     if(p)
