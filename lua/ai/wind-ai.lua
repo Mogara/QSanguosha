@@ -234,8 +234,9 @@ huangtianv_skill={}
 huangtianv_skill.name="huangtianv"
 table.insert(sgs.ai_skills,huangtianv_skill)
 huangtianv_skill.getTurnUseCard=function(self)
-
     if self.huangtianv_used then return nil end
+	if self.player:isLord() then return nil end
+	if self.player:getKingdom() ~= "qun" then return nil end
 
     local cards = self.player:getCards("h")	
     cards=sgs.QList2Table(cards)
@@ -251,21 +252,19 @@ huangtianv_skill.getTurnUseCard=function(self)
 		end
 	end
 	
-	    if not card then return nil end
-	    local suit = card:getSuitString()
-		local number = card:getNumberString()
-	    local card_id = card:getEffectiveId()
-	    local card_str = "@HuangtianCard="..card_id
-		local skillcard = sgs.Card_Parse(card_str)
-		
-	    assert(skillcard)
-        
-        return skillcard
-		
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = "@HuangtianCard="..card_id
+	local skillcard = sgs.Card_Parse(card_str)
+	
+	assert(skillcard)
+	
+	return skillcard
 end
 
 sgs.ai_skill_use_func["HuangtianCard"]=function(card,use,self)
-
     if not self:isFriend(self.room:getLord()) then return nil end
     
 	use.card=card

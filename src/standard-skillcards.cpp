@@ -286,9 +286,9 @@ void HuanzhuangCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *diaochan = card_use.from;
 
     if(diaochan->getGeneralName() == "diaochan"){
-        room->setPlayerProperty(diaochan, "general", "sp_diaochan");
+        room->transfigure(diaochan, "sp_diaochan", false, false);
     }else if(diaochan->getGeneralName() == "sp_diaochan"){
-        room->setPlayerProperty(diaochan, "general", "diaochan");
+        room->transfigure(diaochan, "diaochan", false, false);
     }
 }
 
