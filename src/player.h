@@ -126,7 +126,6 @@ public:
     void loseSkill(const QString &skill_name);
     void loseAllSkills();
     bool hasSkill(const QString &skill_name) const;
-    bool hasLordSkill(const QString &skill_name) const;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);

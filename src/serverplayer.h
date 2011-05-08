@@ -83,6 +83,7 @@ public:
     QStringList getSelected() const;
 
     int getGeneralMaxHP() const;
+    bool hasLordSkill(const QString &skill_name) const;
 
 private:
     ClientSocket *socket;

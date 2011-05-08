@@ -275,13 +275,6 @@ bool Player::hasSkill(const QString &skill_name) const{
     return acquired_skills.contains(skill_name);
 }
 
-bool Player::hasLordSkill(const QString &skill_name) const{
-    if(acquired_skills.contains(skill_name))
-        return true;
-    else
-        return general->hasSkill(skill_name) && role == "lord";
-}
-
 void Player::acquireSkill(const QString &skill_name){
     acquired_skills.insert(skill_name);
 }

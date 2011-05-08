@@ -543,3 +543,10 @@ int ServerPlayer::getGeneralMaxHP() const{
 
     return max_hp;
 }
+
+bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
+    if(room->getMode() == "06_3v3")
+        return false;
+    else
+        return isLord() && hasSkill(skill_name);
+}

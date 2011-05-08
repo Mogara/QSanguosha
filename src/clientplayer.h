@@ -19,6 +19,7 @@ public:
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, int card_id);
     QString getDeathPixmapPath() const;
+    bool hasLordSkill(const QString &skill_name) const;
 
     virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;
