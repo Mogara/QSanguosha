@@ -38,8 +38,8 @@
 
 extern irrklang::ISoundEngine *SoundEngine;
 
-static const QPointF DiscardedPos(-6, -2);
-static const QPointF DrawPilePos(-102, -2);
+static QPointF DiscardedPos(-6, -2);
+static QPointF DrawPilePos(-102, -2);
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
@@ -47,6 +47,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
 {
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
     ClientInstance->setParent(this);
+
+    bool circular = Config.value("CircularView", false).toBool();
+    if(circular){
+        DiscardedPos = QPointF(-140, -60);
+        DrawPilePos = QPointF(-260, -60);
+    }
 
     // create photos
     int i;
@@ -96,9 +102,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
 
     // add buttons that above the avatar area of dashbaord
-    ok_button = dashboard->addButton(tr("OK"), -72, false);
-    cancel_button = dashboard->addButton(tr("Cancel"), -7, false);
-    discard_button = dashboard->addButton(tr("Discard cards"), 75, false);
+    if(circular){
+        ok_button = dashboard->addButton(tr("OK"), -245-50, false);
+        cancel_button = dashboard->addButton(tr("Cancel"), -155-50, false);
+        discard_button = dashboard->addButton(tr("Discard cards"), -70-50, false);
+    }else{
+        ok_button = dashboard->addButton(tr("OK"), -72, false);
+        cancel_button = dashboard->addButton(tr("Cancel"), -7, false);
+        discard_button = dashboard->addButton(tr("Discard cards"), 75, false);
+    }
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
@@ -223,19 +235,33 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_edit_widget->setY(chat_box->height());
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
+        if(circular){
+            chat_box->resize(268, 180);
+            chat_box_widget->setPos(365 , -65);
+
+            chat_edit->setFixedWidth(chat_box->width());
+            chat_edit_widget->setX(0);
+            chat_edit_widget->setY(chat_box->height()+2);
+        }
+
         if(ServerInfo.DisableChat)
             chat_edit_widget->hide();
     }
 
-    // log box
-    log_box = new ClientLogBox;
-    log_box->resize(chat_box->width(), 213);
-    log_box->setTextColor(Config.TextEditColor);
+    {
+        // log box
+        log_box = new ClientLogBox;
+        log_box->resize(chat_box->width(), 213);
+        log_box->setTextColor(Config.TextEditColor);
 
-    QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
-    log_box_widget->setPos(114, -83);
-    log_box_widget->setZValue(-2.0);
-    connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
+        QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
+        log_box_widget->setPos(114, -83);
+        log_box_widget->setZValue(-2.0);
+        connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
+
+        if(circular)
+            log_box_widget->setPos(365, -240);
+    }
 
     {
         prompt_box = new Window(tr("Sanguosha"), QSize(480, 200));
@@ -270,11 +296,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     adjustItems();
 
-    Joystick *js = new Joystick(this);
-    connect(js, SIGNAL(button_clicked(int)), this, SLOT(onJoyButtonClicked(int)));
-    connect(js, SIGNAL(direction_clicked(int)), this, SLOT(onJoyDirectionClicked(int)));
+    if(Config.value("JoystickEnabled", false).toBool()){
+        Joystick *js = new Joystick(this);
+        connect(js, SIGNAL(button_clicked(int)), this, SLOT(onJoyButtonClicked(int)));
+        connect(js, SIGNAL(direction_clicked(int)), this, SLOT(onJoyDirectionClicked(int)));
 
-    js->start();
+        js->start();
+    }
 
     createStateItem();
 }
