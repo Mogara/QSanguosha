@@ -126,6 +126,7 @@ public:
     void acquireSkill(const char *skill_name);
     void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
+	bool hasLordSkill(const char *skill_name) const;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
