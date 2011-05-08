@@ -4,6 +4,7 @@
 class Room;
 class QGroupBox;
 class QLabel;
+class QRadioButton;
 
 #include "socket.h"
 #include "detector.h"
@@ -29,12 +30,14 @@ public:
 
 private:
     QToolBox *toolbox;
+    QSet<QString> ex_generals;
 
     void fillToolBox();
     void fillListWidget(QListWidget *list, const Package *pack);
 
 private slots:
     void save3v3Generals();
+    void toggleCheck();
 };
 
 class KOFBanlistDialog: public QDialog{
@@ -84,6 +87,7 @@ private:
     QCheckBox *ai_enable_checkbox;
     QCheckBox *role_predictable_checkbox;
     QSpinBox *ai_delay_spinbox;
+    QRadioButton *standard_3v3_radiobutton;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;

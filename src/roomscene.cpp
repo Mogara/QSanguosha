@@ -2093,7 +2093,7 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
 }
 
 void DamageMakerDialog::fillCombobox(QComboBox *combobox){
-    combobox->setIconSize(QSize(42, 36));
+    combobox->setIconSize(General::TinyIconSize);
 
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         QString general_name = Sanguosha->translate(player->getGeneralName());

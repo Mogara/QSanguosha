@@ -81,7 +81,7 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
     QVBoxLayout *layout = new QVBoxLayout;
 
     list = new QListWidget;
-    list->setIconSize(QSize(42, 36));
+    list->setIconSize(General::TinyIconSize);
     list->setViewMode(QListView::IconMode);
     list->setDragDropMode(QListView::NoDragDrop);
 
@@ -175,7 +175,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 QGroupBox *box = new QGroupBox(tr("3v3 options"));
                 QVBoxLayout *vlayout = new QVBoxLayout;
 
-                QRadioButton *standard = new QRadioButton(tr("Standard mode"));
+                standard_3v3_radiobutton = new QRadioButton(tr("Standard mode"));
                 QRadioButton *extend = new QRadioButton(tr("Extension mode"));
                 QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
                 extend_edit_button->setEnabled(false);
@@ -185,7 +185,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 QCheckBox *exclude_disaster = new QCheckBox(tr("Exclude disasters"));
                 exclude_disaster->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
 
-                vlayout->addWidget(standard);
+                vlayout->addWidget(standard_3v3_radiobutton);
                 vlayout->addWidget(extend);
                 vlayout->addWidget(extend_edit_button);
                 vlayout->addWidget(exclude_disaster);
@@ -193,14 +193,13 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
                 layout->addWidget(box);
 
-                box->setEnabled(false);
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
-                QString mode = Config.value("3v3/Mode", "standard").toString();
-                if(mode == "standard")
-                    standard->setChecked(true);
-                else
+                bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
+                if(using_extension)
                     extend->setChecked(true);
+                else
+                    standard_3v3_radiobutton->setChecked(true);
             }
 
             if(itor.key() == Config.GameMode)
@@ -496,6 +495,8 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 {
     setWindowTitle(tr("Select generals in extend 3v3 mode"));
 
+    ex_generals = Config.value("3v3/ExtensionGenerals").toStringList().toSet();
+
     QVBoxLayout *layout = new QVBoxLayout;
 
     toolbox = new QToolBox;
@@ -519,7 +520,9 @@ void Select3v3GeneralDialog::fillToolBox(){
         case Package::GeneralPack:
         case Package::MixedPack: {
                 QListWidget *list = new QListWidget;
+                list->setIconSize(General::TinyIconSize);
                 list->setViewMode(QListView::IconMode);
+                list->setDragDropMode(QListView::NoDragDrop);
                 toolbox->addItem(list, Sanguosha->translate(package->objectName()));
                 fillListWidget(list, package);
             }
@@ -536,13 +539,61 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
             continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);
+        item->setData(Qt::UserRole, general->objectName());
         item->setIcon(QIcon(general->getPixmapPath("tiny")));
-        item->setCheckState(Qt::Checked);
+
+        bool checked = false;
+        if(ex_generals.isEmpty()){
+            checked = pack->objectName() == "standard" || pack->objectName() == "wind"
+                      || general->objectName() == "xiaoqiao";
+        }else
+            checked = ex_generals.contains(general->objectName());
+
+        if(checked)
+            item->setCheckState(Qt::Checked);
+        else
+            item->setCheckState(Qt::Unchecked);
     }
+
+    QAction *action = new QAction(tr("Check/Uncheck all"), list);
+    list->addAction(action);
+    list->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleCheck()));
+}
+
+void Select3v3GeneralDialog::toggleCheck(){
+    QWidget *widget = toolbox->currentWidget();
+    QListWidget *list = qobject_cast<QListWidget *>(widget);
+
+    if(list == NULL || list->item(0) == NULL)
+        return;
+
+    bool checked = list->item(0)->checkState() != Qt::Checked;
+
+    int i;
+    for(i=0; i<list->count(); i++)
+        list->item(i)->setCheckState(checked ? Qt::Checked : Qt::Unchecked);
 }
 
 void Select3v3GeneralDialog::save3v3Generals(){
+    int i;
+    for(i=0; i<toolbox->count(); i++){
+        QWidget *widget = toolbox->widget(i);
+        QListWidget *list = qobject_cast<QListWidget *>(widget);
+        if(list){
+            int i;
+            for(i=0; i<list->count(); i++){
+                QListWidgetItem *item = list->item(i);
+                if(item->checkState() == Qt::Checked)
+                    ex_generals << item->data(Qt::UserRole).toString();
+            }
+        }
+    }
 
+    QStringList list = ex_generals.toList();
+    QVariant data = QVariant::fromValue(list);
+    Config.setValue("3v3/ExtensionGenerals", data);
 }
 
 void ServerDialog::select3v3Generals(){
@@ -596,6 +647,8 @@ bool ServerDialog::config(){
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);
+
+    Config.setValue("3v3/UsingExtension", ! standard_3v3_radiobutton->isChecked());
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();

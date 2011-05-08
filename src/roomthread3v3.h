@@ -23,10 +23,10 @@ protected:
 private:
     Room *room;
     ServerPlayer *warm_leader, *cool_leader;
-    QList<const General *> generals;
     QStringList general_names;
     QString result;
 
+    QStringList getGeneralsWithoutExtension() const;
     void askForTakeGeneral(ServerPlayer *player);
     void startArrange(ServerPlayer *player);
 };

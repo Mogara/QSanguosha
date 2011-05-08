@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "ai.h"
 #include "lua.hpp"
+#include "settings.h"
 
 #include <QDateTime>
 
@@ -88,6 +89,18 @@ RoomThread3v3::RoomThread3v3(Room *room)
         }
     }
 
+    if(Config.value("3v3/UsingExtension", false).toBool())
+        general_names = Config.value("3v3/ExtensionGenerals").toStringList();
+    else
+        general_names = getGeneralsWithoutExtension();
+
+    qShuffle(general_names);
+    general_names = general_names.mid(0, 16);
+}
+
+QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
+    QList<const General *> generals;
+
     const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
     const Package *windpack = Sanguosha->findChild<const Package *>("wind");
 
@@ -107,11 +120,11 @@ RoomThread3v3::RoomThread3v3(Room *room)
 
     Q_ASSERT(generals.length() == 32);
 
-    qShuffle(generals);
-    generals = generals.mid(0, 16);
-
+    QStringList general_names;
     foreach(const General *general, generals)
         general_names << general->objectName();
+
+    return general_names;
 }
 
 void RoomThread3v3::run()

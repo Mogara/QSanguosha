@@ -4,6 +4,8 @@
 #include "package.h"
 #include "client.h"
 
+#include <QSize>
+
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden)
     :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hidden(hidden)
 {
@@ -100,3 +102,6 @@ void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     Sanguosha->playEffect(filename);
 }
+
+
+QSize General::TinyIconSize(42, 36);

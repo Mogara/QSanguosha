@@ -3,6 +3,7 @@
 
 class Skill;
 class Package;
+class QSize;
 
 #include <QObject>
 #include <QSet>
@@ -36,6 +37,8 @@ public:
     QString getPixmapPath(const QString &category) const;    
     QString getPackage() const;
     QString getSkillDescription() const;
+
+    static QSize TinyIconSize;
 
 public slots:
     void lastWord() const;
