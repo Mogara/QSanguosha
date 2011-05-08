@@ -82,6 +82,8 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
 
     list = new QListWidget;
     list->setIconSize(QSize(42, 36));
+    list->setViewMode(QListView::IconMode);
+    list->setDragDropMode(QListView::NoDragDrop);
 
     QStringList banlist = Config.value("1v1/Banlist").toStringList();
     foreach(QString name, banlist){
@@ -92,7 +94,6 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
     QPushButton *remove = new QPushButton(tr("Remove"));
     QPushButton *ok = new QPushButton(tr("OK"));
 
-    connect(add, SIGNAL(clicked()), this, SLOT(addGeneral()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeGeneral()));
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(save()));
@@ -106,14 +107,10 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
     layout->addWidget(list);
     layout->addLayout(hlayout);
     setLayout(layout);
-}
 
-void KOFBanlistDialog::addGeneral(){
-    FreeChooseDialog *dialog = new FreeChooseDialog(this, false);
-
-    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
-
-    dialog->exec();
+    FreeChooseDialog *chooser = new FreeChooseDialog(this, false);
+    connect(add, SIGNAL(clicked()), chooser, SLOT(exec()));
+    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
 }
 
 void KOFBanlistDialog::addGeneral(const QString &name){

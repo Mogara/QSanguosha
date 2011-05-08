@@ -47,7 +47,6 @@ private:
     QListWidget *list;
 
 private slots:
-    void addGeneral();
     void addGeneral(const QString &name);
     void removeGeneral();
     void save();
