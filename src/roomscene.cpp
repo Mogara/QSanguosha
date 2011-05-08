@@ -2076,6 +2076,10 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_point->setValue(1);
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(ok_button);
 
     QFormLayout *layout = new QFormLayout;
 
@@ -2084,11 +2088,10 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     layout->addRow(tr("Damage target"), damage_target);
     layout->addRow(tr("Damage nature"), damage_nature);
     layout->addRow(tr("Damage point"), damage_point);
-    layout->addRow(ok_button);
+    layout->addRow(hlayout);
 
     setLayout(layout);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(makeDamage()));
 }
 

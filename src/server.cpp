@@ -504,9 +504,12 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(ok_button);
 
     layout->addWidget(toolbox);
-    layout->addWidget(ok_button);
+    layout->addLayout(hlayout);
 
     setLayout(layout);
 
