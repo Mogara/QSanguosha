@@ -40,7 +40,7 @@ duanliang_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,acard in ipairs(cards)  do
-		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) then --and (self:getUseValue(acard)<(sgs.ai_use_value["SupplyShortage"] or 0)) then
+		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) and (self:getUseValue(acard)<(sgs.ai_use_value["SupplyShortage"] or 0)) then
 			card = acard
 			break
 		end
@@ -59,4 +59,43 @@ duanliang_skill.getTurnUseCard=function(self)
 		
 end
 
+dimeng_skill={}
+dimeng_skill.name="dimeng"
+table.insert(sgs.ai_skills,dimeng_skill)
+dimeng_skill.getTurnUseCard=function(self)
+    if self.dimeng_used then return nil end
+    card=sgs.Card_Parse("@DimengCard=.")
+    return card
+    	
+end
 
+
+sgs.ai_skill_use_func["DimengCard"]=function(card,use,self)
+    local cardNum=self.player:getHandcardNum()
+	
+	self:sort(self.enemies,"handcard")
+	self:sort(self.friends_noself,"handcard")
+	
+	--local lowest_enemy=self.enemies[1]
+	local lowest_friend=self.friends_noself[1]
+	
+	self:sort(self.enemies,"defense")
+	
+	for _,enemy in ipairs(self.enemies) do 
+	    local hand1=enemy:getHandcardNum()
+	    local hand2=lowest_friend:getHandcardNum()
+	    --local hand3=lowest_enemy:getHandcardNum()
+	    
+	    if (hand1 > hand2) then 
+	        if (hand1-hand2)<=cardNum then 
+                use.card=card
+                if use.to then 
+                    use.to:append(enemy)
+                    use.to:append(lowest_friend)
+                    self.dimeng_used=true
+                    return 
+                end
+            end
+        end
+	end
+end

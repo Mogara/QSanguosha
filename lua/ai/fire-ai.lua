@@ -172,10 +172,23 @@ end
 --shuangxiong
 
 sgs.ai_skill_invoke["shuangxiong"]=function(self,data)
-    local handnum=self.player:getHandcardNum()/2
+    if self.player:containsTrick("indulgence") then return false end
+    if self.player:getHp()<2 then return false end
+    
+    local cards=self.player:getCards("h")
+    cards=sgs.QList2Table(cards)
+    
+    local handnum=0
+    
+    for _,card in ipairs(cards) do  
+        if self:getUseValue(card)<8 then handnum=handnum+1 end
+    end
+    
+    handnum=handnum/2
     self:sort(self.enemies, "hp")
     for _, enemy in ipairs(self.enemies) do
         if (self:getSlashNumber(enemy)+enemy:getHp()<=handnum) and (self:getSlashNumber(self.player)>=self:getSlashNumber(enemy)) then return true end
     end
+    if self.player:getHandcardNum()>=self.player:getHp() then return true end
     return false
 end

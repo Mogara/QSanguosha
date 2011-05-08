@@ -2,7 +2,7 @@
 qixi_skill={}
 qixi_skill.name="qixi"
 table.insert(sgs.ai_skills,qixi_skill)
-qixi_skill.getTurnUseCard=function(self)
+qixi_skill.getTurnUseCard=function(self,inclusive)
     local cards = self.player:getCards("he")	
     cards=sgs.QList2Table(cards)
 	
@@ -17,7 +17,7 @@ qixi_skill.getTurnUseCard=function(self)
 	end
 	
 	for _,card in ipairs(cards)  do
-		if card:isBlack()  then
+		if card:isBlack()  and ((self:getUseValue(card)<sgs.ai_use_value["Dismantlement"]) or inclusive) then
 		    local shouldUse=true
 		    
 		    if card:inherits("Armor") then
@@ -56,7 +56,7 @@ end
 wusheng_skill={}
 wusheng_skill.name="wusheng"
 table.insert(sgs.ai_skills,wusheng_skill)
-wusheng_skill.getTurnUseCard=function(self)
+wusheng_skill.getTurnUseCard=function(self,inclusive)
     local cards = self.player:getCards("he")	
     cards=sgs.QList2Table(cards)
 	
@@ -65,7 +65,7 @@ wusheng_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,card in ipairs(cards)  do
-		if card:isRed() then--and (self:getUseValue(card)<sgs.ai_use_value["Slash"]) then
+		if card:isRed() and not card:inherits("Slash") and ((self:getUseValue(card)<sgs.ai_use_value["Slash"]) or inclusive) then
 			red_card = card
 			break
 		end
@@ -139,11 +139,6 @@ sgs.ai_skill_use_func["JijiangCard"]=function(card,use,self)
                                 self:objectiveLevel(enemy)>3 and
                                 self:slashIsEffective(card, enemy) then
 
-                                -- fill the card use struct
-                                use.card=self:searchForAnaleptic(use,enemy,card)
-                                if use.card then 
-                                    return 
-                                end
                                 use.card=card
                                 if use.to then 
                                     use.to:append(enemy) 
@@ -159,7 +154,7 @@ end
 guose_skill={}
 guose_skill.name="guose"
 table.insert(sgs.ai_skills,guose_skill)
-guose_skill.getTurnUseCard=function(self)
+guose_skill.getTurnUseCard=function(self,inclusive)
     local cards = self.player:getCards("he")	
     cards=sgs.QList2Table(cards)
 	
@@ -174,18 +169,18 @@ guose_skill.getTurnUseCard=function(self)
 	end
 	
 	for _,acard in ipairs(cards)  do
-		if (acard:getSuit() == sgs.Card_Diamond) then--and (self:getUseValue(acard)<sgs.ai_use_value["Indulgence"]) then
+		if (acard:getSuit() == sgs.Card_Diamond) and ((self:getUseValue(acard)<sgs.ai_use_value["Indulgence"]) or inclusive) then
 		    local shouldUse=true
 		    
 		    if acard:inherits("Armor") then
                 if not self.player:getArmor() then shouldUse=false 
-                elseif self:hasEquip(card) then shouldUse=false
+                elseif self:hasEquip(acard) then shouldUse=false
                 end
             end
             
             if acard:inherits("Weapon") then
                 if not self.player:getWeapon() then shouldUse=false
-                elseif self:hasEquip(card) and not has_weapon then shouldUse=false
+                elseif self:hasEquip(acard) and not has_weapon then shouldUse=false
                 end
             end
 		    

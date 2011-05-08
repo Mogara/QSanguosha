@@ -8,6 +8,11 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
         return self:getSlashNumber(self.player)<=0
 end
 
+sgs.ai_skill_choice.jijiang = function(self , choices)
+    if self:isFriend(self.room:getLord()) then return "accept" end
+    return "ignore"
+end
+
 sgs.ai_skill_choice.hujia = function(self , choices)
     if self:isFriend(self.room:getLord()) then return "accept" end
     return "ignore"
@@ -74,9 +79,11 @@ end
 
 local zhenji_ai = SmartAI:newSubclass "zhenji"
 
-function zhenji_ai:askForCard(pattern)
+function zhenji_ai:askForCard(pattern,prompt)
+    local card = super.askForCard(self, pattern, prompt)	
+    if card then return card end
 	if pattern == "jink" then
-		local card = super.askForCard(self, pattern)
+		local card = super.askForCard(self, pattern , prompt)
 		if card then return card end
 		local cards = self.player:getHandcards()		
 		for _, card in sgs.qlist(cards) do			
@@ -89,13 +96,13 @@ function zhenji_ai:askForCard(pattern)
 		end
 	end
 	
-	return super.askForCard(self, pattern)	
+	return nil
 end
 
 local guanyu_ai = SmartAI:newSubclass "guanyu"
 
-function guanyu_ai:askForCard(pattern)
-	card = super.askForCard(self, pattern)
+function guanyu_ai:askForCard(pattern,prompt)
+	local card = super.askForCard(self, pattern, prompt)
 	if card then return card end
 	if pattern == "slash" then
 		local cards = self.player:getCards("he")
@@ -116,7 +123,7 @@ end
 
 local zhaoyun_ai = SmartAI:newSubclass "zhaoyun"
 
-function zhaoyun_ai:askForCard(pattern)
+function zhaoyun_ai:askForCard(pattern,prompt)
 	if pattern == "jink" then
 		local cards = self.player:getHandcards()		
 		for _, card in sgs.qlist(cards) do			
@@ -139,7 +146,7 @@ function zhaoyun_ai:askForCard(pattern)
 		end
 	end
 	
-	return super.askForCard(self, pattern)	
+	return super.askForCard(self, pattern , prompt)	
 end
 
 -- tieji
@@ -264,9 +271,8 @@ function huanggai_ai:activate(use)
     if use:isValid() then return end
     if self.player:getWeapon() and self.player:getWeapon():inherits("Crossbow") then
         for _, enemy in ipairs(self.enemies) do
-            if self.player:canSlash(enemy,true) and self:slashIsEffective(card, enemy)
-            and self.player:getHp()>1 then
-            use.card = sgs.Card_Parse("@KurouCard=.")
+            if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
+                use.card = sgs.Card_Parse("@KurouCard=.")
             return
             end
         end
@@ -554,6 +560,7 @@ sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
         fillCardSet(cardSet,"heart",true)
         fillCardSet(cardSet,"club",true)
         fillCardSet(cardSet,"diamond",true)
+        fillCardSet(cardSet,"spade",false)
         for i=10,13 do 
             fillCardSet(cardSet,nil,nil,i,true)
         end
@@ -565,6 +572,9 @@ sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
     elseif reason=="tieji" then
         fillCardSet(cardSet,"heart",true)
         fillCardSet(cardSet,"diamond",true)
+        if self.player:objectName()==target then 
+            if self:getJinkNumber(self.player)<1 then return "." end
+        end
     elseif reason=="leiji" then
         fillCardSet(cardSet,"heart",true)
         fillCardSet(cardSet,"club",true)
@@ -577,10 +587,10 @@ sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
     if self.player:getHandcardNum()<cardNumThreshold then return "." end
 
     if self:isEnemy(target) and (goodMatch(cardSet,card)) then
-        return self:getRetrialCard("he",cardSet,true)
+        return self:getRetrialCard("h",cardSet,true)
     end
     if self:isFriend(target) and (not goodMatch(cardSet,card)) then
-        return self:getRetrialCard("he",cardSet,false)
+        return self:getRetrialCard("h",cardSet,false)
     end
 
     return "."

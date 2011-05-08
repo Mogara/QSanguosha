@@ -45,11 +45,22 @@ function sunjian_ai:askForUseCard(pattern, prompt)
     end
 end
 
+-- benghuai
+
+sgs.ai_skill_choice.benghuai = function(self, choices)
+	if self.player:getLostHp() >= 2 then
+		return "maxhp"
+	else
+		return "hp"
+	end
+end
+
 -- xingshang, allways invoke 
 sgs.ai_skill_invoke.xingshang = true
 
 -- fangzhu, fangzhu 
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
+
 	self:sort(self.friends_noself)
 	local target
 	for _, friend in ipairs(self.friends_noself) do
@@ -88,7 +99,7 @@ end
 
 local xuhuang_ai = SmartAI:newSubclass "xuhuang"
 
-function xuhuang_ai:activate_dummy(use)
+function xuhuang_ai:activate(use)
 	-- find black basic or equip card
 	local cards = self.player:getCards("he")
 	local to_use
@@ -116,10 +127,6 @@ function xuhuang_ai:activate_dummy(use)
 	end
 
 	super.activate(self, use)
-end
-
-sgs.ai_skill_invoke.songwei = function(self, data)
-    return self:isFriend(self.room:getLord())
 end
 
 -- baonue
@@ -163,10 +170,4 @@ sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	end
 	
 	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "->" .. beggar:objectName()
-end
-
-sgs.ai_skill_invoke.lieren = function(self, data)
-    if self.player:getHandcardNum()>=self.player:getHp() then return true
-    else return false
-    end
 end

@@ -27,7 +27,7 @@ sgs.ai_use_value =
         TianyiCard = 8.5,
         HuangtianCard = 8.5,
         JijiangCard=8.5,
-        
+        DimengCard=3.5,
 --normal cards
         ExNihilo=10,
         
@@ -56,7 +56,7 @@ sgs.ai_use_value =
         Duel=3.7,
         
         
-        AmazingGrace=0.5,
+        AmazingGrace=3,
         
         --special
         Analeptic = 5.98,
@@ -70,8 +70,11 @@ sgs.ai_use_priority = {
 
         TianyiCard = 10,
         HuangtianCard = 10,
-        JijiangCard = 4,
+        JijiangCard = 2.4,
+        DimengCard=2.3,
 --
+
+        Collateral=5.8,
         Peach = 5,
 
         Dismantlement=4.5,
@@ -83,7 +86,7 @@ sgs.ai_use_priority = {
         ArcheryAttack=3.5,
         SavageAssault=3.5,
 
-        Collateral=3,
+        
         Duel=2.9,
         IronChain = 2.8,
 

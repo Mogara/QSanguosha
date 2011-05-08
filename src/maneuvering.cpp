@@ -60,12 +60,13 @@ void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    if(effect.to->hasFlag("dying")){
-        // do animation
-        QString who = effect.to->objectName();
-        QString animation_str = QString("analeptic:%1:%2").arg(who).arg(who);
-        room->broadcastInvoke("animate", animation_str);
 
+    // do animation
+    QString who = effect.to->objectName();
+    QString animation_str = QString("analeptic:%1:%2").arg(who).arg(who);
+    room->broadcastInvoke("animate", animation_str);
+
+    if(effect.to->hasFlag("dying")){
         // recover hp
         RecoverStruct recover;
         recover.card = this;

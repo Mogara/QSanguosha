@@ -5,6 +5,7 @@ sgs.ai_assumed["loyalist"]=0
 sgs.ai_assumed["renegade"]=0
 sgs.ai_renegade_suspect={}
 sgs.ai_anti_lord={}
+sgs.ai_lord_tolerance={}
 
 sgs.ai_card_intention["general"]=function(to,level)
     if to:isLord() then
@@ -187,6 +188,7 @@ sgs.ai_carduse_intention["JieyinCard"]=function(card,from,to,source)
 end
 
 sgs.ai_carduse_intention["HuangtianCard"]=function(card,from,to,source)
+        sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1
 --        from:getRoom():output("a JieyinCard")
         return sgs.ai_card_intention.general(to,-80)
 end
@@ -269,7 +271,7 @@ function SmartAI:refreshRoyalty(player,intention)
             end
         end
         
-        if (sgs.ai_anti_lord[name] or 0)>3 then 
+        if ((sgs.ai_anti_lord[name] or 0)-2)>(sgs.ai_lord_tolerance[name] or 0) then 
             if intention>0 then intention=intention/5 end
         end
         sgs.ai_royalty[name]=sgs.ai_royalty[name]+intention
