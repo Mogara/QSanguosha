@@ -1715,11 +1715,12 @@ void RoomScene::updateStatus(Client::Status status){
 
     // do timeout
     progress_bar->setValue(0);
+    if(timer_id != 0){
+        killTimer(timer_id);
+        timer_id = 0;
+    }
+
     if(status == Client::NotActive){
-        if(timer_id != 0){
-            killTimer(timer_id);
-            timer_id = 0;
-        }
         progress_bar->hide();
     }else{
         timer_id = startTimer(200);

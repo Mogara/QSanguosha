@@ -145,7 +145,7 @@ function SmartAI:initialize(player)
 
         
         self.retain=2
-        self.harsh_retain=true
+        --self.harsh_retain=true
         if not sgs.ai_royalty[self.player:objectName()] then
             --self.room:output("initialized"..self.player:objectName()..self.role)
             sgs.ai_royalty[self.player:objectName()]=0
@@ -203,6 +203,8 @@ function SmartAI:updatePlayers(inclusive)
         
         if isRolePredictable() then
             sgs.ai_explicit[self.player:objectName()]=self.role
+            self.retain=2
+            self.harsh_retain=false
             return
         end
         
@@ -295,8 +297,8 @@ function SmartAI:objectiveLevel(player)
     if isRolePredictable() then 
         if self:isFriend(player) then return -2
         elseif player:isLord() then return 5
-        elseif player:getRole()=="renegade" then return 5
-        else return 4 end
+        elseif player:getRole()=="renegade" then return 4.1
+        else return 4.5 end
     end
 
     local modifier=0
@@ -760,6 +762,8 @@ function SmartAI:slashProhibit(card,enemy)
     end
     
     if enemy:hasSkill("leiji") then 
+        if self.player:hasSkill("tieji") then return false end
+        
         if enemy:getHandcardNum()>=3 then return true end
         if enemy:getArmor() and (enemy:getArmor():objectName()=="eight_diagram") then 
             local equips=enemy:getEquips()
@@ -1408,6 +1412,7 @@ function SmartAI:useEquipCard(card, use)
 		use.card = card		
 		end
 	elseif card:inherits("Armor") then
+	    if self.player:hasSkill("bazhen") then return end
 	 	if not self.player:getArmor() then use.card=card
 	 	elseif (self.player:getArmor():objectName())=="silver_lion" then use.card=card
 	 	elseif self.player:isChained()  and (self.player:getArmor():inherits("vine")) and not (card:objectName()=="silver_lion") then use.card=card
@@ -1523,6 +1528,7 @@ function SmartAI:activate(use)
         self:updatePlayers()
         self.toUse =self:getTurnUse()
         self:printCards(self.toUse)
+        if self.harsh_retain then self:log("harsh_retaining") end
         --self:printFEList()
         --local cards = self.player:getHandcards()
         --cards=sgs.QList2Table(cards)
@@ -1588,7 +1594,7 @@ function SmartAI:getUseValue(card)
         else
             if card:inherits("Slash") and (self.player:hasFlag("drank") or self.player:hasFlag("tianyi_success") or self.player:hasFlag("luoyi")) then v = 8.7 --self:log("must slash")
             elseif self.player:getWeapon() and card:inherits("Collateral") then v=2
-            elseif self.player:getMark("shuangxiong") and card:inherits("Duel") then v = 8
+            elseif self.player:getMark("shuangxiong") and card:inherits("Duel") then v=8
             else v = sgs.ai_use_value[class_name] or 0 end
             
         end
@@ -1791,8 +1797,8 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			end
 		end
 	else
-        if (who:getHandcardNum()<2) and not who:isKongcheng() then 
-            if not (who:hasSkill("lianying") or who:hasSkill("kongcheng")) then return -1 end
+        if (who:getHandcardNum()<2) and (not who:isKongcheng()) and
+         not (who:hasSkill("lianying") or who:hasSkill("kongcheng")) then return -1 
 		
 		elseif flags:match("e") then
 		    
@@ -1929,9 +1935,9 @@ end
 
 function SmartAI:hasSkill(skill)
     if (skill.name=="huangtianv") then
-        return (self.player:getKingdom()=="qun") and (self.room:getLord():hasSkill("huangtian") and not self.player:isLord())
+        return (self.player:getKingdom()=="qun") and (self.room:getLord():hasLordSkill("huangtian") and not self.player:isLord())
     elseif (skill.name=="jijiang") then
-        return (self.player:isLord() and self.player:hasSkill(skill.name))
+        return (self.player:isLord() and self.player:hasLordSkill(skill.name))
     else
         return self.player:hasSkill(skill.name)
     end

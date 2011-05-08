@@ -504,8 +504,9 @@ sgs.ai_skill_invoke["luoyi"]=function(self,data)
 
             for _,enemy in ipairs(self.enemies) do
                 if self.player:canSlash(enemy, true) and
-                self:slashIsEffective(card, enemy)
-                and enemy:getHandcardNum()<4 then
+                self:slashIsEffective(card, enemy) and
+                ( (not enemy:getArmor()) or (enemy:getArmor():objectName()=="renwang_shield") or (enemy:getArmor():objectName()=="vine") ) and
+                enemy:getHandcardNum()<4 then
                     if not self.player:containsTrick("indulgence") then
                         return true
                     end
