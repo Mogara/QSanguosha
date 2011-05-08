@@ -10,3 +10,8 @@ sgs.ai_skill_invoke.pojun = function(self, data)
 	end
 end
 
+-- buyi
+sgs.ai_skill_invoke.buyi = function(self, data)
+	local dying = data:toDying()
+	return self:isFriend(dying.who)
+end
