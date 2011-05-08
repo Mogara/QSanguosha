@@ -94,6 +94,7 @@ return {
 	["~shencaocao"] = "神龟虽寿，犹有竟时。腾蛇乘雾，终为土灰",
 	["~shenlumeng"] = "死去元知万事空",
 	["~shenzhugeliang"] = "吾命将至，再不能临阵讨贼矣",
+	["~shenzhouyu"] = "残炎黯然，弦歌不复",
 	
 	["cv:shenguanyu"] = "",
 	["cv:shenlumeng"] = "宇文天启",
