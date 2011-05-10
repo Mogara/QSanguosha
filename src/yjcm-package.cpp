@@ -641,7 +641,7 @@ public:
 
 class ZhichiClear: public TriggerSkill{
 public:
-    ZhichiClear():TriggerSkill("#dongcha-clear"){
+    ZhichiClear():TriggerSkill("#zhichi-clear"){
         events << PhaseChange;
     }
 

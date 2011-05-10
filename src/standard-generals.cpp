@@ -863,16 +863,18 @@ public:
     }
 
     virtual int getPriority() const{
-        return -1;
+        return 3;
     }
 
     virtual bool onPhaseChange(ServerPlayer *lumeng) const{
-        if(lumeng->getPhase() == Player::Play &&
+        if(lumeng->getPhase() == Player::Discard &&
            lumeng->getMark("slash_count") == 0 &&
            lumeng->askForSkillInvoke("keji"))
         {
             lumeng->getRoom()->playSkillEffect("keji");
             lumeng->skip(Player::Discard);
+
+            return true;
         }
 
         return false;

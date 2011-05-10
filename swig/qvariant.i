@@ -1,8 +1,11 @@
 class QVariant{
+public:
 	QVariant(int);
 	QVariant(const char *);
+	QVariant(bool);
 	int toInt() const;
 	QString toString() const;
+	bool toBool() const;
 };
 
 %extend QVariant {
