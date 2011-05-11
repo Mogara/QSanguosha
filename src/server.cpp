@@ -173,6 +173,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 // add 3v3 options
 
                 QGroupBox *box = new QGroupBox(tr("3v3 options"));
+                box->setEnabled(Config.GameMode == "06_3v3");
+
                 QVBoxLayout *vlayout = new QVBoxLayout;
 
                 standard_3v3_radiobutton = new QRadioButton(tr("Standard mode"));

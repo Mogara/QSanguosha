@@ -1667,7 +1667,7 @@ void Room::startGame(){
             broadcastProperty(players.at(i), "general");
     }
 
-    if(Config.Enable2ndGeneral || mode == "08boss"){
+    if((Config.Enable2ndGeneral || mode == "08boss") && mode != "02_1v1"){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
