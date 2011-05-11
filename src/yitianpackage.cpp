@@ -178,6 +178,9 @@ public:
         if(point == 0)
             return;
 
+        if(caochong->isNude())
+            return;
+
         Room *room = caochong->getRoom();
         room->setPlayerMark(caochong, objectName(), point);
 

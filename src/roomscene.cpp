@@ -2706,7 +2706,13 @@ QGraphicsObject *RoomScene::getAnimationObject(const QString &name) const{
         return name2photo.value(name);
 }
 
-void RoomScene::moveAndDisappear(QGraphicsObject *item, const QPointF &from, const QPointF &to) const{
+void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
+    Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
+    addItem(item);
+
+    QPointF from = getAnimationObject(args.at(0))->scenePos();
+    QPointF to = getAnimationObject(args.at(1))->scenePos();
+
     QSequentialAnimationGroup *group = new QSequentialAnimationGroup;
 
     QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
@@ -2716,6 +2722,7 @@ void RoomScene::moveAndDisappear(QGraphicsObject *item, const QPointF &from, con
 
     QPropertyAnimation *disappear = new QPropertyAnimation(item, "opacity");
     disappear->setEndValue(0.0);
+    disappear->setDuration(1000);
 
     group->addAnimation(move);
     group->addAnimation(disappear);
@@ -2724,49 +2731,67 @@ void RoomScene::moveAndDisappear(QGraphicsObject *item, const QPointF &from, con
     connect(group, SIGNAL(finished()), item, SLOT(deleteLater()));
 }
 
+void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
+    Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
+    addItem(item);
+
+    QPointF from = getAnimationObject(args.at(0))->scenePos();
+    item->setPos(from);
+
+    QPropertyAnimation *disappear = new QPropertyAnimation(item, "opacity");
+    disappear->setEndValue(0.0);
+    disappear->setDuration(1000);
+
+    disappear->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(disappear, SIGNAL(finished()), item, SLOT(deleteLater()));
+}
+
+void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args){
+    QString word = args.first();
+    word = Sanguosha->translate(word);
+
+    QGraphicsRectItem *lightbox = addRect(main_window->rect());
+
+    lightbox->setBrush(QColor(0x20, 0x20, 0x20));
+    lightbox->setOpacity(0.8);
+    lightbox->moveBy(-main_window->width()/2, -main_window->height()/2);
+
+    QGraphicsTextItem *line = addText(word, Config.BigFont);
+    line->setDefaultTextColor(Qt::white);
+    QRectF line_rect = line->boundingRect();
+    line->setPos(-line_rect.width()/2, -line_rect.height());
+
+    line->setParentItem(lightbox);
+    line->setPos(lightbox->mapFromScene(line->x(), line->y()));
+
+    QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
+    appear->setStartValue(0.0);
+    appear->setKeyValueAt(0.8, 1.0);
+    appear->setEndValue(1.0);
+    appear->setDuration(2000);
+
+    appear->start();
+
+    connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
+}
+
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
-    if(name == "peach" || name == "analeptic" || name == "nullification"){
-        Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
-        addItem(item);
+    static QMap<QString, AnimationFunc> map;
+    if(map.isEmpty()){
+        map["peach"] = &RoomScene::doMovingAnimation;
+        map["nullification"] = &RoomScene::doMovingAnimation;
 
-        QPointF from = getAnimationObject(args.at(0))->scenePos();
-        QPointF to = getAnimationObject(args.at(1))->scenePos();
+        map["analeptic"] = &RoomScene::doAppearingAnimation;
+        map["fire"] = &RoomScene::doAppearingAnimation;
+        map["lightning"] = &RoomScene::doAppearingAnimation;
+        map["typhoon"] = &RoomScene::doAppearingAnimation;
 
-        moveAndDisappear(item, from, to);
-    }else if(name == "lightbox"){
-        QString word = args.first();
-        word = Sanguosha->translate(word);
-
-        QGraphicsRectItem *lightbox = addRect(main_window->rect());
-
-        lightbox->setBrush(QColor(0x20, 0x20, 0x20));
-        lightbox->setOpacity(0.8);
-        lightbox->moveBy(-main_window->width()/2, -main_window->height()/2);
-
-        QGraphicsTextItem *line = addText(word, Config.BigFont);
-        line->setDefaultTextColor(Qt::white);
-        QRectF line_rect = line->boundingRect();
-        line->setPos(-line_rect.width()/2, -line_rect.height());
-
-        line->setParentItem(lightbox);
-        line->setPos(lightbox->mapFromScene(line->x(), line->y()));
-
-        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
-        appear->setStartValue(0.0);
-        appear->setKeyValueAt(0.8, 1.0);
-        appear->setEndValue(1.0);
-        appear->setDuration(2000);
-
-        appear->start();
-
-        connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
-    }else if(name == "fire" || name == "lightning" || name == "typhoon"){
-        Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
-        addItem(item);
-
-        QPointF from = getAnimationObject(args.at(0))->scenePos();
-        moveAndDisappear(item, from, from);
+        map["lightbox"] = &RoomScene::doLightboxAnimation;
     }
+
+    AnimationFunc func = map.value(name, NULL);
+    if(func)
+        (this->*func)(name, args);
 }
 
 void RoomScene::adjustDashboard(){

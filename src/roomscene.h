@@ -161,8 +161,12 @@ private:
     void fillGenerals3v3(const QStringList &names);
 
     // animation related functions
+    typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
     QGraphicsObject *getAnimationObject(const QString &name) const;
-    void moveAndDisappear(QGraphicsObject *item, const QPointF &from, const QPointF &to) const;
+
+    void doMovingAnimation(const QString &name, const QStringList &args);
+    void doAppearingAnimation(const QString &name, const QStringList &args);
+    void doLightboxAnimation(const QString &name, const QStringList &args);
 
 private slots:
     void updateSkillButtons();
