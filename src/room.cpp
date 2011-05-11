@@ -421,10 +421,15 @@ bool Room::isCanceled(const CardEffectStruct &effect){
     if(!effect.card->isCancelable(effect))
         return false;
 
-    return askForNullification(effect.card->objectName(), effect.from, effect.to);
+    const TrickCard *trick = qobject_cast<const TrickCard *>(effect.card);
+    if(trick)
+        return askForNullification(trick, effect.from, effect.to, true);
+    else
+        return false;
 }
 
-bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to){
+bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive){
+    QString trick_name = trick->objectName();
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players){
         if(!player->hasNullification())
@@ -434,12 +439,18 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         AI *ai = player->getAI();
         const Card *card = NULL;
         if(ai){
-            card = ai->askForNullification(trick_name, from, to);
+            card = ai->askForNullification(trick, from, to, positive);
+            if(card)
+                thread->delay(Config.AIDelay);
         }else{
-            QString ask_str = QString("%1:%2->%3")
-                              .arg(trick_name)
-                              .arg(from ? from->objectName() : ".")
-                              .arg(to->objectName());
+            QString ask_str;
+
+            if(positive)
+                ask_str = QString("%1:%2->%3").arg(trick_name)
+                .arg(from ? from->objectName() : ".")
+                .arg(to->objectName());
+            else
+                ask_str = QString("nullification:.->%1").arg(to->objectName());
 
             player->invoke("askForNullification", ask_str);
             getResult("responseCardCommand", player, false);
@@ -469,7 +480,7 @@ bool Room::askForNullification(const QString &trick_name, ServerPlayer *from, Se
         broadcastInvoke("animate", QString("nullification:%1:%2")
                         .arg(player->objectName()).arg(to->objectName()));
 
-        return !askForNullification("nullification", player, to);
+        return !askForNullification(trick, from, to, !positive);
     }
 
     return false;

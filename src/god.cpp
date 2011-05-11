@@ -2,6 +2,7 @@
 #include "client.h"
 #include "engine.h"
 #include "carditem.h"
+#include "settings.h"
 
 GongxinCard::GongxinCard(){
     once = true;
@@ -603,6 +604,9 @@ public:
         Room *room = shenzhuge->getRoom();
         room->fillAG(stars, shenzhuge);
 
+        int ai_delay = Config.AIDelay;
+        Config.AIDelay = 0;
+
         QList<int> to_exchange;
         while(!stars.isEmpty()){
             int card_id = room->askForAG(shenzhuge, stars, true, "qixing");
@@ -620,6 +624,8 @@ public:
 
             shenzhuge->invoke("pile", QString("%1:stars-%2").arg(shenzhuge->objectName()).arg(card_id));
         }
+
+        Config.AIDelay = ai_delay;
 
         shenzhuge->invoke("clearAG");
 

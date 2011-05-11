@@ -6,6 +6,7 @@ class ProhibitSkill;
 class Scenario;
 class RoomThread3v3;
 class RoomThread1v1;
+class TrickCard;
 
 struct lua_State;
 struct LogMessage;
@@ -136,7 +137,7 @@ public:
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices);
     bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, bool optional = false, bool include_equip = false);
     const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num);
-    bool askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to);
+    bool askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it = true);

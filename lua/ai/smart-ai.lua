@@ -1896,7 +1896,28 @@ function SmartAI:askForAG(card_ids,refusable)
 end
 
 
-function SmartAI:askForNullification(trick_name, from, to)
+function SmartAI:askForNullification(trick, from, to, positive)
+	if self.player:objectName() == to:objectName() and trick:isAggressive() and positive then
+		local cards = self.player:getHandcards()
+		for _, card in sgs.qlist(cards) do
+			if card:objectName() == "nullification" then
+				return card
+			end
+		end
+		
+		if self.player:hasSkill("kanpo") then
+			for _, card in sgs.qlist(cards) do
+				if card:isBlack() then
+					local suit = card:getSuitString()
+					local number = card:getNumberString()
+					local card_id = card:getEffectiveId()
+					local card_str = ("nullification:kanpo[%s:%s]=%d"):format(suit, number, card_id)
+					return sgs.Card_Parse(card_str)
+				end
+			end
+		end
+	end
+	
 	return nil
 end
 

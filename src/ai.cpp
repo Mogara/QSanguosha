@@ -235,9 +235,8 @@ QList<int> TrustAI::askForDiscard(const QString &reason, int discard_num, bool o
         return self->forceToDiscard(discard_num, include_equip);
 }
 
-const Card *TrustAI::askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) {
-    const TrickCard *card = Sanguosha->findChild<const TrickCard *>(trick_name);
-    if(to == self && card->isAggressive()){
+const Card *TrustAI::askForNullification(const TrickCard *trick, ServerPlayer *, ServerPlayer *to, bool positive){
+    if(self == to && trick->isAggressive() && positive){
         QList<const Card *> cards = self->getHandcards();
 
         foreach(const Card *card, cards){

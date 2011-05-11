@@ -3,6 +3,7 @@
 
 class Room;
 class ServerPlayer;
+class TrickCard;
 
 typedef int LuaFunction;
 
@@ -36,7 +37,7 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) = 0;
     virtual QString askForChoice(const QString &skill_name, const QString &choices) = 0;
     virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) = 0;
-    virtual const Card *askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to)  = 0;
+    virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive) = 0;
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason)  = 0;
     virtual const Card *askForCard(const QString &pattern, const QString &prompt)  = 0;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt)  = 0;
@@ -65,7 +66,7 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data) ;
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
     virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip) ;
-    virtual const Card *askForNullification(const QString &trick_name, ServerPlayer *from, ServerPlayer *to) ;
+    virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason) ;
     virtual const Card *askForCard(const QString &pattern, const QString &prompt);
     virtual QString askForUseCard(const QString &pattern, const QString &prompt) ;
@@ -91,6 +92,7 @@ public:
     virtual QString askForUseCard(const QString &pattern, const QString &prompt);
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
     virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip);
+    virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
     virtual int askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason);
     virtual const Card *askForCard(const QString &pattern, const QString &prompt);
