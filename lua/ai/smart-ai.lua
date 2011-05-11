@@ -1497,7 +1497,7 @@ function SmartAI:getTurnUse()
                 end
             else
                 if card:inherits("Weapon") then 
-                    self.predictedRange=sgs.weapon_range[card:className()] 
+                    self.predictedRange=sgs.weapon_range[card:className()] or 1
                     self.weaponUsed=true
                 end
                 if card:inherits("OffensiveHorse") then self.predictNewHorse=true end
@@ -1759,7 +1759,6 @@ function SmartAI:getCardRandomly(who, flags)
 end
 
 function SmartAI:askForCardChosen(who, flags, reason)
-
     if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
@@ -1856,11 +1855,12 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			return -1
 		end
 	end
+	
     self:log("??????")
 	local new_flag=""
     if flags:match("h") then new_flag="h" end
     if flags:match("e") then new_flag=new_flag.."e" end
-    self:getCardRandomly(who, new_flag)
+    return self:getCardRandomly(who, new_flag)
 end
 
 function SmartAI:askForCard(pattern,prompt)

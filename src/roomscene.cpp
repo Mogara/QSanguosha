@@ -40,6 +40,15 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 static QPointF DiscardedPos(-6, -2);
 static QPointF DrawPilePos(-102, -2);
+static int four=0;
+static int five=0;
+static int six=0;
+static int seven=0;
+static int eight=0;
+static int nine=0;
+static int cxw=0;
+static int cxw2=1;
+static QPixmap state = NULL;
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
@@ -47,12 +56,21 @@ RoomScene::RoomScene(QMainWindow *main_window)
 {
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
     ClientInstance->setParent(this);
+    if (player_count==4){four=1;}
+             if (player_count==5){five=1;}
+             if (player_count==6){six=1;}
+              if (player_count==7){seven=1;}
+               if (player_count==8){eight=1;}
+             if (player_count==9){nine=1;}
 
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
         DiscardedPos = QPointF(-140, -60);
         DrawPilePos = QPointF(-260, -60);
-    }
+        cxw=1;
+        cxw2=0;
+
+         }
 
     // create photos
     int i;
@@ -93,19 +111,26 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     // add buttons that above the equipment area of dashboard
-    trust_button = dashboard->addButton(tr("Trust"), 4, true);
+   if(circular){
+       trust_button = dashboard->addButton(tr(""), 10, true);
+           connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+           connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+
+     }else{trust_button = dashboard->addButton(tr("Trust"), 4, true);
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-
+}
     QPushButton *expand_button = new QPushButton(tr("Expand to window width"));
     dashboard->addWidget(expand_button, 67, true);
-    connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
+   connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
 
     // add buttons that above the avatar area of dashbaord
     if(circular){
-        ok_button = dashboard->addButton(tr("OK"), -245-50, false);
-        cancel_button = dashboard->addButton(tr("Cancel"), -155-50, false);
-        discard_button = dashboard->addButton(tr("Discard cards"), -70-50, false);
+        ok_button = dashboard->addButton(tr(""), -245-146, false);
+        cancel_button = dashboard->addButton(tr(""), -155-146, false);
+        discard_button = dashboard->addButton(tr(""), -70-146, false);
+        expand_button->hide();
+        dashboard->setWidth(main_window->width()-10);
     }else{
         ok_button = dashboard->addButton(tr("OK"), -72, false);
         cancel_button = dashboard->addButton(tr("Cancel"), -7, false);
@@ -115,6 +140,26 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
+
+    //button icon
+if(circular){
+         trust_button->setIconSize(QSize(68,30));
+         trust_button->setFixedSize(68, 30);
+         trust_button->setIcon(QIcon("image/system/button/trust.png"));
+
+           ok_button->setIconSize(QSize(68,30));
+           ok_button->setFixedSize(68,30);
+           ok_button->setIcon(QIcon("image/system/button/ok.png"));
+
+            cancel_button->setIconSize(QSize(68,30));
+            cancel_button->setFixedSize(68, 30);
+            cancel_button->setIcon(QIcon ("image/system/button/cancel.png"));
+
+               discard_button->setIconSize(QSize(68,30));
+               discard_button->setFixedSize(68, 30);
+               discard_button->setIcon(QIcon("image/system/button/discard.png"));
+
+}
 
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
@@ -237,18 +282,19 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         if(circular){
             chat_box->resize(268, 180);
-            chat_box_widget->setPos(365 , -65);
+            chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
+            chat_edit->setFixedHeight(24);
             chat_edit_widget->setX(0);
-            chat_edit_widget->setY(chat_box->height()+2);
+            chat_edit_widget->setY(chat_box->height()+1);
         }
 
         if(ServerInfo.DisableChat)
             chat_edit_widget->hide();
     }
 
-    {
+
         // log box
         log_box = new ClientLogBox;
         log_box->resize(chat_box->width(), 213);
@@ -259,8 +305,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
         log_box_widget->setZValue(-2.0);
         connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
-        if(circular)
-            log_box_widget->setPos(365, -240);
+        if(circular){
+            log_box->resize(chat_box->width(), 210);
+            log_box_widget->setPos(367, -246);
     }
 
     {
@@ -323,28 +370,28 @@ void RoomScene::adjustItems(){
 
 QList<QPointF> RoomScene::getPhotoPositions() const{
     static const QPointF pos[] = {
-        QPointF(-501, -69), // 0:zhugeliang
-        QPointF(-501, -273), // 1:wolong
-        QPointF(-356, -294), // 2:shenzhugeliang
-        QPointF(-211, -294), // 3:lusu
-        QPointF(-66, -294), // 4:dongzhuo
-        QPointF(79, -294), // 5:caocao
-        QPointF(224, -296), // 6:shuangxiong
-        QPointF(369, -273), // 7:shenguanyu
-        QPointF(369, -69), // 8:xiaoqiao
-    };
+        QPointF((-630+cxw2*129)+(cxw*four*70)+(cxw*six*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 0:zhugeliang
+        QPointF((-630+cxw2*129)+(cxw*eight*50)+(cxw*five*50)+(cxw*nine*20), (-270-cxw2*3)+(cxw*five*100)), // 1:wolong
+        QPointF((-487+cxw2*131)+(cxw*six*80)+(-seven*cxw*25)+(cxw*nine*45), (-316+cxw2*22)+(cxw*six*15)+(cxw*seven*30)), // 2:shenzhugeliang
+        QPointF((-344+cxw2*133)+(-eight*cxw*50)+(cxw*five*15)+(cxw*seven*50)+(cxw*nine*65), (-320+cxw2*26)), // 3:lusu
+        QPointF((-201+cxw2*135), -324+cxw2*30), // 4:dongzhuo
+        QPointF((-58+cxw2*137)+(cxw*eight*50)+(-five*cxw*15)+(-seven*cxw*50)+(-nine*cxw*65), (-320+cxw2*26)), // 5:caocao
+        QPointF((85+cxw2*139)+(-six*cxw*80)+(seven*cxw*25)+(-nine*cxw*45), (-316+cxw2*22)+(six*cxw*15)+(seven*cxw*30)), // 6:shuangxiong
+        QPointF((228+cxw2*141)+(-eight*cxw*50)+(-five*cxw*50)+(-nine*cxw*20), (-270-cxw2*3)+(five*cxw*100)), // 7:shenguanyu
+        QPointF((228+cxw2*141)+(-four*cxw*70)+(-six*cxw*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 8:xiaoqiao
+            };
 
     static int indices_table[][9] = {
-        {4 }, // 2
-        {3, 5}, // 3
-        {2, 4, 6}, // 4
-        {1, 3, 5, 7}, // 5
-        {0, 2, 4, 6, 8}, // 6
-        {1, 2, 3, 5, 6, 7}, // 7
-        {1, 2, 3, 4, 5, 6, 7}, // 8
-        {0, 1, 2, 3, 5, 6, 7, 8}, // 9
-        {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
-    };
+            {4 }, // 2
+            {3, 5}, // 3
+            {2-cxw*2, 4, 6+cxw*2}, // 4
+            {1, 3, 5, 7}, // 5
+            {0, 2, 4, 6, 8}, // 6
+            {1-cxw, 2, 3, 5, 6, 7+cxw}, // 7
+            {1-cxw, 2-cxw, 3, 4, 5, 6+cxw, 7+cxw}, // 8
+            {0, 1, 2, 3, 5, 6, 7, 8}, // 9
+            {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
+        };
 
     static int indices_table_3v3[][5] = {
         {0, 3, 4, 5, 8}, // lord
@@ -373,11 +420,28 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 
 void RoomScene::changeTextEditBackground(){
     QPalette palette;
-    QBrush brush(backgroundBrush().texture());
+    QPalette l_palette;
+    QPixmap chat_pixmap;
+     QPixmap log_pixmap;
+    QBrush brush;
+    QBrush chat_brush;
+    QBrush log_brush;
+    bool circular = Config.value("CircularView", false).toBool();
+    if(circular){
+           chat_pixmap=QPixmap("image/system/chat_background.png");
+           log_pixmap=QPixmap("image/system/log_background.png");
+            chat_brush=(chat_pixmap);
+             log_brush=(log_pixmap);
+            palette.setBrush(QPalette::Base, chat_brush);
+        l_palette.setBrush(QPalette::Base, log_brush);
+            log_box->setPalette(l_palette);
+            chat_box->setPalette(palette);
+    }else{
+     brush=(backgroundBrush().texture());
     palette.setBrush(QPalette::Base, brush);
-
     log_box->setPalette(palette);
     chat_box->setPalette(palette);
+    }
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -1757,11 +1821,27 @@ void RoomScene::doSkillButton(){
 
 void RoomScene::updateTrustButton(){
     bool trusting = Self->getState() == "trust";
-    if(trusting)
-        trust_button->setText(tr("Cancel trust"));
-    else
-        trust_button->setText(tr("Trust"));
+    bool circular = Config.value("CircularView", false).toBool();
+    if(trusting){
 
+        if(circular){
+            trust_button->setText(tr(""));
+        trust_button->setIconSize(QSize(68,30));
+        trust_button->setFixedSize(68, 30);
+        trust_button->setIcon(QIcon("image/system/button/trust_cancel.png"));
+   } else{
+            trust_button->setText(tr("Cancel trust"));
+
+        }
+   } else{
+    if(circular){
+        trust_button->setText(tr(""));
+        trust_button->setIconSize(QSize(68,30));
+        trust_button->setFixedSize(68, 30);
+        trust_button->setIcon(QIcon("image/system/button/trust.png"));}
+else
+        trust_button->setText(tr("Trust"));
+    }
     dashboard->setTrust(trusting);
 }
 
@@ -2357,9 +2437,15 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 }
 
 void RoomScene::createStateItem(){
-    QGraphicsItem *state_item = addPixmap(QPixmap("image/system/state.png"));
-    state_item->setPos(-110, -90);
-    char roles[100] = {0}, *role;
+    bool circular = Config.value("CircularView", false).toBool();
+ if(circular)
+      state=QPixmap("image/system/state2.png");
+ else
+      state=QPixmap("image/system/state.png");
+
+         QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
+      state_item->setPos(-110, -90);
+      char roles[100] = {0}, *role;
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     for(role = roles; *role!='\0'; role++){
         static QPixmap lord("image/system/roles/small-lord.png");
@@ -2393,6 +2479,9 @@ void RoomScene::createStateItem(){
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
 
+    if(circular){
+                 state_item->setPos(367, -338);
+           }
     if(ServerInfo.EnableAI){
         QRectF state_rect = state_item->boundingRect();
         control_panel = addRect(0, 0, state_rect.width(), 150, Qt::NoPen);
@@ -2411,6 +2500,11 @@ void RoomScene::createStateItem(){
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
+
+        if(circular){
+           add_robot->setPos(-565,205);
+           fill_robots->setPos(-565, 260);
+        }
     }else
         control_panel = NULL;
 }
@@ -2465,14 +2559,33 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose){
-        QPushButton *free_discard = dashboard->addButton(tr("Free discard"), 170, true);
-        free_discard->setToolTip(tr("Discard cards freely"));
 
-        FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-        button2skill.insert(free_discard, discard_skill);
-        connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+        bool circular = Config.value("CircularView", false).toBool();
+        if(circular){
+            QPushButton *free_discard = dashboard->addButton(tr(""), 100, true);
+            free_discard->setToolTip(tr("Discard cards freely"));
+            free_discard->setIconSize(QSize(68,30));
+            free_discard->setFixedSize(68, 30);
+           free_discard->setIcon(QIcon("image/system/button/free_discard.png"));
+           FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+           button2skill.insert(free_discard, discard_skill);
+           connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
 
-        skill_buttons << free_discard;
+           skill_buttons << free_discard;
+        }else{
+            QPushButton *free_discard = dashboard->addButton(tr("Free discard"), 170, true);
+            free_discard->setToolTip(tr("Discard cards freely"));
+            FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+            button2skill.insert(free_discard, discard_skill);
+            connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+
+            skill_buttons << free_discard;
+        }
+       // FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+       // button2skill.insert(free_discard, discard_skill);
+       // connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+
+       // skill_buttons << free_discard;
     }
 
     trust_button->setEnabled(true);
