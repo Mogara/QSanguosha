@@ -56,12 +56,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
 {
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
     ClientInstance->setParent(this);
-    if (player_count==4){four=1;}
-             if (player_count==5){five=1;}
-             if (player_count==6){six=1;}
-              if (player_count==7){seven=1;}
-               if (player_count==8){eight=1;}
-             if (player_count==9){nine=1;}
+
+    switch(player_count){
+    case 4: four = 1; break;
+    case 5: five = 1; break;
+    case 6: six = 1; break;
+    case 7: seven = 1; break;
+    case 8: eight = 1; break;
+    case 9: nine = 1; break;
+    }
 
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
@@ -111,18 +114,19 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     // add buttons that above the equipment area of dashboard
-   if(circular){
-       trust_button = dashboard->addButton(tr(""), 10, true);
-           connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-           connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+    if(circular){
+        trust_button = dashboard->addButton(tr(""), 10, true);
+        connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+        connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
 
-     }else{trust_button = dashboard->addButton(tr("Trust"), 4, true);
-    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-}
+    }else{trust_button = dashboard->addButton(tr("Trust"), 4, true);
+        connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+        connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+    }
+
     QPushButton *expand_button = new QPushButton(tr("Expand to window width"));
     dashboard->addWidget(expand_button, 67, true);
-   connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
+    connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
 
     // add buttons that above the avatar area of dashbaord
     if(circular){
@@ -142,24 +146,23 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
 
     //button icon
-if(circular){
-         trust_button->setIconSize(QSize(68,30));
-         trust_button->setFixedSize(68, 30);
-         trust_button->setIcon(QIcon("image/system/button/trust.png"));
+    if(circular){
+        trust_button->setIconSize(QSize(68,30));
+        trust_button->setFixedSize(68, 30);
+        trust_button->setIcon(QIcon("image/system/button/trust.png"));
 
-           ok_button->setIconSize(QSize(68,30));
-           ok_button->setFixedSize(68,30);
-           ok_button->setIcon(QIcon("image/system/button/ok.png"));
+        ok_button->setIconSize(QSize(68,30));
+        ok_button->setFixedSize(68,30);
+        ok_button->setIcon(QIcon("image/system/button/ok.png"));
 
-            cancel_button->setIconSize(QSize(68,30));
-            cancel_button->setFixedSize(68, 30);
-            cancel_button->setIcon(QIcon ("image/system/button/cancel.png"));
+        cancel_button->setIconSize(QSize(68,30));
+        cancel_button->setFixedSize(68, 30);
+        cancel_button->setIcon(QIcon ("image/system/button/cancel.png"));
 
-               discard_button->setIconSize(QSize(68,30));
-               discard_button->setFixedSize(68, 30);
-               discard_button->setIcon(QIcon("image/system/button/discard.png"));
-
-}
+        discard_button->setIconSize(QSize(68,30));
+        discard_button->setFixedSize(68, 30);
+        discard_button->setIcon(QIcon("image/system/button/discard.png"));
+    }
 
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
@@ -234,6 +237,9 @@ if(circular){
         connect(ClientInstance, SIGNAL(ag_filled(QList<int>)), card_container, SLOT(fillCards(QList<int>)));
         connect(ClientInstance, SIGNAL(ag_taken(const ClientPlayer*,int)), this, SLOT(takeAmazingGrace(const ClientPlayer*,int)));
         connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
+
+        if(circular)
+            card_container->moveBy(-120, 0);
     }
 
     connect(ClientInstance, SIGNAL(skill_attached(QString, bool)), this, SLOT(attachSkill(QString,bool)));
@@ -248,11 +254,31 @@ if(circular){
         connect(ClientInstance, SIGNAL(general_recovered(int,QString)), this, SLOT(recoverGeneral(int,QString)));
 
         arrange_button = NULL;
+        enemy_box = NULL;
+        self_box = NULL;
+
+        if(ServerInfo.GameMode == "02_1v1"){
+            enemy_box = new KOFOrderBox(false, this);
+            self_box = new KOFOrderBox(true, this);
+
+            if(circular){
+                enemy_box->setPos(-361, -343);
+                self_box->setPos(201, -46);
+            }else{
+                enemy_box->setPos(-216, -327);
+                self_box->setPos(360, -39);
+            }
+
+            connect(ClientInstance, SIGNAL(general_revealed(bool,QString)), this, SLOT(revealGeneral(bool,QString)));
+        }
     }
 
     int widen_width = 0;
     if(player_count != 6 && player_count <= 8)
         widen_width = 148;
+
+    if(ServerInfo.GameMode == "02_1v1" && !circular)
+        widen_width = 0;
 
     {
         // chat box
@@ -294,7 +320,7 @@ if(circular){
             chat_edit_widget->hide();
     }
 
-
+    {
         // log box
         log_box = new ClientLogBox;
         log_box->resize(chat_box->width(), 213);
@@ -308,6 +334,7 @@ if(circular){
         if(circular){
             log_box->resize(chat_box->width(), 210);
             log_box_widget->setPos(367, -246);
+        }
     }
 
     {
@@ -379,19 +406,19 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
         QPointF((85+cxw2*139)+(-six*cxw*80)+(seven*cxw*25)+(-nine*cxw*45), (-316+cxw2*22)+(six*cxw*15)+(seven*cxw*30)), // 6:shuangxiong
         QPointF((228+cxw2*141)+(-eight*cxw*50)+(-five*cxw*50)+(-nine*cxw*20), (-270-cxw2*3)+(five*cxw*100)), // 7:shenguanyu
         QPointF((228+cxw2*141)+(-four*cxw*70)+(-six*cxw*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 8:xiaoqiao
-            };
+    };
 
     static int indices_table[][9] = {
-            {4 }, // 2
-            {3, 5}, // 3
-            {2-cxw*2, 4, 6+cxw*2}, // 4
-            {1, 3, 5, 7}, // 5
-            {0, 2, 4, 6, 8}, // 6
-            {1-cxw, 2, 3, 5, 6, 7+cxw}, // 7
-            {1-cxw, 2-cxw, 3, 4, 5, 6+cxw, 7+cxw}, // 8
-            {0, 1, 2, 3, 5, 6, 7, 8}, // 9
-            {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
-        };
+        {4 }, // 2
+        {3, 5}, // 3
+        {2-cxw*2, 4, 6+cxw*2}, // 4
+        {1, 3, 5, 7}, // 5
+        {0, 2, 4, 6, 8}, // 6
+        {1-cxw, 2, 3, 5, 6, 7+cxw}, // 7
+        {1-cxw, 2-cxw, 3, 4, 5, 6+cxw, 7+cxw}, // 8
+        {0, 1, 2, 3, 5, 6, 7, 8}, // 9
+        {0, 1, 2, 3, 4, 5, 6, 7, 8} // 10
+    };
 
     static int indices_table_3v3[][5] = {
         {0, 3, 4, 5, 8}, // lord
@@ -422,25 +449,25 @@ void RoomScene::changeTextEditBackground(){
     QPalette palette;
     QPalette l_palette;
     QPixmap chat_pixmap;
-     QPixmap log_pixmap;
+    QPixmap log_pixmap;
     QBrush brush;
     QBrush chat_brush;
     QBrush log_brush;
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
-           chat_pixmap=QPixmap("image/system/chat_background.png");
-           log_pixmap=QPixmap("image/system/log_background.png");
-            chat_brush=(chat_pixmap);
-             log_brush=(log_pixmap);
-            palette.setBrush(QPalette::Base, chat_brush);
+        chat_pixmap=QPixmap("image/system/chat_background.png");
+        log_pixmap=QPixmap("image/system/log_background.png");
+        chat_brush=(chat_pixmap);
+        log_brush=(log_pixmap);
+        palette.setBrush(QPalette::Base, chat_brush);
         l_palette.setBrush(QPalette::Base, log_brush);
-            log_box->setPalette(l_palette);
-            chat_box->setPalette(palette);
+        log_box->setPalette(l_palette);
+        chat_box->setPalette(palette);
     }else{
-     brush=(backgroundBrush().texture());
-    palette.setBrush(QPalette::Base, brush);
-    log_box->setPalette(palette);
-    chat_box->setPalette(palette);
+        brush=(backgroundBrush().texture());
+        palette.setBrush(QPalette::Base, brush);
+        log_box->setPalette(palette);
+        chat_box->setPalette(palette);
     }
 }
 
@@ -667,6 +694,17 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_6:
     case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
 
+    case Qt::Key_D:{
+            // for debugging use
+
+            if(enemy_box && self_box){
+                QString msg = QString("enemy:(%1, %2), self:(%3, %4)")
+                              .arg(enemy_box->x()).arg(enemy_box->y())
+                              .arg(self_box->x()).arg(self_box->y());
+
+                QMessageBox::information(main_window, "", msg);
+            }
+        }
     }
 }
 
@@ -2438,14 +2476,14 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 
 void RoomScene::createStateItem(){
     bool circular = Config.value("CircularView", false).toBool();
- if(circular)
-      state=QPixmap("image/system/state2.png");
- else
-      state=QPixmap("image/system/state.png");
+    if(circular)
+        state=QPixmap("image/system/state2.png");
+    else
+        state=QPixmap("image/system/state.png");
 
-         QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
-      state_item->setPos(-110, -90);
-      char roles[100] = {0}, *role;
+    QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
+    state_item->setPos(-110, -90);
+    char roles[100] = {0}, *role;
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     for(role = roles; *role!='\0'; role++){
         static QPixmap lord("image/system/roles/small-lord.png");
@@ -2479,9 +2517,9 @@ void RoomScene::createStateItem(){
     text_item->setTextWidth(220);
     text_item->setDefaultTextColor(Qt::white);
 
-    if(circular){
-                 state_item->setPos(367, -338);
-           }
+    if(circular)
+        state_item->setPos(367, -338);
+
     if(ServerInfo.EnableAI){
         QRectF state_rect = state_item->boundingRect();
         control_panel = addRect(0, 0, state_rect.width(), 150, Qt::NoPen);
@@ -2502,8 +2540,8 @@ void RoomScene::createStateItem(){
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
 
         if(circular){
-           add_robot->setPos(-565,205);
-           fill_robots->setPos(-565, 260);
+            add_robot->setPos(-565,205);
+            fill_robots->setPos(-565, 260);
         }
     }else
         control_panel = NULL;
@@ -2541,7 +2579,37 @@ void RoomScene::showPlayerCards(){
 
 static irrklang::ISound *BackgroundMusic;
 
+KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
+{
+    QString basename = self ? "self" : "enemy";
+    QString path = QString("image/system/1v1/%1.png").arg(basename);
+    setPixmap(QPixmap(path));
+
+    scene->addItem(this);
+
+    int i;
+    for(i=0; i<3; i++){
+        avatars[i] = scene->addPixmap(QPixmap("image/system/1v1/unknown.png"));
+        avatars[i]->setParentItem(this);
+        avatars[i]->setPos(5, 23 + 62 *i);
+    }
+
+    revealed = 0;
+}
+
+void KOFOrderBox::revealGeneral(const QString &name){
+    if(revealed < 3){
+        const General *general = Sanguosha->getGeneral(name);
+        if(general){
+            QGraphicsPixmapItem *avatar = avatars[revealed ++];
+            avatar->setPixmap(QPixmap(general->getPixmapPath("small")));
+        }
+    }
+}
+
 void RoomScene::onGameStart(){
+    bool circular = Config.value("CircularView", false).toBool();
+
     if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         selector_box->deleteLater();
         selector_box = NULL;
@@ -2559,19 +2627,17 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose){
-
-        bool circular = Config.value("CircularView", false).toBool();
         if(circular){
             QPushButton *free_discard = dashboard->addButton(tr(""), 100, true);
             free_discard->setToolTip(tr("Discard cards freely"));
             free_discard->setIconSize(QSize(68,30));
             free_discard->setFixedSize(68, 30);
-           free_discard->setIcon(QIcon("image/system/button/free_discard.png"));
-           FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-           button2skill.insert(free_discard, discard_skill);
-           connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+            free_discard->setIcon(QIcon("image/system/button/free_discard.png"));
+            FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+            button2skill.insert(free_discard, discard_skill);
+            connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
 
-           skill_buttons << free_discard;
+            skill_buttons << free_discard;
         }else{
             QPushButton *free_discard = dashboard->addButton(tr("Free discard"), 170, true);
             free_discard->setToolTip(tr("Discard cards freely"));
@@ -2581,11 +2647,6 @@ void RoomScene::onGameStart(){
 
             skill_buttons << free_discard;
         }
-       // FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-       // button2skill.insert(free_discard, discard_skill);
-       // connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-
-       // skill_buttons << free_discard;
     }
 
     trust_button->setEnabled(true);
@@ -3029,6 +3090,13 @@ void RoomScene::changeGeneral(const QString &general){
     if(to_change && arrange_button){
         to_change->changeGeneral(general);
     }
+}
+
+void RoomScene::revealGeneral(bool self, const QString &general){
+    if(self)
+        self_box->revealGeneral(general);
+    else
+        enemy_box->revealGeneral(general);
 }
 
 void RoomScene::startArrange(){

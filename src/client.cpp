@@ -108,6 +108,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["askForOrder"] = &Client::askForOrder;
     callbacks["askForDirection"] = &Client::askForDirection;
     callbacks["recoverGeneral"] = &Client::recoverGeneral;
+    callbacks["revealGeneral"] = &Client::revealGeneral;
 
     ask_dialog = NULL;
     use_card = false;
@@ -1661,6 +1662,18 @@ void Client::recoverGeneral(const QString &recover_str){
     QString name = texts.at(2);
 
     emit general_recovered(index, name);
+}
+
+void Client::revealGeneral(const QString &reveal_str){
+    QRegExp rx("(\\w+):(\\w+)");
+    if(!rx.exactMatch(reveal_str))
+        return;
+
+    QStringList texts = rx.capturedTexts();
+    bool self = texts.at(1) == Self->objectName();
+    QString general = texts.at(2);
+
+    emit general_revealed(self, general);
 }
 
 void Client::selectOrder(){

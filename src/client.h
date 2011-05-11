@@ -142,6 +142,7 @@ public:
     void askForOrder(const QString &reason);
     void askForDirection(const QString &);
     void recoverGeneral(const QString &);
+    void revealGeneral(const QString &);
 
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
@@ -250,6 +251,7 @@ signals:
     void general_asked();
     void arrange_started();
     void general_recovered(int index, const QString &name);
+    void general_revealed(bool self, const QString &general);
 };
 
 extern Client *ClientInstance;

@@ -25,3 +25,15 @@ end
 
 -- caizhaoji_hujia
 sgs.ai_skill_invoke.caizhaoji_hujia = true
+
+-- shaoying
+sgs.ai_skill_invoke.shaoying = function(self, data)
+	local to = data:toDamage().to:getNextAlive()	
+	return self:isEnemy(to)	
+end
+
+-- zhenggong
+sgs.ai_skill_invoke.zhenggong = true
+
+
+

@@ -42,6 +42,16 @@ private slots:
     void makeDamage();
 };
 
+class KOFOrderBox: public QGraphicsPixmapItem{
+public:
+    KOFOrderBox(bool self, QGraphicsScene *scene);
+    void revealGeneral(const QString &name);
+
+private:
+    QGraphicsPixmapItem *avatars[3];
+    int revealed;
+};
+
 class RoomScene : public QGraphicsScene{    
     Q_OBJECT
 
@@ -130,6 +140,7 @@ private:
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
     Button *arrange_button;
+    KOFOrderBox *enemy_box, *self_box;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
     void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
@@ -226,6 +237,7 @@ private slots:
     void toggleArrange();
     void finishArrange();
     void changeGeneral(const QString &general);
+    void revealGeneral(bool self, const QString &general);
 
 signals:
     void restart();

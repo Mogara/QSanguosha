@@ -106,6 +106,9 @@ void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged){
     player->tag["1v1Arrange"] = QVariant::fromValue(left);
     player->setGeneralName(arranged.first());
 
+    foreach(QString general, arranged)
+        player->invoke("revealGeneral", QString("%1:%2").arg(player->objectName()).arg(general));
+
     room->sem->release();
 }
 
