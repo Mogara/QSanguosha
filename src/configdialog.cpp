@@ -25,6 +25,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);    
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
+    ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
 
     ui->volumeSlider->setValue(100 * Config.Volume);
 
@@ -122,6 +123,8 @@ void ConfigDialog::saveConfig()
     Config.FitInView = ui->fitInViewCheckBox->isChecked();
     Config.setValue("FitInView", Config.FitInView);
 
+    Config.setValue("CircularView", ui->circularViewCheckBox->isChecked());
+
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 
@@ -129,7 +132,7 @@ void ConfigDialog::saveConfig()
     Config.setValue("Contest/Sender", ui->senderLineEdit->text());
     Config.setValue("Contest/Password", ui->passwordLineEdit->text());
     Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
-    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
+    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());    
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
