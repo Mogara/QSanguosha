@@ -2217,9 +2217,11 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_nature->addItem(tr("Normal"), "N");
     damage_nature->addItem(tr("Thunder"), "T");
     damage_nature->addItem(tr("Fire"), "F");
+    damage_nature->addItem(tr("HP recover"), "R");
+    damage_nature->addItem(tr("Lose HP"), "L");
 
     damage_point = new QSpinBox;
-    damage_point->setRange(-1000, 1000);
+    damage_point->setRange(1, 1000);
     damage_point->setValue(1);
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
@@ -2230,7 +2232,6 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
 
     QFormLayout *layout = new QFormLayout;
 
-    layout->addWidget(new QLabel(tr("If damage point is negative, it is a hp recover")));
     layout->addRow(tr("Damage source"), damage_source);
     layout->addRow(tr("Damage target"), damage_target);
     layout->addRow(tr("Damage nature"), damage_nature);
@@ -2239,7 +2240,13 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
 
     setLayout(layout);
 
+    connect(damage_nature, SIGNAL(currentIndexChanged(int)), this, SLOT(disableSource()));
     connect(this, SIGNAL(accepted()), this, SLOT(makeDamage()));
+}
+
+void DamageMakerDialog::disableSource(){
+    QString nature = damage_nature->itemData(damage_nature->currentIndex()).toString();
+    damage_source->setEnabled(nature != "L");
 }
 
 void DamageMakerDialog::fillCombobox(QComboBox *combobox){
@@ -2254,10 +2261,6 @@ void DamageMakerDialog::fillCombobox(QComboBox *combobox){
 }
 
 void DamageMakerDialog::makeDamage(){
-    int point = damage_point->value();
-    if(point == 0)
-        return;
-
     ClientInstance->request(QString("useCard :%1->%2:%3%4")
                             .arg(damage_source->itemData(damage_source->currentIndex()).toString())
                             .arg(damage_target->itemData(damage_target->currentIndex()).toString())

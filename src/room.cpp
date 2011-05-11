@@ -2395,44 +2395,43 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
 }
 
 void Room::makeDamage(const QString &damage_str){
-    QRegExp rx(":(.+)->(\\w+):([NTF])(-?\\d+)");
+    QRegExp rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
     if(!rx.exactMatch(damage_str))
         return;
 
     QStringList texts = rx.capturedTexts();
     int point = texts.at(4).toInt();
 
-    if(point == 0)
-        return;
+    // damage
+    DamageStruct damage;
+    if(texts.at(1) != ".")
+        damage.from = findChild<ServerPlayer *>(texts.at(1));
 
-    if(point > 0){
-        // damage
-        DamageStruct damage;
-        if(texts.at(1) != ".")
-            damage.from = findChild<ServerPlayer *>(texts.at(1));
+    damage.to = findChild<ServerPlayer *>(texts.at(2));
 
-        damage.to = findChild<ServerPlayer *>(texts.at(2));
+    char nature = texts.at(3).toAscii().at(0);
+    switch(nature){
+    case 'N': damage.nature = DamageStruct::Normal; break;
+    case 'T': damage.nature = DamageStruct::Thunder; break;
+    case 'F': damage.nature = DamageStruct::Fire; break;
+    case 'L': loseHp(damage.to, point); return;
+    case 'R':{
+            RecoverStruct recover;
+            if(texts.at(1) != ".")
+                recover.who = findChild<ServerPlayer *>(texts.at(1));
+            ServerPlayer *player = findChild<ServerPlayer *>(texts.at(2));
 
-        char nature = texts.at(3).toAscii().at(0);
-        switch(nature){
-        case 'N': damage.nature = DamageStruct::Normal; break;
-        case 'T': damage.nature = DamageStruct::Thunder; break;
-        case 'F': damage.nature = DamageStruct::Fire; break;
+            recover.recover = -point;
+
+            this->recover(player, recover);
+
+            return;
         }
-
-        damage.damage = point;
-
-        this->damage(damage);
-    }else{
-        RecoverStruct recover;
-        if(texts.at(1) != ".")
-            recover.who = findChild<ServerPlayer *>(texts.at(1));
-        ServerPlayer *player = findChild<ServerPlayer *>(texts.at(2));
-
-        recover.recover = -point;
-
-        this->recover(player, recover);
     }
+
+    damage.damage = point;
+
+    this->damage(damage);
 }
 
 void Room::surrenderCommand(ServerPlayer *player, const QString &){

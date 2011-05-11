@@ -39,6 +39,7 @@ private:
     void fillCombobox(QComboBox *combobox);
 
 private slots:
+    void disableSource();
     void makeDamage();
 };
 
