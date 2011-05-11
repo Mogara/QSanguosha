@@ -495,6 +495,10 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     room->transfigure(player, new_general, true, true);
     room->revivePlayer(player);
 
+    room->broadcastInvoke("revealGeneral",
+                          QString("%1:%2").arg(player->objectName()).arg(new_general),
+                          player);
+
     if(!player->faceUp())
         player->turnOver();
 

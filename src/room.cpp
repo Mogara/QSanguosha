@@ -1663,8 +1663,17 @@ void Room::startGame(){
         if(mode == "06_3v3" || mode == "02_1v1")
             start_index = 0;
 
-        for(i = start_index; i < players.count(); i++)
+        for(i = start_index; i < players.count(); i++){
             broadcastProperty(players.at(i), "general");
+        }
+
+        if(mode == "02_1v1"){
+            foreach(ServerPlayer *player, players){
+               broadcastInvoke("revealGeneral",
+                               QString("%1:%2").arg(player->objectName()).arg(player->getGeneralName()),
+                               player);
+            }
+        }
     }
 
     if((Config.Enable2ndGeneral || mode == "08boss") && mode != "02_1v1"){
