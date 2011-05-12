@@ -339,3 +339,39 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 	end
     
 end
+
+-- tianxiang, very simple algorithm
+sgs.ai_skill_use["@tianxiang"] = function(self, prompt)
+	local cards = self.player:getHandcards()
+	local card_id
+	for _, card in sgs.qlist(cards) do
+		local suit = card:getSuit()
+		if suit == sgs.Card_Heart or suit == sgs.Card_Spade then
+			card_id = card:getEffectiveId()
+			break
+		end
+	end
+
+	if not card_id then
+		return "."
+	end
+
+	local damage = self.player:getTag("TianxiangDamage"):toDamage()
+	local point = damage.damage	
+
+	local card_str = "@TianxiangCard=%d->%s"
+
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:getLostHp() >= 2 then
+			return card_str:format(card_id, friend:objectName())
+		end
+	end
+
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getLostHp() <= 1 then
+			return card_str:format(card_id, enemy:objectName())
+		end
+	end
+
+	return "."
+end

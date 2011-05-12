@@ -1749,7 +1749,13 @@ function SmartAI:askForChoice(skill_name, choices)
 		return choice(self, choices)
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		return skill:getDefaultChoice(self.player)
+		if skill then
+			return skill:getDefaultChoice(self.player)
+		else
+			local choice_table = choices:split("+")
+			local r = math.random(1, #choice_table)
+			return choice_table[r]
+		end
 	end		
 end
 

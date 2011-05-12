@@ -169,8 +169,16 @@ public:
 
 	bool hasUsed(const QString &card_class);
     int usedTimes(const QString &card_class);
-	
-	QVariantMap tag;
+};
+
+%extend Player{
+	void setTag(const char *key, QVariant &value){
+		$self->tag[key] = value;
+	}
+
+	QVariant getTag(const char *key){
+		return $self->tag[key];
+	}
 };
 
 class ServerPlayer : public Player
