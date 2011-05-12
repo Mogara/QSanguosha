@@ -28,6 +28,9 @@ sgs.ai_use_value =
         HuangtianCard = 8.5,
         JijiangCard=8.5,
         DimengCard=3.5,
+		JujianCard=5.7,
+		QiangxiCard=2.5,
+		LijianCard=8.5,
 --normal cards
         ExNihilo=10,
         
@@ -72,10 +75,11 @@ sgs.ai_use_priority = {
         HuangtianCard = 10,
         JijiangCard = 2.4,
         DimengCard=2.3,
+		LijianCard = 4,
 --
 
         Collateral=5.8,
-        Peach = 5,
+        Peach = 4.1,
 
         Dismantlement=4.5,
         Snatch=4.3,
