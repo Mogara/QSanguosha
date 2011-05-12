@@ -163,7 +163,6 @@ end
 
 --jujian
 local xushu_ai = SmartAI:newSubclass "xushu"
-xushu_ai:setOnceSkill("jujian")
 
 function xushu_ai:activate(use)
 	super.activate(self, use)
@@ -233,7 +232,6 @@ function xushu_ai:activate(use)
 				if index == 5 then 
 					use.to:append(friend)
 					use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(abandon_handcard, "+"))
-					self.player:hasUsed("JujianCard") = true
 					return
 				end
 			end			
