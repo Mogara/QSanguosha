@@ -40,15 +40,6 @@ extern irrklang::ISoundEngine *SoundEngine;
 
 static QPointF DiscardedPos(-6, -2);
 static QPointF DrawPilePos(-102, -2);
-static int four=0;
-static int five=0;
-static int six=0;
-static int seven=0;
-static int eight=0;
-static int nine=0;
-static int cxw=0;
-static int cxw2=1;
-static QPixmap state = NULL;
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
@@ -57,23 +48,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
     ClientInstance->setParent(this);
 
-    switch(player_count){
-    case 4: four = 1; break;
-    case 5: five = 1; break;
-    case 6: six = 1; break;
-    case 7: seven = 1; break;
-    case 8: eight = 1; break;
-    case 9: nine = 1; break;
-    }
-
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
         DiscardedPos = QPointF(-140, -60);
         DrawPilePos = QPointF(-260, -60);
-        cxw=1;
-        cxw2=0;
-
-         }
+    }
 
     // create photos
     int i;
@@ -396,6 +375,30 @@ void RoomScene::adjustItems(){
 }
 
 QList<QPointF> RoomScene::getPhotoPositions() const{
+    static int four=0;
+    static int five=0;
+    static int six=0;
+    static int seven=0;
+    static int eight=0;
+    static int nine=0;
+    static int cxw=0;
+    static int cxw2=1;
+
+    int player_count = photos.length() + 1;
+    switch(player_count){
+    case 4: four = 1; break;
+    case 5: five = 1; break;
+    case 6: six = 1; break;
+    case 7: seven = 1; break;
+    case 8: eight = 1; break;
+    case 9: nine = 1; break;
+    }
+
+    if(Config.value("CircularView").toBool()){
+        cxw=1;
+        cxw2=0;
+    }
+
     static const QPointF pos[] = {
         QPointF((-630+cxw2*129)+(cxw*four*70)+(cxw*six*50), (-70+cxw2)+(-four*cxw*80)+(-six*cxw*50)), // 0:zhugeliang
         QPointF((-630+cxw2*129)+(cxw*eight*50)+(cxw*five*50)+(cxw*nine*20), (-270-cxw2*3)+(cxw*five*100)), // 1:wolong
@@ -2265,7 +2268,7 @@ void DamageMakerDialog::makeDamage(){
                             .arg(damage_source->itemData(damage_source->currentIndex()).toString())
                             .arg(damage_target->itemData(damage_target->currentIndex()).toString())
                             .arg(damage_nature->itemData(damage_nature->currentIndex()).toString())
-                            .arg(point));
+                            .arg(damage_point->value()));
 }
 
 void RoomScene::makeDamage(){
@@ -2479,6 +2482,8 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 
 void RoomScene::createStateItem(){
     bool circular = Config.value("CircularView", false).toBool();
+
+    QPixmap state;
     if(circular)
         state=QPixmap("image/system/state2.png");
     else
