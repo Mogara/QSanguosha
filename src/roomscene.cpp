@@ -2677,26 +2677,22 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose){
+        QPushButton *free_discard;
         if(circular){
-            QPushButton *free_discard = dashboard->addButton(tr(""), 100, true);
-            free_discard->setToolTip(tr("Discard cards freely"));
+            free_discard = dashboard->addButton(tr(""), 100, true);
             free_discard->setIconSize(QSize(68,30));
             free_discard->setFixedSize(68, 30);
             free_discard->setIcon(QIcon("image/system/button/free_discard.png"));
-            FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-            button2skill.insert(free_discard, discard_skill);
-            connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-
-            skill_buttons << free_discard;
         }else{
-            QPushButton *free_discard = dashboard->addButton(tr("Free discard"), 170, true);
-            free_discard->setToolTip(tr("Discard cards freely"));
-            FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
-            button2skill.insert(free_discard, discard_skill);
-            connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-
-            skill_buttons << free_discard;
+            free_discard = dashboard->addButton(tr("Free discard"), 170, true);
         }
+
+        free_discard->setToolTip(tr("Discard cards freely"));
+        FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
+        button2skill.insert(free_discard, discard_skill);
+        connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
+
+        skill_buttons << free_discard;
     }
 
     trust_button->setEnabled(true);

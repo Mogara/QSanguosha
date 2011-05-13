@@ -23,7 +23,7 @@ Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
-    chain("image/system/chain.png"), action_item(NULL), permanent(false),
+    chain("image/system/chain.png"), action_item(NULL), save_me_item(NULL), permanent(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     order_item(NULL), hide_avatar(false)
 {
@@ -287,10 +287,20 @@ void Photo::updateSmallAvatar(){
 }
 
 void Photo::refresh(){
-    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHP() > 0)
+    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHP() > 0){
         setFrame(SOS);
-    else
+
+        if(save_me_item == NULL){
+            QPixmap save_me("image/system/death/save-me.png");
+            save_me_item = new QGraphicsPixmapItem(save_me, this);
+            save_me_item->setPos(5, 15);
+        }
+        save_me_item->show();
+    }else{
+        if(save_me_item)
+            save_me_item->hide();
         updatePhase();
+    }
 
     update();
 }
@@ -626,4 +636,7 @@ void Photo::killPlayer(){
 
     kingdom_frame = QPixmap();
     role_combobox->hide();
+
+    if(save_me_item)
+        save_me_item->hide();
 }

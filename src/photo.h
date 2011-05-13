@@ -74,7 +74,7 @@ private:
     QPixmap chain;
     RoleCombobox *role_combobox;
     QList<QGraphicsProxyWidget *> pile_buttons;
-    QGraphicsPixmapItem *action_item;
+    QGraphicsPixmapItem *action_item, *save_me_item;
     bool permanent;
 
     QGraphicsTextItem *mark_item;
