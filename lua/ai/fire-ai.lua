@@ -120,6 +120,11 @@ local dianwei_ai = SmartAI:newSubclass "dianwei"
 dianwei_ai:setOnceSkill "qiangxi"
 
 function dianwei_ai:activate(use)
+	super.activate(self, use)
+	if use:isValid() then
+		return
+	end
+	
 	if not self.qiangxi_used then
 		local weapon = self.player:getWeapon()
 		if weapon then
@@ -154,7 +159,7 @@ function dianwei_ai:activate(use)
 		else
 			self:sort(self.enemies, "hp")
 			for _, enemy in ipairs(self.enemies) do
-				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() then
+				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
 					use.card = sgs.Card_Parse("@QiangxiCard=.")
 					use.to:append(enemy)
 
@@ -166,7 +171,6 @@ function dianwei_ai:activate(use)
 		end
 	end
 
-	super.activate(self, use)
 end
 
 --shuangxiong

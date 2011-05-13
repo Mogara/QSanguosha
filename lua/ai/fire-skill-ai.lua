@@ -40,7 +40,7 @@ huoji_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,acard in ipairs(cards)  do
-		if (acard:isRed()) then--and (self:getUseValue(acard)<sgs.ai_use_value["FireAttack"]) then
+		if (acard:isRed()) and not acard:inherits("Peach") then--and (self:getUseValue(acard)<sgs.ai_use_value["FireAttack"]) then
 			card = acard
 			break
 		end

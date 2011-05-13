@@ -65,7 +65,8 @@ wusheng_skill.getTurnUseCard=function(self,inclusive)
 	self:sortByUseValue(cards,true)
 	
 	for _,card in ipairs(cards)  do
-		if card:isRed() and not card:inherits("Slash") and ((self:getUseValue(card)<sgs.ai_use_value["Slash"]) or inclusive) then
+		if card:isRed() and not card:inherits("Slash") and not card:inherits("Peach") 				--ÌÒµ±É±
+			and ((self:getUseValue(card)<sgs.ai_use_value["Slash"]) or inclusive) then
 			red_card = card
 			break
 		end
