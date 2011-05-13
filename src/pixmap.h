@@ -13,6 +13,7 @@ public:
     virtual QRectF boundingRect() const;
     void changePixmap(const QString &name);
     void shift();
+    void makeGray();
 
     bool isMarked() const;
     bool isMarkable() const;

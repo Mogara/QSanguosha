@@ -47,9 +47,10 @@ class KOFOrderBox: public QGraphicsPixmapItem{
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
     void revealGeneral(const QString &name);
+    void killPlayer(const QString &general_name);
 
 private:
-    QGraphicsPixmapItem *avatars[3];
+    Pixmap *avatars[3];
     int revealed;
 };
 

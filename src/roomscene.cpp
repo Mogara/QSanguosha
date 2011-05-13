@@ -240,9 +240,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
             enemy_box = new KOFOrderBox(false, this);
             self_box = new KOFOrderBox(true, this);
 
+            enemy_box->hide();
+            self_box->hide();
+
             if(circular){
                 enemy_box->setPos(-361, -343);
-                self_box->setPos(201, -46);
+                self_box->setPos(201, -60);
             }else{
                 enemy_box->setPos(-216, -327);
                 self_box->setPos(360, -39);
@@ -2327,6 +2330,9 @@ void RoomScene::killPlayer(const QString &who){
         dashboard->killPlayer();
         general = Self->getGeneral();
         item2player.remove(avatar);
+
+        if(ServerInfo.GameMode == "02_1v1")
+            self_box->killPlayer(Self->getGeneralName());
     }else{
         Photo *photo = name2photo[who];
         photo->killPlayer();
@@ -2345,6 +2351,9 @@ void RoomScene::killPlayer(const QString &who){
                 break;
             }
         }
+
+        if(ServerInfo.GameMode == "02_1v1")
+            enemy_box->killPlayer(general->objectName());
     }
 
     if(Config.EnableLastWord)
@@ -2597,9 +2606,12 @@ KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 
     int i;
     for(i=0; i<3; i++){
-        avatars[i] = scene->addPixmap(QPixmap("image/system/1v1/unknown.png"));
-        avatars[i]->setParentItem(this);
-        avatars[i]->setPos(5, 23 + 62 *i);
+        Pixmap *avatar = new Pixmap("image/system/1v1/unknown.png");
+        avatar->setParentItem(this);
+        avatar->setPos(5, 23 + 62 *i);
+        avatar->setObjectName("unknown");
+
+        avatars[i] = avatar;
     }
 
     revealed = 0;
@@ -2609,8 +2621,29 @@ void KOFOrderBox::revealGeneral(const QString &name){
     if(revealed < 3){
         const General *general = Sanguosha->getGeneral(name);
         if(general){
-            QGraphicsPixmapItem *avatar = avatars[revealed ++];
-            avatar->setPixmap(QPixmap(general->getPixmapPath("small")));
+            Pixmap *avatar = avatars[revealed ++];
+            avatar->changePixmap(general->getPixmapPath("small"));
+            avatar->setObjectName(name);
+        }
+    }
+}
+
+void KOFOrderBox::killPlayer(const QString &general_name){
+    int i;
+    for(i=0; i<revealed; i++){
+        Pixmap *avatar = avatars[i];
+        if(avatar->isEnabled() && avatar->objectName() == general_name){
+            avatar->setEnabled(false);
+
+            QPixmap pixmap("image/system/death/unknown.png");
+            QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
+            death->moveBy(10, 0);
+
+            avatar->setOpacity(0.7);
+            avatar->makeGray();
+            avatar->setEnabled(false);
+
+            return;
         }
     }
 }
@@ -2624,6 +2657,11 @@ void RoomScene::onGameStart(){
 
         chat_box->show();
         log_box->show();
+
+        if(self_box && enemy_box){
+            self_box->show();
+            enemy_box->show();
+        }
     }
 
     updateSkillButtons();
