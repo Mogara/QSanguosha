@@ -619,29 +619,11 @@ QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
 
 void Photo::killPlayer(){
     if(!avatar.isNull())
-        killPlayer(avatar);
+        MakeGray(avatar);
 
     if(!small_avatar.isNull())
-        killPlayer(small_avatar);
+        MakeGray(small_avatar);
 
     kingdom_frame = QPixmap();
     role_combobox->hide();
-}
-
-void Photo::killPlayer(QPixmap &pixmap){
-    QImage img = pixmap.toImage();
-    int width = img.width();
-    int height = img.height();
-
-    int i,j;
-    for(i=0; i<width; i++){
-        for(j=0; j<height; j++){
-            QRgb pixel = img.pixel(i,j);
-            int gray = qGray(pixel);
-            pixel = qRgb(gray, gray, gray);
-            img.setPixel(i, j, pixel);
-        }
-    }
-
-    pixmap = QPixmap::fromImage(img);
 }

@@ -20,6 +20,8 @@ public:
     void mark(bool marked = true);
     void setMarkable(bool markable);
 
+    static void MakeGray(QPixmap &pixmap);
+
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

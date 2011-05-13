@@ -201,6 +201,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
         guanxing_box->setZValue(9.0);
 
         connect(ClientInstance, SIGNAL(guanxing(QList<int>,bool)), guanxing_box, SLOT(doGuanxing(QList<int>,bool)));
+
+        if(circular)
+            guanxing_box->moveBy(-120, 0);
     }
 
     {
@@ -224,7 +227,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString, bool)), this, SLOT(attachSkill(QString,bool)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
-    {
+    enemy_box = NULL;
+    self_box = NULL;
+
+    if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         // 1v1 & 3v3 mode
         connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
         connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
@@ -233,8 +239,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(ClientInstance, SIGNAL(general_recovered(int,QString)), this, SLOT(recoverGeneral(int,QString)));
 
         arrange_button = NULL;
-        enemy_box = NULL;
-        self_box = NULL;
 
         if(ServerInfo.GameMode == "02_1v1"){
             enemy_box = new KOFOrderBox(false, this);
@@ -245,7 +249,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
             if(circular){
                 enemy_box->setPos(-361, -343);
-                self_box->setPos(201, -60);
+                self_box->setPos(201, -80);
             }else{
                 enemy_box->setPos(-216, -327);
                 self_box->setPos(360, -39);

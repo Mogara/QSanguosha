@@ -39,7 +39,7 @@ void Pixmap::shift(){
     moveBy(-pixmap.width()/2, -pixmap.height()/2);
 }
 
-void Pixmap::makeGray(){
+void Pixmap::MakeGray(QPixmap &pixmap){
     QImage img = pixmap.toImage();
 
     int i,j;
@@ -47,12 +47,16 @@ void Pixmap::makeGray(){
         for(j=0; j<img.height(); j++){
             QRgb color = img.pixel(i, j);
             int gray = qGray(color);
-            QRgb new_color = qRgb(gray, gray, gray);
-            img.setPixel(i, j, new_color);
+            color = qRgb(gray, gray, gray);
+            img.setPixel(i, j, color);
         }
     }
 
     pixmap = QPixmap::fromImage(img);
+}
+
+void Pixmap::makeGray(){
+    MakeGray(pixmap);
 }
 
 void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
