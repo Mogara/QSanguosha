@@ -167,8 +167,8 @@ public:
 
     QList<int> &getPile(const char *pile_name);
 
-	bool hasUsed(const QString &card_class);
-    int usedTimes(const QString &card_class);
+	bool hasUsed(const char *card_class);
+    int usedTimes(const char *card_class);
 };
 
 %extend Player{

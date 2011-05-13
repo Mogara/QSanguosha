@@ -99,7 +99,7 @@ private:
     QQueue<CardItem*> discarded_queue;
     QMainWindow *main_window;
     QComboBox *role_combobox;
-    QPushButton *trust_button;
+    QPushButton *trust_button, *untrust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;

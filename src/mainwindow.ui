@@ -44,6 +44,7 @@
     <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionExpand_dashboard"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
     <addaction name="actionServerInformation"/>
@@ -262,6 +263,14 @@
    </property>
    <property name="text">
     <string>Damage maker</string>
+   </property>
+  </action>
+  <action name="actionExpand_dashboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Expand dashboard</string>
    </property>
   </action>
  </widget>

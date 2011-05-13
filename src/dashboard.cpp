@@ -314,23 +314,27 @@ void Dashboard::setWidth(int width){
 }
 
 QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_left){
-     int yyy ;//= -25;
-    bool circular = Config.value("CircularView", false).toBool();
-    if(circular){ yyy = -32;}else{yyy=-25;}
     QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
     proxy_widget->setWidget(widget);
     proxy_widget->setParentItem(from_left ? left : right);
-    proxy_widget->setPos(x, yyy);
+    proxy_widget->setPos(x, -32);
 
     return proxy_widget;
 }
 
 QPushButton *Dashboard::addButton(const QString &label, int x, bool from_left){
-    QPushButton *button = new QPushButton(label);
+    QPushButton *button = new QPushButton;
     button->setEnabled(false);
-    button->setMaximumWidth(55);
-    bool circular = Config.value("CircularView", false).toBool();
-    if(circular){ button->setMaximumWidth(68);}
+
+    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(label));
+    QIcon icon(icon_pixmap);
+    button->setIcon(icon);
+    button->setIconSize(icon_pixmap.size());
+    button->setFixedSize(icon_pixmap.size());
+    button->setObjectName(label);
+
+    button->setAttribute(Qt::WA_TranslucentBackground);
+
     addWidget(button, x, from_left);
 
     return button;

@@ -243,6 +243,7 @@ void MainWindow::enterRoom(){
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
+    connect(ui->actionExpand_dashboard, SIGNAL(triggered()), room_scene, SLOT(adjustDashboard()));
 
     if(ServerInfo.FreeChoose){
         ui->actionDamage_maker->setEnabled(true);

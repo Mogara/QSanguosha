@@ -46,7 +46,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     main_window(main_window)
 {
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
-    ClientInstance->setParent(this);
 
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
@@ -93,55 +92,28 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
     // add buttons that above the equipment area of dashboard
-    if(circular){
-        trust_button = dashboard->addButton(tr(""), 10, true);
-        connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-        connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-
-    }else{trust_button = dashboard->addButton(tr("Trust"), 4, true);
-        connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-        connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-    }
-
-    QPushButton *expand_button = new QPushButton(tr("Expand to window width"));
-    dashboard->addWidget(expand_button, 67, true);
-    connect(expand_button, SIGNAL(clicked()), this, SLOT(adjustDashboard()));
+    trust_button = dashboard->addButton("trust", circular ? 10 : 4, true);
+    untrust_button = dashboard->addButton("untrust", circular ? 10 : 4, true);
+    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(untrust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+    untrust_button->hide();
 
     // add buttons that above the avatar area of dashbaord
     if(circular){
-        ok_button = dashboard->addButton(tr(""), -245-146, false);
-        cancel_button = dashboard->addButton(tr(""), -155-146, false);
-        discard_button = dashboard->addButton(tr(""), -70-146, false);
-        expand_button->hide();
+        ok_button = dashboard->addButton("ok", -245-146, false);
+        cancel_button = dashboard->addButton("cancel", -155-146, false);
+        discard_button = dashboard->addButton("discard", -70-146, false);
         dashboard->setWidth(main_window->width()-10);
     }else{
-        ok_button = dashboard->addButton(tr("OK"), -72, false);
-        cancel_button = dashboard->addButton(tr("Cancel"), -7, false);
-        discard_button = dashboard->addButton(tr("Discard cards"), 75, false);
+        ok_button = dashboard->addButton("ok", -72, false);
+        cancel_button = dashboard->addButton("cancel", -7, false);
+        discard_button = dashboard->addButton("discard", 75, false);
     }
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
-
-    //button icon
-    if(circular){
-        trust_button->setIconSize(QSize(68,30));
-        trust_button->setFixedSize(68, 30);
-        trust_button->setIcon(QIcon("image/system/button/trust.png"));
-
-        ok_button->setIconSize(QSize(68,30));
-        ok_button->setFixedSize(68,30);
-        ok_button->setIcon(QIcon("image/system/button/ok.png"));
-
-        cancel_button->setIconSize(QSize(68,30));
-        cancel_button->setFixedSize(68, 30);
-        cancel_button->setIcon(QIcon ("image/system/button/cancel.png"));
-
-        discard_button->setIconSize(QSize(68,30));
-        discard_button->setFixedSize(68, 30);
-        discard_button->setIcon(QIcon("image/system/button/discard.png"));
-    }
 
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
@@ -1869,27 +1841,9 @@ void RoomScene::doSkillButton(){
 
 void RoomScene::updateTrustButton(){
     bool trusting = Self->getState() == "trust";
-    bool circular = Config.value("CircularView", false).toBool();
-    if(trusting){
+    trust_button->setVisible(!trusting);
+    untrust_button->setVisible(trusting);
 
-        if(circular){
-            trust_button->setText(tr(""));
-        trust_button->setIconSize(QSize(68,30));
-        trust_button->setFixedSize(68, 30);
-        trust_button->setIcon(QIcon("image/system/button/trust_cancel.png"));
-   } else{
-            trust_button->setText(tr("Cancel trust"));
-
-        }
-   } else{
-    if(circular){
-        trust_button->setText(tr(""));
-        trust_button->setIconSize(QSize(68,30));
-        trust_button->setFixedSize(68, 30);
-        trust_button->setIcon(QIcon("image/system/button/trust.png"));}
-else
-        trust_button->setText(tr("Trust"));
-    }
     dashboard->setTrust(trusting);
 }
 
@@ -2653,8 +2607,6 @@ void KOFOrderBox::killPlayer(const QString &general_name){
 }
 
 void RoomScene::onGameStart(){
-    bool circular = Config.value("CircularView", false).toBool();
-
     if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         selector_box->deleteLater();
         selector_box = NULL;
@@ -2677,16 +2629,7 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose){
-        QPushButton *free_discard;
-        if(circular){
-            free_discard = dashboard->addButton(tr(""), 100, true);
-            free_discard->setIconSize(QSize(68,30));
-            free_discard->setFixedSize(68, 30);
-            free_discard->setIcon(QIcon("image/system/button/free_discard.png"));
-        }else{
-            free_discard = dashboard->addButton(tr("Free discard"), 170, true);
-        }
-
+        QPushButton *free_discard = dashboard->addButton("free_discard", 100, true);
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
@@ -2902,17 +2845,10 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
 }
 
 void RoomScene::adjustDashboard(){
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-    if(button){
-        bool expand = button->text() == tr("Expand to window width");
-        if(expand){
-            dashboard->setWidth(main_window->width()-10);
-            button->setText(tr("Reset to default width"));
-        }else{
-            dashboard->setWidth(0);
-            button->setText(tr("Expand to window width"));
-        }
-
+    QAction *action = qobject_cast<QAction *>(sender());
+    if(action){
+        bool expand = action->isChecked();
+        dashboard->setWidth(expand ? main_window->width()-10 : 0);
         adjustItems();
     }
 }
