@@ -144,6 +144,36 @@ void ServerDialog::edit1v1Banlist(){
     dialog->exec();
 }
 
+QGroupBox *ServerDialog::create3v3Box(){
+    QGroupBox *box = new QGroupBox(tr("3v3 options"));
+    box->setEnabled(Config.GameMode == "06_3v3");
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+
+    standard_3v3_radiobutton = new QRadioButton(tr("Standard mode"));
+    QRadioButton *extend = new QRadioButton(tr("Extension mode"));
+    QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
+    extend_edit_button->setEnabled(false);
+    connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
+    connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
+
+    QCheckBox *exclude_disaster = new QCheckBox(tr("Exclude disasters"));
+    exclude_disaster->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
+
+    vlayout->addWidget(standard_3v3_radiobutton);
+    vlayout->addLayout(HLay(extend, extend_edit_button));
+    vlayout->addWidget(exclude_disaster);
+    box->setLayout(vlayout);
+
+    bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
+    if(using_extension)
+        extend->setChecked(true);
+    else
+        standard_3v3_radiobutton->setChecked(true);
+
+    return box;
+}
+
 QGroupBox *ServerDialog::createGameModeBox(){
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
@@ -159,49 +189,22 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
             QRadioButton *button = new QRadioButton(itor.value());
             button->setObjectName(itor.key());
-
-            layout->addWidget(button);
             mode_group->addButton(button);
 
             if(itor.key() == "02_1v1"){
                 // add 1v1 banlist edit button
-                QPushButton *button = new QPushButton(tr("Banlist ..."));
-                connect(button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
-                layout->addWidget(button);
+                QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
+                connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
+                layout->addLayout(HLay(button, edit_button));
 
             }else if(itor.key() == "06_3v3"){
                 // add 3v3 options
-
-                QGroupBox *box = new QGroupBox(tr("3v3 options"));
-                box->setEnabled(Config.GameMode == "06_3v3");
-
-                QVBoxLayout *vlayout = new QVBoxLayout;
-
-                standard_3v3_radiobutton = new QRadioButton(tr("Standard mode"));
-                QRadioButton *extend = new QRadioButton(tr("Extension mode"));
-                QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
-                extend_edit_button->setEnabled(false);
-                connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
-                connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
-
-                QCheckBox *exclude_disaster = new QCheckBox(tr("Exclude disasters"));
-                exclude_disaster->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
-
-                vlayout->addWidget(standard_3v3_radiobutton);
-                vlayout->addWidget(extend);
-                vlayout->addWidget(extend_edit_button);
-                vlayout->addWidget(exclude_disaster);
-                box->setLayout(vlayout);
-
+                QGroupBox *box = create3v3Box();
+                layout->addWidget(button);
                 layout->addWidget(box);
-
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
-
-                bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
-                if(using_extension)
-                    extend->setChecked(true);
-                else
-                    standard_3v3_radiobutton->setChecked(true);
+            }else{
+                layout->addWidget(button);
             }
 
             if(itor.key() == Config.GameMode)
@@ -213,8 +216,6 @@ QGroupBox *ServerDialog::createGameModeBox(){
         // add scenario modes
         QRadioButton *scenario_button = new QRadioButton(tr("Scenario mode"));
         scenario_button->setObjectName("scenario");
-
-        layout->addWidget(scenario_button);
         mode_group->addButton(scenario_button);
 
         scenario_combobox = new QComboBox;
@@ -226,7 +227,6 @@ QGroupBox *ServerDialog::createGameModeBox(){
             QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
             scenario_combobox->addItem(text, name);
         }
-        layout->addWidget(scenario_combobox);
 
         if(mode_group->checkedButton() == NULL){
             int index = names.indexOf(Config.GameMode);
@@ -235,6 +235,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 scenario_combobox->setCurrentIndex(index);
             }
         }
+
+        layout->addLayout(HLay(scenario_button, scenario_combobox));
     }
 
 
