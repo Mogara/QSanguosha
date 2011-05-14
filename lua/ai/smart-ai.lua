@@ -1929,6 +1929,10 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	return nil
 end
 
+function SmartAI:askForGuanxing(cards, up_only)
+	return cards, {}
+end
+
 function SmartAI:getOneFriend()
 	for _, friend in ipairs(self.friends) do
 		if friend ~= self.player then

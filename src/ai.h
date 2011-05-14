@@ -5,6 +5,8 @@ class Room;
 class ServerPlayer;
 class TrickCard;
 
+struct lua_State;
+
 typedef int LuaFunction;
 
 #include "card.h"
@@ -47,6 +49,7 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id) = 0;
+    virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only) = 0;
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
 protected:
@@ -76,6 +79,7 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying) ;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
+    virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only);
 
     virtual bool useCard(const Card *card);
 };
@@ -90,7 +94,6 @@ public:
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QString askForUseCard(const QString &pattern, const QString &prompt);
-    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
     virtual QList<int> askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip);
     virtual const Card *askForNullification(const TrickCard *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     virtual QString askForChoice(const QString &skill_name, const QString &choices);
@@ -99,9 +102,18 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason);
 
+    virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
+    virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only);
+
     virtual void filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data);
 
     LuaFunction callback;
+
+private:
+    void pushCallback(lua_State *L, const char *function_name);
+    void pushQIntList(lua_State *L, const QList<int> &list);
+    void reportError(lua_State *L);
+    bool getTable(lua_State *L, QList<int> &table);
 };
 
 #endif // AI_H

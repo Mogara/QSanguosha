@@ -647,7 +647,7 @@ bool ServerDialog::config(){
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
-    Config.setValue("RolePredictable", Config.value("RolePredictable", true));
+    Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
     Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);

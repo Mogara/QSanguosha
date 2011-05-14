@@ -221,10 +221,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
             if(circular){
                 enemy_box->setPos(-361, -343);
-                self_box->setPos(201, -80);
+                self_box->setPos(201, -90);
             }else{
                 enemy_box->setPos(-216, -327);
-                self_box->setPos(360, -39);
+                self_box->setPos(360, -90);
             }
 
             connect(ClientInstance, SIGNAL(general_revealed(bool,QString)), this, SLOT(revealGeneral(bool,QString)));
@@ -2639,6 +2639,7 @@ void RoomScene::onGameStart(){
     }
 
     trust_button->setEnabled(true);
+    untrust_button->setEnabled(true);
     updateStatus(ClientInstance->getStatus());
 
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();

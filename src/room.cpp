@@ -2205,51 +2205,54 @@ ServerPlayer *Room::getLord() const{
 }
 
 void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only){
-    // if Zhuge Liang is not online, just return immediately
-    if(zhuge->getState() != "online")
-        return;
+    QList<int> top_cards, bottom_cards;
 
-    QString guanxing_str = Card::IdsToStrings(cards).join("+");
-    if(up_only)
-        guanxing_str.append("!");
-    zhuge->invoke("doGuanxing", guanxing_str);
-    getResult("replyGuanxingCommand", zhuge);
+    AI *ai = zhuge->getAI();
+    if(ai){
+        ai->askForGuanxing(cards, top_cards, bottom_cards, up_only);
+    }else{
+        QString guanxing_str = Card::IdsToStrings(cards).join("+");
+        if(up_only)
+            guanxing_str.append("!");
+        zhuge->invoke("doGuanxing", guanxing_str);
+        getResult("replyGuanxingCommand", zhuge);
 
-    if(result.isEmpty()){
-        // the method "doGuanxing" without any arguments
-        // means to clear all the guanxing items
-        zhuge->invoke("doGuanxing");
-        foreach(int card_id, cards)
-            draw_pile->prepend(card_id);
-        return;
+        if(result.isEmpty()){
+            // the method "doGuanxing" without any arguments
+            // means to clear all the guanxing items
+            zhuge->invoke("doGuanxing");
+            foreach(int card_id, cards)
+                draw_pile->prepend(card_id);
+            return;
+        }
+
+        QStringList results = result.split(":");
+
+        Q_ASSERT(results.length() == 2);
+
+        QString top_str = results.at(0);
+        QString bottom_str = results.at(1);
+
+        QStringList top_list;
+        if(!top_str.isEmpty())
+            top_list = top_str.split("+");
+
+        QStringList bottom_list;
+        if(!bottom_str.isEmpty())
+            bottom_list = bottom_str.split("+");
+
+        top_cards = Card::StringsToIds(top_list);
+        bottom_cards = Card::StringsToIds(bottom_list);
     }
 
-    QStringList results = result.split(":");
-
-    Q_ASSERT(results.length() == 2);
-
-    QString top_str = results.at(0);
-    QString bottom_str = results.at(1);
-
-    QStringList top_list;
-    if(!top_str.isEmpty())
-        top_list = top_str.split("+");
-
-    QStringList bottom_list;
-    if(!bottom_str.isEmpty())
-        bottom_list = bottom_str.split("+");
-
-    Q_ASSERT(top_list.length() + bottom_list.length() == cards.length());
+    Q_ASSERT(top_cards.length() + bottom_cards.length() == cards.length());
 
     LogMessage log;
     log.type = "#GuanxingResult";
     log.from = zhuge;
-    log.arg = QString::number(top_list.length());
-    log.arg2 = QString::number(bottom_list.length());
+    log.arg = QString::number(top_cards.length());
+    log.arg2 = QString::number(bottom_cards.length());
     sendLog(log);
-
-    QList<int> top_cards = Card::StringsToIds(top_list);
-    QList<int> bottom_cards = Card::StringsToIds(bottom_list);
 
     QListIterator<int> i(top_cards);
     i.toBack();

@@ -387,6 +387,13 @@ ServerPlayer *TrustAI::askForYiji(const QList<int> &, int &){
     return NULL;
 }
 
+void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only){
+    Q_UNUSED(bottom);
+    Q_UNUSED(up_only);
+
+    up = cards;
+}
+
 LuaAI::LuaAI(ServerPlayer *player)
     :TrustAI(player), callback(0)
 {
@@ -462,60 +469,52 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
 }
 
 QList<int> LuaAI::askForDiscard(const QString &reason, int discard_num, bool optional, bool include_equip){
-    if(callback == 0)
-        return TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
-
     lua_State *L = room->getLuaState();
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-
-    lua_pushstring(L, __func__);
-
+    pushCallback(L, __func__);
     lua_pushstring(L, reason.toAscii());
-
     lua_pushinteger(L, discard_num);
-
     lua_pushboolean(L, optional);
-
     lua_pushboolean(L, include_equip);
 
     int error = lua_pcall(L, 5, 1, 0);
     if(error){
-        const char *error_msg = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        room->output(error_msg);
+        reportError(L);
         return TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
     }
 
     QList<int> result;
+    if(getTable(L, result))
+        return result;
+    else
+        return TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
+}
 
-    if(lua_istable(L, -1)){
-        size_t len = lua_objlen(L, -1);
-        size_t i;
-        for(i=0; i<len; i++){
-            lua_rawgeti(L, -1, i+1);
-            result << lua_tointeger(L, -1);
-            lua_pop(L, 1);
-        }
-    }else
-        result = TrustAI::askForDiscard(reason, discard_num, optional, include_equip);
+bool LuaAI::getTable(lua_State *L, QList<int> &table){
+    if(!lua_istable(L, -1)){
+        lua_pop(L, 1);
+        return false;
+    }
+
+    size_t len = lua_objlen(L, -1);
+    size_t i;
+    for(i=0; i<len; i++){
+        lua_rawgeti(L, -1, i+1);
+        table << lua_tointeger(L, -1);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);
 
-    return result;
+    return true;
 }
 
 QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
-    Q_ASSERT(callback);
 
     lua_State *L = room->getLuaState();
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-
-    lua_pushstring(L, __func__);
-
+    pushCallback(L, __func__);
     lua_pushstring(L, skill_name.toAscii());
-
     lua_pushstring(L, choices.toAscii());
 
     int error = lua_pcall(L, 3, 1, 0);
@@ -523,7 +522,6 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
     lua_pop(L, 1);
     if(error){
         room->output(result);
-
         return TrustAI::askForChoice(skill_name, choices);
     }
 
@@ -531,16 +529,10 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
 }
 
 const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
-    Q_ASSERT(callback);
-
     lua_State *L = room->getLuaState();
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-
-    lua_pushstring(L, __func__);
-
+    pushCallback(L, __func__);
     lua_pushstring(L, pattern.toAscii());
-
     lua_pushstring(L, prompt.toAscii());
 
     int error = lua_pcall(L, 3, 1, 0);
@@ -558,32 +550,16 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
 }
 
 int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &reason){
-    Q_ASSERT(callback);
-
     lua_State *L = room->getLuaState();
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
-
-    lua_pushstring(L, __func__);
-
-    lua_createtable(L, card_ids.length(), 0);
-
-    int i;
-    for(i=0; i<card_ids.length(); i++){
-        lua_pushinteger(L, card_ids.at(i));
-        lua_rawseti(L, -2, i+1);
-    }
-
+    pushCallback(L, __func__);
+    pushQIntList(L, card_ids);
     lua_pushboolean(L, refusable);
-
     lua_pushstring(L, reason.toAscii());
 
     int error = lua_pcall(L, 4, 1, 0);
     if(error){
-        const char *error_msg = lua_tostring(L, -1);
-        room->output(error_msg);
-        lua_pop(L, 1);
-
+        reportError(L);
         return TrustAI::askForAG(card_ids, refusable, reason);
     }
 
@@ -591,4 +567,44 @@ int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &r
     lua_pop(L, 1);
 
     return card_id;
+}
+
+void LuaAI::pushCallback(lua_State *L, const char *function_name){
+    Q_ASSERT(callback);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+    lua_pushstring(L, function_name);
+}
+
+void LuaAI::pushQIntList(lua_State *L, const QList<int> &list){
+    lua_createtable(L, list.length(), 0);
+
+    int i;
+    for(i=0; i<list.length(); i++){
+        lua_pushinteger(L, list.at(i));
+        lua_rawseti(L, -2, i+1);
+    }
+}
+
+void LuaAI::reportError(lua_State *L){
+    const char *error_msg = lua_tostring(L, -1);
+    room->output(error_msg);
+    lua_pop(L, 1);
+}
+
+void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only){
+    lua_State *L = room->getLuaState();
+
+    pushCallback(L, __func__);
+    pushQIntList(L, cards);
+    lua_pushboolean(L, up_only);
+
+    int error = lua_pcall(L, 3, 2, 0);
+    if(error){
+        reportError(L);
+        return TrustAI::askForGuanxing(cards, up, bottom, up_only);
+    }
+
+    getTable(L, bottom);
+    getTable(L, up);
 }
