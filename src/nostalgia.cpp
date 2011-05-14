@@ -257,14 +257,30 @@ public:
     }
 };
 
-class Guhuo: public OneCardViewAsSkill{
+GuhuoCard::GuhuoCard(){
+
+}
+
+bool GuhuoCard::guhuo() const{
+    //room->setTag("Guohuoing", true);
+
+    //room->setTag("Guohuoing", false);
+
+    return false;
+}
+
+void GuhuoCard::onUse(Room *room, const CardUseStruct &card_use) const{
+
+}
+
+class GuhuoViewAsSkill: public OneCardViewAsSkill{
 public:
-    Guhuo():OneCardViewAsSkill("guhuo"){
+    GuhuoViewAsSkill():OneCardViewAsSkill(""){
 
     }
 
     virtual bool isEnabledAtResponse() const{
-        return !Self->isKongcheng() && !ClientInstance->card_pattern.startsWith("@");
+        return !Self->isKongcheng() && ClientInstance->card_pattern == "@guhuo";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -272,7 +288,49 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        return card_item->getFilteredCard();
+        GuhuoCard *card = new GuhuoCard;
+        card->addSubcard(card_item->getFilteredCard());
+
+        return card;
+    }
+};
+
+class Guhuo: public TriggerSkill{
+public:
+    Guhuo():TriggerSkill("guhuo"){
+        view_as_skill = new GuhuoViewAsSkill;
+
+        events << CardAsked;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        if(!TriggerSkill::triggerable(target))
+            return false;
+
+        if(target->isKongcheng())
+            return false;
+
+        if(target->getRoom()->getTag("Guhuoing").toBool())
+            return false;
+
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *yuji, QVariant &data) const{
+        QString pattern = data.toString();
+
+        if(pattern.startsWith("@"))
+            return false;
+
+        Room *room = yuji->getRoom();
+        while(true){
+            const Card *card = room->askForCard(yuji, "@guhuo", "@guhuo:::" + pattern, false);
+            const GuhuoCard *guhuo_card = qobject_cast<const GuhuoCard *>(card);
+            if(guhuo_card == NULL)
+                return false;
+
+            guhuo_card->guhuo();
+        }
     }
 };
 
@@ -289,13 +347,14 @@ NostalgiaPackage::NostalgiaPackage()
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
 
-    //General *yuji = new General(this, "yuji", "qun", 3);
-    //yuji->addSkill(new Guhuo);
+    General *yuji = new General(this, "yuji", "qun", 3);
+    yuji->addSkill(new Guhuo);
 
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
 
     addMetaObject<TianxiangCard>();
+    addMetaObject<GuhuoCard>();
 }
 
 ADD_PACKAGE(Nostalgia);

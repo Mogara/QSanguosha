@@ -13,6 +13,8 @@ class Button;
 class CardContainer;
 class GuanxingBox;
 
+class QGroupBox;
+
 #include <QGraphicsScene>
 #include <QTableWidget>
 #include <QQueue>
@@ -52,6 +54,26 @@ public:
 private:
     Pixmap *avatars[3];
     int revealed;
+};
+
+class GuhuoDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    static GuhuoDialog *GetInstance();
+
+public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    GuhuoDialog();
+
+    QGroupBox *createLeft();
+    QGroupBox *createRight();
+    QAbstractButton *createButton(const Card *card);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
 };
 
 class RoomScene : public QGraphicsScene{    
