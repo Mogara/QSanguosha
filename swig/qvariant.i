@@ -84,4 +84,8 @@ public:
 	RecoverStruct toRecover() const{
 		return $self->value<RecoverStruct>();
 	}
+
+	JudgeStruct *toJudge() const{
+		return $self->value<JudgeStar>();
+	}
 };

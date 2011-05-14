@@ -64,8 +64,11 @@ JudgeStruct::JudgeStruct()
 
 }
 
-bool JudgeStruct::isGood() const{
-    Q_ASSERT(card != NULL);
+
+
+bool JudgeStruct::isGood(const Card *card) const{
+    if(card == NULL)
+        card = this->card;
 
     QString class_name = card->metaObject()->className();
     QString suit = card->getSuitString();

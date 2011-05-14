@@ -115,6 +115,7 @@ public:
                 << "" << judge->reason << judge->card->getEffectIdString();
         QString prompt = prompt_list.join(":");
 
+        player->tag["Judge"] = data;
         const Card *card = room->askForCard(player, "@guidao", prompt);
 
         if(card){

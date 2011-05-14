@@ -93,8 +93,10 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
     self:updatePlayers()
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
-
-		if (enemy) and (self:objectiveLevel(enemy)>3) then return "@LeijiCard=.->"..enemy:objectName() end
+		if (enemy) and (self:objectiveLevel(enemy)>3) then
+			return "@LeijiCard=.->"..enemy:objectName() 
+		end
+		
 		return "."
 	end
 	return "."
@@ -142,10 +144,10 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 end
 
 sgs.ai_get_cardType=function(card)
-if card:inherits("Weapon") then return 1 end
-if card:inherits("Armor") then return 2 end 
-if card:inherits("OffensiveHorse")then return 3 end 
-if card:inherits("DefensiveHorse") then return 4 end 
+	if card:inherits("Weapon") then return 1 end
+	if card:inherits("Armor") then return 2 end 
+	if card:inherits("OffensiveHorse")then return 3 end 
+	if card:inherits("DefensiveHorse") then return 4 end 
 end
 
 sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
@@ -236,95 +238,24 @@ function goodMatch(cardSet,card)
 end
 
 sgs.ai_skill_invoke["@guidao"]=function(self,prompt)
-    local data=prompt:split(":")
-    local target=data[2]
-    local reason=data[4]
-    local card=sgs.Sanguosha:getCard(string.match(data[5],"%d+"))
-    local result=card:getSuitString()
-    local number=card:getNumber()
-
-    local players=self.room:getAllPlayers()
-
-    players=sgs.QList2Table(players)
-
-    for _, player in ipairs(players) do
-
-        if player:objectName()==target then
-            target=player
-            break
-        end
-    end
-
-    local cardSet={}
-    
-    cardSet.club={}
-    cardSet.spade={}
-    cardSet.heart={}
-    cardSet.diamond={}
-    
-    if reason=="indulgence" then
-        fillCardSet(cardSet,"heart",true)
-    elseif reason=="supply_shortage" then
-        fillCardSet(cardSet,"club",true)
-    elseif reason=="eight_diagram" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"diamond",true)
-    elseif reason=="luoshen" then
-        fillCardSet(cardSet,"spade",true)
-        fillCardSet(cardSet,"club",true)
-    elseif reason=="lightning" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"club",true)
-        fillCardSet(cardSet,"diamond",true)
-        fillCardSet(cardSet,"spade",false)
-		fillCardSet(cardSet,nil,nil,1,true)  -----同上
-        for i=10,13 do 
-            fillCardSet(cardSet,nil,nil,i,true)
-        end
-    elseif reason=="tieji" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"diamond",true)
-        if self.player:objectName()==target then 
-            if self:getJinkNumber(self.player)<1 then return "." end
-        end
-    elseif reason=="leiji" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"club",true)
-        fillCardSet(cardSet,"diamond",true)
-    else
-        return "."
-    end
-
-    if self:isEnemy(target) and (goodMatch(cardSet,card)) then
-		if target:hasSkill("tianxiang") and (reason == "lightning" or reason == "leiji") then				--小乔劈不死
-			return "."
-		end	
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"diamond",true)
-        return self:getRetrialCard("he",cardSet,true)
-    end
-    if self:isFriend(target) and (not goodMatch(cardSet,card)) then
-        fillCardSet(cardSet,"heart",false)
-        fillCardSet(cardSet,"diamond",false)
-        return self:getRetrialCard("he",cardSet,false)
-    end
-    
-    if card:inherits("EightDiagram") or (result=="spade") 
-    or (card:inherits("Jink") and (self:getJinkNumber(self.player)<=0)) then
-        if not goodMatch(cardSet,card) then
-            fillCardSet(cardSet,"heart",true)
-            fillCardSet(cardSet,"diamond",true)
-            fillCardSet(cardSet,"spade",true)
-            return self:getRetrialCard("he",cardSet,true)
-        else 
-            fillCardSet(cardSet,"heart",false)
-            fillCardSet(cardSet,"diamond",false)
-            fillCardSet(cardSet,"spade",false)
-            return self:getRetrialCard("he",cardSet,false)
-        end
-    end
-
-    return "."
+    local judge = self.player:getTag("Judge"):toJudge()
+	
+	if self:needRetrial(judge) then
+		local all_cards = self.player:getCards("he")
+		local cards = {}
+		for _, card in sgs.qlist(all_cards) do
+			if card:isBlack() then
+				table.insert(cards, card)
+			end
+		end
+		
+		local card_id = self:getRetrialCardId(cards, judge)
+		if card_id ~= -1 then
+			return "@GuidaoCard=" .. card_id
+		end
+	end
+	
+	return "."
 end
 
 huangtianv_skill={}

@@ -89,7 +89,7 @@ struct RecoverStruct{
 
 struct JudgeStruct{
     JudgeStruct();
-    bool isGood() const;
+    bool isGood(const Card *card = NULL) const;
     bool isBad() const;
 
     ServerPlayer *who;

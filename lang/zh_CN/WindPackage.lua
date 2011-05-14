@@ -52,6 +52,7 @@ return {
 	["liegong:yes"] = "此【杀】不可闪避", 
 	
 	["#KuangguRecover"] = "%from 的锁定技【狂骨】被触发，恢复了 %arg 点体力",
+	["@guidao-card"] = "请使用【鬼道】技能来修改 %src 的 %arg 判定",
 	
 	-- last words
 	["~caoren"] = "实在是守不住了……",
