@@ -839,7 +839,7 @@ void XinzhanCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         source->invoke("clearAG");
     }
 
-    if(left.length() >= 2)
+    if(!left.isEmpty())
         room->doGuanxing(source, left, true);
  }
 

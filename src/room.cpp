@@ -2213,6 +2213,8 @@ void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only
     AI *ai = zhuge->getAI();
     if(ai){
         ai->askForGuanxing(cards, top_cards, bottom_cards, up_only);
+    }else if(up_only && cards.length() == 1){
+        top_cards = cards;
     }else{
         QString guanxing_str = Card::IdsToStrings(cards).join("+");
         if(up_only)

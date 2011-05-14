@@ -1673,20 +1673,24 @@ void RoomScene::updateStatus(Client::Status status){
                 dashboard->enableCards(ClientInstance->card_pattern);
 
             ok_button->setEnabled(false);
+            cancel_button->setEnabled(ClientInstance->refusable);
+            discard_button->setEnabled(false);
 
             QString pattern = ClientInstance->card_pattern;
-            if(pattern.startsWith("@")){
-                QRegExp rx("@@?(\\w+)!?");
-                if(rx.exactMatch(pattern)){
-                    QString skill_name = rx.capturedTexts().at(1);
-                    const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
-                    if(skill)
-                        dashboard->startPending(skill);
+            QRegExp rx("@@?(\\w+)!?");
+            if(rx.exactMatch(pattern)){
+                QString skill_name = rx.capturedTexts().at(1);
+
+                foreach(QAbstractButton *button, skill_buttons){
+                    if(button->objectName() == skill_name){
+                        const ViewAsSkill *skill = button2skill.value(button);
+                        if(skill)
+                            dashboard->startPending(skill);
+                        break;
+                    }
                 }
             }
 
-            cancel_button->setEnabled(ClientInstance->refusable);
-            discard_button->setEnabled(false);
             break;
         }
 

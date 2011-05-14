@@ -365,7 +365,7 @@ void GuhuoCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
 class GuhuoViewAsSkill: public OneCardViewAsSkill{
 public:
-    GuhuoViewAsSkill():OneCardViewAsSkill(""){
+    GuhuoViewAsSkill():OneCardViewAsSkill("guhuo"){
 
     }
 
