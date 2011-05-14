@@ -185,7 +185,7 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.card && damage.card->inherits("SavageAssault")){
             Room *room = player->getRoom();

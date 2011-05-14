@@ -527,7 +527,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(provided){
         card = provided;
         provided = NULL;
-    }else{
+    }else if(!pattern.startsWith("@") && !player->isKongcheng()){
         AI *ai = player->getAI();
         if(ai){
             thread->delay(Config.AIDelay);
