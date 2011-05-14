@@ -258,11 +258,11 @@ sgs.ai_skill_invoke["@guidao"]=function(self,prompt)
 	return "."
 end
 
-huangtianv_skill={}
+local huangtianv_skill={}
 huangtianv_skill.name="huangtianv"
 table.insert(sgs.ai_skills,huangtianv_skill)
-huangtianv_skill.getTurnUseCard=function(self)
 
+huangtianv_skill.getTurnUseCard=function(self)
     if self.huangtianv_used then return nil end
     if self.player:isLord() then return nil end
     if self.player:getKingdom() ~= "qun" then return nil end
@@ -281,17 +281,18 @@ huangtianv_skill.getTurnUseCard=function(self)
 		end
 	end
 	
-	    if not card then return nil end
-	    local suit = card:getSuitString()
-		local number = card:getNumberString()
-	    local card_id = card:getEffectiveId()
-	    local card_str = "@HuangtianCard="..card_id
-		local skillcard = sgs.Card_Parse(card_str)
+	if not card then 
+		return nil
+	end
+	
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = "@HuangtianCard="..card_id
+	local skillcard = sgs.Card_Parse(card_str)
 		
-	    assert(skillcard)
-        
-        return skillcard
-		
+	assert(skillcard)	
+	return skillcard		
 end
 
 sgs.ai_skill_use_func["HuangtianCard"]=function(card,use,self)

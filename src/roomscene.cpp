@@ -1674,15 +1674,17 @@ void RoomScene::updateStatus(Client::Status status){
 
             ok_button->setEnabled(false);
 
-            if(ClientInstance->card_pattern.endsWith("!")){
-                QRegExp rx("@@?(\\w+)!");
-                if(rx.exactMatch(ClientInstance->card_pattern)){
+            QString pattern = ClientInstance->card_pattern;
+            if(pattern.startsWith("@")){
+                QRegExp rx("@@?(\\w+)!?");
+                if(rx.exactMatch(pattern)){
                     QString skill_name = rx.capturedTexts().at(1);
-                    const Skill *skill = Sanguosha->getSkill(skill_name);
-                    const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
-                    dashboard->startPending(view_as_skill);
+                    const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
+                    if(skill)
+                        dashboard->startPending(skill);
                 }
             }
+
             cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);
             break;
@@ -2368,22 +2370,6 @@ void RoomScene::showCard(const QString &player_name, int card_id){
         log_box->appendLog("$ShowCard", photo->getPlayer()->getGeneralName(),
                            QStringList(), card_str);
     }
-}
-
-const ViewAsSkill *RoomScene::getViewAsSkill(const QString &skill_name){
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if(!skill){
-        QMessageBox::warning(main_window, tr("Warning"), tr("No such skill named %1").arg(skill_name));
-        return NULL;
-    }
-
-    const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
-    if(!view_as_skill){
-        QMessageBox::warning(main_window, tr("Warning"), tr("The skill %1 must be view as skill!").arg(skill_name));
-        return NULL;
-    }
-
-    return view_as_skill;
 }
 
 void RoomScene::chooseSkillButton(){
@@ -3252,15 +3238,17 @@ void RoomScene::toggleArrange(){
         }
     }
 
-    if(index == -1){
-        item->goBack();
-        return;
+    if(arrange_rect == NULL){
+        if(arrange_items.contains(item)){
+            arrange_items.removeOne(item);
+            down_generals << item;
+        }
+    }else{
+        arrange_items.removeOne(item);
+        down_generals.removeOne(item);
+
+        arrange_items.insert(index, item);
     }
-
-    arrange_items.removeOne(item);
-    down_generals.removeOne(item);
-
-    arrange_items.insert(index, item);
 
     int n = qMin(arrange_items.length(), 3);
     for(i=0; i<n; i++){
