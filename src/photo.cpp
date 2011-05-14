@@ -147,9 +147,17 @@ void Photo::hideProcessBar(){
 void Photo::setEmotion(const QString &emotion, bool permanent){
     this->permanent = permanent;
 
+    if(emotion == "."){
+        emotion_item->hide();
+        return;
+    }
+
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
     emotion_item->setPixmap(QPixmap(path));
     emotion_item->show();
+
+    if(emotion == "question" || emotion == "no-question")
+        return;
 
     if(!permanent)
         QTimer::singleShot(2000, this, SLOT(hideEmotion()));

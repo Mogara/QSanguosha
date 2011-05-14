@@ -100,7 +100,7 @@ public:
     bool isNDTrick() const;
 
     // card target selection
-    bool targetFixed() const;
+    virtual bool targetFixed() const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool isAvailable() const;

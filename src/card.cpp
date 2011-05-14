@@ -257,7 +257,7 @@ bool Card::isVirtualCard() const{
 const Card *Card::Parse(const QString &str){
     if(str.startsWith(QChar('@'))){
         // skill card
-        static QRegExp pattern("@(\\w+)=(.+)(:.+)?");
+        static QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
         if(!pattern.exactMatch(str))
             return NULL;
 
@@ -279,7 +279,11 @@ const Card *Card::Parse(const QString &str){
         // skill name
         QString skill_name = card_name.remove("Card").toLower();
         card->setSkillName(skill_name);
-        card->setUserString(user_string);
+
+        if(!user_string.isEmpty()){
+            user_string.remove(0, 1);
+            card->setUserString(user_string);
+        }
 
         return card;
     }else if(str.startsWith(QChar('$'))){

@@ -31,5 +31,15 @@ return {
 	["$guhuo2"] = "你信吗?",
 	["~yuji"] = "竟然被猜到了",
 	
+	["#Guhuo"] = "%from 发动了技能【蛊惑】，蛊惑的牌为 %arg, 指定的目标为 %to",
+	["#GuhuoNoTarget"] = "%from 发动了技能【蛊惑】，蛊惑的牌为 %arg",
+	["guhuo:question"] = "质疑",
+	["guhuo:noquestion"] = "不质疑",
+	["question"] = "质疑",
+	["noquestion"] = "不质疑",
+	["#GuhuoQuery"] = "%from 表示 %arg",
+	["$GuhuoResult"] = "%from 用来蛊惑的牌是 %card",
+	["@guhuo"] = "你需要打出一张 %arg，你可以选择使用蛊惑....",
+	
 	["cv:yangxiu"] = "迷宫",
 }

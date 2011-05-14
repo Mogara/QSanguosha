@@ -143,6 +143,10 @@ bool ClientPlayer::hasLordSkill(const QString &skill_name) const{
         return getRole() == "lord" && hasSkill(skill_name);
 }
 
+void ClientPlayer::setHandcardNum(int n){
+    handcard_num = n;
+}
+
 void ClientPlayer::setFlags(const QString &flag){
     Player::setFlags(flag);
 

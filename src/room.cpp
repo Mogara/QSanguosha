@@ -2010,6 +2010,9 @@ void Room::setEmotion(ServerPlayer *target, TargetType type){
     case Bad: emotion = "bad"; break;
     case Recover: emotion = "recover"; break;
     case DrawCard: emotion = "draw-card"; break;
+    case Question: emotion = "question"; break;
+    case NoQuestion: emotion = "no-question"; break;
+    case NoEmotion: emotion = "."; break;
     }
 
     broadcastInvoke("setEmotion", QString("%1:%2").arg(target->objectName()).arg(emotion), target);

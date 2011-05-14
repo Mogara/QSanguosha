@@ -111,6 +111,9 @@ public:
         Bad,
         Recover,
         DrawCard,
+        Question,
+        NoQuestion,
+        NoEmotion,
     };
 
     void setEmotion(ServerPlayer *target, TargetType type);

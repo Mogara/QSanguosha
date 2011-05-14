@@ -10,6 +10,7 @@ class QTextDocument;
 class ClientPlayer : public Player
 {
     Q_OBJECT
+    Q_PROPERTY(int handcard READ getHandcardNum WRITE setHandcardNum)
 
 public:
     explicit ClientPlayer(Client *client);
@@ -20,10 +21,11 @@ public:
     void changePile(const QString &name, bool add, int card_id);
     QString getDeathPixmapPath() const;
     bool hasLordSkill(const QString &skill_name) const;
+    void setHandcardNum(int n);
 
     virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;
-    virtual int getHandcardNum() const;
+    virtual int getHandcardNum() const;    
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);

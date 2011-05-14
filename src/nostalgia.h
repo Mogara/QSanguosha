@@ -25,7 +25,11 @@ class GuhuoCard: public SkillCard{
 
 public:
     Q_INVOKABLE GuhuoCard();
-    bool guhuo() const;
+    bool guhuo(ServerPlayer *yuji) const;
+
+    virtual bool targetFixed() const;
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };

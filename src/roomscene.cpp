@@ -2637,15 +2637,21 @@ GuhuoDialog::GuhuoDialog()
 }
 
 void GuhuoDialog::popup(){
+    if(ClientInstance->getStatus() != Client::Playing)
+        return;
+
     foreach(QAbstractButton *button, group->buttons()){
         const Card *card = map[button->objectName()];
         button->setEnabled(card->isAvailable());
     }
 
+    Self->tag.remove("Guhuo");
     exec();
 }
 
-void GuhuoDialog::selectCard(QAbstractButton *){
+void GuhuoDialog::selectCard(QAbstractButton *button){
+    CardStar card = map.value(button->objectName());
+    Self->tag["Guhuo"] = QVariant::fromValue(card);
     accept();
 }
 
