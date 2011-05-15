@@ -7,10 +7,9 @@ sgs.ai_skill_invoke.guixin = true
 sgs.ai_skill_invoke.shelie = true
 
 local shenlumeng_ai = SmartAI:newSubclass "shenlumeng"
-shenlumeng_ai:setOnceSkill("gongxin")
 
 function shenlumeng_ai:activate(use)
-    if not self.gongxin_used then
+    if not self.player:hasUsed("GongxinCard") then
         self:sort(self.enemies, "handcard")
         
         for _, enemy in ipairs(self.enemies) do
@@ -20,7 +19,6 @@ function shenlumeng_ai:activate(use)
 					use.card = sgs.Card_Parse("@GongxinCard=.")
 					use.to:append(enemy)
 
-					self.gongxin_used = true
 					return
 				end
 			end
@@ -72,6 +70,7 @@ wushen_skill.getTurnUseCard=function(self)
         return slash
 	end
 end
+
 local shenguanyu_ai = SmartAI:newSubclass "shenguanyu"
 
 function shenguanyu_ai:askForCard(pattern,prompt)
@@ -83,7 +82,7 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 		self:fillSkillCards(cards)
         self:sortByUseValue(cards,true)
 		for _, card in ipairs(cards) do
-			if card:getSuitString()=="heart" then
+			if card:getSuit() == sgs.Card_Heart then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
 				local card_id = card:getEffectiveId()

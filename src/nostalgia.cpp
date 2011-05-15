@@ -378,6 +378,12 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
+        if(ClientInstance->getStatus() == Client::Responsing){
+            GuhuoCard *card = new GuhuoCard;
+            card->addSubcard(card_item->getFilteredCard());
+            return card;
+        }
+
         CardStar c = Self->tag.value("Guhuo").value<CardStar>();
         if(c){
             GuhuoCard *card = new GuhuoCard;
@@ -433,10 +439,11 @@ public:
             log.type = "#GuhuoNoTarget";
             log.from = yuji;
             log.arg = pattern;
+            room->sendLog(log);
 
             if(guhuo_card->guhuo(yuji)){
-                const Card *guhuo_card = Sanguosha->getCard(guhuo_card->getEffectiveId());
-                Card *c = Sanguosha->cloneCard(pattern, guhuo_card->getSuit(), guhuo_card->getNumber());
+                const Card *real_card = Sanguosha->getCard(guhuo_card->getEffectiveId());
+                Card *c = Sanguosha->cloneCard(pattern, real_card->getSuit(), real_card->getNumber());
                 c->setSkillName("guhuo");
                 room->provide(c);
 

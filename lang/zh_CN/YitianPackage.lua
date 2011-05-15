@@ -3,7 +3,6 @@
 return {
 	["#AcquireSkill"] = "%from 获得了技能 【%arg】", 
 	["#ChangeKingdom"] = "%from 把 %to 的国籍由原来的 %arg 改成了 %arg2", 
-	["#Jilei"] = "%from 鸡肋了 %to 的 %arg", 
 	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算", 
 	["yitian"] = "倚天", 
 	["yitian_sword"] = "倚天剑", 
