@@ -388,17 +388,8 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const Client
 
 static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
     Room *room = a->getRoom();
-    int current = room->getCurrent()->getSeat();
 
-    int seat1 = a->getSeat();
-    if(seat1 < current)
-        seat1 += room->alivePlayerCount();
-
-    int seat2 = b->getSeat();
-    if(seat2 < current)
-        seat2 += room->alivePlayerCount();
-
-    return seat1 < seat2;
+    return room->getFront(a, b) == a;
 }
 
 void Card::onUse(Room *room, const CardUseStruct &card_use) const{

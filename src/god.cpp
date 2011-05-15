@@ -233,8 +233,7 @@ void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, const QList<Serve
     room->broadcastInvoke("animate", "lightbox:$smallyeyan");
     shenzhouyu->loseMark("@flame");
 
-    foreach(ServerPlayer *target, targets)
-        room->cardEffect(this, shenzhouyu, target);
+    Card::use(room, shenzhouyu, targets);
 }
 
 void SmallYeyanCard::onEffect(const CardEffectStruct &effect) const{

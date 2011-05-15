@@ -1653,6 +1653,19 @@ bool Room::hasWelfare(const ServerPlayer *player) const{
         return player->isLord() && player_count > 4;
 }
 
+ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
+    ServerPlayer *p;
+
+    for(p=current; true; p=p->getNext()){
+        if(p == a)
+            return a;
+        else if(p == b)
+            return b;
+    }
+
+    return a;
+}
+
 void Room::startGame(){    
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());

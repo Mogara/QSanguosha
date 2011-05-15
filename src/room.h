@@ -94,6 +94,7 @@ public:
     void setFixedDistance(Player *from, const Player *to, int distance);
     void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
     bool hasWelfare(const ServerPlayer *player) const;
+    ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;

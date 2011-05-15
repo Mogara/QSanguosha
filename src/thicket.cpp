@@ -539,13 +539,13 @@ void DimengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     int n1 = a->getHandcardNum();
     int n2 = b->getHandcardNum();
 
-    // make sure n1 >= n2
-    if(n1 < n2){
+    // make sure a is front of b
+    if(room->getFront(a, b) != a){
         qSwap(a, b);
         qSwap(n1, n2);
     }
 
-    int diff = n1 - n2;
+    int diff = qAbs(n1 - n2);
     if(diff != 0){
         room->askForDiscard(source, "dimeng", diff, false, true);
     }
