@@ -129,7 +129,7 @@ void CardContainer::startGongxin(){
 void CardContainer::addCloseButton(bool dispose){
     CloseButton *close_button = new CloseButton;
     close_button->setParentItem(this);
-    close_button->setPos(524, 21);
+    close_button->setPos(517, 21);
 
     if(dispose)
         connect(close_button, SIGNAL(clicked()), this, SLOT(deleteLater()));
