@@ -64,8 +64,6 @@ JudgeStruct::JudgeStruct()
 
 }
 
-
-
 bool JudgeStruct::isGood(const Card *card) const{
     if(card == NULL)
         card = this->card;
@@ -74,6 +72,9 @@ bool JudgeStruct::isGood(const Card *card) const{
     QString suit = card->getSuitString();
     QString number = card->getNumberString();
     QString card_str = QString("%1:%2:%3").arg(class_name).arg(suit).arg(number);
+
+    if(who->hasSkill("hongyan"))
+        card_str.replace("spade", "heart");
 
     if(good)
         return pattern.exactMatch(card_str);
