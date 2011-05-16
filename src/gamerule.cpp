@@ -11,7 +11,7 @@ GameRule::GameRule(QObject *parent)
 
     events << GameStart << TurnStart << PhaseChange << CardUsed
             << CardEffected << HpRecover << AskForPeachesDone
-            << AskForPeaches << Death << Dying
+            << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete
             << StartJudge << FinishJudge;
@@ -405,12 +405,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
-    case Death:{
-            player->bury();
-
-            if(room->getTag("SkipNormalDeathProcess").toBool())
-                return false;
-
+    case GameOverJudge:{
             if(room->getMode() == "02_1v1"){
                 QStringList list = player->tag["1v1Arrange"].toStringList();
 
@@ -428,18 +423,28 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             }
 
             QString winner = getWinner(player);
-            if(winner.isNull()){
-                DamageStar damage = data.value<DamageStar>();
-                ServerPlayer *killer = damage ? damage->from : NULL;
-                if(killer){
-                    rewardAndPunish(killer, player);
-                }
-
-                setGameProcess(room);
-            }else{
+            if(!winner.isNull()){
                 room->gameOver(winner);
                 return true;
             }
+
+            break;
+        }
+
+    case Death:{
+            player->bury();
+
+            if(room->getTag("SkipNormalDeathProcess").toBool())
+                return false;
+
+            DamageStar damage = data.value<DamageStar>();
+            ServerPlayer *killer = damage ? damage->from : NULL;
+            if(killer){
+                rewardAndPunish(killer, player);
+            }
+
+            setGameProcess(room);
+
 
             break;
         }

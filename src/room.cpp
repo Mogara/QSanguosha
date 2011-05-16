@@ -211,6 +211,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     sendLog(log);
 
     QVariant data = QVariant::fromValue(reason);
+    thread->trigger(GameOverJudge, victim, data);
     thread->trigger(Death, victim, data);
 }
 

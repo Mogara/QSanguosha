@@ -39,10 +39,6 @@ public:
         events << Death;
     }
 
-    virtual int getPriority() const{
-        return -1;
-    }
-
     virtual bool triggerable(const ServerPlayer *target) const{
         return target->hasSkill("wuhun");
     }

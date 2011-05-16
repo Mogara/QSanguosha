@@ -354,6 +354,7 @@ enum TriggerEvent{
     AskForPeaches,
     AskForPeachesDone, 
     Death,
+	GameOverJudge,
 
     SlashEffect,
     SlashEffected,
