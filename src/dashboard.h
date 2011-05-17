@@ -22,7 +22,8 @@ public:
     virtual QRectF boundingRect() const;
     void setWidth(int width);
     QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
-    QPushButton *addButton(const QString &label, int x, bool from_left);
+    QPushButton *createButton(const QString &name);
+    QPushButton *addButton(const QString &name, int x, bool from_left);
     QProgressBar *addProgressBar();
 
     void setTrust(bool trust);

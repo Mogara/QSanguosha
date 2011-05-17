@@ -582,6 +582,10 @@ QString Client::getSkillLine() const{
     return skill_line;
 }
 
+Replayer *Client::getReplayer() const{
+    return replayer;
+}
+
 QString Client::getPlayerName(const QString &str){
     QRegExp rx("sgs\\d+");
     QString general_name;

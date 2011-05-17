@@ -25,6 +25,8 @@ class QGroupBox;
 #include <QDockWidget>
 #include <QSpinBox>
 #include <QDialog>
+#include <QGraphicsWidget>
+#include <QGraphicsProxyWidget>
 
 class DamageMakerDialog: public QDialog{
     Q_OBJECT
@@ -74,6 +76,24 @@ private:
     QAbstractButton *createButton(const Card *card);
     QButtonGroup *group;
     QHash<QString, const Card *> map;
+};
+
+class ReplayerControlBar: public QGraphicsProxyWidget{
+    Q_OBJECT
+
+public:
+    ReplayerControlBar(Dashboard *dashboard);
+    static QString FormatTime(int secs);
+
+public slots:
+    void toggle();
+    void setTime(int secs);
+    void setSpeed(qreal speed);
+
+private:
+    QLabel *time_label;
+    QString duration_str;
+    qreal speed;
 };
 
 class RoomScene : public QGraphicsScene{    
@@ -192,6 +212,8 @@ private:
     void removeWidgetFromSkillDock(QWidget *widget);
     QList<QPointF> getPhotoPositions() const;
     void createStateItem();
+    void createButtons();
+    void createReplayControlBar();
 
     void fillGenerals1v1(const QStringList &names);
     void fillGenerals3v3(const QStringList &names);

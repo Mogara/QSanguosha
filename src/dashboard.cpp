@@ -319,24 +319,30 @@ QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_lef
     proxy_widget->setParentItem(from_left ? left : right);
     proxy_widget->setPos(x, -32);
 
+    //proxy_widget->hide();
+
     return proxy_widget;
 }
 
-QPushButton *Dashboard::addButton(const QString &label, int x, bool from_left){
+QPushButton *Dashboard::createButton(const QString &name){
     QPushButton *button = new QPushButton;
     button->setEnabled(false);
 
-    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(label));
+    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(name));
     QIcon icon(icon_pixmap);
     button->setIcon(icon);
     button->setIconSize(icon_pixmap.size());
     button->setFixedSize(icon_pixmap.size());
-    button->setObjectName(label);
+    button->setObjectName(name);
 
     button->setAttribute(Qt::WA_TranslucentBackground);
 
-    addWidget(button, x, from_left);
+    return button;
+}
 
+QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
+    QPushButton *button = createButton(name);
+    addWidget(createButton(name), x, from_left);
     return button;
 }
 

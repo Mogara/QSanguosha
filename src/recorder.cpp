@@ -6,8 +6,8 @@
 #include <QFile>
 #include <QBuffer>
 
-Recorder::Recorder(QObject *parent) :
-    QObject(parent)
+Recorder::Recorder(QObject *parent)
+    :QObject(parent)
 {
     watch.start();
 }
@@ -34,22 +34,14 @@ bool Recorder::save(const QString &filename) const{
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
-    :QThread(parent), filename(filename)
+    :QThread(parent), filename(filename), speed(1.0)
 {
-
-}
-
-void Replayer::run(){
     QFile file(filename);
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     typedef char buffer_t[1024];
-
-    int last = 0;
-    QStringList nondelays;
-    nondelays << "addPlayer" << "removePlayer" << "speak";
 
     while(!file.atEnd()){
         buffer_t line;
@@ -62,24 +54,96 @@ void Replayer::run(){
 
         *space = '\0';
         QString cmd = space + 1;
-
         int elapsed = atoi(line);
-        int delay = qMin(elapsed - last, 2500);
-        last = elapsed;
+
+        Pair pair;
+        pair.elapsed = elapsed;
+        pair.cmd = cmd;
+
+        pairs << pair;
+    }
+
+    file.close();
+}
+
+int Replayer::getDuration() const{
+    return pairs.last().elapsed / 1000.0;
+}
+
+qreal Replayer::getSpeed() {
+    qreal speed;
+    mutex.lock();
+    speed = this->speed;
+    mutex.unlock();
+    return speed;
+}
+
+void Replayer::uniform(){
+    mutex.lock();
+
+    if(speed != 1.0){
+        speed = 1.0;
+        emit speed_changed(1.0);
+    }
+
+    mutex.unlock();
+}
+
+void Replayer::speedUp(){
+    mutex.lock();
+
+    if(speed < 6.0){
+        qreal inc = speed >= 2.0 ? 1.0 : 0.5;
+        speed += inc;
+        emit speed_changed(speed);
+    }
+
+    mutex.unlock();
+}
+
+void Replayer::slowDown(){
+    mutex.lock();
+
+    if(speed >= 1.0){
+        qreal dec = speed >= 2.0 ? 1.0 : 0.5;
+        speed -= dec;
+        emit speed_changed(speed);
+    }
+
+    mutex.unlock();
+}
+
+void Replayer::toggle(){
+
+}
+
+void Replayer::run(){
+    int last = 0;
+
+    QStringList nondelays;
+    nondelays << "addPlayer" << "removePlayer" << "speak";
+
+    foreach(Pair pair, pairs){
+        int delay = qMin(pair.elapsed - last, 2500);
+        last = pair.elapsed;
 
         bool delayed = true;
         foreach(QString nondelay, nondelays){
-            if(cmd.startsWith(nondelay)){
+            if(pair.cmd.startsWith(nondelay)){
                 delayed = false;
                 break;
             }
         }
 
-        if(delayed)
-            msleep(delay);
-        emit command_parsed(cmd);
-    }
+        if(delayed){
+            delay /= getSpeed();
 
-    file.close();
+            msleep(delay);
+
+            emit elasped(pair.elapsed / 1000.0);
+        }
+
+        emit command_parsed(pair.cmd);
+    }
 }
 

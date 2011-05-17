@@ -58,6 +58,7 @@ public:
     bool isJilei(const Card *card) const;
     bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
+    Replayer *getReplayer() const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;

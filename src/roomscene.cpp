@@ -8,6 +8,7 @@
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
+#include "recorder.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -18,7 +19,6 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QCheckBox>
-#include <QGraphicsProxyWidget>
 #include <QGraphicsLinearLayout>
 #include <QMenu>
 #include <QGroupBox>
@@ -52,7 +52,7 @@ static QPointF DrawPilePos(-102, -2);
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
-    main_window(main_window)
+    main_window(main_window), skill_dock(NULL)
 {
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
@@ -100,29 +100,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
     role_combobox->addItem(tr("Unknown"));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(updateRoleComboBox(QString)));
 
-    // add buttons that above the equipment area of dashboard
-    trust_button = dashboard->addButton("trust", circular ? 10 : 4, true);
-    untrust_button = dashboard->addButton("untrust", circular ? 10 : 4, true);
-    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-    connect(untrust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
-    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-    untrust_button->hide();
-
-    // add buttons that above the avatar area of dashbaord
-    if(circular){
-        ok_button = dashboard->addButton("ok", -245-146, false);
-        cancel_button = dashboard->addButton("cancel", -155-146, false);
-        discard_button = dashboard->addButton("discard", -70-146, false);
-        dashboard->setWidth(main_window->width()-10);
-    }else{
-        ok_button = dashboard->addButton("ok", -72, false);
-        cancel_button = dashboard->addButton("cancel", -7, false);
-        discard_button = dashboard->addButton("discard", 75, false);
-    }
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
-    connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
+    createButtons();
+    if(ClientInstance->getReplayer())
+        createReplayControlBar();
 
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
@@ -330,13 +310,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     timer_id = 0;
     tick = 0;
 
-    skill_dock = new QDockWidget(main_window);
-    skill_dock->setTitleBarWidget(new QWidget);
-    skill_dock->titleBarWidget()->hide();
-    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
-
-    addWidgetToSkillDock(sort_combobox, true);
-
     adjustItems();
 
 #ifdef JOYSTICK_SUPPORT
@@ -351,7 +324,133 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
 #endif
 
+    skill_dock = new QDockWidget(main_window);
+    skill_dock->setTitleBarWidget(new QWidget);
+    skill_dock->titleBarWidget()->hide();
+    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
+
+    addWidgetToSkillDock(sort_combobox, true);
+
     createStateItem();
+}
+
+void RoomScene::createButtons(){
+    trust_button = dashboard->createButton("trust");
+    untrust_button = dashboard->createButton("untrust");
+    ok_button = dashboard->createButton("ok");
+    cancel_button = dashboard->createButton("cancel");
+    discard_button = dashboard->createButton("discard");
+
+    // add buttons that above the avatar area of dashbaord
+    if(Config.value("CircularView", false).toBool()){
+        dashboard->addWidget(trust_button, 10, true);
+        dashboard->addWidget(untrust_button, 10, true);
+
+        dashboard->addWidget(ok_button, -245-146, false);
+        dashboard->addWidget(cancel_button, -155-146, false);
+        dashboard->addWidget(discard_button, -70-146, false);
+
+        dashboard->setWidth(main_window->width()-10);
+    }else{
+        dashboard->addWidget(trust_button, 4, true);
+        dashboard->addWidget(untrust_button, 4, true);
+
+        dashboard->addWidget(ok_button, -72, false);
+        dashboard->addWidget(cancel_button, -7, false);
+        dashboard->addWidget(discard_button, 75, false);
+    }
+
+    connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(untrust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
+    connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
+}
+
+ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QPushButton *play, *uniform, *slow_down, *speed_up;
+
+    uniform = dashboard->createButton("uniform");
+    slow_down = dashboard->createButton("slow-down");
+    play = dashboard->createButton("pause");
+    speed_up = dashboard->createButton("speed-up");
+
+    time_label = new QLabel;
+    QPalette palette;
+    palette.setColor(QPalette::WindowText, Config.TextEditColor);
+    time_label->setPalette(palette);
+
+    QWidgetList widgets;
+    widgets << uniform << slow_down << play << speed_up << time_label;
+
+    foreach(QWidget *widget, widgets){
+        widget->setEnabled(true);
+        layout->addWidget(widget);
+    }
+
+    Replayer *replayer = ClientInstance->getReplayer();
+    connect(play, SIGNAL(clicked()), replayer, SLOT(toggle()));
+    connect(play, SIGNAL(clicked()), this, SLOT(toggle()));
+    connect(uniform, SIGNAL(clicked()), replayer, SLOT(uniform()));
+    connect(slow_down, SIGNAL(clicked()), replayer, SLOT(slowDown()));
+    connect(speed_up, SIGNAL(clicked()), replayer, SLOT(speedUp()));
+    connect(replayer, SIGNAL(elasped(int)), this, SLOT(setTime(int)));
+    connect(replayer, SIGNAL(speed_changed(qreal)), this, SLOT(setSpeed(qreal)));
+
+    speed = replayer->getSpeed();
+
+    QWidget *widget = new QWidget;
+    widget->setAttribute(Qt::WA_TranslucentBackground);
+    widget->setLayout(layout);
+    setWidget(widget);
+
+    setParentItem(dashboard);
+    moveBy(0, -35);
+
+    duration_str = FormatTime(replayer->getDuration());
+}
+
+QString ReplayerControlBar::FormatTime(int secs){
+    int minutes = secs / 60;
+    int remainder  = secs % 60;
+    return QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(remainder, 2, 10, QChar('0'));
+}
+
+void ReplayerControlBar::toggle(){
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+
+    if(button){
+        QString new_name = button->objectName() == "pause" ? "play" : "pause";
+        button->setObjectName(new_name);
+        button->setIcon(QIcon(QString("image/system/button/%1.png").arg(new_name)));
+    }
+}
+
+void ReplayerControlBar::setSpeed(qreal speed){
+    this->speed = speed;
+}
+
+void ReplayerControlBar::setTime(int secs){
+    time_label->setText(QString("<b>x%1 </b> [%2/%3]")
+                        .arg(speed)
+                        .arg(FormatTime(secs))
+                        .arg(duration_str));
+}
+
+void RoomScene::createReplayControlBar(){
+    // hide all buttons
+    ok_button->hide();
+    cancel_button->hide();
+    discard_button->hide();
+    trust_button->hide();
+    untrust_button->hide();
+    trust_button->disconnect();
+    untrust_button->disconnect();    
+
+    new ReplayerControlBar(dashboard);
 }
 
 void RoomScene::adjustItems(){
@@ -1868,11 +1967,13 @@ void RoomScene::doSkillButton(){
 }
 
 void RoomScene::updateTrustButton(){
-    bool trusting = Self->getState() == "trust";
-    trust_button->setVisible(!trusting);
-    untrust_button->setVisible(trusting);
+    if(!ClientInstance->getReplayer()){
+        bool trusting = Self->getState() == "trust";
+        trust_button->setVisible(!trusting);
+        untrust_button->setVisible(trusting);
 
-    dashboard->setTrust(trusting);
+        dashboard->setTrust(trusting);
+    }
 }
 
 static bool CompareByNumber(const Card *card1, const Card *card2){
@@ -2749,8 +2850,8 @@ void RoomScene::onGameStart(){
     log_box->append(tr("------- Game Start --------"));
 
     // add free discard button
-    if(ServerInfo.FreeChoose){
-        QPushButton *free_discard = dashboard->addButton("free_discard", 100, true);
+    if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
+        QPushButton *free_discard = dashboard->addButton("free-discard", 100, true);
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
@@ -2759,9 +2860,11 @@ void RoomScene::onGameStart(){
         skill_buttons << free_discard;
     }
 
-    trust_button->setEnabled(true);
-    untrust_button->setEnabled(true);
-    updateStatus(ClientInstance->getStatus());
+    if(trust_button && untrust_button){
+        trust_button->setEnabled(true);
+        untrust_button->setEnabled(true);
+        updateStatus(ClientInstance->getStatus());
+    }
 
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){
@@ -2822,7 +2925,10 @@ void RoomScene::freeze(){
     foreach(Photo *photo, photos)
         photo->setEnabled(false);
     item2player.clear();
+
     trust_button->setEnabled(false);
+    untrust_button->setEnabled(false);
+
     chat_edit->setEnabled(false);
     if(BackgroundMusic)
         BackgroundMusic->stop();

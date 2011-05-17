@@ -155,7 +155,7 @@ public:
     GuanduRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << PhaseChange << Damaged << Death;
+        events << GameStart << PhaseChange << Damaged << GameOverJudge;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -232,7 +232,7 @@ public:
                 break;
             }
 
-        case Death:{
+        case GameOverJudge:{
                 if(player->isLord()){
                     QStringList roles = room->aliveRoles(player);
                     if(roles.length() == 2){
@@ -274,6 +274,13 @@ GuanduScenario::GuanduScenario()
 
     addMetaObject<ZhanShuangxiongCard>();
     addMetaObject<SmallTuxiCard>();
+}
+
+AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    if(a->getRole() == "renegade" && b->getRole() == "renegade")
+        return AI::Friend;
+    else
+        return AI::GetRelation(a, b);
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{

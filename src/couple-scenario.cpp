@@ -7,7 +7,7 @@ public:
     CoupleScenarioRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << Death;
+        events << GameStart << GameOverJudge << Death;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -30,7 +30,7 @@ public:
                 break;
             }
 
-        case Death:{
+        case GameOverJudge:{
                 if(player->isLord()){
                     scenario->marryAll(room);
                 }else if(player->getGeneral()->isMale()){
@@ -79,6 +79,10 @@ public:
                     }
                 }
 
+                break;
+            }
+
+        case Death:{
                 // reward and punishment
                 DamageStar damage = data.value<DamageStar>();
                 if(damage && damage->from){
@@ -207,14 +211,17 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     foreach(QString husband, husbands)
         others << husband << map.value(husband);
 
-    qShuffle(others);
     generals << others;
+    qShuffle(generals);
 
     // roles
-    roles << "lord";
     int i;
-    for(i=0; i<8; i++)
-        roles << "renegade";
+    for(i=0; i<9; i++){
+        if(generals.at(i) == "caocao")
+            roles << "lord";
+        else
+            roles << "renegade";
+    }
 }
 
 int CoupleScenario::getPlayerCount() const{
