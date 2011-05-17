@@ -6,9 +6,14 @@
 #include "mainwindow.h"
 #include "settings.h"
 #include "banpairdialog.h"
+
+#ifdef AUDIO_SUPPORT
+
 #include "irrKlang.h"
 
 irrklang::ISoundEngine *SoundEngine;
+
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -27,9 +32,13 @@ int main(int argc, char *argv[])
 
     Config.init();
 
+#ifdef AUDIO_SUPPORT
+
     SoundEngine = irrklang::createIrrKlangDevice();
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
+
+#endif
 
     Sanguosha = new Engine;
 

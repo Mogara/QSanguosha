@@ -52,13 +52,17 @@ void StartScene::setServerLogBackground(){
     }
 }
 
+#ifdef AUDIO_SUPPORT
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
-void StartScene::switchToServer(Server *server){
+void StartScene::switchToServer(Server *server){    
+#ifdef AUDIO_SUPPORT
     if(SoundEngine){
         SoundEngine->drop();
         SoundEngine = NULL;
     }
+#endif
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");

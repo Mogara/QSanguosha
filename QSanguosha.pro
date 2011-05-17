@@ -4,6 +4,7 @@
 TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
+CONFIG += warn_on audio joystick
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/button.cpp \
@@ -60,7 +61,6 @@ SOURCES += src/main.cpp \
     src/nostalgia.cpp \
     src/joypackage.cpp \
     src/rolecombobox.cpp \
-    src/joystick.cpp \
     src/couple-scenario.cpp \
     swig/sanguosha_wrap.cxx \
     src/lua-wrapper.cpp \
@@ -127,7 +127,6 @@ HEADERS += src/mainwindow.h \
     src/joypackage.h \
     src/rolecombobox.h \
     src/standard-equips.h \
-    src/joystick.h \
     src/couple-scenario.h \
     src/standard-commons.h \
     src/standard-skillcards.h \
@@ -149,18 +148,33 @@ FORMS += src/mainwindow.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
 
-INCLUDEPATH += include/irrKlang
+
 INCLUDEPATH += include/lua
 INCLUDEPATH += include
 INCLUDEPATH += src
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += -L. irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
+    LIBS += -L. -llua -lm
 }
 
 unix {
-    LIBS += -lm -llua -lIrrKlang -lplibjs -lplibul
+    LIBS += -lm -llua
+}
+
+CONFIG(audio){
+    DEFINES += AUDIO_SUPPORT
+    INCLUDEPATH += include/irrKlang
+    win32: LIBS += irrKlang.lib
+    unix: LIBS += -lIrrKlang
+}
+
+CONFIG(joystick){
+    DEFINES += JOYSTICK_SUPPORT
+    HEADERS += src/joystick.h
+    SOURCES += src/joystick.cpp
+    win32: LIBS += -lplibjs -lplibul -lwinmm
+    unix: LIBS += -lplibjs -lplibul
 }
 
 TRANSLATIONS += sanguosha.ts

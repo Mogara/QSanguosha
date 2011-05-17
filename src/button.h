@@ -7,7 +7,6 @@
 #include <QFont>
 #include <QFontMetrics>
 
-
 class Button : public QGraphicsObject
 {
     Q_OBJECT

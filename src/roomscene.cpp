@@ -5,8 +5,6 @@
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
 #include "choosegeneraldialog.h"
-#include "joystick.h"
-#include "irrKlang.h"
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
@@ -36,7 +34,18 @@
 #include <QCommandLinkButton>
 #include <QFormLayout>
 
+#ifdef JOYSTICK_SUPPORT
+
+#include "joystick.h"
+
+#endif
+
+#ifdef AUDIO_SUPPORT
+
+#include "irrKlang.h"
 extern irrklang::ISoundEngine *SoundEngine;
+
+#endif
 
 static QPointF DiscardedPos(-6, -2);
 static QPointF DrawPilePos(-102, -2);
@@ -313,7 +322,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
         addItem(prompt_box);
     }
 
+#ifdef AUDIO_SUPPORT
     memory = new QSharedMemory("QSanguosha", this);
+#endif
 
     progress_bar = dashboard->addProgressBar();
     timer_id = 0;
@@ -328,6 +339,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     adjustItems();
 
+#ifdef JOYSTICK_SUPPORT
+
     if(Config.value("JoystickEnabled", false).toBool()){
         Joystick *js = new Joystick(this);
         connect(js, SIGNAL(button_clicked(int)), this, SLOT(onJoyButtonClicked(int)));
@@ -335,6 +348,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         js->start();
     }
+
+#endif
 
     createStateItem();
 }
@@ -2756,6 +2771,8 @@ void RoomScene::onGameStart(){
     foreach(Photo *photo, photos)
         photo->createRoleCombobox();
 
+#ifdef AUDIO_SUPPORT
+
     if(!Config.EnableBgMusic || SoundEngine == NULL)
         return;
 
@@ -2790,6 +2807,8 @@ void RoomScene::onGameStart(){
 
     if(BackgroundMusic)
         BackgroundMusic->setVolume(Config.Volume);
+
+#endif
 }
 
 void RoomScene::freeze(){

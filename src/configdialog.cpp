@@ -93,7 +93,9 @@ void ConfigDialog::on_resetBgButton_clicked()
     emit bg_changed();
 }
 
+#ifdef AUDIO_SUPPORT
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
 void ConfigDialog::saveConfig()
 {
@@ -105,8 +107,10 @@ void ConfigDialog::saveConfig()
     Config.Volume = volume;
     Config.setValue("Volume", volume);    
 
+#ifdef AUDIO_SUPPORT
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
+#endif
 
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;

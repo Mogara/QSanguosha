@@ -155,7 +155,9 @@ private:
     QTextEdit *chat_box;
     QLineEdit *chat_edit;
 
+#ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
+#endif
 
     // for 3v3 & 1v1 mode
     Pixmap *selector_box;

@@ -1,14 +1,18 @@
 #include "button.h"
-#include "irrKlang.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRotation>
 #include <QPropertyAnimation>
 
+#ifdef AUDIO_SUPPORT
+
+#include "irrKlang.h"
 extern irrklang::ISoundEngine *SoundEngine;
 
 static QRectF ButtonRect(0, 0, 189, 46);
+
+#endif
 
 Button::Button(const QString &label, qreal scale)
     :label(label), size(ButtonRect.size() * scale),
@@ -40,11 +44,13 @@ void Button::setFont(const QFont &font){
     this->font = font;
 }
 
-void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
+void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *){
     setFocus(Qt::MouseFocusReason);
 
+#ifdef AUDIO_SUPPORT
     if(SoundEngine && !mute)
         SoundEngine->play2D("audio/system/button-hover.ogg");
+#endif
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -52,8 +58,10 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
+#ifdef AUDIO_SUPPORT
     if(SoundEngine && !mute)
         SoundEngine->play2D("audio/system/button-down.ogg");
+#endif
 
     emit clicked();
 }

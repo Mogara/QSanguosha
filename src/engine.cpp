@@ -39,7 +39,9 @@ extern "C" {
     Scenario *NewHongyanScenario();
 }
 
+#ifdef AUDIO_SUPPORT
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
 extern "C" {
     int luaopen_sgs(lua_State *);
@@ -140,8 +142,11 @@ void Engine::addTranslationEntry(const char *key, const char *value){
 Engine::~Engine(){
     lua_close(lua);
 
+#ifdef AUDIO_SUPPORT
     if(SoundEngine)
         SoundEngine->drop();
+#endif
+
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -528,6 +533,8 @@ void Engine::playAudio(const QString &name) const{
 }
 
 void Engine::playEffect(const QString &filename) const{
+#ifdef AUDIO_SUPPORT
+
     if(!Config.EnableEffects)
         return;
 
@@ -541,6 +548,8 @@ void Engine::playEffect(const QString &filename) const{
         return;
 
     SoundEngine->play2D(filename.toAscii());
+
+#endif
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index) const{
