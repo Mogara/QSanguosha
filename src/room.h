@@ -216,8 +216,12 @@ private:
     void arrangeCommand(ServerPlayer *player, const QString &arg);
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);
-    void selectOrderCommand(ServerPlayer *player, const QString &arg);    
-    void makeDamage(const QString &damage_str);
+    void selectOrderCommand(ServerPlayer *player, const QString &arg);
+
+    void makeCheat(const QString &cheat_str);
+    void makeDamage(const QStringList &texts);
+    void makeKilling(const QStringList &texts);
+    void makeReviving(const QStringList &texts);
 
 private slots:
     void reportDisconnection();

@@ -246,8 +246,12 @@ void MainWindow::enterRoom(){
     connect(ui->actionExpand_dashboard, SIGNAL(triggered()), room_scene, SLOT(adjustDashboard()));
 
     if(ServerInfo.FreeChoose){
-        ui->actionDamage_maker->setEnabled(true);
+        ui->menuCheat->setEnabled(true);
+
+        connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
+        connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
+        connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
     }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));

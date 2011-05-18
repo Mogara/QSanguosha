@@ -28,6 +28,19 @@ class QGroupBox;
 #include <QGraphicsWidget>
 #include <QGraphicsProxyWidget>
 
+class DeathNoteDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    DeathNoteDialog(QWidget *parent);
+
+protected:
+    virtual void accept();
+
+private:
+    QComboBox *killer, *victim;
+};
+
 class DamageMakerDialog: public QDialog{
     Q_OBJECT
 
@@ -104,6 +117,8 @@ public:
     void changeTextEditBackground();
     void adjustItems();
 
+    static void FillPlayerNames(QComboBox *combobox, bool add_none);
+
 public slots:
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
@@ -122,6 +137,8 @@ public slots:
     void surrender();
     void saveReplayRecord();
     void makeDamage();
+    void makeKilling();
+    void makeReviving();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -584,6 +584,8 @@ void Select3v3GeneralDialog::toggleCheck(){
 }
 
 void Select3v3GeneralDialog::save3v3Generals(){
+    ex_generals.clear();
+
     int i;
     for(i=0; i<toolbox->count(); i++){
         QWidget *widget = toolbox->widget(i);

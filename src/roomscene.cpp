@@ -2294,17 +2294,51 @@ void RoomScene::saveReplayRecord(){
     ClientInstance->save(filename);
 }
 
+DeathNoteDialog::DeathNoteDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Death note"));
+
+    killer = new QComboBox;
+    RoomScene::FillPlayerNames(killer, true);
+
+    victim = new QComboBox;
+    RoomScene::FillPlayerNames(victim, false);
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Killer"), killer);
+    layout->addRow(tr("Victim"), victim);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    hlayout->addWidget(ok_button);
+    layout->addRow(hlayout);
+
+    setLayout(layout);
+}
+
+void DeathNoteDialog::accept(){
+    QDialog::accept();
+
+    ClientInstance->request(QString("useCard :KILL:%1->%2")
+                            .arg(killer->itemData(killer->currentIndex()).toString())
+                            .arg(victim->itemData(victim->currentIndex()).toString())
+                            );
+}
+
 DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     :QDialog(parent)
 {
     setWindowTitle(tr("Damage maker"));
 
     damage_source = new QComboBox;
-    damage_source->addItem(tr("None"), ".");
-    fillCombobox(damage_source);
+    RoomScene::FillPlayerNames(damage_source, true);
 
     damage_target = new QComboBox;
-    fillCombobox(damage_target);
+    RoomScene::FillPlayerNames(damage_target, false);
 
     damage_nature = new QComboBox;
     damage_nature->addItem(tr("Normal"), "N");
@@ -2342,7 +2376,10 @@ void DamageMakerDialog::disableSource(){
     damage_source->setEnabled(nature != "L");
 }
 
-void DamageMakerDialog::fillCombobox(QComboBox *combobox){
+void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
+    if(add_none)
+        combobox->addItem(tr("None"), ".");
+
     combobox->setIconSize(General::TinyIconSize);
 
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
@@ -2369,6 +2406,46 @@ void RoomScene::makeDamage(){
 
     DamageMakerDialog *damage_maker = new DamageMakerDialog(main_window);
     damage_maker->exec();
+}
+
+void RoomScene::makeKilling(){
+    if(Self->getPhase() != Player::Play){
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
+        return;
+    }
+
+    DeathNoteDialog *dialog = new DeathNoteDialog(main_window);
+    dialog->exec();
+}
+
+void RoomScene::makeReviving(){
+    if(Self->getPhase() != Player::Play){
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
+        return;
+    }
+
+    QStringList items;
+    QList<const ClientPlayer*> players = ClientInstance->getPlayers();
+    foreach(const ClientPlayer *player, players){
+        if(player->isDead()){
+            QString general_name = Sanguosha->translate(player->getGeneralName());
+            items << QString("%1 [%2]").arg(player->screenName()).arg(general_name);
+        }
+    }
+
+    if(items.isEmpty()){
+        QMessageBox::warning(main_window, tr("Warning"), tr("No victims now!"));
+        return;
+    }
+
+    bool ok;
+    QString item = QInputDialog::getItem(main_window, tr("Reviving wand"),
+                                         tr("Please select a player to revive"), items, 0, false, &ok);
+    if(ok){
+        int index = items.indexOf(item);
+
+        ClientInstance->request("useCard :REVIVE:" + players.at(index)->objectName());
+    }
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){

@@ -2043,7 +2043,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
         getResult("useCardCommand", player);
 
         if(result.startsWith(":")){
-            makeDamage(result);
+            makeCheat(result);
             if(player->isAlive())
                 return activate(player, card_use);
         }
@@ -2416,12 +2416,21 @@ void Room::kickCommand(ServerPlayer *player, const QString &arg){
     to_kick->kick();
 }
 
-void Room::makeDamage(const QString &damage_str){
-    QRegExp rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
-    if(!rx.exactMatch(damage_str))
-        return;
+void Room::makeCheat(const QString &cheat_str){
+    QRegExp damage_rx(":(.+)->(\\w+):([NTFRL])(\\d+)");
+    QRegExp killing_rx(":KILL:(.+)->(\\w+)");
+    QRegExp revive_rx(":REVIVE:(.+)");
 
-    QStringList texts = rx.capturedTexts();
+    if(damage_rx.exactMatch(cheat_str))
+        makeDamage(damage_rx.capturedTexts());
+    else if(killing_rx.exactMatch(cheat_str)){
+        makeKilling(killing_rx.capturedTexts());
+    }else if(revive_rx.exactMatch(cheat_str)){
+        makeReviving(revive_rx.capturedTexts());
+    }
+}
+
+void Room::makeDamage(const QStringList &texts){
     int point = texts.at(4).toInt();
 
     // damage
@@ -2443,7 +2452,7 @@ void Room::makeDamage(const QString &damage_str){
                 recover.who = findChild<ServerPlayer *>(texts.at(1));
             ServerPlayer *player = findChild<ServerPlayer *>(texts.at(2));
 
-            recover.recover = -point;
+            recover.recover = point;
 
             this->recover(player, recover);
 
@@ -2454,6 +2463,32 @@ void Room::makeDamage(const QString &damage_str){
     damage.damage = point;
 
     this->damage(damage);
+}
+
+void Room::makeKilling(const QStringList &texts){
+    ServerPlayer *killer = NULL, *victim = NULL;
+
+    if(texts.at(1) != ".")
+        killer = findChild<ServerPlayer *>(texts.at(1));
+
+    victim = findChild<ServerPlayer *>(texts.at(2));
+
+    Q_ASSERT(victim);
+
+    if(killer == NULL)
+        return killPlayer(victim);
+
+    DamageStruct damage;
+    damage.from = killer;
+    damage.to = victim;
+    killPlayer(victim, &damage);
+}
+
+void Room::makeReviving(const QStringList &texts){
+    ServerPlayer *player = findChild<ServerPlayer *>(texts.at(1));
+    Q_ASSERT(player);
+    revivePlayer(player);
+    setPlayerProperty(player, "hp", player->getMaxHP());
 }
 
 void Room::surrenderCommand(ServerPlayer *player, const QString &){

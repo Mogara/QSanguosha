@@ -51,7 +51,6 @@
     <addaction name="actionSurrender"/>
     <addaction name="actionKick"/>
     <addaction name="actionSaveRecord"/>
-    <addaction name="actionDamage_maker"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -72,9 +71,22 @@
     <addaction name="actionFullscreen"/>
     <addaction name="actionMinimize_to_system_tray"/>
    </widget>
+   <widget class="QMenu" name="menuCheat">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Cheat</string>
+    </property>
+    <addaction name="actionGet_card"/>
+    <addaction name="actionDamage_maker"/>
+    <addaction name="actionDeath_note"/>
+    <addaction name="actionRevive_wand"/>
+   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuCheat"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionExit">
@@ -259,7 +271,7 @@
   </action>
   <action name="actionDamage_maker">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Damage maker</string>
@@ -271,6 +283,21 @@
    </property>
    <property name="text">
     <string>Expand dashboard</string>
+   </property>
+  </action>
+  <action name="actionGet_card">
+   <property name="text">
+    <string>Get card ...</string>
+   </property>
+  </action>
+  <action name="actionDeath_note">
+   <property name="text">
+    <string>Death note ...</string>
+   </property>
+  </action>
+  <action name="actionRevive_wand">
+   <property name="text">
+    <string>Revive wand ...</string>
    </property>
   </action>
  </widget>
