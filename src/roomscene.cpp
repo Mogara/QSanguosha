@@ -2425,11 +2425,12 @@ void RoomScene::makeReviving(){
     }
 
     QStringList items;
-    QList<const ClientPlayer*> players = ClientInstance->getPlayers();
-    foreach(const ClientPlayer *player, players){
+    QList<const ClientPlayer*> victims;;
+    foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         if(player->isDead()){
             QString general_name = Sanguosha->translate(player->getGeneralName());
             items << QString("%1 [%2]").arg(player->screenName()).arg(general_name);
+            victims << player;
         }
     }
 
@@ -2444,7 +2445,7 @@ void RoomScene::makeReviving(){
     if(ok){
         int index = items.indexOf(item);
 
-        ClientInstance->request("useCard :REVIVE:" + players.at(index)->objectName());
+        ClientInstance->request("useCard :REVIVE:" + victims.at(index)->objectName());
     }
 }
 
