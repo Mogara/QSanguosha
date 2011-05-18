@@ -34,7 +34,7 @@ bool Recorder::save(const QString &filename) const{
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
-    :QThread(parent), filename(filename), speed(1.0)
+    :QThread(parent), filename(filename), speed(1.0), playing(true)
 {
     QFile file(filename);
 
@@ -114,7 +114,9 @@ void Replayer::slowDown(){
 }
 
 void Replayer::toggle(){
-
+    playing = !playing;
+    if(playing)
+        play_sem.release(); // to play
 }
 
 void Replayer::run(){
@@ -139,8 +141,10 @@ void Replayer::run(){
             delay /= getSpeed();
 
             msleep(delay);
-
             emit elasped(pair.elapsed / 1000.0);
+
+            if(!playing)
+                play_sem.acquire();
         }
 
         emit command_parsed(pair.cmd);

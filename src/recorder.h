@@ -5,6 +5,7 @@
 #include <QTime>
 #include <QThread>
 #include <QMutex>
+#include <QSemaphore>
 
 class Recorder : public QObject
 {
@@ -43,7 +44,9 @@ protected:
 private:
     QString filename;
     qreal speed;
+    bool playing;
     QMutex mutex;
+    QSemaphore play_sem;
 
     struct Pair{
         int elapsed;
