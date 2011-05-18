@@ -319,8 +319,6 @@ QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_lef
     proxy_widget->setParentItem(from_left ? left : right);
     proxy_widget->setPos(x, -32);
 
-    //proxy_widget->hide();
-
     return proxy_widget;
 }
 
