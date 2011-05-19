@@ -157,12 +157,28 @@ QGroupBox *ServerDialog::create3v3Box(){
     connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
     connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
 
-    QCheckBox *exclude_disaster = new QCheckBox(tr("Exclude disasters"));
-    exclude_disaster->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
+    exclude_disaster_checkbox = new QCheckBox(tr("Exclude disasters"));
+    exclude_disaster_checkbox->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
+
+    {
+        QComboBox *combobox = new QComboBox;
+        combobox->addItem(tr("Normal"), "Normal");
+        combobox->addItem(tr("Random"), "Random");
+        combobox->addItem(tr("All roles"), "AllRoles");
+
+        role_choose_combobox = combobox;
+
+        QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
+        if(scheme == "Random")
+            combobox->setCurrentIndex(1);
+        else if(scheme == "AllRoles")
+            combobox->setCurrentIndex(2);
+    }
 
     vlayout->addWidget(standard_3v3_radiobutton);
     vlayout->addLayout(HLay(extend, extend_edit_button));
-    vlayout->addWidget(exclude_disaster);
+    vlayout->addWidget(exclude_disaster_checkbox);
+    vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_combobox));
     box->setLayout(vlayout);
 
     bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
@@ -170,6 +186,8 @@ QGroupBox *ServerDialog::create3v3Box(){
         extend->setChecked(true);
     else
         standard_3v3_radiobutton->setChecked(true);
+
+
 
     return box;
 }
@@ -657,7 +675,11 @@ bool ServerDialog::config(){
     Config.setValue("AnnounceIP", Config.AnnounceIP);
     Config.setValue("Address", Config.Address);
 
-    Config.setValue("3v3/UsingExtension", ! standard_3v3_radiobutton->isChecked());
+    Config.beginGroup("3v3");
+    Config.setValue("UsingExtension", ! standard_3v3_radiobutton->isChecked());
+    Config.setValue("RoleChoose", role_choose_combobox->itemData(role_choose_combobox->currentIndex()).toString());
+    Config.setValue("ExcludeDisaster", exclude_disaster_checkbox->isChecked());
+    Config.endGroup();
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
