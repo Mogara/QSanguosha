@@ -1,7 +1,10 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
+
+#ifdef AUDIO_SUPPORT
 #include "irrKlang.h"
+#endif
 
 #include <QFileDialog>
 #include <QDesktopServices>

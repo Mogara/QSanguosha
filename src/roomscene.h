@@ -47,6 +47,9 @@ class DamageMakerDialog: public QDialog{
 public:
     DamageMakerDialog(QWidget *parent);
 
+protected:
+    virtual void accept();
+
 private:
     QComboBox *damage_source;
     QComboBox *damage_target;
@@ -57,7 +60,6 @@ private:
 
 private slots:
     void disableSource();
-    void makeDamage();
 };
 
 class KOFOrderBox: public QGraphicsPixmapItem{
@@ -278,8 +280,10 @@ private slots:
     void onGameOver(bool victory, const QList<bool> &result_list);
     void onStandoff();
 
+#ifdef JOYSTICK_SUPPORT
     void onJoyButtonClicked(int bit);
     void onJoyDirectionClicked(int direction);
+#endif
 
     void moveCard(const CardMoveStructForClient &move);
     void moveNCards(int n, const QString &from, const QString &to);

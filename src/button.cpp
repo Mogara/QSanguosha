@@ -9,10 +9,9 @@
 
 #include "irrKlang.h"
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
 static QRectF ButtonRect(0, 0, 189, 46);
-
-#endif
 
 Button::Button(const QString &label, qreal scale)
     :label(label), size(ButtonRect.size() * scale),

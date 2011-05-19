@@ -5,11 +5,16 @@
 #include "settings.h"
 #include "scenario.h"
 #include "challengemode.h"
-#include "irrKlang.h"
 #include "lua.hpp"
 #include "banpairdialog.h"
 
+#ifdef AUDIO_SUPPORT
+
 typedef irrklang::ISound SoundType;
+
+extern irrklang::ISoundEngine *SoundEngine;
+
+#endif
 
 #include <QFile>
 #include <QStringList>
@@ -38,10 +43,6 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
 }
-
-#ifdef AUDIO_SUPPORT
-extern irrklang::ISoundEngine *SoundEngine;
-#endif
 
 extern "C" {
     int luaopen_sgs(lua_State *);

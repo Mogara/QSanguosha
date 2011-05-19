@@ -44,6 +44,7 @@
 
 #include "irrKlang.h"
 extern irrklang::ISoundEngine *SoundEngine;
+static irrklang::ISound *BackgroundMusic;
 
 #endif
 
@@ -1552,6 +1553,8 @@ void RoomScene::cancelViewAsSkill(){
         updateStatus(ClientInstance->getStatus());
 }
 
+#ifdef JOYSTICK_SUPPORT
+
 void RoomScene::onJoyButtonClicked(int bit){
     QWidget *active_window = QApplication::activeWindow();
 
@@ -1641,6 +1644,8 @@ void RoomScene::onJoyDirectionClicked(int direction){
         QCursor::setPos(dest->mapToGlobal(center));
     }
 }
+
+#endif
 
 void RoomScene::selectTarget(int order, bool multiple){
     QGraphicsItem *to_select = NULL;
@@ -2368,7 +2373,6 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     setLayout(layout);
 
     connect(damage_nature, SIGNAL(currentIndexChanged(int)), this, SLOT(disableSource()));
-    connect(this, SIGNAL(accepted()), this, SLOT(makeDamage()));
 }
 
 void DamageMakerDialog::disableSource(){
@@ -2390,7 +2394,9 @@ void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
     }
 }
 
-void DamageMakerDialog::makeDamage(){
+void DamageMakerDialog::accept(){
+    QDialog::accept();
+
     ClientInstance->request(QString("useCard :%1->%2:%3%4")
                             .arg(damage_source->itemData(damage_source->currentIndex()).toString())
                             .arg(damage_target->itemData(damage_target->currentIndex()).toString())
@@ -2444,7 +2450,6 @@ void RoomScene::makeReviving(){
                                          tr("Please select a player to revive"), items, 0, false, &ok);
     if(ok){
         int index = items.indexOf(item);
-
         ClientInstance->request("useCard :REVIVE:" + victims.at(index)->objectName());
     }
 }
@@ -2743,8 +2748,6 @@ void RoomScene::showPlayerCards(){
     }
 }
 
-static irrklang::ISound *BackgroundMusic;
-
 KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 {
     QString basename = self ? "self" : "enemy";
@@ -3008,8 +3011,11 @@ void RoomScene::freeze(){
     untrust_button->setEnabled(false);
 
     chat_edit->setEnabled(false);
+
+#ifdef AUDIO_SUPPORT
     if(BackgroundMusic)
         BackgroundMusic->stop();
+#endif
 
     progress_bar->hide();
 

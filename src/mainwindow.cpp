@@ -381,9 +381,10 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
 
     QString address = "http://www.ambiera.com/irrklang/";
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 
-    //QMessageBox::about(this, tr("About irrKlang"), content);
+#ifdef AUDIO_SUPPORT
+    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
+#endif
 
     Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
     scene->addItem(window);
