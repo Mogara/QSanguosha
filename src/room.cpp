@@ -213,6 +213,22 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
     thread->trigger(Death, victim, data);
+
+    if(Config.EnableAI){
+        bool expose_roles = true;
+        foreach(ServerPlayer *player, alive_players){
+            if(player->getState() != "robot" && player->getState() != "offline"){
+                expose_roles = false;
+                break;
+            }
+        }
+
+        if(expose_roles){
+            foreach(ServerPlayer *player, alive_players){
+                broadcastProperty(player, "role");
+            }
+        }
+    }
 }
 
 void Room::judge(JudgeStruct &judge_struct){
@@ -2046,6 +2062,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
             makeCheat(result);
             if(player->isAlive())
                 return activate(player, card_use);
+            return;
         }
 
         if(result.isEmpty())
