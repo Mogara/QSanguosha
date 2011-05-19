@@ -177,8 +177,6 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
     room->sem->acquire();
 }
 
-
-
 void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name){
     general_names.removeOne(name);
     player->addToSelected(name);
