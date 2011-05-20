@@ -10,56 +10,17 @@
 class YitianSwordSkill : public WeaponSkill{
 public:
     YitianSwordSkill():WeaponSkill("yitian_sword"){
-        events << CardGot;
+        events << DamageComplete;
     }
 
-    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
-        CardMoveStruct move = data.value<CardMoveStruct>();
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
+        if(player->getPhase() != Player::NotActive)
+           return false;
 
-        if(!move.open)
-            return false;
-
-        const Card *card = Sanguosha->getCard(move.card_id);
-        Room *room = player->getRoom();
-        if(room->getCurrent() != player && card->inherits("Slash") && move.to_place == Player::Hand){
-            QString pattern = QString("@@yitian-%1").arg(move.card_id);
-            room->askForUseCard(player, pattern, "@yitian-sword");
-        }
+        if(player->askForSkillInvoke("yitian"))
+            player->getRoom()->askForUseCard(player, "slash", "yitian-slash");
 
         return false;
-    }
-};
-
-class YitianSwordViewAsSkill: public ViewAsSkill{
-public:
-    YitianSwordViewAsSkill():ViewAsSkill("yitian_sword"){
-
-    }
-
-    virtual bool isEnabledAtPlay() const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.startsWith("@@yitian-");
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(!selected.isEmpty())
-            return false;
-
-        QString pattern = ClientInstance->card_pattern;
-        pattern.remove("@@yitian-");
-        int card_id = pattern.toInt();
-
-        return to_select->getCard()->getId() == card_id;
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
-        return cards.first()->getCard();
     }
 };
 
@@ -68,7 +29,6 @@ YitianSword::YitianSword(Suit suit, int number)
 {
     setObjectName("yitian_sword");
     skill = new YitianSwordSkill;
-    attach_skill = true;
 }
 
 void YitianSword::onMove(const CardMoveStruct &move) const{
@@ -1650,7 +1610,7 @@ YitianPackage::YitianPackage()
     dengshizai->addSkill(new Zhenggong);
     dengshizai->addSkill(new Toudu);
 
-    skills << new YitianSwordViewAsSkill << new LianliSlashViewAsSkill;
+    skills << new LianliSlashViewAsSkill;
 
     addMetaObject<ChengxiangCard>();
     addMetaObject<JuejiCard>();
