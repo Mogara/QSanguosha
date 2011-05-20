@@ -1945,11 +1945,6 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         thread->trigger(CardLost, move.from, data);
     }
 
-    if(move.to){
-        QVariant data = QVariant::fromValue(move);
-        thread->trigger(CardGot, move.to, data);
-    }
-
     Sanguosha->getCard(move.card_id)->onMove(move);
 }
 
