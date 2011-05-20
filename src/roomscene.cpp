@@ -247,7 +247,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_edit = new QLineEdit;
         chat_edit->setFixedWidth(chat_box->width());
 
-#if QT_VERSION >= 040700
+#if QT_VERSION >= 0x040700
         chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
 #endif
 
