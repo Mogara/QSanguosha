@@ -245,8 +245,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         // chat edit
         chat_edit = new QLineEdit;
-        chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
         chat_edit->setFixedWidth(chat_box->width());
+
+#if QT_VERSION >= 040700
+        chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
+#endif
 
         QGraphicsProxyWidget *chat_edit_widget = new QGraphicsProxyWidget(chat_box_widget);
         chat_edit_widget->setWidget(chat_edit);
