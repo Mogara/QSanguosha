@@ -230,6 +230,13 @@ public:
 	bool hasLordSkill(const char *skill_name) const;
 };
 
+%extend ServerPlayer{
+	void speak(const char *msg){
+		QString str = QByteArray(msg).toBase64();
+		$self->getRoom()->speakCommand($self, str);
+	}
+};
+
 class ClientPlayer : public Player
 {
 public:
