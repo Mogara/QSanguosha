@@ -395,37 +395,41 @@ public:
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *lingtong, QVariant &data) const{
         CardMoveStruct move = data.value<CardMoveStruct>();
 
         if(move.from_place == Player::Equip){
-            Room *room = player->getRoom();
+            Room *room = lingtong->getRoom();
 
-            QString choice = room->askForChoice(player, objectName(), "slash+damage+nothing");
+            QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
             if(choice == "slash"){
-                QList<ServerPlayer *> players = room->getOtherPlayers(player);
+                QList<ServerPlayer *> targets;
+                foreach(ServerPlayer *target, room->getAlivePlayers()){
+                    if(lingtong->canSlash(target, false))
+                        targets << target;
+                }
 
-                ServerPlayer *target = room->askForPlayerChosen(player, players, "xuanfeng-slash");
+                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
 
                 CardEffectStruct effect;
                 Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName(objectName());
                 effect.card = slash;
-                effect.from = player;
+                effect.from = lingtong;
                 effect.to = target;
 
                 room->cardEffect(effect);
             }else if(choice == "damage"){
-                QList<ServerPlayer *> players = room->getOtherPlayers(player), targets;
+                QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
                 foreach(ServerPlayer *p, players){
-                    if(player->distanceTo(p) <= 1)
+                    if(lingtong->distanceTo(p) <= 1)
                         targets << p;
                 }
 
-                ServerPlayer *target = room->askForPlayerChosen(player, targets, "xuanfeng-damage");
+                ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-damage");
 
                 DamageStruct damage;
-                damage.from = player;
+                damage.from = lingtong;
                 damage.to = target;
                 room->damage(damage);
             }
