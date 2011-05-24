@@ -210,6 +210,7 @@ public:
     bool pindian(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
 	void turnOver();
 	void play();
+	AI *getSmartAI() const;
 
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);
