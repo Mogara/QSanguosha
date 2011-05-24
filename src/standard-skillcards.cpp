@@ -272,7 +272,13 @@ void JijiangCard::use(Room *room, ServerPlayer *liubei, const QList<ServerPlayer
         slash = room->askForCard(liege, "slash", "@jijiang-slash");
         if(slash){
             liubei->invoke("increaseSlashCount");
-            room->cardEffect(slash, liubei, targets.first());
+
+            CardUseStruct card_use;
+            card_use.card = slash;
+            card_use.from = liubei;
+            card_use.to << targets.first();
+
+            room->useCard(card_use);
             return;
         }
     }
