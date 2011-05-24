@@ -544,7 +544,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if(provided){
         card = provided;
         provided = NULL;
-    }else if(!pattern.startsWith("@") || !player->isKongcheng()){
+    }else if(pattern.startsWith("@") || !player->isNude()){
         AI *ai = player->getAI();
         if(ai){
             thread->delay(Config.AIDelay);
