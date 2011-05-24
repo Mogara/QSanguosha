@@ -79,7 +79,7 @@ public:
                     }
                 }
 
-                break;
+                return true;
             }
 
         case Death:{
