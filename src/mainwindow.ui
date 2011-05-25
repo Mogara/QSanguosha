@@ -41,6 +41,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionScript_editor"/>
+    <addaction name="actionCard_editor"/>
     <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
@@ -255,6 +256,9 @@
    </property>
   </action>
   <action name="actionScript_editor">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Script editor</string>
    </property>
@@ -298,6 +302,11 @@
   <action name="actionRevive_wand">
    <property name="text">
     <string>Revive wand ...</string>
+   </property>
+  </action>
+  <action name="actionCard_editor">
+   <property name="text">
+    <string>Card editor ...</string>
    </property>
   </action>
  </widget>

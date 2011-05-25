@@ -71,7 +71,8 @@ SOURCES += src/main.cpp \
     src/yjcm-package.cpp \
     src/roomthread3v3.cpp \
     src/cardcontainer.cpp \
-    src/roomthread1v1.cpp
+    src/roomthread1v1.cpp \
+    src/cardeditor.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -139,7 +140,8 @@ HEADERS += src/mainwindow.h \
     src/yjcm-package.h \
     src/roomthread3v3.h \
     src/cardcontainer.h \
-    src/roomthread1v1.h
+    src/roomthread1v1.h \
+    src/cardeditor.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
