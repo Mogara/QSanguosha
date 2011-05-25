@@ -308,8 +308,9 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.from->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-    const Card *card = Sanguosha->getCard(card_id);
-    room->moveCardTo(card, effect.from, Player::Hand, false);
+    const Card *card = Sanguosha->getCard(card_id);    
+    bool is_public = room->getCardPlace(card_id) != Player::Hand;
+    room->moveCardTo(card, effect.from, Player::Hand, is_public ? true : false);
 
     QList<ServerPlayer *> targets = room->getOtherPlayers(effect.to);
     ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "xuanhuo");

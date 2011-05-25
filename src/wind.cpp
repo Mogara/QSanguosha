@@ -455,7 +455,7 @@ public:
         default_choice = "alive";
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &) const{
         Room *room = zhoutai->getRoom();
         QList<int> &buqu = zhoutai->getPile("buqu");
 
