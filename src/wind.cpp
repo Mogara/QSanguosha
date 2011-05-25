@@ -103,7 +103,23 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isNude();
+        if(!TriggerSkill::triggerable(target))
+            return false;
+
+        if(target->isKongcheng()){
+            bool has_black = false;
+            int i;
+            for(i=0; i<4; i++){
+                const EquipCard *equip = target->getEquip(i);
+                if(equip && equip->isBlack()){
+                    has_black = true;
+                    break;
+                }
+            }
+
+            return has_black;
+        }else
+            return true;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
