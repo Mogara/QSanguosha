@@ -10,6 +10,15 @@
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QGraphicsPixmapItem>
+#include <QFontDatabase>
+
+class BlackEdgeTextItem: public QGraphicsTextItem{
+public:
+    BlackEdgeTextItem();
+
+protected:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+};
 
 class CardScene: public QGraphicsScene{
     Q_OBJECT
@@ -25,6 +34,9 @@ public slots:
     void setTitle(const QString &title);
     void setMaxHp(int max_hp);
     void setRatio(int ratio);
+
+    void setNameFont(const QString &family);
+    void setTitleFont(const QString &family);
 
 private:
     QGraphicsPixmapItem *photo, *frame;
@@ -50,6 +62,7 @@ private:
 
     QGroupBox *createLeft();
     QWidget *createSkillTab();
+    QComboBox *createFontCombobox(const QFontDatabase &db);
 
 private slots:
     void setCardFrame();

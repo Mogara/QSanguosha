@@ -1,6 +1,7 @@
 #include "cardeditor.h"
 #include "mainwindow.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -8,19 +9,50 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCommandLinkButton>
+#include <QFontDatabase>
+#include <QGraphicsDropShadowEffect>
+#include <QLabel>
 
 CardScene::CardScene()
     :QGraphicsScene(QRectF(0, 0, 366, 514))
 {
     photo = new QGraphicsPixmapItem;
     frame = new QGraphicsPixmapItem;
+
     name = new QGraphicsTextItem;
+    name->setFlag(QGraphicsItem::ItemIsMovable);
+    name->setPos(28, 206);
+    name->setTextWidth(36);
+    name->setDefaultTextColor(Qt::white);
+
+    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
+    effect->setXOffset(-1);
+    effect->setYOffset(-1);
+    effect->setBlurRadius(10);
+    effect->setColor(Qt::black);
+
+
+    name->setGraphicsEffect(effect);
+
     title = new QGraphicsTextItem;
+
+
+    photo->setFlag(QGraphicsItem::ItemIsMovable);
 
     addItem(photo);
     addItem(frame);
     addItem(name);
     addItem(title);
+
+    int i;
+    for(i=0; i<8; i++){
+        QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
+        magatamas << item;
+        item->hide();
+        addItem(item);
+
+        item->setPos(94 + i*(115-94), 18);
+    }
 }
 
 void CardScene::setFrame(const QString &kingdom, bool is_lord){
@@ -31,6 +63,10 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
         path = QString("diy/%1.png").arg(kingdom);
 
     frame->setPixmap(QPixmap(path));
+
+    foreach(QGraphicsPixmapItem *item, magatamas){
+        item->setPixmap(QPixmap(QString("diy/%1-magatama.png").arg(kingdom)));
+    }
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
@@ -38,6 +74,16 @@ void CardScene::setGeneralPhoto(const QString &filename){
 }
 
 void CardScene::setName(const QString &name){
+    this->name->setPlainText(name);
+}
+
+void CardScene::setNameFont(const QString &family){
+    QFont font(family);
+    font.setPointSize(36);
+    name->setFont(font);
+}
+
+void CardScene::setTitleFont(const QString &family){
 
 }
 
@@ -45,8 +91,13 @@ void CardScene::setTitle(const QString &title){
 
 }
 
-void CardScene::setMaxHp(int max_hp){
+void CardScene::setMaxHp(int max_hp){    
+    int n = magatamas.length();
+    max_hp = qBound(0, max_hp, n-1);
 
+    int i;
+    for(i=0; i<n; i++)
+        magatamas.at(i)->setVisible(i < max_hp);
 }
 
 void CardScene::setRatio(int ratio){
@@ -84,8 +135,13 @@ QGroupBox *CardEditor::createLeft(){
     QGroupBox *box = new QGroupBox;
     box->setTitle(tr("Properties"));
 
+    QFontDatabase db;
+
     name_edit = new QLineEdit;
+    QComboBox *name_font_combobox = createFontCombobox(db);
+
     title_edit = new QLineEdit;
+    QComboBox *title_font_combobox = createFontCombobox(db);
 
     kingdom_combobox = new QComboBox;
     lord_checkbox = new QCheckBox(tr("Lord"));
@@ -105,10 +161,17 @@ QGroupBox *CardEditor::createLeft(){
     ratio_spinbox->setSuffix(" %");
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Name"), name_edit);
-    layout->addRow(tr("Title"), title_edit);
-    layout->addRow(tr("Kingdom"), HLay(kingdom_combobox, lord_checkbox));
-    layout->addRow(tr("Max HP"), hp_spinbox);
+    layout->addRow(tr("Name"), HLay(name_edit, name_font_combobox));
+    layout->addRow(tr("Title"), HLay(title_edit, title_font_combobox));
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(new QLabel(tr("Kingdom")));
+    hlayout->addWidget(kingdom_combobox);
+    hlayout->addWidget(lord_checkbox);
+    hlayout->addWidget(new QLabel(tr("Max HP")));
+    hlayout->addWidget(hp_spinbox);
+    layout->addRow(hlayout);
+
     layout->addRow(tr("General"), HLay(browse_button, ratio_spinbox));
 
     skill_tabs = new QTabWidget;
@@ -132,14 +195,29 @@ QGroupBox *CardEditor::createLeft(){
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveImage()));
+    connect(name_font_combobox, SIGNAL(currentIndexChanged(QString)), card_scene, SLOT(setNameFont(QString)));
+    connect(title_font_combobox, SIGNAL(currentIndexChanged(QString)), card_scene, SLOT(setTitleFont(QString)));
 
     box->setLayout(layout);
     return box;
 }
 
+QComboBox *CardEditor::createFontCombobox(const QFontDatabase &db){
+    QComboBox *combobox = new QComboBox;
+    QStringList families = db.families(QFontDatabase::SimplifiedChinese);
+    families << db.families(QFontDatabase::TraditionalChinese);
+    families.sort();
+    combobox->addItems(families);
+
+    return combobox;
+}
+
 void CardEditor::setCardFrame(){
     QString kingdom = kingdom_combobox->itemData(kingdom_combobox->currentIndex()).toString();
-    card_scene->setFrame(kingdom, lord_checkbox->isChecked());
+    if(kingdom == "god")
+        card_scene->setFrame("god", false);
+    else
+        card_scene->setFrame(kingdom, lord_checkbox->isChecked());
 }
 
 QWidget *CardEditor::createSkillTab(){
