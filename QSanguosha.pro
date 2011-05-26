@@ -73,7 +73,6 @@ SOURCES += src/main.cpp \
     src/cardcontainer.cpp \
     src/roomthread1v1.cpp \
     src/cardeditor.cpp \
-    src/zombie-package.cpp \
     src/zombie-mode-scenario.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
@@ -144,7 +143,6 @@ HEADERS += src/mainwindow.h \
     src/cardcontainer.h \
     src/roomthread1v1.h \
     src/cardeditor.h \
-    src/zombie-package.h \
     src/zombie-mode-scenario.h
 
 FORMS += src/mainwindow.ui \

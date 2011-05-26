@@ -2,11 +2,228 @@
 #include "zombie-mode-scenario.h"
 #include "engine.h"
 #include "standard-skillcards.h"
-#include "zombie-package.h"
 #include "clientplayer.h"
 #include "client.h"
 #include "carditem.h"
 
+class ZombieRule: public ScenarioRule{
+public:
+    ZombieRule(Scenario *scenario)
+        :ScenarioRule(scenario)
+    {
+        events << Death << GameOverJudge << TurnStart;
+    }
+
+    void zombify(ServerPlayer *player, ServerPlayer *killer = NULL) const{
+        Room *room = player->getRoom();
+        room->setPlayerProperty(player, "general2", "zombie");
+        room->getThread()->addPlayerSkills(player, true);
+
+        int maxhp = killer ? (killer->getMaxHP() + 1)/2 : 5;
+        room->setPlayerProperty(player, "maxhp", maxhp);
+        room->setPlayerProperty(player, "hp", player->getMaxHP());
+        room->setPlayerProperty(player, "role", "rebel");
+
+        if(player->getState() == "online")
+            player->setState("robot");
+
+        QString gender = player->getGeneral()->isMale() ? "male" : "female";
+        room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        switch(event){
+        case GameOverJudge:{
+                QStringList roles = room->aliveRoles(player);
+                foreach(QString role, roles){
+                    if(role == "loyalist" || role == "lord")
+                        return true;
+                }
+
+                break;
+            }
+
+        case Death:{
+            if(player->isLord()){
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if(p->getRoleEnum()==Player::Loyalist){
+                        room->setPlayerProperty(player, "role", "loyalist");
+                        room->setPlayerProperty(p, "role", "lord");
+
+                        break;
+                    }
+                }
+            }
+
+            DamageStar damage = data.value<DamageStar>();
+            if(damage && damage->from){
+                ServerPlayer *killer = damage->from;
+
+                if(killer == player)
+                    return false;
+
+                if(killer->getRole() == "loyalist" && player->getRole() == "rebel"){
+                    RecoverStruct recover;
+                    recover.who = killer;
+                    recover.recover = killer->getLostHp();
+                    room->recover(killer, recover);
+
+                    return false;
+                }
+
+                if(killer->getRole() == "rebel" && player->getRole() != "rebel"){
+                    zombify(player, killer);
+                    player->getRoom()->revivePlayer(player);
+
+                    player->throwAllCards();
+                    player->drawCards(3);
+
+                    return false;
+                }
+            }
+
+            break;
+        }
+
+        case TurnStart:{                
+                int round = room->getTag("Round").toInt();
+                if(player->isLord()){
+                    room->setTag("Round", ++round);
+
+                    if(round > 9)
+                        room->gameOver("lord+loyalist");
+                    else if(round == 2){
+                        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+                        qShuffle(players);
+
+                        zombify(players.at(0));
+                        room->getThread()->delay();
+                        zombify(players.at(1));
+                        room->getThread()->delay();
+                    }
+                }
+            }
+
+        default:
+            break;
+        }
+
+        return false;
+    }
+};
+
+bool ZombieScenario::exposeRoles() const{
+    return true;
+}
+
+void ZombieScenario::assign(QStringList &generals, QStringList &roles) const{
+    Q_UNUSED(generals);
+
+    roles << "lord";
+    int i;
+    for(i=0; i<7; i++)
+        roles << "loyalist";
+
+    qShuffle(roles);
+}
+
+int ZombieScenario::getPlayerCount() const{
+    return 8;
+}
+
+void ZombieScenario::getRoles(char *roles) const{
+    strcpy(roles, "ZCCCCCCC");
+}
+
+void ZombieScenario::onTagSet(Room *room, const QString &key) const{
+    // dummy
+}
+
+class Zaibian: public DrawCardsSkill{
+public:
+    Zaibian():DrawCardsSkill("zaibian"){
+        frequency = Compulsory;
+    }
+
+    int getNumDiff(ServerPlayer *zombie) const{
+        int human = 0, zombies = 0;
+        foreach(ServerPlayer *player, zombie->getRoom()->getAlivePlayers()){
+            switch(player->getRoleEnum()){
+            case Player::Lord:
+            case Player::Loyalist: human ++; break;
+            case Player::Rebel: zombies ++; break;
+            default:
+                break;
+            }
+        }
+
+        int x = human - zombies + 1;
+        if(x < 0)
+            return 0;
+        else
+            return x;
+    }
+
+    virtual int getDrawNum(ServerPlayer *zombie, int n) const{
+        int x = getNumDiff(zombie);
+        if(x > 0){
+            Room *room = zombie->getRoom();
+            LogMessage log;
+            log.type = "#ZaibianGood";
+            log.from = zombie;
+            log.arg = QString::number(x);
+            room->sendLog(log);
+        }
+
+        return n + x;
+    }
+};
+
+class Xunmeng: public TriggerSkill{
+public:
+    Xunmeng():TriggerSkill("xunmeng"){
+        events << Predamage;
+
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        const Card *reason = damage.card;
+        if(reason == NULL)
+            return false;
+
+        if(reason->inherits("Slash")){
+            LogMessage log;
+            log.type = "#Xunmeng";
+            log.from = zombie;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            zombie->getRoom()->sendLog(log);
+
+            if(zombie->getHp()>2)zombie->getRoom()->loseHp(zombie);
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
+PeachingCard::PeachingCard()
+    :QingnangCard()
+{
+
+}
+
+bool PeachingCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    if(targets.length() > 0)return false;
+    return to_select->isWounded() && (Self->distanceTo(to_select) <= 1);
+}
 
 class Peaching: public OneCardViewAsSkill{
 public:
@@ -30,226 +247,52 @@ public:
     }
 };
 
-class ZombieRule: public ScenarioRule{
+GanranEquip::GanranEquip(Card::Suit suit, int number)
+    :IronChain(suit, number)
+{
+
+}
+
+bool GanranEquip::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    return false;
+}
+
+class Ganran: public FilterSkill{
 public:
-
-    ZombieRule(Scenario *scenario)
-        :ScenarioRule(scenario)
-    {
-        events << GameStart << Death << GameOverJudge << TurnStart;
-
-
+    Ganran():FilterSkill("ganran"){
 
     }
 
-    bool zombify(ServerPlayer *player, Room *room,ServerPlayer *killer=NULL) const{
-        player->setGeneral2Name(player->getGeneralName());
-        player->sendProperty("general2");
-        room->broadcastProperty(player, "general2");
-
-        QList<const TriggerSkill *> skills = player->getTriggerSkills();
-        room->transfigure(player,"zombie",true);
-
-//        QVariant void_data;
-
-//        foreach(const TriggerSkill *skill, skills){
-//            if(skill->isLordSkill()){
-//                    continue;
-//            }
-//            room->getThread()->addTriggerSkill(skill);
-
-//            if(skill->getTriggerEvents().contains(GameStart))
-//                skill->trigger(GameStart, player, void_data);
-//        }
-
-        if(killer)
-        {
-            int hp=killer->getMaxHP();
-            if(hp%2)hp++;
-            player->setMaxHP(hp/2);
-            room->broadcastProperty(player, "maxhp");
-        }else
-        {
-            player->setMaxHP(5);
-            room->broadcastProperty(player, "maxhp");
-        }
-        player->setHp(player->getMaxHP());
-        room->broadcastProperty(player, "hp");
-        return false;
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getCard()->getTypeId() == Card::Equip;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        switch(event)
-        {
-        case GameStart:{
-            Room *room = player->getRoom();
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getCard();
+        GanranEquip *ironchain = new GanranEquip(card->getSuit(), card->getNumber());
+        ironchain->addSubcard(card_item->getCard()->getId());
+        ironchain->setSkillName(objectName());
 
-            QVariant data = QVariant::fromValue(0);
-
-            player->getRoom()->setTag("rounds",data);
-
-            if(player->getRole() == "rebel" )
-            {
-                data = player->getRoom()->getTag("MotherZombie");
-
-                QString name=data.toString();
-
-                data = QVariant::fromValue(player->objectName());
-
-                if(name.length()>0)player->getRoom()->setTag("FatherZombie",data);
-                else player->getRoom()->setTag("MotherZombie",data);
-                //zombify(player,room);
-
-                player->setProperty("role","loyalist");
-                player->sendProperty("role");
-
-            }else
-            {
-                room->acquireSkill(player, new Peaching);
-            }
-            break;
-        }
-        case GameOverJudge:{
-
-                Room *room = player->getRoom();
-                QStringList roles = room->aliveRoles(player);
-                for(int i=0;i<roles.length();i++){
-                    if(roles.at(i)=="loyalist" || roles.at(i)=="lord"){
-                        return true;
-                    }
-                }
-
-            break;
-        }
-        case Death:{
-            if(player->isLord())
-            {
-                foreach(ServerPlayer *p,player->getRoom()->getAlivePlayers())
-                {
-                    if(p->getRoleEnum()==Player::Loyalist)
-                    {
-                        player->setProperty("role","loyalist");
-                        player->sendProperty("role");
-                        player->getRoom()->broadcastProperty(player, "role");
-
-                        p->setProperty("role","lord");
-                        p->sendProperty("role");
-                        p->getRoom()->broadcastProperty(player, "role");
-                        break;
-                    }
-                }
-            }
-            DamageStar damage = data.value<DamageStar>();
-                if(damage && damage->from){
-                    ServerPlayer *killer = damage->from;
-
-                    if(killer == player)
-                        return false;
-
-                    if(player->getRoleEnum()==Player::Rebel)
-                    {
-                        if(!(killer->getRoleEnum()==Player::Rebel))killer->setHp(killer->getMaxHP());
-                        return false;
-                    }
-
-                    if(killer->getGeneralName()=="zombie")
-                    {
-                        player->getRoom()->revivePlayer(player);
-                        zombify(player,player->getRoom(),killer);
-                        player->setProperty("role","rebel");
-                        player->sendProperty("role");
-                        player->getRoom()->broadcastProperty(player, "role");
-                        player->throwAllHandCards();
-                        player->throwAllEquips();
-                        player->drawCards(3);
-                        return true;
-                    }
-                    killer->throwAllHandCards();
-                    killer->throwAllEquips();
-                    return true;
-                }
-
-            break;
-
-        }
-        case TurnStart:{
-
-            QVariant data = player->getRoom()->getTag("rounds");
-            int rc=data.toInt();
-
-            if(player->isLord())
-            {
-                if(rc>9)player->getRoom()->gameOver("lord+loyalist");
-                else {
-                    rc++;
-                    data=QVariant::fromValue(rc);
-                    player->getRoom()->setTag("rounds",data);
-                }
-            }
-
-            data=player->getRoom()->getTag("MotherZombie");
-            QString name1=data.toString();
-            data=player->getRoom()->getTag("FatherZombie");
-            QString name2=data.toString();
-
-            if(player->objectName().compare(&name1)==0 || player->objectName().compare(&name2)==0)
-            {
-                if(rc>1 &&!(player->getGeneralName()=="zombie"))
-                {
-                    player->setProperty("role","rebel");
-                    player->sendProperty("role");
-                    player->getRoom()->broadcastProperty(player, "role");
-                    zombify(player,player->getRoom());
-                }
-
-            }
-        }
-        default:break;
-        }
-        return false;
+        return ironchain;
     }
 };
 
 ZombieScenario::ZombieScenario()
     :Scenario("zombie_m")
 {
-    females << "zhenji" << "huangyueying" << "zhurong"
-            << "daqiao" << "luxun" << "xiaoqiao"
-            << "diaochan" << "caizhaoji" << "sunshangxiang";
-
-    standard_roles << "lord" << "loyalist" << "loyalist"
-            << "loyalist" << "loyalist" << "loyalist" << "rebel" << "rebel";
-
     rule = new ZombieRule(this);
 
     skills<< new Peaching;
 
+    General *zombie = new General(this,"zombie","zombies",3, true, true);
+    zombie->addSkill(new Xunmeng);
+    zombie->addSkill(new Skill("yicong", Skill::Compulsory));
+    zombie->addSkill(new Skill("paoxiao"));
+    zombie->addSkill(new Ganran);
+    zombie->addSkill(new Zaibian);
+    zombie->addSkill(new Skill("wansha", Skill::Compulsory));
 
-}
-
-bool ZombieScenario::exposeRoles() const{
-    return false;
-}
-
-void ZombieScenario::assign(QStringList &generals, QStringList &roles) const{
-//    generals = females;
-//    qShuffle(generals);
-//    generals.removeLast();
-
-    roles = standard_roles;
-    qShuffle(roles);
-}
-
-int ZombieScenario::getPlayerCount() const{
-    return 8;
-}
-
-void ZombieScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZCCCCCCC");
-}
-
-void ZombieScenario::onTagSet(Room *room, const QString &key) const{
-    // dummy
+    addMetaObject<PeachingCard>();
 }
 
 ADD_SCENARIO(Zombie)

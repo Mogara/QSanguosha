@@ -5,13 +5,15 @@
 
 #include <QHBoxLayout>
 #include <QFormLayout>
-#include <QTextEdit>
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCommandLinkButton>
 #include <QFontDatabase>
 #include <QLabel>
 #include <QFontComboBox>
+#include <QGraphicsSceneMouseEvent>
+#include <QApplication>
+#include <QCursor>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white)
@@ -81,7 +83,6 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
 SkillBox::SkillBox()
     :middle_height(0)
 {
-    setFlag(ItemIsMovable);
 }
 
 void SkillBox::setKingdom(const QString &kingdom){
@@ -91,10 +92,15 @@ void SkillBox::setKingdom(const QString &kingdom){
 }
 
 void SkillBox::setMiddleHeight(int height){
-    if(height == -1)
+    if(height < 0){
         middle_height = middle.height();
-    else
+        prepareGeometryChange();
+    }
+
+    if(height >= middle.height()){
         middle_height = height;
+        prepareGeometryChange();
+    }
 }
 
 QRectF SkillBox::boundingRect() const{
@@ -108,6 +114,21 @@ void SkillBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->drawPixmap(0, -down.height(), down);
     painter->drawTiledPixmap(0, -down.height()-middle_height, middle.width(), middle_height, middle);
     painter->drawPixmap(0, -down.height()-middle_height-up.height(), up);
+
+
+}
+
+void SkillBox::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
+}
+
+void SkillBox::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+    int diff = event->pos().y() - event->lastPos().y();
+    setMiddleHeight(middle_height - diff);
+}
+
+void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
+    QApplication::restoreOverrideCursor();
 }
 
 CardScene::CardScene()
@@ -300,7 +321,7 @@ QGroupBox *CardEditor::createLeft(){
 
     int i;
     for(i=1; i<=4; i++){
-        skill_tabs->addTab(createSkillTab(), tr("Skill %1").arg(i));
+        skill_tabs->addTab(new SkillTab, tr("Skill %1").arg(i));
     }
 
     layout->addRow(skill_tabs);
@@ -336,19 +357,27 @@ void CardEditor::setCardFrame(){
         card_scene->setFrame(kingdom, lord_checkbox->isChecked());
 }
 
-QWidget *CardEditor::createSkillTab(){
-    QWidget *tab = new QWidget;
+SkillTab::SkillTab()
+{
     QFormLayout *layout = new QFormLayout;
 
-    QLineEdit *skill_name_edit = new QLineEdit;
-    QTextEdit *description_edit = new QTextEdit;
+    name_edit = new QLineEdit;
+    description_edit = new QTextEdit;
 
-    layout->addRow(tr("Name"), skill_name_edit);
+    layout->addRow(tr("Name"), name_edit);
     layout->addRow(tr("Description"), description_edit);
 
-    tab->setLayout(layout);
+    setLayout(layout);
 
-    return tab;
+    connect(name_edit, SIGNAL(textChanged(QString)), this, SLOT(setDocTitle(QString)));
+}
+
+QTextDocument *SkillTab::getDoc() const{
+    return description_edit->document();
+}
+
+void SkillTab::setDocTitle(const QString &title){
+    description_edit->setDocumentTitle(title);
 }
 
 void CardEditor::browseGeneralPhoto(){

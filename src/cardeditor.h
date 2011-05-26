@@ -11,6 +11,7 @@
 #include <QTabWidget>
 #include <QGraphicsPixmapItem>
 #include <QFontDatabase>
+#include <QTextEdit>
 
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
@@ -48,6 +49,9 @@ public:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     int middle_height;
@@ -84,6 +88,21 @@ private:
     SkillBox *skill_box;
 };
 
+class SkillTab: public QWidget{
+    Q_OBJECT
+
+public:
+    SkillTab();
+    QTextDocument *getDoc() const;
+
+private:
+    QLineEdit *name_edit;
+    QTextEdit *description_edit;
+
+private slots:
+    void setDocTitle(const QString &title);
+};
+
 class CardEditor : public QDialog
 {
     Q_OBJECT
@@ -101,7 +120,6 @@ private:
     QTabWidget *skill_tabs;
 
     QGroupBox *createLeft();
-    QWidget *createSkillTab();
 
 private slots:
     void setCardFrame();

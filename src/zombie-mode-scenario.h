@@ -4,8 +4,6 @@
 #include "scenario.h"
 #include "standard-skillcards.h"
 #include "maneuvering.h"
-#include "zombie-package.h"
-
 
 class ZombieScenario : public Scenario{
     Q_OBJECT
@@ -22,8 +20,23 @@ public:
 
 private:
     QStringList females;
-    QStringList standard_roles;
-
 };
+
+class GanranEquip: public IronChain{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GanranEquip(Card::Suit suit, int number);
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+};
+
+class PeachingCard: public QingnangCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PeachingCard();
+    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+};
+
 
 #endif // DUMMYHONYANSCENATIO_H
