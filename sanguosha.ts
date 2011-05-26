@@ -45,80 +45,82 @@
 <context>
     <name>CardEditor</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="64"/>
+        <location filename="src/cardeditor.cpp" line="227"/>
         <source>Card editor</source>
         <translation>卡牌编辑器</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="84"/>
+        <location filename="src/cardeditor.cpp" line="245"/>
         <source>Properties</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="90"/>
+        <location filename="src/cardeditor.cpp" line="254"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="100"/>
+        <location filename="src/cardeditor.cpp" line="264"/>
         <source>Photo file ...</source>
         <translation>武将头像 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="107"/>
-        <location filename="src/cardeditor.cpp" line="151"/>
+        <location filename="src/cardeditor.cpp" line="271"/>
+        <location filename="src/cardeditor.cpp" line="310"/>
+        <location filename="src/cardeditor.cpp" line="331"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="108"/>
+        <location filename="src/cardeditor.cpp" line="272"/>
+        <location filename="src/cardeditor.cpp" line="311"/>
         <source>Title</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="109"/>
+        <location filename="src/cardeditor.cpp" line="275"/>
         <source>Kingdom</source>
         <translation>势力</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="110"/>
+        <location filename="src/cardeditor.cpp" line="278"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="111"/>
+        <location filename="src/cardeditor.cpp" line="282"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="117"/>
+        <location filename="src/cardeditor.cpp" line="288"/>
         <source>Skill %1</source>
         <translation>技能 %1</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="122"/>
+        <location filename="src/cardeditor.cpp" line="293"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="123"/>
+        <location filename="src/cardeditor.cpp" line="294"/>
         <source>Save the image</source>
         <translation>保存图像</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="152"/>
+        <location filename="src/cardeditor.cpp" line="332"/>
         <source>Description</source>
         <translation>描述</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="161"/>
-        <location filename="src/cardeditor.cpp" line="172"/>
+        <location filename="src/cardeditor.cpp" line="341"/>
+        <location filename="src/cardeditor.cpp" line="352"/>
         <source>Select a photo file ...</source>
         <translation>选择一张武将的图像 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="163"/>
-        <location filename="src/cardeditor.cpp" line="174"/>
+        <location filename="src/cardeditor.cpp" line="343"/>
+        <location filename="src/cardeditor.cpp" line="354"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
@@ -1397,6 +1399,11 @@
         <location filename="src/mainwindow.ui" line="309"/>
         <source>Card editor ...</source>
         <translation>卡牌编辑器 ...</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="312"/>
+        <source>Ctrl+T</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="src/mainwindow.ui" line="224"/>

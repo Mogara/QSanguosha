@@ -12,12 +12,46 @@
 #include <QGraphicsPixmapItem>
 #include <QFontDatabase>
 
-class BlackEdgeTextItem: public QGraphicsTextItem{
+class BlackEdgeTextItem: public QGraphicsObject{
+    Q_OBJECT
+
 public:
     BlackEdgeTextItem();
+    void setText(const QString &text);
+    void setFont(const QFont &font);
+    void setColor(const QColor &color);
+
+public slots:
+    void setSkip(int skip);
+
+    virtual QRectF boundingRect() const;
+
+protected:    
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    QString text;
+    QFont font;
+    int skip;
+    QColor color;
+};
+
+class SkillBox: public QGraphicsObject{
+    Q_OBJECT
+
+public:
+    SkillBox();
+    void setKingdom(const QString &kingdom);
+    void setMiddleHeight(int height);
+
+    virtual QRectF boundingRect() const;
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    int middle_height;
+    QPixmap up, middle, down;
 };
 
 class CardScene: public QGraphicsScene{
@@ -38,10 +72,16 @@ public slots:
     void setNameFont(const QString &family);
     void setTitleFont(const QString &family);
 
+#ifdef QT_DEBUG
+protected:
+    virtual void keyPressEvent(QKeyEvent *);
+#endif
+
 private:
     QGraphicsPixmapItem *photo, *frame;
     QList<QGraphicsPixmapItem *> magatamas;
-    QGraphicsTextItem *name, *title;
+    BlackEdgeTextItem *name, *title;
+    SkillBox *skill_box;
 };
 
 class CardEditor : public QDialog
@@ -62,7 +102,6 @@ private:
 
     QGroupBox *createLeft();
     QWidget *createSkillTab();
-    QComboBox *createFontCombobox(const QFontDatabase &db);
 
 private slots:
     void setCardFrame();
