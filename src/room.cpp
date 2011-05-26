@@ -823,6 +823,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
 
     thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
+    broadcastProperty(player,"general");
     thread->addPlayerSkills(player, invoke_start);
 
     player->setMaxHP(player->getGeneralMaxHP());
@@ -939,7 +940,7 @@ void Room::timerEvent(QTimerEvent *event){
     }else{
         killTimer(event->timerId());
 
-        if(scenario)
+        if(scenario && !scenario->inherits("ZombieScenario"))
             startGame();
         else if(mode == "06_3v3"){
             thread_3v3 = new RoomThread3v3(this);
@@ -974,10 +975,14 @@ void Room::prepareForStart(){
         int i;
         for(i=0; i<players.length(); i++){
             ServerPlayer *player = players.at(i);
-            player->setGeneralName(generals.at(i));
+            if(generals.length()>0)
+            {
+                player->setGeneralName(generals.at(i));
+                broadcastProperty(player, "general");
+            }
             player->setRole(roles.at(i));
 
-            broadcastProperty(player, "general");
+
 
             if(player->isLord())
                 broadcastProperty(player, "role");
@@ -1666,6 +1671,8 @@ void Room::sendDamageLog(const DamageStruct &data){
 bool Room::hasWelfare(const ServerPlayer *player) const{
     if(mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
+    else if (scenario && scenario->inherits("ZombieScenario"))
+        return false;
     else
         return player->isLord() && player_count > 4;
 }
@@ -1688,7 +1695,7 @@ void Room::startGame(){
         tag.insert("StartTime", QDateTime::currentDateTime());
 
     int i;
-    if(scenario == NULL){
+    if(true){
         int start_index = 1;
         if(mode == "06_3v3" || mode == "02_1v1")
             start_index = 0;

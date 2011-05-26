@@ -30,6 +30,7 @@ extern "C" {
     Package *NewWind();
     Package *NewFire();
     Package *NewThicket();
+    Package *NewZombie();
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
@@ -42,6 +43,7 @@ extern "C" {
     Scenario *NewFanchengScenario();
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
+    Scenario *NewZombieScenario();
 }
 
 extern "C" {
@@ -56,6 +58,7 @@ Engine::Engine()
     addPackage(NewWind());
     addPackage(NewFire());
     addPackage(NewThicket());
+    addPackage(NewZombie());
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
@@ -75,6 +78,7 @@ Engine::Engine()
     addScenario(NewFanchengScenario());
     addScenario(NewCoupleScenario());
     addScenario(NewHongyanScenario());
+    addScenario(NewZombieScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");
