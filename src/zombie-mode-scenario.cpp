@@ -25,7 +25,7 @@ public:
         room->setPlayerProperty(player, "role", "rebel");
         player->loseSkill("peaching");
 
-        if(player->getState() == "online")
+        if((player->getState() == "online" || player->getState() == "trust") && (maxhp<5))
             player->setState("robot");
 
         QString gender = player->getGeneral()->isMale() ? "male" : "female";
@@ -106,9 +106,13 @@ public:
 
                         zombify(players.at(0));
                         room->getThread()->delay();
-                        zombify(players.at(1));
-                        room->getThread()->delay();
+                        room->setTag("SurpriseZombie", players.at(1)->objectName());
                     }
+                }else if(round==2 && player->objectName().compare(room->getTag("SurpriseZombie").toString())==0)
+                {
+                    zombify(player);
+                    room->setTag("SurpriseZombie",NULL);
+                    room->getThread()->delay();
                 }
             }
 
