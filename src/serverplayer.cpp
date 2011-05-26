@@ -481,8 +481,10 @@ void ServerPlayer::setAI(AI *ai) {
 }
 
 AI *ServerPlayer::getAI() const{
-    if(getState() == "online")
+    if((getGeneralName()=="zombie") && (getMaxHP()<5))return ai;
+    if(getState() == "online"){
         return NULL;
+    }
     else if(getState() == "trust" && !Config.FreeChoose)
         return trust_ai;
     else
@@ -547,6 +549,7 @@ int ServerPlayer::getGeneralMaxHP() const{
 bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
     if(room->getMode() == "06_3v3")
         return false;
-    else
+    else if(room->hasWelfare(this))
         return isLord() && hasSkill(skill_name);
+    return false;
 }
