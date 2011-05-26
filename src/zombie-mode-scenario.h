@@ -1,5 +1,5 @@
-#ifndef DUMMYHONYANSCENATIO_H
-#define DUMMYHONYANSCENATIO_H
+#ifndef ZOMBIE_MODE_H
+#define ZOMBIE_MODE_H
 
 #include "scenario.h"
 #include "standard-skillcards.h"
@@ -9,7 +9,6 @@ class ZombieScenario : public Scenario{
     Q_OBJECT
 
 public:
-
     explicit ZombieScenario();
 
     virtual bool exposeRoles() const;
@@ -39,4 +38,4 @@ public:
 };
 
 
-#endif // DUMMYHONYANSCENATIO_H
+#endif // ZOMBIE_MODE_H

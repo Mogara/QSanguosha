@@ -11,7 +11,7 @@ public:
     ZombieRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << Death << GameOverJudge << TurnStart;
+        events << GameStart << Death << GameOverJudge << TurnStart;
     }
 
     void zombify(ServerPlayer *player, ServerPlayer *killer = NULL) const{
@@ -23,6 +23,7 @@ public:
         room->setPlayerProperty(player, "maxhp", maxhp);
         room->setPlayerProperty(player, "hp", player->getMaxHP());
         room->setPlayerProperty(player, "role", "rebel");
+        player->loseSkill("peaching");
 
         if(player->getState() == "online")
             player->setState("robot");
@@ -35,6 +36,11 @@ public:
         Room *room = player->getRoom();
 
         switch(event){
+        case GameStart:{
+                room->acquireSkill(player, "peaching");
+                break;
+            }
+
         case GameOverJudge:{
                 QStringList roles = room->aliveRoles(player);
                 foreach(QString role, roles){
