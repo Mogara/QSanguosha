@@ -328,7 +328,7 @@ public:
 };
 
 ZombieScenario::ZombieScenario()
-    :Scenario("zombie_m")
+    :Scenario("zombie_mode")
 {
     rule = new ZombieRule(this);
 
