@@ -14,6 +14,7 @@ public:
     void changePixmap(const QString &name);
     void shift();
     void makeGray();
+    void scaleSmoothly(qreal ratio);
 
     bool isMarked() const;
     bool isMarkable() const;

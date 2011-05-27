@@ -3264,7 +3264,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names){
         }
 
         CardItem *general_item = general_items.at(i);
-        general_item->setScale(0.4);
+        general_item->scaleSmoothly(0.4);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());
@@ -3300,7 +3300,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
         }
 
         CardItem *general_item = new CardItem(names.at(i));
-        general_item->setScale(0.4);
+        general_item->scaleSmoothly(0.4);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());

@@ -59,6 +59,14 @@ void Pixmap::makeGray(){
     MakeGray(pixmap);
 }
 
+void Pixmap::scaleSmoothly(qreal ratio){
+    qreal width = pixmap.width() * ratio;
+    qreal height = pixmap.height() * ratio;
+    pixmap = pixmap.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    prepareGeometryChange();
+}
+
 void Pixmap::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     painter->drawPixmap(0, 0, pixmap);
 }

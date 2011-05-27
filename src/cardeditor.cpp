@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "settings.h"
 
-#include <QHBoxLayout>
 #include <QFormLayout>
 #include <QPushButton>
 #include <QFileDialog>
@@ -29,12 +28,14 @@ QRectF BlackEdgeTextItem::boundingRect() const{
 
     QRectF rect;
     rect.setWidth(metric.width(text.at(0)));
-    rect.setHeight(text.length() * (metric.height() - metric.descent() + skip));
+    rect.setHeight(text.length() * (metric.height() - metric.descent() + skip) + 10);
     return rect;
 }
 
 void BlackEdgeTextItem::setSkip(int skip){
     this->skip = skip;
+
+    prepareGeometryChange();
 }
 
 void BlackEdgeTextItem::setColor(const QColor &color){
@@ -44,13 +45,19 @@ void BlackEdgeTextItem::setColor(const QColor &color){
 void BlackEdgeTextItem::setText(const QString &text){
     this->text = text;
 
-    this->prepareGeometryChange();
+    prepareGeometryChange();
 }
 
 void BlackEdgeTextItem::setFont(const QFont &font){
+    int size = this->font.pointSize();
     this->font = font;
+    this->font.setPointSize(size);
+    prepareGeometryChange();
+}
 
-    this->prepareGeometryChange();
+void BlackEdgeTextItem::setFontSize(int size){
+    font.setPointSize(size);
+    prepareGeometryChange();
 }
 
 void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
@@ -156,7 +163,7 @@ CardScene::CardScene()
     addItem(skill_box);
 
     int i;
-    for(i=0; i<8; i++){
+    for(i=0; i<10; i++){
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
         magatamas << item;
         item->hide();
@@ -199,21 +206,12 @@ void CardScene::setGeneralPhoto(const QString &filename){
     photo->setPixmap(QPixmap(filename));
 }
 
-void CardScene::setName(const QString &name){
-    this->name->setText(name);
+BlackEdgeTextItem *CardScene::getNameItem() const{
+    return name;
 }
 
-void CardScene::setNameFont(const QString &family){    
-    QFont font(family);
-    font.setPointSize(36);
-    font.setBold(true);
-    name->setFont(font);    
-}
-
-void CardScene::setTitleFont(const QString &family){
-    QFont font(family);
-    font.setPointSize(20);
-    title->setFont(font);
+BlackEdgeTextItem *CardScene::getTitleItem() const{
+    return title;
 }
 
 #ifdef QT_DEBUG
@@ -230,11 +228,6 @@ void CardScene::keyPressEvent(QKeyEvent *event){
 }
 
 #endif
-
-
-void CardScene::setTitle(const QString &title){
-    this->title->setText(title);
-}
 
 void CardScene::setMaxHp(int max_hp){    
     int n = magatamas.length();
@@ -276,15 +269,73 @@ CardEditor::CardEditor(QWidget *parent) :
     card_scene->setFrame("wei", false);
 }
 
+QHBoxLayout *CardEditor::createTextItemLayout(const QString &text, const QFont &font, int size, BlackEdgeTextItem *item){
+    QLineEdit *title_edit = new QLineEdit;
+    QFontComboBox *title_font_combobox = new QFontComboBox;
+    QSpinBox *title_size_spinbox = new QSpinBox;
+    title_size_spinbox->setRange(1, 96);
+    QSpinBox *title_space_spinbox = new QSpinBox;
+    title_space_spinbox->setRange(0, 100);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(new QLabel(text));
+    hlayout->addWidget(title_edit);
+    hlayout->addWidget(title_font_combobox);
+    hlayout->addWidget(new QLabel(tr("Size")));
+    hlayout->addWidget(title_size_spinbox);
+    hlayout->addWidget(new QLabel(tr("Line spacing")));
+    hlayout->addWidget(title_space_spinbox);
+
+    BlackEdgeTextItem *title_item = item;
+    connect(title_edit, SIGNAL(textChanged(QString)), title_item, SLOT(setText(QString)));
+    connect(title_font_combobox, SIGNAL(currentFontChanged(QFont)), title_item, SLOT(setFont(QFont)));
+    connect(title_size_spinbox, SIGNAL(valueChanged(int)), title_item, SLOT(setFontSize(int)));
+    connect(title_space_spinbox, SIGNAL(valueChanged(int)), title_item, SLOT(setSkip(int)));
+
+    title_edit->setText(text);
+    title_size_spinbox->setValue(size);
+
+    return hlayout;
+}
+
 QGroupBox *CardEditor::createLeft(){
     QGroupBox *box = new QGroupBox;
     box->setTitle(tr("Properties"));
 
-    name_edit = new QLineEdit;
-    QFontComboBox *name_font_combobox = new QFontComboBox;
+    QFormLayout *layout = new QFormLayout;
+    layout->addRow(createTextItemLayout(tr("Title"), QFont(), 20, card_scene->getTitleItem()));
+    layout->addRow(createTextItemLayout(tr("Name"), QFont(), 36, card_scene->getNameItem()));
 
-    title_edit = new QLineEdit;
-    QFontComboBox *title_font_combobox = new QFontComboBox;
+    /*
+    {
+        QLineEdit *name_edit = new QLineEdit;
+        QFontComboBox *name_font_combobox = new QFontComboBox;
+        QSpinBox *name_size_spinbox = new QSpinBox;
+        name_size_spinbox->setRange(1, 96);
+        QSpinBox *name_space_spinbox = new QSpinBox;
+        name_space_spinbox->setRange(0, 100);
+
+        QHBoxLayout *hlayout = new QHBoxLayout;
+        hlayout->addWidget(new QLabel(tr("Name")));
+        hlayout->addWidget(name_edit);
+        hlayout->addWidget(name_font_combobox);
+        hlayout->addWidget(new QLabel(tr("Size")));
+        hlayout->addWidget(name_size_spinbox);
+        hlayout->addWidget(new QLabel(tr("Line spacing")));
+        hlayout->addWidget(name_space_spinbox);
+        layout->addRow(hlayout);
+
+        BlackEdgeTextItem *name_item = card_scene->getNameItem();
+        connect(name_edit, SIGNAL(textChanged(QString)), name_item, SLOT(setText(QString)));
+        connect(name_font_combobox, SIGNAL(currentFontChanged(QFont)), name_item, SLOT(setFont(QFont)));
+        connect(name_size_spinbox, SIGNAL(valueChanged(int)), name_item, SLOT(setFontSize(int)));
+        connect(name_space_spinbox, SIGNAL(valueChanged(int)), name_item, SLOT(setSkip(int)));
+
+        name_edit->setText(tr("Name"));
+        name_size_spinbox->setValue(36);
+    }
+
+*/
 
     kingdom_combobox = new QComboBox;
     lord_checkbox = new QCheckBox(tr("Lord"));
@@ -293,9 +344,8 @@ QGroupBox *CardEditor::createLeft(){
         kingdom_combobox->addItem(icon, Sanguosha->translate(kingdom), kingdom);
     }
 
-    hp_spinbox = new QSpinBox;
-    hp_spinbox->setRange(0, 8);
-    hp_spinbox->setValue(3);
+    QSpinBox *hp_spinbox = new QSpinBox;
+    hp_spinbox->setRange(0, 10);
 
     QPushButton *browse_button = new QPushButton(tr("Photo file ..."));
     ratio_spinbox = new QSpinBox;
@@ -303,17 +353,16 @@ QGroupBox *CardEditor::createLeft(){
     ratio_spinbox->setValue(100);
     ratio_spinbox->setSuffix(" %");
 
-    QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Name"), HLay(name_edit, name_font_combobox));
-    layout->addRow(tr("Title"), HLay(title_edit, title_font_combobox));
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(new QLabel(tr("Kingdom")));
-    hlayout->addWidget(kingdom_combobox);
-    hlayout->addWidget(lord_checkbox);
-    hlayout->addWidget(new QLabel(tr("Max HP")));
-    hlayout->addWidget(hp_spinbox);
-    layout->addRow(hlayout);
+    {
+        QHBoxLayout *hlayout = new QHBoxLayout;
+        hlayout->addWidget(new QLabel(tr("Kingdom")));
+        hlayout->addWidget(kingdom_combobox);
+        hlayout->addWidget(lord_checkbox);
+        hlayout->addWidget(new QLabel(tr("Max HP")));
+        hlayout->addWidget(hp_spinbox);
+        layout->addRow(hlayout);
+    }
 
     layout->addRow(tr("General"), HLay(browse_button, ratio_spinbox));
 
@@ -321,7 +370,22 @@ QGroupBox *CardEditor::createLeft(){
 
     int i;
     for(i=1; i<=4; i++){
-        skill_tabs->addTab(new SkillTab, tr("Skill %1").arg(i));
+        SkillTab *tab = new SkillTab;
+        skill_tabs->addTab(tab, tr("Skill %1").arg(i));
+
+
+
+        QGraphicsTextItem *text_item = new QGraphicsTextItem;
+        text_item->setPlainText("hello, world");
+        text_item->setFlag(QGraphicsItem::ItemIsMovable);
+        text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
+        text_item->setTextWidth(100);
+
+        //text_item->setDocument(tab->getDoc());
+        //text_item->document()->setTextWidth(100);
+
+        text_item->setPos(100, 100 + i * 100);
+        card_scene->addItem(text_item);
     }
 
     layout->addRow(skill_tabs);
@@ -332,19 +396,15 @@ QGroupBox *CardEditor::createLeft(){
 
     connect(kingdom_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
-    connect(name_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setName(QString)));
-    connect(title_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setTitle(QString)));
+
     connect(browse_button, SIGNAL(clicked()), this, SLOT(browseGeneralPhoto()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveImage()));
-    connect(name_font_combobox, SIGNAL(currentIndexChanged(QString)), card_scene, SLOT(setNameFont(QString)));
-    connect(title_font_combobox, SIGNAL(currentIndexChanged(QString)), card_scene, SLOT(setTitleFont(QString)));
 
     box->setLayout(layout);
 
-    name_edit->setText(tr("Name"));
-    title_edit->setText(tr("Title"));
+    hp_spinbox->setValue(3);
 
     return box;
 }

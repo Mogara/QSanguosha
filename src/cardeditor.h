@@ -12,17 +12,19 @@
 #include <QGraphicsPixmapItem>
 #include <QFontDatabase>
 #include <QTextEdit>
+#include <QHBoxLayout>
 
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
 
 public:
-    BlackEdgeTextItem();
-    void setText(const QString &text);
-    void setFont(const QFont &font);
+    BlackEdgeTextItem();  
     void setColor(const QColor &color);
 
 public slots:
+    void setText(const QString &text);
+    void setFont(const QFont &font);
+    void setFontSize(int size);
     void setSkip(int skip);
 
     virtual QRectF boundingRect() const;
@@ -58,6 +60,8 @@ private:
     QPixmap up, middle, down;
 };
 
+class CardEditor;
+
 class CardScene: public QGraphicsScene{
     Q_OBJECT
 
@@ -66,15 +70,12 @@ public:
 
     void setFrame(const QString &kingdom, bool is_lord);
     void setGeneralPhoto(const QString &filename);
+    BlackEdgeTextItem *getNameItem() const;
+    BlackEdgeTextItem *getTitleItem() const;
 
 public slots:
-    void setName(const QString &name);
-    void setTitle(const QString &title);
     void setMaxHp(int max_hp);
     void setRatio(int ratio);
-
-    void setNameFont(const QString &family);
-    void setTitleFont(const QString &family);
 
 #ifdef QT_DEBUG
 protected:
@@ -112,14 +113,17 @@ public:
 
 private:
     CardScene *card_scene;
-    QLineEdit *name_edit;
-    QLineEdit *title_edit;
     QComboBox *kingdom_combobox;
     QCheckBox *lord_checkbox;
-    QSpinBox *hp_spinbox, *ratio_spinbox;
+    QSpinBox *ratio_spinbox;
     QTabWidget *skill_tabs;
 
     QGroupBox *createLeft();
+    QHBoxLayout *createTextItemLayout(const QString &text,
+                                      const QFont &font,
+                                      int size,
+                                      BlackEdgeTextItem *item
+                                      );
 
 private slots:
     void setCardFrame();
