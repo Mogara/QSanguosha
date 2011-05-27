@@ -460,8 +460,10 @@ bool Player::isKongcheng() const{
 }
 
 bool Player::isNude() const{
-    return getHandcardNum() == 0 && getWeapon() == NULL && getArmor() == NULL
-            && getDefensiveHorse() == NULL && getOffensiveHorse() == NULL;
+    if(getHandcardNum()!=0 || weapon || armor || defensive_horse || offensive_horse)
+        return false;
+    else
+        return true;
 }
 
 bool Player::isAllNude() const{

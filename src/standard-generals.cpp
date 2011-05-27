@@ -836,24 +836,15 @@ public:
 class Keji: public TriggerSkill{
 public:
     Keji():TriggerSkill("keji"){
-        events << PhaseChange << CardUsed << CardResponsed;
+        events << CardResponsed;
 
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *lumeng, QVariant &data) const{
-        if(event == PhaseChange){
-            if(lumeng->getPhase() == Player::Start)
-                lumeng->setMark("slash_count", 0);
-        }else if(event == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if(use.card->inherits("Slash"))
-                lumeng->addMark("slash_count");
-        }else if(event == CardResponsed){
-            CardStar card_star = data.value<CardStar>();
-            if(card_star->inherits("Slash"))
-                lumeng->addMark("slash_count");
-        }
+    virtual bool trigger(TriggerEvent , ServerPlayer *lumeng, QVariant &data) const{
+        CardStar card_star = data.value<CardStar>();
+        if(card_star->inherits("Slash"))
+            lumeng->setFlags("keji_use_slash");
 
         return false;
     }
@@ -870,7 +861,8 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *lumeng) const{
         if(lumeng->getPhase() == Player::Discard &&
-           lumeng->getMark("slash_count") == 0 &&
+           !lumeng->hasFlag("keji_use_slash") &&
+           lumeng->usedTimes("Slash") + lumeng->usedTimes("ThunderSlash") + lumeng->usedTimes("FireSlash") == 0 &&
            lumeng->askForSkillInvoke("keji"))
         {
             lumeng->getRoom()->playSkillEffect("keji");
