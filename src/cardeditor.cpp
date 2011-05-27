@@ -138,6 +138,7 @@ void SkillBox::addSkill(){
     skill_descriptions << text_item;
 
     connect(text_item->document(), SIGNAL(contentsChanged()), this, SLOT(updateLayout()));
+    updateLayout();
 }
 
 void SkillBox::setSkillTitleFont(const QFont &font){
@@ -157,7 +158,14 @@ void SkillBox::setSkillDescriptionFont(const QFont &font){
 }
 
 void SkillBox::updateLayout(){
-
+    int i, n = skill_titles.length();
+    qreal height = 0;
+    for(i=0; i<n; i++){
+        QGraphicsTextItem *item = skill_descriptions.at(n-1-i);
+        QRectF rect = item->boundingRect();
+        height += rect.height();
+        item->setY(- height);
+    }
 }
 
 QRectF SkillBox::boundingRect() const{

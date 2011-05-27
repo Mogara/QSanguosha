@@ -136,8 +136,7 @@ sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 	local max_x = 0
 	local target
 	for _, friend in ipairs(self.friends) do
-		local x = friend:getMaxHP() - friend:getHandcardNum()
-		x = math.min(5, x)
+		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()		
 
 		if x > max_x then
 			max_x = x
