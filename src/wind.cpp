@@ -103,23 +103,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!TriggerSkill::triggerable(target))
-            return false;
-
-        if(target->isKongcheng()){
-            bool has_black = false;
-            int i;
-            for(i=0; i<4; i++){
-                const EquipCard *equip = target->getEquip(i);
-                if(equip && equip->isBlack()){
-                    has_black = true;
-                    break;
-                }
-            }
-
-            return has_black;
-        }else
-            return true;
+        return TriggerSkill::triggerable(target) && !target->isNude();
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -455,7 +439,7 @@ public:
         default_choice = "alive";
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &data) const{
         Room *room = zhoutai->getRoom();
         QList<int> &buqu = zhoutai->getPile("buqu");
 
