@@ -16,8 +16,9 @@ public:
 
     void zombify(ServerPlayer *player, ServerPlayer *killer = NULL) const{
         Room *room = player->getRoom();
+
         room->setPlayerProperty(player, "general2", "zombie");
-        room->getThread()->addPlayerSkills(player, true);
+        room->getThread()->addPlayerSkills(player, false);
 
         int maxhp = killer ? (killer->getMaxHP() + 1)/2 : 5;
         room->setPlayerProperty(player, "maxhp", maxhp);
@@ -25,11 +26,18 @@ public:
         room->setPlayerProperty(player, "role", "rebel");
         player->loseSkill("peaching");
 
-        if((player->getState() == "online" || player->getState() == "trust") && (maxhp<5))
+        if(player->getState() == "online" || player->getState() == "trust")
             player->setState("robot");
+
+        LogMessage log;
+        log.type = "#Zombify";
+        log.from = player;
+        room->sendLog(log);
 
         QString gender = player->getGeneral()->isMale() ? "male" : "female";
         room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
+
+        if(maxhp==5)room->setTag("SurpriseZombie", NULL);
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -83,8 +91,6 @@ public:
                     zombify(player, killer);
                     player->getRoom()->revivePlayer(player);
 
-                    player->throwAllCards();
-                    player->drawCards(3);
 
                     return false;
                 }
@@ -98,20 +104,40 @@ public:
                 if(player->isLord()){
                     room->setTag("Round", ++round);
 
+                    QList<ServerPlayer *> players = room->getOtherPlayers(player);
+                    qShuffle(players);
+                    if(players.length()<1)room->gameOver("lord+loyalist");
+
                     if(round > 9)
                         room->gameOver("lord+loyalist");
-                    else if(round == 2){
-                        QList<ServerPlayer *> players = room->getOtherPlayers(player);
-                        qShuffle(players);
+                    else if(round==6)
+                    {
+                        foreach(ServerPlayer *p,room->getAlivePlayers())
+                            if (p->getRoleEnum()==Player::Loyalist)
+                            {
+                                room->setTag("SurpriseZombie", players.at(0)->objectName());
+                                break;
+                            }
 
-                        zombify(players.at(0));
-                        room->getThread()->delay();
-                        room->setTag("SurpriseZombie", players.at(1)->objectName());
+
                     }
-                }else if(round==2 && player->objectName().compare(room->getTag("SurpriseZombie").toString())==0)
+                    else if(round == 2){
+                        players.at(0)->bury();
+                        room->killPlayer(players.at(0));
+                        zombify(players.at(0));
+                        room->revivePlayer(players.at(0));
+                        players.at(0)->drawCards(5);
+                        room->setTag("SurpriseZombie", players.at(1)->objectName());
+                        room->getThread()->delay();
+                    }
+
+                }else if(round>=2 && player->objectName().compare(room->getTag("SurpriseZombie").toString())==0)
                 {
+                    player->bury();
+                    room->killPlayer(player);
                     zombify(player);
-                    room->setTag("SurpriseZombie",NULL);
+                    room->revivePlayer(player);
+                    player->drawCards(5);
                     room->getThread()->delay();
                 }
             }
@@ -151,9 +177,10 @@ void ZombieScenario::onTagSet(Room *room, const QString &key) const{
     // dummy
 }
 
-class Zaibian: public DrawCardsSkill{
+class Zaibian: public TriggerSkill{
 public:
-    Zaibian():DrawCardsSkill("zaibian"){
+    Zaibian():TriggerSkill("zaibian"){
+        events << PhaseChange ;
         frequency = Compulsory;
     }
 
@@ -176,7 +203,8 @@ public:
             return x;
     }
 
-    virtual int getDrawNum(ServerPlayer *zombie, int n) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *zombie, QVariant &data) const{
+        if(event == PhaseChange && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
             Room *room = zombie->getRoom();
@@ -185,9 +213,11 @@ public:
             log.from = zombie;
             log.arg = QString::number(x);
             room->sendLog(log);
+            zombie->drawCards(x);
         }
 
-        return n + x;
+        }
+        return false;
     }
 };
 
