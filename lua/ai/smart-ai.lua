@@ -204,7 +204,8 @@ function SmartAI:updatePlayers(inclusive)
         
         self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
         
-        
+        self.role =self.player:getRole()
+		
         if isRolePredictable() then
             if (self.role=="lord") or (self.role=="loyalist") then self:refreshRoyalty(self.player,300)
             elseif (self.role=="rebel") then self:refreshRoyalty(self.player,-300)
@@ -507,8 +508,9 @@ function SmartAI:filterEvent(event, player, data)
             self:updatePlayers()
         elseif event == sgs.Death then
                 self:updatePlayers()
-				speakTrigger(nil,player,nil,"death")
+				
                 if self==sgs.recorder then
+				speakTrigger(nil,player,nil,"death")
                 	local selfexp=sgs.ai_explicit[player:objectName()]
                 	if selfexp then
                 	    if selfexp=="loyalish" then selfexp="loyalist"
@@ -1538,7 +1540,7 @@ function SmartAI:useCardIronChain(card, use)
 	end
 
         use.card = card
-
+	
 	if targets[2] then
                 if use.to then use.to:append(targets[1]) end
                 if use.to then use.to:append(targets[2]) end
@@ -1841,7 +1843,7 @@ function SmartAI:activate(use)
         --self.room:output(getCount(self.player:objectName()))
         self:updatePlayers()
         self:assignKeep(self.player:getHp(),true)
-        --self:printCards(self.kept)
+        self:printCards(self.kept)
         self.toUse =self:getTurnUse()
         self:printCards(self.toUse)
         if self.harsh_retain then self:log("harsh_retaining") end
