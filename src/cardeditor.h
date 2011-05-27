@@ -12,17 +12,20 @@
 #include <QGraphicsPixmapItem>
 #include <QFontDatabase>
 #include <QTextEdit>
+#include <QHBoxLayout>
+#include <QMainWindow>
 
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
 
 public:
-    BlackEdgeTextItem();
-    void setText(const QString &text);
-    void setFont(const QFont &font);
+    BlackEdgeTextItem();  
     void setColor(const QColor &color);
 
 public slots:
+    void setText(const QString &text);
+    void setFont(const QFont &font);
+    void setFontSize(int size);
     void setSkip(int skip);
 
     virtual QRectF boundingRect() const;
@@ -47,6 +50,12 @@ public:
 
     virtual QRectF boundingRect() const;
 
+public slots:
+    void addSkill();
+    void setSkillTitleFont(const QFont &font);
+    void setSkillDescriptionFont(const QFont &font);
+    void updateLayout();
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -56,6 +65,9 @@ protected:
 private:
     int middle_height;
     QPixmap up, middle, down;
+    QString kingdom;
+    QList<QGraphicsTextItem *> skill_titles;
+    QList<QGraphicsTextItem *> skill_descriptions;
 };
 
 class CardScene: public QGraphicsScene{
@@ -66,15 +78,13 @@ public:
 
     void setFrame(const QString &kingdom, bool is_lord);
     void setGeneralPhoto(const QString &filename);
+    BlackEdgeTextItem *getNameItem() const;
+    BlackEdgeTextItem *getTitleItem() const;
+    SkillBox *getSkillBox() const;
 
 public slots:
-    void setName(const QString &name);
-    void setTitle(const QString &title);
-    void setMaxHp(int max_hp);
     void setRatio(int ratio);
-
-    void setNameFont(const QString &family);
-    void setTitleFont(const QString &family);
+    void setMaxHp(int max_hp);    
 
 #ifdef QT_DEBUG
 protected:
@@ -88,22 +98,7 @@ private:
     SkillBox *skill_box;
 };
 
-class SkillTab: public QWidget{
-    Q_OBJECT
-
-public:
-    SkillTab();
-    QTextDocument *getDoc() const;
-
-private:
-    QLineEdit *name_edit;
-    QTextEdit *description_edit;
-
-private slots:
-    void setDocTitle(const QString &title);
-};
-
-class CardEditor : public QDialog
+class CardEditor : public QMainWindow
 {
     Q_OBJECT
 
@@ -112,18 +107,22 @@ public:
 
 private:
     CardScene *card_scene;
-    QLineEdit *name_edit;
-    QLineEdit *title_edit;
     QComboBox *kingdom_combobox;
     QCheckBox *lord_checkbox;
-    QSpinBox *hp_spinbox, *ratio_spinbox;
-    QTabWidget *skill_tabs;
 
-    QGroupBox *createLeft();
+    QWidget *createLeft();
+    QGroupBox *createTextItemBox(const QString &text,
+                                 const QFont &font,
+                                 int size,
+                                 int skip,
+                                 BlackEdgeTextItem *item
+                                 );
+    QLayout *createGeneralLayout();
+    QWidget *createSkillBox();
 
 private slots:
     void setCardFrame();
-    void browseGeneralPhoto();
+    void import();
     void saveImage();
 };
 

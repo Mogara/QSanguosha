@@ -1,13 +1,6 @@
--- Menghuo's AI
-
-local menghuo_ai = SmartAI:newSubclass "menghuo"
-
-function menghuo_ai:askForSkillInvoke(skill_name, data)
-	if skill_name == "zaiqi" then
-		return self.player:getLostHp() >= 2
-	else
-		return super.askForSkillInvoke(self, skill_name, data)
-	end
+-- zaiqi
+sgs.ai_skill_invoke["zaiqi"] = function(self, data)
+	return self.player:getLostHp() >= 2
 end
 
 -- Sunjian's AI
@@ -127,12 +120,7 @@ sgs.ai_skill_invoke.baonue = function(self, data)
 	return self.player:getRole() == "loyalist"
 end
 
--- haoshi
-sgs.ai_skill_invoke.haoshi = function(self, data)
-	if self.player:getHandcardNum() <= 1 then
-		return true
-	end
-
+function SmartAI:getBeggar()
 	local least = math.huge
 	local players = self.room:getOtherPlayers(self.player)
 	for _, player in sgs.qlist(players) do
@@ -141,19 +129,27 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 
 	self:sort(self.friends_noself)
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getHandcardNum() == least then
-			self.beggar = friend
-			return true
+		if friend:getHandcardNum() == least then			
+			return friend
 		end
 	end
+end
 
-	return false
+-- haoshi
+sgs.ai_skill_invoke.haoshi = function(self, data)
+	if self.player:getHandcardNum() <= 1 then
+		return true
+	end
+
+	if self:getBeggar() then
+		return true
+	else
+		return false
+	end
 end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
-	local beggar = self.beggar
-	assert(beggar)
-	self.beggar = nil
+	local beggar = self:getBeggar()
 	
 	local cards = self.player:getHandcards()
 	local n = math.floor(self.player:getHandcardNum()/2)

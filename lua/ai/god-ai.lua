@@ -85,7 +85,7 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 		self:fillSkillCards(cards)
         self:sortByUseValue(cards,true)
 		for _, card in ipairs(cards) do
-			if card:getSuitString()=="heart" then
+			if card:getSuit() == sgs.Card_Heart then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
 				local card_id = card:getEffectiveId()

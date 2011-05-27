@@ -53,7 +53,6 @@ private slots:
     void on_actionExit_triggered();
 
     void startConnection();
-    void restartConnection();
     void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);

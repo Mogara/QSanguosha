@@ -34,9 +34,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	self:sort(self.enemies, "handcard")
 	
 	local first_index
-	local second_index
-	
-	for i=1, #self.enemies do																			--tuxi update
+	for i=1, #self.enemies-1 do																			------ÐÞ¸ÄÍ»Ï®
 		if (self.enemies[i]:objectName() == "zhugeliang" and self.enemies[i]:getHandcardNum() == 1) or
 		   (self.enemies[i]:objectName() == "luxun" and self.enemies[i]:getHandcardNum() == 1) then 
 			first_index = nil
@@ -51,21 +49,8 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 		return "."
 	end
 	
-	for i=first_index+1, #self.enemies do																			--tuxi update
-		if (self.enemies[i]:objectName() == "zhugeliang" and self.enemies[i]:getHandcardNum() == 1) or
-		   (self.enemies[i]:objectName() == "luxun" and self.enemies[i]:getHandcardNum() == 1) then 
-			second_index = nil
-				
-		elseif not self.enemies[i]:isKongcheng() then
-			second_index = i
-			break
-		end
-	end
-	
-	if not second_index then return "." end
-	
 	local first = self.enemies[first_index]:objectName()
-	local second = self.enemies[second_index]:objectName()
+	local second = self.enemies[first_index + 1]:objectName()
         --self:updateRoyalty(-0.8*sgs.ai_royalty[first],self.player:objectName())
         --self:updateRoyalty(-0.8*sgs.ai_royalty[second],self.player:objectName())
 	return ("@TuxiCard=.->%s+%s"):format(first, second)
@@ -776,81 +761,15 @@ end
 
 
 sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
-    local data=prompt:split(":")
-    local target=data[2]
-    local reason=data[4]
-    local card=sgs.Sanguosha:getCard(string.match(data[5],"%d+"))
-    local result=card:getSuitString()
-    local number=card:getNumber()
-
-    local players=self.room:getAllPlayers()
-
-    players=sgs.QList2Table(players)
-
-    for _, player in ipairs(players) do
-
-        if player:objectName()==target then
-            target=player
-            break
-        end
-    end
-
-    local cardSet={}
-    
-    cardSet.club={}
-    cardSet.spade={}
-    cardSet.heart={}
-    cardSet.diamond={}
-    
-    local cardNumThreshold=3
-    if reason=="indulgence" then
-        fillCardSet(cardSet,"heart",true)
-        cardNumThreshold=2
-    elseif reason=="supply_shortage" then
-        fillCardSet(cardSet,"club",true)
-    elseif reason=="eight_diagram" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"diamond",true)
-    elseif reason=="luoshen" then
-        fillCardSet(cardSet,"spade",true)
-        fillCardSet(cardSet,"club",true)
-    elseif reason=="lightning" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"club",true)
-        fillCardSet(cardSet,"diamond",true)
-        fillCardSet(cardSet,"spade",false)
-		fillCardSet(cardSet,nil,nil,1,true)
-        for i=10,13 do 
-            fillCardSet(cardSet,nil,nil,i,true)
-        end
-        if target:getArmor() and target:getArmor():objectName()=="silver_lion" and not target:hasSkill("tianxiang") then
-            cardNumThreshold=20
-        else
-            cardNumThreshold=1
-        end
-    elseif reason=="tieji" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"diamond",true)
-        if self.player:objectName()==target then 
-            if self:getJinkNumber(self.player)<1 then return "." end
-        end
-    elseif reason=="leiji" then
-        fillCardSet(cardSet,"heart",true)
-        fillCardSet(cardSet,"club",true)
-        fillCardSet(cardSet,"diamond",true)
-        cardNumThreshold=2
-    else
-        cardNumThreshold=20
-    end
-
-    if self.player:getHandcardNum()<cardNumThreshold then return "." end
-
-    if self:isEnemy(target) and (goodMatch(cardSet,card)) and not (target:hasSkill("tianxiang") and target:getCards("he")) then
-        return self:getRetrialCard("h",cardSet,true)
-    end
-    if self:isFriend(target) and (not goodMatch(cardSet,card)) then
-        return self:getRetrialCard("h",cardSet,false)
-    end
-
-    return "."
+    local judge = self.player:getTag("Judge"):toJudge()
+	
+	if self:needRetrial(judge) then
+		local cards = sgs.QList2Table(self.player:getHandcards())		
+		local card_id = self:getRetrialCardId(cards, judge)
+		if card_id ~= -1 then
+			return "@GuicaiCard=" .. card_id
+		end
+	end
+	
+	return "."
 end

@@ -87,13 +87,11 @@ function yuanshao_ai:activate(use)
 	
 	super.activate(self, use)
 end
-						
 
 local xunyu_ai = SmartAI:newSubclass "xunyu"
-xunyu_ai:setOnceSkill("quhu")
 
 function xunyu_ai:activate(use)
-	if not self.quhu_used and not self.player:isKongcheng() then
+	if not self.player:hasUsed("QuhuCard") and not self.player:isKongcheng() then
 		local max_card = self:getMaxCard()
 		local max_point = max_card:getNumber()
 		self:sort(self.enemies, "handcard")
@@ -107,9 +105,7 @@ function xunyu_ai:activate(use)
 							local card_id = max_card:getEffectiveId()
 							local card_str = "@QuhuCard=" .. card_id
 							use.card = sgs.Card_Parse(card_str)
-							use.to:append(enemy)
-
-							self.quhu_used = true
+							use.to:append(enemy)						
 
 							return
 						end
@@ -163,7 +159,6 @@ sgs.ai_skill_invoke.mengjin = function(self, data)
 end
 
 local dianwei_ai = SmartAI:newSubclass "dianwei"
-dianwei_ai:setOnceSkill "qiangxi"
 
 function dianwei_ai:activate(use)
 	super.activate(self, use)
@@ -171,7 +166,7 @@ function dianwei_ai:activate(use)
 		return
 	end
 	
-	if not self.qiangxi_used then
+	if not self.player:hasUsed("QiangxiCard") then
 		local weapon = self.player:getWeapon()
 		if weapon then
 			local hand_weapon, cards
@@ -188,16 +183,13 @@ function dianwei_ai:activate(use)
 				if hand_weapon and self.player:inMyAttackRange(enemy) then
 					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
 					use.to:append(enemy)
-
-					self.qiangxi_used = true
+					
 					break
 				end
 
 				if self.player:distanceTo(enemy) <= 1 then
 					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
 					use.to:append(enemy)
-
-					self.qiangxi_used = true
 
 					return
 				end
@@ -208,8 +200,6 @@ function dianwei_ai:activate(use)
 				if self.player:inMyAttackRange(enemy) and self.player:getHp() > enemy:getHp() and self.player:getHp() > 2 then
 					use.card = sgs.Card_Parse("@QiangxiCard=.")
 					use.to:append(enemy)
-
-					self.qiangxi_used = true
 
 					return
 				end

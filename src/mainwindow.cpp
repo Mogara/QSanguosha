@@ -202,16 +202,6 @@ void MainWindow::on_actionReplay_triggered()
     client->signup();
 }
 
-void MainWindow::restartConnection(){
-    Self->deleteLater();
-    ClientInstance->deleteLater();
-
-    Self = NULL;
-    ClientInstance = NULL;
-
-    startConnection();
-}
-
 void MainWindow::networkError(const QString &error_msg){
     if(isVisible())
         QMessageBox::warning(this, tr("Network error"), error_msg);
@@ -254,7 +244,7 @@ void MainWindow::enterRoom(){
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
+    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
 
     gotoScene(room_scene);
 }
