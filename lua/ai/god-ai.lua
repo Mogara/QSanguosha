@@ -1,4 +1,4 @@
--- this script file contains the AI classes for gods
+    -- this script file contains the AI classes for gods
 
 -- guixin, always invoke
 sgs.ai_skill_invoke.guixin = true
@@ -6,26 +6,30 @@ sgs.ai_skill_invoke.guixin = true
 -- shelie
 sgs.ai_skill_invoke.shelie = true
 
-local shenlumeng_ai = SmartAI:newSubclass "shenlumeng"
+local gongxin_skill={}
+gongxin_skill.name="gongxin"
+table.insert(sgs.ai_skills,gongxin_skill)
+gongxin_skill.getTurnUseCard=function(self)
+		local card_str = ("@GongxinCard=.")
+		local gongxin_card = sgs.Card_Parse(card_str)
+		assert(gongxin_card)
+        return gongxin_card
+end
 
-function shenlumeng_ai:activate(use)
-    if not self.player:hasUsed("GongxinCard") then
-        self:sort(self.enemies, "handcard")
-        
-        for _, enemy in ipairs(self.enemies) do
-            local cards = enemy:getHandcards()
-			for _, card in sgs.qlist(cards) do				
-				if card:getSuit() == sgs.Card_Heart and not card:inherits("Shit") then
-					use.card = sgs.Card_Parse("@GongxinCard=.")
-					use.to:append(enemy)
-
+sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
+    if self.player:usedTimes("GongxinCard")>0 then return end
+    self:sort(self.enemies,"handcard")
+    
+    for _,enemy in ipairs(self.enemies) do  
+        local cards = enemy:getHandcards()
+			for _, acard in sgs.qlist(cards) do				
+				if acard:getSuit() == sgs.Card_Heart and not acard:inherits("Shit") then
+					use.card = card
+					if use.to then use.to:append(enemy) end
 					return
 				end
 			end
-        end
     end
-
-	super.activate(self, use)
 end
 
 local shenlubu_ai = SmartAI:newSubclass "shenlubu"
@@ -70,7 +74,6 @@ wushen_skill.getTurnUseCard=function(self)
         return slash
 	end
 end
-
 local shenguanyu_ai = SmartAI:newSubclass "shenguanyu"
 
 function shenguanyu_ai:askForCard(pattern,prompt)
@@ -82,7 +85,7 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 		self:fillSkillCards(cards)
         self:sortByUseValue(cards,true)
 		for _, card in ipairs(cards) do
-			if card:getSuit() == sgs.Card_Heart then
+			if card:getSuitString()=="heart" then
 				local suit = card:getSuitString()
 				local number = card:getNumberString()
 				local card_id = card:getEffectiveId()

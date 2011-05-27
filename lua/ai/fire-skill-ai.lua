@@ -1,4 +1,4 @@
-lianhuan_skill={}
+local lianhuan_skill={}
 lianhuan_skill.name="lianhuan"
 table.insert(sgs.ai_skills,lianhuan_skill)
 lianhuan_skill.getTurnUseCard=function(self)
@@ -28,7 +28,7 @@ lianhuan_skill.getTurnUseCard=function(self)
 		
 end
 
-huoji_skill={}
+local huoji_skill={}
 huoji_skill.name="huoji"
 table.insert(sgs.ai_skills,huoji_skill)
 huoji_skill.getTurnUseCard=function(self)
@@ -59,7 +59,7 @@ huoji_skill.getTurnUseCard=function(self)
 		
 end
 
-shuangxiong_skill={}
+local shuangxiong_skill={}
 shuangxiong_skill.name="shuangxiong"
 table.insert(sgs.ai_skills,shuangxiong_skill)
 shuangxiong_skill.getTurnUseCard=function(self)
@@ -96,7 +96,7 @@ shuangxiong_skill.getTurnUseCard=function(self)
 		
 end
 
-tianyi_skill={}
+local tianyi_skill={}
 tianyi_skill.name="tianyi"
 table.insert(sgs.ai_skills,tianyi_skill)
 tianyi_skill.getTurnUseCard=function(self)

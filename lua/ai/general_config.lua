@@ -25,12 +25,16 @@ sgs.ai_use_value =
 --skill cards
 
         TianyiCard = 8.5,
+        XianzhenCard = 9.2,
+        XianzhenSlashCard = 9.2,
         HuangtianCard = 8.5,
         JijiangCard=8.5,
         DimengCard=3.5,
-		JujianCard=5.7,
+		JujianCard=6.7,
 		QiangxiCard=2.5,
 		LijianCard=8.5,
+		RendeCard=8.5,
+		MinceCard=5.9,
 --normal cards
         ExNihilo=10,
         
@@ -72,10 +76,16 @@ sgs.ai_use_priority = {
 --skill cards
 
         TianyiCard = 10,
+		JieyinCard = 4,
         HuangtianCard = 10,
+        XianzhenCard = 9.2,
+        XianzhenSlashCard = 2.6,
         JijiangCard = 2.4,
         DimengCard=2.3,
 		LijianCard = 4,
+		QingnangCard=4.2,
+		RendeCard= 5.8,
+		MingceCard=4,
 --
 
         Collateral=5.8,

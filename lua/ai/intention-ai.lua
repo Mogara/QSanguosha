@@ -42,6 +42,7 @@ sgs.ai_card_intention["general"]=function(to,level)
 end
 
 sgs.ai_carduse_intention["Indulgence"]=function(card,from,to,source)
+	speakTrigger(card,from,to)
     return sgs.ai_card_intention.general(to,120)
 end
 
@@ -50,33 +51,32 @@ sgs.ai_carduse_intention["SupplyShortage"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Slash"]=function(card,from,to,source)
+    
     if sgs.ai_liuliEffect then
         sgs.ai_liuliEffect=false
         return 0
     end
     local modifier=0
     if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
-    return sgs.ai_card_intention.general(to,80+modifier)
+    local value=sgs.ai_card_intention.general(to,80+modifier)
+    
+    if to:hasSkill("leiji") and (getJinkNumber(to)>0) and (to:getHandcardNum()>2) then 
+        return -value/1.5
+    end
+    speakTrigger(card,from,to)
+    if to:hasSkill("yiji") then 
+        return value*(2-to:getHp())/1.1
+    end
+    
+    return value
 end
 
 sgs.ai_card_intention["FireSlash"]=function(card,from,to,source)
-    if sgs.ai_liuliEffect then
-        sgs.ai_liuliEffect=false
-        return 0
-    end
-    local modifier=0
-    if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
-    return sgs.ai_card_intention.general(to,80+modifier)
+    return sgs.ai_card_intention["Slash"](card,from,to,source)
 end
 
 sgs.ai_card_intention["ThunderSlash"]=function(card,from,to,source)
-    if sgs.ai_liuliEffect then
-        sgs.ai_liuliEffect=false
-        return 0
-    end
-    local modifier=0
-    if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
-    return sgs.ai_card_intention.general(to,80+modifier)
+    return sgs.ai_card_intention["Slash"](card,from,to,source)
 end
 
 sgs.ai_card_intention["Peach"]=function(card,from,to,source)
@@ -97,6 +97,7 @@ sgs.ai_card_intention["Collateral"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["FireAttack"]=function(card,from,to,source)
+	speakTrigger(card,from,to)
     return sgs.ai_card_intention.general(to,80)
 end
 
@@ -115,6 +116,7 @@ end
 
 sgs.ai_card_intention["SavageAssault"]=function(card,from,to,source)
         --return sgs.ai_card_intention.general(to,40)
+		speakTrigger(card,from,to)
         return 0
 end
 
@@ -148,6 +150,7 @@ end
 
 sgs.ai_carduse_intention["LeijiCard"]=function(card,from,to,source)
 --        from:getRoom():output("a LeijiCard")
+		speakTrigger(card,from,to)
         return sgs.ai_card_intention.general(to,80)
 end
 
@@ -214,6 +217,22 @@ sgs.ai_carduse_intention["TianyiCard"]=function(card,from,to,source)
 end
 
 sgs.ai_carduse_intention["QuhuCard"]=function(card,from,to,source)
+--        from:getRoom():output("a FanjianCard")
+		speakTrigger(card,from,to)
+        return sgs.ai_card_intention.general(to,70)
+end
+
+sgs.ai_carduse_intention["JujianCard"]=function(card,from,to,source)
+--        from:getRoom():output("a FanjianCard")
+        return sgs.ai_card_intention.general(to,-70)
+end
+
+sgs.ai_carduse_intention["MingceCard"]=function(card,from,to,source)
+--        from:getRoom():output("a FanjianCard")
+        return sgs.ai_card_intention.general(to,-70)
+end
+
+sgs.ai_carduse_intention["XianzhenCard"]=function(card,from,to,source)
 --        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,70)
 end

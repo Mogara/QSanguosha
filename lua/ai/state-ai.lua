@@ -71,6 +71,7 @@ end
 function SmartAI:getMoves()
     local cards=self.player:getHandcards()
     cards=sgs.QList2Table(cards)
+    self:fillSkillCards(cards)
     local moves={}
     for _,card in ipairs(cards) do
 
@@ -90,20 +91,24 @@ function SmartAI:getMoves()
     return moves
 end
 
-function SmartAI:printMoves(moves)
-    self.room:output("moves------------")
-    for _,move in ipairs(moves) do
-        local from=self:getPlayer(move.from)
-        for _,toName in ipairs(move.to) do
-        local to=self:getPlayer(toName)
-        self.room:output(move.card:className().." "..
-                         from:getGeneralName().." "..
-                         to:getGeneralName().." "..
-                         (move.target or ""))
-
+function SmartAI:assignKeep(num,start)
+    if num<=0 then return end
+    if start then 
+        self.keepValue={}
+        self.kept={}
+    end
+    local cards=self.player:getHandcards()
+    cards=sgs.QList2Table(cards)
+    self:sortByKeepValue(cards,true,self.kept)
+    for _,card in ipairs(cards) do
+        if not self.keepValue[card:getId()] then
+            self.keepValue[card:getId()]=self:getKeepValue(card,self.kept)
+            table.insert(self.kept,card)
+            --self:log(card:className())
+            self:assignKeep(num-1)
+            break
         end
     end
-    self.room:output("endofmoves--------")
 end
 
 function SmartAI:getPlayer(objectName)

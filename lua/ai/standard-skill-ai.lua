@@ -1,5 +1,35 @@
+local spear_skill={}
+spear_skill.name="spear"
+table.insert(sgs.ai_skills,spear_skill)
+spear_skill.getTurnUseCard=function(self,inclusive)
+    local cards = self.player:getCards("h")	
+    cards=sgs.QList2Table(cards)
+    
+    if #cards<(self.player:getHp()+1) then return nil end
+    if #cards<2 then return nil end
+    if self:getSlash() then return nil end
+    
+    self:sortByUseValue(cards,true)
+    
+    local suit1 = cards[1]:getSuitString()
+	local card_id1 = cards[1]:getEffectiveId()
+	
+	local suit2 = cards[2]:getSuitString()
+	local card_id2 = cards[2]:getEffectiveId()
+	
+	local suit=sgs.Card_NoSuit
+	if cards[1]:isBlack() and cards[2]:isBlack() then suit=sgs.Card_Club
+	elseif cards[1]:isBlack()==cards[2]:isBlack() then suit=sgs.Card_Diamond end
+	
+	local card_str = ("slash:spear[%s:%s]=%d+%d"):format(suit, 0, card_id1, card_id2)
+	
+    local slash = sgs.Card_Parse(card_str)
+    
+    return slash
+    
+end
 
-qixi_skill={}
+local qixi_skill={}
 qixi_skill.name="qixi"
 table.insert(sgs.ai_skills,qixi_skill)
 qixi_skill.getTurnUseCard=function(self,inclusive)
@@ -53,7 +83,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	end
 end
 
-wusheng_skill={}
+local wusheng_skill={}
 wusheng_skill.name="wusheng"
 table.insert(sgs.ai_skills,wusheng_skill)
 wusheng_skill.getTurnUseCard=function(self,inclusive)
@@ -65,7 +95,7 @@ wusheng_skill.getTurnUseCard=function(self,inclusive)
 	self:sortByUseValue(cards,true)
 	
 	for _,card in ipairs(cards)  do
-		if card:isRed() and not card:inherits("Slash") and not card:inherits("Peach") 				--ÌÒµ±É±
+		if card:isRed() and not card:inherits("Slash") and not card:inherits("Peach") 				--not peach
 			and ((self:getUseValue(card)<sgs.ai_use_value["Slash"]) or inclusive) then
 			red_card = card
 			break
@@ -85,7 +115,7 @@ wusheng_skill.getTurnUseCard=function(self,inclusive)
 	end
 end
 
-longdan_skill={}
+local longdan_skill={}
 longdan_skill.name="longdan"
 table.insert(sgs.ai_skills,longdan_skill)
 longdan_skill.getTurnUseCard=function(self)
@@ -115,7 +145,134 @@ longdan_skill.getTurnUseCard=function(self)
 		
 end
 
-jijiang_skill={}
+
+local fanjian_skill={}
+fanjian_skill.name="fanjian"
+table.insert(sgs.ai_skills,fanjian_skill)
+fanjian_skill.getTurnUseCard=function(self)
+        if self.player:isKongcheng() then return nil end
+        if self.player:usedTimes("FanjianCard")>0 then return nil end
+		
+		local cards = self.player:getHandcards()
+		
+		for _, card in sgs.qlist(cards) do
+		--	if card:getSuit() == sgs.Card_Diamond or card:inherits("Peach") or card:inherits("Analeptic") then		
+			if card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() == 1 then
+				return nil
+			elseif card:inherits("Peach") or card:inherits("Analeptic") then
+				return nil
+			end
+		end
+		
+		
+		local card_str = "@FanjianCard=."
+		local fanjianCard = sgs.Card_Parse(card_str)
+	    assert(fanjianCard)
+        
+        return fanjianCard
+		
+end
+
+sgs.ai_skill_use_func["FanjianCard"]=function(card,use,self)
+	self:sort(self.enemies, "hp")
+			
+			for _, enemy in ipairs(self.enemies) do								
+				if (not enemy:hasSkill("qingnang")) or (enemy:getHp() == 1 and enemy:getHandcardNum() == 0 and not enemy:getEquips()) then
+					use.card = card
+					if use.to then use.to:append(enemy) end
+					
+					return
+				end
+			end
+end
+
+local jieyin_skill={}
+jieyin_skill.name="jieyin"
+table.insert(sgs.ai_skills,jieyin_skill)
+jieyin_skill.getTurnUseCard=function(self)
+        if self.player:getHandcardNum()<2 then return nil end
+        if self.player:usedTimes("JieyinCard")>0 then return nil end
+		
+		local cards = self.player:getHandcards()
+		cards=sgs.QList2Table(cards)
+		
+		self:sortByUseValue(cards,true)
+		
+		local first  = cards[1]:getEffectiveId()
+		local second = cards[2]:getEffectiveId()
+
+		local card_str = ("@JieyinCard=%d+%d"):format(first, second)
+		return sgs.Card_Parse(card_str)
+end
+
+sgs.ai_skill_use_func["JieyinCard"]=function(card,use,self)
+	self:sort(self.friends, "hp")
+	
+	for _, friend in ipairs(self.friends) do
+		if friend:getGeneral():isMale() and friend:isWounded() then
+			use.card=card
+			if use.to then use.to:append(friend) end
+			return
+		end
+	end
+end
+
+local qingnang_skill={}
+qingnang_skill.name="qingnang"
+table.insert(sgs.ai_skills,qingnang_skill)
+qingnang_skill.getTurnUseCard=function(self)
+        if self.player:getHandcardNum()<1 then return nil end
+        if self.player:usedTimes("QingnangCard")>0 then return nil end
+		
+		local cards = self.player:getHandcards()
+		cards=sgs.QList2Table(cards)
+		
+		self:sortByKeepValue(cards)
+
+		local card_str = ("@QingnangCard=%d"):format(cards[1]:getId())
+		return sgs.Card_Parse(card_str)
+end
+
+sgs.ai_skill_use_func["QingnangCard"]=function(card,use,self)
+	self:sort(self.friends, "defense")
+	
+	for _, friend in ipairs(self.friends) do
+		if friend:isWounded() then
+			use.card=card
+			if use.to then use.to:append(friend) end
+			return
+		end
+	end
+end
+
+local kurou_skill={}
+kurou_skill.name="kurou"
+table.insert(sgs.ai_skills,kurou_skill)
+kurou_skill.getTurnUseCard=function(self,inclusive)
+        if  (self.player:getHp() > 3 and self.player:getHandcardNum() > self.player:getHp()) or		
+		(self.player:getHp() - self.player:getHandcardNum() >= 2) then
+                return sgs.Card_Parse("@KurouCard=.")
+        end
+		
+		--if not inclusive then return nil end
+		
+	if self.player:getWeapon() and self.player:getWeapon():inherits("Crossbow") then
+        for _, enemy in ipairs(self.enemies) do
+            if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
+                return sgs.Card_Parse("@KurouCard=.")
+            end
+        end
+    end
+end
+
+sgs.ai_skill_use_func["KurouCard"]=function(card,use,self)
+	
+	if not use.isDummy then self:speak("kurou") end
+	
+	use.card=card
+end
+
+local jijiang_skill={}
 jijiang_skill.name="jijiang"
 table.insert(sgs.ai_skills,jijiang_skill)
 jijiang_skill.getTurnUseCard=function(self)
@@ -152,7 +309,24 @@ sgs.ai_skill_use_func["JijiangCard"]=function(card,use,self)
 	
 end
 
-guose_skill={}
+local rende_skill={}
+rende_skill.name="jijiang"
+table.insert(sgs.ai_skills,rende_skill)
+rende_skill.getTurnUseCard=function(self)
+        local cards = self.player:getHandcards()	
+		cards=sgs.QList2Table(cards)
+		
+		for _,acard in ipairs(cards)  do
+			
+		end
+end
+
+sgs.ai_skill_use_func["RendeCard"]=function(card,use,self)
+    
+	
+end
+
+local guose_skill={}
 guose_skill.name="guose"
 table.insert(sgs.ai_skills,guose_skill)
 guose_skill.getTurnUseCard=function(self,inclusive)
