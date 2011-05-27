@@ -142,5 +142,19 @@ local ganran_skill={}
 ganran_skill.name="ganran"
 table.insert(sgs.ai_skills,ganran_skill)
 ganran_skill.getTurnUseCard=function(self)
+	local cards=self.player:getCards("h")
+        cards=sgs.QList2Table(cards)
+       
+	for _,card in ipairs(cards) do
+		if card:inherits("EquipCard") then
+			local suit = card:getSuitString()
+			local number = card:getNumberString()
+			local card_id = card:getEffectiveId()
+			local card_str = ("iron_chain:ganran[%s:%s]=%d"):format(suit, number, card_id)
+			local thecard=sgs.Card_Parse(card_str)
+			return thecard
+		end
+	end
+        
 	return nil
 end

@@ -340,7 +340,7 @@ QPushButton *Dashboard::createButton(const QString &name){
 
 QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
     QPushButton *button = createButton(name);
-    addWidget(button, x, from_left);
+    addWidget(createButton(name), x, from_left);
     return button;
 }
 

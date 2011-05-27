@@ -1671,8 +1671,6 @@ void Room::sendDamageLog(const DamageStruct &data){
 bool Room::hasWelfare(const ServerPlayer *player) const{
     if(mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
-    else if (scenario && scenario->inherits("ZombieScenario"))
-        return false;
     else
         return player->isLord() && player_count > 4;
 }

@@ -1914,7 +1914,6 @@ void RoomScene::updateStatus(Client::Status status){
         }
     }
 
-
     foreach(QAbstractButton *button, skill_buttons){
         const ViewAsSkill *skill = button2skill.value(button, NULL);
         if(skill)
@@ -2945,9 +2944,11 @@ void RoomScene::onGameStart(){
         skill_buttons << free_discard;
     }
 
-    trust_button->setEnabled(true);
-    untrust_button->setEnabled(true);
-    updateStatus(ClientInstance->getStatus());
+    if(trust_button && untrust_button){
+        trust_button->setEnabled(true);
+        untrust_button->setEnabled(true);
+        updateStatus(ClientInstance->getStatus());
+    }
 
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     foreach(const ClientPlayer *player, players){

@@ -16,6 +16,7 @@ public:
     virtual int getPlayerCount() const;
     virtual void getRoles(char *roles) const;
     virtual void onTagSet(Room *room, const QString &key) const;
+    virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
 
 private:
     QStringList females;
@@ -26,7 +27,6 @@ class GanranEquip: public IronChain{
 
 public:
     Q_INVOKABLE GanranEquip(Card::Suit suit, int number);
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
 };
 
 class PeachingCard: public QingnangCard{
