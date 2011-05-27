@@ -203,9 +203,6 @@ void MainWindow::on_actionReplay_triggered()
 }
 
 void MainWindow::restartConnection(){
-    Self->deleteLater();
-    ClientInstance->deleteLater();
-
     Self = NULL;
     ClientInstance = NULL;
 
