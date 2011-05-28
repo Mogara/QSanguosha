@@ -342,25 +342,26 @@ bool GuhuoCard::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
     return card && card->targetsFeasible(targets);
 }
 
-void GuhuoCard::onUse(Room *room, const CardUseStruct &card_use) const{
+const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
+    Room *room = card_use->from->getRoom();
+
     LogMessage log;
-    log.type = "#Guhuo";
-    log.from = card_use.from;
-    log.to = card_use.to;
+    log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
+    log.from = card_use->from;
+    log.to = card_use->to;
     log.arg = user_string;
 
     room->sendLog(log);
 
-    if(guhuo(card_use.from)){
-        CardUseStruct use = card_use;
+    if(guhuo(card_use->from)){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
         use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
-        use.card = use_card;
 
-        room->useCard(use);
-    }
+        return use_card;
+    }else
+        return NULL;
 }
 
 class GuhuoViewAsSkill: public OneCardViewAsSkill{
@@ -370,7 +371,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
-        return !Self->isKongcheng() && ClientInstance->card_pattern == "@guhuo";
+        return !Self->isKongcheng() && !ClientInstance->card_pattern.startsWith("@");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -380,6 +381,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
+            card->setUserString(ClientInstance->card_pattern);
             card->addSubcard(card_item->getFilteredCard());
             return card;
         }

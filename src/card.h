@@ -104,6 +104,7 @@ public:
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual bool isAvailable() const;
+    virtual const Card *validate(const CardUseStruct *card_use) const;
 
     bool isOnce() const;
     bool isMute() const;

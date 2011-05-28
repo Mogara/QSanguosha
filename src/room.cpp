@@ -1525,7 +1525,14 @@ void Room::commonCommand(ServerPlayer *, const QString &arg){
 }
 
 void Room::useCard(const CardUseStruct &card_use){
-    card_use.card->onUse(this, card_use);
+    const Card *card = card_use.card->validate(&card_use);
+    if(card == card_use.card)
+        card_use.card->onUse(this, card_use);
+    else if(card){
+        CardUseStruct new_use = card_use;
+        new_use.card = card;
+        useCard(new_use);
+    }
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){

@@ -472,6 +472,10 @@ bool Card::isAvailable() const{
     return true;
 }
 
+const Card *Card::validate(const CardUseStruct *) const{
+    return this;
+}
+
 bool Card::isOnce() const{
     return once;
 }

@@ -45,49 +45,49 @@
 <context>
     <name>CardEditor</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="311"/>
+        <location filename="src/cardeditor.cpp" line="312"/>
         <source>Card editor</source>
         <translation>卡牌编辑器</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="329"/>
+        <location filename="src/cardeditor.cpp" line="330"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="330"/>
+        <location filename="src/cardeditor.cpp" line="331"/>
         <source>Import ...</source>
         <translation>导入 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="331"/>
+        <location filename="src/cardeditor.cpp" line="332"/>
         <source>Save ...</source>
         <translation>保存 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="340"/>
+        <location filename="src/cardeditor.cpp" line="341"/>
         <source>Tool</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="341"/>
+        <location filename="src/cardeditor.cpp" line="342"/>
         <source>Add skill</source>
         <translation>添加技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="359"/>
+        <location filename="src/cardeditor.cpp" line="353"/>
+        <source>Select font ...</source>
+        <translation>选择字体 ...</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="360"/>
         <source>Text</source>
         <translation>文本</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="360"/>
+        <location filename="src/cardeditor.cpp" line="361"/>
         <source>Font</source>
         <translation>字体</translation>
-    </message>
-    <message>
-        <location filename="src/cardeditor.cpp" line="361"/>
-        <source>Size</source>
-        <translation>大小</translation>
     </message>
     <message>
         <location filename="src/cardeditor.cpp" line="362"/>
@@ -95,56 +95,61 @@
         <translation>行距</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="381"/>
+        <location filename="src/cardeditor.cpp" line="382"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="396"/>
+        <location filename="src/cardeditor.cpp" line="401"/>
         <source>Kingdom</source>
-        <translation>势力</translation>
+        <translation>所属势力</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="397"/>
+        <location filename="src/cardeditor.cpp" line="402"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="415"/>
+        <location filename="src/cardeditor.cpp" line="403"/>
+        <source>Image ratio</source>
+        <translation>图像比例</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="422"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="419"/>
+        <location filename="src/cardeditor.cpp" line="426"/>
         <source>Title font</source>
         <translation>技能名字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="421"/>
+        <location filename="src/cardeditor.cpp" line="428"/>
         <source>Description font</source>
         <translation>技能描述字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="433"/>
-        <location filename="src/cardeditor.cpp" line="438"/>
+        <location filename="src/cardeditor.cpp" line="440"/>
+        <location filename="src/cardeditor.cpp" line="444"/>
         <source>Title</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="441"/>
         <location filename="src/cardeditor.cpp" line="447"/>
+        <location filename="src/cardeditor.cpp" line="452"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="488"/>
-        <location filename="src/cardeditor.cpp" line="499"/>
+        <location filename="src/cardeditor.cpp" line="475"/>
+        <location filename="src/cardeditor.cpp" line="486"/>
         <source>Select a photo file ...</source>
         <translation>选择一张图片 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="490"/>
-        <location filename="src/cardeditor.cpp" line="501"/>
+        <location filename="src/cardeditor.cpp" line="477"/>
+        <location filename="src/cardeditor.cpp" line="488"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
@@ -1754,7 +1759,7 @@
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2080"/>
+        <location filename="src/room.cpp" line="2078"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2541,12 +2546,12 @@
 <context>
     <name>SkillBox</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="124"/>
+        <location filename="src/cardeditor.cpp" line="118"/>
         <source>Skill description</source>
         <translation>技能描述</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="133"/>
+        <location filename="src/cardeditor.cpp" line="127"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>

@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include "engine.h"
 #include "settings.h"
+#include "pixmap.h"
 
 #include <QFormLayout>
 #include <QPushButton>
@@ -13,6 +14,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
 #include <QCursor>
+#include <QFontDialog>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -49,27 +51,16 @@ void BlackEdgeTextItem::setOutline(int outline){
 
 void BlackEdgeTextItem::setText(const QString &text){
     this->text = text;
-
     prepareGeometryChange();
 
     Config.setValue("CardEditor/" + objectName() + "Text", text);
 }
 
 void BlackEdgeTextItem::setFont(const QFont &font){
-    int size = this->font.pointSize();
     this->font = font;
-    this->font.setPointSize(size);
-
     prepareGeometryChange();
 
     Config.setValue("CardEditor/" + objectName() + "Font", font);
-}
-
-void BlackEdgeTextItem::setFontSize(int size){
-    font.setPointSize(size);
-    prepareGeometryChange();
-
-    Config.setValue("CardEditor/" + objectName() + "FontSize", size);
 }
 
 void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
@@ -201,22 +192,19 @@ void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
 CardScene::CardScene()
     :QGraphicsScene(QRectF(0, 0, 366, 514))
 {
-    photo = new QGraphicsPixmapItem;
+    photo = new Pixmap;
     frame = new QGraphicsPixmapItem;
 
     name = new BlackEdgeTextItem;
-    name->setPos(28, 206);
     name->setObjectName("Name");
     name->setOutline(5);
 
     title = new BlackEdgeTextItem;
-    title->setPos(49, 128);
     title->setObjectName("Title");
 
     photo->setFlag(QGraphicsItem::ItemIsMovable);
 
     skill_box = new SkillBox;
-    skill_box->setPos(70, 484);
 
     addItem(photo);
     addItem(frame);
@@ -233,6 +221,8 @@ CardScene::CardScene()
 
         item->setPos(94 + i*(115-94), 18);
     }
+
+    loadConfig();
 }
 
 void CardScene::setFrame(const QString &kingdom, bool is_lord){
@@ -268,8 +258,47 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
-    photo->setPixmap(QPixmap(filename));
+    photo->changePixmap(filename);
+
+    Config.setValue("CardEditor/Photo", filename);
 }
+
+void CardScene::save(const QString &filename, bool smooth){
+    QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
+    QPainter painter(&image);
+
+    if(smooth){
+        photo->scaleSmoothly(photo->scale());
+        photo->setScale(1.0);
+    }
+
+    render(&painter);
+
+    image.save(filename);
+}
+
+void CardScene::saveConfig(){
+    Config.beginGroup("CardEditor");
+    Config.setValue("NamePos", name->pos());
+    Config.setValue("TitlePos", title->pos());
+    Config.setValue("PhotoPos", photo->pos());
+    Config.setValue("SkillBoxPos", skill_box->pos());
+    Config.endGroup();
+}
+
+void CardScene::loadConfig(){
+    name->setPos(28, 206);
+    title->setPos(49, 128);
+    skill_box->setPos(70, 484);
+
+    Config.beginGroup("CardEditor");
+    name->setPos(Config.value("NamePos", QPointF(28, 206)).toPointF());
+    title->setPos(Config.value("TitlePos", QPointF(49, 128)).toPointF());
+    photo->setPos(Config.value("PhotoPos").toPointF());
+    skill_box->setPos(Config.value("SkillBoxPos", QPointF(70, 484)).toPointF());
+    Config.endGroup();
+}
+
 
 BlackEdgeTextItem *CardScene::getNameItem() const{
     return name;
@@ -300,6 +329,8 @@ void CardScene::keyPressEvent(QKeyEvent *event){
 
 void CardScene::setRatio(int ratio){
     photo->setScale(ratio / 100.0);
+
+    Config.setValue("CardEditor/ImageRatio", ratio);
 }
 
 void CardScene::setMaxHp(int max_hp){    
@@ -339,7 +370,9 @@ CardEditor::CardEditor(QWidget *parent) :
 
     QMenu *file_menu = new QMenu(tr("File"));
     QAction *import = new QAction(tr("Import ..."), file_menu);
+    import->setShortcut(Qt::CTRL + Qt::Key_O);
     QAction *save = new QAction(tr("Save ..."), file_menu);
+    save->setShortcut(Qt::CTRL + Qt::Key_S);
     file_menu->addAction(import);
     file_menu->addAction(save);
 
@@ -350,17 +383,18 @@ CardEditor::CardEditor(QWidget *parent) :
 
     QMenu *tool_menu = new QMenu(tr("Tool"));
     QAction *add_skill = new QAction(tr("Add skill"), tool_menu);
+    add_skill->setShortcut(Qt::ALT + Qt::Key_S);
     connect(add_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(addSkill()));
     tool_menu->addAction(add_skill);
 
     menu_bar->addMenu(tool_menu);
 }
 
-QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int size, int skip, BlackEdgeTextItem *item){
+QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int skip, BlackEdgeTextItem *item){
     QGroupBox *box = new QGroupBox;
 
     QLineEdit *edit = new QLineEdit;
-    QFontComboBox *font_combobox = new QFontComboBox;
+    QPushButton *font_button = new QPushButton(tr("Select font ..."));
     QSpinBox *size_spinbox = new QSpinBox;
     size_spinbox->setRange(1, 96);
     QSpinBox *space_spinbox = new QSpinBox;
@@ -368,18 +402,18 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Text"), edit);
-    layout->addRow(tr("Font"), font_combobox);
-    layout->addRow(tr("Size"), size_spinbox);
+    layout->addRow(tr("Font"), font_button);
     layout->addRow(tr("Line spacing"), space_spinbox);
 
+    QFontDialog *font_dialog = new QFontDialog(this);
+    connect(font_button, SIGNAL(clicked()), font_dialog, SLOT(exec()));
+
     connect(edit, SIGNAL(textChanged(QString)), item, SLOT(setText(QString)));
-    connect(font_combobox, SIGNAL(currentFontChanged(QFont)), item, SLOT(setFont(QFont)));
-    connect(size_spinbox, SIGNAL(valueChanged(int)), item, SLOT(setFontSize(int)));
+    connect(font_dialog, SIGNAL(currentFontChanged(QFont)), item, SLOT(setFont(QFont)));
     connect(space_spinbox, SIGNAL(valueChanged(int)), item, SLOT(setSkip(int)));
 
     edit->setText(text);
-    size_spinbox->setValue(size);
-    font_combobox->setCurrentFont(font);
+    font_dialog->setCurrentFont(font);
     space_spinbox->setValue(skip);
 
     box->setLayout(layout);
@@ -399,6 +433,10 @@ QLayout *CardEditor::createGeneralLayout(){
     QSpinBox *hp_spinbox = new QSpinBox;
     hp_spinbox->setRange(0, 10);
 
+    ratio_spinbox = new QSpinBox;
+    ratio_spinbox->setRange(1, 1600);
+    ratio_spinbox->setValue(100);
+    ratio_spinbox->setSuffix(" %");
 
     QFormLayout *layout = new QFormLayout;
     QHBoxLayout *hlayout = new QHBoxLayout;
@@ -406,16 +444,22 @@ QLayout *CardEditor::createGeneralLayout(){
     hlayout->addWidget(lord_checkbox);
     layout->addRow(tr("Kingdom"), hlayout);
     layout->addRow(tr("Max HP"), hp_spinbox);
+    layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     connect(kingdom_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
+    connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
     int is_lord = Config.value("CardEditor/IsLord", false).toBool();
     kingdom_combobox->setCurrentIndex(kingdom_names.indexOf(kingdom));
     lord_checkbox->setChecked(is_lord);
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
+    ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
+    QString photo = Config.value("CardEditor/Photo").toString();
+    if(!photo.isEmpty())
+        card_scene->setGeneralPhoto(photo);
 
     setCardFrame();
 
@@ -439,19 +483,23 @@ QWidget *CardEditor::createSkillBox(){
     return box;
 }
 
+void CardEditor::closeEvent(QCloseEvent *event){
+    QMainWindow::closeEvent(event);
+
+    card_scene->saveConfig();
+}
+
 QWidget *CardEditor::createLeft(){
     QFormLayout *layout = new QFormLayout;
     QGroupBox *box = createTextItemBox(Config.value("CardEditor/TitleText", tr("Title")).toString(),
-                                       Config.value("CardEditor/TitleFont").value<QFont>(),
-                                       Config.value("CardEditor/TitleFontSize", 20).toInt(),
+                                       Config.value("CardEditor/TitleFont", QFont("Times", 20)).value<QFont>(),
                                        Config.value("CardEditor/TitleSkip", 0).toInt(),
                                        card_scene->getTitleItem());
     box->setTitle(tr("Title"));
     layout->addRow(box);
 
     box = createTextItemBox(Config.value("CardEditor/NameText", tr("Name")).toString(),
-                            Config.value("CardEditor/NameFont").value<QFont>(),
-                            Config.value("CardEditor/NameFontSize", 36).toInt(),
+                            Config.value("CardEditor/NameFont", QFont("Times", 36)).value<QFont>(),
                             Config.value("CardEditor/NameSkip", 0).toInt(),
                             card_scene->getNameItem());
 
@@ -461,25 +509,7 @@ QWidget *CardEditor::createLeft(){
     layout->addRow(createGeneralLayout());
     layout->addRow(createSkillBox());
 
-    QSpinBox *ratio_spinbox = new QSpinBox;
-    ratio_spinbox->setRange(1, 1600);
-    ratio_spinbox->setValue(100);
-    ratio_spinbox->setSuffix(" %");
-    connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
-
-    /*
-
-
-    {
-        QHBoxLayout *hlayout = new QHBoxLayout;
-        hlayout->addWidget(import_button);
-        hlayout->addWidget(new QLabel(tr("Image ratio")));
-        hlayout->addWidget(ratio_spinbox);
-        layout->addRow(hlayout);
-    }
-
-    */
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
@@ -497,27 +527,28 @@ void CardEditor::setCardFrame(){
 void CardEditor::import(){
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a photo file ..."),
-                                                    QString(),
+                                                    Config.value("CardEditor/ImportPath").toString(),
                                                     tr("Images (*.png *.bmp *.jpg)")
                                                     );
 
-    if(!filename.isEmpty())
+    if(!filename.isEmpty()){
         card_scene->setGeneralPhoto(filename);
+        Config.setValue("CardEditor/ImportPath", QFileInfo(filename).absolutePath());
+    }
 }
 
 void CardEditor::saveImage(){
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Select a photo file ..."),
-                                                    QString(),
+                                                    Config.value("CardEditor/ExportPath").toString(),
                                                     tr("Images (*.png *.bmp *.jpg)")
                                                     );
 
     if(!filename.isEmpty()){
-        QImage image(card_scene->sceneRect().size().toSize(), QImage::Format_ARGB32);
-        QPainter painter(&image);
-        card_scene->render(&painter);
+        card_scene->save(filename);
+        ratio_spinbox->setValue(100);
 
-        image.save(filename);
+        Config.setValue("CardEditor/ExportPath", QFileInfo(filename).absolutePath());
     }
 }
 

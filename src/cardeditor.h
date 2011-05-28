@@ -15,6 +15,8 @@
 #include <QHBoxLayout>
 #include <QMainWindow>
 
+class Pixmap;
+
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
 
@@ -26,7 +28,6 @@ public:
 public slots:
     void setText(const QString &text);
     void setFont(const QFont &font);
-    void setFontSize(int size);
     void setSkip(int skip);
 
     virtual QRectF boundingRect() const;
@@ -83,6 +84,9 @@ public:
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
     SkillBox *getSkillBox() const;
+    void save(const QString &filename, bool smooth = true);
+    void saveConfig();
+    void loadConfig();
 
 public slots:
     void setRatio(int ratio);
@@ -94,7 +98,8 @@ protected:
 #endif
 
 private:
-    QGraphicsPixmapItem *photo, *frame;
+    Pixmap *photo;
+    QGraphicsPixmapItem *frame;
     QList<QGraphicsPixmapItem *> magatamas;
     BlackEdgeTextItem *name, *title;
     SkillBox *skill_box;
@@ -111,16 +116,19 @@ private:
     CardScene *card_scene;
     QComboBox *kingdom_combobox;
     QCheckBox *lord_checkbox;
+    QSpinBox *ratio_spinbox;
 
     QWidget *createLeft();
     QGroupBox *createTextItemBox(const QString &text,
                                  const QFont &font,
-                                 int size,
                                  int skip,
                                  BlackEdgeTextItem *item
                                  );
     QLayout *createGeneralLayout();
     QWidget *createSkillBox();
+
+protected:
+    virtual void closeEvent(QCloseEvent *);
 
 private slots:
     void setCardFrame();
