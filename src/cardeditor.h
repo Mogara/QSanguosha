@@ -21,6 +21,7 @@ class BlackEdgeTextItem: public QGraphicsObject{
 public:
     BlackEdgeTextItem();  
     void setColor(const QColor &color);
+    void setOutline(int outline);
 
 public slots:
     void setText(const QString &text);
@@ -38,6 +39,7 @@ private:
     QFont font;
     int skip;
     QColor color;
+    int outline;
 };
 
 class SkillBox: public QGraphicsObject{

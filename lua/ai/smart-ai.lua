@@ -2632,8 +2632,9 @@ function SmartAI:cardNeed(card)
     return self:getUseValue(card)
 end
 
-function SmartAI:cardMatch(condition)
-
+function SmartAI:askForGuanxing(cards, up_only)
+	-- keep it unchanged
+	return cards, {}
 end
 
 -- load other ai scripts

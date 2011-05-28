@@ -15,7 +15,7 @@
 #include <QCursor>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
-    :skip(0), color(Qt::white)
+    :skip(0), color(Qt::white), outline(3)
 {
     setFlag(ItemIsMovable);
 }
@@ -41,6 +41,10 @@ void BlackEdgeTextItem::setSkip(int skip){
 
 void BlackEdgeTextItem::setColor(const QColor &color){
     this->color = color;
+}
+
+void BlackEdgeTextItem::setOutline(int outline){
+    this->outline = outline;
 }
 
 void BlackEdgeTextItem::setText(const QString &text){
@@ -75,7 +79,7 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen pen(Qt::black);
-    pen.setWidth(3);
+    pen.setWidth(outline);
     painter->setPen(pen);
 
     QFontMetrics metric(font);
@@ -203,6 +207,7 @@ CardScene::CardScene()
     name = new BlackEdgeTextItem;
     name->setPos(28, 206);
     name->setObjectName("Name");
+    name->setOutline(5);
 
     title = new BlackEdgeTextItem;
     title->setPos(49, 128);
