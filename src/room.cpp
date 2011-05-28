@@ -561,6 +561,15 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
     }
 
+    if(card == NULL)
+        return NULL;
+
+    bool continuable = false;
+    CardUseStruct card_use;
+    card_use.card = card;
+    card_use.from = player;
+    card = card->validateInResposing(player, &continuable);
+
     if(card){
         if(throw_it)
             throwCard(card);
@@ -578,7 +587,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             QVariant card_star = QVariant::fromValue(card_ptr);
             thread->trigger(CardResponsed, player, card_star);
         }
-    }
+    }else if(continuable)
+        return askForCard(player, pattern, prompt, throw_it);
 
     return card;
 }
