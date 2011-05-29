@@ -7,14 +7,10 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QFileDialog>
-#include <QCommandLinkButton>
-#include <QFontDatabase>
 #include <QLabel>
-#include <QFontComboBox>
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
 #include <QCursor>
-#include <QFontDialog>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -115,29 +111,51 @@ void SkillBox::setMiddleHeight(int height){
     }
 }
 
+AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
+    :QGraphicsTextItem(text, parent)
+{
+
+}
+
+void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    if(hasFocus()){
+        QGraphicsTextItem::paint(painter, option, widget);
+        return;
+    }
+
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    QPainterPath path;
+    QFontMetrics fm(font());
+    path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
+    painter->fillPath(path, defaultTextColor());
+}
+
 void SkillBox::addSkill(){
     QGraphicsTextItem *text_item = new QGraphicsTextItem(tr("Skill description"), this);
+    text_item->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
     text_item->setTextWidth(middle.width());
-    text_item->setFlag(ItemIsMovable);
-    //text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
+    text_item->setFlag(ItemIsMovable);    
+    text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
 
     QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));
     QGraphicsPixmapItem *skill_title = new QGraphicsPixmapItem(title_pixmap, text_item);
     skill_title->setX(-39);
 
-    QGraphicsTextItem *title_text = new QGraphicsTextItem(tr("Skill"), skill_title);
-    //title_text->setTextInteractionFlags(Qt::TextEditorInteraction);
-    title_text->setPos(0, 0);
+    QGraphicsTextItem *title_text = new AATextItem(tr("Skill"), skill_title);
+    title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>());
+    title_text->setTextInteractionFlags(Qt::TextEditorInteraction);
+    title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, 0)).toPointF());
 
     skill_titles << title_text;
     skill_descriptions << text_item;
 
-    connect(text_item->document(), SIGNAL(contentsChanged()), this, SLOT(updateLayout()));
+    connect(text_item->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
     updateLayout();
 }
 
 void SkillBox::setSkillTitleFont(const QFont &font){
-    Config.setValue("CardEditor/SkillNameFont", font);
+    Config.setValue("CardEditor/SkillTitleFont", font);
 
     foreach(QGraphicsTextItem *item, skill_titles){
         item->setFont(font);
@@ -390,11 +408,27 @@ CardEditor::CardEditor(QWidget *parent) :
     menu_bar->addMenu(tool_menu);
 }
 
+void CardEditor::updateButtonText(const QFont &font){
+    QFontDialog *dialog = qobject_cast<QFontDialog *>(sender());
+    if(dialog){
+        QPushButton *button = dialog2button.value(dialog, NULL);
+        if(button)
+            button->setText(font.family());
+    }
+}
+
+void CardEditor::setMapping(QFontDialog *dialog, QPushButton *button){
+    dialog2button.insert(dialog, button);
+
+    connect(dialog, SIGNAL(currentFontChanged(QFont)), this, SLOT(updateButtonText(QFont)));
+    connect(button, SIGNAL(clicked()), dialog, SLOT(exec()));
+}
+
 QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int skip, BlackEdgeTextItem *item){
     QGroupBox *box = new QGroupBox;
 
     QLineEdit *edit = new QLineEdit;
-    QPushButton *font_button = new QPushButton(tr("Select font ..."));
+    QPushButton *font_button = new QPushButton(font.family());
     QSpinBox *size_spinbox = new QSpinBox;
     size_spinbox->setRange(1, 96);
     QSpinBox *space_spinbox = new QSpinBox;
@@ -406,7 +440,7 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
     layout->addRow(tr("Line spacing"), space_spinbox);
 
     QFontDialog *font_dialog = new QFontDialog(this);
-    connect(font_button, SIGNAL(clicked()), font_dialog, SLOT(exec()));
+    setMapping(font_dialog, font_button);
 
     connect(edit, SIGNAL(textChanged(QString)), item, SLOT(setText(QString)));
     connect(font_dialog, SIGNAL(currentFontChanged(QFont)), item, SLOT(setFont(QFont)));
@@ -470,14 +504,23 @@ QWidget *CardEditor::createSkillBox(){
     QGroupBox *box = new QGroupBox(tr("Skill"));
 
     QFormLayout *layout = new QFormLayout;
-    QFontComboBox *title_font_combobox = new QFontComboBox;
-    layout->addRow(tr("Title font"), title_font_combobox);
-    QFontComboBox *desc_font_combobox = new QFontComboBox;
-    layout->addRow(tr("Description font"), desc_font_combobox);
+    QPushButton *title_font_button = new QPushButton;
+    QPushButton *desc_font_button = new QPushButton;
+    QFontDialog *title_font_dialog = new QFontDialog(this);
+    QFontDialog *desc_font_dialog = new QFontDialog(this);
+
+    layout->addRow(tr("Title font"), title_font_button);
+    layout->addRow(tr("Description font"), desc_font_button);
 
     SkillBox *skill_box = card_scene->getSkillBox();
-    connect(title_font_combobox, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillTitleFont(QFont)));
-    connect(desc_font_combobox, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillDescriptionFont(QFont)));
+    connect(title_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillTitleFont(QFont)));
+    connect(desc_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillDescriptionFont(QFont)));
+
+    setMapping(title_font_dialog, title_font_button);
+    setMapping(desc_font_dialog, desc_font_button);
+
+    title_font_dialog->setCurrentFont(Config.value("CardEditor/SkillTitleFont", QFont("", 15)).value<QFont>());
+    desc_font_dialog->setCurrentFont(Config.value("CardEditor/SkillDescriptionFont", QFont("", 9)).value<QFont>());
 
     box->setLayout(layout);
     return box;

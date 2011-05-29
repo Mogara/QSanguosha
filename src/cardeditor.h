@@ -14,6 +14,7 @@
 #include <QTextEdit>
 #include <QHBoxLayout>
 #include <QMainWindow>
+#include <QFontDialog>
 
 class Pixmap;
 
@@ -41,6 +42,14 @@ private:
     int skip;
     QColor color;
     int outline;
+};
+
+class AATextItem: public QGraphicsTextItem{
+public:
+    AATextItem(const QString &text, QGraphicsItem *parent);
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
 class SkillBox: public QGraphicsObject{
@@ -117,6 +126,7 @@ private:
     QComboBox *kingdom_combobox;
     QCheckBox *lord_checkbox;
     QSpinBox *ratio_spinbox;
+    QMap<QFontDialog *, QPushButton *> dialog2button;
 
     QWidget *createLeft();
     QGroupBox *createTextItemBox(const QString &text,
@@ -130,10 +140,14 @@ private:
 protected:
     virtual void closeEvent(QCloseEvent *);
 
+private:
+    void setMapping(QFontDialog *dialog, QPushButton *button);
+
 private slots:
     void setCardFrame();
     void import();
     void saveImage();
+    void updateButtonText(const QFont &font);
 };
 
 #endif // CARDEDITOR_H
