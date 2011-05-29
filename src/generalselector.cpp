@@ -108,6 +108,8 @@ void GeneralSelector::loadFirstGeneralTable(const QString &role){
                 first_general_table.insert(key, value);
             }
         }
+
+        file.close();
     }
 }
 
@@ -129,5 +131,7 @@ void GeneralSelector::loadSecondGeneralTable(){
             QString key = QString("%1+%2").arg(first).arg(second);
             second_general_table.insert(key, value);
         }
+
+        file.close();
     }
 }
