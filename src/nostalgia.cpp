@@ -342,35 +342,57 @@ bool GuhuoCard::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
     return card && card->targetsFeasible(targets);
 }
 
-void GuhuoCard::onUse(Room *room, const CardUseStruct &card_use) const{
+const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
+    Room *room = card_use->from->getRoom();
+
     LogMessage log;
-    log.type = "#Guhuo";
-    log.from = card_use.from;
-    log.to = card_use.to;
+    log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
+    log.from = card_use->from;
+    log.to = card_use->to;
     log.arg = user_string;
 
     room->sendLog(log);
 
-    if(guhuo(card_use.from)){
-        CardUseStruct use = card_use;
+    if(guhuo(card_use->from)){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
-        use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
-        use.card = use_card;
 
-        room->useCard(use);
-    }
+        return use_card;
+    }else
+        return NULL;
+}
+
+const Card *GuhuoCard::validateInResposing(ServerPlayer *user, bool *continuable) const{
+    *continuable = true;
+
+    Room *room = user->getRoom();
+
+    LogMessage log;
+    log.type = "#GuhuoNoTarget";
+    log.from = user;
+    log.arg = user_string;
+    room->sendLog(log);
+
+    if(guhuo(user)){
+        const Card *card = Sanguosha->getCard(subcards.first());
+        Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
+        use_card->addSubcard(this);
+
+        return use_card;
+    }else
+        return NULL;
 }
 
 class GuhuoViewAsSkill: public OneCardViewAsSkill{
 public:
     GuhuoViewAsSkill():OneCardViewAsSkill("guhuo"){
-
     }
 
     virtual bool isEnabledAtResponse() const{
-        return !Self->isKongcheng() && ClientInstance->card_pattern == "@guhuo";
+        return !Self->isKongcheng()
+                && !ClientInstance->card_pattern.startsWith("@")
+                && !ClientInstance->card_pattern.contains("+");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -380,6 +402,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
+            card->setUserString(ClientInstance->card_pattern);
             card->addSubcard(card_item->getFilteredCard());
             return card;
         }
@@ -399,58 +422,17 @@ public:
 class Guhuo: public TriggerSkill{
 public:
     Guhuo():TriggerSkill("guhuo"){
+        default_choice = "noquestion";
         view_as_skill = new GuhuoViewAsSkill;
 
-        events << CardAsked;
-
-        default_choice = "noquestion";
+        events << AskForPeaches;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        if(!TriggerSkill::triggerable(target))
-            return false;
-
-        if(target->isKongcheng())
-            return false;
-
-        if(target->getRoom()->getTag("Guhuoing").toBool())
-            return false;
-
-        return true;
+        return TriggerSkill::triggerable(target) && !target->isKongcheng();
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *yuji, QVariant &data) const{
-        QString pattern = data.toString();
-
-        if(pattern.startsWith("@") || pattern.startsWith("."))
-            return false;
-
-        Room *room = yuji->getRoom();
-        while(!yuji->isKongcheng()){
-            const Card *card = room->askForCard(yuji, "@guhuo", "@guhuo:::" + pattern, false);
-            if(card == NULL)
-                return false;
-
-            const GuhuoCard *guhuo_card = qobject_cast<const GuhuoCard *>(card);
-            if(guhuo_card == NULL)
-                return false;
-
-            LogMessage log;
-            log.type = "#GuhuoNoTarget";
-            log.from = yuji;
-            log.arg = pattern;
-            room->sendLog(log);
-
-            if(guhuo_card->guhuo(yuji)){
-                const Card *real_card = Sanguosha->getCard(guhuo_card->getEffectiveId());
-                Card *c = Sanguosha->cloneCard(pattern, real_card->getSuit(), real_card->getNumber());
-                c->setSkillName("guhuo");
-                room->provide(c);
-
-                return true;
-            }
-        }
-
+    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &) const{
         return false;
     }
 };

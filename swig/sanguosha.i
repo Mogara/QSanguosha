@@ -129,6 +129,8 @@ public:
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
+    bool hasEquip(const Card *card) const;
+    bool hasEquip() const;
 
     QStack<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);

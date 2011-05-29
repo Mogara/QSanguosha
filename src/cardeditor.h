@@ -14,6 +14,9 @@
 #include <QTextEdit>
 #include <QHBoxLayout>
 #include <QMainWindow>
+#include <QFontDialog>
+
+class Pixmap;
 
 class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
@@ -21,11 +24,11 @@ class BlackEdgeTextItem: public QGraphicsObject{
 public:
     BlackEdgeTextItem();  
     void setColor(const QColor &color);
+    void setOutline(int outline);
 
 public slots:
     void setText(const QString &text);
     void setFont(const QFont &font);
-    void setFontSize(int size);
     void setSkip(int skip);
 
     virtual QRectF boundingRect() const;
@@ -38,6 +41,15 @@ private:
     QFont font;
     int skip;
     QColor color;
+    int outline;
+};
+
+class AATextItem: public QGraphicsTextItem{
+public:
+    AATextItem(const QString &text, QGraphicsItem *parent);
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
 class SkillBox: public QGraphicsObject{
@@ -47,6 +59,7 @@ public:
     SkillBox();
     void setKingdom(const QString &kingdom);
     void setMiddleHeight(int height);
+    void setTextEditable(bool editable);
 
     virtual QRectF boundingRect() const;
 
@@ -55,6 +68,7 @@ public slots:
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
     void updateLayout();
+    void insertSuit();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -81,6 +95,9 @@ public:
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
     SkillBox *getSkillBox() const;
+    void save(const QString &filename, bool smooth = true);
+    void saveConfig();
+    void loadConfig();
 
 public slots:
     void setRatio(int ratio);
@@ -92,7 +109,8 @@ protected:
 #endif
 
 private:
-    QGraphicsPixmapItem *photo, *frame;
+    Pixmap *photo;
+    QGraphicsPixmapItem *frame;
     QList<QGraphicsPixmapItem *> magatamas;
     BlackEdgeTextItem *name, *title;
     SkillBox *skill_box;
@@ -109,21 +127,29 @@ private:
     CardScene *card_scene;
     QComboBox *kingdom_combobox;
     QCheckBox *lord_checkbox;
+    QSpinBox *ratio_spinbox;
+    QMap<QFontDialog *, QPushButton *> dialog2button;
 
     QWidget *createLeft();
     QGroupBox *createTextItemBox(const QString &text,
                                  const QFont &font,
-                                 int size,
                                  int skip,
                                  BlackEdgeTextItem *item
                                  );
     QLayout *createGeneralLayout();
     QWidget *createSkillBox();
 
+protected:
+    virtual void closeEvent(QCloseEvent *);
+
+private:
+    void setMapping(QFontDialog *dialog, QPushButton *button);
+
 private slots:
     void setCardFrame();
     void import();
     void saveImage();
+    void updateButtonText(const QFont &font);
 };
 
 #endif // CARDEDITOR_H

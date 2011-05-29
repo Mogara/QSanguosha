@@ -1,9 +1,12 @@
 -- pojun
 sgs.ai_skill_invoke.pojun = function(self, data)
 	local damage = data:toDamage()
-	local good = damage.to:getHp() > 2
 	
+	if not damage.to:faceUp() then
+		return self:isFriend(damage.to)
+	end		
 	
+	local good = damage.to:getHp() > 2	
 	if self:isFriend(damage.to) then
 		return good
 	elseif self:isEnemy(damage.to) then
@@ -66,20 +69,13 @@ function gaoshun_ai:askForCard(pattern,prompt)
 	end
 end
 
-
-
-
-
 -- buyi
 sgs.ai_skill_invoke.buyi = function(self, data)
 	local dying = data:toDying()
 	return self:isFriend(dying.who)
 end
 
-
 --xuanfeng
-sgs.ai_skill_playerchosen = {}
-
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
 	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))
@@ -420,7 +416,7 @@ sgs.ai_skill_playerchosen.mingce = function(self,targets)
 
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and self:canSlash(target) and not self:slashProhibit(slash ,target) then
+		if self:isEnemy(target) and self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
 		--self:log("Find!")
 		return target
 		end

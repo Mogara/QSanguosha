@@ -459,7 +459,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             LogMessage log;
             log.type = "$InitialJudge";
             log.from = player;
-            log.card_str = judge->card->toString();
+            log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
             room->sendJudgeResult(judge);
@@ -476,7 +476,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             LogMessage log;
             log.type = "$JudgeResult";
             log.from = player;
-            log.card_str = judge->card->toString();
+            log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
             room->sendJudgeResult(judge);
