@@ -188,14 +188,15 @@ void SkillBox::insertSuit(){
         return;
 
     foreach(QGraphicsTextItem *item, skill_descriptions){
-        //if(item->hasFocus()){
-        item->setFocus();
+        if(item->hasFocus()){
+        //item->setFocus();
             QString suit_name = combobox->itemData(combobox->currentIndex()).toString();
             QImage image(QString("image/system/suit/%1.png").arg(suit_name));
+            image = image.scaled(QSize(9, 9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             item->textCursor().insertImage(image);
 
             return;
-        //}
+        }
     }
 }
 
@@ -445,7 +446,7 @@ void CardEditor::updateButtonText(const QFont &font){
     if(dialog){
         QPushButton *button = dialog2button.value(dialog, NULL);
         if(button)
-            button->setText(font.family());
+            button->setText(QString("%1[%2]").arg(font.family()).arg(font.pointSize()));
     }
 }
 
