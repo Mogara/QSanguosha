@@ -19,9 +19,6 @@ GeneralSelector::GeneralSelector()
 {
     loadFirstGeneralTable();
     loadSecondGeneralTable();
-
-    qDebug("first: %d", first_general_table.size());
-    qDebug("second: %d", second_general_table.size());
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates){
@@ -40,7 +37,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
 
     foreach(QString candidate, candidates){
         QString key = QString("%1:%2:%3").arg(candidate).arg(role).arg(index);
-        int value = first_general_table.value(key, 5);
+        qreal value = first_general_table.value(key, 5);
 
         if(role == "loyalist" || role == "renegade"){
             const General *general = Sanguosha->getGeneral(candidate);
@@ -96,7 +93,7 @@ void GeneralSelector::loadFirstGeneralTable(const QString &role){
 
             int i;
             for(i=0; i<7; i++){
-                int value;
+                qreal value;
                 stream >> value;
 
                 QString key = QString("%1:%2:%3").arg(name).arg(role).arg(i+2);

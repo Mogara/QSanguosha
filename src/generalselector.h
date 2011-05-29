@@ -22,7 +22,7 @@ private:
     void loadFirstGeneralTable(const QString &role);
     void loadSecondGeneralTable();
 
-    QHash<QString, int> first_general_table;
+    QHash<QString, qreal> first_general_table;
     QHash<QString, int> second_general_table;
 };
 
