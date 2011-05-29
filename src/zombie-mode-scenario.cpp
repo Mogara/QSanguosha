@@ -96,6 +96,7 @@ public:
 
                 if(killer->getGeneral2Name()=="zombie"){
                     zombify(player, killer);
+                    room->setPlayerProperty(player, "role", "renegade");
                     player->getRoom()->revivePlayer(player);
                     room->setPlayerProperty(killer,"role","rebel");
 
@@ -117,6 +118,18 @@ public:
 
                     QList<ServerPlayer *> players = room->getOtherPlayers(player);
                     qShuffle(players);
+
+                    bool hasZombie=false;
+                    foreach(ServerPlayer *p,players)
+                    {
+                        if (p->getGeneral2Name()=="zombie")
+                        {
+                            hasZombie=true;
+                            break;
+                        }
+                    }
+
+                    if(round>2&&!hasZombie)room->gameOver("lord+loyalist");
 
                     if(player->getMark("@round") > 7)
                     {
