@@ -69,20 +69,13 @@ function gaoshun_ai:askForCard(pattern,prompt)
 	end
 end
 
-
-
-
-
 -- buyi
 sgs.ai_skill_invoke.buyi = function(self, data)
 	local dying = data:toDying()
 	return self:isFriend(dying.who)
 end
 
-
 --xuanfeng
-sgs.ai_skill_playerchosen = {}
-
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
 	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))

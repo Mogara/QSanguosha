@@ -2137,6 +2137,8 @@ function SmartAI:getRetrialCardId(cards, judge)
 	end
 end
 
+sgs.ai_skill_playerchosen = {}
+
 function SmartAI:askForPlayerChosen(targets, reason)
 	self:log("askForPlayerChosen:"..reason)
 	local playerchosen = sgs.ai_skill_playerchosen[string.gsub(reason,"%-","_")]
