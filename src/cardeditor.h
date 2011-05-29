@@ -81,7 +81,7 @@ private:
     QPixmap up, middle, down;
     QString kingdom;
     QList<QGraphicsTextItem *> skill_titles;
-    QList<QGraphicsTextItem *> skill_descriptions;
+    QGraphicsTextItem *skill_description;
 };
 
 class CardScene: public QGraphicsScene{

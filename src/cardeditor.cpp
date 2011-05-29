@@ -90,6 +90,15 @@ SkillBox::SkillBox()
     :middle_height(0)
 {
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    skill_description = new QGraphicsTextItem(tr("Skill description"), this);
+    skill_description->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
+    skill_description->setTextWidth(middle.width());
+    skill_description->setFlag(ItemIsMovable);
+    skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
+    skill_description->setX(17);
+
+    connect(skill_description->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
 }
 
 void SkillBox::setKingdom(const QString &kingdom){
@@ -97,6 +106,17 @@ void SkillBox::setKingdom(const QString &kingdom){
     up.load(QString("diy/%1-skill-up.png").arg(kingdom));
     down.load(QString("diy/%1-skill-down.png").arg(kingdom));
     middle.load(QString("diy/%1-skill-middle.png").arg(kingdom));
+
+    foreach(QGraphicsTextItem *skill_title, skill_titles){
+        QGraphicsItem *item = skill_title->parentItem();
+        QGraphicsPixmapItem *pixmap_item = qgraphicsitem_cast<QGraphicsPixmapItem *>(item);
+        pixmap_item->setPixmap(QPixmap(QString("diy/%1-skill.png").arg(kingdom)));
+
+        if(kingdom == "god")
+            skill_title->setDefaultTextColor(QColor(255, 255, 102));
+        else
+            skill_title->setDefaultTextColor(Qt::black);
+    }
 }
 
 void SkillBox::setMiddleHeight(int height){
@@ -114,7 +134,6 @@ void SkillBox::setMiddleHeight(int height){
 AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
     :QGraphicsTextItem(text, parent)
 {
-
 }
 
 void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
@@ -132,15 +151,15 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 }
 
 void SkillBox::addSkill(){
-    QGraphicsTextItem *text_item = new QGraphicsTextItem(tr("Skill description"), this);
-    text_item->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
-    text_item->setTextWidth(middle.width());
-    text_item->setFlag(ItemIsMovable);    
-    text_item->setTextInteractionFlags(Qt::TextEditorInteraction);
+    QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));    
+    QGraphicsPixmapItem *skill_title = scene()->addPixmap(title_pixmap);
+    qreal last_y = 389;
+    if(!skill_titles.isEmpty()){
+        QGraphicsItem *last = skill_titles.last()->parentItem();
+        last_y = last->y() + last->boundingRect().height();
+    }
 
-    QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));
-    QGraphicsPixmapItem *skill_title = new QGraphicsPixmapItem(title_pixmap, text_item);
-    skill_title->setX(-39);
+    skill_title->setPos(32, last_y);
 
     QGraphicsTextItem *title_text = new AATextItem(tr("Skill"), skill_title);
     title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>());
@@ -149,10 +168,6 @@ void SkillBox::addSkill(){
     title_text->document()->setDocumentMargin(0);
 
     skill_titles << title_text;
-    skill_descriptions << text_item;
-
-    connect(text_item->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
-    updateLayout();
 }
 
 void SkillBox::setSkillTitleFont(const QFont &font){
@@ -166,20 +181,11 @@ void SkillBox::setSkillTitleFont(const QFont &font){
 void SkillBox::setSkillDescriptionFont(const QFont &font){
     Config.setValue("CardEditor/SkillDescriptionFont", font);
 
-    foreach(QGraphicsTextItem *item, skill_descriptions){
-        item->setFont(font);
-    }
+    skill_description->setFont(font);
 }
 
 void SkillBox::updateLayout(){
-    int i, n = skill_titles.length();
-    qreal height = 0;
-    for(i=0; i<n; i++){
-        QGraphicsTextItem *item = skill_descriptions.at(n-1-i);
-        QRectF rect = item->boundingRect();
-        height += rect.height();
-        item->setY(- height);
-    }
+    // dummy
 }
 
 void SkillBox::insertSuit(){
@@ -187,19 +193,11 @@ void SkillBox::insertSuit(){
     if(combobox == NULL)
         return;
 
-    foreach(QGraphicsTextItem *item, skill_descriptions){
-        if(item->hasFocus()){
-        //item->setFocus();
-            QString suit_name = combobox->itemData(combobox->currentIndex()).toString();
-            QImage image(QString("image/system/suit/%1.png").arg(suit_name));
-            image = image.scaled(QSize(9, 9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-            item->textCursor().insertImage(image);
-
-            return;
-        }
-    }
+    QString suit_name = combobox->itemData(combobox->currentIndex()).toString();
+    QImage image(QString("image/system/suit/%1.png").arg(suit_name));
+    image = image.scaled(QSize(9, 9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    skill_description->textCursor().insertImage(image);
 }
-
 
 QRectF SkillBox::boundingRect() const{
     // left down cornor is the origin
@@ -324,8 +322,7 @@ void SkillBox::setTextEditable(bool editable){
     foreach(QGraphicsTextItem *item, skill_titles)
         item->setTextInteractionFlags(flags);
 
-    foreach(QGraphicsTextItem *item, skill_descriptions)
-        item->setTextInteractionFlags(flags);
+    skill_description->setTextInteractionFlags(flags);
 }
 
 void CardScene::saveConfig(){
@@ -338,10 +335,6 @@ void CardScene::saveConfig(){
 }
 
 void CardScene::loadConfig(){
-    name->setPos(28, 206);
-    title->setPos(49, 128);
-    skill_box->setPos(70, 484);
-
     Config.beginGroup("CardEditor");
     name->setPos(Config.value("NamePos", QPointF(28, 206)).toPointF());
     title->setPos(Config.value("TitlePos", QPointF(49, 128)).toPointF());
