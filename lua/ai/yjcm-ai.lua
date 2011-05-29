@@ -416,7 +416,7 @@ sgs.ai_skill_playerchosen.mingce = function(self,targets)
 
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and self:canSlash(target) and not self:slashProhibit(slash ,target) then
+		if self:isEnemy(target) and self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
 		--self:log("Find!")
 		return target
 		end

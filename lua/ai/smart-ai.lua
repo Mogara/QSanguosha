@@ -645,8 +645,12 @@ function SmartAI:askForYiji(cards)
 		end
 	end
 	
+	if true then
+		return nil, -1
+	end
+	
     if self.player:getHandcardNum()<2 then
-		return nil, 0
+		return nil, -1
 	end
 	
 	for card_id in ipairs(cards) do
