@@ -59,6 +59,7 @@ public:
     SkillBox();
     void setKingdom(const QString &kingdom);
     void setMiddleHeight(int height);
+    void setTextEditable(bool editable);
 
     virtual QRectF boundingRect() const;
 
@@ -67,6 +68,7 @@ public slots:
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
     void updateLayout();
+    void insertSuit();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

@@ -31,7 +31,7 @@ sgs.ai_skill_invoke.zhenggong  = true
 
 sgs.ai_skill_invoke.toudu = function(self, data)
 	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy) then
+		if self.player:canSlash(enemy, false) then
 			return true
 		end
 	end
@@ -50,5 +50,12 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 end
 
 -- yitian-sword
-sgs.ai_skill_invoke.yitian_sword = true
+sgs.ai_skill_invoke.yitian_sword = function(self, data)
+	if next(self.enemies) then
+		return true
+	else
+		return false
+	end
+end
+
 sgs.ai_skill_playerchosen.yitian_sword = sgs.ai_skill_playerchosen.toudu

@@ -179,8 +179,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     victim->setAlive(false);
     broadcastProperty(victim, "alive");
 
-    victim->loseAllSkills();
-
     broadcastProperty(victim, "role");
     broadcastInvoke("killPlayer", victim->objectName());
 
@@ -213,6 +211,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
     thread->trigger(Death, victim, data);
+    victim->loseAllSkills();
 
     if(Config.EnableAI){
         bool expose_roles = true;
@@ -964,7 +963,8 @@ void Room::timerEvent(QTimerEvent *event){
             connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
             QStringList lord_list = Sanguosha->getRandomLords();
-            QString default_lord = lord_list[qrand() % lord_list.length()];
+            QString default_lord = lord_list[qrand() % lord_list.length()];            
+
             ServerPlayer *the_lord = getLord();
             if(the_lord->getState() != "online") {
                 chooseCommand(the_lord, default_lord);
@@ -1432,6 +1432,8 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     }
 }
 
+#include "generalselector.h"
+
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getGeneral()){
         // the player has chosen player, should ignore it
@@ -1464,7 +1466,8 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
             ServerPlayer *p = players.at(i);
 
-            QString default_general = choices.first();
+            GeneralSelector *selector = GeneralSelector::GetInstance();
+            QString default_general = selector->selectFirst(p, choices);
             if(p->getState() != "online"){
                 chooseCommand(p, default_general);
             }else{
@@ -1507,7 +1510,8 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
                     choices << choice;
                 }
 
-                QString default_general2 = choices.first();
+                GeneralSelector *selector = GeneralSelector::GetInstance();
+                QString default_general2 = selector->selectSecond(p, choices);
                 if(p->getState() != "online"){
                     choose2Command(p, default_general2);
                 }else{

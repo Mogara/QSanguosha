@@ -338,6 +338,10 @@ bool Player::hasEquip(const Card *card) const{
     return weapon == card || armor == card || defensive_horse == card || offensive_horse == card;
 }
 
+bool Player::hasEquip() const{
+    return weapon || armor || defensive_horse || offensive_horse;
+}
+
 const Weapon *Player::getWeapon() const{
     return weapon;
 }
@@ -460,10 +464,7 @@ bool Player::isKongcheng() const{
 }
 
 bool Player::isNude() const{
-    if(getHandcardNum()!=0 || weapon || armor || defensive_horse || offensive_horse)
-        return false;
-    else
-        return true;
+    return isKongcheng() && !hasEquip();
 }
 
 bool Player::isAllNude() const{

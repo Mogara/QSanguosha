@@ -146,6 +146,7 @@ void SkillBox::addSkill(){
     title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>());
     title_text->setTextInteractionFlags(Qt::TextEditorInteraction);
     title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, 0)).toPointF());
+    title_text->document()->setDocumentMargin(0);
 
     skill_titles << title_text;
     skill_descriptions << text_item;
@@ -180,6 +181,24 @@ void SkillBox::updateLayout(){
         item->setY(- height);
     }
 }
+
+void SkillBox::insertSuit(){
+    QComboBox *combobox = qobject_cast<QComboBox *>(sender());
+    if(combobox == NULL)
+        return;
+
+    foreach(QGraphicsTextItem *item, skill_descriptions){
+        //if(item->hasFocus()){
+        item->setFocus();
+            QString suit_name = combobox->itemData(combobox->currentIndex()).toString();
+            QImage image(QString("image/system/suit/%1.png").arg(suit_name));
+            item->textCursor().insertImage(image);
+
+            return;
+        //}
+    }
+}
+
 
 QRectF SkillBox::boundingRect() const{
     // left down cornor is the origin
@@ -290,9 +309,22 @@ void CardScene::save(const QString &filename, bool smooth){
         photo->setScale(1.0);
     }
 
-    render(&painter);
+    skill_box->setTextEditable(false);
 
+    render(&painter);
     image.save(filename);
+
+    skill_box->setTextEditable(true);
+}
+
+void SkillBox::setTextEditable(bool editable){
+    Qt::TextInteractionFlags flags = editable ? Qt::TextEditorInteraction : Qt::NoTextInteraction;
+
+    foreach(QGraphicsTextItem *item, skill_titles)
+        item->setTextInteractionFlags(flags);
+
+    foreach(QGraphicsTextItem *item, skill_descriptions)
+        item->setTextInteractionFlags(flags);
 }
 
 void CardScene::saveConfig(){
@@ -522,6 +554,18 @@ QWidget *CardEditor::createSkillBox(){
     title_font_dialog->setCurrentFont(Config.value("CardEditor/SkillTitleFont", QFont("", 15)).value<QFont>());
     desc_font_dialog->setCurrentFont(Config.value("CardEditor/SkillDescriptionFont", QFont("", 9)).value<QFont>());
 
+    QComboBox *suit_combobox = new QComboBox;
+    const Card::Suit *suits = Card::AllSuits;
+    int i;
+    for(i=0; i<4; i++){
+        QString suit_name = Card::Suit2String(suits[i]);
+        QIcon suit_icon(QString("image/system/suit/%1.png").arg(suit_name));
+        suit_combobox->addItem(suit_icon, Sanguosha->translate(suit_name), suit_name);
+    }
+    layout->addRow(tr("Insert suit"), suit_combobox);
+
+    connect(suit_combobox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit()));
+
     box->setLayout(layout);
     return box;
 }
@@ -551,8 +595,6 @@ QWidget *CardEditor::createLeft(){
 
     layout->addRow(createGeneralLayout());
     layout->addRow(createSkillBox());
-
-
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
