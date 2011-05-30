@@ -95,7 +95,6 @@ public:
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
     SkillBox *getSkillBox() const;
-    void save(const QString &filename);
     void saveConfig();
     void loadConfig();
 
