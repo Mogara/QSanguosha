@@ -93,10 +93,10 @@ SkillBox::SkillBox()
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
     skill_description->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
-    skill_description->setTextWidth(260);
+    skill_description->setTextWidth(223);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
-    skill_description->setX(17);
+    skill_description->setX(25);
 
     connect(skill_description->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
 }
@@ -161,7 +161,7 @@ void SkillBox::addSkill(){
     QGraphicsTextItem *title_text = new AATextItem(tr("Skill"), skill_title);
     title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>());
     title_text->setTextInteractionFlags(Qt::TextEditorInteraction);
-    title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, 0)).toPointF());
+    title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, -2)).toPointF());
     title_text->document()->setDocumentMargin(0);
 
     skill_titles << title_text;
@@ -570,13 +570,13 @@ void CardEditor::closeEvent(QCloseEvent *event){
 }
 
 QWidget *CardEditor::createLeft(){
-    QFormLayout *layout = new QFormLayout;
+    QVBoxLayout *layout = new QVBoxLayout;
     QGroupBox *box = createTextItemBox(Config.value("CardEditor/TitleText", tr("Title")).toString(),
                                        Config.value("CardEditor/TitleFont", QFont("Times", 20)).value<QFont>(),
                                        Config.value("CardEditor/TitleSkip", 0).toInt(),
                                        card_scene->getTitleItem());
     box->setTitle(tr("Title"));
-    layout->addRow(box);
+    layout->addWidget(box);
 
     box = createTextItemBox(Config.value("CardEditor/NameText", tr("Name")).toString(),
                             Config.value("CardEditor/NameFont", QFont("Times", 36)).value<QFont>(),
@@ -584,10 +584,12 @@ QWidget *CardEditor::createLeft(){
                             card_scene->getNameItem());
 
     box->setTitle(tr("Name"));
-    layout->addRow(box);
+    layout->addWidget(box);
 
-    layout->addRow(createGeneralLayout());
-    layout->addRow(createSkillBox());
+    layout->addLayout(createGeneralLayout());
+    layout->addWidget(createSkillBox());
+    layout->addStretch();
+    layout->addWidget(new QLabel(tr("Thanks to BeiwanLufen")));
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
