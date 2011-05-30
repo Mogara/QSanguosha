@@ -327,8 +327,12 @@ QPushButton *Dashboard::createButton(const QString &name){
     button->setEnabled(false);
 
     QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(name));
+    QPixmap icon_pixmap_disabled(QString("image/system/button/%1-disabled.png").arg(name));
+
     QIcon icon(icon_pixmap);
-    button->setIcon(icon);
+    icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);
+
+    button->setIcon(icon);    
     button->setIconSize(icon_pixmap.size());
     button->setFixedSize(icon_pixmap.size());
     button->setObjectName(name);
