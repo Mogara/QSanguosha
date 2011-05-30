@@ -93,7 +93,7 @@ SkillBox::SkillBox()
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
     skill_description->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
-    skill_description->setTextWidth(middle.width());
+    skill_description->setTextWidth(260);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
     skill_description->setX(17);
@@ -120,13 +120,10 @@ void SkillBox::setKingdom(const QString &kingdom){
 }
 
 void SkillBox::setMiddleHeight(int height){
-    if(height < 0){
-        middle_height = middle.height();
-        prepareGeometryChange();
-    }
-
-    if(height >= middle.height()){
-        middle_height = height;
+    int new_height = height < 0 ? middle.height() : height;
+    if(middle_height != new_height){
+        middle_height = new_height;
+        skill_description->setY(- middle_height - down.height());
         prepareGeometryChange();
     }
 }
@@ -299,14 +296,9 @@ void CardScene::setGeneralPhoto(const QString &filename){
     Config.setValue("CardEditor/Photo", filename);
 }
 
-void CardScene::save(const QString &filename, bool smooth){
+void CardScene::save(const QString &filename){
     QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
     QPainter painter(&image);
-
-    if(smooth){
-        photo->scaleSmoothly(photo->scale());
-        photo->setScale(1.0);
-    }
 
     skill_box->setTextEditable(false);
 
@@ -391,6 +383,7 @@ void CardScene::setMaxHp(int max_hp){
 #include <QMenu>
 #include <QMenuBar>
 
+
 CardEditor::CardEditor(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -398,6 +391,12 @@ CardEditor::CardEditor(QWidget *parent) :
 
     QHBoxLayout *layout = new QHBoxLayout;
     QGraphicsView *view = new QGraphicsView;
+
+    view->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
+                        QPainter::SmoothPixmapTransform	|
+                        QPainter::HighQualityAntialiasing
+                        );
+
     card_scene = new CardScene;
     view->setScene(card_scene);
     view->setMinimumSize(380, 530);
@@ -625,8 +624,6 @@ void CardEditor::saveImage(){
 
     if(!filename.isEmpty()){
         card_scene->save(filename);
-        ratio_spinbox->setValue(100);
-
         Config.setValue("CardEditor/ExportPath", QFileInfo(filename).absolutePath());
     }
 }
