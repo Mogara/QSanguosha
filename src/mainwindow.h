@@ -35,6 +35,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionDIY_editor_triggered();
     void on_actionCard_editor_triggered();
     void on_actionAcknowledgement_triggered();
     void on_actionBroadcast_triggered();

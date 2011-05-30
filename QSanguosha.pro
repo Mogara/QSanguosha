@@ -74,7 +74,8 @@ SOURCES += src/main.cpp \
     src/roomthread1v1.cpp \
     src/cardeditor.cpp \
     src/zombie-mode-scenario.cpp \
-    src/generalselector.cpp
+    src/generalselector.cpp \
+    src/diyscriptor.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -145,14 +146,16 @@ HEADERS += src/mainwindow.h \
     src/roomthread1v1.h \
     src/cardeditor.h \
     src/zombie-mode-scenario.h \
-    src/generalselector.h
+    src/generalselector.h \
+    src/diyscriptor.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
     src/generaloverview.ui \
     src/cardoverview.ui \
     src/distanceviewdialog.ui \
-    src/configdialog.ui
+    src/configdialog.ui \
+    src/diyscriptor.ui
 
 
 INCLUDEPATH += include/lua
