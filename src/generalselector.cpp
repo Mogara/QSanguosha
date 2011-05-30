@@ -19,6 +19,7 @@ GeneralSelector::GeneralSelector()
 {
     loadFirstGeneralTable();
     loadSecondGeneralTable();
+    load3v3Table();
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates){
@@ -85,6 +86,24 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
     return max_general;
 }
 
+QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &candidates){
+    int max = -1;
+    QString max_general;
+
+    foreach(QString candidate, candidates){
+        int value = priority_3v3_table.value(candidate, 0);
+
+        if(value > max){
+            max = value;
+            max_general = candidate;
+        }
+    }
+
+    Q_ASSERT(!max_general.isEmpty());
+
+    return max_general;
+}
+
 void GeneralSelector::loadFirstGeneralTable(){
     loadFirstGeneralTable("loyalist");
     loadFirstGeneralTable("rebel");
@@ -135,3 +154,21 @@ void GeneralSelector::loadSecondGeneralTable(){
         file.close();
     }
 }
+
+void GeneralSelector::load3v3Table(){
+    QFile file("etc/3v3-priority.txt");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        while(!stream.atEnd()){
+            QString name;
+            int priority;
+
+            stream >> name >> priority;
+
+            priority_3v3_table.insert(name, priority);
+        }
+
+        file.close();
+    }
+}
+

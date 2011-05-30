@@ -4,71 +4,9 @@
 #include "ai.h"
 #include "lua.hpp"
 #include "settings.h"
+#include "generalselector.h"
 
 #include <QDateTime>
-
-static bool CompareByPriority(const QString &a, const QString &b){
-    static QHash<QString, int> map;
-    if(map.isEmpty()){
-        map["zhangliao"] = 7;
-        map["guojia"] = 7;
-        map["liubei"] = 7;
-        map["zhugeliang"] = 7;
-        map["xunyu"] = 7;
-        map["xuhuang"] = 7;
-        map["lusu"] = 7;
-
-        map["simayi"] = 6;
-        map["huangyueying"] = 6;
-        map["sunshangxiang"] = 6;
-        map["huatuo"] = 6;
-        map["yuanshao"] = 6;
-        map["caopi"] = 6;
-        map["dongzhuo"] = 6;
-
-        map["zhenji"] = 5;
-        map["zhangfei"] = 5;
-        map["huanggai"] = 5;
-        map["daqiao"] = 5;
-        map["zhangjiao"] = 5;
-        map["dianwei"] = 5;
-        map["taishici"] = 5;
-        map["shuangxiong"] = 5;
-        map["sunjian"] = 5;
-
-        map["caocao"] = 4;
-        map["xuchu"] = 4;
-        map["machao"] = 4;
-        map["ganning"] = 4;
-        map["lubu"] = 4;
-        map["xiahouyuan"] = 4;
-        map["huangzhong"] = 4;
-        map["pangde"] = 4;
-        map["zhurong"] = 4;
-
-        map["sunquan"] = 3;
-        map["zhouyu"] = 3;
-        map["zhoutai"] = 3;
-        map["jiaxu"] = 3;
-        map["wolong"] = 3;
-        map["pangtong"] = 3;
-
-        map["xiahoudun"] = 2;
-        map["guanyu"] = 2;
-        map["zhaoyun"] = 2;
-        map["lumeng"] = 2;
-        map["luxun"] = 2;
-        map["weiyan"] = 2;
-        map["menghuo"] = 2;
-
-        map["caoren"] = 1;
-    }
-
-    int p1 = map.value(a, 0);
-    int p2 = map.value(b, 0);
-
-    return p1 > p2;
-}
 
 static bool CompareByMaxHp(const QString &a, const QString &b){
     const General *g1 = Sanguosha->getGeneral(a);
@@ -133,7 +71,6 @@ void RoomThread3v3::run()
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
-    qSort(general_names.begin(), general_names.end(), CompareByPriority);
 
     QString order = room->askForOrder(warm_leader);
     ServerPlayer *first, *next;
@@ -165,7 +102,7 @@ void RoomThread3v3::run()
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player){
     QString name;
     if(general_names.length() == 1 || player->getState() != "online")
-        name = general_names.first();
+        name = GeneralSelector::GetInstance()->select3v3(player, general_names);
 
     if(name.isNull()){
         player->invoke("askForGeneral3v3");
