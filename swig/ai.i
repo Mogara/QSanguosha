@@ -135,6 +135,8 @@ void LuaAI::activate(CardUseStruct &card_use) {
     }
 }
 
+
+
 AI *Room::cloneAI(ServerPlayer *player){
     if(L == NULL)
         return new TrustAI(player);
@@ -324,6 +326,34 @@ const Card *LuaAI::askForNullification(const TrickCard *trick, ServerPlayer *fro
 		return static_cast<const Card *>(card_ptr);
 	else
 		return TrustAI::askForNullification(trick, from, to, positive);
+}
+
+const Card *LuaAI::askForCardShow(ServerPlayer *requestor) {
+    Q_ASSERT(callback);
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, callback);
+
+    lua_pushstring(L, __func__);
+
+    SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+
+        return TrustAI::askForCardShow(requestor);
+    }
+	void *card_ptr;
+	int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+	lua_pop(L, 1);
+	if(SWIG_IsOK(result))
+		return static_cast<const Card *>(card_ptr);
+	else
+		return TrustAI::askForCardShow(requestor);
 }
 
 %}

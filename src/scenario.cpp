@@ -49,6 +49,10 @@ void Scenario::assign(QStringList &generals, QStringList &roles) const{
     }
 }
 
+bool Scenario::generalSelection() const{
+    return false;
+}
+
 AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     return AI::GetRelation(a, b);
 }

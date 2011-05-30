@@ -949,7 +949,7 @@ void Room::timerEvent(QTimerEvent *event){
     }else{
         killTimer(event->timerId());
 
-        if(scenario && !scenario->inherits("ZombieScenario"))
+        if(scenario && !scenario->generalSelection())
             startGame();
         else if(mode == "06_3v3"){
             thread_3v3 = new RoomThread3v3(this);

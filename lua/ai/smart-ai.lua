@@ -2511,6 +2511,16 @@ function SmartAI:cardNeed(card)
     return self:getUseValue(card)
 end
 
+function SmartAI:askForCardShow(requestor)
+	local card = self:getCardRandomly(self.player,"h")
+	card=sgs.Sanguosha:getCard(card)
+	if self.player:hasSkill("hongyan") and card:getSuit()==sgs.Card_Spade then
+		card:setSuit(sgs.Card_Heart)
+		card:setSkillName("hongyan")
+	end
+	return card
+end
+
 function SmartAI:askForGuanxing(cards, up_only)
 	-- keep it unchanged
 	return cards, {}

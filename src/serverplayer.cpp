@@ -483,7 +483,6 @@ void ServerPlayer::setAI(AI *ai) {
 }
 
 AI *ServerPlayer::getAI() const{
-    if((getGeneralName()=="zombie") && (getMaxHP()<5))return ai;
     if(getState() == "online"){
         return NULL;
     }

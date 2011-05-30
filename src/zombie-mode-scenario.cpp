@@ -193,6 +193,10 @@ void ZombieScenario::onTagSet(Room *room, const QString &key) const{
     // dummy
 }
 
+bool ZombieScenario::generalSelection() const{
+    return true;
+}
+
 AI::Relation ZombieScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
     bool aZombie=true;
     bool bZombie=true;

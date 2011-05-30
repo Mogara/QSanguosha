@@ -400,46 +400,6 @@ LuaAI::LuaAI(ServerPlayer *player)
 
 }
 
-const Card *LuaAI::askForCardShow(ServerPlayer *requestor) {
-    if(requestor == self){
-        QList<const Card *> cards = self->getHandcards();
-        foreach(const Card *card, cards){
-            if(card->getTypeId() != Card::Basic)
-                return card;
-        }
-
-        return cards.first();
-    }
-
-    QList<const Card *> cards = requestor->getHandcards();
-    Card::Suit lack = Card::NoSuit;
-    int i;
-    for(i=0; i<4; i++){
-        Card::Suit suit = Card::AllSuits[i];
-        bool found = false;
-        foreach(const Card *card, cards){
-            if(card->getSuit() == suit){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found){
-            lack = suit;
-            break;
-        }
-    }
-
-    cards = self->getHandcards();
-    if(lack != Card::NoSuit){
-        foreach(const Card *card, cards){
-            if(card->getSuit() == lack)
-                return card;
-        }
-    }
-
-    return TrustAI::askForCardShow(requestor);
-}
 
 QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt){
     if(callback == 0)
