@@ -8,13 +8,6 @@
 
 #include <QDateTime>
 
-static bool CompareByMaxHp(const QString &a, const QString &b){
-    const General *g1 = Sanguosha->getGeneral(a);
-    const General *g2 = Sanguosha->getGeneral(b);
-
-    return g1->getMaxHp() < g2->getMaxHp();
-}
-
 RoomThread3v3::RoomThread3v3(Room *room)
     :QThread(room), room(room)
 {
@@ -126,14 +119,8 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name){
 
 void RoomThread3v3::startArrange(ServerPlayer *player){
     if(player->getState() != "online"){
-        QStringList arranged = player->getSelected();
-        qShuffle(arranged);
-        arranged = arranged.mid(0, 3);
-
-        qSort(arranged.begin(), arranged.end(), CompareByMaxHp);
-        arranged.swap(0, 1);
-
-        arrange(player, arranged);
+        GeneralSelector *selector = GeneralSelector::GetInstance();
+        arrange(player, selector->arrange3v3(player));
     }else{
         player->invoke("startArrange");        
     }

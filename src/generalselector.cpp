@@ -104,6 +104,24 @@ QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &cand
     return max_general;
 }
 
+static bool CompareByMaxHp(const QString &a, const QString &b){
+    const General *g1 = Sanguosha->getGeneral(a);
+    const General *g2 = Sanguosha->getGeneral(b);
+
+    return g1->getMaxHp() < g2->getMaxHp();
+}
+
+QStringList GeneralSelector::arrange3v3(ServerPlayer *player){
+    QStringList arranged = player->getSelected();
+    qShuffle(arranged);
+    arranged = arranged.mid(0, 3);
+
+    qSort(arranged.begin(), arranged.end(), CompareByMaxHp);
+    arranged.swap(0, 1);
+
+    return arranged;
+}
+
 void GeneralSelector::loadFirstGeneralTable(){
     loadFirstGeneralTable("loyalist");
     loadFirstGeneralTable("rebel");

@@ -16,6 +16,7 @@ public:
     QString selectFirst(ServerPlayer *player, const QStringList &candidates);
     QString selectSecond(ServerPlayer *player, const QStringList &candidates);
     QString select3v3(ServerPlayer *player, const QStringList &candidates);
+    QStringList arrange3v3(ServerPlayer *player);
 
 private:
     GeneralSelector();
