@@ -296,18 +296,6 @@ void CardScene::setGeneralPhoto(const QString &filename){
     Config.setValue("CardEditor/Photo", filename);
 }
 
-void CardScene::save(const QString &filename){
-    QImage image(sceneRect().size().toSize(), QImage::Format_ARGB32);
-    QPainter painter(&image);
-
-    skill_box->setTextEditable(false);
-
-    render(&painter);
-    image.save(filename);
-
-    skill_box->setTextEditable(true);
-}
-
 void SkillBox::setTextEditable(bool editable){
     Qt::TextInteractionFlags flags = editable ? Qt::TextEditorInteraction : Qt::NoTextInteraction;
 
@@ -399,7 +387,8 @@ CardEditor::CardEditor(QWidget *parent) :
 
     card_scene = new CardScene;
     view->setScene(card_scene);
-    view->setMinimumSize(380, 530);
+    view->setFixedSize(card_scene->sceneRect().width() + 2,
+                       card_scene->sceneRect().height() + 2);
 
     layout->addWidget(createLeft());
     layout->addWidget(view);
@@ -625,7 +614,7 @@ void CardEditor::saveImage(){
                                                     );
 
     if(!filename.isEmpty()){
-        card_scene->save(filename);
+        QPixmap::grabWidget(card_scene->views().first()).save(filename);
         Config.setValue("CardEditor/ExportPath", QFileInfo(filename).absolutePath());
     }
 }
