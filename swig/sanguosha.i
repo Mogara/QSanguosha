@@ -22,6 +22,7 @@ public:
 	bool inherits(const char *class_name);
 	bool setProperty ( const char * name, const QVariant & value);
 	QVariant property ( const char * name ) const;
+	void setParent(QObject *parent);
 };
 
 %extend QObject{
