@@ -84,7 +84,7 @@ function sgs.CreateViewAsSkill(spec)
 				return false
 			end
 			
-			return spec.view_filter(self, to_select , selected)
+			return spec.view_filter(self, selected, to_select)
 	end
 	
 	skill.enabled_at_play = spec.enabled_at_play

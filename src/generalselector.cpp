@@ -23,7 +23,6 @@ GeneralSelector::GeneralSelector()
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates){
-    QString lord_kingdom = player->getRoom()->getLord()->getKingdom();
     QString role = player->getRole();
     int seat = player->getSeat();
     int player_count = Sanguosha->getPlayerCount(player->getRoom()->getMode());
@@ -44,11 +43,16 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     else
         default_value = 6.3;
 
+    ServerPlayer *lord = player->getRoom()->getLord();
+    QString lord_kingdom;
+    if(lord->getGeneral()->isLord())
+        lord_kingdom = lord->getKingdom();
+
     foreach(QString candidate, candidates){
         QString key = QString("%1:%2:%3").arg(candidate).arg(role).arg(index);
         qreal value = first_general_table.value(key, default_value);
 
-        if(role == "loyalist" || role == "renegade"){
+        if(!lord_kingdom.isNull() && (role == "loyalist" || role == "renegade")){
             const General *general = Sanguosha->getGeneral(candidate);
             if(general->getKingdom() == lord_kingdom)
                 value += 0.5;

@@ -578,7 +578,7 @@ QWidget *CardEditor::createLeft(){
     layout->addLayout(createGeneralLayout());
     layout->addWidget(createSkillBox());
     layout->addStretch();
-    layout->addWidget(new QLabel(tr("Thanks to BeiwanLufen")));
+    layout->addWidget(new QLabel(tr("Thanks to BeiwanLufen <img width='50' height='50' src='diy/lufen.jpg' />")));
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);

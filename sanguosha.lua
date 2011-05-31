@@ -31,9 +31,10 @@ function load_extensions()
 	local scripts = sgs.GetFileNames("extensions")
 	
 	for _, script in ipairs(scripts) do		
-		local filename = ("extensions/%s"):format(script)
-		local package = dofile(filename)
-		sgs.Sanguosha:addPackage(package)
+		local name = script:sub(script:find("%w+"))
+		local module_name = "extensions." .. name
+		local loaded = require(module_name)
+		sgs.Sanguosha:addPackage(loaded.extension)
 	end
 end
 
