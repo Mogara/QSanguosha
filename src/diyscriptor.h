@@ -36,8 +36,13 @@ private slots:
 
     void on__sb_clicked();
 
+    void on__cn_textChanged(QString );
+
 private:
     Ui::DIYScriptor *ui;
+    QStringList gameCards;
+    QString gameCardViewAsFormat;
+    QString skillCardViewAsFormat;
     QTextBrowser *editionArea;
 };
 
