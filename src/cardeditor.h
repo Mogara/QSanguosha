@@ -72,6 +72,8 @@ public slots:
     void updateLayout();
     void insertSuit(int index);
     void insertBoldText(const QString &bold_text);
+    void saveConfig();
+    void loadConfig();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

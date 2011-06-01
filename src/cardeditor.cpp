@@ -194,6 +194,47 @@ void SkillBox::addSkill(){
     skill_titles << title_text;
 }
 
+void SkillBox::saveConfig(){
+    Config.beginGroup("CardEditor");
+
+    Config.beginWriteArray("SkillTitles");
+    for(int i=0; i<skill_titles.length(); i++){
+        Config.setArrayIndex(i);
+
+        Config.setValue("TitleText", skill_titles.at(i)->toPlainText());
+        Config.setValue("TitlePos", skill_titles.at(i)->parentItem()->pos());
+    }
+
+    Config.endArray();
+
+    Config.setValue("SkillDescription", skill_description->toHtml());
+    Config.endGroup();
+}
+
+void SkillBox::loadConfig(){
+    Config.beginGroup("CardEditor");
+
+    int size = Config.beginReadArray("SkillTitles");
+    for(int i=0; i<size; i++){
+        Config.setArrayIndex(i);
+
+        addSkill();
+
+        QGraphicsTextItem *item = skill_titles.last();
+        if(Config.contains("TitleText"))
+            item->setPlainText(Config.value("TitleText").toString());
+
+        if(Config.contains("TitlePos"))
+            item->parentItem()->setPos(Config.value("TitlePos").toPoint());
+    }
+
+    Config.endArray();
+
+    skill_description->setHtml(Config.value("SkillDescription").toString());
+    Config.endGroup();
+}
+
+
 void SkillBox::setSkillTitleFont(const QFont &font){
     Config.setValue("CardEditor/SkillTitleFont", font);
 
@@ -215,9 +256,13 @@ void SkillBox::updateLayout(){
 void SkillBox::insertSuit(int index){
     Card::Suit suit = static_cast<Card::Suit>(index);
     QString suit_name = Card::Suit2String(suit);
-    QImage image(QString("image/system/suit/%1.png").arg(suit_name));
-
+    QString suit_path = QString("image/system/suit/%1.png").arg(suit_name);
     int size = skill_description->font().pointSize() + 1;
+
+    // QString code = QString("<img src='%1' width='%2' height='%2'>").arg(suit_path).arg(size);
+    // skill_description->textCursor().insertHtml(code);
+
+    QImage image(suit_path);
     image = image.scaled(QSize(size, size), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     skill_description->textCursor().insertImage(image);
 }
@@ -346,6 +391,8 @@ void CardScene::saveConfig(){
     Config.setValue("PhotoPos", photo->pos());
     Config.setValue("SkillBoxPos", skill_box->pos());
     Config.endGroup();
+
+    skill_box->saveConfig();
 }
 
 void CardScene::loadConfig(){
@@ -355,6 +402,8 @@ void CardScene::loadConfig(){
     photo->setPos(Config.value("PhotoPos").toPointF());
     skill_box->setPos(Config.value("SkillBoxPos", QPointF(70, 484)).toPointF());
     Config.endGroup();
+
+    skill_box->loadConfig();
 }
 
 
