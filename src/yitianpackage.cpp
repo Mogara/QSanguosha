@@ -656,7 +656,7 @@ QiaocaiCard::QiaocaiCard(){
 }
 
 void QiaocaiCard::onEffect(const CardEffectStruct &effect) const{
-    QStack<const Card *> cards = effect.to->getJudgingArea();
+    QList<const Card *> cards = effect.to->getJudgingArea();
     foreach(const Card *card, cards){
         effect.from->obtainCard(card);
     }

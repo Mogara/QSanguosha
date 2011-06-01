@@ -183,7 +183,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
 QWidget *PlayerCardDialog::createJudgingArea(){
     QGroupBox *area = new QGroupBox(tr("Judging Area"));
     QVBoxLayout *layout = new QVBoxLayout;
-    QStack<const Card *> cards = player->getJudgingArea();
+    QList<const Card *> cards = player->getJudgingArea();
     foreach(const Card *card, cards){
         QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
         button->setIcon(card->getSuitIcon());

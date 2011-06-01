@@ -265,9 +265,9 @@ void Dashboard::hideAvatar(){
 }
 
 void Dashboard::installDelayedTrick(CardItem *card){
-    judging_area.push(card);
+    judging_area << card;
     const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
-    delayed_tricks.push(QPixmap(trick->getIconPath()));
+    delayed_tricks << QPixmap(trick->getIconPath());
 
     card->setHomePos(mapToScene(QPointF(34, 37)));
     card->goBack(true);
@@ -610,17 +610,12 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         }
 
     }else if(place == Player::Judging){
-        int i;
-        for(i=0; i<judging_area.count(); i++){
-            CardItem *item = judging_area.at(i);
-            if(item->getCard()->getId() == card_id){
-                card_item = item;                
-                card_item->hideFrame();
-
-                judging_area.remove(i);
-                delayed_tricks.remove(i);
-                break;
-            }
+        card_item = CardItem::FindItem(judging_area, card_id);
+        if(card_item){
+            card_item->hideFrame();
+            int index = judging_area.indexOf(card_item);
+            judging_area.removeAt(index);
+            delayed_tricks.removeAt(index);
         }
     }
 

@@ -83,8 +83,8 @@ private:
     QList<CardItem **> equips;
     QGraphicsRectItem *equip_rects[4];
 
-    QStack<QGraphicsPixmapItem *> judging_pixmaps;    
-    QStack<CardItem *> judging_area;
+    QList<QGraphicsPixmapItem *> judging_pixmaps;    
+    QList<CardItem *> judging_area;
 
     QMap<QString, QGraphicsPixmapItem *> mark_items;
     QMap<QString, QGraphicsSimpleTextItem *> mark_texts;

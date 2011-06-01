@@ -133,10 +133,10 @@ public:
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
-    QStack<const Card *> getJudgingArea() const;
+    QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QStack<const DelayedTrick *> delayedTricks() const;
+    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const char *trick_name) const;
     const DelayedTrick *topDelayedTrick() const;
 
@@ -238,6 +238,10 @@ public:
 	void speak(const char *msg){
 		QString str = QByteArray(msg).toBase64();
 		$self->getRoom()->speakCommand($self, str);
+	}
+
+	bool isSkipped(Player::Phase phase){
+		return ! $self->getPhases().contains(phase);
 	}
 };
 

@@ -8,7 +8,6 @@
 
 #include <QPushButton>
 #include <QComboBox>
-#include <QStack>
 #include <QGraphicsLinearLayout>
 #include <QLineEdit>
 #include <QProgressBar>
@@ -81,8 +80,8 @@ private:
 
     int sort_type;
     QGraphicsSimpleTextItem *handcard_num;
-    QStack<CardItem *> judging_area;
-    QStack<QPixmap> delayed_tricks;
+    QList<CardItem *> judging_area;
+    QList<QPixmap> delayed_tricks;
     QGraphicsPixmapItem *death_item;
     Pixmap *chain_icon, *back_icon;
 

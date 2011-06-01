@@ -97,7 +97,7 @@ void ServerPlayer::throwAllCards(){
     throwAllEquips();
     throwAllHandCards();
 
-    QStack<const Card *> tricks = getJudgingArea();
+    QList<const Card *> tricks = getJudgingArea();
     foreach(const Card *trick, tricks)
         room->throwCard(trick);
 }
@@ -271,11 +271,8 @@ QList<const Card *> ServerPlayer::getCards(const QString &flags) const{
     if(flags.contains("e"))
         cards << getEquips();
 
-    if(flags.contains("j")){
-        QStack<const Card *> tricks = getJudgingArea();
-        foreach(const Card *trick, tricks)
-            cards << trick;
-    }
+    if(flags.contains("j"))
+        cards << getJudgingArea();
 
     return cards;
 }

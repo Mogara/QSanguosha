@@ -1,17 +1,17 @@
---´ó¼ÒºÃÎÒÊÇhypercross¡£
---´ÓÕâ¸öÎÄ¼þ¿ªÊ¼½²½âDIY½Ó¿ÚµÄÓÃ·¨¡£
+--å¤§å®¶å¥½æˆ‘æ˜¯hypercrossã€‚
+--ä»Žè¿™ä¸ªæ–‡ä»¶å¼€å§‹è®²è§£DIYæŽ¥å£çš„ç”¨æ³•ã€‚
 
---Ê×ÏÈ£¬Õâ¸öÎÄ¼þËµÃ÷DIYÐèÒªµÄÎÄ¼þ¼°Æä½á¹¹¡£
+--é¦–å…ˆï¼Œè¿™ä¸ªæ–‡ä»¶è¯´æ˜ŽDIYéœ€è¦çš„æ–‡ä»¶åŠå…¶ç»“æž„ã€‚
 
---DIYÊÇÒÔmoduleµÄÐÎÊ½´æÔÚµÄ¡£Ã¿¸öModule¼´ÊÇÒ»¸öUTF8¸ñÊ½µÄLuaÎÄ¼þ£¨½¨ÒéÓÃnotepad++±à¼­£©£¬°üº¬ÈçÏÂ¸ñÊ½µÄ´úÂë£º
+--DIYæ˜¯ä»¥moduleçš„å½¢å¼å­˜åœ¨çš„ã€‚æ¯ä¸ªModuleå³æ˜¯ä¸€ä¸ªUTF8æ ¼å¼çš„Luaæ–‡ä»¶ï¼ˆå»ºè®®ç”¨notepad++ç¼–è¾‘ï¼‰ï¼ŒåŒ…å«å¦‚ä¸‹æ ¼å¼çš„ä»£ç ï¼š
 
-module("extensions.moligaloo", package.seeall)  -- ½øÈëmodule¡£ÕâÀïmoligalooÕâ¸ö´Ê±ØÐëºÍÎÄ¼þÃûÏàÍ¬¡£
+module("extensions.moligaloo", package.seeall)  -- è¿›å…¥moduleã€‚è¿™é‡Œmoligalooè¿™ä¸ªè¯å¿…é¡»å’Œæ–‡ä»¶åç›¸åŒã€‚
 
-extension = sgs.Package("moligaloo")            -- ´´½¨À©Õ¹°ü¶ÔÏó¡£±äÁ¿Ãû±ØÐëÎªextension¡£²ÎÊýÃûÎªÀ©Õ¹°üµÄobjectName£¬Ò²ÊÇÍ¨³£»áÊ¹ÓÃµÄÀ©Õ¹°ü±êÊ¶
+extension = sgs.Package("moligaloo")            -- åˆ›å»ºæ‰©å±•åŒ…å¯¹è±¡ã€‚å˜é‡åå¿…é¡»ä¸ºextensionã€‚å‚æ•°åä¸ºæ‰©å±•åŒ…çš„objectNameï¼Œä¹Ÿæ˜¯é€šå¸¸ä¼šä½¿ç”¨çš„æ‰©å±•åŒ…æ ‡è¯†
 
-shiqian = sgs.General(extension, "shiqian", "qun") -- ´´½¨Îä½«¶ÔÏó¡£¹ØÓÚÎä½«ÊôÐÔµÄÏêÏ¸ËµÃ÷¼ûreferenceÎÄµµ¡£
+shiqian = sgs.General(extension, "shiqian", "qun") -- åˆ›å»ºæ­¦å°†å¯¹è±¡ã€‚å…³äºŽæ­¦å°†å±žæ€§çš„è¯¦ç»†è¯´æ˜Žè§referenceæ–‡æ¡£ã€‚
 
-shentou = sgs.CreateViewAsSkill{ --´´½¨¼¼ÄÜ£¬¼¼ÄÜÖÖÀàÎªViewAsSkill¡£ ´Ë¶ÎÓÉÓÚ´úÂëÖØ¸´ÐÔ´ó£¬ÎÒÖÆ×÷ÁËÒ»¸ö½Å±¾Éú³ÉÆ÷À´Éú³É´úÂë£»µ«ÊÇÓÉÓÚÉñÖ÷²»Ìá³«½Å±¾Éú³ÉÆ÷µÄ×ö·¨ËùÒÔÓ¦¸Ã½ö½öÊÇViewAsSkill¾ßÓÐÉú³ÉÆ÷¶øÒÑ¡£
+shentou = sgs.CreateViewAsSkill{ --åˆ›å»ºæŠ€èƒ½ï¼ŒæŠ€èƒ½ç§ç±»ä¸ºViewAsSkillã€‚ æ­¤æ®µç”±äºŽä»£ç é‡å¤æ€§å¤§ï¼Œæˆ‘åˆ¶ä½œäº†ä¸€ä¸ªè„šæœ¬ç”Ÿæˆå™¨æ¥ç”Ÿæˆä»£ç ï¼›ä½†æ˜¯ç”±äºŽç¥žä¸»ä¸æå€¡è„šæœ¬ç”Ÿæˆå™¨çš„åšæ³•æ‰€ä»¥åº”è¯¥ä»…ä»…æ˜¯ViewAsSkillå…·æœ‰ç”Ÿæˆå™¨è€Œå·²ã€‚
 	name = "shentou",
 	n = 1,
 	view_filter = function(self, selected, to_select)
@@ -27,10 +27,10 @@ shentou = sgs.CreateViewAsSkill{ --´´½¨¼¼ÄÜ£¬¼¼ÄÜÖÖÀàÎªViewAsSkill¡£ ´Ë¶ÎÓÉÓÚ´úÂ
 			return new_card
 		end
 	end
-}--¹ØÓÚ¼¼ÄÜµÄËµÃ÷½«ÊÇ¼¸ºõËùÓÐÆäËû°ïÖúÎÄ¼þµÄÖØµã¡£´Ë´¦Ê¡ÂÔ¡£
+}--å…³äºŽæŠ€èƒ½çš„è¯´æ˜Žå°†æ˜¯å‡ ä¹Žæ‰€æœ‰å…¶ä»–å¸®åŠ©æ–‡ä»¶çš„é‡ç‚¹ã€‚æ­¤å¤„çœç•¥ã€‚
 
-shiqian:addSkill(shentou) --¸³ÓèÎä½«¼¼ÄÜ¡£
+shiqian:addSkill(shentou) --èµ‹äºˆæ­¦å°†æŠ€èƒ½ã€‚
 
---Äã¿ÉÒÔ½«±¾ÎÄ¼þ±£´æÖÁextensionÄ¿Â¼ÏÂµÄmoligaloo.lua²¢Æô¶¯ÓÎÏ·¡£´ËÊ±À©Õ¹°ü¼´ÒÑ¾­±»Ìí¼ÓÖÁÓÎÏ·¡£
+--ä½ å¯ä»¥å°†æœ¬æ–‡ä»¶ä¿å­˜è‡³extensionç›®å½•ä¸‹çš„moligaloo.luaå¹¶å¯åŠ¨æ¸¸æˆã€‚æ­¤æ—¶æ‰©å±•åŒ…å³å·²ç»è¢«æ·»åŠ è‡³æ¸¸æˆã€‚
 
---ÎªÁËÍêÉÆDIYÀ©Õ¹°ü£¬ÐèÒª½«ÒôÆµ¡¢Í¼Æ¬ÒÔ¼°·­Òë´úÂë·Åµ½Ö¸¶¨Ä¿Â¼¡£ÕâÒ»µã½«ÔÚÆäËûÎÄµµÖÐËµÃ÷¡£
+--ä¸ºäº†å®Œå–„DIYæ‰©å±•åŒ…ï¼Œéœ€è¦å°†éŸ³é¢‘ã€å›¾ç‰‡ä»¥åŠç¿»è¯‘ä»£ç æ”¾åˆ°æŒ‡å®šç›®å½•ã€‚è¿™ä¸€ç‚¹å°†åœ¨å…¶ä»–æ–‡æ¡£ä¸­è¯´æ˜Žã€‚

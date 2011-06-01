@@ -393,7 +393,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
     return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
 }
 
-QStack<const Card *> Player::getJudgingArea() const{
+QList<const Card *> Player::getJudgingArea() const{
     return judging_area;
 }
 
@@ -472,15 +472,15 @@ bool Player::isAllNude() const{
 }
 
 void Player::addDelayedTrick(const Card *trick){
-    judging_area.push(trick);
-    delayed_tricks.push(DelayedTrick::CastFrom(trick));
+    judging_area << trick;
+    delayed_tricks << DelayedTrick::CastFrom(trick);
 }
 
 void Player::removeDelayedTrick(const Card *trick){
     int index = judging_area.indexOf(trick);
     if(index >= 0){
-        judging_area.remove(index);
-        delayed_tricks.remove(index);
+        judging_area.removeAt(index);
+        delayed_tricks.removeAt(index);
     }
 }
 
@@ -488,17 +488,15 @@ const DelayedTrick *Player::topDelayedTrick() const{
     if(delayed_tricks.isEmpty())
         return NULL;
     else
-        return delayed_tricks.top();
+        return delayed_tricks.last();
 }
 
-QStack<const DelayedTrick *> Player::delayedTricks() const{
+QList<const DelayedTrick *> Player::delayedTricks() const{
     return delayed_tricks;
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    QVectorIterator<const DelayedTrick *> itor(delayed_tricks);
-    while(itor.hasNext()){      
-        const DelayedTrick *trick = itor.next();
+    foreach(const DelayedTrick *trick, delayed_tricks){
         if(trick->objectName() == trick_name)
             return true;
     }
