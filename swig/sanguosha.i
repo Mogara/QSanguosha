@@ -133,10 +133,10 @@ public:
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
-    QStack<const Card *> getJudgingArea() const;
+    QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QStack<const DelayedTrick *> delayedTricks() const;
+    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const char *trick_name) const;
     const DelayedTrick *topDelayedTrick() const;
 
@@ -238,6 +238,10 @@ public:
 	void speak(const char *msg){
 		QString str = QByteArray(msg).toBase64();
 		$self->getRoom()->speakCommand($self, str);
+	}
+
+	bool isSkipped(Player::Phase phase){
+		return ! $self->getPhases().contains(phase);
 	}
 };
 
@@ -694,7 +698,7 @@ public:
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, bool throw_it = true);
     bool askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
-    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor);
+    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);    
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason);

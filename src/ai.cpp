@@ -314,7 +314,7 @@ int TrustAI::askForAG(const QList<int> &card_ids, bool refusable, const QString 
     return card_ids.at(r);
 }
 
-const Card *TrustAI::askForCardShow(ServerPlayer *) {
+const Card *TrustAI::askForCardShow(ServerPlayer *, const QString &){
     return self->getRandomHandCard();
 }
 

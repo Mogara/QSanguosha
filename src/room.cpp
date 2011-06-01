@@ -645,20 +645,20 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     return card_id;
 }
 
-const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor){
+const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason){
     if(player->getHandcardNum() == 1){
         return player->getHandcards().first();
     }
 
     AI *ai = player->getAI();
     if(ai)
-        return ai->askForCardShow(requestor);
+        return ai->askForCardShow(requestor, reason);
 
     player->invoke("askForCardShow", requestor->getGeneralName());
     getResult("responseCardCommand", player);
 
     if(result.isEmpty())
-        return askForCardShow(player, requestor);
+        return askForCardShow(player, requestor, reason);
     else if(result == ".")
         return player->getRandomHandCard();
 

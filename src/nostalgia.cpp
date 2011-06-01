@@ -6,6 +6,10 @@
 #include "engine.h"
 #include "nostalgia.h"
 
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QCommandLinkButton>
+
 class Hongyan: public FilterSkill{
 public:
     Hongyan():FilterSkill("hongyan"){
@@ -263,7 +267,7 @@ GuhuoCard::GuhuoCard(){
 
 bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     Room *room = yuji->getRoom();
-    room->setTag("Guohuoing", true);
+    room->setTag("Guhuoing", true);
 
     room->moveCardTo(this, yuji, Player::Special, false);
 
@@ -316,12 +320,121 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     log.card_str = QString::number(subcards.first());
     room->sendLog(log);
 
-    room->setTag("Guohuoing", false);
+    room->setTag("Guhuoing", false);
 
     if(!success)
         room->throwCard(this);
 
     return success;
+}
+
+GuhuoDialog *GuhuoDialog::GetInstance(){
+    static GuhuoDialog *instance;
+    if(instance == NULL)
+        instance = new GuhuoDialog;
+
+    return instance;
+}
+
+GuhuoDialog::GuhuoDialog()
+{
+    setWindowTitle(tr("Guhuo"));
+
+    group = new QButtonGroup(this);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(createLeft());
+    layout->addWidget(createRight());
+
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(selectCard(QAbstractButton*)));
+}
+
+void GuhuoDialog::popup(){
+    if(ClientInstance->getStatus() != Client::Playing)
+        return;
+
+    foreach(QAbstractButton *button, group->buttons()){
+        const Card *card = map[button->objectName()];
+        button->setEnabled(card->isAvailable());
+    }
+
+    Self->tag.remove("Guhuo");
+    exec();
+}
+
+void GuhuoDialog::selectCard(QAbstractButton *button){
+    CardStar card = map.value(button->objectName());
+    Self->tag["Guhuo"] = QVariant::fromValue(card);
+    accept();
+}
+
+QGroupBox *GuhuoDialog::createLeft(){
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(tr("Basic cards"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards){
+        if(card->getTypeId() == Card::Basic && !map.contains(card->objectName())){
+            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setParent(this);
+
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    layout->addStretch();
+
+    box->setLayout(layout);
+    return box;
+}
+
+QGroupBox *GuhuoDialog::createRight(){
+    QGroupBox *box = new QGroupBox(tr("Non delayed tricks"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(tr("Single target"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(tr("Multiple targets"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards){
+        if(card->isNDTrick() && !map.contains(card->objectName())){
+            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setParent(this);
+
+            QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+
+QAbstractButton *GuhuoDialog::createButton(const Card *card){
+    QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+    button->setObjectName(card->objectName());
+    button->setToolTip(card->getDescription());
+
+    map.insert(card->objectName(), card);
+    group->addButton(button);
+
+    return button;
 }
 
 bool GuhuoCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -356,6 +469,7 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     if(guhuo(card_use->from)){
         const Card *card = Sanguosha->getCard(subcards.first());
         Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
+        use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
 
         return use_card;
@@ -363,20 +477,27 @@ const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
         return NULL;
 }
 
-const Card *GuhuoCard::validateInResposing(ServerPlayer *user, bool *continuable) const{
+const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable) const{
     *continuable = true;
 
-    Room *room = user->getRoom();
+    Room *room = yuji->getRoom();
+
+    QString to_guhuo;
+    if(user_string == "peach+analeptic")
+        to_guhuo = room->askForChoice(yuji, "guhuo-saveself", user_string);
+    else
+        to_guhuo = user_string;
 
     LogMessage log;
     log.type = "#GuhuoNoTarget";
-    log.from = user;
-    log.arg = user_string;
+    log.from = yuji;
+    log.arg = to_guhuo;
     room->sendLog(log);
 
-    if(guhuo(user)){
+    if(guhuo(yuji)){
         const Card *card = Sanguosha->getCard(subcards.first());
-        Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
+        Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
+        use_card->setSkillName("guhuo");
         use_card->addSubcard(this);
 
         return use_card;
@@ -384,15 +505,14 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *user, bool *continuable
         return NULL;
 }
 
-class GuhuoViewAsSkill: public OneCardViewAsSkill{
+class Guhuo: public OneCardViewAsSkill{
 public:
-    GuhuoViewAsSkill():OneCardViewAsSkill("guhuo"){
+    Guhuo():OneCardViewAsSkill("guhuo"){
     }
 
     virtual bool isEnabledAtResponse() const{
         return !Self->isKongcheng()
-                && !ClientInstance->card_pattern.startsWith("@")
-                && !ClientInstance->card_pattern.contains("+");
+                && !ClientInstance->card_pattern.startsWith("@");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -417,23 +537,9 @@ public:
         }else
             return NULL;
     }
-};
 
-class Guhuo: public TriggerSkill{
-public:
-    Guhuo():TriggerSkill("guhuo"){
-        default_choice = "noquestion";
-        view_as_skill = new GuhuoViewAsSkill;
-
-        events << AskForPeaches;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return TriggerSkill::triggerable(target) && !target->isKongcheng();
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *, QVariant &) const{
-        return false;
+    virtual QDialog *getDialog() const{
+        return GuhuoDialog::GetInstance();
     }
 };
 

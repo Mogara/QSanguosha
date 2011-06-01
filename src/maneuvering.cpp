@@ -256,7 +256,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->isKongcheng())
         return;
 
-    const Card *card = room->askForCardShow(effect.to, effect.from);
+    const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
     room->showCard(effect.to, card->getEffectiveId());
 
     QString suit_str = card->getSuitString();

@@ -73,26 +73,6 @@ private:
     int revealed;
 };
 
-class GuhuoDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    static GuhuoDialog *GetInstance();
-
-public slots:
-    void popup();
-    void selectCard(QAbstractButton *button);
-
-private:
-    GuhuoDialog();
-
-    QGroupBox *createLeft();
-    QGroupBox *createRight();
-    QAbstractButton *createButton(const Card *card);
-    QButtonGroup *group;
-    QHash<QString, const Card *> map;
-};
-
 class ReplayerControlBar: public QGraphicsProxyWidget{
     Q_OBJECT
 

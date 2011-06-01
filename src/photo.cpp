@@ -342,20 +342,11 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
             }
         }
     }else if(place == Player::Judging){
-        QMutableVectorIterator<CardItem *> itor(judging_area);
-        while(itor.hasNext()){
-            CardItem *item = itor.next();
-            if(item->getCard()->getId() == card_id){
-                card_item = item;
-
-                int index = judging_area.indexOf(item);
-                QGraphicsPixmapItem *pixmap_item = judging_pixmaps.at(index);
-                judging_pixmaps.remove(index);
-                delete pixmap_item;
-                itor.remove();
-
-                break;
-            }
+        card_item = CardItem::FindItem(judging_area, card_id);
+        if(card_item){
+            int index = judging_area.indexOf(card_item);
+            delete judging_pixmaps.takeAt(index);
+            judging_area.removeAt(index);
         }
     }
 
@@ -391,8 +382,8 @@ void Photo::installDelayedTrick(CardItem *trick){
     item->setToolTip(player->topDelayedTrick()->getDescription());
 
     item->setPos(-10, 16 + judging_area.count() * 19);
-    judging_area.push(trick);
-    judging_pixmaps.push(item);
+    judging_area << trick;
+    judging_pixmaps << item;
 }
 
 void Photo::addCardItem(CardItem *card_item){

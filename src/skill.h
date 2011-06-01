@@ -5,6 +5,7 @@ class Player;
 class CardItem;
 class Card;
 class ServerPlayer;
+class QDialog;
 
 #include "room.h"
 
@@ -30,13 +31,14 @@ public:
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(ServerPlayer *player, const Card *card) const;
+    virtual QDialog *getDialog() const;
 
     void initMediaSource();
     void playEffect(int index = -1) const;
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
-    QStringList getSources() const;
+    QStringList getSources() const;    
 
 protected:
     Frequency frequency;

@@ -6,7 +6,6 @@
 
 #include <QObject>
 #include <QTcpSocket>
-#include <QStack>
 
 class EquipCard;
 class Weapon;
@@ -132,10 +131,10 @@ public:
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
-    QStack<const Card *> getJudgingArea() const;
+    QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QStack<const DelayedTrick *> delayedTricks() const;
+    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const QString &trick_name) const;
     const DelayedTrick *topDelayedTrick() const;
 
@@ -205,8 +204,8 @@ private:
     const Horse *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
-    QStack<const Card *> judging_area;
-    QStack<const DelayedTrick *> delayed_tricks;
+    QList<const Card *> judging_area;
+    QList<const DelayedTrick *> delayed_tricks;
     QHash<const Player *, int> fixed_distance;
 
     QHash<QString, int> history;
