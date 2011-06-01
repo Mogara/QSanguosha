@@ -341,24 +341,25 @@ RoomScene::RoomScene(QMainWindow *main_window)
 void RoomScene::createButtons(){
     trust_button = dashboard->createButton("trust");
     untrust_button = dashboard->createButton("untrust");
+    QPushButton *reverse_button = dashboard->createButton("reverse-select");
+    reverse_button->setEnabled(true);
+
     ok_button = dashboard->createButton("ok");
     cancel_button = dashboard->createButton("cancel");
-    discard_button = dashboard->createButton("discard");
+    discard_button = dashboard->createButton("discard");    
+
+    dashboard->addWidget(trust_button, 10, true);
+    dashboard->addWidget(untrust_button, 10, true);
+    dashboard->addWidget(reverse_button, 100, true);
 
     // add buttons that above the avatar area of dashbaord
     if(Config.value("CircularView", false).toBool()){
-        dashboard->addWidget(trust_button, 10, true);
-        dashboard->addWidget(untrust_button, 10, true);
-
         dashboard->addWidget(ok_button, -245-146, false);
         dashboard->addWidget(cancel_button, -155-146, false);
         dashboard->addWidget(discard_button, -70-146, false);
 
         dashboard->setWidth(main_window->width()-10);
     }else{
-        dashboard->addWidget(trust_button, 4, true);
-        dashboard->addWidget(untrust_button, 4, true);
-
         dashboard->addWidget(ok_button, -72, false);
         dashboard->addWidget(cancel_button, -7, false);
         dashboard->addWidget(discard_button, 75, false);
@@ -366,6 +367,7 @@ void RoomScene::createButtons(){
 
     connect(trust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
     connect(untrust_button, SIGNAL(clicked()), ClientInstance, SLOT(trust()));
+    connect(reverse_button, SIGNAL(clicked()), dashboard, SLOT(reverseSelection()));
     connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
@@ -854,12 +856,6 @@ void RoomScene::timerEvent(QTimerEvent *event){
     int timeout = ServerInfo.OperationTimeout;
     if(ClientInstance->getStatus() == Client::AskForGuanxing)
         timeout = 20;
-
-    /*
-    if(ClientInstance->getStatus() == Client::Responsing &&
-       ClientInstance->card_pattern == "nullification")
-       timeout = Config.NullificationCountDown;
-       */
 
     int step = 100 / double(timeout * 5);
     int new_value = progress_bar->value() + step;
@@ -2828,7 +2824,7 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
-        QPushButton *free_discard = dashboard->addButton("free-discard", 100, true);
+        QPushButton *free_discard = dashboard->addButton("free-discard", 190, true);
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);

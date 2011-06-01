@@ -669,6 +669,34 @@ void Dashboard::sortCards(int sort_type){
     adjustCards();
 }
 
+void Dashboard::reverseSelection(){
+    if(view_as_skill == NULL)
+        return;
+
+    QSet<CardItem *> selected_set = pendings.toSet();
+    unselectAll();
+
+    foreach(CardItem *item, card_items)
+        item->setEnabled(false);
+
+    pendings.clear();
+
+    foreach(CardItem *item, card_items){
+        if(view_as_skill->viewFilter(pendings, item) && !selected_set.contains(item)){
+            item->select();
+            pendings << item;
+
+            item->setEnabled(true);
+        }
+    }
+
+    if(pending_card && pending_card->isVirtualCard() && pending_card->parent() == NULL)
+        delete pending_card;
+    pending_card = view_as_skill->viewAs(pendings);
+
+    emit card_selected(pending_card);
+}
+
 void Dashboard::disableAllCards(){
     foreach(CardItem *card_item, card_items){
         card_item->setEnabled(false);

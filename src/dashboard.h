@@ -61,6 +61,7 @@ public slots:
     void updateSmallAvatar();
     void refresh();
     void sortCards(int sort_type);
+    void reverseSelection();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
