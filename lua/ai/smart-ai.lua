@@ -2595,7 +2595,6 @@ function SmartAI:askForCardShow(requestor, reason)
 end
 
 sgs.ai_cardshow.fire_attack = function(self, requestor)
-	assert(self.player:objectName() == requestor:objectName())
 
 	local priority =
 	{
