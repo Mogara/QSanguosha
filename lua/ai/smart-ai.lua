@@ -616,8 +616,8 @@ sgs.ai_skill_invoke = {
 	kylin_bow = function(self, data)	
 		local effect = data:toSlashEffect()
 		
-		if effect.to:hasSkill("xiaoji") then
-			return false
+		if effect.to:hasSkill("xiaoji") or effect.to:hasSkill("xuanfeng") then
+			return self:isFriend(effect.to)
 		end
 		
 		return self:isEnemy(effect.to)
