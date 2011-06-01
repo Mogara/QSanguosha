@@ -1157,7 +1157,7 @@ void LexueCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
     room->playSkillEffect("lexue", 1);
-    const Card *card = room->askForCardShow(effect.to, effect.from);
+    const Card *card = room->askForCardShow(effect.to, effect.from, "lexue");
     int card_id = card->getEffectiveId();
     room->showCard(effect.to, card_id);
 

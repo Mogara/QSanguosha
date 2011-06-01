@@ -788,7 +788,7 @@ public:
         if(wuguotai && wuguotai->askForSkillInvoke(objectName(), data)){
             const Card *card = NULL;
             if(player == wuguotai)
-                card = room->askForCardShow(player, wuguotai);
+                card = room->askForCardShow(player, wuguotai, objectName());
             else
                 card = player->getRandomHandCard();
 

@@ -75,6 +75,19 @@ sgs.ai_skill_invoke.buyi = function(self, data)
 	return self:isFriend(dying.who)
 end
 
+sgs.ai_cardshow.buyi = function(self, requestor)
+	assert(self.player:objectName() == requestor:objectName())
+	
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:getTypeId() ~= sgs.Card_Basic then
+			return card
+		end
+	end
+	
+	return self.player:getRandomHandCard()
+end
+
 --xuanfeng
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
