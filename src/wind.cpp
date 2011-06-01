@@ -24,8 +24,11 @@ bool LeijiCard::targetFilter(const QList<const ClientPlayer *> &targets, const C
     return targets.isEmpty();
 }
 
-void LeijiCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
+void LeijiCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *zhangjiao = effect.from;
+    ServerPlayer *target = effect.to;
+
+    Room *room = zhangjiao->getRoom();
     room->setEmotion(target, Room::Bad);
 
     JudgeStruct judge;

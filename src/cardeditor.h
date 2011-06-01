@@ -70,7 +70,8 @@ public slots:
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
     void updateLayout();
-    void insertSuit();
+    void insertSuit(int index);
+    void insertBoldText(const QString &bold_text);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

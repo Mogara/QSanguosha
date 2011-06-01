@@ -212,15 +212,22 @@ void SkillBox::updateLayout(){
     // dummy
 }
 
-void SkillBox::insertSuit(){
-    QComboBox *combobox = qobject_cast<QComboBox *>(sender());
-    if(combobox == NULL)
-        return;
-
-    QString suit_name = combobox->itemData(combobox->currentIndex()).toString();
+void SkillBox::insertSuit(int index){
+    Card::Suit suit = static_cast<Card::Suit>(index);
+    QString suit_name = Card::Suit2String(suit);
     QImage image(QString("image/system/suit/%1.png").arg(suit_name));
-    image = image.scaled(QSize(9, 9), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    int size = skill_description->font().pointSize() + 1;
+    image = image.scaled(QSize(size, size), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     skill_description->textCursor().insertImage(image);
+}
+
+void SkillBox::insertBoldText(const QString &bold_text){
+    QTextCharFormat format;
+    format.setFontWeight(QFont::Bold);
+    skill_description->textCursor().insertText(bold_text, format);
+
+    skill_description->textCursor().insertText(",", QTextCharFormat());
 }
 
 QRectF SkillBox::boundingRect() const{
@@ -573,7 +580,15 @@ QWidget *CardEditor::createSkillBox(){
     }
     layout->addRow(tr("Insert suit"), suit_combobox);
 
-    connect(suit_combobox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit()));
+    connect(suit_combobox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit(int)));
+
+    QComboBox *bold_combobox = new QComboBox;
+    bold_combobox->setEditable(true);
+    bold_combobox->addItem(tr("Compulsory"));
+    bold_combobox->addItem(tr("Limited"));
+    layout->addRow(tr("Insert bold text"), bold_combobox);
+
+    connect(bold_combobox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
 
     box->setLayout(layout);
     return box;
