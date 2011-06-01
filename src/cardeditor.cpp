@@ -11,6 +11,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
 #include <QCursor>
+#include <QKeyEvent>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -145,6 +146,32 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QFontMetrics fm(font());
     path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
     painter->fillPath(path, defaultTextColor());
+}
+
+void AATextItem::keyReleaseEvent(QKeyEvent *event){
+    if(!hasFocus()){
+        event->ignore();
+        return;
+    }
+
+    int delta_y = 0;
+    switch(event->key()){
+    case Qt::Key_Up: delta_y = -1; break;
+    case Qt::Key_Down: delta_y = 1; break;
+    default:
+        break;
+    }
+
+    if(delta_y == 0){
+        event->ignore();
+        return;
+    }
+
+    if(event->modifiers() & Qt::ShiftModifier)
+        delta_y *= 5;
+
+    event->accept();
+    parentItem()->moveBy(0, delta_y);
 }
 
 void SkillBox::addSkill(){

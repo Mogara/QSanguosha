@@ -3278,6 +3278,7 @@ void RoomScene::selectGeneral(){
 void RoomScene::changeGeneral(const QString &general){
     if(to_change && arrange_button){
         to_change->changeGeneral(general);
+        to_change->scaleSmoothly(0.4);
     }
 }
 

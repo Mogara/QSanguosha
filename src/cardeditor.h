@@ -50,6 +50,8 @@ public:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void keyReleaseEvent(QKeyEvent *event);
+
 };
 
 class SkillBox: public QGraphicsObject{
