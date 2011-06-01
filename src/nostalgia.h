@@ -4,6 +4,11 @@
 #include "package.h"
 #include "card.h"
 
+#include <QGroupBox>
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QDialog>
+
 class NostalgiaPackage: public Package{
     Q_OBJECT
 
@@ -33,6 +38,26 @@ public:
 
     virtual const Card *validate(const CardUseStruct *card_use) const;
     virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
+};
+
+class GuhuoDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    static GuhuoDialog *GetInstance();
+
+public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    GuhuoDialog();
+
+    QGroupBox *createLeft();
+    QGroupBox *createRight();
+    QAbstractButton *createButton(const Card *card);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
 };
 
 #endif // NOSTALGIA_H

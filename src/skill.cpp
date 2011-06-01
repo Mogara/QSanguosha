@@ -110,6 +110,10 @@ QStringList Skill::getSources() const{
     return sources;
 }
 
+QDialog *Skill::getDialog() const{
+    return NULL;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     :Skill(name)
 {

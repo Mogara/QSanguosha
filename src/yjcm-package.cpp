@@ -376,23 +376,7 @@ public:
         events << CardLost;
     }
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const{
-        /*
-
-        Room *room = player->getRoom();
-        QList<ServerPlayer *> players = room->getOtherPlayers(player);
-        foreach(ServerPlayer *p, players){
-            if(AI::GetRelation(player, p) != AI::Enemy)
-                continue;
-
-            if(player->distanceTo(p) <= 1)
-                return "damage";
-            else
-                return "slash";
-        }
-
-        */
-
+    virtual QString getDefaultChoice(ServerPlayer *) const{
         return "nothing";
     }
 

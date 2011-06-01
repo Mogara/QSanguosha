@@ -65,9 +65,9 @@ bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, con
     return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self;
 }
 
-class GuidaoViewAsSkill:public ViewAsSkill{
+class GuidaoViewAsSkill:public OneCardViewAsSkill{
 public:
-    GuidaoViewAsSkill():ViewAsSkill(""){
+    GuidaoViewAsSkill():OneCardViewAsSkill(""){
 
     }
 
@@ -79,16 +79,13 @@ public:
         return ClientInstance->card_pattern == "@guidao";
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getFilteredCard()->isBlack();
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return to_select->getFilteredCard()->isBlack();
     }
 
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() != 1)
-            return NULL;
-
+    virtual const Card *viewAs(CardItem *card_item) const{
         GuidaoCard *card = new GuidaoCard;
-        card->addSubcard(cards.first()->getFilteredCard());
+        card->addSubcard(card_item->getFilteredCard());
 
         return card;
     }

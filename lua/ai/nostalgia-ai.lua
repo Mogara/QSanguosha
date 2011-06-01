@@ -85,3 +85,12 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	
 	return "."
 end	
+
+sgs.ai_skill_choice["guhuo"] = function(self, choices)
+	local r = math.random(0, 1)
+	if r == 0 then
+		return "question"
+	else
+		return "noquestion"
+	end
+end

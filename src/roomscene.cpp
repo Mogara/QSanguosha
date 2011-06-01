@@ -1204,13 +1204,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
                 if(view_as_skill){
                     button2skill.insert(button, view_as_skill);
                     connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
-
-                    // Guhuo special case
-                    if(skill->objectName() == "guhuo"){
-                        GuhuoDialog *dialog = GuhuoDialog::GetInstance();
-                        dialog->setParent(main_window, Qt::Dialog);
-                        connect(button, SIGNAL(clicked()), dialog, SLOT(popup()));
-                    }
                 }
 
                 break;
@@ -1236,6 +1229,12 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
         connect(button, SIGNAL(clicked()), this, SLOT(doSkillButton()));
     }else{
         button = new QPushButton;
+    }
+
+    QDialog *dialog = skill->getDialog();
+    if(dialog){
+        dialog->setParent(main_window, Qt::Dialog);
+        connect(button, SIGNAL(clicked()), dialog, SLOT(popup()));
     }
 
     button->setObjectName(skill->objectName());
@@ -2804,114 +2803,7 @@ void KOFOrderBox::killPlayer(const QString &general_name){
     }
 }
 
-GuhuoDialog *GuhuoDialog::GetInstance(){
-    static GuhuoDialog *instance;
-    if(instance == NULL)
-        instance = new GuhuoDialog;
 
-    return instance;
-}
-
-GuhuoDialog::GuhuoDialog()
-{
-    setWindowTitle(tr("Guhuo"));
-
-    group = new QButtonGroup(this);
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(createLeft());
-    layout->addWidget(createRight());
-
-    setLayout(layout);
-
-    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(selectCard(QAbstractButton*)));
-}
-
-void GuhuoDialog::popup(){
-    if(ClientInstance->getStatus() != Client::Playing)
-        return;
-
-    foreach(QAbstractButton *button, group->buttons()){
-        const Card *card = map[button->objectName()];
-        button->setEnabled(card->isAvailable());
-    }
-
-    Self->tag.remove("Guhuo");
-    exec();
-}
-
-void GuhuoDialog::selectCard(QAbstractButton *button){
-    CardStar card = map.value(button->objectName());
-    Self->tag["Guhuo"] = QVariant::fromValue(card);
-    accept();
-}
-
-QGroupBox *GuhuoDialog::createLeft(){
-    QGroupBox *box = new QGroupBox;
-    box->setTitle(tr("Basic cards"));
-
-    QVBoxLayout *layout = new QVBoxLayout;
-
-    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    foreach(const Card *card, cards){
-        if(card->getTypeId() == Card::Basic && !map.contains(card->objectName())){
-            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-            c->setParent(this);
-
-            layout->addWidget(createButton(c));
-        }
-    }
-
-    layout->addStretch();
-
-    box->setLayout(layout);
-    return box;
-}
-
-QGroupBox *GuhuoDialog::createRight(){
-    QGroupBox *box = new QGroupBox(tr("Non delayed tricks"));
-    QHBoxLayout *layout = new QHBoxLayout;
-
-    QGroupBox *box1 = new QGroupBox(tr("Single target"));
-    QVBoxLayout *layout1 = new QVBoxLayout;
-
-    QGroupBox *box2 = new QGroupBox(tr("Multiple targets"));
-    QVBoxLayout *layout2 = new QVBoxLayout;
-
-
-    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    foreach(const Card *card, cards){
-        if(card->isNDTrick() && !map.contains(card->objectName())){
-            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-            c->setParent(this);
-
-            QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
-            layout->addWidget(createButton(c));
-        }
-    }
-
-    box->setLayout(layout);
-    box1->setLayout(layout1);
-    box2->setLayout(layout2);
-
-    layout1->addStretch();
-    layout2->addStretch();
-
-    layout->addWidget(box1);
-    layout->addWidget(box2);
-    return box;
-}
-
-QAbstractButton *GuhuoDialog::createButton(const Card *card){
-    QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
-    button->setObjectName(card->objectName());
-    button->setToolTip(card->getDescription());
-
-    map.insert(card->objectName(), card);
-    group->addButton(button);
-
-    return button;
-}
 
 void RoomScene::onGameStart(){
     if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
