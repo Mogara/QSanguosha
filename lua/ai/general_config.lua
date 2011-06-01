@@ -86,6 +86,7 @@ sgs.ai_use_priority = {
 		QingnangCard=4.2,
 		RendeCard= 5.8,
 		MingceCard=4,
+		JujianCard = 5.6,
 --
 
         Collateral=5.8,

@@ -38,6 +38,12 @@ end
 
 sgs.ai_chat={}
 
+sgs.ai_chat.yiji=
+{
+"再用力一点",
+"要死了啊!"
+}
+
 sgs.ai_chat.hostile_female= 
 { 
 "啧啧啧，来帮你解决点手牌吧", 

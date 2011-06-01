@@ -65,8 +65,8 @@ sgs.ai_skill_use_func["XianzhenCard"]=function(card,use,self)
 	
 	for _, enemy in ipairs(self.enemies) do
 	    local enemy_max_card = self:getMaxCard(enemy)
-		if enemy_max_card and max_point > enemy_max_card:getNumber() then
-		    
+		if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) 
+			and (enemy_max_card and max_point > enemy_max_card:getNumber()) then
 		    if use.to then 
 		        self.xianzhen_used = true
 		        use.to:append(enemy)

@@ -52,6 +52,8 @@ end
 
 sgs.ai_card_intention["Slash"]=function(card,from,to,source)
     
+	if from:getRole() == to:getRole() or (from:getRole() == "lord" and to:getRole() == "loyalist") 
+		or (to:getRole() == "lord" and from:getRole() == "loyalist") then return 0 end
     if sgs.ai_liuliEffect then
         sgs.ai_liuliEffect=false
         return 0
@@ -92,6 +94,8 @@ sgs.ai_card_intention["Duel"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Collateral"]=function(card,from,to,source)
+	if from:getRole() == to:getRole() or (from:getRole() == "lord" and to:getRole() == "loyalist") 
+		or (to:getRole() == "lord" and from:getRole() == "loyalist") then return 0 end
     sgs.ai_collateral=true
     return sgs.ai_card_intention.general(to,80)
 end
@@ -242,6 +246,18 @@ sgs.ai_carduse_intention["LiuliCard"]=function(card,from,to,source)
         sgs.ai_liuliEffect=true
         return sgs.ai_card_intention.general(to,70)
 end
+
+sgs.ai_card_intention["QingnangCard"]=function(card,from,to,source)
+--        from:getRoom():output("a ShensuCard")
+        return sgs.ai_card_intention.general(to,-80)
+end
+
+sgs.ai_card_intention["JujianCard"]=function(card,from,to,source)
+--        from:getRoom():output("a ShensuCard")
+        return sgs.ai_card_intention.general(to,-80)
+end
+
+
 
 sgs.ai_explicit={}
 sgs.ai_royalty={}

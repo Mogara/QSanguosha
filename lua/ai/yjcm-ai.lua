@@ -75,6 +75,19 @@ sgs.ai_skill_invoke.buyi = function(self, data)
 	return self:isFriend(dying.who)
 end
 
+sgs.ai_cardshow.buyi = function(self, requestor)
+	assert(self.player:objectName() == requestor:objectName())
+
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:getTypeId() ~= sgs.Card_Basic then
+			return card
+		end
+	end
+
+	return self.player:getRandomHandCard()
+end
+
 --xuanfeng
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
@@ -347,18 +360,21 @@ mingce_skill.name="mingce"
 table.insert(sgs.ai_skills,mingce_skill)
 mingce_skill.getTurnUseCard=function(self)
 	local card
-	
-	local hcards = self.player:getCards("h")
-	hcards = sgs.QList2Table(hcards)
-	self:sortByUseValue(hcards, true)
+	if self.player:getArmor() and (self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded()) then 
+		card = self.player:getArmor()
+	end
+	if not card then
+		local hcards = self.player:getCards("h")
+		hcards = sgs.QList2Table(hcards)
+		self:sortByUseValue(hcards, true)
 
 		for _, hcard in ipairs(hcards) do
-		if hcard:inherits("Slash") or hcard:inherits("EquipCard") then
-			card = hcard
-			break
+			if hcard:inherits("Slash") or hcard:inherits("EquipCard") then
+				card = hcard
+				break
+			end
 		end
-		end
-
+	end
 	if card then
 		card = sgs.Card_Parse("@MingceCard=" .. card:getEffectiveId()) 
 		return card
