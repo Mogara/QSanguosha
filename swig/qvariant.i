@@ -9,6 +9,11 @@ public:
 };
 
 %extend QVariant {
+
+	void setValue(int value){
+		$self->setValue(QVariant::fromValue(value));
+	}
+
 	DamageStruct toDamage() const{
 		return $self->value<DamageStruct>();
 	}
