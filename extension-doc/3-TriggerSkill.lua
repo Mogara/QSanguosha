@@ -16,13 +16,13 @@
 
 --on_trigger为触发效果函数。对于具有多个触发时机的技能(如庸肆)，需要使用条件语句，分时机执行效果。
 
---can_trigger为触发条件满足判断。对于满足发动条件的情况，此函数应该返回true。无定义时，默认为总是满足触发条件。
+--can_trigger为触发条件满足判断。对于满足发动条件的情况，此函数应该返回true。无定义时，默认为“具有此技能且存活”。
 
 --以下是曹操奸雄的实现：
 
 jianxiong=sgs.CreateTriggerSkill{
 	
-	frequency = sgs.Skill_Frequent,
+	frequency = sgs.Skill_NotFrequent,
 	
 	name      = "jianxiong",
 	
