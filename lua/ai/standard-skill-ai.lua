@@ -378,12 +378,13 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 		
 end
 
-lijian_skill={}
+
+local lijian_skill={}
 lijian_skill.name="lijian"
 table.insert(sgs.ai_skills,lijian_skill)
 lijian_skill.getTurnUseCard=function(self)
 	if self.lijian_used then
-		return nil
+		return 
 	end
 	if not self.player:isNude() then
 		local card
@@ -394,7 +395,6 @@ lijian_skill.getTurnUseCard=function(self)
 			local cards = self.player:getHandcards()
 			cards=sgs.QList2Table(cards)
 			
-			-- 引用AI[0511]patch中的代码
 			for _, acard in ipairs(cards) do
 				if (acard:inherits("BasicCard") or acard:inherits("EquipCard") or acard:inherits("AmazingGrace"))
 					and not acard:inherits("Peach") and not acard:inherits("Shit") then 
@@ -442,7 +442,6 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 			end
 		end
 		if friend_maxSlash then
-			self:log("found!")
 			local safe = false
 			if (first:hasSkill("ganglie") or first:hasSkill("fankui") or first:hasSkill("enyuan")) then
 				if (first:getHp()<=1 and first:getHandcardNum()==0) then safe=true end
@@ -482,18 +481,15 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 			second = males[2]
 			local lord = self.room:getLord()
 			if (first:getHp()<=1) then
-				if self.player:isLord() then
-					self:log("Diaochan is the lord!")
+				if self.player:isLord() or isRolePredictable() then 
 					local friend_maxSlash = findFriend_maxSlash(self,first)
 					if friend_maxSlash then second=friend_maxSlash end
-				end
-				if (lord:getGeneral():isMale()) and (not lord:hasSkill("wuyan")) then
+				elseif (lord:getGeneral():isMale()) and (not lord:hasSkill("wuyan")) then 
 					if (self.role=="rebel") and (not first:isLord()) then
 						second = lord
 					else
-						if ((self.role=="loyalist" and not (first:hasSkill("ganglie") or first:hasSkill("enyuan")))
-							or (self.role=="renegade"))
-							and	(first:getHandcardNum()<2 or self:getSlashNumber(first)<1) then
+						if ((self.role=="loyalist" or (self.role=="renegade") and not (first:hasSkill("ganglie") and first:hasSkill("enyuan"))))
+							and	( self:getSlashNumber(first)<=self:getSlashNumber(second)) then
 							--the first male maybe have a "Slash" Card
 							second = lord
 						end
