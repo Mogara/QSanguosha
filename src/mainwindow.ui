@@ -41,7 +41,6 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionScript_editor"/>
-    <addaction name="actionDIY_editor"/>
     <addaction name="actionCard_editor"/>
     <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
