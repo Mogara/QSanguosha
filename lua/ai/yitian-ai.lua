@@ -40,7 +40,7 @@ end
 sgs.ai_skill_playerchosen.toudu = function(self, targets)
 	local enemies = {}
 	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) then
+		if self:isEnemy(target) and self.player:canSlash(target, false) then
 			table.insert(enemies, enemy)
 		end
 	end
@@ -50,7 +50,9 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 end
 
 -- yitian-sword
-sgs.ai_skill_invoke.yitian_sword = function(self, data)
+
+-- hit enemy when yitian sword was lost
+sgs.ai_skill_invoke["yitian-lost"] = function(self, data)
 	if next(self.enemies) then
 		return true
 	else
@@ -58,4 +60,14 @@ sgs.ai_skill_invoke.yitian_sword = function(self, data)
 	end
 end
 
-sgs.ai_skill_playerchosen.yitian_sword = sgs.ai_skill_playerchosen.toudu
+sgs.ai_skill_playerchosen["yitian-lost"] = function(self, targets)
+	local enemies = {}
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) then
+			table.insert(enemies, enemy)
+		end
+	end
+	
+	self:sort(enemies)
+	return enemies[1]
+end

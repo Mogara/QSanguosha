@@ -5,8 +5,6 @@ end
 
 -- Sunjian's AI
 
-local sunjian_ai = SmartAI:newSubclass "sunjian"
-
 sgs.ai_skill_choice.yinghun = function(self, choices)
 	if self:isFriend(self.yinghun) then
 		return "dxt1"
@@ -15,27 +13,25 @@ sgs.ai_skill_choice.yinghun = function(self, choices)
 	end
 end
 
-function sunjian_ai:askForUseCard(pattern, prompt)
-	if pattern == "@@yinghun" then        
-		local x = self.player:getLostHp()
-		if x == 1 and #self.friends == 1 then
-			return "."
-		end
+sgs.ai_skill_use["@@yinghun"] = function(self, prompt)       
+	local x = self.player:getLostHp()
+	if x == 1 and #self.friends == 1 then
+		return "."
+	end
+
+	if #self.friends > 1 then
+		self:sort(self.friends, "chaofeng")
+		self.yinghun = self:getOneFriend()
+	else
+		self:sort(self.enemies, "chaofeng")
+		self.yinghun = self.enemies[1]
+	end
 	
-        if #self.friends > 1 then
-            self:sort(self.friends, "chaofeng")
-            self.yinghun = self:getOneFriend()
-        else
-            self:sort(self.enemies, "chaofeng")
-            self.yinghun = self.enemies[1]
-        end
-		
-		if self.yinghun then
-			return "@YinghunCard=.->" .. self.yinghun:objectName()
-		else
-			return "."
-		end
-    end
+	if self.yinghun then
+		return "@YinghunCard=.->" .. self.yinghun:objectName()
+	else
+		return "."
+	end
 end
 
 -- xingshang, allways invoke 
