@@ -87,6 +87,7 @@ private:
     QString kingdom;
     QList<QGraphicsTextItem *> skill_titles;
     QGraphicsTextItem *skill_description;
+    QGraphicsTextItem *copyright_text;
 };
 
 class CardScene: public QGraphicsScene{

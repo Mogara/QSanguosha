@@ -93,11 +93,18 @@ SkillBox::SkillBox()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
-    skill_description->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
     skill_description->setTextWidth(223);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
     skill_description->setX(25);
+
+    copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
+    copyright_text->setTextWidth(skill_description->textWidth());
+    copyright_text->setPos(25, -3);
+    copyright_text->setTextInteractionFlags(Qt::TextEditorInteraction);
+
+    QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
+    setSkillDescriptionFont(font);
 }
 
 void SkillBox::setKingdom(const QString &kingdom){
@@ -217,6 +224,11 @@ void SkillBox::saveConfig(){
     Config.endArray();
 
     Config.setValue("SkillDescription", skill_description->toHtml());
+    Config.setValue("SkillDescriptionFont", skill_description->font());
+    if(!skill_titles.isEmpty()){
+        Config.setValue("SkillTitleFont", skill_titles.first()->font());
+    }
+
     Config.endGroup();
 }
 
@@ -245,17 +257,17 @@ void SkillBox::loadConfig(){
 
 
 void SkillBox::setSkillTitleFont(const QFont &font){
-    Config.setValue("CardEditor/SkillTitleFont", font);
-
     foreach(QGraphicsTextItem *item, skill_titles){
         item->setFont(font);
     }
 }
 
 void SkillBox::setSkillDescriptionFont(const QFont &font){
-    Config.setValue("CardEditor/SkillDescriptionFont", font);
-
     skill_description->setFont(font);
+
+    QFont copyright_font = font;
+    copyright_font.setPointSize(7);
+    copyright_text->setFont(copyright_font);
 }
 
 void SkillBox::insertSuit(int index){
