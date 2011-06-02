@@ -882,7 +882,7 @@ public:
 
         Room *room = player->getRoom();
 
-        if(!effect.to->isNude() && player->askForSkillInvoke("ice_sword",QVariant::fromValue(player))){
+        if(!effect.to->isNude() && player->askForSkillInvoke("ice_sword", data)){
             int card_id = room->askForCardChosen(player, effect.to, "he", "ice_sword");
             room->throwCard(card_id);
 
