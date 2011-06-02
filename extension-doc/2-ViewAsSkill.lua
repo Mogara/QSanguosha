@@ -42,7 +42,7 @@
 
 n=1,
 
-view_filter = function(self, to_select, selected)
+view_filter = function(self, selected, to_select)
 	local condition=(to_select:getSuit()==sgs.Card_Club)
 	return condition
 end,
@@ -53,7 +53,7 @@ end,
 
 n=2,
 
-view_filter = function(self, to_select, selected)
+view_filter = function(self, selected, to_select)
 	if #selected<1 then return not to_select:isEquipped() end
 	local condition=(to_select:getSuit()==selected[1]:getSuit())
 	return condition and not to_select:isEquipped()
