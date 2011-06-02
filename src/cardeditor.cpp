@@ -98,8 +98,6 @@ SkillBox::SkillBox()
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
     skill_description->setX(25);
-
-    connect(skill_description->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
 }
 
 void SkillBox::setKingdom(const QString &kingdom){
@@ -194,6 +192,17 @@ void SkillBox::addSkill(){
     skill_titles << title_text;
 }
 
+void SkillBox::removeSkill(){
+    foreach(QGraphicsTextItem *title, skill_titles){
+        if(title->hasFocus()){
+            skill_titles.removeOne(title);
+            delete title->parentItem();
+
+            return;
+        }
+    }
+}
+
 void SkillBox::saveConfig(){
     Config.beginGroup("CardEditor");
 
@@ -247,10 +256,6 @@ void SkillBox::setSkillDescriptionFont(const QFont &font){
     Config.setValue("CardEditor/SkillDescriptionFont", font);
 
     skill_description->setFont(font);
-}
-
-void SkillBox::updateLayout(){
-    // dummy
 }
 
 void SkillBox::insertSuit(int index){
@@ -501,6 +506,11 @@ CardEditor::CardEditor(QWidget *parent) :
     add_skill->setShortcut(Qt::ALT + Qt::Key_S);
     connect(add_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(addSkill()));
     tool_menu->addAction(add_skill);
+
+    QAction *remove_skill = new QAction(tr("Remove skill"), tool_menu);
+    remove_skill->setShortcut(Qt::ALT + Qt::Key_D);
+    connect(remove_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(removeSkill()));
+    tool_menu->addAction(remove_skill);
 
     menu_bar->addMenu(tool_menu);
 }

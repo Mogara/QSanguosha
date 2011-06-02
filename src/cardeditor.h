@@ -67,9 +67,9 @@ public:
 
 public slots:
     void addSkill();
+    void removeSkill();
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
-    void updateLayout();
     void insertSuit(int index);
     void insertBoldText(const QString &bold_text);
     void saveConfig();
