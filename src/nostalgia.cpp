@@ -275,6 +275,18 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     QSet<ServerPlayer *> questioned;
 
     foreach(ServerPlayer *player, players){
+        if(player->getHp() <= 0){
+            LogMessage log;
+            log.type = "#GuhuoCannotQuestion";
+            log.from = player;
+            log.arg = QString::number(player->getHp());
+            room->sendLog(log);
+
+            room->setEmotion(player, Room::NoQuestion);
+
+            continue;
+        }
+
         QString choice = room->askForChoice(player, "guhuo", "question+noquestion");
         if(choice == "question"){
             room->setEmotion(player, Room::Question);
