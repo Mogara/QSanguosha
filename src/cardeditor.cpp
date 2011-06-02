@@ -93,13 +93,18 @@ SkillBox::SkillBox()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
-    skill_description->setFont(Config.value("CardEditor/SkillDescriptionFont").value<QFont>());
     skill_description->setTextWidth(223);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
     skill_description->setX(25);
 
-    connect(skill_description->document(), SIGNAL(blockCountChanged(int)), this, SLOT(updateLayout()));
+    copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
+    copyright_text->setTextWidth(skill_description->textWidth());
+    copyright_text->setPos(25, -3);
+    copyright_text->setTextInteractionFlags(Qt::TextEditorInteraction);
+
+    QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
+    setSkillDescriptionFont(font);
 }
 
 void SkillBox::setKingdom(const QString &kingdom){
@@ -194,30 +199,87 @@ void SkillBox::addSkill(){
     skill_titles << title_text;
 }
 
-void SkillBox::setSkillTitleFont(const QFont &font){
-    Config.setValue("CardEditor/SkillTitleFont", font);
+void SkillBox::removeSkill(){
+    foreach(QGraphicsTextItem *title, skill_titles){
+        if(title->hasFocus()){
+            skill_titles.removeOne(title);
+            delete title->parentItem();
 
+            return;
+        }
+    }
+}
+
+void SkillBox::saveConfig(){
+    Config.beginGroup("CardEditor");
+
+    Config.beginWriteArray("SkillTitles");
+    for(int i=0; i<skill_titles.length(); i++){
+        Config.setArrayIndex(i);
+
+        Config.setValue("TitleText", skill_titles.at(i)->toPlainText());
+        Config.setValue("TitlePos", skill_titles.at(i)->parentItem()->pos());
+    }
+
+    Config.endArray();
+
+    Config.setValue("SkillDescription", skill_description->toHtml());
+    Config.setValue("SkillDescriptionFont", skill_description->font());
+    if(!skill_titles.isEmpty()){
+        Config.setValue("SkillTitleFont", skill_titles.first()->font());
+    }
+
+    Config.endGroup();
+}
+
+void SkillBox::loadConfig(){
+    Config.beginGroup("CardEditor");
+
+    int size = Config.beginReadArray("SkillTitles");
+    for(int i=0; i<size; i++){
+        Config.setArrayIndex(i);
+
+        addSkill();
+
+        QGraphicsTextItem *item = skill_titles.last();
+        if(Config.contains("TitleText"))
+            item->setPlainText(Config.value("TitleText").toString());
+
+        if(Config.contains("TitlePos"))
+            item->parentItem()->setPos(Config.value("TitlePos").toPoint());
+    }
+
+    Config.endArray();
+
+    skill_description->setHtml(Config.value("SkillDescription").toString());
+    Config.endGroup();
+}
+
+
+void SkillBox::setSkillTitleFont(const QFont &font){
     foreach(QGraphicsTextItem *item, skill_titles){
         item->setFont(font);
     }
 }
 
 void SkillBox::setSkillDescriptionFont(const QFont &font){
-    Config.setValue("CardEditor/SkillDescriptionFont", font);
-
     skill_description->setFont(font);
-}
 
-void SkillBox::updateLayout(){
-    // dummy
+    QFont copyright_font = font;
+    copyright_font.setPointSize(7);
+    copyright_text->setFont(copyright_font);
 }
 
 void SkillBox::insertSuit(int index){
     Card::Suit suit = static_cast<Card::Suit>(index);
     QString suit_name = Card::Suit2String(suit);
-    QImage image(QString("image/system/suit/%1.png").arg(suit_name));
-
+    QString suit_path = QString("image/system/suit/%1.png").arg(suit_name);
     int size = skill_description->font().pointSize() + 1;
+
+    // QString code = QString("<img src='%1' width='%2' height='%2'>").arg(suit_path).arg(size);
+    // skill_description->textCursor().insertHtml(code);
+
+    QImage image(suit_path);
     image = image.scaled(QSize(size, size), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     skill_description->textCursor().insertImage(image);
 }
@@ -346,6 +408,8 @@ void CardScene::saveConfig(){
     Config.setValue("PhotoPos", photo->pos());
     Config.setValue("SkillBoxPos", skill_box->pos());
     Config.endGroup();
+
+    skill_box->saveConfig();
 }
 
 void CardScene::loadConfig(){
@@ -355,6 +419,8 @@ void CardScene::loadConfig(){
     photo->setPos(Config.value("PhotoPos").toPointF());
     skill_box->setPos(Config.value("SkillBoxPos", QPointF(70, 484)).toPointF());
     Config.endGroup();
+
+    skill_box->loadConfig();
 }
 
 
@@ -452,6 +518,11 @@ CardEditor::CardEditor(QWidget *parent) :
     add_skill->setShortcut(Qt::ALT + Qt::Key_S);
     connect(add_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(addSkill()));
     tool_menu->addAction(add_skill);
+
+    QAction *remove_skill = new QAction(tr("Remove skill"), tool_menu);
+    remove_skill->setShortcut(Qt::ALT + Qt::Key_D);
+    connect(remove_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(removeSkill()));
+    tool_menu->addAction(remove_skill);
 
     menu_bar->addMenu(tool_menu);
 }

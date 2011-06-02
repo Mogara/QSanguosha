@@ -67,11 +67,13 @@ public:
 
 public slots:
     void addSkill();
+    void removeSkill();
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
-    void updateLayout();
     void insertSuit(int index);
     void insertBoldText(const QString &bold_text);
+    void saveConfig();
+    void loadConfig();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -85,6 +87,7 @@ private:
     QString kingdom;
     QList<QGraphicsTextItem *> skill_titles;
     QGraphicsTextItem *skill_description;
+    QGraphicsTextItem *copyright_text;
 };
 
 class CardScene: public QGraphicsScene{

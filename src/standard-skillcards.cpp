@@ -42,6 +42,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
 JieyinCard::JieyinCard(){
     once = true;
+    mute = true;
 }
 
 bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -60,6 +61,20 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
 
     room->recover(effect.from, recover, true);
     room->recover(effect.to, recover, true);
+
+    int index = -1;
+    if(effect.from->getGeneral()->isMale()){
+        if(effect.from == effect.to)
+            index = 5;
+        else if(effect.from->getHp() >= effect.to->getHp())
+            index = 3;
+        else
+            index = 4;
+    }else{
+        index = 1 + qrand() % 2;
+    }
+
+    room->playSkillEffect("jieyin", index);
 }
 
 TuxiCard::TuxiCard(){
