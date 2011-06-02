@@ -119,6 +119,8 @@ private:
     QList<QGraphicsPixmapItem *> magatamas;
     BlackEdgeTextItem *name, *title;
     SkillBox *skill_box;
+    QGraphicsRectItem *big_avatar_rect;
+    QGraphicsRectItem *small_avatar_rect;
 };
 
 class CardEditor : public QMainWindow

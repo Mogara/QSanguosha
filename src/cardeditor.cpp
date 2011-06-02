@@ -318,6 +318,8 @@ void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
     QApplication::restoreOverrideCursor();
 }
 
+#include <QGraphicsRectItem>
+
 CardScene::CardScene()
     :QGraphicsScene(QRectF(0, 0, 366, 514))
 {
@@ -352,6 +354,22 @@ CardScene::CardScene()
     }
 
     loadConfig();
+
+    big_avatar_rect = new QGraphicsRectItem(QRectF(0, 0, 94, 96));
+    big_avatar_rect->hide();
+    big_avatar_rect->setBrush(QColor(0x3B, 0x1D, 0x01));
+    big_avatar_rect->setOpacity(0.6);
+    big_avatar_rect->setFlag(QGraphicsItem::ItemIsMovable);
+
+    addItem(big_avatar_rect);
+
+    small_avatar_rect = new QGraphicsRectItem(QRectF(0, 0, 122, 50));
+    small_avatar_rect->hide();
+    small_avatar_rect->setBrush(QColor(0x98, 0xAE, 0xC2));
+    small_avatar_rect->setOpacity(0.6);
+    small_avatar_rect->setFlag(QGraphicsItem::ItemIsMovable);
+
+    addItem(small_avatar_rect);
 }
 
 void CardScene::setFrame(const QString &kingdom, bool is_lord){
