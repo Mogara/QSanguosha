@@ -45,136 +45,166 @@
 <context>
     <name>CardEditor</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="478"/>
+        <location filename="src/cardeditor.cpp" line="607"/>
         <source>Card editor</source>
         <translation>卡牌编辑器</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="503"/>
+        <location filename="src/cardeditor.cpp" line="634"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="504"/>
+        <location filename="src/cardeditor.cpp" line="635"/>
         <source>Import ...</source>
         <translation>导入 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="506"/>
+        <location filename="src/cardeditor.cpp" line="637"/>
         <source>Save ...</source>
         <translation>保存 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="516"/>
+        <location filename="src/cardeditor.cpp" line="639"/>
+        <source>Exit</source>
+        <translation>退出</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="654"/>
         <source>Tool</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="517"/>
+        <location filename="src/cardeditor.cpp" line="655"/>
         <source>Add skill</source>
         <translation>添加技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="522"/>
+        <location filename="src/cardeditor.cpp" line="660"/>
         <source>Remove skill</source>
         <translation>删除技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="557"/>
+        <location filename="src/cardeditor.cpp" line="667"/>
+        <source>Make big avatar</source>
+        <translation>制作大头像</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="672"/>
+        <source>Make small avatar</source>
+        <translation>制作小头像</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="677"/>
+        <source>Hide avatar rect</source>
+        <translation>隐藏头像框</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="698"/>
+        <source>Select a avatar file</source>
+        <translation>选择一个头像文件</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="700"/>
+        <source>Image file (*.png *.jpg *.bmp)</source>
+        <translation>图像 (*.png *.jpg *.bmp)</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="732"/>
         <source>Text</source>
         <translation>文本</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="558"/>
+        <location filename="src/cardeditor.cpp" line="733"/>
         <source>Font</source>
         <translation>字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="559"/>
+        <location filename="src/cardeditor.cpp" line="734"/>
         <source>Line spacing</source>
         <translation>行距</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="579"/>
+        <location filename="src/cardeditor.cpp" line="754"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="598"/>
+        <location filename="src/cardeditor.cpp" line="773"/>
         <source>Kingdom</source>
         <translation>所属势力</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="599"/>
+        <location filename="src/cardeditor.cpp" line="774"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="600"/>
+        <location filename="src/cardeditor.cpp" line="775"/>
         <source>Image ratio</source>
         <translation>图像比例</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="623"/>
+        <location filename="src/cardeditor.cpp" line="798"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="631"/>
+        <location filename="src/cardeditor.cpp" line="806"/>
         <source>Title font</source>
         <translation>技能名字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="632"/>
+        <location filename="src/cardeditor.cpp" line="807"/>
         <source>Description font</source>
         <translation>技能描述字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="652"/>
+        <location filename="src/cardeditor.cpp" line="827"/>
         <source>Insert suit</source>
         <translation>插入花色</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="658"/>
+        <location filename="src/cardeditor.cpp" line="833"/>
         <source>Compulsory</source>
         <translation>锁定技</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="659"/>
+        <location filename="src/cardeditor.cpp" line="834"/>
         <source>Limited</source>
         <translation>限定技</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="660"/>
+        <location filename="src/cardeditor.cpp" line="835"/>
         <source>Insert bold text</source>
         <translation>插入粗体文本</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="676"/>
-        <location filename="src/cardeditor.cpp" line="680"/>
+        <location filename="src/cardeditor.cpp" line="851"/>
+        <location filename="src/cardeditor.cpp" line="855"/>
         <source>Title</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="683"/>
-        <location filename="src/cardeditor.cpp" line="688"/>
+        <location filename="src/cardeditor.cpp" line="858"/>
+        <location filename="src/cardeditor.cpp" line="863"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="694"/>
+        <location filename="src/cardeditor.cpp" line="869"/>
         <source>Thanks to BeiwanLufen &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</source>
         <translation>感谢背碗卤粉提供素材 &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="711"/>
-        <location filename="src/cardeditor.cpp" line="724"/>
+        <location filename="src/cardeditor.cpp" line="886"/>
+        <location filename="src/cardeditor.cpp" line="899"/>
         <source>Select a photo file ...</source>
         <translation>选择一张图片 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="713"/>
-        <location filename="src/cardeditor.cpp" line="726"/>
+        <location filename="src/cardeditor.cpp" line="888"/>
+        <location filename="src/cardeditor.cpp" line="901"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
@@ -230,6 +260,14 @@
         <location filename="src/cardoverview.ui" line="130"/>
         <source>Play (female)</source>
         <translation>女性配音</translation>
+    </message>
+</context>
+<context>
+    <name>CardScene</name>
+    <message>
+        <location filename="src/cardeditor.cpp" line="426"/>
+        <source>Done</source>
+        <translation>完成</translation>
     </message>
 </context>
 <context>
@@ -824,178 +862,6 @@
     </message>
 </context>
 <context>
-    <name>DIYScriptor</name>
-    <message>
-        <location filename="src/diyscriptor.ui" line="14"/>
-        <source>DIY script generator</source>
-        <translation>DIY 脚本生成器</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="27"/>
-        <source>Code view</source>
-        <oldsource>code view</oldsource>
-        <translation>代码</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="40"/>
-        <source>Result</source>
-        <oldsource>result</oldsource>
-        <translation>结果</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="56"/>
-        <location filename="src/diyscriptor.ui" line="76"/>
-        <location filename="src/diyscriptor.ui" line="321"/>
-        <location filename="src/diyscriptor.ui" line="339"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <oldsource>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="93"/>
-        <source>Save</source>
-        <translation>保存</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="110"/>
-        <source>ViewAsSkill</source>
-        <translation>视作技</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="122"/>
-        <source>effect card:</source>
-        <translation>效果卡牌:</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="135"/>
-        <source>Generate</source>
-        <translation>生成</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="171"/>
-        <source>card name</source>
-        <translation>卡牌名</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="186"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;local suit,number&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;for _,card in ipairs(cards) do&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;	if suit and (suit~=card:getSuit()) then suit=sgs.Card_NoSuit else suit=card:getSuit() end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;	if number and (number~=card:getNumber()) then number=-1 else number=card:getNumber() end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;local view_as_card= sgs.Sanguosha:cloneCard(&amp;quot;CardName&amp;quot;, suit, number)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;for _,card in ipairs(cards) do&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;	view_as_card:addSubcard(card:getId())&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;view_as_card:setSkillName(self:objectName())&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <oldsource>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;local suit,number&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;for _,card in ipairs(cards) do&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;	if suit and (suit~=card:getSuit()) then suit=sgs.Card_NoSuit else suit=card:getSuit() end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;	if number and (number~=card:getNumber()) then number=-1 else number=card:getNumber() end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;local view_as_card= sgs.Sanguosha:cloneCard(&amp;quot;CardName&amp;quot;, suit, number)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;for _,card in ipairs(cards) do&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;	view_as_card:addSubcard(card:getId())&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;end&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt;&quot;&gt;view_as_card:setSkillName(self:objectName())&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="220"/>
-        <source>valid card condition </source>
-        <translation>有效条件</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="230"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;to_select:getSuit()==sgs.Card_Club&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="248"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;#cards~=1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="241"/>
-        <source>invalid use condition</source>
-        <translation>无效条件</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="271"/>
-        <source>skill name</source>
-        <translation>技能名</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="278"/>
-        <source>example</source>
-        <translation>例子</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="285"/>
-        <source>number of card needed</source>
-        <translation>所需要的卡牌数</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="292"/>
-        <source>1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="314"/>
-        <source>is skill enabled at play</source>
-        <translation>是否在出牌阶段启用</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="332"/>
-        <source>is skill enabled at response</source>
-        <translation>是否在回应时启用</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="352"/>
-        <source>TriggerSkill</source>
-        <translation>触发技</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.ui" line="357"/>
-        <source>SkillCard</source>
-        <translation>技能卡</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.cpp" line="127"/>
-        <source>Save File</source>
-        <translation>保存文件</translation>
-    </message>
-    <message>
-        <location filename="src/diyscriptor.cpp" line="129"/>
-        <source>DIY script (*.lua)</source>
-        <translation>DIY 脚本 (*.lua)</translation>
-    </message>
-</context>
-<context>
     <name>DamageMakerDialog</name>
     <message>
         <location filename="src/roomscene.cpp" line="2339"/>
@@ -1445,225 +1311,225 @@ p, li { white-space: pre-wrap; }
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="59"/>
+        <location filename="src/mainwindow.ui" line="58"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="70"/>
+        <location filename="src/mainwindow.ui" line="69"/>
         <source>View</source>
         <translation>视图</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="96"/>
+        <location filename="src/mainwindow.ui" line="95"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="108"/>
+        <location filename="src/mainwindow.ui" line="107"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="116"/>
+        <location filename="src/mainwindow.ui" line="115"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="124"/>
+        <location filename="src/mainwindow.ui" line="123"/>
         <source>Ctrl+G</source>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="132"/>
+        <location filename="src/mainwindow.ui" line="131"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="145"/>
+        <location filename="src/mainwindow.ui" line="144"/>
         <source>Ctrl+R</source>
         <oldsource>Ctrl+C</oldsource>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="113"/>
+        <location filename="src/mainwindow.ui" line="112"/>
         <source>Start server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="81"/>
+        <location filename="src/mainwindow.ui" line="80"/>
         <source>Cheat</source>
         <translation>作弊</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="121"/>
+        <location filename="src/mainwindow.ui" line="120"/>
         <source>Start game</source>
         <translation>启动游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="129"/>
+        <location filename="src/mainwindow.ui" line="128"/>
         <source>General overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="142"/>
+        <location filename="src/mainwindow.ui" line="141"/>
         <source>Card overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="153"/>
+        <location filename="src/mainwindow.ui" line="152"/>
         <source>Enable hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="158"/>
+        <location filename="src/mainwindow.ui" line="157"/>
         <source>About Qt</source>
         <translation>关于 Qt</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="166"/>
+        <location filename="src/mainwindow.ui" line="165"/>
         <source>View Discarded</source>
         <translation>查看弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="169"/>
+        <location filename="src/mainwindow.ui" line="168"/>
         <source>Ctrl+D</source>
         <translation>Ctrl+D</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="177"/>
+        <location filename="src/mainwindow.ui" line="176"/>
         <source>View distance</source>
         <translation>查看距离</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="180"/>
+        <location filename="src/mainwindow.ui" line="179"/>
         <source>Ctrl+I</source>
         <oldsource>Ctrl+V</oldsource>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="188"/>
+        <location filename="src/mainwindow.ui" line="187"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="196"/>
+        <location filename="src/mainwindow.ui" line="195"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="201"/>
+        <location filename="src/mainwindow.ui" line="200"/>
         <source>Replay</source>
         <translation>战局重放</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="209"/>
+        <location filename="src/mainwindow.ui" line="208"/>
         <source>Save battle record</source>
         <translation>保存战斗记录</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="214"/>
+        <location filename="src/mainwindow.ui" line="213"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="217"/>
+        <location filename="src/mainwindow.ui" line="216"/>
         <source>Alt+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="222"/>
+        <location filename="src/mainwindow.ui" line="221"/>
         <source>Show/Hide menu</source>
         <translation>显示/隐藏菜单</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="251"/>
+        <location filename="src/mainwindow.ui" line="250"/>
         <source>Scenario overview</source>
         <translation>剧情一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="264"/>
+        <location filename="src/mainwindow.ui" line="263"/>
         <source>Script editor</source>
         <translation>脚本编辑器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="269"/>
+        <location filename="src/mainwindow.ui" line="268"/>
         <source>Broadcast ...</source>
         <translation>广播 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="274"/>
+        <location filename="src/mainwindow.ui" line="273"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="282"/>
+        <location filename="src/mainwindow.ui" line="281"/>
         <source>Damage maker</source>
         <translation>伤害制造器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="290"/>
+        <location filename="src/mainwindow.ui" line="289"/>
         <source>Expand dashboard</source>
         <translation>延长控制板</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="295"/>
+        <location filename="src/mainwindow.ui" line="294"/>
         <source>Get card ...</source>
         <translation>获取卡牌 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="300"/>
+        <location filename="src/mainwindow.ui" line="299"/>
         <source>Death note ...</source>
         <translation>死亡笔记 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="305"/>
+        <location filename="src/mainwindow.ui" line="304"/>
         <source>Revive wand ...</source>
         <translation>复活魔杖 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="310"/>
+        <location filename="src/mainwindow.ui" line="309"/>
         <source>Card editor ...</source>
         <translation>卡牌编辑器 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="313"/>
+        <location filename="src/mainwindow.ui" line="312"/>
         <source>Ctrl+T</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="318"/>
+        <location filename="src/mainwindow.ui" line="317"/>
         <source>DIY editor</source>
         <translation>DIY 编辑器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="225"/>
+        <location filename="src/mainwindow.ui" line="224"/>
         <source>Alt+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="233"/>
+        <location filename="src/mainwindow.ui" line="232"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="238"/>
+        <location filename="src/mainwindow.ui" line="237"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="241"/>
+        <location filename="src/mainwindow.ui" line="240"/>
         <source>Alt+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="246"/>
+        <location filename="src/mainwindow.ui" line="245"/>
         <location filename="src/mainwindow.cpp" line="450"/>
         <source>Role assign table</source>
         <translation>身份分配表</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="137"/>
+        <location filename="src/mainwindow.ui" line="136"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
@@ -1762,7 +1628,7 @@ p, li { white-space: pre-wrap; }
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="256"/>
+        <location filename="src/mainwindow.ui" line="255"/>
         <location filename="src/mainwindow.cpp" line="379"/>
         <source>About irrKlang</source>
         <translation>关于 irrKlang</translation>
@@ -2748,17 +2614,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SkillBox</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="95"/>
+        <location filename="src/cardeditor.cpp" line="98"/>
         <source>Skill description</source>
         <translation>技能描述</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="101"/>
+        <location filename="src/cardeditor.cpp" line="104"/>
         <source>Copyright text</source>
         <translation>™&amp;©  2011 游卡桌游</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="193"/>
+        <location filename="src/cardeditor.cpp" line="196"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>

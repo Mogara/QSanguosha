@@ -12,6 +12,9 @@
 #include <QApplication>
 #include <QCursor>
 #include <QKeyEvent>
+#include <QMenu>
+#include <QMenuBar>
+#include <QGraphicsRectItem>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -66,9 +69,11 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
 
     painter->setRenderHint(QPainter::Antialiasing);
 
-    QPen pen(Qt::black);
-    pen.setWidth(outline);
-    painter->setPen(pen);
+    if(outline > 0){
+        QPen pen(Qt::black);
+        pen.setWidth(outline);
+        painter->setPen(pen);
+    }
 
     QFontMetrics metric(font);
     int height = metric.height() - metric.descent() + skip;
@@ -82,7 +87,9 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
         QPainterPath path;
         path.addText(0, (i+1) * height, font, text);
 
-        painter->drawPath(path);
+        if(outline > 0)
+            painter->drawPath(path);
+
         painter->fillPath(path, color);
     }
 }
@@ -100,7 +107,7 @@ SkillBox::SkillBox()
 
     copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
     copyright_text->setTextWidth(skill_description->textWidth());
-    copyright_text->setPos(25, -3);
+    copyright_text->setPos(25, -4);
     copyright_text->setTextInteractionFlags(Qt::TextEditorInteraction);
 
     QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
@@ -200,6 +207,12 @@ void SkillBox::addSkill(){
 }
 
 void SkillBox::removeSkill(){
+    if(skill_titles.length() == 1){
+        delete skill_titles.first()->parentItem();
+        skill_titles.clear();
+        return;
+    }
+
     foreach(QGraphicsTextItem *title, skill_titles){
         if(title->hasFocus()){
             skill_titles.removeOne(title);
@@ -318,10 +331,56 @@ void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
     QApplication::restoreOverrideCursor();
 }
 
-#include <QGraphicsRectItem>
+AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
+    :QGraphicsRectItem(0, 0, width, height), name_box(name_box)
+{
+    QPen thick_pen(Qt::black);
+    thick_pen.setWidth(4);
+    setPen(thick_pen);
+
+    setFlag(ItemIsMovable);
+
+    name_box = new QGraphicsRectItem(this);
+    name_box->setRect(0, 0, box_rect.width(), box_rect.height());
+    name_box->setPos(box_rect.x(), box_rect.y());
+    name_box->setOpacity(0.7);
+    name_box->setPen(Qt::NoPen);
+
+    QFont font("SimHei");
+    font.setPixelSize(font_size);
+    name = new BlackEdgeTextItem;
+    name->setFont(font);
+    name->setOutline(0);
+    name->setParentItem(name_box);
+    name->setFlag(ItemIsMovable, false);
+}
+
+void AvatarRectItem::toCenter(QGraphicsScene *scene){
+    QRectF scene_rect = scene->sceneRect();
+    setPos((scene_rect.width() - rect().width())/2,
+           (scene_rect.height() - rect().height())/2);
+}
+
+void AvatarRectItem::setKingdom(const QString &kingdom){
+    QMap<QString, QColor> color_map;
+    if(color_map.isEmpty()){
+        color_map["wei"] = QColor(0x54, 0x79, 0x98);
+        color_map["shu"] = QColor(0xD0, 0x79, 0x6C);
+        color_map["wu"] = QColor(0x4D, 0xB8, 0x73);
+        color_map["qun"] = QColor(0x8A, 0x80, 0x7A);
+        color_map["god"] = QColor(0x96, 0x94, 0x3D);
+    }
+
+    QColor color = color_map.value(kingdom);
+    name_box->setBrush(color);
+}
+
+void AvatarRectItem::setName(const QString &name){
+    this->name->setText(name);
+}
 
 CardScene::CardScene()
-    :QGraphicsScene(QRectF(0, 0, 366, 514))
+    :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL)
 {
     photo = new Pixmap;
     frame = new QGraphicsPixmapItem;
@@ -355,21 +414,26 @@ CardScene::CardScene()
 
     loadConfig();
 
-    big_avatar_rect = new QGraphicsRectItem(QRectF(0, 0, 94, 96));
-    big_avatar_rect->hide();
-    big_avatar_rect->setBrush(QColor(0x3B, 0x1D, 0x01));
-    big_avatar_rect->setOpacity(0.6);
-    big_avatar_rect->setFlag(QGraphicsItem::ItemIsMovable);
+    QGraphicsRectItem *name_box = new QGraphicsRectItem(0, 0, 16, 48);
+    name_box->setPos(78, 24);
 
+    QRectF big_rect(78, 24, 16, 48);
+    big_avatar_rect = new AvatarRectItem(94, 96, big_rect, 13);
+    big_avatar_rect->hide();
+    big_avatar_rect->toCenter(this);
     addItem(big_avatar_rect);
 
-    small_avatar_rect = new QGraphicsRectItem(QRectF(0, 0, 122, 50));
+    QRectF small_rect(6, 0, 16, 50);
+    small_avatar_rect = new AvatarRectItem(122, 50, small_rect, 9);
     small_avatar_rect->hide();
-    small_avatar_rect->setBrush(QColor(0x98, 0xAE, 0xC2));
-    small_avatar_rect->setOpacity(0.6);
-    small_avatar_rect->setFlag(QGraphicsItem::ItemIsMovable);
-
+    small_avatar_rect->toCenter(this);
     addItem(small_avatar_rect);
+
+    done_menu = new QMenu();
+
+    QAction *done_action = new QAction(tr("Done"), done_menu);
+    connect(done_action, SIGNAL(triggered()), this, SLOT(doneMakingAvatar()));
+    done_menu->addAction(done_action);
 }
 
 void CardScene::setFrame(const QString &kingdom, bool is_lord){
@@ -399,6 +463,9 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
 
     skill_box->setKingdom(kingdom);
     skill_box->setMiddleHeight(-1);
+
+    big_avatar_rect->setKingdom(kingdom);
+    small_avatar_rect->setKingdom(kingdom);
 
     Config.setValue("CardEditor/Kingdom", kingdom);
     Config.setValue("CardEditor/IsLord", is_lord);
@@ -486,9 +553,70 @@ void CardScene::setMaxHp(int max_hp){
     Config.setValue("CardEditor/MaxHP", max_hp);
 }
 
-#include <QMenu>
-#include <QMenuBar>
+void CardScene::makeBigAvatar(){
+    small_avatar_rect->hide();
+    big_avatar_rect->show();
 
+    big_avatar_rect->setName(Config.value("CardEditor/NameText").toString());
+}
+
+void CardScene::makeSmallAvatar(){
+    big_avatar_rect->hide();
+    small_avatar_rect->show();
+
+    small_avatar_rect->setName(Config.value("CardEditor/NameText").toString());
+}
+
+void CardScene::doneMakingAvatar(){
+    QGraphicsRectItem *avatar_rect = NULL;
+
+    if(big_avatar_rect->isVisible())
+        avatar_rect = big_avatar_rect;
+    else if(small_avatar_rect->isVisible())
+        avatar_rect = small_avatar_rect;
+
+    if(avatar_rect){
+        avatar_rect->setPen(Qt::NoPen);
+
+        QRectF rect(avatar_rect->scenePos(), avatar_rect->rect().size());
+        emit avatar_snapped(rect);
+
+        QPen thick_pen;
+        thick_pen.setWidth(4);
+        avatar_rect->setPen(thick_pen);
+    }
+}
+
+void CardScene::hideAvatarRects(){
+    big_avatar_rect->hide();
+    small_avatar_rect->hide();
+}
+
+void CardScene::setAvatarNameBox(const QString &text){
+    big_avatar_rect->setName(text);
+    small_avatar_rect->setName(text);
+}
+
+void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
+    QGraphicsItem *item = itemAt(event->scenePos());
+    if(item){
+        if(item->parentItem() == skill_box){
+            QGraphicsScene::contextMenuEvent(event);
+            return;
+        }else if(item == big_avatar_rect || item == small_avatar_rect){
+            done_menu->popup(event->screenPos());
+            return;
+        }
+    }
+
+    if(!skill_box->hasFocus() && menu){
+        menu->popup(event->screenPos());
+    }
+}
+
+void CardScene::setMenu(QMenu *menu){
+    this->menu = menu;
+}
 
 CardEditor::CardEditor(QWidget *parent) :
     QMainWindow(parent)
@@ -504,6 +632,8 @@ CardEditor::CardEditor(QWidget *parent) :
                         );
 
     card_scene = new CardScene;
+    connect(card_scene, SIGNAL(avatar_snapped(QRectF)), this, SLOT(saveAvatar(QRectF)));
+
     view->setScene(card_scene);
     view->setFixedSize(card_scene->sceneRect().width() + 2,
                        card_scene->sceneRect().height() + 2);
@@ -523,13 +653,19 @@ CardEditor::CardEditor(QWidget *parent) :
     import->setShortcut(Qt::CTRL + Qt::Key_O);
     QAction *save = new QAction(tr("Save ..."), file_menu);
     save->setShortcut(Qt::CTRL + Qt::Key_S);
+    QAction *exit = new QAction(tr("Exit"), file_menu);
+    exit->setShortcut(Qt::CTRL + Qt::Key_Q);
+
     file_menu->addAction(import);
     file_menu->addAction(save);
+    file_menu->addSeparator();
+    file_menu->addAction(exit);
 
     menu_bar->addMenu(file_menu);
 
     connect(import, SIGNAL(triggered()), this, SLOT(import()));
     connect(save, SIGNAL(triggered()), this, SLOT(saveImage()));
+    connect(exit, SIGNAL(triggered()), this, SLOT(close()));
 
     QMenu *tool_menu = new QMenu(tr("Tool"));
     QAction *add_skill = new QAction(tr("Add skill"), tool_menu);
@@ -542,7 +678,26 @@ CardEditor::CardEditor(QWidget *parent) :
     connect(remove_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(removeSkill()));
     tool_menu->addAction(remove_skill);
 
+    tool_menu->addSeparator();
+
+    QAction *making_big = new QAction(tr("Make big avatar"), tool_menu);
+    making_big->setShortcut(Qt::ALT + Qt::Key_B);
+    connect(making_big, SIGNAL(triggered()), card_scene, SLOT(makeBigAvatar()));
+    tool_menu->addAction(making_big);
+
+    QAction *making_small = new QAction(tr("Make small avatar"), tool_menu);
+    making_small->setShortcut(Qt::ALT + Qt::Key_M);
+    connect(making_small, SIGNAL(triggered()), card_scene, SLOT(makeSmallAvatar()));
+    tool_menu->addAction(making_small);
+
+    QAction *hiding_rect = new QAction(tr("Hide avatar rect"), tool_menu);
+    hiding_rect->setShortcut(Qt::ALT + Qt::Key_H);
+    connect(hiding_rect, SIGNAL(triggered()), card_scene, SLOT(hideAvatarRects()));
+    tool_menu->addAction(hiding_rect);
+
     menu_bar->addMenu(tool_menu);
+
+    card_scene->setMenu(tool_menu);
 }
 
 void CardEditor::updateButtonText(const QFont &font){
@@ -551,6 +706,24 @@ void CardEditor::updateButtonText(const QFont &font){
         QPushButton *button = dialog2button.value(dialog, NULL);
         if(button)
             button->setText(QString("%1[%2]").arg(font.family()).arg(font.pointSize()));
+    }
+}
+
+void CardEditor::saveAvatar(const QRectF &rect){
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    tr("Select a avatar file"),
+                                                    QString(),
+                                                    tr("Image file (*.png *.jpg *.bmp)"));
+
+    if(!filename.isEmpty()){
+        QImage image(rect.width(), rect.height(), QImage::Format_ARGB32);
+        QPainter painter(&image);
+
+        QPixmap pixmap = QPixmap::grabWidget(card_scene->views().first());
+        pixmap = pixmap.copy(rect.toRect());
+        painter.drawPixmap(0, 0, pixmap);
+
+        image.save(filename);
     }
 }
 
@@ -570,6 +743,10 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
     size_spinbox->setRange(1, 96);
     QSpinBox *space_spinbox = new QSpinBox;
     space_spinbox->setRange(0, 100);
+
+    edit->setObjectName("name");
+    size_spinbox->setObjectName("font");
+    space_spinbox->setObjectName("space");
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Text"), edit);
@@ -702,6 +879,9 @@ QWidget *CardEditor::createLeft(){
                             Config.value("CardEditor/NameFont", QFont("Times", 36)).value<QFont>(),
                             Config.value("CardEditor/NameSkip", 0).toInt(),
                             card_scene->getNameItem());
+
+    QLineEdit *name_edit = box->findChild<QLineEdit *>("name");
+    connect(name_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setAvatarNameBox(QString)));
 
     box->setTitle(tr("Name"));
     layout->addWidget(box);
