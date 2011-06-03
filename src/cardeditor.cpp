@@ -709,6 +709,8 @@ void CardEditor::updateButtonText(const QFont &font){
     }
 }
 
+#include <QBitmap>
+
 void CardEditor::saveAvatar(const QRectF &rect){
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Select a avatar file"),
@@ -721,6 +723,10 @@ void CardEditor::saveAvatar(const QRectF &rect){
 
         QPixmap pixmap = QPixmap::grabWidget(card_scene->views().first());
         pixmap = pixmap.copy(rect.toRect());
+
+        QBitmap mask("diy/mask.png");
+        pixmap.setMask(mask);
+
         painter.drawPixmap(0, 0, pixmap);
 
         image.save(filename);
