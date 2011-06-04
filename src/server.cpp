@@ -50,6 +50,11 @@ ServerDialog::ServerDialog(QWidget *parent)
     setLayout(layout);
 }
 
+void ServerDialog::ensureEnableAI(){
+    ai_enable_checkbox->setChecked(true);
+}
+
+
 QLayout *ServerDialog::createLeft(){
     server_name_edit = new QLineEdit;
     server_name_edit->setText(Config.ServerName);

@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
+    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     config_dialog = new ConfigDialog(this);
@@ -67,14 +67,14 @@ MainWindow::MainWindow(QWidget *parent)
     QList<QAction*> actions;
     actions << ui->actionStart_Game            
             << ui->actionStart_Server
+            << ui->actionPC_Console_Start
             << ui->actionReplay
-            << ui->actionConfigure
-            << ui->actionAbout
+            << ui->actionConfigure            
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
-            << ui->actionAcknowledgement
-            << ui->actionExit;
+            << ui->actionAbout
+            << ui->actionAcknowledgement;
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);    
@@ -479,4 +479,23 @@ void MainWindow::on_actionBroadcast_triggered()
 void MainWindow::on_actionAcknowledgement_triggered()
 {
 
+}
+
+void MainWindow::on_actionPC_Console_Start_triggered()
+{
+    ServerDialog *dialog = new ServerDialog(this);
+    dialog->ensureEnableAI();
+    if(!dialog->config())
+        return;
+
+    Server *server = new Server(this);
+    if(! server->listen()){
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+
+        return;
+    }
+
+    server->createNewRoom();
+
+    connection_dialog->connectToLocalServer();
 }

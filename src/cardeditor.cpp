@@ -54,7 +54,7 @@ void BlackEdgeTextItem::toCenter(const QRectF &rect){
         return;
 
     QFontMetrics metric(font);
-    setX((rect.width() - metric.width(text.at(0))));
+    setX((rect.width() - metric.width(text.at(0)))/2);
 
     int total_height = (metric.height() - metric.descent()) * text.length();
     setY((rect.height() - total_height)/2);

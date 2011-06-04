@@ -29,6 +29,7 @@
     </property>
     <addaction name="actionStart_Game"/>
     <addaction name="actionStart_Server"/>
+    <addaction name="actionPC_Console_Start"/>
     <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
@@ -312,9 +313,9 @@
     <string>Ctrl+T</string>
    </property>
   </action>
-  <action name="actionDIY_editor">
+  <action name="actionPC_Console_Start">
    <property name="text">
-    <string>DIY editor</string>
+    <string>PC Console Start</string>
    </property>
   </action>
  </widget>

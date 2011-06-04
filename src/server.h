@@ -60,6 +60,7 @@ class ServerDialog: public QDialog{
 
 public:
     ServerDialog(QWidget *parent);
+    void ensureEnableAI();
     bool config();
 
 private:
@@ -115,14 +116,13 @@ public:
     void broadcast(const QString &msg);
     bool listen();
     void daemonize();
+    void createNewRoom();
 
 private:
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
-    QSet<QString> addresses;
-
-    void createNewRoom();
+    QSet<QString> addresses;    
 
 private slots:
     void processNewConnection(ClientSocket *socket);
