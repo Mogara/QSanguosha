@@ -481,22 +481,27 @@ bool Room::askForNullification(const TrickCard *trick, ServerPlayer *from, Serve
         if(card == NULL)
             continue;
 
-        CardUseStruct use;
-        use.card = card;
-        use.from = player;
-        useCard(use);
+        bool continable = false;
+        card = card->validateInResposing(player, &continable);
+        if(card){
+            CardUseStruct use;
+            use.card = card;
+            use.from = player;
+            useCard(use);
 
-        LogMessage log;
-        log.type = "#NullificationDetails";
-        log.from = from;
-        log.to << to;
-        log.arg = trick_name;
-        sendLog(log);
+            LogMessage log;
+            log.type = "#NullificationDetails";
+            log.from = from;
+            log.to << to;
+            log.arg = trick_name;
+            sendLog(log);
 
-        broadcastInvoke("animate", QString("nullification:%1:%2")
-                        .arg(player->objectName()).arg(to->objectName()));
+            broadcastInvoke("animate", QString("nullification:%1:%2")
+                            .arg(player->objectName()).arg(to->objectName()));
 
-        return !askForNullification(trick, from, to, !positive);
+            return !askForNullification(trick, from, to, !positive);
+        }else if(continable)
+            goto trust;
     }
 
     return false;
@@ -702,7 +707,15 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     if(result == ".")
         return NULL;
 
-    return Card::Parse(result);
+    const Card *card = Card::Parse(result);
+    bool continuable = false;
+    card = card->validateInResposing(player, &continuable);
+    if(card)
+        return card;
+    else if(continuable)
+        return askForSinglePeach(player, dying);
+    else
+        return NULL;
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
@@ -2368,8 +2381,10 @@ const Card *Room::askForPindian(ServerPlayer *player,
     }
 
     AI *ai = player->getAI();
-    if(ai)
+    if(ai){
+        thread->delay(Config.AIDelay);
         return ai->askForPindian(from, reason);
+    }
 
     QString ask_str = QString("%1->%2")
                        .arg(from->objectName())

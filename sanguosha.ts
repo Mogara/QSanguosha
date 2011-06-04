@@ -550,37 +550,37 @@
 <context>
     <name>ClientLogBox</name>
     <message>
-        <location filename="src/clientlogbox.cpp" line="74"/>
+        <location filename="src/clientlogbox.cpp" line="75"/>
         <source>%from use skill [%1]</source>
         <translation>%from 发动了技能【%1】</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="76"/>
+        <location filename="src/clientlogbox.cpp" line="77"/>
         <source>%from use skill [%1], and the cost is %2</source>
         <translation>%from 发动了技能【%1】，所用的牌为 %2</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="79"/>
+        <location filename="src/clientlogbox.cpp" line="80"/>
         <source>%from use skill [%1], played [%2]</source>
         <translation>%from 使用了【%1】技能，打出了 【%2】</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="81"/>
+        <location filename="src/clientlogbox.cpp" line="82"/>
         <source>%from use skill [%1] use %2 as %3</source>
         <translation>%from 使用了技能【%1】将 %2 当成了 %3</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="89"/>
+        <location filename="src/clientlogbox.cpp" line="90"/>
         <source>%from use %1</source>
         <translation>%from 使用了 %1</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="92"/>
+        <location filename="src/clientlogbox.cpp" line="93"/>
         <source>, target is %to</source>
         <translation>, 目标是 %to</translation>
     </message>
     <message>
-        <location filename="src/clientlogbox.cpp" line="124"/>
+        <location filename="src/clientlogbox.cpp" line="125"/>
         <source>Log string is not well formatted: %1</source>
         <oldsource>Log string is not well formatted: %1, error string is %2</oldsource>
         <translation>提示信息没有格式化好: %1</translation>
@@ -1334,225 +1334,236 @@
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="59"/>
+        <location filename="src/mainwindow.ui" line="57"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="70"/>
+        <location filename="src/mainwindow.ui" line="68"/>
         <source>View</source>
         <translation>视图</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="96"/>
+        <location filename="src/mainwindow.ui" line="103"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="108"/>
+        <location filename="src/mainwindow.ui" line="115"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="116"/>
+        <location filename="src/mainwindow.ui" line="123"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="124"/>
+        <location filename="src/mainwindow.ui" line="131"/>
         <source>Ctrl+G</source>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="132"/>
+        <location filename="src/mainwindow.ui" line="139"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="145"/>
+        <location filename="src/mainwindow.ui" line="152"/>
         <source>Ctrl+R</source>
         <oldsource>Ctrl+C</oldsource>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="113"/>
+        <location filename="src/mainwindow.ui" line="120"/>
         <source>Start server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="81"/>
+        <location filename="src/mainwindow.ui" line="79"/>
         <source>Cheat</source>
         <translation>作弊</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="121"/>
+        <location filename="src/mainwindow.ui" line="88"/>
+        <source>DIY</source>
+        <translation>DIY</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="128"/>
         <source>Start game</source>
         <translation>启动游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="129"/>
+        <location filename="src/mainwindow.ui" line="136"/>
         <source>General overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="142"/>
+        <location filename="src/mainwindow.ui" line="149"/>
         <source>Card overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="153"/>
+        <location filename="src/mainwindow.ui" line="160"/>
         <source>Enable hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="158"/>
+        <location filename="src/mainwindow.ui" line="165"/>
         <source>About Qt</source>
         <translation>关于 Qt</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="166"/>
+        <location filename="src/mainwindow.ui" line="173"/>
         <source>View Discarded</source>
         <translation>查看弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="169"/>
+        <location filename="src/mainwindow.ui" line="176"/>
         <source>Ctrl+D</source>
         <translation>Ctrl+D</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="177"/>
+        <location filename="src/mainwindow.ui" line="184"/>
         <source>View distance</source>
         <translation>查看距离</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="180"/>
+        <location filename="src/mainwindow.ui" line="187"/>
         <source>Ctrl+I</source>
         <oldsource>Ctrl+V</oldsource>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="188"/>
+        <location filename="src/mainwindow.ui" line="195"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="196"/>
+        <location filename="src/mainwindow.ui" line="203"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="201"/>
+        <location filename="src/mainwindow.ui" line="208"/>
         <source>Replay</source>
         <translation>战局重放</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="209"/>
+        <location filename="src/mainwindow.ui" line="216"/>
         <source>Save battle record</source>
         <translation>保存战斗记录</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="214"/>
+        <location filename="src/mainwindow.ui" line="221"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="217"/>
+        <location filename="src/mainwindow.ui" line="224"/>
         <source>Alt+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="222"/>
+        <location filename="src/mainwindow.ui" line="229"/>
         <source>Show/Hide menu</source>
         <translation>显示/隐藏菜单</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="251"/>
+        <location filename="src/mainwindow.ui" line="258"/>
         <source>Scenario overview</source>
         <translation>剧情一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="264"/>
+        <location filename="src/mainwindow.ui" line="271"/>
         <source>Script editor</source>
         <translation>脚本编辑器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="269"/>
+        <location filename="src/mainwindow.ui" line="276"/>
         <source>Broadcast ...</source>
         <translation>广播 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="274"/>
+        <location filename="src/mainwindow.ui" line="281"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="282"/>
+        <location filename="src/mainwindow.ui" line="289"/>
         <source>Damage maker</source>
         <translation>伤害制造器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="290"/>
+        <location filename="src/mainwindow.ui" line="297"/>
         <source>Expand dashboard</source>
         <translation>延长控制板</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="295"/>
+        <location filename="src/mainwindow.ui" line="302"/>
         <source>Get card ...</source>
         <translation>获取卡牌 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="300"/>
+        <location filename="src/mainwindow.ui" line="307"/>
         <source>Death note ...</source>
         <translation>死亡笔记 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="305"/>
+        <location filename="src/mainwindow.ui" line="312"/>
         <source>Revive wand ...</source>
         <translation>复活魔杖 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="310"/>
+        <location filename="src/mainwindow.ui" line="317"/>
         <source>Card editor ...</source>
         <translation>卡牌编辑器 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="313"/>
+        <location filename="src/mainwindow.ui" line="320"/>
         <source>Ctrl+T</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="318"/>
+        <location filename="src/mainwindow.ui" line="325"/>
         <source>PC Console Start</source>
         <translation>单机启动</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="225"/>
+        <location filename="src/mainwindow.ui" line="330"/>
+        <source>Package manager ...</source>
+        <oldsource>Packaging ...</oldsource>
+        <translation>DIY 包管理器 ...</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="232"/>
         <source>Alt+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="233"/>
+        <location filename="src/mainwindow.ui" line="240"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="238"/>
+        <location filename="src/mainwindow.ui" line="245"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="241"/>
+        <location filename="src/mainwindow.ui" line="248"/>
         <source>Alt+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="246"/>
+        <location filename="src/mainwindow.ui" line="253"/>
         <location filename="src/mainwindow.cpp" line="451"/>
         <source>Role assign table</source>
         <translation>身份分配表</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="137"/>
+        <location filename="src/mainwindow.ui" line="144"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
@@ -1565,6 +1576,7 @@
         <location filename="src/mainwindow.cpp" line="157"/>
         <location filename="src/mainwindow.cpp" line="500"/>
         <location filename="src/mainwindow.cpp" line="523"/>
+        <location filename="src/mainwindow.cpp" line="535"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -1628,6 +1640,11 @@
         <translation>服务器尚未启动!</translation>
     </message>
     <message>
+        <location filename="src/mainwindow.cpp" line="535"/>
+        <source>This function is not implemented yet!</source>
+        <translation>此功能尚未实现!</translation>
+    </message>
+    <message>
         <location filename="src/mainwindow.cpp" line="370"/>
         <source>irrKlang is a cross platform sound library for C++, C# and all .NET languages. &lt;br /&gt;</source>
         <translation>irrKlang 是一个跨平台的音频库，适用的语言有 C++, C# 和所有的 .Net 平台语言 &lt;br /&gt;</translation>
@@ -1643,7 +1660,7 @@
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="256"/>
+        <location filename="src/mainwindow.ui" line="263"/>
         <location filename="src/mainwindow.cpp" line="380"/>
         <source>About irrKlang</source>
         <translation>关于 irrKlang</translation>
@@ -1744,6 +1761,75 @@
     </message>
 </context>
 <context>
+    <name>PackagingEditor</name>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="67"/>
+        <source>Browse files</source>
+        <translation>浏览文件</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="68"/>
+        <source>Select files to package</source>
+        <translation>选择要打包的文件</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="21"/>
+        <location filename="src/packagingeditor.cpp" line="70"/>
+        <source>Make package</source>
+        <translation>打包</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="14"/>
+        <source>DIY package manager</source>
+        <translation>DIY 包管理器</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="17"/>
+        <source>Package format is 7z, see its offcial site :&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</source>
+        <translation>打包格式为 7z, 官方网站 :&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="20"/>
+        <source>Package management</source>
+        <translation>包管理</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="38"/>
+        <source>Install</source>
+        <translation>安装</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="39"/>
+        <source>Install a DIY package</source>
+        <translation>安装一个 DIY 包</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="41"/>
+        <source>Uninstall</source>
+        <translation>卸载</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="42"/>
+        <source>Uninstall a DIY package</source>
+        <translation>卸载一个 DIY 包</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="71"/>
+        <source>Export files to a single package</source>
+        <translation>将选择的文件打包</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="99"/>
+        <source>Select one or more files to package</source>
+        <translation>选择一个或多个文件打包</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="101"/>
+        <source>Any files (*.*)</source>
+        <translation>任何文件 (*.*)</translation>
+    </message>
+</context>
+<context>
     <name>Pixmap</name>
     <message>
         <location filename="src/pixmap.cpp" line="15"/>
@@ -1812,37 +1898,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="1064"/>
+        <location filename="src/room.cpp" line="1077"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1181"/>
+        <location filename="src/room.cpp" line="1194"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1209"/>
+        <location filename="src/room.cpp" line="1222"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1173"/>
+        <location filename="src/room.cpp" line="1186"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1213"/>
+        <location filename="src/room.cpp" line="1226"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1248"/>
+        <location filename="src/room.cpp" line="1261"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2097"/>
+        <location filename="src/room.cpp" line="2110"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:

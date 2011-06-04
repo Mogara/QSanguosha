@@ -529,3 +529,8 @@ void MainWindow::on_actionPC_Console_Start_triggered()
 
     connection_dialog->connectToLocalServer();
 }
+
+void MainWindow::on_actionScript_editor_triggered()
+{
+    QMessageBox::information(this, tr("Warning"), tr("This function is not implemented yet!"));
+}

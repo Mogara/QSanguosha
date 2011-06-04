@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "engine.h"
 #include "clientplayer.h"
+#include "client.h"
 
 #include <QPalette>
 
@@ -21,7 +22,7 @@ void ClientLogBox::appendLog(
 {
     QString from;
     if(!from_general.isEmpty()){
-        from = Sanguosha->translate(from_general);
+        from = ClientInstance->getPlayerName(from_general);
         from = bold(from);
     }
 
@@ -29,7 +30,7 @@ void ClientLogBox::appendLog(
     if(!tos.isEmpty()){
         QStringList to_list;
         foreach(QString to, tos)
-            to_list << Sanguosha->translate(to);
+            to_list << ClientInstance->getPlayerName(to);
         to = to_list.join(",");
         arg = Sanguosha->translate(arg);
 

@@ -51,6 +51,8 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionPackaging_triggered();
+    void on_actionScript_editor_triggered();
     void on_actionPC_Console_Start_triggered();
     void on_actionCard_editor_triggered();
     void on_actionAcknowledgement_triggered();

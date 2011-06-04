@@ -59,6 +59,7 @@ public:
     bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
     Replayer *getReplayer() const;
+    QString getPlayerName(const QString &str);
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -193,7 +194,6 @@ private:
 
     void updatePileNum();
     void setPromptList(const QStringList &text);
-    QString getPlayerName(const QString &str);
 
 private slots:
     void processCommand(const QString &cmd);

@@ -41,8 +41,6 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
-    <addaction name="actionScript_editor"/>
-    <addaction name="actionCard_editor"/>
     <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
@@ -85,9 +83,18 @@
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
    </widget>
+   <widget class="QMenu" name="menuDIY">
+    <property name="title">
+     <string>DIY</string>
+    </property>
+    <addaction name="actionCard_editor"/>
+    <addaction name="actionScript_editor"/>
+    <addaction name="actionPackaging"/>
+   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuDIY"/>
    <addaction name="menuCheat"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -258,7 +265,7 @@
   </action>
   <action name="actionScript_editor">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Script editor</string>
@@ -316,6 +323,11 @@
   <action name="actionPC_Console_Start">
    <property name="text">
     <string>PC Console Start</string>
+   </property>
+  </action>
+  <action name="actionPackaging">
+   <property name="text">
+    <string>Package manager ...</string>
    </property>
   </action>
  </widget>
