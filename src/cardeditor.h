@@ -121,6 +121,7 @@ public slots:
     void setMaxHp(int max_hp);
     void makeBigAvatar();
     void makeSmallAvatar();
+    void makeTinyAvatar();
     void doneMakingAvatar();
     void hideAvatarRects();
     void setAvatarNameBox(const QString &text);
@@ -139,8 +140,10 @@ private:
     QList<QGraphicsPixmapItem *> magatamas;
     BlackEdgeTextItem *name, *title;
     SkillBox *skill_box;
-    AvatarRectItem *big_avatar_rect, *small_avatar_rect;
+    AvatarRectItem *big_avatar_rect, *small_avatar_rect, *tiny_avatar_rect;
     QMenu *menu, *done_menu;
+
+    void makeAvatar(AvatarRectItem *item);
 
 signals:
     void avatar_snapped(const QRectF &rect);

@@ -1539,7 +1539,18 @@ void Room::commonCommand(ServerPlayer *, const QString &arg){
 }
 
 void Room::useCard(const CardUseStruct &card_use){
-    const Card *card = card_use.card->validate(&card_use);
+    const Card *card = card_use.card;
+
+    QString key;
+    if(card->inherits("LuaSkillCard"))
+        key = "#" + card->objectName();
+    else
+        key = card->metaObject()->className();
+
+    card_use.from->addHistory(key);
+    card_use.from->invoke("addHistory", key);
+
+    card = card_use.card->validate(&card_use);
     if(card == card_use.card)
         card_use.card->onUse(this, card_use);
     else if(card){

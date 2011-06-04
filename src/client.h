@@ -94,6 +94,7 @@ public:
     void log(const QString &log_str);
     void speak(const QString &speak_data);    
     void increaseSlashCount(const QString & = QString());
+    void addHistory(const QString &card);
     void moveFocus(const QString &focus);
     void setEmotion(const QString &set_str);
     void skillInvoked(const QString &invoke_str);
@@ -188,7 +189,6 @@ private:
     int pile_num;
     QString skill_title, skill_line;
     QString jilei_flags;
-    int slash_count;
     QString choose_command;
 
     void updatePileNum();

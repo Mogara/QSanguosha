@@ -20,7 +20,7 @@ public:
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, int card_id);
     QString getDeathPixmapPath() const;
-    bool hasLordSkill(const QString &skill_name) const;
+    virtual bool hasLordSkill(const QString &skill_name) const;
     void setHandcardNum(int n);
 
     virtual void setFlags(const QString &flag);

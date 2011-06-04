@@ -860,15 +860,18 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *lumeng) const{
-        if(lumeng->getPhase() == Player::Discard &&
-           !lumeng->hasFlag("keji_use_slash") &&
-           lumeng->usedTimes("Slash") + lumeng->usedTimes("ThunderSlash") + lumeng->usedTimes("FireSlash") == 0 &&
-           lumeng->askForSkillInvoke("keji"))
-        {
-            lumeng->getRoom()->playSkillEffect("keji");
-            lumeng->skip(Player::Discard);
+        if(lumeng->getPhase() == Player::Start){
+            lumeng->setFlags("-keji_use_slash");
+        }else if(lumeng->getPhase() == Player::Discard){
+            if(!lumeng->hasFlag("keji_use_slash") &&
+               lumeng->getSlashCount() == 0 &&
+               lumeng->askForSkillInvoke("keji"))
+            {
+                lumeng->getRoom()->playSkillEffect("keji");
+                lumeng->skip(Player::Discard);
 
-            return true;
+                return true;
+            }
         }
 
         return false;

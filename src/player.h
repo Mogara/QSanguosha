@@ -125,6 +125,7 @@ public:
     void loseSkill(const QString &skill_name);
     void loseAllSkills();
     bool hasSkill(const QString &skill_name) const;
+    virtual bool hasLordSkill(const QString &skill_name) const = 0;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
@@ -169,10 +170,11 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
-    void addHistory(const Card *card);
+    void addHistory(const QString &name);
     void clearHistory();
     bool hasUsed(const QString &card_class);
     int usedTimes(const QString &card_class);
+    int getSlashCount() const;
 
     QList<const TriggerSkill *> getTriggerSkills() const;
     QList<const Skill *> getVisibleSkills() const;

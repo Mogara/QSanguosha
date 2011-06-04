@@ -22,8 +22,7 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
-    :QObject(parent), refusable(true), status(NotActive), alive_count(1),
-    slash_count(0)
+    :QObject(parent), refusable(true), status(NotActive), alive_count(1)
 {
     ClientInstance = this;    
 
@@ -46,6 +45,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
     callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
+    callbacks["addHistory"] = &Client::addHistory;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
     callbacks["moveFocus"] = &Client::moveFocus;
@@ -358,13 +358,7 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
         else
             request(QString("useCard %1->%2").arg(card->toString()).arg(target_names.join("+")));
 
-        if(status == Playing){
-            Self->addHistory(card);
-
-            if(card->inherits("Slash"))
-                increaseSlashCount();
-
-        }else if(status == Responsing)
+        if(status == Responsing)
             card_pattern.clear();
     }
 
@@ -571,6 +565,7 @@ bool Client::canSlashWithCrossbow() const{
     if(Self->hasSkill("paoxiao"))
         return true;
     else{
+        int slash_count = Self->getSlashCount();
         if(Self->hasFlag("tianyi_success"))
             return slash_count < 2;
         else
@@ -868,7 +863,11 @@ void Client::speakToServer(const QString &text){
 }
 
 void Client::increaseSlashCount(const QString &){
-    slash_count ++;
+    // this command is deprecated
+}
+
+void Client::addHistory(const QString &card){
+    Self->addHistory(card);
 }
 
 int Client::alivePlayerCount() const{
@@ -1283,7 +1282,6 @@ void Client::clearTurnTag(){
     }
 
     case Player::NotActive:{
-            slash_count = 0;
             Self->clearHistory();
             Self->clearFlags();
             break;

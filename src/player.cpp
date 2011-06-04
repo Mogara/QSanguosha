@@ -575,8 +575,14 @@ QList<int> &Player::getPile(const QString &pile_name){
     return piles[pile_name];
 }
 
-void Player::addHistory(const Card *card){
-    ++ history[card->metaObject()->className()];
+void Player::addHistory(const QString &name){
+    ++ history[name];
+}
+
+int Player::getSlashCount() const{
+    return history.value("Slash", 0)
+            + history.value("ThunderSlash", 0)
+            + history.value("FireSlash", 0);
 }
 
 void Player::clearHistory(){

@@ -2491,14 +2491,14 @@ function SmartAI:hasSkill(skill)
 	local skill_name = skill 
 	if type(skill) == "table" then
 		skill_name = skill.name
-		if (skill_name=="huangtianv") then
-			return (self.player:getKingdom()=="qun") and self:isFriend(self.room:getLord()) and (self.room:getLord():hasSkill("huangtian") and not self.player:isLord())			
-		elseif (skill_name=="jijiang") then
-			return (self.player:isLord() and self.player:hasSkill(skill_name))
-		end
 	end
 	
-	return self.player:hasSkill(skill_name)
+	local real_skill = sgs.Sanguosha:getSkill(skill_name)
+	if real_skill and real_skill:isLordSkill() then
+		return self.player:hasLordSkill(skill_name)
+	else
+		return self.player:hasSkill(skill_name)
+	end
 end
 
 function SmartAI:fillSkillCards(cards)

@@ -62,7 +62,6 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
                 CardUseStruct card_use;
                 room->activate(player, card_use);
                 if(card_use.isValid()){
-                    player->addHistory(card_use.card);
                     room->useCard(card_use);
                 }else
                     break;

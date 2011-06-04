@@ -127,6 +127,7 @@ public:
     void acquireSkill(const char *skill_name);
     void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
+	virtual bool hasLordSkill(const char *skill_name) const = 0;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
@@ -170,8 +171,9 @@ public:
 
     QList<int> &getPile(const char *pile_name);
 
-	bool hasUsed(const char *card_class);
+    bool hasUsed(const char *card_class);
     int usedTimes(const char *card_class);
+    int getSlashCount() const;
 };
 
 %extend Player{

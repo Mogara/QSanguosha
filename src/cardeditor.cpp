@@ -429,6 +429,12 @@ CardScene::CardScene()
     small_avatar_rect->toCenter(this);
     addItem(small_avatar_rect);
 
+    QRectF tiny_rect(0, 0, 10, 36);
+    tiny_avatar_rect = new AvatarRectItem(42, 36, tiny_rect, 6);
+    tiny_avatar_rect->hide();
+    tiny_avatar_rect->toCenter(this);
+    addItem(tiny_avatar_rect);
+
     done_menu = new QMenu();
 
     QAction *done_action = new QAction(tr("Done"), done_menu);
@@ -553,18 +559,23 @@ void CardScene::setMaxHp(int max_hp){
     Config.setValue("CardEditor/MaxHP", max_hp);
 }
 
-void CardScene::makeBigAvatar(){
-    small_avatar_rect->hide();
-    big_avatar_rect->show();
+void CardScene::makeAvatar(AvatarRectItem *item){
+    hideAvatarRects();
 
-    big_avatar_rect->setName(Config.value("CardEditor/NameText").toString());
+    item->setName(Config.value("CardEditor/NameText").toString());
+    item->show();
+}
+
+void CardScene::makeBigAvatar(){
+    makeAvatar(big_avatar_rect);
 }
 
 void CardScene::makeSmallAvatar(){
-    big_avatar_rect->hide();
-    small_avatar_rect->show();
+    makeAvatar(small_avatar_rect);
+}
 
-    small_avatar_rect->setName(Config.value("CardEditor/NameText").toString());
+void CardScene::makeTinyAvatar(){
+    makeAvatar(tiny_avatar_rect);
 }
 
 void CardScene::doneMakingAvatar(){
@@ -574,6 +585,8 @@ void CardScene::doneMakingAvatar(){
         avatar_rect = big_avatar_rect;
     else if(small_avatar_rect->isVisible())
         avatar_rect = small_avatar_rect;
+    else
+        avatar_rect = tiny_avatar_rect;
 
     if(avatar_rect){
         avatar_rect->setPen(Qt::NoPen);
@@ -590,11 +603,13 @@ void CardScene::doneMakingAvatar(){
 void CardScene::hideAvatarRects(){
     big_avatar_rect->hide();
     small_avatar_rect->hide();
+    tiny_avatar_rect->hide();
 }
 
 void CardScene::setAvatarNameBox(const QString &text){
     big_avatar_rect->setName(text);
     small_avatar_rect->setName(text);
+    tiny_avatar_rect->setName(text);
 }
 
 void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
@@ -689,6 +704,11 @@ CardEditor::CardEditor(QWidget *parent) :
     making_small->setShortcut(Qt::ALT + Qt::Key_M);
     connect(making_small, SIGNAL(triggered()), card_scene, SLOT(makeSmallAvatar()));
     tool_menu->addAction(making_small);
+
+    QAction *making_tiny = new QAction(tr("Make tiny avatar"), tool_menu);
+    making_tiny->setShortcut(Qt::ALT + Qt::Key_T);
+    connect(making_tiny, SIGNAL(triggered()), card_scene, SLOT(makeTinyAvatar()));
+    tool_menu->addAction(making_tiny);
 
     QAction *hiding_rect = new QAction(tr("Hide avatar rect"), tool_menu);
     hiding_rect->setShortcut(Qt::ALT + Qt::Key_H);
