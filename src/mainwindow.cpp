@@ -22,6 +22,7 @@
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
 #include <QInputDialog>
+#include <QLabel>
 
 class FitView : public QGraphicsView
 {
@@ -463,6 +464,35 @@ void MainWindow::on_actionScenario_Overview_triggered()
     dialog->show();
 }
 
+BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
+    :QDialog(parent), server(server)
+{
+    setWindowTitle(tr("Broadcast"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(new QLabel(tr("Please input the message to broadcast")));
+
+    text_edit = new QTextEdit;
+    layout->addWidget(text_edit);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    hlayout->addWidget(ok_button);
+
+    layout->addLayout(hlayout);
+
+    setLayout(layout);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+}
+
+void BroadcastBox::accept(){
+    QDialog::accept();
+
+    server->broadcast(text_edit->toPlainText());
+}
+
 void MainWindow::on_actionBroadcast_triggered()
 {
     Server *server = findChild<Server *>();
@@ -471,8 +501,8 @@ void MainWindow::on_actionBroadcast_triggered()
         return;
     }
 
-    QString msg = QInputDialog::getText(this, tr("Broadcast"), tr("Please input the message to broadcast"));
-    server->broadcast(msg);
+    BroadcastBox *dialog = new BroadcastBox(server, this);
+    dialog->exec();
 }
 
 
