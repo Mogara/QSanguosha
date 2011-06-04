@@ -33,24 +33,28 @@ end
 sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	self:sort(self.enemies, "handcard")
 	
-	local first_index
-	for i=1, #self.enemies-1 do																			------ÐÞ¸ÄÍ»Ï®
-		if (self.enemies[i]:objectName() == "zhugeliang" and self.enemies[i]:getHandcardNum() == 1) or
-		   (self.enemies[i]:objectName() == "luxun" and self.enemies[i]:getHandcardNum() == 1) then 
-			first_index = nil
+	local first_index, second_index
+	for i=1, #self.enemies-1 do																			
+		if (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:getHandcardNum() == 1) or
+		   (self.enemies[i]:hasSkill("lianying") and self.enemies[i]:getHandcardNum() == 1) then 
+			if first_index then second_index = nil end
 				
 		elseif not self.enemies[i]:isKongcheng() then
-			first_index = i
-			break
+			if not first_index then 
+				first_index = i 
+			else 
+				second_index = i 
+			end
 		end
+		if second_index then break end
 	end
 	
-	if not first_index then
+	if not second_index then
 		return "."
 	end
 	
 	local first = self.enemies[first_index]:objectName()
-	local second = self.enemies[first_index + 1]:objectName()
+	local second = self.enemies[second_index]:objectName()
         --self:updateRoyalty(-0.8*sgs.ai_royalty[first],self.player:objectName())
         --self:updateRoyalty(-0.8*sgs.ai_royalty[second],self.player:objectName())
 	return ("@TuxiCard=.->%s+%s"):format(first, second)
@@ -205,6 +209,7 @@ local sunshangxiang_ai = SmartAI:newSubclass "sunshangxiang"
 sunshangxiang_ai:setOnceSkill("jieyin")
 
 function sunshangxiang_ai:activate_dummy(use)
+	
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
 		if card:inherits("EquipCard") then
@@ -225,7 +230,11 @@ function sunshangxiang_ai:activate_dummy(use)
 	if not self.jieyin_used and target and self.player:getHandcardNum()>=2 then
 		local cards = self.player:getHandcards()
 		local first, second
+		local tag = false
 		if self.player:getHandcardNum() == 2 then 
+			for _, card in sgs.qlist(cards) do
+				if self:hasSameEquip(card) then tag = true break end
+			end
 			first = cards:at(0):getEffectiveId()
 			second = cards:at(1):getEffectiveId()
 		else
@@ -238,8 +247,8 @@ function sunshangxiang_ai:activate_dummy(use)
 				if second then break end
 			end
 		end
-
-		if second then 
+	
+		if not tag and second then 
 			local card_str = ("@JieyinCard=%d+%d"):format(first, second)
 			use.card = sgs.Card_Parse(card_str)
 			use.to:append(target)
@@ -363,6 +372,8 @@ function daqiao_ai:activate_dummy(use)
 			end			
 		end
 	end
+
+
 end
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"

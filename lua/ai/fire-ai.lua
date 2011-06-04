@@ -49,7 +49,7 @@ function yuanshao_ai:activate(use)
 
 	local first_found, second_found = false, false
 	local first_card, second_card
-	if not self.luanji_used and self.player:getHandcardNum() >= 4 then
+	if self.player:getHandcardNum() >= 2 then
 		local cards = self.player:getHandcards()
 		local same_suit=false
 		cards = sgs.QList2Table(cards)
@@ -81,7 +81,6 @@ function yuanshao_ai:activate(use)
 		local archeryattack = sgs.Card_Parse(card_str)
 		assert(archeryattack)
 		self:useTrickCard(archeryattack, use)
-		self.luanji_used = true
 		return
 	end
 	

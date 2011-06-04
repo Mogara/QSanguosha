@@ -1,3 +1,19 @@
+sgs.ai_skill_invoke.ice_sword=function(self, data)
+	local effect = data:toSlashEffect() 
+	local target = effect.to
+	if self:isFriend(target) then return false end
+	local hasPeach
+	local cards = target:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Peach") or card:inherits("Analeptic") then hasPeach = true break end
+	end
+	if hasPeach then return true end
+	if (target:getHandcardNum() > 1 or target:getArmor()) and target:getHp() > 1 then
+		return true
+	end
+	return false
+end
+
 local spear_skill={}
 spear_skill.name="spear"
 table.insert(sgs.ai_skills,spear_skill)

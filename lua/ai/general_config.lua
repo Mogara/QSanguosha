@@ -23,7 +23,7 @@ sgs.ai_use_value =
 {
 
 --skill cards
-
+		XinzhanCard = 4.4,
         TianyiCard = 8.5,
         XianzhenCard = 9.2,
         XianzhenSlashCard = 9.2,
@@ -74,7 +74,7 @@ sgs.ai_use_priority = {
 --priority of using an active card
 
 --skill cards
-
+		XinzhanCard = 9.2,
         TianyiCard = 10,
 		JieyinCard = 4,
         HuangtianCard = 10,

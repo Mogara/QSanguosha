@@ -77,3 +77,24 @@ sgs.ai_skill_use_func["XianzhenCard"]=function(card,use,self)
 		end
 	end
 end
+
+local masu_ai = SmartAI:newSubclass "masu"
+--masu_ai:setOnceSkill("masu")
+function masu_ai:activate(use)
+--local xinzhan_skill={}
+--xinzhan_skill.name="xinzhan"
+--table.insert(sgs.ai_skills,xinzhan_skill)
+--xinzhan_skill.getTurnUseCard=function(self,inclusive)
+	self:log("get")
+	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getHp() then
+		if use.to then 
+			use.card = sgs.Card_Parse("@XinzhanCard=.") 
+		return 
+		end
+	end
+	super.activate(self, use)
+end
+
+--sgs.ai_skill_use_func["XinzhanCard"]=function(card,use,self)
+--		use.card=card
+--end
