@@ -93,6 +93,12 @@ function sgs.CreateViewAsSkill(spec)
 	return skill
 end
 
+function sgs.LoadTranslationTable(t)
+	for key, value in pairs(t) do
+		sgs.AddTranslationEntry(key, value)		
+	end
+end
+
 -- utilities, i.e: convert QList<const Card> to Lua's native table
 function sgs.QList2Table(qlist)
 	local t = {}

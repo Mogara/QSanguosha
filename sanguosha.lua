@@ -5,17 +5,19 @@ package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 dofile "lua/sgs_ex.lua"
 
+local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()
+if done_loading then
+	return
+end
+
 function load_translation(file)
 	local t = dofile(file)
 	if type(t) ~= "table" then
 	    error(("file %s is should return a table!"):format(file))
 	end
 	
-	for key, value in pairs(t) do
-		sgs.AddTranslationEntry(key, value)		
-	end
+	sgs.LoadTranslationTable(t)
 end
-
 
 function load_translations()
 	local lang = sgs.GetConfig("Language", "zh_CN")
@@ -40,3 +42,6 @@ end
 
 load_translations()
 load_extensions()
+
+done_loading = sgs.QVariant(true)
+sgs.Sanguosha:setProperty("DoneLoading", done_loading)

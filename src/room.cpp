@@ -2062,24 +2062,6 @@ void Room::removeTag(const QString &key){
 }
 
 void Room::setEmotion(ServerPlayer *target, const QString &emotion){
-    /*
-    QString emotion;
-    switch(type){
-    case Killer: emotion = "killer"; break;
-    case Victim: emotion = "victim"; break;
-    case DuelA: emotion = "duel-a"; break;
-    case DuelB: emotion = "duel-b"; break;
-    case Good: emotion = "good"; break;
-    case Bad: emotion = "bad"; break;
-    case Recover: emotion = "recover"; break;
-    case DrawCard: emotion = "draw-card"; break;
-    case Question: emotion = "question"; break;
-    case NoQuestion: emotion = "no-question"; break;
-    case NoEmotion: emotion = "."; break;
-    }
-
-    */
-
     broadcastInvoke("setEmotion",
                     QString("%1:%2").arg(target->objectName()).arg(emotion.isEmpty() ? "." : emotion),
                     target);
