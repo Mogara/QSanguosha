@@ -328,8 +328,8 @@ void Room::slashEffect(const SlashEffectStruct &effect){
 
     QVariant data = QVariant::fromValue(effect);
 
-    setEmotion(effect.from, Killer);
-    setEmotion(effect.to, Victim);
+    setEmotion(effect.from, "killer");
+    setEmotion(effect.to, "victim");
 
     bool broken = thread->trigger(SlashEffect, effect.from, data);
     if(!broken)
@@ -1606,7 +1606,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     thread->trigger(HpRecover, player, data);
 
     if(set_emotion){
-        setEmotion(player, Recover);
+        setEmotion(player, "recover");
     }
 }
 
@@ -2061,7 +2061,8 @@ void Room::removeTag(const QString &key){
     tag.remove(key);
 }
 
-void Room::setEmotion(ServerPlayer *target, TargetType type){
+void Room::setEmotion(ServerPlayer *target, const QString &emotion){
+    /*
     QString emotion;
     switch(type){
     case Killer: emotion = "killer"; break;
@@ -2077,7 +2078,11 @@ void Room::setEmotion(ServerPlayer *target, TargetType type){
     case NoEmotion: emotion = "."; break;
     }
 
-    broadcastInvoke("setEmotion", QString("%1:%2").arg(target->objectName()).arg(emotion), target);
+    */
+
+    broadcastInvoke("setEmotion",
+                    QString("%1:%2").arg(target->objectName()).arg(emotion.isEmpty() ? "." : emotion),
+                    target);
 }
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
@@ -2668,7 +2673,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards){
             moveCardTo(dummy_card, who, Player::Hand, false);
             delete dummy_card;
 
-            setEmotion(who, DrawCard);
+            setEmotion(who, "draw-card");
 
             return true;
         }

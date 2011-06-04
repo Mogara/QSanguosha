@@ -106,7 +106,7 @@ void ServerPlayer::drawCards(int n, bool set_emotion){
     room->drawCards(this, n);
 
     if(set_emotion)
-        room->setEmotion(this, Room::DrawCard);
+        room->setEmotion(this, "draw-card");
 }
 
 // a convenient way to ask player
@@ -360,9 +360,9 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     room->sendLog(log);
 
     if(success)
-        room->setEmotion(this, Room::Good);
+        room->setEmotion(this, "success");
     else
-        room->setEmotion(this, Room::Bad);
+        room->setEmotion(this, "no-success");
 
     return success;
 }

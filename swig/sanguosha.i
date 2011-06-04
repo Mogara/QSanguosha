@@ -661,18 +661,7 @@ public:
     void setTag(const char *key, const QVariant &value);
     QVariant getTag(const char *key) const;
 
-    enum TargetType{
-        Killer,
-        Victim,
-        DuelA,
-        DuelB,
-        Good,
-        Bad,
-        Recover,
-        DrawCard,
-    };
-
-    void setEmotion(ServerPlayer *target, TargetType type);
+    void setEmotion(ServerPlayer *target, const char *emotion);
 
     // related to card transfer
     Player::Place getCardPlace(int card_id) const;

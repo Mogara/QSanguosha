@@ -117,9 +117,9 @@ void Typhoon::takeEffect(ServerPlayer *target) const{
         if(target->distanceTo(player) == 1){
             int discard_num = qMin(6, player->getHandcardNum());
             if(discard_num == 0)
-                room->setEmotion(player, Room::Good);
+                room->setEmotion(player, "good");
             else{
-                room->setEmotion(player, Room::Bad);
+                room->setEmotion(player, "bad");
                 room->broadcastInvoke("animate", "typhoon:" + player->objectName());
                 room->broadcastInvoke("playAudio", "typhoon");
 
@@ -149,9 +149,9 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
     foreach(ServerPlayer *player, players){
         if(target->distanceTo(player) <= 1){
             if(player->getEquips().isEmpty()){
-                room->setEmotion(player, Room::Good);
+                room->setEmotion(player, "good");
             }else{
-                room->setEmotion(player, Room::Bad);
+                room->setEmotion(player, "bad");
                 room->broadcastInvoke("playAudio", "earthquake");
                 player->throwAllEquips();
             }

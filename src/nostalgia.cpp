@@ -282,17 +282,17 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
             log.arg = QString::number(player->getHp());
             room->sendLog(log);
 
-            room->setEmotion(player, Room::NoQuestion);
+            room->setEmotion(player, "no-question");
 
             continue;
         }
 
         QString choice = room->askForChoice(player, "guhuo", "question+noquestion");
         if(choice == "question"){
-            room->setEmotion(player, Room::Question);
+            room->setEmotion(player, "question");
             questioned << player;
         }else
-            room->setEmotion(player, Room::NoQuestion);
+            room->setEmotion(player, "no-question");
 
         LogMessage log;
         log.type = "#GuhuoQuery";
@@ -307,7 +307,7 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
         success = true;
 
         foreach(ServerPlayer *player, players)
-            room->setEmotion(player, Room::NoEmotion);
+            room->setEmotion(player, ".");
 
     }else{
         const Card *card = Sanguosha->getCard(subcards.first());
@@ -315,7 +315,7 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
         success = real && card->getSuit() == Card::Heart;
 
         foreach(ServerPlayer *player, players){
-            room->setEmotion(player, Room::NoEmotion);
+            room->setEmotion(player, ".");
 
             if(questioned.contains(player)){
                 if(real)

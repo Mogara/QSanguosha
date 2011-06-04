@@ -29,7 +29,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *target = effect.to;
 
     Room *room = zhangjiao->getRoom();
-    room->setEmotion(target, Room::Bad);
+    room->setEmotion(target, "bad");
 
     JudgeStruct judge;
     judge.pattern = QRegExp("(.*):(spade):(.*)");
@@ -49,7 +49,7 @@ void LeijiCard::onEffect(const CardEffectStruct &effect) const{
 
         room->damage(damage);
     }else
-        room->setEmotion(zhangjiao, Room::Bad);
+        room->setEmotion(zhangjiao, "bad");
 }
 
 HuangtianCard::HuangtianCard(){
@@ -60,7 +60,7 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     ServerPlayer *zhangjiao = targets.first();
     if(zhangjiao->hasSkill("huangtian")){
         zhangjiao->obtainCard(this);
-        room->setEmotion(zhangjiao, Room::Good);
+        room->setEmotion(zhangjiao, "good");
     }
 }
 

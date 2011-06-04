@@ -346,9 +346,9 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     if(good)
-        room->setEmotion(effect.to, Room::Good);
+        room->setEmotion(effect.to, "good");
     else
-        room->setEmotion(effect.to, Room::Bad);
+        room->setEmotion(effect.to, "bad");
 }
 
 class YinghunViewAsSkill: public ZeroCardViewAsSkill{
@@ -405,7 +405,7 @@ void HaoshiCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &ta
     ServerPlayer *beggar = targets.first();
 
     room->moveCardTo(this, beggar, Player::Hand, false);
-    room->setEmotion(beggar, Room::DrawCard);
+    room->setEmotion(beggar, "draw-card");
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill{
@@ -774,7 +774,7 @@ public:
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+max_hp");
 
             room->playSkillEffect(objectName());
-            room->setEmotion(dongzhuo, Room::Bad);
+            room->setEmotion(dongzhuo, "bad");
 
             LogMessage log;
             log.from = dongzhuo;

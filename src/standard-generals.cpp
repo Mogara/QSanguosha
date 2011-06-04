@@ -195,11 +195,11 @@ public:
                     damage.from = xiahou;
                     damage.to = from;
 
-                    room->setEmotion(xiahou, Room::Good);
+                    room->setEmotion(xiahou, "good");
                     room->damage(damage);
                 }
             }else
-                room->setEmotion(xiahou, Room::Bad);
+                room->setEmotion(xiahou, "bad");
         }
     }
 };

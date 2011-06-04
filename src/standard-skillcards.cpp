@@ -96,8 +96,8 @@ void TuxiCard::onEffect(const CardEffectStruct &effect) const{
     const Card *card = Sanguosha->getCard(card_id);
     room->moveCardTo(card, effect.from, Player::Hand, false);
 
-    room->setEmotion(effect.to, Room::Bad);
-    room->setEmotion(effect.from, Room::Good);
+    room->setEmotion(effect.to, "bad");
+    room->setEmotion(effect.from, "good");
 }
 
 FanjianCard::FanjianCard(){
