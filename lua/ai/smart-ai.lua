@@ -733,8 +733,6 @@ sgs.ai_skill_use = {}
 
 function SmartAI:askForUseCard(pattern, prompt)
 	local use_func = sgs.ai_skill_use[pattern]
-	if string.find(pattern,"@@liuli") then use_func = sgs.ai_skill_use["@@liuli"]
-	elseif string.find(pattern,"dujiang") then use_func = sgs.ai_skill_use["dujiang"] end
 	if use_func then
 		return use_func(self, prompt) or "."
 	else

@@ -232,36 +232,25 @@ void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
 }
 
 LiuliCard::LiuliCard()
-    :is_weapon(false)
 {
 }
 
-void LiuliCard::setSlashSource(const QString &slash_source){
-    this->slash_source = slash_source;
-}
-
-void LiuliCard::setIsWeapon(bool is_weapon)
-{
-    this->is_weapon = is_weapon;
-}
 
 bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
 
-    if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
+    if(to_select->hasFlag("slash_source"))
         return false;
 
-    if(to_select->objectName() == slash_source)
+    if(!Self->canSlash(to_select))
         return false;
 
-    if(to_select == Self)
-        return false;
-
-    if(is_weapon)
+    int card_id = subcards.first();
+    if(Self->getWeapon() && Self->getWeapon()->getId() == card_id)
         return Self->distanceTo(to_select) <= 1;
     else
-        return Self->inMyAttackRange(to_select);
+        return true;
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{

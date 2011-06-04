@@ -960,26 +960,16 @@ public:
     }
 
     virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.startsWith("@@liuli");;
+        return ClientInstance->card_pattern == "@liuli";
     }
 
-    virtual bool viewFilter(const CardItem *to_select) const{
+    virtual bool viewFilter(const CardItem *) const{
         return true;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        if(!ClientInstance->card_pattern.startsWith("@@liuli-"))
-            return NULL;
-
-        QString slash_source = ClientInstance->card_pattern;
-        slash_source.remove("@@liuli-");
-
         LiuliCard *liuli_card = new LiuliCard;
-        liuli_card->setSlashSource(slash_source);
-
-        const Card *card = card_item->getCard();
-        liuli_card->addSubcard(card->getId());
-        liuli_card->setIsWeapon(Self->getWeapon() == card);
+        liuli_card->addSubcard(card_item->getFilteredCard());
 
         return liuli_card;
     }
@@ -993,7 +983,7 @@ public:
         events << CardEffected;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *daqiao, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *daqiao, QVariant &data) const{
         Room *room = daqiao->getRoom();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
@@ -1010,12 +1000,15 @@ public:
             }
 
             if(can_invoke){
-                QString prompt = "@liuli-card:" + effect.from->getGeneralName();
-                if(room->askForUseCard(daqiao, "@@liuli-" + effect.from->objectName(), prompt)){
+                QString prompt = "@liuli:" + effect.from->objectName();
+                room->setPlayerFlag(effect.from, "slash_source");
+                if(room->askForUseCard(daqiao, "@@liuli", prompt)){
                     foreach(ServerPlayer *player, players){
                         if(player->hasFlag("liuli_target")){
+                            room->setPlayerFlag(effect.from, "-slash_source");
                             room->setPlayerFlag(player, "-liuli_target");
                             effect.to = player;
+
                             room->cardEffect(effect);
                             return true;
                         }

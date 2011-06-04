@@ -313,42 +313,33 @@ function huanggai_ai:activate_dummy(use)
     super.activate(self, use)
 end
 
-local daqiao_ai = SmartAI:newSubclass "daqiao"
-
 sgs.ai_skill_use["@@liuli"] = function(self, prompt)
-	
-	local others=self.room:getOtherPlayers(self.player)												-----wtf? no use?
-	others=sgs.QList2Table(others)
+	local players = self.room:getOtherPlayers(self.player)
 	local source
-	for _, enemy in ipairs(others) do 
-		if enemy:objectName()==prompt then 
-			 source=enemy
-			 break
+	for _, player in sgs.qlist(player) do 
+		if player:hasFlag("slash_source") then
+			source = player
+			break
 		end
-	end
+	end	
 	
-	
-
 	for _, enemy in ipairs(self.enemies) do
-
-		if self.player:canSlash(enemy,true) and not (prompt==("@liuli-card:"..enemy:getGeneralName())) then			
-
-                        local cards = self.player:getCards("he")
-                        cards=sgs.QList2Table(cards)
-                        for _,card in ipairs(cards) do
-                            if card:inherits("Weapon") and self.player:distanceTo(enemy)>1 then local bullshit
-                            elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(enemy)
-                                and self.player:distanceTo(enemy)>1 then
-                                local bullshit
-                            else
-                                --self:updateRoyalty(-0.8*sgs.ai_royalty[enemy:objectName()],self.player:objectName())
-                                return "@LiuliCard="..card:getEffectiveId().."->"..enemy:objectName()
-                            end
-                        end
+		if self.player:canSlash(enemy) and source:objectName() ~= enemy:objectName() then	
+			local cards = self.player:getCards("he")			
+			for _,card in sgs.qlist(cards) do
+				if card == self.player:getWeapon() and self.player:distanceTo(enemy)>1 then
+					local bullshit
+				else
+					return "@LiuliCard="..card:getEffectiveId().."->"..enemy:objectName()
+				end
+			end
 		end
 	end
+	
 	return "."
 end
+
+local daqiao_ai = SmartAI:newSubclass "daqiao"
 
 function daqiao_ai:activate_dummy(use)
 	super.activate(self, use)
@@ -372,8 +363,6 @@ function daqiao_ai:activate_dummy(use)
 			end			
 		end
 	end
-
-
 end
 
 local huatuo_ai = SmartAI:newSubclass "huatuo"
