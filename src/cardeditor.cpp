@@ -49,6 +49,17 @@ void BlackEdgeTextItem::setOutline(int outline){
     this->outline = outline;
 }
 
+void BlackEdgeTextItem::toCenter(const QRectF &rect){
+    if(text.isEmpty())
+        return;
+
+    QFontMetrics metric(font);
+    setX((rect.width() - metric.width(text.at(0))));
+
+    int total_height = (metric.height() - metric.descent()) * text.length();
+    setY((rect.height() - total_height)/2);
+}
+
 void BlackEdgeTextItem::setText(const QString &text){
     this->text = text;
     prepareGeometryChange();
@@ -377,6 +388,7 @@ void AvatarRectItem::setKingdom(const QString &kingdom){
 
 void AvatarRectItem::setName(const QString &name){
     this->name->setText(name);
+    this->name->toCenter(name_box->rect());
 }
 
 CardScene::CardScene()
@@ -424,13 +436,13 @@ CardScene::CardScene()
     addItem(big_avatar_rect);
 
     QRectF small_rect(6, 0, 16, 50);
-    small_avatar_rect = new AvatarRectItem(122, 50, small_rect, 9);
+    small_avatar_rect = new AvatarRectItem(122, 50, small_rect, 11);
     small_avatar_rect->hide();
     small_avatar_rect->toCenter(this);
     addItem(small_avatar_rect);
 
     QRectF tiny_rect(0, 0, 10, 36);
-    tiny_avatar_rect = new AvatarRectItem(42, 36, tiny_rect, 6);
+    tiny_avatar_rect = new AvatarRectItem(42, 36, tiny_rect, 9);
     tiny_avatar_rect->hide();
     tiny_avatar_rect->toCenter(this);
     addItem(tiny_avatar_rect);
@@ -472,6 +484,7 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
 
     big_avatar_rect->setKingdom(kingdom);
     small_avatar_rect->setKingdom(kingdom);
+    tiny_avatar_rect->setKingdom(kingdom);
 
     Config.setValue("CardEditor/Kingdom", kingdom);
     Config.setValue("CardEditor/IsLord", is_lord);

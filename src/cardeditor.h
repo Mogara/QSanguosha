@@ -25,6 +25,7 @@ public:
     BlackEdgeTextItem();  
     void setColor(const QColor &color);
     void setOutline(int outline);
+    void toCenter(const QRectF &rect);
 
 public slots:
     void setText(const QString &text);
