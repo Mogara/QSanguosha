@@ -95,20 +95,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Start){
-            int equip_num = 0;
-            if(target->getWeapon())
-                equip_num ++;
-
-            if(target->getArmor())
-                equip_num ++;
-
-            if(target->getDefensiveHorse())
-                equip_num ++;
-
-            if(target->getOffensiveHorse())
-                equip_num ++;
-
-            if(equip_num < 2)
+            if(target->getEquips().length() < 2)
                 return false;
 
             Room *room = target->getRoom();

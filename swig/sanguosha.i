@@ -3,6 +3,7 @@
 %{
 #include "structs.h"
 #include "engine.h"
+#include "client.h"
 
 #include <QDir>
 
@@ -257,6 +258,12 @@ public:
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
     virtual bool isLastHandCard(const Card *card) const; 
+};
+
+%extend ClientPlayer {
+	const char *getPattern() const{
+		return ClientInstance->card_pattern.toAscii();
+	}
 };
 
 extern ClientPlayer *Self;

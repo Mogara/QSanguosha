@@ -10,6 +10,10 @@ void LuaTriggerSkill::addEvent(TriggerEvent event){
     events << event;
 }
 
+void LuaTriggerSkill::setViewAsSkill(ViewAsSkill *view_as_skill){
+    this->view_as_skill = view_as_skill;
+}
+
 LuaViewAsSkill::LuaViewAsSkill(const char *name)
     :ViewAsSkill(name), view_filter(0), view_as(0),
     enabled_at_play(0), enabled_at_response(0)

@@ -18,6 +18,10 @@ function sgs.CreateTriggerSkill(spec)
 	if spec.can_trigger then
 		skill.can_trigger = spec.can_trigger
 	end
+	
+	if spec.view_as_skill then
+		skill:setViewAsSkill(spec.view_as_skill)
+	end
 
 	return skill
 end
