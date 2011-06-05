@@ -533,7 +533,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasLordSkill("xueyi");
+        return target->getPhase() == Player::Discard && target->hasLordSkill("xueyi");
     }
 
     virtual int getPriority() const{

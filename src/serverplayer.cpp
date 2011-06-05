@@ -288,10 +288,6 @@ DummyCard *ServerPlayer::wholeHandCards() const{
     return dummy_card;
 }
 
-bool ServerPlayer::isLord() const{
-    return getRole() == "lord";
-}
-
 bool ServerPlayer::hasNullification() const{    
     if(hasSkill("kanpo")){
         foreach(const Card *card, handcards){
@@ -547,7 +543,8 @@ int ServerPlayer::getGeneralMaxHP() const{
 bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
     if(room->getMode() == "06_3v3")
         return false;
-    else if(room->hasWelfare(this))
+    else if(acquired_skills.contains(skill_name))
+        return true;
+    else
         return isLord() && hasSkill(skill_name);
-    return false;
 }

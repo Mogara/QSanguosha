@@ -125,6 +125,7 @@ public:
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 
+    bool isLord() const;
     void acquireSkill(const char *skill_name);
     void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
@@ -211,7 +212,6 @@ public:
     QList<const Card *> getHandcards() const;
     QList<const Card *> getCards(const char *flags) const;
     DummyCard *wholeHandCards() const;
-    bool isLord() const;
     bool hasNullification() const;
     bool pindian(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
 	void turnOver();

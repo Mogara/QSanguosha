@@ -265,6 +265,10 @@ const General *Player::getGeneral() const{
     return general;
 }
 
+bool Player::isLord() const{
+    return getRole() == "lord";
+}
+
 bool Player::hasSkill(const QString &skill_name) const{
     if(general && general->hasSkill(skill_name))
         return true;

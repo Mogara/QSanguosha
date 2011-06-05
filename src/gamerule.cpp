@@ -506,6 +506,9 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     if(!player->faceUp())
         player->turnOver();
 
+    if(player->isChained())
+        room->setPlayerProperty(player, "chained", false);
+
     player->drawCards(4);
 }
 

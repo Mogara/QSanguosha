@@ -121,6 +121,8 @@ public:
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 
+    bool isLord() const;
+
     void acquireSkill(const QString &skill_name);
     void loseSkill(const QString &skill_name);
     void loseAllSkills();
@@ -184,6 +186,7 @@ public:
 protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
+    QSet<QString> acquired_skills;
 
 private:    
     QString screen_name;
@@ -196,7 +199,6 @@ private:
     int seat;
     bool alive;
     QSet<QString> flags;
-    QSet<QString> acquired_skills;
 
     int attack_range;
 
