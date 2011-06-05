@@ -687,7 +687,7 @@ void Client::selectChoice(){
 }
 
 void Client::askForChoice(const QString &ask_str){
-    QRegExp rx("(\\w+):(.+)");
+    QRegExp rx("([\\w-]+):(.+)");
 
     if(!rx.exactMatch(ask_str))
         return;

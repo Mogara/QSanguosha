@@ -40,6 +40,7 @@ return {
 	["noquestion"] = "不质疑",
 	["#GuhuoQuery"] = "%from 表示 %arg",
 	["$GuhuoResult"] = "%from 用来蛊惑的牌是 %card",
+	["guhuo-saveself"] = "自救蛊惑",
 	["guhuo-saveself:peach"] = "桃子",
 	["guhuo-saveself:analeptic"] = "酒",
 	
