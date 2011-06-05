@@ -122,14 +122,14 @@ function SmartAI:initialize(player)
 	self.lua_ai.callback = function(method_name, ...)
 		local method = self[method_name]
 		if method then
-			local success, result1, result2
-			success, result1, result2 = pcall(method, self, ...)
-			if not success then
-				room:writeToConsole(result1)
-				room:writeToConsole(debug.traceback())
-			else
-				return result1, result2
-			end			
+			local success, result1, result2 
+			success, result1, result2 = pcall(method, self, ...) 
+			if not success then 
+				room:writeToConsole(result1) 
+				room:writeToConsole(debug.traceback()) 
+			else 
+				return result1, result2 
+			end  
 		end
 	end      
 	
@@ -335,7 +335,7 @@ function SmartAI:objectiveLevel(player)
 		
 		if not hasLoyal then 
 			if #players == 2 then 
-				if player:getRole() == "rebel" then return 5 else return 3 end
+				if player:getRole() == "rebel" then return 5 else return 3.1 end
 			end
 			if player:getRole() == "renegade" then return -1 else return 5 end
 		end
@@ -384,8 +384,12 @@ function SmartAI:objectiveLevel(player)
 				if (self.player:getHp()+player:getHp() <= (self.room:getLord()):getHp()) then 
 					return -1
 				else 
-					return 3
+					return 3.1
 				end
+			end
+		elseif not hasLoyal then
+			if player:getRole() == "lord" then return 5 
+			elseif player:getRole() == "renegade" then return 3.1
 			end
         elseif sgs.ai_explicit[player:objectName()]=="loyalist" then return 5-modifier
         elseif sgs.ai_explicit[player:objectName()]=="loyalish" then return 5-modifier
@@ -403,7 +407,7 @@ function SmartAI:objectiveLevel(player)
         --if (#players==2) and player:isLord() then return 0 end
 		
         if not hasRebel then 
-			if player:isLord() then return 3 
+			if player:isLord() then return 3.1 
 			else return 5 end
 		end
 
@@ -413,7 +417,7 @@ function SmartAI:objectiveLevel(player)
 			if player:getRole() == "rebel" then return -1 
 			elseif player:getRole() == "loyalist" and not player:isLord() then return 5
 			elseif player:isLord() then 
-				if player:getHp() > 2 then return 3.5 else return -1 end
+				if player:getHp() > 2 then return 3.1 else return -1 end
 			end
 		else
 			local loyalish_count, rebel_count = 0, 0
@@ -431,7 +435,7 @@ function SmartAI:objectiveLevel(player)
 				if player:getRole() == "rebel" then return 5
 				else return -1 end
 			else
-				if player:getRole() == "rebel" then return 3
+				if player:getRole() == "rebel" then return 3.1
 				else 
 					if player:isLord() and loyalish_count == 1 then
 						if loyalish_hp > rebel_hp then return 5 else return -2 end
@@ -588,10 +592,9 @@ function SmartAI:filterEvent(event, player, data)
 end
 
 function SmartAI:isFriend(other, another)
-	if another and self.lua_ai:isFriend(another) and self.lua_ai:isFriend(another) then
-		return true 
+	if another then 
+		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
 	end
-	
     if useDefaultStrategy() then return self.lua_ai:isFriend(other) end
     if (self.player:objectName())==(other:objectName()) then return true end 
 	if self:objectiveLevel(other)<0 then return true end
@@ -848,10 +851,6 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 end
 
 function SmartAI:slashProhibit(card,enemy)
-	if not card then
-		return true
-	end
-
     if self:isFriend(enemy) then
         if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
             if enemy:hasArmorEffect("vine") then return true end
@@ -904,22 +903,16 @@ function SmartAI:slashProhibit(card,enemy)
 		return true
 	end	
 	
-	if  (enemy:hasSkill("zhichi") and self.room:getTag("zhichi"):toString() == enemy:objectName()) then return true end			--chengong's zhichi
+	if  (enemy:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == enemy:objectName()) then return true end			--chengong's zhichi
     
     return false
 end
 
 function SmartAI:useBasicCard(card, use,no_distance)
-	if not card then
-		return
-	end
-
 	if card:getSkillName()=="wushen" then no_distance=true end
 	if (self.player:getHandcardNum()==1) and self.player:getWeapon() and self.player:getWeapon():inherits("Halberd") then
 		self.slash_targets=3
 	end	
-	
-	self.predictedRange = self.player:getAttackRange()
 	
 	if card:inherits("Slash") and self:slashIsAvailable() then
 		local target_count=0
@@ -1039,7 +1032,7 @@ function SmartAI:aoeIsEffective(card, to)
 	end
 
 	--Chengong's zhichi
-	if (to:hasSkill("zhichi") and self.room:getTag("zhichi"):toString() == to:objectName()) then
+	if (to:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == to:objectName()) then
 		return false
 	end
 	
@@ -1107,7 +1100,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	local friends = self:exclude(self.friends_noself, dismantlement)
 	local hasLion, target
 	for _, friend in ipairs(friends) do
-		if not friend:hasSkill("wuyan") then
+		if self:hasTrickEffective(card, friend) then
 			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 				use.card = dismantlement
 				if use.to then use.to:append(friend) end
@@ -1139,13 +1132,10 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		
 		--if equips or not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then			--not all conditions
 		
-		    if  not enemy:isNude() and not enemy:hasSkill("wuyan") and					---update
+		    if  not enemy:isNude() and self:hasTrickEffective(card, enemy) and					---update
 			   (not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
 				if enemy:getHandcardNum() == 1 then
 					if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
-				end
-				if enemy:hasSkill("zhichi") then
-					if enemy:getTag("zhichi"):toString() == enemy:objectName() then return end
 				end
 				use.card = dismantlement
                 if use.to then 
@@ -1180,7 +1170,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	local friends = self:exclude(self.friends_noself, snatch)
 	local hasLion, target
 	for _, friend in ipairs(friends) do
-		if not friend:hasSkill("wuyan") then
+		if self:hasTrickEffective(card, friend) then
 			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 				use.card = snatch
 				if use.to then use.to:append(friend) end
@@ -1208,14 +1198,11 @@ function SmartAI:useCardSnatch(snatch, use)
 	end	
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do		    
-		if  not enemy:isNude() and not enemy:hasSkill("wuyan") and					---update
+		if  not enemy:isNude() and self:hasTrickEffective(card, enemy) and					---update
 			(not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
-			end
-			if enemy:hasSkill("zhichi") then
-				if enemy:getTag("zhichi"):toString() == enemy:objectName() then return end
-			end             
+			end       
 			use.card = snatch
 			if use.to then 
 				use.to:append(enemy) 
@@ -1247,8 +1234,8 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	end
 	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng()  and not enemy:hasSkill("wuyan") then							----no xushu
-			if (enemy:hasSkill("zhichi") and self.room:getTag("zhichi"):toString() == enemy:objectName()) then return end
+		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng()  and self:hasTrickEffective(card, enemy) then							----no xushu
+			
 			local cards = enemy:getHandcards()
 			local success = true
 			for _, card in sgs.qlist(cards) do
@@ -1403,8 +1390,7 @@ function SmartAI:useCardDuel(duel, use)
 			local n1 = self:getSlashNumber(self.player)
 			local n2 = self:getSlashNumber(enemy)
 
-			if n1 >= n2  and not enemy:hasSkill("wuyan") and not
-				(enemy:hasSkill("zhichi") and self.room:getTag("zhichi"):toString() == enemy:objectName()) then													--no xushu
+			if n1 >= n2 and self:hasTrickEffective(card, enemy) then													--no xushu
 				use.card = duel
 					if use.to then 
 						use.to:append(enemy) 
@@ -1536,9 +1522,8 @@ function SmartAI:useCardIronChain(card, use)
 
 	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card)  and not enemy:hasSkill("wuyan")  				--same above
-			and not enemy:hasSkill("danlao") and not (enemy:hasSkill("zhichi") and self.room:getTag("zhichi"):toString() == enemy:objectName()) 
-			and not (self:objectiveLevel(enemy)<=3) then
+		if not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) and not enemy:hasSkill("danlao") 
+			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy)<=3) then
 			table.insert(targets, enemy)
 		end
 	end
@@ -2466,7 +2451,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)   							--
 			--if to:isLord() then return null_card end				--add codes
 		end		
 	else
-		if from and from:objectName() == to:objectName() then
+		if from:objectName() == to:objectName() then
 			if self:isFriend(from) then return null_card
 			else return nil end
 		end
@@ -2709,13 +2694,11 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 	return result
 end
 
-function SmartAI:askForPindian(player, from, to, reason)
-	self.room:output(reason .. "pindian!!")
-	
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	self:SortByUseValue(cards, true)
-	return cards[1]
+function SmartAI:hasTrickEffective(card, player)
+	if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
+		if not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
+	end
+	return true
 end
 	
 function SmartAI:hasSameEquip(card)
@@ -2734,9 +2717,9 @@ end
 
 function SmartAI:askForGuanxing(cards, up_only)
 	--zhugeliang
---	if not up_only then return zhugeliang_guanxing(self,cards,up_only)
---	else return masu_xinzhan(self, cards, up_only)
---	end
+	if not up_only then return zhugeliang_guanxing(self,cards,up_only)
+	else return masu_xinzhan(self, cards, up_only)
+	end
 	-- keep it unchanged
 	return cards, {}
 end
@@ -2764,3 +2747,5 @@ dofile "lua/ai/fire-skill-ai.lua"
 dofile "lua/ai/yjcm-skill-ai.lua"
 
 dofile "lua/ai/fancheng-ai.lua"
+
+dofile "lua/ai/guanxing-skill-ai.lua"
