@@ -476,7 +476,10 @@ XianzhenSlashCard::XianzhenSlashCard(){
 
 void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *target = card_use.from->tag["XianzhenTarget"].value<PlayerStar>();
-    if(target == NULL)
+    if(target == NULL || target->isDead())
+        return;
+
+    if(!card_use.from->canSlash(target, false))
         return;
 
     const Card *slash = room->askForCard(card_use.from, "slash", "@xianzhen-slash");

@@ -815,7 +815,7 @@ public:
 
         foreach(ServerPlayer *dongzhuo, dongzhuos){
             QVariant who = QVariant::fromValue(dongzhuo);
-            if(dongzhuo->isWounded() && player->askForSkillInvoke(objectName(), who)){
+            if(player->askForSkillInvoke(objectName(), who)){
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(spade):(.*)");
                 judge.good = true;
