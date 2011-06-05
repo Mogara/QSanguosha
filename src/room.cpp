@@ -1017,44 +1017,7 @@ void Room::prepareForStart(){
                 player->sendProperty("role");
         }
     }else if(mode == "06_3v3"){
-        /*
-        qShuffle(players);
-
-        ServerPlayer *online = NULL;
-        int online_num = 0;
-        foreach(ServerPlayer *player, players){
-            if(player->getState() == "online"){
-                online = player;
-                online_num ++;
-            }
-        }
-
-        if(online_num == 1){
-            players.removeOne(online);
-
-            int r = qrand() % 2;
-            if(r == 1)
-                players.prepend(online);
-            else
-                players.insert(3, online);
-        }
-
-        static QStringList roles;
-        if(roles.isEmpty()){
-            roles << "lord" << "loyalist" << "rebel"
-                    << "renegade" << "rebel" << "loyalist";
-        }
-
-        int i;
-        for(i=0; i<6; i++){
-            players.at(i)->setRole(roles.at(i));
-            broadcastProperty(players.at(i), "role");
-        }
-
-        */
-
         return;
-
     }else if(mode == "02_1v1"){
         if(qrand() % 2 == 0)
             players.swap(0, 1);

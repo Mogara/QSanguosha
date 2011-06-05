@@ -45,6 +45,9 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
 
 void RoomThread3v3::run()
 {
+    // initialize the random seed for this thread
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+
     QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
     assignRoles(scheme);
     room->adjustSeats();
@@ -65,9 +68,6 @@ void RoomThread3v3::run()
 
     qShuffle(general_names);
     general_names = general_names.mid(0, 16);
-
-    // initialize the random seed for this thread
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     room->broadcastInvoke("fillGenerals", general_names.join("+"));
 
@@ -148,6 +148,48 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
     room->sem->release();
 }
 
+void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme){
+    QStringList all_roles = roles;
+    QList<ServerPlayer *> new_players, abstained;
+    int i;
+    for(i=0; i<6; i++)
+        new_players << NULL;
+
+    foreach(ServerPlayer *player, room->players){
+        if(player->getState() == "online"){
+            QString role = room->askForRole(player, all_roles, scheme);
+            if(role != "abstain"){
+                player->setRole(role);
+                all_roles.removeOne(role);
+
+                for(i=0; i<6; i++){
+                    if(roles.at(i) == role && new_players.at(i) == NULL){
+                        new_players[i] = player;
+                        break;
+                    }
+                }
+
+                continue;
+            }
+        }
+
+        abstained << player;
+    }
+
+    if(!abstained.isEmpty()){
+        qShuffle(abstained);
+
+        for(i=0; i<6; i++){
+            if(new_players.at(i) == NULL){
+                new_players[i] = abstained.takeFirst();
+                new_players.at(i)->setRole(roles.at(i));
+            }
+        }
+    }
+
+    room->players = new_players;
+}
+
 // there are 3 scheme
 // Normal: choose team1 or team2
 // Random: assign role randomly
@@ -165,47 +207,33 @@ void RoomThread3v3::assignRoles(const QString &scheme){
         for(i=0; i<roles.length(); i++)
             room->setPlayerProperty(room->players.at(i), "role", roles.at(i));
     }else if(scheme == "AllRoles"){
-        QStringList all_roles = roles;
-        QList<ServerPlayer *> new_players, abstained;
-        int i;
-        for(i=0; i<6; i++)
-            new_players << NULL;
+        assignRoles(roles, scheme);
+    }else{
+        QStringList all_roles;
+        all_roles << "leader1" << "guard1" << "guard2"
+                    << "leader2" << "guard2" << "guard1";
+        assignRoles(all_roles, scheme);
+
+        QMap<QString, QString> map;
+        if(qrand() % 2 == 0){
+            map["leader1"] = "lord";
+            map["guard1"] = "loyalist";
+            map["leader2"] = "renegade";
+            map["guard2"] = "rebel";
+        }else{
+            map["leader1"] = "renegade";
+            map["guard1"] = "rebel";
+            map["leader2"] = "lord";
+            map["guard2"] = "loyalist";
+
+            room->players.swap(0, 3);
+            room->players.swap(1, 4);
+            room->players.swap(2, 5);
+        }
 
         foreach(ServerPlayer *player, room->players){
-            if(player->getState() == "online"){
-                QString role = room->askForRole(player, all_roles, scheme);
-                if(role != "abstain"){
-                    player->setRole(role);
-                    all_roles.removeOne(role);
-
-                    for(i=0; i<6; i++){
-                        if(roles.at(i) == role && new_players.at(i) == NULL){
-                            new_players[i] = player;
-                            break;
-                        }
-                    }
-
-                    continue;
-                }
-            }
-
-            abstained << player;
+            player->setRole(map[player->getRole()]);
         }
-
-        if(!abstained.isEmpty()){
-            qShuffle(abstained);
-
-            for(i=0; i<6; i++){
-                if(new_players.at(i) == NULL){
-                    new_players[i] = abstained.takeFirst();
-                    new_players.at(i)->setRole(roles.at(i));
-                }
-            }
-        }
-
-        room->players = new_players;
-    }else{
-        // Normal
     }
 
     foreach(ServerPlayer *player, room->players)

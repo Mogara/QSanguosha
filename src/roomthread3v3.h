@@ -30,6 +30,7 @@ private:
     QStringList getGeneralsWithoutExtension() const;
     void askForTakeGeneral(ServerPlayer *player);
     void startArrange(ServerPlayer *player);
+    void assignRoles(const QStringList &roles, const QString &scheme);
 };
 
 #endif // ROOMTHREAD3V3_H
