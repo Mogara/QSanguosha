@@ -21,6 +21,7 @@ private:
 private slots:
     void installPackage();
     void uninstallPackage();
+    void rescanPackage();
     void browseFiles();
     void makePackage();
 };
