@@ -32,11 +32,13 @@ end
 function load_extensions()
 	local scripts = sgs.GetFileNames("extensions")
 	
-	for _, script in ipairs(scripts) do		
-		local name = script:sub(script:find("%w+"))
-		local module_name = "extensions." .. name
-		local loaded = require(module_name)
-		sgs.Sanguosha:addPackage(loaded.extension)
+	for _, script in ipairs(scripts) do	
+		if script:match(".+%.lua$") then
+			local name = script:sub(script:find("%w+"))
+			local module_name = "extensions." .. name
+			local loaded = require(module_name)
+			sgs.Sanguosha:addPackage(loaded.extension)
+		end
 	end
 end
 

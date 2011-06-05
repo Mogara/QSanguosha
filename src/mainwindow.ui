@@ -329,6 +329,9 @@
    <property name="text">
     <string>Package manager ...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

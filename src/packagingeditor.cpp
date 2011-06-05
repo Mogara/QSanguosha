@@ -28,10 +28,24 @@ PackagingEditor::PackagingEditor(QWidget *parent) :
     setLayout(layout);
 }
 
+void PackagingEditor::loadPackageList(){
+    package_list->setViewMode(QListView::IconMode);
+    package_list->setIconSize(QSize(64, 64));
+    package_list->setMovement(QListView::Static);
+    package_list->setWordWrap(true);
+
+    QDir dir("extensions");
+    QIcon icon("image/system/ark.png");
+    foreach(QFileInfo info, dir.entryInfoList(QStringList() << "*.txt")){
+        new QListWidgetItem(icon, info.baseName(), package_list);
+    }
+}
+
 QWidget *PackagingEditor::createManagerTab(){
     QWidget *widget = new QWidget;
 
     package_list = new QListWidget;
+    loadPackageList();
 
     QVBoxLayout *vlayout = new QVBoxLayout;
 

@@ -16,6 +16,7 @@ private:
 
     QWidget *createManagerTab();
     QWidget *createPackagingTab();
+    void loadPackageList();
 
 private slots:
     void installPackage();
