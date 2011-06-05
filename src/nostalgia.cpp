@@ -419,6 +419,7 @@ QGroupBox *GuhuoDialog::createRight(){
     foreach(const Card *card, cards){
         if(card->isNDTrick() && !map.contains(card->objectName())){
             Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setSkillName("guhuo");
             c->setParent(this);
 
             QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;

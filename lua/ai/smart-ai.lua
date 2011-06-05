@@ -122,7 +122,14 @@ function SmartAI:initialize(player)
 	self.lua_ai.callback = function(method_name, ...)
 		local method = self[method_name]
 		if method then
-			return method(self, ...)
+			local success, result1, result2
+			success, result1, result2 = pcall(method, self, ...)
+			if not success then
+				room:writeToConsole(result1)
+				room:writeToConsole(debug.traceback())
+			else
+				return result1, result2
+			end			
 		end
 	end      
 	

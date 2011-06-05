@@ -715,6 +715,10 @@ public:
 		if(Config.value("DebugOutput", false).toBool())
 			$self->output(msg);
 	}
+
+	void writeToConsole(const char *msg){
+		$self->output(msg);
+	}
 };
 
 class QRegExp{

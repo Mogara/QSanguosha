@@ -298,7 +298,10 @@ bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const C
 }
 
 bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    return targets.length() <= 2;
+    if(getSkillName() == "guhuo")
+        return targets.length() == 1 || targets.length() == 2;
+    else
+        return targets.length() <= 2;
 }
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
