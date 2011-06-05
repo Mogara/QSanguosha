@@ -89,7 +89,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
 
-    QString filename = "backdrop/new-year.jpg";
+    QString filename = "backdrop/duanwu.jpg";
     Config.BackgroundBrush = filename;
     Config.setValue("BackgroundBrush", filename);
 
