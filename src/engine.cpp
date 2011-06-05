@@ -190,8 +190,14 @@ void Engine::addPackage(Package *package){
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
         QList<const Skill *> all_skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, all_skills)
+        foreach(const Skill *skill, all_skills){
+            if(skills.contains(skill->objectName()))
+                QMessageBox::information(NULL, "",
+                                         QString("package %1, skill %2")
+                                         .arg(package->objectName()).arg(skill->objectName()));
+
             skills.insert(skill->objectName(), skill);
+        }
 
         if(general->isHidden()){
             hidden_generals.insert(general->objectName(), general);

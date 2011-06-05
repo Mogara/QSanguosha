@@ -1272,8 +1272,7 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 }
 
 void RoomScene::updateSkillButtons(){
-    const QList<const Skill*> skills = Self->getVisibleSkills();
-    foreach(const Skill* skill, skills){
+    foreach(const Skill* skill, Self->getVisibleSkills()){
         if(skill->isLordSkill()){
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;

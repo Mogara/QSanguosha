@@ -6,7 +6,6 @@
 #include "carditem.h"
 #include "engine.h"
 #include "maneuvering.h"
-#include "standard-commons.h"
 
 QuhuCard::QuhuCard(){
     once = true;
@@ -587,7 +586,7 @@ FirePackage::FirePackage()
 
     pangde = new General(this, "pangde", "qun");
     pangde->addSkill(new Mengjin);
-    pangde->addSkill(new Mashu);
+    pangde->addSkill("mashu");
 
     addMetaObject<QuhuCard>();
     addMetaObject<JiemingCard>();

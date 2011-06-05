@@ -353,11 +353,11 @@ ZombieScenario::ZombieScenario()
 
     General *zombie = new General(this,"zombie","zombies",3, true, true);
     zombie->addSkill(new Xunmeng);
-    //zombie->addSkill(new Skill("yicong", Skill::Compulsory));
-    zombie->addSkill(new Skill("paoxiao"));
     zombie->addSkill(new Ganran);
     zombie->addSkill(new Zaibian);
-    zombie->addSkill(new Skill("wansha", Skill::Compulsory));
+
+    zombie->addSkill("paoxiao");
+    zombie->addSkill("wansha");
 
     addMetaObject<PeachingCard>();
     addMetaObject<GanranEquip>();

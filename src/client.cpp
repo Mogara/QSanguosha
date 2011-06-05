@@ -1048,8 +1048,7 @@ void Client::killPlayer(const QString &player_name){
 
     ClientPlayer *player = getPlayer(player_name);
     if(player == Self){
-        QList<const Skill *> skills = Self->getVisibleSkills();
-        foreach(const Skill *skill, skills)
+        foreach(const Skill *skill, Self->getVisibleSkills())
             emit skill_detached(skill->objectName());
     }
 

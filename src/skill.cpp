@@ -45,6 +45,10 @@ QString Skill::getText() const{
     return skill_name;
 }
 
+bool Skill::isVisible() const{
+    return ! objectName().startsWith("#");
+}
+
 QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
 }

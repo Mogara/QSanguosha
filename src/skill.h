@@ -28,6 +28,7 @@ public:
     bool isLordSkill() const;
     QString getDescription() const;
     QString getText() const;
+    bool isVisible() const;
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(ServerPlayer *player, const Card *card) const;

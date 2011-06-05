@@ -24,4 +24,6 @@ return {
 	["$yongsi3"] = "呀呀呀呀呀呀",
 	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
 	["~yuanshu"] = "呃呀~~~~~~~",
+	
+	["sp_sunshangxiang"] = "SP孙尚香",
 }

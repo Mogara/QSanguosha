@@ -132,7 +132,6 @@ HEADERS += src/mainwindow.h \
     src/rolecombobox.h \
     src/standard-equips.h \
     src/couple-scenario.h \
-    src/standard-commons.h \
     src/standard-skillcards.h \
     src/structs.h \
     src/lua-wrapper.h \

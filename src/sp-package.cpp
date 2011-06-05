@@ -94,6 +94,10 @@ SPPackage::SPPackage()
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
+
+    General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
+    sp_sunshangxiang->addSkill("jieyin");
+    sp_sunshangxiang->addSkill("xiaoji");
 }
 
 ADD_PACKAGE(SP);

@@ -117,8 +117,7 @@ RoomThread::RoomThread(Room *room)
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     QVariant void_data;
 
-    QList<const TriggerSkill *> skills = player->getTriggerSkills();
-    foreach(const TriggerSkill *skill, skills){
+    foreach(const TriggerSkill *skill, player->getTriggerSkills()){
         if(skill->isLordSkill()){
             if(!player->isLord() || room->mode == "06_3v3")
                 continue;
@@ -132,8 +131,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
 }
 
 void RoomThread::removePlayerSkills(ServerPlayer *player){
-    QList<const TriggerSkill *> skills = player->getTriggerSkills();
-    foreach(const TriggerSkill *skill, skills){
+    foreach(const TriggerSkill *skill, player->getTriggerSkills()){
         if(skill->isLordSkill()){
             if(!player->isLord() || room->mode == "06_3v3")
                 continue;

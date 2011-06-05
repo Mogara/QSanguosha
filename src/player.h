@@ -178,8 +178,8 @@ public:
     int usedTimes(const QString &card_class);
     int getSlashCount() const;
 
-    QList<const TriggerSkill *> getTriggerSkills() const;
-    QList<const Skill *> getVisibleSkills() const;
+    QSet<const TriggerSkill *> getTriggerSkills() const;
+    QSet<const Skill *> getVisibleSkills() const;
 
     QVariantMap tag;
 

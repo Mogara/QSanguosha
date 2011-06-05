@@ -5,7 +5,6 @@
 #include "carditem.h"
 #include "god.h"
 #include "standard.h"
-#include "standard-commons.h"
 
 class YitianSwordSkill : public WeaponSkill{
 public:
@@ -1546,7 +1545,7 @@ YitianPackage::YitianPackage()
     // generals
     General *shencc = new General(this, "shencc$", "god", 3);
     shencc->addSkill(new Guixin2);
-    shencc->addSkill(new Feiying);
+    shencc->addSkill("feiying");
 
     General *caochong = new General(this, "caochong", "wei", 3);
     caochong->addSkill(new Chengxiang);
@@ -1558,7 +1557,7 @@ YitianPackage::YitianPackage()
     zhangjunyi->addSkill(new JuejiClear);
 
     General *lukang = new General(this, "lukang", "wu", 3);
-    lukang->addSkill(new Qianxun);
+    lukang->addSkill("qianxu");
     lukang->addSkill(new LukangWeiyan);
 
     General *jinxuandi = new General(this, "jinxuandi", "god");
@@ -1586,9 +1585,9 @@ YitianPackage::YitianPackage()
     luboyan->addSkill(new Zonghuo);
 
     General *luboyanf = new General(this, "luboyanf", "wu", 3, false, true);
-    luboyanf->addSkill(new Shenjun);
-    luboyanf->addSkill(new Shaoying);
-    luboyanf->addSkill(new Zonghuo);
+    luboyanf->addSkill("shenjun");
+    luboyanf->addSkill("shaoying");
+    luboyanf->addSkill("zonghuo");
 
     General *zhongshiji = new General(this, "zhongshiji", "wei");
     zhongshiji->addSkill(new Gongmou);

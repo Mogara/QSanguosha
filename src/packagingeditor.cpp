@@ -168,6 +168,9 @@ void PackagingEditor::browseFiles(){
 }
 
 void PackagingEditor::makePackage(){
+    if(file_list->count() == 0)
+        return;
+
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Select a package name"),
                                                     ".",

@@ -390,11 +390,6 @@ public:
     }
 };
 
-Feiying::Feiying()
-    :Skill("feiying", Skill::Compulsory)
-{
-}
-
 class Kuangbao: public TriggerSkill{
 public:
     Kuangbao():TriggerSkill("kuangbao"){
@@ -919,7 +914,7 @@ GodPackage::GodPackage()
 
     General *shencaocao = new General(this, "shencaocao$", "god", 3);
     shencaocao->addSkill(new Guixin);
-    shencaocao->addSkill(new Feiying);
+    shencaocao->addSkill(new Skill("feiying", Skill::Compulsory));
 
     General *shenlubu = new General(this, "shenlubu", "god", 5);
     shenlubu->addSkill(new Kuangbao);

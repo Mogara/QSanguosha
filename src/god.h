@@ -87,11 +87,6 @@ public:
     Q_INVOKABLE WushenSlash(Card::Suit suit, int number);
 };
 
-class Feiying: public Skill{
-public:
-    Feiying();
-};
-
 class KuangfengCard: public SkillCard{
     Q_OBJECT
 

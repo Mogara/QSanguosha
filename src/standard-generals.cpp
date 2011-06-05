@@ -7,7 +7,6 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "standard-skillcards.h"
-#include "standard-commons.h"
 #include "ai.h"
 
 class Jianxiong:public MasochismSkill{
@@ -1021,6 +1020,23 @@ public:
     }
 };
 
+class Chujia: public GameStartSkill{
+public:
+    Chujia():GameStartSkill("chujia"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return GameStartSkill::triggerable(target) && target->getGeneralName() == "sunshangxiang";
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        if(player->askForSkillInvoke(objectName())){
+            player->getRoom()->transfigure(player, "sp_sunshangxiang", true, true);
+        }
+    }
+};
+
 class Jieyin: public ViewAsSkill{
 public:
     Jieyin():ViewAsSkill("jieyin"){
@@ -1216,6 +1232,24 @@ public:
     }
 };
 
+class Qianxun: public ProhibitSkill{
+public:
+    Qianxun():ProhibitSkill("qianxun"){
+
+    }
+
+    virtual bool isProhibited(const Player *, const Player *, const Card *card) const{
+        return card->inherits("Snatch") || card->inherits("Indulgence");
+    }
+};
+
+class Mashu: public Skill{
+public:
+    Mashu():Skill("mashu", Skill::Compulsory)
+    {
+    }
+};
+
 void StandardPackage::addGenerals(){
     General *caocao, *zhangliao, *guojia, *xiahoudun, *simayi, *xuchu, *zhenji;
 
@@ -1300,6 +1334,7 @@ void StandardPackage::addGenerals(){
     daqiao->addSkill(new Liuli);
 
     sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false);
+    sunshangxiang->addSkill(new Chujia);
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
 
@@ -1318,8 +1353,8 @@ void StandardPackage::addGenerals(){
     diaochan->addSkill(new Huanzhuang("tuoqiao"));
 
     General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
-    sp_diaochan->addSkill(new Lijian);
-    sp_diaochan->addSkill(new Biyue);
+    sp_diaochan->addSkill("lijian");
+    sp_diaochan->addSkill("biyue");
     sp_diaochan->addSkill(new Huanzhuang("xuwei"));
 
     // for test only
@@ -1328,8 +1363,8 @@ void StandardPackage::addGenerals(){
 
     General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
     wuxing_zhuge->addSkill(new SuperGuanxing);
-    wuxing_zhuge->addSkill(new Kongcheng);
-    wuxing_zhuge->addSkill(new KongchengEffect);
+    wuxing_zhuge->addSkill("kongcheng");
+    wuxing_zhuge->addSkill("#kongcheng-effect");
 
     // for skill cards    
     addMetaObject<ZhihengCard>();

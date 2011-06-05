@@ -2,6 +2,7 @@
 #define GENERAL_H
 
 class Skill;
+class TriggerSkill;
 class Package;
 class QSize;
 
@@ -31,8 +32,10 @@ public:
     bool isHidden() const;
 
     void addSkill(Skill* skill);
+    void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
-    QList<const Skill *> getVisibleSkills() const;
+    QSet<const Skill *> getVisibleSkills() const;
+    QSet<const TriggerSkill *> getTriggerSkills() const;
 
     QString getPixmapPath(const QString &category) const;    
     QString getPackage() const;
@@ -48,7 +51,8 @@ private:
     int max_hp;
     bool male;
     bool lord;
-    QMap<QString, Skill *> skill_map;
+    QSet<QString> skill_set;
+    QSet<QString> extra_set;
     bool hidden;
 };
 
