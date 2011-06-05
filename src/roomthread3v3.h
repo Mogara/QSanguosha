@@ -16,6 +16,7 @@ public:
     explicit RoomThread3v3(Room *room);
     void takeGeneral(ServerPlayer *player, const QString &name);
     void arrange(ServerPlayer *player, const QStringList &arranged);
+    void assignRoles(const QString &scheme);
 
 protected:
     virtual void run();

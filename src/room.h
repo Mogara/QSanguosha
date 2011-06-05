@@ -202,6 +202,8 @@ private:
     void takeGeneralCommand(ServerPlayer *player, const QString &arg);
     QString askForOrder(ServerPlayer *player);
     void selectOrderCommand(ServerPlayer *player, const QString &arg);
+    QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
+    void selectRoleCommand(ServerPlayer *player, const QString &arg);
 
     void makeCheat(const QString &cheat_str);
     void makeDamage(const QStringList &texts);

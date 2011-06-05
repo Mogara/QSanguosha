@@ -57,6 +57,7 @@ void Room::initCallbacks(){
     callbacks["arrangeCommand"] = &Room::arrangeCommand;
     callbacks["takeGeneralCommand"] = &Room::takeGeneralCommand;
     callbacks["selectOrderCommand"] = &Room::selectOrderCommand;
+    callbacks["selectRoleCommand"] = &Room::selectRoleCommand;
 
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
@@ -1016,6 +1017,7 @@ void Room::prepareForStart(){
                 player->sendProperty("role");
         }
     }else if(mode == "06_3v3"){
+        /*
         qShuffle(players);
 
         ServerPlayer *online = NULL;
@@ -1048,6 +1050,11 @@ void Room::prepareForStart(){
             players.at(i)->setRole(roles.at(i));
             broadcastProperty(players.at(i), "role");
         }
+
+        */
+
+        return;
+
     }else if(mode == "02_1v1"){
         if(qrand() % 2 == 0)
             players.swap(0, 1);
@@ -2718,5 +2725,23 @@ QString Room::askForOrder(ServerPlayer *player){
 
 void Room::selectOrderCommand(ServerPlayer *, const QString &arg){
     result = arg;
+    sem->release();
+}
+
+QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme){
+    QStringList squeezed = roles.toSet().toList();
+    player->invoke("askForRole", QString("%1:%2").arg(scheme).arg(squeezed.join("+")));
+    reply_player = player;
+    reply_func = "selectRoleCommand";
+    sem->acquire();
+
+    return result;
+}
+
+void Room::selectRoleCommand(ServerPlayer *player, const QString &arg){
+    result = arg;
+    if(result.isEmpty())
+        result = "abstained";
+
     sem->release();
 }

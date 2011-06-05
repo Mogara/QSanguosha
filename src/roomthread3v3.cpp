@@ -11,22 +11,7 @@
 RoomThread3v3::RoomThread3v3(Room *room)
     :QThread(room), room(room)
 {
-    foreach(ServerPlayer *player, room->players){
-        switch(player->getRoleEnum()){
-        case Player::Lord: warm_leader = player; break;
-        case Player::Renegade: cool_leader = player; break;
-        default:
-            break;
-        }
-    }
 
-    if(Config.value("3v3/UsingExtension", false).toBool())
-        general_names = Config.value("3v3/ExtensionGenerals").toStringList();
-    else
-        general_names = getGeneralsWithoutExtension();
-
-    qShuffle(general_names);
-    general_names = general_names.mid(0, 16);
 }
 
 QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
@@ -60,6 +45,27 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
 
 void RoomThread3v3::run()
 {
+    QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
+    assignRoles(scheme);
+    room->adjustSeats();
+
+    foreach(ServerPlayer *player, room->players){
+        switch(player->getRoleEnum()){
+        case Player::Lord: warm_leader = player; break;
+        case Player::Renegade: cool_leader = player; break;
+        default:
+            break;
+        }
+    }
+
+    if(Config.value("3v3/UsingExtension", false).toBool())
+        general_names = Config.value("3v3/ExtensionGenerals").toStringList();
+    else
+        general_names = getGeneralsWithoutExtension();
+
+    qShuffle(general_names);
+    general_names = general_names.mid(0, 16);
+
     // initialize the random seed for this thread
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
@@ -140,4 +146,68 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
     }
 
     room->sem->release();
+}
+
+// there are 3 scheme
+// Normal: choose team1 or team2
+// Random: assign role randomly
+// AllRoles: select roles directly
+void RoomThread3v3::assignRoles(const QString &scheme){
+    QStringList roles;
+    roles << "lord" << "loyalist" << "rebel"
+            << "renegade"  << "rebel" << "loyalist";
+
+    if(scheme == "Random"){
+        // the easiest way
+        qShuffle(room->players);
+
+        int i;
+        for(i=0; i<roles.length(); i++)
+            room->setPlayerProperty(room->players.at(i), "role", roles.at(i));
+    }else if(scheme == "AllRoles"){
+        QStringList all_roles = roles;
+        QList<ServerPlayer *> new_players, abstained;
+        int i;
+        for(i=0; i<6; i++)
+            new_players << NULL;
+
+        foreach(ServerPlayer *player, room->players){
+            if(player->getState() == "online"){
+                QString role = room->askForRole(player, all_roles, scheme);
+                if(role != "abstain"){
+                    player->setRole(role);
+                    all_roles.removeOne(role);
+
+                    for(i=0; i<6; i++){
+                        if(roles.at(i) == role && new_players.at(i) == NULL){
+                            new_players[i] = player;
+                            break;
+                        }
+                    }
+
+                    continue;
+                }
+            }
+
+            abstained << player;
+        }
+
+        if(!abstained.isEmpty()){
+            qShuffle(abstained);
+
+            for(i=0; i<6; i++){
+                if(new_players.at(i) == NULL){
+                    new_players[i] = abstained.takeFirst();
+                    new_players.at(i)->setRole(roles.at(i));
+                }
+            }
+        }
+
+        room->players = new_players;
+    }else{
+        // Normal
+    }
+
+    foreach(ServerPlayer *player, room->players)
+        room->broadcastProperty(player, "role");
 }

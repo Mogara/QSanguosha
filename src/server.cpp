@@ -192,8 +192,6 @@ QGroupBox *ServerDialog::create3v3Box(){
     else
         standard_3v3_radiobutton->setChecked(true);
 
-
-
     return box;
 }
 

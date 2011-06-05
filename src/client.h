@@ -143,6 +143,7 @@ public:
     void takeGeneral(const QString &take_str);
     void startArrange(const QString &);
     void askForOrder(const QString &reason);
+    void askForRole(const QString &role_str);
     void askForDirection(const QString &);
     void recoverGeneral(const QString &);
     void revealGeneral(const QString &);
@@ -204,6 +205,7 @@ private slots:
     void clearTurnTag();
     void invokeSkill(int result);
     void selectOrder();
+    void selectRole();
 
 signals:
     void server_connected();

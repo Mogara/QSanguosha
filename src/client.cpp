@@ -106,6 +106,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["takeGeneral"] = &Client::takeGeneral;
     callbacks["startArrange"] = &Client::startArrange;
     callbacks["askForOrder"] = &Client::askForOrder;
+    callbacks["askForRole"] = &Client::askForRole;
     callbacks["askForDirection"] = &Client::askForDirection;
     callbacks["recoverGeneral"] = &Client::recoverGeneral;
     callbacks["revealGeneral"] = &Client::revealGeneral;
@@ -1619,6 +1620,76 @@ void Client::askForOrder(const QString &reason){
     ask_dialog = dialog;
 
     setStatus(ExecDialog);
+}
+
+void Client::askForRole(const QString &role_str){
+    QRegExp rx("(\\w+):(.+)");
+    if(!rx.exactMatch(role_str))
+        return;
+
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle(tr("Select role in 3v3 mode"));
+
+    QLabel *prompt = new QLabel(tr("Please select a role"));
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    layout->addWidget(prompt);
+
+    QStringList texts = rx.capturedTexts();
+    QString scheme = texts.at(1);
+    QSet<QString> role_set = texts.at(2).split("+").toSet();
+    QStringList roles;
+    if(scheme == "AllRoles")
+        roles << "lord" << "loyalist" << "renegade" << "rebel";
+    else
+        roles << "leader1" << "guard1" << "leader2" << "guard2";
+
+    static QMap<QString, QString> jargon;
+    if(jargon.isEmpty()){
+        jargon["lord"] = tr("Warm leader");
+        jargon["loyalist"] = tr("Warm guard");
+        jargon["renegade"] = tr("Cool leader");
+        jargon["rebel"] = tr("Cool guard");
+
+        jargon["leader1"] = tr("Leader of Team 1");
+        jargon["guard1"] = tr("Guard of Team 1");
+        jargon["leader2"] = tr("Leader of Team 2");
+        jargon["guard2"] = tr("Guard of Team 2");
+    }
+
+    foreach(QString role, roles){
+        QCommandLinkButton *button = new QCommandLinkButton(jargon[role]);
+        if(scheme == "AllRoles")
+            button->setIcon(QIcon(QString("image/system/roles/%1.png").arg(role)));
+
+        layout->addWidget(button);
+
+        if(role_set.contains(role)){
+            button->setObjectName(role);
+            connect(button, SIGNAL(clicked()), this, SLOT(selectRole()));
+            connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        }else
+            button->setDisabled(true);
+    }
+
+    QCommandLinkButton *abstain_button = new QCommandLinkButton(tr("Abstain"));
+    connect(abstain_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    layout->addWidget(abstain_button);
+
+    dialog->setObjectName("abstain");
+    connect(dialog, SIGNAL(rejected()), this, SLOT(selectRole()));
+
+    dialog->setLayout(layout);
+
+    ask_dialog = dialog;
+
+    setStatus(ExecDialog);
+}
+
+void Client::selectRole(){
+    request(QString("selectRole ") + sender()->objectName());
+
+    setStatus(NotActive);
 }
 
 void Client::askForDirection(const QString &){
