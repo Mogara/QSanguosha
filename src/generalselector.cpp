@@ -5,14 +5,15 @@
 #include <QFile>
 #include <QTextStream>
 
+static GeneralSelector *Selector;
+
 GeneralSelector *GeneralSelector::GetInstance(){
-    static GeneralSelector *selector;
-    if(selector == NULL){
-        selector = new GeneralSelector;
-        selector->setParent(Sanguosha);
+    if(Selector == NULL){
+        Selector = new GeneralSelector;
+        Selector->setParent(Sanguosha);
     }
 
-    return selector;
+    return Selector;
 }
 
 GeneralSelector::GeneralSelector()
@@ -20,6 +21,7 @@ GeneralSelector::GeneralSelector()
     loadFirstGeneralTable();
     loadSecondGeneralTable();
     load3v3Table();
+    load1v1Table();
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates){
@@ -91,11 +93,19 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
 }
 
 QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &candidates){
+    return selectHighest(priority_3v3_table, candidates, 0);
+}
+
+QString GeneralSelector::select1v1(const QStringList &candidates){
+    return selectHighest(priority_1v1_table, candidates, 5);
+}
+
+QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const QStringList &candidates, int default_value){
     int max = -1;
     QString max_general;
 
     foreach(QString candidate, candidates){
-        int value = priority_3v3_table.value(candidate, 0);
+        int value = table.value(candidate, default_value);
 
         if(value > max){
             max = value;
@@ -124,6 +134,23 @@ QStringList GeneralSelector::arrange3v3(ServerPlayer *player){
     arranged.swap(0, 1);
 
     return arranged;
+}
+
+static bool CompareFunction(const QString &first, const QString &second){
+    return Selector->get1v1ArrangeValue(first) < Selector->get1v1ArrangeValue(second);
+}
+
+int GeneralSelector::get1v1ArrangeValue(const QString &name){
+    int value = priority_1v1_table.value(name, 5);
+    if(sacrifice.contains(name))
+        value += 100;
+    return value;
+}
+
+QStringList GeneralSelector::arrange1v1(ServerPlayer *player){
+    QStringList arranged = player->getSelected();
+    qSort(arranged.begin(), arranged.end(), CompareFunction);
+    return arranged.mid(0, 3);
 }
 
 void GeneralSelector::loadFirstGeneralTable(){
@@ -194,3 +221,26 @@ void GeneralSelector::load3v3Table(){
     }
 }
 
+void GeneralSelector::load1v1Table(){
+    QRegExp rx("(\\w+)\\s+(\\d+)\\s*(\\*)?");
+    QFile file("etc/1v1-priority.txt");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        while(!stream.atEnd()){
+            QString line = stream.readLine();
+            if(!rx.exactMatch(line))
+                continue;
+
+            QStringList texts = rx.capturedTexts();
+            QString name = texts.at(1);
+            int priority = texts.at(2).toInt();
+
+            priority_1v1_table.insert(name, priority);
+
+            if(!texts.at(3).isEmpty())
+                sacrifice << name;
+        }
+
+        file.close();
+    }
+}

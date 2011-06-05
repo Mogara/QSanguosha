@@ -2,6 +2,7 @@
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
+#include "generalselector.h"
 
 #include <QDateTime>
 
@@ -53,8 +54,8 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player){
     if(general_names.length() == 1)
         name = general_names.first();
     else if(player->getState() != "online"){
-        int r = qrand() % general_names.length();
-        name = general_names.at(r);
+        GeneralSelector *selector = GeneralSelector::GetInstance();
+        name = selector->select1v1(general_names);
     }
 
     if(name.isNull()){
@@ -89,11 +90,9 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name){
 }
 
 void RoomThread1v1::startArrange(ServerPlayer *player){
-    if(player->getState() != "online"){
-        QStringList arranged = player->getSelected();
-        qShuffle(arranged);
-        arranged = arranged.mid(0, 3);
-        arrange(player, arranged);
+    if(player->getState() != "online"){        
+        GeneralSelector *selector = GeneralSelector::GetInstance();
+        arrange(player, selector->arrange1v1(player));
     }else{
         player->invoke("startArrange");
     }
