@@ -236,9 +236,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
         chat_box_widget->setPos(-343 - widen_width, -83);
         chat_box_widget->setZValue(-2.0);
-        QPalette palette;
-        palette.setBrush(QPalette::Base, backgroundBrush());
-        chat_box->setPalette(palette);
+
         chat_box->setReadOnly(true);
         chat_box->setTextColor(Config.TextEditColor);
         connect(ClientInstance, SIGNAL(words_spoken(QString)), chat_box, SLOT(append(QString)));
@@ -549,28 +547,9 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 
 void RoomScene::changeTextEditBackground(){
     QPalette palette;
-    QPalette l_palette;
-    QPixmap chat_pixmap;
-    QPixmap log_pixmap;
-    QBrush brush;
-    QBrush chat_brush;
-    QBrush log_brush;
-    bool circular = Config.value("CircularView", false).toBool();
-    if(circular){
-        chat_pixmap=QPixmap("image/system/chat_background.png");
-        log_pixmap=QPixmap("image/system/log_background.png");
-        chat_brush=(chat_pixmap);
-        log_brush=(log_pixmap);
-        palette.setBrush(QPalette::Base, chat_brush);
-        l_palette.setBrush(QPalette::Base, log_brush);
-        log_box->setPalette(l_palette);
-        chat_box->setPalette(palette);
-    }else{
-        brush=(backgroundBrush().texture());
-        palette.setBrush(QPalette::Base, brush);
-        log_box->setPalette(palette);
-        chat_box->setPalette(palette);
-    }
+    palette.setBrush(QPalette::Base, backgroundBrush());
+    chat_box->setPalette(palette);
+    log_box->setPalette(palette);
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
