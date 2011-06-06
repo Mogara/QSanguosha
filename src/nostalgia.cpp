@@ -311,7 +311,12 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
 
     }else{
         const Card *card = Sanguosha->getCard(subcards.first());
-        bool real = card->objectName() == user_string;
+        bool real;
+        if(user_string == "peach+analeptic")
+            real = card->objectName() == "peach" || card->objectName() == "analeptic";
+        else
+            real = card->match(user_string);
+
         success = real && card->getSuit() == Card::Heart;
 
         foreach(ServerPlayer *player, players){

@@ -1167,7 +1167,7 @@ void Room::processRequest(const QString &request){
 
         (this->*callback)(player, args.at(1));
 
-#ifndef QT_DEBUG
+#ifndef QT_NO_DEBUG
         // output client command only in debug version
         emit room_message(player->reportHeader() + request);
 #endif
