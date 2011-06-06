@@ -46,6 +46,7 @@ public:
     bool isHidden() const;
 
     void addSkill(Skill* skill);
+	void addSkill(const char *skill_name);
     bool hasSkill(const char *skill_name) const;
 
     QString getPixmapPath(const char *category) const;    
