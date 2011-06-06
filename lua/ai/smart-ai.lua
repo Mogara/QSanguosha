@@ -125,8 +125,8 @@ function SmartAI:initialize(player)
 			local success, result1, result2 
 			success, result1, result2 = pcall(method, self, ...) 
 			if not success then 
-				room:writeToConsole(result1) 
-				room:writeToConsole(debug.traceback()) 
+				self.room:writeToConsole(result1) 
+				self.room:writeToConsole(debug.traceback()) 
 			else 
 				return result1, result2 
 			end  

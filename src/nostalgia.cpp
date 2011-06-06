@@ -470,6 +470,7 @@ bool GuhuoCard::targetsFeasible(const QList<const ClientPlayer *> &targets) cons
 
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
     Room *room = card_use->from->getRoom();
+    room->playSkillEffect("guhuo");
 
     LogMessage log;
     log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
@@ -494,6 +495,7 @@ const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable
     *continuable = true;
 
     Room *room = yuji->getRoom();
+    room->playSkillEffect("guhuo");
 
     QString to_guhuo;
     if(user_string == "peach+analeptic")

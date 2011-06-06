@@ -59,7 +59,13 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->drawCards(x);
 
     Room *room = effect.to->getRoom();
-    room->playSkillEffect("fangzhu", effect.to->faceUp() ? 1 : 2);
+
+    int index;
+    if(effect.to->faceUp())
+        index = effect.to->getGeneralName() == "caozhi" ? 3 : 1;
+    else
+        index = 2;
+    room->playSkillEffect("fangzhu", index);
 
     effect.to->turnOver();
 }

@@ -99,8 +99,13 @@ public:
 
         ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         if(caozhi && caozhi->askForSkillInvoke(objectName(), data)){
+            if(player->getGeneralName() == "zhenji")
+                room->playSkillEffect("luoying", 2);
+            else
+                room->playSkillEffect("luoying", 1);
+
             foreach(const Card *club, clubs)
-                caozhi->obtainCard(club);
+                caozhi->obtainCard(club);            
         }
 
         return false;
@@ -126,6 +131,10 @@ public:
         analeptic->setSkillName("jiushi");
         return analeptic;
     }
+
+    virtual int getEffectIndex(ServerPlayer *, const Card *) const{
+        return qrand() % 2 + 1;
+    }
 };
 
 class JiushiFlip: public TriggerSkill{
@@ -143,8 +152,10 @@ public:
             player->tag["PredamagedFace"] = player->faceUp();
         }else if(event == Damaged){
             bool faceup = player->tag.value("PredamagedFace").toBool();
-            if(!faceup && player->askForSkillInvoke("jiushi", data))
+            if(!faceup && player->askForSkillInvoke("jiushi", data)){
+                player->getRoom()->playSkillEffect("jiushi", 3);
                 player->turnOver();
+            }
         }
 
         return false;

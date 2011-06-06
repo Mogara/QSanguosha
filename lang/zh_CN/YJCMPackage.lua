@@ -66,7 +66,7 @@ return {
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
 	
-	["cv:caozhi"] = "",
+	["cv:caozhi"] = "彩三",
 	["cv:yujin"] = "",
 	["cv:fazheng"] = "",
 	["cv:masu"] = "",
@@ -93,4 +93,11 @@ return {
 	["xuanfeng:damage"] = "对距离1以内的其他角色造成伤害",
 	["xuanfeng:slash"] = "对任意一名其他角色使用一张【杀】",
 	["#JujianRecover"] = "%from 用举荐弃掉了三张 %arg ，将恢复一点体力",
+	
+	["$jiushi1"] = "举泰山以为肉，倾东海以为酒",
+	["$jiushi2"] = "饮酒并醉，纵横喧哗。",
+	["$jiushi3"] = "归来宴平乐，美酒斗十千",
+	["$luoying1"] = "骋我径寸翰，流藻垂华芳",
+	["$luoying2"] = "翩若惊鸿，婉若游龙，荣曜秋菊，华茂春松",
+	["~caozhi"] = "捐躯赴国难，视死忽如归",
 }
