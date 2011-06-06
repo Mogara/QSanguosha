@@ -176,6 +176,9 @@ const ChallengeMode *Engine::getChallengeMode(const QString &name) const{
 }
 
 void Engine::addPackage(Package *package){
+    if(findChild<const Package *>(package->objectName()))
+        return;
+
     package->setParent(this);
 
     QList<Card *> all_cards = package->findChildren<Card *>();
@@ -284,7 +287,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         card_obj->setObjectName(name);
         return qobject_cast<Card *>(card_obj);
     }else
-        return NULL;    
+        return NULL;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{

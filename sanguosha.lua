@@ -5,11 +5,6 @@ package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 dofile "lua/sgs_ex.lua"
 
-local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()
-if done_loading then
-	return
-end
-
 function load_translation(file)
 	local t = dofile(file)
 	if type(t) ~= "table" then
@@ -29,7 +24,7 @@ function load_translations()
 	end
 end
 
-function load_extensions()
+function load_extensions(just_require)
 	local scripts = sgs.GetFileNames("extensions")
 	
 	for _, script in ipairs(scripts) do	
@@ -37,13 +32,19 @@ function load_extensions()
 			local name = script:sub(script:find("%w+"))
 			local module_name = "extensions." .. name
 			local loaded = require(module_name)
+			
 			sgs.Sanguosha:addPackage(loaded.extension)
 		end
 	end
 end
 
-load_translations()
 load_extensions()
 
-done_loading = sgs.QVariant(true)
-sgs.Sanguosha:setProperty("DoneLoading", done_loading)
+local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()
+if not done_loading then
+	load_translations()
+	done_loading = sgs.QVariant(true)
+	sgs.Sanguosha:setProperty("DoneLoading", done_loading)
+end
+
+
