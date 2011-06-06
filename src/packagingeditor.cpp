@@ -196,6 +196,8 @@ void PackagingEditor::makePackage(){
         args << "a" << filename << spec_name << ("@" + spec_name);
         process->start("7zr", args);
         process->waitForFinished();
+
+        rescanPackage();
     }
 }
 
