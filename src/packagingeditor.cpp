@@ -125,9 +125,8 @@ void PackagingEditor::installPackage(){
         QStringList args;
         args << "x" << filename;
         process->start("7zr", args);
-        process->waitForFinished();
 
-        rescanPackage();
+        connect(process, SIGNAL(finished(int)), this, SLOT(done7zProcess(int)));
     }
 }
 
@@ -195,10 +194,16 @@ void PackagingEditor::makePackage(){
         QStringList args;
         args << "a" << filename << spec_name << ("@" + spec_name);
         process->start("7zr", args);
-        process->waitForFinished();
 
-        rescanPackage();
+        connect(process, SIGNAL(finished(int)), this, SLOT(done7zProcess(int)));
     }
+}
+
+void PackagingEditor::done7zProcess(int exit_code){
+    if(exit_code != 0)
+        QMessageBox::warning(this, tr("Warning"), tr("Package compress/decompress error!"));
+    else
+        rescanPackage();
 }
 
 void MainWindow::on_actionPackaging_triggered()

@@ -24,6 +24,7 @@ private slots:
     void rescanPackage();
     void browseFiles();
     void makePackage();
+    void done7zProcess(int exit_code);
 };
 
 #endif // PACKAGINGEDITOR_H
