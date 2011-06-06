@@ -3,6 +3,7 @@ class LuaTriggerSkill: public TriggerSkill{
 public:
     LuaTriggerSkill(const char *name, Frequency frequency);
     void addEvent(TriggerEvent event);
+	void setViewAsSkill(ViewAsSkill *view_as_skill);
 	
 	virtual bool triggerable(ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
