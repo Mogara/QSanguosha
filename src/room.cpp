@@ -46,7 +46,7 @@ void Room::initCallbacks(){
     callbacks["selectChoiceCommand"] = &Room::commonCommand;
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
-    callbacks["replyGongxinCommand"] = &Room::commonCommand;   
+    callbacks["replyGongxinCommand"] = &Room::commonCommand;
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
@@ -363,7 +363,7 @@ bool Room::obtainable(const Card *card, ServerPlayer *player){
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         if(subcards.isEmpty())
-            return false;        
+            return false;
     }else{
         ServerPlayer *owner = getCardOwner(card->getId());
         Player::Place place = getCardPlace(card->getId());
@@ -407,7 +407,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     getResult("selectChoiceCommand", player);
 
     if(result.isEmpty())
-        return askForChoice(player, skill_name, choices);    
+        return askForChoice(player, skill_name, choices);
 
     if(result == "."){
         const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -977,7 +977,7 @@ void Room::timerEvent(QTimerEvent *event){
             connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
             QStringList lord_list = Sanguosha->getRandomLords();
-            QString default_lord = lord_list[qrand() % lord_list.length()];            
+            QString default_lord = lord_list[qrand() % lord_list.length()];
 
             ServerPlayer *the_lord = getLord();
             if(the_lord->getState() != "online") {
@@ -1166,7 +1166,12 @@ void Room::processRequest(const QString &request){
         }
 
         (this->*callback)(player, args.at(1));
+
+#ifndef QT_DEBUG
+        // output client command only in debug version
         emit room_message(player->reportHeader() + request);
+#endif
+
     }else
         emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
 }
@@ -1207,7 +1212,7 @@ void Room::fillRobotsCommand(ServerPlayer *player, const QString &){
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
-    player->setObjectName(generatePlayerName());    
+    player->setObjectName(generatePlayerName());
     player->setProperty("avatar", avatar);
     player->setScreenName(screen_name);
 
@@ -1242,7 +1247,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             if(p == player)
                 continue;
 
-            QString name = p->objectName();            
+            QString name = p->objectName();
             QString base64;
             if(Config.ContestMode)
                 base64 = contestant;
@@ -1610,7 +1615,7 @@ bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to){
     return cardEffect(effect);
 }
 
-bool Room::cardEffect(const CardEffectStruct &effect){    
+bool Room::cardEffect(const CardEffectStruct &effect){
     if(effect.to->isDead())
         return false;
 
@@ -1648,7 +1653,7 @@ void Room::damage(const DamageStruct &damage_data){
     // damage done, should not cause damage process broken
     thread->trigger(DamageDone, damage_data.to, data);
 
-    // damage  
+    // damage
     if(damage_data.from){
         bool broken = thread->trigger(Damage, damage_data.from, data);
         if(broken)
@@ -1705,7 +1710,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
     return a;
 }
 
-void Room::startGame(){    
+void Room::startGame(){
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
 
@@ -1751,7 +1756,7 @@ void Room::startGame(){
         // setup AI
         AI *ai = cloneAI(player);
         ais << ai;
-        player->setAI(ai);        
+        player->setAI(ai);
     }
 
     broadcastInvoke("startGame");
@@ -2057,7 +2062,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use){
     if(ai){
         thread->delay(Config.AIDelay);
         card_use.from = player;
-        ai->activate(card_use);        
+        ai->activate(card_use);
     }else{
         broadcastInvoke("activate", player->objectName());
         getResult("useCardCommand", player);
@@ -2333,7 +2338,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         return;
 
     int card_id = result.toInt();
-    showCard(target, card_id);    
+    showCard(target, card_id);
 
     QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
     if(result == "discard")

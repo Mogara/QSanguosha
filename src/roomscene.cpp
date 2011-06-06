@@ -125,7 +125,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer*)), SLOT(addPlayer(ClientPlayer*)));
-    connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));    
+    connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
     connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer*>)), SLOT(arrangeSeats(QList<const ClientPlayer*>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status)), this, SLOT(updateStatus(Client::Status)));
@@ -139,10 +139,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(focus_moved(QString)), this, SLOT(moveFocus(QString)));
     connect(ClientInstance, SIGNAL(emotion_set(QString,QString)), this, SLOT(setEmotion(QString,QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString,QString)), this, SLOT(showSkillInvocation(QString,QString)));
-    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)),
-            this, SLOT(acquireSkill(const ClientPlayer*,QString)));
-    connect(ClientInstance, SIGNAL(animated(QString,QStringList)),
-            this, SLOT(doAnimation(QString,QStringList)));
+    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
+    connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
     connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
@@ -344,7 +342,7 @@ void RoomScene::createButtons(){
 
     ok_button = dashboard->createButton("ok");
     cancel_button = dashboard->createButton("cancel");
-    discard_button = dashboard->createButton("discard");    
+    discard_button = dashboard->createButton("discard");
 
     dashboard->addWidget(trust_button, 10, true);
     dashboard->addWidget(untrust_button, 10, true);
@@ -452,7 +450,7 @@ void RoomScene::createReplayControlBar(){
     trust_button->hide();
     untrust_button->hide();
     trust_button->disconnect();
-    untrust_button->disconnect();    
+    untrust_button->disconnect();
 
     new ReplayerControlBar(dashboard);
 }
@@ -608,7 +606,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    // set item to player mapping    
+    // set item to player mapping
     if(item2player.isEmpty()){
         item2player.insert(avatar, Self);
         connect(avatar, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
@@ -719,7 +717,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     bool control_is_down = event->modifiers() & Qt::ControlModifier;
 
-    switch(event->key()){        
+    switch(event->key()){
     case Qt::Key_F1: break;
     case Qt::Key_F2: chooseSkillButton(); break;
     case Qt::Key_F3: sort_combobox->showPopup(); break;
@@ -734,7 +732,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
 
     case Qt::Key_T: dashboard->selectCard("trick"); break;
     case Qt::Key_A: dashboard->selectCard("aoe"); break;
-    case Qt::Key_N: dashboard->selectCard("nullification"); break;    
+    case Qt::Key_N: dashboard->selectCard("nullification"); break;
     case Qt::Key_Q: dashboard->selectCard("snatch"); break;
     case Qt::Key_C: dashboard->selectCard("dismantlement"); break;
     case Qt::Key_U: dashboard->selectCard("duel"); break;
@@ -998,7 +996,7 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
         group->addAnimation(ugoku);
         group->addAnimation(kieru);
 
-        connect(group, SIGNAL(finished()), card_pixmap, SLOT(deleteLater()));       
+        connect(group, SIGNAL(finished()), card_pixmap, SLOT(deleteLater()));
     }
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
@@ -1511,7 +1509,7 @@ void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
     if(card == NULL)
-        return;    
+        return;
 
     if(card->isAvailable()){
         // use card
@@ -1575,7 +1573,7 @@ void RoomScene::onJoyDirectionClicked(int direction){
         case Joystick::Down: selectNextTarget(false); break;
         }
     }else{
-        bool next = (direction == Joystick::Right || direction == Joystick::Down);        
+        bool next = (direction == Joystick::Right || direction == Joystick::Down);
         int index = -1;
         QList<QAbstractButton *> list = active_window->findChildren<QAbstractButton *>();
 
@@ -1734,7 +1732,7 @@ void RoomScene::doTimeout(){
     case Client::AskForGongxin:{
             ok_button->click();
             break;
-        }         
+        }
 
     default:
         break;
@@ -2214,7 +2212,7 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
         bool result = result_list.at(i);
 
         if(result)
-            winner_list << player;            
+            winner_list << player;
         else
             loser_list << player;
 
