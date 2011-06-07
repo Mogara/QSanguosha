@@ -337,7 +337,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 void RoomScene::createButtons(){
     trust_button = dashboard->createButton("trust");
     untrust_button = dashboard->createButton("untrust");
-    QPushButton *reverse_button = dashboard->createButton("reverse-select");
+    reverse_button = dashboard->createButton("reverse-select");
     reverse_button->setEnabled(true);
 
     ok_button = dashboard->createButton("ok");
@@ -449,6 +449,8 @@ void RoomScene::createReplayControlBar(){
     discard_button->hide();
     trust_button->hide();
     untrust_button->hide();
+    reverse_button->hide();
+
     trust_button->disconnect();
     untrust_button->disconnect();
 

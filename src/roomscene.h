@@ -91,7 +91,7 @@ private:
     qreal speed;
 };
 
-class RoomScene : public QGraphicsScene{    
+class RoomScene : public QGraphicsScene{
     Q_OBJECT
 
 public:
@@ -111,7 +111,7 @@ public slots:
     void toggleDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
-    void updateStatus(Client::Status status);    
+    void updateStatus(Client::Status status);
     void killPlayer(const QString &who);
     void revivePlayer(const QString &who);
     void showServerInformation();
@@ -142,10 +142,11 @@ private:
     QComboBox *role_combobox;
     QPushButton *trust_button, *untrust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
+    QPushButton *reverse_button;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
-    QMap<QGraphicsItem *, const ClientPlayer *> item2player;    
+    QMap<QGraphicsItem *, const ClientPlayer *> item2player;
     QDockWidget *skill_dock;
     QComboBox *sort_combobox;
 
@@ -251,10 +252,10 @@ private slots:
     void clearPile();
     void removeLightBox();
 
-    void showCard(const QString &player_name, int card_id);    
+    void showCard(const QString &player_name, int card_id);
     void viewDistance();
 
-    void speak();    
+    void speak();
 
     void onGameStart();
     void onGameOver(bool victory, const QList<bool> &result_list);

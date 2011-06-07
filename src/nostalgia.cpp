@@ -532,7 +532,8 @@ public:
 
     virtual bool isEnabledAtResponse() const{
         return !Self->isKongcheng()
-                && !ClientInstance->card_pattern.startsWith("@");
+                && !ClientInstance->card_pattern.startsWith("@")
+                && !ClientInstance->card_pattern.startsWith(".");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
