@@ -22,7 +22,7 @@ class BlackEdgeTextItem: public QGraphicsObject{
     Q_OBJECT
 
 public:
-    BlackEdgeTextItem();  
+    BlackEdgeTextItem();
     void setColor(const QColor &color);
     void setOutline(int outline);
     void toCenter(const QRectF &rect);
@@ -34,7 +34,7 @@ public slots:
 
     virtual QRectF boundingRect() const;
 
-protected:    
+protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
@@ -70,6 +70,7 @@ public slots:
     void removeSkill();
     void setSkillTitleFont(const QFont &font);
     void setSkillDescriptionFont(const QFont &font);
+    void setTinyFont(const QFont &font);
     void insertSuit(int index);
     void insertBoldText(const QString &bold_text);
     void saveConfig();

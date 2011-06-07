@@ -116,12 +116,14 @@ SkillBox::SkillBox()
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
     skill_description->setX(25);
 
+    QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
+
     copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
+    copyright_text->setFont(Config.value("CardEditor/TinyFont").value<QFont>());
     copyright_text->setTextWidth(skill_description->textWidth());
     copyright_text->setPos(25, -4);
     copyright_text->setTextInteractionFlags(Qt::TextEditorInteraction);
 
-    QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
     setSkillDescriptionFont(font);
 }
 
@@ -198,7 +200,7 @@ void AATextItem::keyReleaseEvent(QKeyEvent *event){
 }
 
 void SkillBox::addSkill(){
-    QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));    
+    QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));
     QGraphicsPixmapItem *skill_title = scene()->addPixmap(title_pixmap);
     qreal last_y = 389;
     if(!skill_titles.isEmpty()){
@@ -249,6 +251,7 @@ void SkillBox::saveConfig(){
 
     Config.setValue("SkillDescription", skill_description->toHtml());
     Config.setValue("SkillDescriptionFont", skill_description->font());
+    Config.setValue("TinyFont", copyright_text->font());
     if(!skill_titles.isEmpty()){
         Config.setValue("SkillTitleFont", skill_titles.first()->font());
     }
@@ -288,10 +291,10 @@ void SkillBox::setSkillTitleFont(const QFont &font){
 
 void SkillBox::setSkillDescriptionFont(const QFont &font){
     skill_description->setFont(font);
+}
 
-    QFont copyright_font = font;
-    copyright_font.setPointSize(7);
-    copyright_text->setFont(copyright_font);
+void SkillBox::setTinyFont(const QFont &font){
+    copyright_text->setFont(font);
 }
 
 void SkillBox::insertSuit(int index){
@@ -561,7 +564,7 @@ void CardScene::setRatio(int ratio){
     Config.setValue("CardEditor/ImageRatio", ratio);
 }
 
-void CardScene::setMaxHp(int max_hp){    
+void CardScene::setMaxHp(int max_hp){
     int n = magatamas.length();
     max_hp = qBound(0, max_hp, n-1);
 
@@ -857,23 +860,31 @@ QWidget *CardEditor::createSkillBox(){
     QGroupBox *box = new QGroupBox(tr("Skill"));
 
     QFormLayout *layout = new QFormLayout;
+
     QPushButton *title_font_button = new QPushButton;
     QPushButton *desc_font_button = new QPushButton;
+    QPushButton *tiny_font_button = new QPushButton;
+
     QFontDialog *title_font_dialog = new QFontDialog(this);
     QFontDialog *desc_font_dialog = new QFontDialog(this);
+    QFontDialog *tiny_font_dialog = new QFontDialog(this);
 
     layout->addRow(tr("Title font"), title_font_button);
     layout->addRow(tr("Description font"), desc_font_button);
+    layout->addRow(tr("Tiny font"), tiny_font_button);
 
     SkillBox *skill_box = card_scene->getSkillBox();
     connect(title_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillTitleFont(QFont)));
     connect(desc_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillDescriptionFont(QFont)));
+    connect(tiny_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setTinyFont(QFont)));
 
     setMapping(title_font_dialog, title_font_button);
     setMapping(desc_font_dialog, desc_font_button);
+    setMapping(tiny_font_dialog, tiny_font_button);
 
     title_font_dialog->setCurrentFont(Config.value("CardEditor/SkillTitleFont", QFont("", 15)).value<QFont>());
     desc_font_dialog->setCurrentFont(Config.value("CardEditor/SkillDescriptionFont", QFont("", 9)).value<QFont>());
+    tiny_font_dialog->setCurrentFont(Config.value("CardEditor/TinyFont", QFont("", 7)).value<QFont>());
 
     QComboBox *suit_combobox = new QComboBox;
     const Card::Suit *suits = Card::AllSuits;
@@ -889,6 +900,7 @@ QWidget *CardEditor::createSkillBox(){
 
     QComboBox *bold_combobox = new QComboBox;
     bold_combobox->setEditable(true);
+    bold_combobox->addItem(tr("Lord skill"));
     bold_combobox->addItem(tr("Compulsory"));
     bold_combobox->addItem(tr("Limited"));
     layout->addRow(tr("Insert bold text"), bold_combobox);

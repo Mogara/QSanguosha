@@ -325,7 +325,7 @@ end
 sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	local players = self.room:getOtherPlayers(self.player)
 	local source
-	for _, player in sgs.qlist(player) do 
+	for _, player in sgs.qlist(players) do 
 		if player:hasFlag("slash_source") then
 			source = player
 			break
