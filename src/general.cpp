@@ -53,7 +53,7 @@ QString General::getPixmapPath(const QString &category) const{
     return QString("image/generals/%1/%2.%3").arg(category).arg(objectName()).arg(suffix);
 }
 
-void General::addSkill(Skill *skill){    
+void General::addSkill(Skill *skill){
     skill->setParent(this);
     skill->initMediaSource();
     skill_set << skill->objectName();
@@ -106,11 +106,7 @@ QString General::getPackage() const{
 QString General::getSkillDescription() const{
     QString description;
 
-    QList<const Skill *> skills = findChildren<const Skill *>();
-    foreach(const Skill *skill, skills){
-        if(skill->objectName().startsWith("#"))
-            continue;
-
+    foreach(const Skill *skill, getVisibleSkills()){
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");

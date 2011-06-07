@@ -12,7 +12,7 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GeneralOverview)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
 
     button_layout = new QVBoxLayout;
 
@@ -97,9 +97,6 @@ GeneralOverview::~GeneralOverview()
 }
 
 void GeneralOverview::addLines(const Skill *skill){
-    if(skill->objectName().startsWith("#"))
-        return;
-
     QString skill_name = Sanguosha->translate(skill->objectName());
     QStringList sources = skill->getSources();
 
@@ -122,7 +119,7 @@ void GeneralOverview::addLines(const Skill *skill){
             }
 
             QCommandLinkButton *button = new QCommandLinkButton(button_text);
-            button->setObjectName(source);            
+            button->setObjectName(source);
             button_layout->addWidget(button);
 
             QString filename = rx.capturedTexts().at(1);
@@ -160,7 +157,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
-    QList<const Skill *> skills = general->findChildren<const Skill *>();
+    QSet<const Skill *> skills = general->getVisibleSkills();
     ui->skillTextEdit->clear();
 
     resetButtons();

@@ -930,7 +930,7 @@ public:
     Shenjun():TriggerSkill("shenjun"){
         events << GameStart << PhaseChange << Predamaged;
         frequency = Compulsory;
-    }   
+    }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
@@ -1227,7 +1227,7 @@ public:
             const Card *card = Sanguosha->getCard(card_id);
             const Card *first = cards.first()->getFilteredCard();
 
-            Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());            
+            Card *new_card = Sanguosha->cloneCard(card->objectName(), first->getSuit(), first->getNumber());
             new_card->addSubcards(cards);
             new_card->setSkillName(objectName());
             return new_card;
@@ -1296,7 +1296,7 @@ public:
         if(target->getPhase() == Player::Finish &&
            target->hasFlag("xunzhi"))
         {
-            Room *room = target->getRoom();           
+            Room *room = target->getRoom();
             room->transfigure(target, parent()->objectName(), false);
             room->killPlayer(target);
         }
@@ -1557,7 +1557,7 @@ YitianPackage::YitianPackage()
     zhangjunyi->addSkill(new JuejiClear);
 
     General *lukang = new General(this, "lukang", "wu", 3);
-    lukang->addSkill("qianxu");
+    lukang->addSkill("qianxun");
     lukang->addSkill(new LukangWeiyan);
 
     General *jinxuandi = new General(this, "jinxuandi", "god");
