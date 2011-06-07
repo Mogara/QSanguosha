@@ -146,6 +146,9 @@ end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	local beggar = self:getBeggar()
+	if not beggar then
+		return "."
+	end
 	
 	local cards = self.player:getHandcards()
 	local n = math.floor(self.player:getHandcardNum()/2)
