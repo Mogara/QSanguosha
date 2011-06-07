@@ -37,7 +37,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	for i=1, #self.enemies-1 do																			
 		if (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:getHandcardNum() == 1) or
 		   (self.enemies[i]:hasSkill("lianying") and self.enemies[i]:getHandcardNum() == 1) then 
-			if first_index then second_index = nil end
+				local bullshit
 				
 		elseif not self.enemies[i]:isKongcheng() then
 			if not first_index then 
@@ -52,7 +52,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	if not second_index then
 		return "."
 	end
-	
+	self:log(self.enemies[first_index]:getGeneralName() .. "+" .. self.enemies[second_index]:getGeneralName())
 	local first = self.enemies[first_index]:objectName()
 	local second = self.enemies[second_index]:objectName()
         --self:updateRoyalty(-0.8*sgs.ai_royalty[first],self.player:objectName())
@@ -323,9 +323,38 @@ function huanggai_ai:activate_dummy(use)
 end
 
 sgs.ai_skill_use["@@liuli"] = function(self, prompt)
+	
+	local others=self.room:getOtherPlayers(self.player)												
+	others=sgs.QList2Table(others)
+	local source
+	for _, player in ipairs(others) do 
+		if player:hasFlag("slash_source") then
+			source = player
+			 break
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy,true) and not (source:objectName() == enemy:objectName()) then	
+            local cards = self.player:getCards("he")
+            cards=sgs.QList2Table(cards)
+            for _,card in ipairs(cards) do
+                if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(enemy)>1 then local bullshit
+                elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(enemy)
+                    and self.player:distanceTo(enemy)>1 then
+                    local bullshit
+                else
+                    return "@LiuliCard="..card:getEffectiveId().."->"..enemy:objectName()
+                end
+            end
+		end
+	end
+	return "."
+end
+
+function nothing(self, prompt)
 	local players = self.room:getOtherPlayers(self.player)
 	local source
-	for _, player in sgs.qlist(players) do 
+	for _, player in sgs.qlist(player) do 
 		if player:hasFlag("slash_source") then
 			source = player
 			break

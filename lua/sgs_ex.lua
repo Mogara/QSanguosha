@@ -2,6 +2,9 @@
 
 -- trigger skills
 function sgs.CreateTriggerSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.on_trigger) == "function")
+
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
 	

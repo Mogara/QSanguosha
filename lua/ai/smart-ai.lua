@@ -245,6 +245,7 @@ function SmartAI:updatePlayers(inclusive)
 			if self:objectiveLevel(player)<=0 then return end
 			table.insert(elist,player)
 			self:updateLoyalTarget(player)
+			self:updateRebelTarget(player)
 			
 			if self:objectiveLevel(player)>=4 then self.harsh_retain=false end
 			--local use=self:getTurnUse()
@@ -268,6 +269,19 @@ function SmartAI:updateLoyalTarget(player)
         elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target=player 
         end
     end
+end
+
+function SmartAI:updateRebelTarget(player)
+	if self.role == "lord" or self.role == "loyalist" then return end
+	if not sgs.rebel_target then sgs.rebel_target=player end
+	if self.room:getLord():objectName() == player:objectName() then sgs.rebel_target=player
+	elseif self:objectiveLevel(player)>=4 and self:objectiveLevel(player)<5 then
+		if player:getHp() == 1 and sgs.rebel_target:getHp() > 2 then sgs.rebel_target=player
+		elseif (sgs.rebel_target:getArmor()) and (not player:getArmor() and sgs.rebel_target:getHp()>player:getHp()) then sgs.rebel_target=player 
+		elseif sgs.rebel_target:getHp()-player:getHp()>2 then sgs.rebel_target=player
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.rebel_target:getGeneralName()] or 0) then sgs.rebel_target=player 
+		end
+	end
 end
 
 function SmartAI:printFEList()
@@ -365,6 +379,13 @@ function SmartAI:objectiveLevel(player)
 			if player:getRole() == "renegade" then return 5 else return -2 end
 		end
 		
+		if loyalish_num <= rebel_num then 
+			if player:getRole() == "lord" then return -2
+ 			elseif player:getRole() == "renegade" then return -1 
+			elseif player:getRole() == "rebel" then return 5
+			end
+		end
+		
         if sgs.ai_explicit[player:objectName()]=="rebel" then return 5-modifier
         elseif sgs.ai_explicit[player:objectName()]=="rebelish" then return 5-modifier
         elseif player:isLord() then return -2
@@ -390,6 +411,7 @@ function SmartAI:objectiveLevel(player)
 		elseif not hasLoyal then
 			if player:getRole() == "lord" then return 5 
 			elseif player:getRole() == "renegade" then return 3.1
+			else return -2
 			end
         elseif sgs.ai_explicit[player:objectName()]=="loyalist" then return 5-modifier
         elseif sgs.ai_explicit[player:objectName()]=="loyalish" then return 5-modifier
@@ -407,7 +429,8 @@ function SmartAI:objectiveLevel(player)
         --if (#players==2) and player:isLord() then return 0 end
 		
         if not hasRebel then 
-			if player:isLord() then return 3.1 
+			if player:isLord() then 
+				if player:getHp() > 2 then return 3.1 else return -1 end
 			else return 5 end
 		end
 
@@ -1100,7 +1123,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	local friends = self:exclude(self.friends_noself, dismantlement)
 	local hasLion, target
 	for _, friend in ipairs(friends) do
-		if self:hasTrickEffective(card, friend) then
+		if self:hasTrickEffective(dismantlement, friend) then
 			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 				use.card = dismantlement
 				if use.to then use.to:append(friend) end
@@ -1132,7 +1155,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		
 		--if equips or not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then			--not all conditions
 		
-		    if  not enemy:isNude() and self:hasTrickEffective(card, enemy) and					---update
+		    if  not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) and					---update
 			   (not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
 				if enemy:getHandcardNum() == 1 then
 					if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
@@ -1170,7 +1193,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	local friends = self:exclude(self.friends_noself, snatch)
 	local hasLion, target
 	for _, friend in ipairs(friends) do
-		if self:hasTrickEffective(card, friend) then
+		if self:hasTrickEffective(snatch, friend) then
 			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 				use.card = snatch
 				if use.to then use.to:append(friend) end
@@ -1198,7 +1221,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	end	
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do		    
-		if  not enemy:isNude() and self:hasTrickEffective(card, enemy) and					---update
+		if  not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and					---update
 			(not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
@@ -1234,7 +1257,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	end
 	self:sort(self.enemies,"defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng()  and self:hasTrickEffective(card, enemy) then							----no xushu
+		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng()  and self:hasTrickEffective(fire_attack, enemy) then							----no xushu
 			
 			local cards = enemy:getHandcards()
 			local success = true
@@ -1390,7 +1413,7 @@ function SmartAI:useCardDuel(duel, use)
 			local n1 = self:getSlashNumber(self.player)
 			local n2 = self:getSlashNumber(enemy)
 
-			if n1 >= n2 and self:hasTrickEffective(card, enemy) then													--no xushu
+			if n1 >= n2 and self:hasTrickEffective(duel, enemy) then													--no xushu
 				use.card = duel
 					if use.to then 
 						use.to:append(enemy) 
@@ -1483,7 +1506,7 @@ function SmartAI:useCardCollateral(card, use)
 	local final_enemy = nil
 	for _, enemy in ipairs(self.enemies) do
 		if not self.room:isProhibited(self.player, enemy, card) 
-			and not enemy:hasSkill("weimu")
+			and self:hasTrickEffective(card, enemy)
 			and not enemy:hasSkill("xiaoji")					--update
 			and not enemy:hasSkill("wuyan")						
 			and enemy:getWeapon() then
@@ -1617,6 +1640,23 @@ function SmartAI:useCardAmazingGrace(card, use)
 	end
 end
 
+function SmartAI:getPeachNum()
+	local index = 0
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Peach") then index = index + 1 end
+	end
+	if self.player:hasSkill("jijiu") then 
+		cards = self.player:getCards("e")
+		cards = sgs.QList2Table(cards)
+		for _, card in ipairs(cards) do
+			if card:isRed() then index = index + 1 end
+		end
+	end
+	
+	return index
+end
+
 function SmartAI:useTrickCard(card, use)
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
@@ -1632,6 +1672,7 @@ function SmartAI:useTrickCard(card, use)
 					return
 				end
 			end
+			good = good + self:getPeachNum()
 		end
 
 		for _, enemy in ipairs(self.enemies) do
@@ -1642,8 +1683,9 @@ function SmartAI:useTrickCard(card, use)
 					good = good + 20/(enemy:getHp())
 				end
 			end
+			bad = bad + self:getPeachNum()
 		end
-
+		
 		if good > bad then
 			use.card = card
 		end
@@ -2696,7 +2738,7 @@ end
 
 function SmartAI:hasTrickEffective(card, player)
 	if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
-		if not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
+		if acrd and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 	end
 	return true
 end

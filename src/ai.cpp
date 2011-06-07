@@ -392,6 +392,7 @@ void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int>
     Q_UNUSED(up_only);
 
     up = cards;
+    bottom.clear();
 }
 
 LuaAI::LuaAI(ServerPlayer *player)
