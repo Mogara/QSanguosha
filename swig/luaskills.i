@@ -12,6 +12,31 @@ public:
     LuaFunction can_trigger;
 };
 
+class GameStartSkill: public TriggerSkill{
+public:
+    GameStartSkill(const QString &name);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual void onGameStart(ServerPlayer *player) const = 0;
+};
+
+class ProhibitSkill: public GameStartSkill{
+public:
+    ProhibitSkill(const QString &name);
+
+    virtual void onGameStart(ServerPlayer *player) const;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
+};
+
+class LuaProhibitSkill: public ProhibitSkill{
+public:
+    LuaProhibitSkill(const char *name);
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const;
+
+    LuaFunction is_prohibited;
+};
+
 class ViewAsSkill:public Skill{
 public:
     ViewAsSkill(const QString &name);
@@ -126,6 +151,30 @@ static void Error(lua_State *L){
     const char *error_string = lua_tostring(L, -1);
     lua_pop(L, 1);
     QMessageBox::warning(NULL, "Lua script error!", error_string);
+}
+
+bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card) const{
+    if(is_prohibited == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, is_prohibited);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaProhibitSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 4, 1, 0);
+    if(error){
+        Error(L);
+        return false;
+    }
+
+    bool result = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
 }
 
 // ----------------------

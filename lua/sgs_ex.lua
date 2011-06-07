@@ -39,6 +39,16 @@ function sgs.CreateGameStartSkill(spec)
 	return sgs.CreateTriggerSkill(spec)
 end
 
+function sgs.CreateProhibitSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.is_prohibit) == "function")
+	
+	local skill = sgs.LuaProhibitSkill(name)	
+	skill.is_prohibit = spec.is_prohibit
+	
+	return skill
+end
+
 function sgs.CreateMasochismSkill(spec)
 	assert(type(spec.on_damaged) == "function")
 	

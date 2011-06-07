@@ -20,6 +20,17 @@ public:
     LuaFunction can_trigger;
 };
 
+class LuaProhibitSkill: public ProhibitSkill{
+    Q_OBJECT
+
+public:
+    LuaProhibitSkill(const char *name);
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const;
+
+    LuaFunction is_prohibited;
+};
+
 class LuaViewAsSkill: public ViewAsSkill{
     Q_OBJECT
 
@@ -55,7 +66,7 @@ public:
     static LuaSkillCard *Parse(const QString &str);
     void pushSelf(lua_State *L) const;
 
-    virtual QString toString() const;    
+    virtual QString toString() const;
 
     // these functions are defined at swig/luaskills.i
     virtual bool isAvailable() const;
@@ -66,7 +77,7 @@ public:
 
     // the lua callbacks
     LuaFunction available;
-    LuaFunction filter;    
+    LuaFunction filter;
     LuaFunction feasible;
     LuaFunction on_use;
     LuaFunction on_effect;
