@@ -148,6 +148,15 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
 
     player->setFlags("dying");
 
+    QString sos_filename;
+    if(player->getGeneral()->isMale())
+        sos_filename = "male-sos";
+    else{
+        int r = qrand() % 2 + 1;
+        sos_filename = QString("female-sos%1").arg(r);
+    }
+    broadcastInvoke("playAudio", sos_filename);
+
     QVariant dying_data = QVariant::fromValue(dying);
     thread->trigger(Dying, player, dying_data);
 }

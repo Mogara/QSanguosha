@@ -976,6 +976,7 @@ void CardEditor::saveImage(){
                                                     );
 
     if(!filename.isEmpty()){
+        card_scene->clearFocus();
         QPixmap::grabWidget(card_scene->views().first()).save(filename);
         Config.setValue("CardEditor/ExportPath", QFileInfo(filename).absolutePath());
     }
