@@ -2290,7 +2290,16 @@ void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only
         bottom_cards = Card::StringsToIds(bottom_list);
     }
 
-    Q_ASSERT(top_cards.length() + bottom_cards.length() == cards.length());
+
+    if(top_cards.length() + bottom_cards.length() != cards.length()){
+        QString top_str = Card::IdsToStrings(top_cards).join("+");
+        QString bottom_str = Card::IdsToStrings(bottom_cards).join("+");
+
+        qDebug("Guanxing error: %s %s", qPrintable(top_str), qPrintable(bottom_str));
+
+        top_cards = cards;
+        bottom_cards.clear();
+    }
 
     LogMessage log;
     log.type = "#GuanxingResult";
