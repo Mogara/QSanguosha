@@ -15,4 +15,6 @@ public:
 
 %template(SPlayerList) QList<ServerPlayer *>;
 %template(CardList) QList<const Card *>;
-%template(IntList) QList<int>;
+
+// ask QList<int> and QStringList are wrapped as a native lua table
+// no need to wrap their corresponding template classes
