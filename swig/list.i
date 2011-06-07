@@ -10,7 +10,7 @@ public:
 	bool isEmpty() const;
 	T first() const;
 	T last() const;
-	void removeAt(int i) const;
+	void removeAt(int i);
 };
 
 %template(SPlayerList) QList<ServerPlayer *>;
