@@ -27,6 +27,12 @@ LuaViewAsSkill::LuaViewAsSkill(const char *name)
 
 }
 
+LuaFilterSkill::LuaFilterSkill(const char *name)
+    :FilterSkill(name), view_filter(0), view_as(0)
+{
+
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)
@@ -60,7 +66,7 @@ void LuaSkillCard::setTargetFixed(bool target_fixed){
 }
 
 void LuaSkillCard::setWillThrow(bool will_throw){
-    this->will_throw = will_throw;
+    this->will_throw = will_throw;;
 }
 
 LuaSkillCard *LuaSkillCard::Parse(const QString &str){

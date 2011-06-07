@@ -53,6 +53,19 @@ protected:
     virtual bool isEnabledAtResponse() const;
 };
 
+class LuaFilterSkill: public FilterSkill{
+    Q_OBJECT
+
+public:
+    LuaFilterSkill(const char *name);
+
+    virtual bool viewFilter(const CardItem *to_select) const;
+    virtual const Card *viewAs(CardItem *card_item) const;
+
+    LuaFunction view_filter;
+    LuaFunction view_as;
+};
+
 class LuaSkillCard: public SkillCard{
     Q_OBJECT
 

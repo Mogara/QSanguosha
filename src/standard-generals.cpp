@@ -107,7 +107,7 @@ public:
             }
 
             if(can_invoke && room->askForUseCard(zhangliao, "@@tuxi", "@tuxi-card"))
-                return true;            
+                return true;
         }
 
         return false;
@@ -486,7 +486,7 @@ public:
         if(!room->askForSkillInvoke(liubei, objectName()))
             return false;
 
-        room->playSkillEffect(objectName());        
+        room->playSkillEffect(objectName());
         foreach(ServerPlayer *liege, lieges){
             const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash");
             if(slash){
@@ -540,7 +540,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();       
+        const Card *card = to_select->getCard();
 
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
@@ -620,7 +620,7 @@ public:
 class Guanxing:public PhaseChangeSkill{
 public:
     Guanxing():PhaseChangeSkill("guanxing"){
-        frequency = Frequent;       
+        frequency = Frequent;
     }
 
     virtual bool onPhaseChange(ServerPlayer *zhuge) const{
@@ -1360,15 +1360,16 @@ void StandardPackage::addGenerals(){
     // for test only
     General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
     zhiba_sunquan->addSkill(new Zhiba);
+    zhiba_sunquan->addSkill("jiuyuan");
 
     General *wuxing_zhuge = new General(this, "wuxingzhuge", "shu", 3, true, true);
     wuxing_zhuge->addSkill(new SuperGuanxing);
     wuxing_zhuge->addSkill("kongcheng");
     wuxing_zhuge->addSkill("#kongcheng-effect");
 
-    // for skill cards    
+    // for skill cards
     addMetaObject<ZhihengCard>();
-    addMetaObject<RendeCard>();    
+    addMetaObject<RendeCard>();
     addMetaObject<TuxiCard>();
     addMetaObject<JieyinCard>();
     addMetaObject<KurouCard>();
@@ -1379,5 +1380,5 @@ void StandardPackage::addGenerals(){
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
     addMetaObject<HuanzhuangCard>();
-    addMetaObject<CheatCard>();    
+    addMetaObject<CheatCard>();
 }

@@ -61,6 +61,33 @@ public:
     LuaFunction enabled_at_response;
 };
 
+class OneCardViewAsSkill: public ViewAsSkill{
+public:
+    OneCardViewAsSkill(const QString &name);
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+
+    virtual bool viewFilter(const CardItem *to_select) const = 0;
+    virtual const Card *viewAs(CardItem *card_item) const = 0;
+};
+
+class FilterSkill: public OneCardViewAsSkill{
+public:
+    FilterSkill(const QString &name);
+};
+
+class LuaFilterSkill: public FilterSkill{
+public:
+    LuaFilterSkill(const char *name);
+
+    virtual bool viewFilter(const CardItem *to_select) const;
+    virtual const Card *viewAs(CardItem *card_item) const;
+
+    LuaFunction view_filter;
+    LuaFunction view_as;
+};
+
 class LuaSkillCard: public SkillCard{
 public:
     LuaSkillCard(const char *name);
@@ -176,6 +203,56 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
     lua_pop(L, 1);
     return result;
 }
+
+bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
+    if(view_filter == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, view_filter);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaFilterSkill, 0);
+    SWIG_NewPointerObj(L, to_select->getCard(), SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return false;
+    }
+
+    bool result = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
+}
+
+const Card *LuaFilterSkill::viewAs(CardItem *card_item) const{
+    if(view_as == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, view_as);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaFilterSkill, 0);
+    SWIG_NewPointerObj(L, card_item->getCard(), SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return NULL;
+    }
+    
+    void *card_ptr;
+    int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+    lua_pop(L, 1);
+    if(SWIG_IsOK(result)){
+		const Card *card = static_cast<const Card *>(card_ptr);
+        return card;
+    }else
+        return NULL;
+}
+
 
 // ----------------------
 

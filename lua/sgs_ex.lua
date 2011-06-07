@@ -43,9 +43,21 @@ function sgs.CreateProhibitSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.is_prohibit) == "function")
 	
-	local skill = sgs.LuaProhibitSkill(name)	
+	local skill = sgs.LuaProhibitSkill(spec.name)	
 	skill.is_prohibit = spec.is_prohibit
 	
+	return skill
+end
+
+function sgs.CreateFilterSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.view_filter) == "function")
+	assert(type(spec.view_as) == "function")
+
+	local skill = sgs.LuaFilterSkill(spec.name)
+	skill.view_filter = spec.view_filter
+	skill.view_as = spec.view_as
+
 	return skill
 end
 
