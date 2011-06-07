@@ -491,7 +491,17 @@ public:
 };
 
 class SkillCard: public Card{
-    
+public:
+    SkillCard();
+    void setUserString(const QString &user_string);
+
+    virtual QString getSubtype() const;    
+    virtual QString getType() const;
+    virtual CardType getTypeId() const;
+    virtual QString toString() const;    
+
+protected:
+    QString user_string;
 };
 
 class DummyCard: public Card{
