@@ -2432,23 +2432,25 @@ function SmartAI:askForAG(card_ids,refusable)
     return cards[#cards]:getEffectiveId()
 end
 
-function SmartAI:askForNullification(trick_name, from, to, positive)   							-----add nullification
+function SmartAI:askForNullification(trick_name, from, to, positive)
 	local cards = self.player:getCards("h")
 	local null_card
-		for _, card in sgs.qlist(cards) do
-			if card:inherits("Nullification") then 
-				null_card = card
-				break
-			end				
-			if card:isBlack() and self.player:hasSkill("kanpo") then
-			    local suit = card:getSuitString()
-		        local number = card:getNumberString()
-		        local card_id = card:getEffectiveId()
-		        local card_str = ("nullification[%s:%s]=%d"):format(suit, number, card_id)
-		        null_card = sgs.Card_Parse(card_str)				
-				break
-			end
+	
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Nullification") then 
+			null_card = card
+			break
+		end				
+		if card:isBlack() and self.player:hasSkill("kanpo") then
+			local suit = card:getSuitString()
+			local number = card:getNumberString()
+			local card_id = card:getEffectiveId()
+			local card_str = ("nullification[%s:%s]=%d"):format(suit, number, card_id)
+			null_card = sgs.Card_Parse(card_str)				
+			break
 		end
+	end
+	
     if not null_card then return nil end
     
 	if positive then	
@@ -2492,7 +2494,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)   							--
 			end
 			--if to:isLord() then return null_card end				--add codes
 		end		
-	else
+	elseif from then
 		if from:objectName() == to:objectName() then
 			if self:isFriend(from) then return null_card
 			else return nil end
@@ -2502,11 +2504,9 @@ function SmartAI:askForNullification(trick_name, from, to, positive)   							--
 --	    local reverse_null=self:askForNullification(trick_name, from, to, true)
 --		if null_card and not reverse_null then return null_card end
 	end
-	
-	return nil
 end
 
-function SmartAI:askForSinglePeach(player, dying)										--add ask for peach
+function SmartAI:askForSinglePeach(player, dying)
 	local cards = self.player:getCards("he")
 	
 	if self:isFriend(dying) and dying:isLord() then
