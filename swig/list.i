@@ -11,4 +11,4 @@ public:
 
 %template(SPlayerList) QList<ServerPlayer *>;
 %template(CardList) QList<const Card *>;
-
+%template(IntList) QList<int>;
