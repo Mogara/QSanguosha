@@ -86,7 +86,6 @@ yongsi=sgs.CreateTriggerSkill{
 			data:setValue(data:toInt()+getKingdoms()) --DrawNCards事件的data是一个int类型的QVariant，改变该QVariant对象会改变摸牌数
 		elseif (event==sgs.PhaseChange) and (player:getPhase()==sgs.Player_Discard) then
 			--进入弃牌阶段时，先执行庸肆弃牌，然后再执行常规弃牌
-			room:output("aaaaaa")
 			local x = getKingdoms()
 			local e = player:getEquips():length()+player:getHandcardNum()
 			if e>x then room:askForDiscard(player,"yongsi",x,false,true) -- 最后两个参数为”是否强制“以及”是否包含装备“

@@ -11,7 +11,7 @@ extension = sgs.Package("moligaloo")            -- 创建扩展包对象。变�
 
 shiqian = sgs.General(extension, "shiqian", "qun") -- 创建武将对象。关于武将属性的详细说明见reference文档。
 
-shentou = sgs.CreateViewAsSkill{ --创建技能，技能种类为ViewAsSkill。 此段由于代码重复性大，我制作了一个脚本生成器来生成代码；但是由于神主不提倡脚本生成器的做法所以应该仅仅是ViewAsSkill具有生成器而已。
+shentou = sgs.CreateViewAsSkill{ --创建技能，技能种类为ViewAsSkill。 
 	name = "shentou",
 	n = 1,
 	view_filter = function(self, selected, to_select)
@@ -28,6 +28,12 @@ shentou = sgs.CreateViewAsSkill{ --创建技能，技能种类为ViewAsSkill。 
 		end
 	end
 }--关于技能的说明将是几乎所有其他帮助文件的重点。此处省略。
+
+sgs.LoadTranslationTable{
+	["shentou"] = "神偷",
+	[":shentou"] = "你可以将你的梅花手牌当做顺手牵羊使用。",
+
+}--此段为翻译，将技能名称与描述中文化
 
 shiqian:addSkill(shentou) --赋予武将技能。
 

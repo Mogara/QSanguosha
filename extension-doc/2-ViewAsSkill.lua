@@ -111,7 +111,7 @@ view_as = function(self, cards)
 	local invalid_condition=(#cards<1)
 	if invalid_condition then return nil end
 	
-	local view_as_card=sgs.CreateSkillCard( lijianCard )
+	local view_as_card=lijian_Card:clone()
 	
 	for _,card in ipairs(cards) do
 		view_as_card:addSubcard(card:getId())
@@ -120,4 +120,4 @@ view_as = function(self, cards)
 	return view_as_card
 end,
 
---其中lijianCard的定义应该被包含在同一个module文件当中。我将在其他文档中讲解技能牌的定义。
+--其中lijian_Card的定义应该被包含在同一个module文件当中。我将在其他文档中讲解技能牌的定义。

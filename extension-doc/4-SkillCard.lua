@@ -94,7 +94,7 @@ end,
 
 on_use=function(self,room,source,targets)
 	room:throwCard(self)	--self代表技能牌本身。由于是将“任意张牌当成制衡牌打出”，因此弃置制衡牌就等于弃置所有用来发动制衡的牌，也即被制衡掉的牌。
-	room:drawCards(source,self:getSubcards():length())
+	room:drawCards(source,#self:getSubcards())
 	--摸取相当于被用来发动制衡的牌的数目的牌。
 	--可以用self:getSubcards()来获取这些牌的QList。
 )
