@@ -187,6 +187,10 @@ public:
 	QVariant getTag(const char *key){
 		return $self->tag[key];
 	}
+
+	void removeTag(const char *tag_name){
+		$self->tag.remove(tag_name);
+	}
 };
 
 class ServerPlayer : public Player

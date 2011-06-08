@@ -5,7 +5,7 @@ public:
     void addEvent(TriggerEvent event);
 	void setViewAsSkill(ViewAsSkill *view_as_skill);
 	
-	virtual bool triggerable(ServerPlayer *target) const;
+	virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 
     LuaFunction on_trigger;
@@ -108,7 +108,7 @@ public:
 #include "clientplayer.h"
 #include "carditem.h"
 
-bool LuaTriggerSkill::triggerable(ServerPlayer *target) const{
+bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
 	if(can_trigger == 0)
 		return TriggerSkill::triggerable(target);
 	
@@ -117,10 +117,7 @@ bool LuaTriggerSkill::triggerable(ServerPlayer *target) const{
 	
 	// the callback function
 	lua_rawgeti(L, LUA_REGISTRYINDEX, can_trigger);	
-	
-	LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
-	SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTriggerSkill, 0);
-	
+	SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);	
 	SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
 
 	int error = lua_pcall(L, 2, 1, 0);
