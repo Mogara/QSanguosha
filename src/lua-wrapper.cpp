@@ -70,15 +70,33 @@ void LuaSkillCard::setWillThrow(bool will_throw){
 }
 
 LuaSkillCard *LuaSkillCard::Parse(const QString &str){
-    QString name = str;
-    name.remove(QChar('#'));
+    QRegExp rx("#(\\w+):(.*):(.*)");
+    if(!rx.exactMatch(str))
+        return NULL;
+
+    QStringList texts = rx.capturedTexts();
+    QString name = texts.at(1);
+    QString subcard_str = texts.at(2);
+    QString user_string = texts.at(3);
 
     const LuaSkillCard *c = LuaSkillCards.value(name, NULL);
+    if(c == NULL)
+        return NULL;
 
-    return c ? c->clone() : NULL;
+    LuaSkillCard *new_card = c->clone();
+
+    if(subcard_str != "."){
+        foreach(QString subcard, subcard_str.split("+")){
+            new_card->addSubcard(subcard.toInt());
+        }
+    }
+
+    new_card->setUserString(user_string);
+    return new_card;
 }
 
 QString LuaSkillCard::toString() const{
-    return "#" + objectName();
+    return QString("#%1:%2:%3").arg(objectName())
+            .arg(subcardString()).arg(user_string);
 }
 

@@ -93,6 +93,7 @@ public:
     LuaSkillCard(const char *name);
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
+    LuaSkillCard *clone() const;
 
     LuaFunction available;
     LuaFunction filter;    
