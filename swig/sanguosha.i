@@ -599,6 +599,18 @@ public:
 class QThread: public QObject{
 };
 
+struct LogMessage{
+    LogMessage();
+    QString toString() const;
+
+    QString type;
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+    QString card_str;
+    QString arg;
+    QString arg2;
+};
+
 class RoomThread : public QThread{
 public:
     explicit RoomThread(Room *room);

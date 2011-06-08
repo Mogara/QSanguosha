@@ -1,5 +1,6 @@
 class QVariant{
 public:
+	QVariant();
 	QVariant(int);
 	QVariant(const char *);
 	QVariant(bool);
