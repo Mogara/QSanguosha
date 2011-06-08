@@ -2149,7 +2149,7 @@ sgs.ai_skill_playerchosen = {}
 
 function SmartAI:askForPlayerChosen(targets, reason)
 	self:log("askForPlayerChosen:"..reason)
-	local playerchosen = sgs.ai_skill_playerchosen[string.gsub(reason,"%-","_")]
+	local playerchosen = sgs.ai_skill_playerchosen[reason]
 	local target
 	if type(playerchosen) == "function" then
 		target=playerchosen(self,targets)
