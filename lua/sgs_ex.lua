@@ -86,8 +86,13 @@ function sgs.CreateSkillCard(spec)
 	
 	local card = sgs.LuaSkillCard(spec.name)
 	
-	card:setTargetFixed(spec.target_fixed)
-	card:setWillThrow(spec.will_throw)	
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+
+	if type(spec.will_throw) == "boolean" then
+		card:setWillThrow(spec.will_throw)	
+	end
 	
 	card.available = spec.available
 	card.filter = spec.filter
