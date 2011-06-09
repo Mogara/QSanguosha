@@ -36,7 +36,7 @@ LuaFilterSkill::LuaFilterSkill(const char *name)
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)
-    :SkillCard(), available(0), filter(0), feasible(0), on_use(0), on_effect(0)
+    :SkillCard(), filter(0), feasible(0), on_use(0), on_effect(0)
 {
     if(name){
         LuaSkillCards.insert(name, this);
@@ -53,7 +53,6 @@ LuaSkillCard *LuaSkillCard::clone() const{
     new_card->will_throw = will_throw;
 
     new_card->filter = filter;
-    new_card->available = available;
     new_card->feasible = feasible;
     new_card->on_use = on_use;
     new_card->on_effect = on_effect;

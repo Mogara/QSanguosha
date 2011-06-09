@@ -94,7 +94,6 @@ function sgs.CreateSkillCard(spec)
 		card:setWillThrow(spec.will_throw)	
 	end
 	
-	card.available = spec.available
 	card.filter = spec.filter
 	card.feasible = spec.feasible
 	card.on_use = spec.on_use

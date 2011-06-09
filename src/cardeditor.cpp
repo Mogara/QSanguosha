@@ -634,7 +634,7 @@ void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         if(item->parentItem() == skill_box){
             QGraphicsScene::contextMenuEvent(event);
             return;
-        }else if(item == big_avatar_rect || item == small_avatar_rect){
+        }else if(item == big_avatar_rect || item == small_avatar_rect || item == tiny_avatar_rect){
             done_menu->popup(event->screenPos());
             return;
         }

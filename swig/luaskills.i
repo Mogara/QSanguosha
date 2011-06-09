@@ -95,7 +95,6 @@ public:
     void setWillThrow(bool will_throw);
     LuaSkillCard *clone() const;
 
-    LuaFunction available;
     LuaFunction filter;    
     LuaFunction feasible;
     LuaFunction on_use;
@@ -374,28 +373,6 @@ bool LuaViewAsSkill::isEnabledAtResponse() const{
 void LuaSkillCard::pushSelf(lua_State *L) const{
     LuaSkillCard *self = const_cast<LuaSkillCard *>(this);
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaSkillCard, 0);
-}
-
-bool LuaSkillCard::isAvailable() const{
-    if(available == 0)
-        return SkillCard::isAvailable();
-
-    lua_State *L = Sanguosha->getLuaState();
-	
-	// the callback
-	lua_rawgeti(L, LUA_REGISTRYINDEX, available);	
-
-    pushSelf(L);
-
-    int error = lua_pcall(L, 1, 1, 0);
-    if(error){
-        Error(L);
-        return false;
-    }else{
-		bool result = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		return result;
-	}
 }
 
 bool LuaSkillCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
