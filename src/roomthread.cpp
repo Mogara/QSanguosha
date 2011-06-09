@@ -234,7 +234,7 @@ void RoomThread::run(){
 }
 
 static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
-    return a->getPriority() < b->getPriority();
+    return a->getPriority() > b->getPriority();
 }
 
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
