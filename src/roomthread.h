@@ -9,11 +9,6 @@
 
 #include "structs.h"
 
-struct TriggerSkillSorter{
-    bool operator()(const TriggerSkill *a, const TriggerSkill *b);
-    void sort(QList<const TriggerSkill *> &skills);
-};
-
 struct LogMessage{
     LogMessage();
     QString toString() const;

@@ -1,7 +1,7 @@
 #include "lua-wrapper.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency)
-    :TriggerSkill(name), on_trigger(0), can_trigger(0)
+    :TriggerSkill(name), on_trigger(0), can_trigger(0), priority(1)
 {
     this->frequency = frequency;
 }
@@ -12,6 +12,10 @@ void LuaTriggerSkill::addEvent(TriggerEvent event){
 
 void LuaTriggerSkill::setViewAsSkill(ViewAsSkill *view_as_skill){
     this->view_as_skill = view_as_skill;
+}
+
+int LuaTriggerSkill::getPriority() const{
+    return priority;
 }
 
 LuaProhibitSkill::LuaProhibitSkill(const char *name)

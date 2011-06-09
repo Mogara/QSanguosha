@@ -21,17 +21,6 @@ QString LogMessage::toString() const{
             .arg(card_str).arg(arg).arg(arg2);
 }
 
-bool TriggerSkillSorter::operator ()(const TriggerSkill *a, const TriggerSkill *b){
-    int x = a->getPriority();
-    int y = b->getPriority();
-
-    return x > y;
-}
-
-void TriggerSkillSorter::sort(QList<const TriggerSkill *> &skills){
-    qStableSort(skills.begin(), skills.end(), *this);
-}
-
 DamageStruct::DamageStruct()
     :from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false)
 {
@@ -144,7 +133,7 @@ void RoomThread::removePlayerSkills(ServerPlayer *player){
 void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
         addPlayerSkills(player, false);
-    }   
+    }
 
     addTriggerSkill(rule);
 }
@@ -244,6 +233,10 @@ void RoomThread::run(){
     }
 }
 
+static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
+    return a->getPriority() < b->getPriority();
+}
+
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
@@ -255,8 +248,7 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
             itor.remove();
     }
 
-    TriggerSkillSorter sorter;
-    sorter.sort(skills);
+    qStableSort(skills.begin(), skills.end(), CompareByPriority);
 
     bool broken = false;
     foreach(const TriggerSkill *skill, skills){

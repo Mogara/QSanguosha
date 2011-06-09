@@ -10,6 +10,7 @@ public:
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;
+	int priority;
 };
 
 class GameStartSkill: public TriggerSkill{

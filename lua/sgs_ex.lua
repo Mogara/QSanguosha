@@ -26,6 +26,10 @@ function sgs.CreateTriggerSkill(spec)
 		skill:setViewAsSkill(spec.view_as_skill)
 	end
 
+	if type(spec.priority) == "number" then
+		skill.priority = spec.priority
+	end
+
 	return skill
 end
 
