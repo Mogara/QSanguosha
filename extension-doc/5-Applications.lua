@@ -25,10 +25,6 @@ target_fixed=false,
 
 will_throw=true,
 
-avaliable=function(self)
-	return sgs.Self:getCards("he"):length()>0
-end,
-
 filter=function(self,targets,to_select)
 
 	if #targets>0 then return false end

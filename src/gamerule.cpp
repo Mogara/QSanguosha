@@ -10,7 +10,7 @@ GameRule::GameRule(QObject *parent)
     setParent(parent);
 
     events << GameStart << TurnStart << PhaseChange << CardUsed
-            << CardEffected << HpRecover << AskForPeachesDone
+            << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete
@@ -216,6 +216,24 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             break;
         }
 
+    case HpLost:{
+            int lose = data.toInt();
+
+            LogMessage log;
+            log.type = "#LoseHp";
+            log.from = player;
+            log.arg = QString::number(lose);
+            room->sendLog(log);
+
+            room->setPlayerProperty(player, "hp", player->getHp() - lose);
+            room->broadcastInvoke("hpChange", QString("%1:%2").arg(player->objectName()).arg(-lose));
+
+            if(player->getHp() <= 0)
+                room->enterDying(player, NULL);
+
+            break;
+    }
+
     case Dying:{
             if(player->getHp() > 0){
                 player->setFlags("-dying");
@@ -303,7 +321,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             }
 
             break;
-        }        
+        }
 
     case DamageComplete:{
             if(room->getMode() == "02_1v1" && player->isDead()){

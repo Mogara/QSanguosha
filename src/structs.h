@@ -105,6 +105,7 @@ enum TriggerEvent{
     PhaseChange,
     DrawNCards,
     HpRecover,
+    HpLost,
 
     StartJudge,
     AskForRetrial,
