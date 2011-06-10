@@ -52,7 +52,8 @@ xianzhen_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func["XianzhenSlashCard"]=function(card,use,self)
-    if self:getSlash() then
+	local target = self.player:getTag("XianzhenTarget"):toPlayer() 
+    if self:getSlash() and not target:isDead() and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
         use.card=card
     end
 end

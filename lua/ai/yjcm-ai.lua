@@ -102,20 +102,22 @@ sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	return "nothing"
 end
 
-sgs.ai_skill_playerchosen["xuanfeng-damage"] = function(self,targets)
+sgs.ai_skill_playerchosen.xuanfeng_damage = function(self,targets)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:distanceTo(enemy)<=1 then return enemy end
 	end
+
+	return nil
 end
 
-sgs.ai_skill_playerchosen["xuanfeng-slash"] = function(self,targets)
-	local slash = sgs.Card_Parse("slash[no_suit:0]")
+sgs.ai_skill_playerchosen.xuanfeng_slash = function(self,targets)
+	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if not self:slashProhibit(slash ,enemy) then return enemy end
 	end
-
+--	self:log("unfound")
 	return self.enemys:at(math.random(0, targets:length() - 1))
 end
 

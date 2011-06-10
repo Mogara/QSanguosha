@@ -18,7 +18,7 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local dmg
 	
 	if data=="@@tianxiang-card" then
-		dmg = self.room:getTag("TianxiangDamage"):toDamage()
+		dmg = self.player:getTag("TianxiangDamage"):toDamage()
 	else
 		dmg=data
 	end
@@ -127,10 +127,9 @@ sgs.ai_skill_choice["guhuo"] = function(self, choices)
 	for _, other in ipairs(players) do
 		if other:hasSkill("guhuo") then yuji = other break end
 	end
-	if self:isFriend(yuji) then return "noquestion" 
+	if self.lua_ai:isFriend(yuji) then return "noquestion" 
 	else
-		if self.player:getHp() > 2 then return "question"
-		elseif self.player:getHp() == 2 then
+		if self.player:getHp() >= 2 then 
 			local r = math.random(0, 1)
 			if r == 0 then
 				return "question"

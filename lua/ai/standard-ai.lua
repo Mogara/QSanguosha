@@ -5,7 +5,11 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 sgs.ai_skill_invoke.jijiang = function(self, data)
-        return self:getSlashNumber(self.player)<=0
+	if self:getSlashNumber(self.player)<=0 and not self.jijiang_used then 
+		self.jijiang_used = true 
+		return true
+	end
+	return false
 end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
@@ -22,10 +26,11 @@ end
 sgs.ai_skill_invoke.hujia = function(self, data)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Jink") then
+		if card:inherits("Jink") and not self.hujia_used then
 			return false
 		end
 	end
+	self.hujia_used = true
 	return true	
 end
 
@@ -49,8 +54,15 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 		if second_index then break end
 	end
 	
-	if not second_index then
-		return "."
+	if not first_index then return "." end
+	
+	if first_index and not second_index then
+		local others = self.room:getOtherPlayers(self.player)
+		for _, other in sgs.qlist(others) do
+			if self:isFair(other) and (self.enemies[first_index]:objectName()) ~= (other:objectName()) then 
+				return ("@TuxiCard=.->%s+%s"):format(self.enemies[first_index]:objectName(), other:objectName())
+			end
+		end
 	end
 	self:log(self.enemies[first_index]:getGeneralName() .. "+" .. self.enemies[second_index]:getGeneralName())
 	local first = self.enemies[first_index]:objectName()
