@@ -202,7 +202,8 @@ public:
     void drawCard(const Card *card);
     Room *getRoom() const;
     void playCardEffect(const Card *card);
-    int getRandomHandCard() const;
+    int getRandomHandCardId() const;
+	const Card *getRandomHandCard() const;
     void obtainCard(const Card *card);
     void throwAllEquips();
     void throwAllHandCards();
