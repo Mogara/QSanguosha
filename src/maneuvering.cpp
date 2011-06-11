@@ -18,7 +18,7 @@ bool NatureSlash::match(const QString &pattern) const{
 
 ThunderSlash::ThunderSlash(Suit suit, int number)
     :NatureSlash(suit, number, DamageStruct::Thunder)
-{    
+{
     setObjectName("thunder_slash");
 }
 
@@ -88,10 +88,10 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.nature == DamageStruct::Normal){
-            if(player->getRoom()->askForSkillInvoke(player, objectName())){
+            if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
                 effect.nature = DamageStruct::Fire;
 
                 data = QVariant::fromValue(effect);
@@ -103,7 +103,7 @@ public:
 };
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
-    setObjectName("fan");    
+    setObjectName("fan");
     skill = new FanSkill;
 }
 
@@ -238,7 +238,7 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     setObjectName("fire_attack");
 }
 
-bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
+bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
 
@@ -313,7 +313,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         TrickCard::onUse(room, card_use);
 }
 
-void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{   
+void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
     room->playCardEffect("@tiesuo", source->getGeneral()->isMale());

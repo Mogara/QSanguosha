@@ -75,16 +75,6 @@ function CloneAI(player)
 	end
 end
 
---- FIXME: ?
-function getCount(name)
-	if sgs.ai_round[name] then 
-                sgs.ai_round[name]=sgs.ai_round[name]+1
-	else 
-		sgs.ai_round[name]=1 
-	end
-        return sgs.ai_round[name]
-end
-
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
@@ -785,6 +775,16 @@ function SmartAI:askForUseCard(pattern, prompt)
 end
 
 function SmartAI:slashIsEffective(slash, to)
+	if to:hasSkill("yizhong") and not to:getArmor() then
+		if slash:isBlack() then
+			return false
+		end		
+	end
+	
+	if to:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == to:objectName() then
+		return false
+	end
+
 	if self.player:hasWeapon("qinggang_sword") then
 		return true
 	end
@@ -792,10 +792,8 @@ function SmartAI:slashIsEffective(slash, to)
 	local armor = to:getArmor()
 	if armor then
 		if armor:objectName() == "renwang_shield" then
-		    if not slash then return true end
 			return not slash:isBlack()
-		elseif armor:inherits("Vine") then
-		    if not slash then return false end
+		elseif armor:objectName() == "vine" then
 			return slash:inherits("NatureSlash") or self.player:hasWeapon("fan")
 		end
 	end
@@ -823,7 +821,6 @@ function SmartAI:slashIsAvailable()
         return (self.player:usedTimes("Slash") + self.player:usedTimes("FireSlash") + self.player:usedTimes("ThunderSlash")) < 1
 	end
 end
-
 
 function SmartAI:getSlash()
     local cards = self.player:getHandcards()
@@ -879,10 +876,30 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
     end
 end
 
+--- Judge the player has the armor or not
+-- @param player The player to judge
+-- @param armor_name The armor's objectName
+-- @return true if the player has the corresponding armor, otherwise false
+function SmartAI.HasArmor(player, armor_name)
+	if armor_name == "eight_diagram" then
+		if player:getArmor() then
+			return player:getArmor():objectName() == "eight_diagram"
+		else
+			return player:hasSkill("bazhen")
+		end
+	else
+		return player:getArmor() and player:getArmor():objectName() == armor_name
+	end
+end
+
 function SmartAI:slashProhibit(card,enemy)
+	if card == nil then
+		card = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	end
+
     if self:isFriend(enemy) then
         if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
-            if enemy:hasArmorEffect("vine") then return true end
+            if SmartAI.HasArmor(enemy, "vine") then return true end
         end
         if enemy:isChained() and not card:inherits("NatureSlash") then return true end
     end
@@ -907,39 +924,18 @@ function SmartAI:slashProhibit(card,enemy)
     end
     
     if enemy:hasSkill("tiandu") then 
-        if enemy:getArmor() and (enemy:getArmor():objectName()=="eight_diagram") then return true end
+        if SmartAI.HasArmor(enemy, "eight_diagram") then return true end
     end
     
     if enemy:hasSkill("ganglie") then
         if self.player:getHandcardNum()+self.player:getHp()<5 then return true end
     end
 	
-	if enemy:hasSkill("yizhong") and not enemy:getArmor() and card:isBlack() then
-		return true
-	end	
-	
 	if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~=self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
 	    return true
 	end
 	
-	if enemy:getArmor() and (enemy:getArmor():objectName() == "renwang_shield") and ((not card) or card:isBlack()) then					
-		if not self.player:getWeapon() or self.player:getWeapon():objectName() ~= "qinggang_sword"  then
-			return true
-		end	
-	end	
-	
-	if enemy:getArmor() and (enemy:getArmor():objectName() == "vine") and not card then
-		if not (self.player:getWeapon() and self.player:getWeapon():objectName() == "fan") then
-			if card:inherits("NatureSlash") then return true end
-		end
-		if (self.player:getWeapon() and self.player:getWeapon():objectName() == "qinggang_sword") then
-			return false
-		end
-	end	
-	
-	if  (enemy:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == enemy:objectName()) then return true end			
-    
-    return false
+	return not self:slashIsEffective(card, enemy)
 end
 
 function SmartAI:useBasicCard(card, use,no_distance)

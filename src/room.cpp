@@ -1015,8 +1015,6 @@ void Room::prepareForStart(){
             }
             player->setRole(roles.at(i));
 
-
-
             if(player->isLord())
                 broadcastProperty(player, "role");
 
@@ -1182,7 +1180,7 @@ void Room::processRequest(const QString &request){
 #endif
 
     }else
-        emit room_message(QString("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
+        emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QString &){
