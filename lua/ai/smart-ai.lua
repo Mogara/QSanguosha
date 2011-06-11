@@ -980,6 +980,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,enemy)
 			if not slash_prohibit then
+				self.predictedRange = self.player:getAttackRange()
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
 				self:objectiveLevel(enemy)>3 and
@@ -2490,7 +2491,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 				end
 			end
 		end		
-	else
+	elseif from then
 		if from:objectName() == to:objectName() then
 			if self:isFriend(from) then return null_card
 			else return nil end

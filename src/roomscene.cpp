@@ -34,6 +34,10 @@
 #include <QCommandLinkButton>
 #include <QFormLayout>
 
+#ifdef Q_OS_WIN32
+#include <QAxObject>
+#endif
+
 #ifdef JOYSTICK_SUPPORT
 
 #include "joystick.h"
@@ -237,7 +241,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         chat_box->setReadOnly(true);
         chat_box->setTextColor(Config.TextEditColor);
-        connect(ClientInstance, SIGNAL(words_spoken(QString)), chat_box, SLOT(append(QString)));
+        connect(ClientInstance, SIGNAL(line_spoken(QString)), chat_box, SLOT(append(QString)));
 
         // chat edit
         chat_edit = new QLineEdit;
@@ -2777,9 +2781,55 @@ void KOFOrderBox::killPlayer(const QString &general_name){
     }
 }
 
+#ifdef Q_OS_WIN32
 
+SpeakThread::SpeakThread(QObject *parent)
+    :QThread(parent), voice_obj(NULL)
+{
+
+}
+
+void SpeakThread::run(){
+    voice_obj = new QAxObject("SAPI.SpVoice", this);
+
+    while(true){
+        sem.acquire();
+
+        if(to_speak.isEmpty())
+            return;
+
+        const QMetaObject *meta = voice_obj->metaObject();
+        meta->invokeMethod(voice_obj, "Speak", Q_ARG(QString, to_speak));
+    }
+}
+
+void SpeakThread::finish(){
+    to_speak.clear();
+
+    sem.release();
+}
+
+void SpeakThread::speak(const QString &text){
+    to_speak = text;
+
+    sem.release();
+}
+
+#endif
 
 void RoomScene::onGameStart(){
+#ifdef Q_OS_WIN32
+
+    if(Config.value("EnableVoice", false).toBool()){
+        SpeakThread *thread = new SpeakThread(this);
+        connect(ClientInstance, SIGNAL(text_spoken(QString)), thread, SLOT(speak(QString)));
+        connect(this, SIGNAL(destroyed()), thread, SLOT(finish()));
+
+        thread->start();
+    }
+
+#endif
+
     if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1"){
         selector_box->deleteLater();
         selector_box = NULL;

@@ -296,7 +296,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                 use.from = player;
                 if(player != dying.who)
                     use.to << dying.who;
-                room->useCard(use);
+
+                room->useCard(use, false);
             }
 
             break;

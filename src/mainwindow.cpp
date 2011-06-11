@@ -44,6 +44,8 @@ protected:
     }
 };
 
+#include <QAxObject>
+
 MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -59,18 +61,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));   
+    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
-    actions << ui->actionStart_Game            
+    actions << ui->actionStart_Game
             << ui->actionStart_Server
             << ui->actionPC_Console_Start
             << ui->actionReplay
-            << ui->actionConfigure            
+            << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
@@ -78,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionAcknowledgement;
 
     foreach(QAction *action, actions)
-        start_scene->addButton(action);    
+        start_scene->addButton(action);
 
     FitView *view = new FitView(scene);
 
@@ -88,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);   
+    addAction(ui->actionFullscreen);
     addAction(ui->actionMinimize_to_system_tray);
 
     systray = NULL;
@@ -119,7 +121,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
 }
 
 MainWindow::~MainWindow()
-{    
+{
     delete ui;
 }
 

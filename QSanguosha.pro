@@ -4,7 +4,7 @@
 TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
-CONFIG += warn_on audio joystick
+CONFIG += warn_on audio joystick qaxcontainer
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/button.cpp \

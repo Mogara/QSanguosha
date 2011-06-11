@@ -105,7 +105,7 @@ public:
                 room->playSkillEffect("luoying", 1);
 
             foreach(const Card *club, clubs)
-                caozhi->obtainCard(club);            
+                caozhi->obtainCard(club);
         }
 
         return false;
@@ -319,7 +319,7 @@ void XuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.from->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "he", "xuanhuo");
-    const Card *card = Sanguosha->getCard(card_id);    
+    const Card *card = Sanguosha->getCard(card_id);
     bool is_public = room->getCardPlace(card_id) != Player::Hand;
     room->moveCardTo(card, effect.from, Player::Hand, is_public ? true : false);
 
@@ -407,14 +407,14 @@ public:
 
                 ServerPlayer *target = room->askForPlayerChosen(lingtong, targets, "xuanfeng-slash");
 
-                CardEffectStruct effect;
                 Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName(objectName());
-                effect.card = slash;
-                effect.from = lingtong;
-                effect.to = target;
 
-                room->cardEffect(effect);
+                CardUseStruct card_use;
+                card_use.card = slash;
+                card_use.from = lingtong;
+                card_use.to << target;
+                room->useCard(card_use, false);
             }else if(choice == "damage"){
                 QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
                 foreach(ServerPlayer *p, players){
@@ -684,7 +684,7 @@ public:
 
         }else if(event == CardEffected){
             if(room->getTag("Zhichi").toString() != player->objectName())
-                return false;            
+                return false;
 
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(effect.card->inherits("Slash") || effect.card->getTypeId() == Card::Trick){

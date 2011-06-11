@@ -27,6 +27,7 @@ class QGroupBox;
 #include <QDialog>
 #include <QGraphicsWidget>
 #include <QGraphicsProxyWidget>
+#include <QThread>
 
 class DeathNoteDialog: public QDialog{
     Q_OBJECT
@@ -90,6 +91,31 @@ private:
     QString duration_str;
     qreal speed;
 };
+
+#ifdef Q_OS_WIN32
+
+class QAxObject;
+
+class SpeakThread: public QThread{
+    Q_OBJECT
+
+public:
+    SpeakThread(QObject *parent);
+
+public slots:
+    void speak(const QString &text);
+    void finish();
+
+protected:
+    virtual void run();
+
+private:
+    QAxObject *voice_obj;
+    QSemaphore sem;
+    QString to_speak;
+};
+
+#endif
 
 class RoomScene : public QGraphicsScene{
     Q_OBJECT

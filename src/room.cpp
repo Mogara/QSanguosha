@@ -1535,10 +1535,10 @@ void Room::commonCommand(ServerPlayer *, const QString &arg){
     sem->release();
 }
 
-void Room::useCard(const CardUseStruct &card_use){
+void Room::useCard(const CardUseStruct &card_use, bool add_history){
     const Card *card = card_use.card;
 
-    if(card_use.from->getPhase() == Player::Play){
+    if(card_use.from->getPhase() == Player::Play && add_history){
         QString key;
         if(card->inherits("LuaSkillCard"))
             key = "#" + card->objectName();

@@ -4,7 +4,6 @@ public:
 	QList();
 	~QList();
 	int length() const;
-	T at(int i) const;
 	void append(const T &elem);
 	void prepend(const T &elem);
 	bool isEmpty() const;
@@ -12,6 +11,12 @@ public:
 	T last() const;
 	void removeAt(int i);
 };
+
+%extend QList{
+	T at(int i) const{
+		return $self->value(i);
+	}
+}
 
 %template(SPlayerList) QList<ServerPlayer *>;
 %template(CardList) QList<const Card *>;

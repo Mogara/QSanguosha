@@ -24,7 +24,7 @@ Client *ClientInstance = NULL;
 Client::Client(QObject *parent, const QString &filename)
     :QObject(parent), refusable(true), status(NotActive), alive_count(1)
 {
-    ClientInstance = this;    
+    ClientInstance = this;
 
     callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setup"] = &Client::setup;
@@ -35,7 +35,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["startGame"] = &Client::startGame;
     callbacks["hpChange"] = &Client::hpChange;
     callbacks["clearPile"] = &Client::clearPile;
-    callbacks["setPileNumber"] = &Client::setPileNumber;    
+    callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["gameOver"] = &Client::gameOver;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
@@ -69,7 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
     callbacks["drawCards"] = &Client::drawCards;
-    callbacks["drawNCards"] = &Client::drawNCards;   
+    callbacks["drawNCards"] = &Client::drawNCards;
 
     // interactive methods
     callbacks["activate"] = &Client::activate;
@@ -152,7 +152,7 @@ void Client::signup(){
     if(replayer)
         replayer->start();
     else{
-        QString base64 = Config.UserName.toUtf8().toBase64();       
+        QString base64 = Config.UserName.toUtf8().toBase64();
         QString signup_str = QString("signup %1:%2").arg(base64).arg(Config.UserAvatar);
         QString password = Config.Password;
         if(!password.isEmpty()){
@@ -295,7 +295,7 @@ void Client::drawCards(const QString &cards_str){
     emit cards_drawed(cards);
 }
 
-void Client::drawNCards(const QString &draw_str){    
+void Client::drawNCards(const QString &draw_str){
     QRegExp pattern("(\\w+):(\\d+)");
     pattern.indexIn(draw_str);
     QStringList texts = pattern.capturedTexts();
@@ -322,7 +322,7 @@ void Client::doChooseGeneral2(const QString &generals_str){
 }
 
 void Client::chooseItem(const QString &item_name){
-    if(!item_name.isEmpty()){        
+    if(!item_name.isEmpty()){
         request(QString("%1 %2").arg(choose_command).arg(item_name));
         Sanguosha->playAudio("choose-item");
     }
@@ -375,8 +375,8 @@ void Client::startInXs(const QString &left_seconds){
     }
 }
 
-void Client::arrangeSeats(const QString &seats_str){    
-    QStringList player_names = seats_str.split("+");    
+void Client::arrangeSeats(const QString &seats_str){
+    QStringList player_names = seats_str.split("+");
     players.clear();
 
     int i;
@@ -386,7 +386,7 @@ void Client::arrangeSeats(const QString &seats_str){
         Q_ASSERT(player != NULL);
 
         player->setSeat(i+1);
-        players << player;        
+        players << player;
     }
 
     QList<const ClientPlayer*> seats;
@@ -511,7 +511,7 @@ Client::Status Client::getStatus() const{
     return status;
 }
 
-void Client::updateFrequentFlags(int state){    
+void Client::updateFrequentFlags(int state){
     QString flag = sender()->objectName();
     if(state == Qt::Checked)
         frequent_flags.insert(flag);
@@ -605,7 +605,7 @@ void Client::setPromptList(const QStringList &texts){
     if(texts.length() >= 4){
         QString arg = Sanguosha->translate(texts.at(3));
         prompt.replace("%arg", arg);
-    }   
+    }
 
     prompt_doc->setHtml(prompt);
 }
@@ -811,7 +811,7 @@ void Client::playCardEffect(const QString &play_str){
         Sanguosha->playCardEffect(card_name, is_male);
     }else if(rx2.exactMatch(play_str)){
         QStringList texts = rx2.capturedTexts();
-        QString card_name = texts.at(1);        
+        QString card_name = texts.at(1);
         bool is_male = texts.at(3) == "M";
 
         Sanguosha->playCardEffect("@" + card_name, is_male);
@@ -992,7 +992,7 @@ void Client::askForDiscard(const QString &discard_str){
 
     prompt_doc->setHtml(prompt);
 
-    setStatus(Discarding);    
+    setStatus(Discarding);
 }
 
 void Client::askForExchange(const QString &exchange_str){
@@ -1011,7 +1011,7 @@ void Client::askForExchange(const QString &exchange_str){
     setStatus(Discarding);
 }
 
-void Client::gameOver(const QString &result_str){    
+void Client::gameOver(const QString &result_str){
     QStringList texts = result_str.split(":");
     QString winner = texts.at(0);
     QStringList roles = texts.at(1).split("+");
@@ -1376,7 +1376,7 @@ void Client::askForPindian(const QString &ask_str){
     }
 
     use_card = false;
-    card_pattern = ".";    
+    card_pattern = ".";
     refusable = false;
 
     setStatus(Responsing);
@@ -1433,10 +1433,11 @@ void Client::speak(const QString &speak_data){
 
     QByteArray data = QByteArray::fromBase64(base64.toAscii());
     QString text = QString::fromUtf8(data);
+    emit text_spoken(text);
 
     if(who == "."){
         QString line = tr("<font color='red'>System: %1</font>").arg(text);
-        emit words_spoken(line);
+        emit line_spoken(line);
         return;
     }
 
@@ -1454,7 +1455,7 @@ void Client::speak(const QString &speak_data){
     QString line = tr("<font color='%1'>[%2] said: %3 </font>")
                    .arg(Config.TextEditColor.name()).arg(title).arg(text);
 
-    emit words_spoken(line);
+    emit line_spoken(line);
 }
 
 void Client::moveFocus(const QString &focus){
