@@ -14,7 +14,7 @@ end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
 	if self.player:hasSkill("yongsi") or self.player:hasSkill("jijiang") then
-		if self:getSlashNumber(self.player) <= 0 then return "ignore" end
+		if self:getSlashNmuber(self.player) <= 0 then return "ignore" end
 	end
     if self:isFriend(self.room:getLord()) then return "accept" end
     return "ignore"

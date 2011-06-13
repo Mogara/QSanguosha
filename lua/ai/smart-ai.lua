@@ -75,6 +75,16 @@ function CloneAI(player)
 	end
 end
 
+--- FIXME: ?
+function getCount(name)
+	if sgs.ai_round[name] then 
+                sgs.ai_round[name]=sgs.ai_round[name]+1
+	else 
+		sgs.ai_round[name]=1 
+	end
+        return sgs.ai_round[name]
+end
+
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
@@ -253,9 +263,9 @@ function SmartAI:updateLoyalTarget(player)
     if (self:objectiveLevel(player)>=4) then
         if not sgs.loyal_target then sgs.loyal_target=player 
 		elseif self:getEquipNumber(sgs.loyal_target)>self:getEquipNumber(player) then sgs.loyal_target=player 
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target=player 
         elseif (sgs.loyal_target:getHp()>1) and (getDefense(player)<=3) then sgs.loyal_target=player 
         elseif (sgs.loyal_target:getHandcardNum()>0) and (player:getHandcardNum()==0) then sgs.loyal_target=player 
-        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target=player 
         elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target=player 
         end
     end
@@ -288,12 +298,22 @@ end
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
-        if self.player:getRole()=="renegade" then
-		elseif player:getRole()=="renegade" then
-        elseif self:isFriend(player) then return -2
-        elseif player:isLord() then return 5
-        elseif player:getRole()=="renegade" then return 4.1
-       else return 4.5 end
+    --    if self.player:getRole()=="renegade" then
+	--	elseif player:getRole()=="renegade" then
+    --    elseif self:isFriend(player) then return -2
+     --   elseif player:isLord() then return 5
+    -- --   elseif player:getRole()=="renegade" then return 4.1
+     --  else return 4.5 end
+	   
+	   if self.player:getRole() == "rebel" then
+			if self:isFriend(player) then return -2 
+			elseif player:getRole() == "renegade" then return 4.1
+			else return 5 
+			end
+		elseif self.player:getRole() == "loyalist" or self.player:isLord() then
+			if self:isFriend(player) then return -2 else return 4.5 end
+		elseif self.player:getRole() == "renegade" then return 0 
+		end
     end
     
     if player:objectName()==self.player:objectName() then return -2 end
@@ -616,7 +636,7 @@ end
 
 function SmartAI:isFair(other)
     if (self.player:objectName())==(other:objectName()) then return false end 
-	if self:objectiveLevel(other)>=-1 and self:objectiveLevel(other)<3 then return true end
+	if self:objectiveLevel(other)>=-1 and self:objectiveLevel(other)<4 then return true end
 	return false
 end
 
@@ -822,6 +842,7 @@ function SmartAI:slashIsAvailable()
 	end
 end
 
+
 function SmartAI:getSlash()
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards)
@@ -880,7 +901,7 @@ end
 -- @param player The player to judge
 -- @param armor_name The armor's objectName
 -- @return true if the player has the corresponding armor, otherwise false
-function SmartAI.HasArmor(player, armor_name)
+function SmartAI:hasArmor(player, armor_name)
 	if armor_name == "eight_diagram" then
 		if player:getArmor() then
 			return player:getArmor():objectName() == "eight_diagram"
@@ -899,7 +920,7 @@ function SmartAI:slashProhibit(card,enemy)
 
     if self:isFriend(enemy) then
         if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
-            if SmartAI.HasArmor(enemy, "vine") then return true end
+            if self:hasArmor(enemy, "vine") then return true end
         end
         if enemy:isChained() and not card:inherits("NatureSlash") then return true end
     end
@@ -924,7 +945,7 @@ function SmartAI:slashProhibit(card,enemy)
     end
     
     if enemy:hasSkill("tiandu") then 
-        if SmartAI.HasArmor(enemy, "eight_diagram") then return true end
+        if self:hasArmor(enemy, "eight_diagram") then return true end
     end
     
     if enemy:hasSkill("ganglie") then
@@ -937,6 +958,7 @@ function SmartAI:slashProhibit(card,enemy)
 	
 	return not self:slashIsEffective(card, enemy)
 end
+
 
 function SmartAI:useBasicCard(card, use,no_distance)
 	if card:getSkillName()=="wushen" then no_distance=true end
@@ -976,9 +998,8 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,enemy)
 			if not slash_prohibit then
-				self.predictedRange = self.player:getAttackRange()
 				if ((self.player:canSlash(enemy, not no_distance)) or 
-				(use.isDummy and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
+				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
 				self:objectiveLevel(enemy)>3 and
 				self:slashIsEffective(card, enemy) then
 					-- fill the card use struct
@@ -1561,7 +1582,7 @@ end
 
 -- when self has wizard (zhangjiao, simayi, use it)
 function SmartAI:useCardLightning(card, use)					
-	if self.player:containsTrick("Lightning") then return nil end
+	if self.player:containsTrick("lightning") then return nil end
 
 	if not self:hasWizard(self.enemies) then--and self.room:isProhibited(self.player, self.player, card) then
 		if self:hasWizard(self.friends) then
@@ -2196,7 +2217,6 @@ function SmartAI:askForCardChosen(who, flags, reason)
     if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
-
 			local lightning, indulgence, supply_shortage
 			for _, trick in sgs.qlist(tricks) do
 				if trick:inherits("Lightning") then
@@ -2230,8 +2250,8 @@ function SmartAI:askForCardChosen(who, flags, reason)
 				if not equips:isEmpty() then
 					return equips:at(0):getId()
 				end
-			elseif who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then 
-				return who:getArmor():getId()
+			else
+				if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
 			end
 		end
 	else 
@@ -2354,7 +2374,6 @@ function SmartAI:askForCard(pattern,prompt)
 		end	
 		return "."
 	elseif parsedPrompt[1]=="axe-card" then
-		self:log("11111111111111")
 		local allcards = self.player:getCards("he")
 		allcards = sgs.QList2Table(allcards)
 		if self.player:hasFlag("drank") or #allcards-2>= self.player:getHp()
@@ -2392,7 +2411,7 @@ function SmartAI:askForCard(pattern,prompt)
 			end
 			self:log(#cards)
 			if #cards>=2 then
-				self:SortByKeepValue(cards, true)
+				self:sortByKeepValue(cards, true)
 				return "$"..cards[1]:getEffectiveId().."+"..cards[2]:getEffectiveId()
 			end
 		end
@@ -2416,7 +2435,10 @@ end
 
 function SmartAI:askForAG(card_ids,refusable)	
 	if refusable and self:hasSkill("xinzhan") then
-		return card_ids[1]
+		if self:isFriend(self.player:getNextAlive()) then
+			if #card_ids == 1 then return -1 end
+		end
+		return card_ids[1] 
 	end
     local ids=card_ids
     local cards={}
@@ -2487,13 +2509,13 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 				end
 			end
 		end		
-	elseif from then
-		if from:objectName() == to:objectName() then
+	else
+		if from and from:objectName() == to:objectName() then
 			if self:isFriend(from) then return null_card
 			else return nil end
 		end
-		if self:isFriend(from) or self:isEnemy(to) then return null_card end
-		if self:isEnemy(from) or self:isFriend(to) then return nil end
+		if self:isFriend(from) and self:isEnemy(to) then return null_card end
+		if self:isEnemy(from) and self:isFriend(to) then return nil end
 --	    local reverse_null=self:askForNullification(trick_name, from, to, true)
 --		if null_card and not reverse_null then return null_card end
 	end
@@ -2760,8 +2782,8 @@ end
 
 function SmartAI:askForGuanxing(cards, up_only)
 	--zhugeliang
-	if not up_only then return zhugeliang_guanxing(self,cards,up_only)
-	else return masu_xinzhan(self, cards, up_only)
+	if not up_only then return GuanXing(self,cards)
+	else return XinZhan(self, cards)
 	end
 	-- keep it unchanged
 	return cards, {}
@@ -2791,4 +2813,4 @@ dofile "lua/ai/yjcm-skill-ai.lua"
 
 dofile "lua/ai/fancheng-ai.lua"
 
-dofile "lua/ai/guanxing-skill-ai.lua"
+dofile "lua/ai/guanxing-ai.lua"
