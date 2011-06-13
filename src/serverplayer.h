@@ -15,6 +15,8 @@ class ServerPlayer : public Player
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString ip READ getIp)
+
 public:
     explicit ServerPlayer(Room *room);
 
@@ -83,6 +85,8 @@ public:
 
     int getGeneralMaxHP() const;
     virtual bool hasLordSkill(const QString &skill_name) const;
+
+    QString getIp() const;
 
 private:
     ClientSocket *socket;

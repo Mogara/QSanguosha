@@ -18,7 +18,8 @@ class QRadioButton;
 #include <QLayoutItem>
 #include <QListWidget>
 #include <QSplitter>
-#include <QToolBox>
+#include <QTabWidget>
+#include <QMultiHash>
 
 class Package;
 
@@ -29,10 +30,10 @@ public:
     Select3v3GeneralDialog(QDialog *parent);
 
 private:
-    QToolBox *toolbox;
+    QTabWidget *tab_widget;
     QSet<QString> ex_generals;
 
-    void fillToolBox();
+    void fillTabWidget();
     void fillListWidget(QListWidget *list, const Package *pack);
 
 private slots:
@@ -106,6 +107,7 @@ private slots:
 };
 
 class Scenario;
+class ServerPlayer;
 
 class Server : public QObject{
     Q_OBJECT
@@ -122,11 +124,13 @@ private:
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
-    QSet<QString> addresses;    
+    QSet<QString> addresses;
+    QMultiHash<QString, ServerPlayer *> signup_players;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
     void cleanup();
+    void signupPlayer(ServerPlayer *player);
 
 signals:
     void server_message(const QString &);

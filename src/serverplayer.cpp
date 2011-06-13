@@ -288,7 +288,7 @@ DummyCard *ServerPlayer::wholeHandCards() const{
     return dummy_card;
 }
 
-bool ServerPlayer::hasNullification() const{    
+bool ServerPlayer::hasNullification() const{
     if(hasSkill("kanpo")){
         foreach(const Card *card, handcards){
             if(card->isBlack() || card->objectName() == "nullification")
@@ -547,4 +547,11 @@ bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
         return true;
     else
         return isLord() && hasSkill(skill_name);
+}
+
+QString ServerPlayer::getIp() const{
+    if(socket)
+        return socket->peerAddress();
+    else
+        return QString();
 }

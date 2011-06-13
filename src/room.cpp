@@ -1264,9 +1264,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
             player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
         }
+
+        emit player_signuped(player);
     }
 
     signup_count ++;
+
     if(isFull()){
         prepareForStart();
 
@@ -1706,6 +1709,14 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
     }
 
     return a;
+}
+
+void Room::marshal(ServerPlayer *player){
+    player->invoke("marshal", "start");
+
+
+
+    player->invoke("marshal", "end");
 }
 
 void Room::startGame(){

@@ -394,7 +394,7 @@ QLayout *ServerDialog::createRight(){
         max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
         connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));
 
-        second_general_checkbox->setChecked(Config.Enable2ndGeneral);        
+        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
         QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
         BanPairDialog *banpair_dialog = new BanPairDialog(this);
@@ -524,8 +524,8 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 
     QVBoxLayout *layout = new QVBoxLayout;
 
-    toolbox = new QToolBox;
-    fillToolBox();
+    tab_widget = new QTabWidget;
+    fillTabWidget();
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
@@ -533,15 +533,17 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
     hlayout->addStretch();
     hlayout->addWidget(ok_button);
 
-    layout->addWidget(toolbox);
+    layout->addWidget(tab_widget);
     layout->addLayout(hlayout);
 
     setLayout(layout);
 
+    setMinimumWidth(550);
+
     connect(this, SIGNAL(accepted()), this, SLOT(save3v3Generals()));
 }
 
-void Select3v3GeneralDialog::fillToolBox(){
+void Select3v3GeneralDialog::fillTabWidget(){
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach(const Package *package, packages){
         switch(package->getType()){
@@ -551,8 +553,9 @@ void Select3v3GeneralDialog::fillToolBox(){
                 list->setIconSize(General::TinyIconSize);
                 list->setViewMode(QListView::IconMode);
                 list->setDragDropMode(QListView::NoDragDrop);
-                toolbox->addItem(list, Sanguosha->translate(package->objectName()));
                 fillListWidget(list, package);
+
+                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
             }
         default:
             break;
@@ -586,12 +589,13 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
     QAction *action = new QAction(tr("Check/Uncheck all"), list);
     list->addAction(action);
     list->setContextMenuPolicy(Qt::ActionsContextMenu);
+    list->setResizeMode(QListView::Adjust);
 
     connect(action, SIGNAL(triggered()), this, SLOT(toggleCheck()));
 }
 
 void Select3v3GeneralDialog::toggleCheck(){
-    QWidget *widget = toolbox->currentWidget();
+    QWidget *widget = tab_widget->currentWidget();
     QListWidget *list = qobject_cast<QListWidget *>(widget);
 
     if(list == NULL || list->item(0) == NULL)
@@ -608,8 +612,8 @@ void Select3v3GeneralDialog::save3v3Generals(){
     ex_generals.clear();
 
     int i;
-    for(i=0; i<toolbox->count(); i++){
-        QWidget *widget = toolbox->widget(i);
+    for(i=0; i<tab_widget->count(); i++){
+        QWidget *widget = tab_widget->widget(i);
         QListWidget *list = qobject_cast<QListWidget *>(widget);
         if(list){
             int i;
@@ -742,6 +746,7 @@ void Server::createNewRoom(){
         QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
     }else{
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+        connect(current, SIGNAL(player_signuped(ServerPlayer*)), this, SLOT(signupPlayer(ServerPlayer*)));
     }
 }
 
@@ -753,7 +758,7 @@ void Server::processNewConnection(ClientSocket *socket){
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
         }else
-            addresses.insert(addr);        
+            addresses.insert(addr);
     }
 
     if(current->isFull()){
@@ -767,8 +772,12 @@ void Server::processNewConnection(ClientSocket *socket){
 }
 
 void Server::cleanup(){
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
 
     if(Config.ForbidSIMC)
         addresses.remove(socket->peerAddress());
+}
+
+void Server::signupPlayer(ServerPlayer *player){
+    signup_players.insert(player->screenName(), player);
 }

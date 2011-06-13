@@ -95,6 +95,7 @@ public:
     void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
     bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+    void marshal(ServerPlayer *player);
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
@@ -217,7 +218,8 @@ private slots:
     void startGame();
 
 signals:
-    void room_message(const QString &);
+    void room_message(const QString &msg);
+    void player_signuped(ServerPlayer *player);
 };
 
 #endif // ROOM_H
