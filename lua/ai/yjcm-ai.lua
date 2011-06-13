@@ -268,6 +268,8 @@ xushu_ai:setOnceSkill("jujian")
 
 function xushu_ai:activate(use)
 
+	super.activate(self, use)
+	if use:isValid() then return end
 	local abandon_handcard = {}
 	local index = 0
 	local hasPeach=false
@@ -350,7 +352,6 @@ function xushu_ai:activate(use)
 	
 	end
 	
-	super.activate(self, use)
 end
 
 
