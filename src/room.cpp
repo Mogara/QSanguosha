@@ -328,6 +328,8 @@ void Room::gameOver(const QString &winner){
         thread->end();
     else
         sem->release();
+
+    deleteLater();
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){
@@ -2300,7 +2302,9 @@ void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only
     }
 
 
-    if(top_cards.length() + bottom_cards.length() != cards.length()){
+    bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();
+    bool result_equal = top_cards.toSet() + bottom_cards.toSet() == cards.toSet();
+    if(!length_equal || !result_equal){
         QString top_str = Card::IdsToStrings(top_cards).join("+");
         QString bottom_str = Card::IdsToStrings(bottom_cards).join("+");
 
