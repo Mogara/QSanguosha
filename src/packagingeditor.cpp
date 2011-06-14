@@ -9,6 +9,58 @@
 #include <QTabWidget>
 #include <QProcess>
 #include <QMessageBox>
+#include <QFormLayout>
+#include <QSettings>
+
+#include "settings.h"
+
+MetaInfoWidget::MetaInfoWidget(bool load_config){
+    setTitle(tr("Meta information"));
+
+    QFormLayout *layout = new QFormLayout;
+
+    QLineEdit *name_edit = new QLineEdit;
+    QLineEdit *designer_edit = new QLineEdit;
+    QLineEdit *programmer_edit = new QLineEdit;
+    QLineEdit *version_edit = new QLineEdit;
+
+    name_edit->setObjectName("Name");
+    designer_edit->setObjectName("Designer");
+    programmer_edit->setObjectName("Programmer");
+    version_edit->setObjectName("Version");
+
+    if(load_config){
+        Config.beginGroup("PackageManager");
+        name_edit->setText(Config.value("Name", "My DIY").toString());
+        designer_edit->setText(Config.value("Designer", tr("Designer")).toString());
+        programmer_edit->setText(Config.value("Programmer", "Moligaloo").toString());
+        version_edit->setText(Config.value("Version", "1.0").toString());
+        Config.endGroup();
+    }
+
+    layout->addRow(tr("Name"), name_edit);
+    layout->addRow(tr("Designer"), designer_edit);
+    layout->addRow(tr("Programmer"), programmer_edit);
+    layout->addRow(tr("Version"), version_edit);
+
+    setLayout(layout);
+}
+
+void MetaInfoWidget::saveToSettings(QSettings &settings){
+    QList<const QLineEdit *> edits = findChildren<const QLineEdit *>();
+
+    foreach(const QLineEdit *edit, edits){
+        settings.setValue(edit->objectName(), edit->text());
+    }
+}
+
+void MetaInfoWidget::showSettings(const QSettings *settings){
+    QList<QLineEdit *> edits = findChildren<QLineEdit *>();
+
+    foreach(QLineEdit *edit, edits){
+        edit->setText(settings->value(edit->objectName()).toString());
+    }
+}
 
 PackagingEditor::PackagingEditor(QWidget *parent) :
     QDialog(parent)
@@ -33,8 +85,16 @@ PackagingEditor::PackagingEditor(QWidget *parent) :
 void PackagingEditor::loadPackageList(){
     QDir dir("extensions");
     QIcon icon("image/system/ark.png");
-    foreach(QFileInfo info, dir.entryInfoList(QStringList() << "*.spec")){
-        new QListWidgetItem(icon, info.baseName(), package_list);
+    foreach(QFileInfo info, dir.entryInfoList(QStringList() << "*.ini")){
+        const QSettings *settings = new QSettings(info.filePath(), QSettings::IniFormat, package_list);
+
+        QString name = settings->value("Name").toString();
+        if(name.isEmpty())
+            name = info.baseName();
+
+        QListWidgetItem *item = new QListWidgetItem(icon, name, package_list);
+        int setting_ptr = reinterpret_cast<int>(settings);
+        item->setData(Qt::UserRole, setting_ptr);
     }
 }
 
@@ -46,6 +106,7 @@ QWidget *PackagingEditor::createManagerTab(){
     package_list->setIconSize(QSize(64, 64));
     package_list->setMovement(QListView::Static);
     package_list->setWordWrap(true);
+    package_list->setResizeMode(QListView::Adjust);
 
     loadPackageList();
 
@@ -68,17 +129,30 @@ QWidget *PackagingEditor::createManagerTab(){
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addLayout(vlayout);
     layout->addWidget(package_list);
-
+    layout->addWidget(package_list_meta = new MetaInfoWidget(false));
     widget->setLayout(layout);
 
     connect(install_button, SIGNAL(clicked()), this, SLOT(installPackage()));
     connect(uninstall_button, SIGNAL(clicked()), this, SLOT(uninstallPackage()));
     connect(rescan_button, SIGNAL(clicked()), this, SLOT(rescanPackage()));
+    connect(package_list, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(updateMetaInfo(QListWidgetItem*)));
 
     return widget;
 }
 
+void PackagingEditor::updateMetaInfo(QListWidgetItem *item){
+    int setting_ptr = item->data(Qt::UserRole).toInt();
+    const QSettings *settings = reinterpret_cast<const QSettings *>(setting_ptr);
+    if(settings){
+        package_list_meta->showSettings(settings);
+    }
+}
+
 void PackagingEditor::rescanPackage(){
+    QList<QSettings *> settings_list = findChildren<QSettings *>();
+    foreach(QSettings *settings, settings_list)
+        settings->deleteLater();
+
     package_list->clear();
 
     loadPackageList();
@@ -104,6 +178,7 @@ QWidget *PackagingEditor::createPackagingTab(){
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addLayout(vlayout);
     layout->addWidget(file_list);
+    layout->addWidget(file_list_meta = new MetaInfoWidget(true));
 
     widget->setLayout(layout);
 
@@ -135,23 +210,27 @@ void PackagingEditor::uninstallPackage(){
     if(item == NULL)
         return;
 
+    int settings_ptr = item->data(Qt::UserRole).toInt();
+    QSettings *settings = reinterpret_cast<QSettings *>(settings_ptr);
+
+    if(settings == NULL)
+        return;
+
     QMessageBox::StandardButton button = QMessageBox::question(this,
                                                                tr("Are you sure"),
                                                                tr("Are you sure to remove ?"));
     if(button != QMessageBox::Ok)
         return;
 
-    QFile file(QString("extensions/%1.spec").arg(item->text()));
-    if(file.open(QIODevice::ReadOnly)){
-        QTextStream stream(&file);
-        while(!stream.atEnd()){
-            QFile::remove(stream.readLine());
-        }
-    }
+    QStringList filelist = settings->value("FileList").toStringList();
+    foreach(QString file, filelist)
+        QFile::remove(file);
 
-    file.remove();
+    QFile::remove(settings->fileName());
 
-    rescanPackage();
+    settings->deleteLater();
+
+    delete item;
 }
 
 void PackagingEditor::browseFiles(){
@@ -170,6 +249,10 @@ void PackagingEditor::makePackage(){
     if(file_list->count() == 0)
         return;
 
+    Config.beginGroup("PackageManager");
+    file_list_meta->saveToSettings(Config);
+    Config.endGroup();
+
     QString filename = QFileDialog::getSaveFileName(this,
                                                     tr("Select a package name"),
                                                     ".",
@@ -177,22 +260,18 @@ void PackagingEditor::makePackage(){
 
     if(!filename.isEmpty()){
         QFileInfo info(filename);
-        QString spec_name = QString("extensions/%1.spec").arg(info.baseName());
-        QFile file(spec_name);
-        if(file.open(QIODevice::WriteOnly)){
-            QTextStream stream(&file);
-
-            int i;
-            for(i=0; i<file_list->count(); i++){
-                stream << file_list->item(i)->text() << "\n";
-            }
-
-            file.close();
-        }
+        QString spec_name = QString("extensions/%1.ini").arg(info.baseName());
+        QSettings settings(spec_name, QSettings::IniFormat);
+        file_list_meta->saveToSettings(settings);
+        QStringList filelist;
+        int i;
+        for(i=0; i<file_list->count(); i++)
+            filelist << file_list->item(i)->text();
+        settings.setValue("FileList", filelist);
 
         QProcess *process = new QProcess(this);
         QStringList args;
-        args << "a" << filename << spec_name << ("@" + spec_name);
+        args << "a" << filename << spec_name << filelist;
         process->start("7zr", args);
 
         connect(process, SIGNAL(finished(int)), this, SLOT(done7zProcess(int)));
