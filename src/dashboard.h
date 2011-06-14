@@ -8,7 +8,6 @@
 
 #include <QPushButton>
 #include <QComboBox>
-#include <QStack>
 #include <QGraphicsLinearLayout>
 #include <QLineEdit>
 #include <QProgressBar>
@@ -21,8 +20,9 @@ public:
     Dashboard();
     virtual QRectF boundingRect() const;
     void setWidth(int width);
-    void addWidget(QWidget *widget, int x, bool from_left);
-    QPushButton *addButton(const QString &label, int x, bool from_left);
+    QGraphicsProxyWidget *addWidget(QWidget *widget, int x, bool from_left);
+    QPushButton *createButton(const QString &name);
+    QPushButton *addButton(const QString &name, int x, bool from_left);
     QProgressBar *addProgressBar();
 
     void setTrust(bool trust);
@@ -36,6 +36,7 @@ public:
     void unselectAll();
     void hideAvatar();
     void setFilter(const FilterSkill *filter);
+    const FilterSkill *getFilter() const;
 
     void disableAllCards();
     void enableCards();
@@ -52,11 +53,15 @@ public:
     const ViewAsSkill *currentSkill() const;    
     const Card *pendingCard() const;
 
+    void killPlayer();
+    void revivePlayer();
+
 public slots:
     void updateAvatar();
     void updateSmallAvatar();
     void refresh();
     void sortCards(int sort_type);
+    void reverseSelection();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -72,12 +77,13 @@ private:
     Pixmap *avatar, *small_avatar;
     QGraphicsPixmapItem *kingdom;
     QGraphicsTextItem *mark_item;
+    QGraphicsPixmapItem *action_item;
 
     int sort_type;
     QGraphicsSimpleTextItem *handcard_num;
-    QStack<CardItem *> judging_area;
-    QStack<QPixmap> delayed_tricks;
-    QPixmap death_pixmap;
+    QList<CardItem *> judging_area;
+    QList<QPixmap> delayed_tricks;
+    QGraphicsPixmapItem *death_item;
     Pixmap *chain_icon, *back_icon;
 
     QGraphicsRectItem *equip_rects[4];
@@ -109,6 +115,7 @@ private slots:
     void onCardItemClicked();
     void onCardItemThrown();
     void onMarkChanged();
+    void setActionState();
 
 signals:
     void card_selected(const Card *card);

@@ -79,11 +79,8 @@ YijiViewAsSkill::YijiViewAsSkill()
 }
 
 void YijiViewAsSkill::setCards(const QString &card_str){
-    ids.clear();
-
     QStringList cards = card_str.split("+");
-    foreach(QString card, cards)
-        ids << card.toInt();
+    ids = Card::StringsToIds(cards);
 }
 
 bool YijiViewAsSkill::viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{

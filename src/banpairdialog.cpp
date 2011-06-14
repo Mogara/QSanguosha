@@ -143,5 +143,7 @@ void BanPairDialog::removePair(){
 
 void BanPairDialog::save(){
     BanPair::saveBanPairs();
+
+    accept();
 }
 

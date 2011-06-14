@@ -78,7 +78,7 @@ return {
 	["$qinyin1"] = "捻指勾弦，气破万军",
 	["$qinyin2"] = "如梦似幻，拨弄乾坤",
 	["$qinyin3"] = "聆听吧，孟德，这首献给你的镇魂曲",
-	["$greatyeyan"] = "红莲业火焚尽世间万物!",
+	["$greatyeyan"] = "红莲业火，焚尽世间万物!",
 	["$mediumyeyan"] = "浮生罪业，皆归灰烬",
 	["$smallyeyan"] = "血色火海，葬敌万千",
 	["$shelie1"] = "但当涉猎，见往事耳",
@@ -89,15 +89,21 @@ return {
 	["$dawu1"] = "一天浓雾满长江，远近难分水渺茫",
 	["$dawu2"] = "返元气于洪荒，混天地为大块",
 	["$kuangfeng"] = "万事俱备，只欠东风",
+	["stars"] = "七星堆",
 	
 	["~shencaocao"] = "神龟虽寿，犹有竟时。腾蛇乘雾，终为土灰",
 	["~shenlumeng"] = "死去元知万事空",
 	["~shenzhugeliang"] = "吾命将至，再不能临阵讨贼矣",
+	["~shenzhouyu"] = "残炎黯然，弦歌不复",
 	
 	["cv:shenguanyu"] = "",
 	["cv:shenlumeng"] = "宇文天启",
 	["cv:shenzhouyu"] = "血桜の涙",
 	["cv:shenzhugeliang"] = "背后灵",
 	["cv:shencaocao"] = "倚天の剑",
-	["cv:shenlubu"] = "",	
+	["cv:shenlubu"] = "",
+	
+	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
+	["#KuangbaoDamaged"] = "%from 的锁定技【狂暴】被触发，受到 %arg 点伤害获得 %arg 枚暴怒标记",
+	["#WuhunRevenge"] = "%from 的锁定技【武魂】被触发，持有最多梦魇标记的角色 %to(%arg个)将立即死亡",
 }

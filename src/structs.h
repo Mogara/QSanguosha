@@ -67,6 +67,7 @@ struct CardMoveStruct{
     int card_id;
     Player::Place from_place, to_place;
     ServerPlayer *from, *to;
+    bool open;
 
     QString toString() const;
 };
@@ -76,15 +77,39 @@ struct DyingStruct{
 
     ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
-    int peaches; // peaches that needs
+};
+
+struct RecoverStruct{
+    RecoverStruct();
+
+    int recover;
+    ServerPlayer *who;
+    const Card *card;
+};
+
+struct JudgeStruct{
+    JudgeStruct();
+    bool isGood(const Card *card = NULL) const;
+    bool isBad() const;
+
+    ServerPlayer *who;
+    const Card *card;
+    QRegExp pattern;
+    bool good;
+    QString reason;
 };
 
 enum TriggerEvent{
     GameStart,
+    TurnStart,
     PhaseChange,
     DrawNCards,
-    JudgeOnEffect,
     HpRecover,
+    HpLost,
+
+    StartJudge,
+    AskForRetrial,
+    FinishJudge,
 
     Predamage,
     Predamaged,
@@ -97,6 +122,7 @@ enum TriggerEvent{
     AskForPeaches,
     AskForPeachesDone,
     Death,
+    GameOverJudge,
 
     SlashEffect,
     SlashEffected,
@@ -109,7 +135,6 @@ enum TriggerEvent{
     CardResponsed,
     CardDiscarded,
     CardLost,
-    CardGot,
 
     CardEffect,
     CardEffected,
@@ -118,6 +143,8 @@ enum TriggerEvent{
 
 typedef const Card *CardStar;
 typedef ServerPlayer *PlayerStar;
+typedef JudgeStruct *JudgeStar;
+typedef DamageStruct *DamageStar;
 
 Q_DECLARE_METATYPE(DamageStruct);
 Q_DECLARE_METATYPE(CardEffectStruct);
@@ -127,5 +154,8 @@ Q_DECLARE_METATYPE(CardMoveStruct);
 Q_DECLARE_METATYPE(CardStar);
 Q_DECLARE_METATYPE(PlayerStar);
 Q_DECLARE_METATYPE(DyingStruct);
+Q_DECLARE_METATYPE(RecoverStruct);
+Q_DECLARE_METATYPE(JudgeStar);
+Q_DECLARE_METATYPE(DamageStar);
 
 #endif // STRUCTS_H

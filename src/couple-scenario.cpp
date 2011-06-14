@@ -7,7 +7,7 @@ public:
     CoupleScenarioRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << Death;
+        events << GameStart << GameOverJudge << Death;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -30,7 +30,7 @@ public:
                 break;
             }
 
-        case Death:{
+        case GameOverJudge:{
                 if(player->isLord()){
                     scenario->marryAll(room);
                 }else if(player->getGeneral()->isMale()){
@@ -69,23 +69,24 @@ public:
                     else
                         room->gameOver(survivor->objectName());
 
-                    scenario->disposeSpouseMap(room);
                     return true;
                 }else if(players.length() == 2){
                     ServerPlayer *first = players.at(0);
                     ServerPlayer *second = players.at(1);
                     if(scenario->getSpouse(first) == second){
                         room->gameOver(QString("%1+%2").arg(first->objectName()).arg(second->objectName()));
-
-                        scenario->disposeSpouseMap(room);
                         return true;
                     }
                 }
 
+                return true;
+            }
+
+        case Death:{
                 // reward and punishment
-                QString killer_name = data.toString();
-                if(!killer_name.isEmpty()){
-                    ServerPlayer *killer = room->findChild<ServerPlayer *>(killer_name);
+                DamageStar damage = data.value<DamageStar>();
+                if(damage && damage->from){
+                    ServerPlayer *killer = damage->from;
 
                     if(killer == player)
                         return false;
@@ -120,6 +121,7 @@ CoupleScenario::CoupleScenario()
     map["zhouyu"] = "xiaoqiao";
     map["lubu"] = "diaochan";
     map["zhangfei"] = "xiahoujuan";
+    map["sunjian"] = "wuguotai";
 
     full_map = map;
     full_map["dongzhuo"] = "diaochan";
@@ -127,12 +129,6 @@ CoupleScenario::CoupleScenario()
 }
 
 void CoupleScenario::marryAll(Room *room) const{
-    SpouseMapStar spouse_map = NULL;
-    if(room->getTag("SpouseMap").isValid())
-        spouse_map = room->getTag("SpouseMap").value<SpouseMapStar>();
-    else
-        spouse_map = new SpouseMap;
-
     foreach(QString husband_name, full_map.keys()){
         ServerPlayer *husband = room->findPlayer(husband_name, true);
         if(husband == NULL)
@@ -141,16 +137,20 @@ void CoupleScenario::marryAll(Room *room) const{
         QString wife_name = map.value(husband_name, QString());
         if(!wife_name.isNull()){
             ServerPlayer *wife = room->findPlayer(wife_name, true);
-            marry(husband, wife, spouse_map);
+            marry(husband, wife);
         }
     }
-
-    QVariant data = QVariant::fromValue(spouse_map);
-    room->setTag("SpouseMap", data);
 }
 
-void CoupleScenario::marry(ServerPlayer *husband, ServerPlayer *wife, SpouseMapStar map_star) const{
-    if(map_star->value(husband, NULL) == wife && map_star->value(wife, NULL) == husband)
+void CoupleScenario::setSpouse(ServerPlayer *player, ServerPlayer *spouse) const{
+    if(spouse)
+        player->tag["spouse"] = QVariant::fromValue(spouse);
+    else
+        player->tag.remove("spouse");
+}
+
+void CoupleScenario::marry(ServerPlayer *husband, ServerPlayer *wife) const{
+    if(getSpouse(husband) == wife)
         return;
 
     LogMessage log;
@@ -159,25 +159,24 @@ void CoupleScenario::marry(ServerPlayer *husband, ServerPlayer *wife, SpouseMapS
     log.to << wife;
     husband->getRoom()->sendLog(log);
 
-    map_star->insert(husband, wife);
-    map_star->insert(wife, husband);
+    setSpouse(husband, wife);
+    setSpouse(wife, husband);
 }
 
 void CoupleScenario::remarry(ServerPlayer *enkemann, ServerPlayer *widow) const{
     Room *room = enkemann->getRoom();
-    SpouseMapStar map_star = room->getTag("SpouseMap").value<SpouseMapStar>();
 
-    ServerPlayer *ex_husband = map_star->value(widow);
-    map_star->remove(ex_husband);
+    ServerPlayer *ex_husband = getSpouse(widow);
+    setSpouse(ex_husband, NULL);
     LogMessage log;
     log.type = "#Divorse";
     log.from = widow;
     log.to << ex_husband;
     room->sendLog(log);
 
-    ServerPlayer *ex_wife = map_star->value(enkemann, NULL);
+    ServerPlayer *ex_wife = getSpouse(enkemann);
     if(ex_wife){
-        map_star->remove(ex_wife);
+        setSpouse(ex_wife, NULL);
         LogMessage log;
         log.type = "#Divorse";
         log.from = enkemann;
@@ -185,21 +184,12 @@ void CoupleScenario::remarry(ServerPlayer *enkemann, ServerPlayer *widow) const{
         room->sendLog(log);
     }
 
-    marry(enkemann, widow, map_star);
+    marry(enkemann, widow);
     room->setPlayerProperty(widow, "role", "loyalist");
 }
 
-ServerPlayer *CoupleScenario::getSpouse(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    SpouseMapStar map_star = room->getTag("SpouseMap").value<SpouseMapStar>();
-    return map_star->value(player, NULL);
-}
-
-void CoupleScenario::disposeSpouseMap(Room *room) const{
-    SpouseMapStar map_star = room->getTag("SpouseMap").value<SpouseMapStar>();
-    delete map_star;
-
-    room->setTag("SpouseMap", QVariant());
+ServerPlayer *CoupleScenario::getSpouse(const ServerPlayer *player) const{
+    return player->tag["spouse"].value<PlayerStar>();
 }
 
 bool CoupleScenario::isWidow(ServerPlayer *player) const{
@@ -221,14 +211,17 @@ void CoupleScenario::assign(QStringList &generals, QStringList &roles) const{
     foreach(QString husband, husbands)
         others << husband << map.value(husband);
 
-    qShuffle(others);
     generals << others;
+    qShuffle(generals);
 
     // roles
-    roles << "lord";
     int i;
-    for(i=0; i<8; i++)
-        roles << "renegade";
+    for(i=0; i<9; i++){
+        if(generals.at(i) == "caocao")
+            roles << "lord";
+        else
+            roles << "renegade";
+    }
 }
 
 int CoupleScenario::getPlayerCount() const{
@@ -241,6 +234,16 @@ void CoupleScenario::getRoles(char *roles) const{
 
 void CoupleScenario::onTagSet(Room *room, const QString &key) const{
 
+}
+
+AI::Relation CoupleScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    if(getSpouse(a) == b)
+        return AI::Friend;
+
+    if((a->isLord() || b->isLord()) && a->getGeneral()->isMale() != b->getGeneral()->isMale())
+        return AI::Neutrality;
+
+    return AI::Enemy;
 }
 
 ADD_SCENARIO(Couple);

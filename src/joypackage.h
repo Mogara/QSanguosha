@@ -64,4 +64,18 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
+class Monkey: public OffensiveHorse{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Monkey(Card::Suit suit, int number);
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+    virtual QString getEffectPath(bool is_male) const;
+
+private:
+    TriggerSkill *grab_peach;
+};
+
 #endif // JOYPACKAGE_H

@@ -13,11 +13,15 @@ public:
     virtual QRectF boundingRect() const;
     void changePixmap(const QString &name);
     void shift();
+    void makeGray();
+    void scaleSmoothly(qreal ratio);
 
     bool isMarked() const;
     bool isMarkable() const;
     void mark(bool marked = true);
     void setMarkable(bool markable);
+
+    static void MakeGray(QPixmap &pixmap);
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

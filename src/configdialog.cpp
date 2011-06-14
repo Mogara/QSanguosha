@@ -1,11 +1,15 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
+
+#ifdef AUDIO_SUPPORT
 #include "irrKlang.h"
+#endif
 
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QFontDialog>
+#include <QColorDialog>
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
@@ -24,6 +28,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);    
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
+    ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
 
     ui->volumeSlider->setValue(100 * Config.Volume);
 
@@ -39,6 +44,10 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     font = Config.UIFont;
     showFont(ui->textEditFontLineEdit, font);
 
+    QPalette palette;
+    palette.setColor(QPalette::Text, Config.TextEditColor);
+    ui->textEditFontLineEdit->setPalette(palette);
+
     // tab 3
     ui->smtpServerLineEdit->setText(Config.value("Contest/SMTPServer").toString());
     ui->senderLineEdit->setText(Config.value("Contest/Sender").toString());
@@ -49,6 +58,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font){
+    lineedit->setFont(font);
     lineedit->setText(QString("%1 %2").arg(font.family()).arg(font.pointSize()));
 }
 
@@ -79,14 +89,16 @@ void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
 
-    QString filename = "backdrop/new-year.jpg";
+    QString filename = "backdrop/duanwu.jpg";
     Config.BackgroundBrush = filename;
     Config.setValue("BackgroundBrush", filename);
 
     emit bg_changed();
 }
 
+#ifdef AUDIO_SUPPORT
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
 void ConfigDialog::saveConfig()
 {
@@ -96,9 +108,12 @@ void ConfigDialog::saveConfig()
 
     float volume = ui->volumeSlider->value() / 100.0;
     Config.Volume = volume;
-    Config.setValue("Volume", volume);
+    Config.setValue("Volume", volume);    
 
-    SoundEngine->setSoundVolume(Config.Volume);
+#ifdef AUDIO_SUPPORT
+    if(SoundEngine)
+        SoundEngine->setSoundVolume(Config.Volume);
+#endif
 
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;
@@ -115,6 +130,8 @@ void ConfigDialog::saveConfig()
     Config.FitInView = ui->fitInViewCheckBox->isChecked();
     Config.setValue("FitInView", Config.FitInView);
 
+    Config.setValue("CircularView", ui->circularViewCheckBox->isChecked());
+
     Config.NeverNullifyMyTrick = ui->neverNullifyMyTrickCheckBox->isChecked();
     Config.setValue("NeverNullifyMyTrick", Config.NeverNullifyMyTrick);
 
@@ -122,7 +139,7 @@ void ConfigDialog::saveConfig()
     Config.setValue("Contest/Sender", ui->senderLineEdit->text());
     Config.setValue("Contest/Password", ui->passwordLineEdit->text());
     Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
-    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
+    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());    
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
@@ -169,5 +186,17 @@ void ConfigDialog::on_setTextEditFontButton_clicked()
 
         Config.setValue("UIFont", font);
         QApplication::setFont(font, "QTextEdit");
+    }
+}
+
+void ConfigDialog::on_setTextEditColorButton_clicked()
+{
+    QColor color = QColorDialog::getColor(Config.TextEditColor, this);
+    if(color.isValid()){
+        Config.TextEditColor = color;
+        Config.setValue("TextEditColor", color);
+        QPalette palette;
+        palette.setColor(QPalette::Text, color);
+        ui->textEditFontLineEdit->setPalette(palette);
     }
 }

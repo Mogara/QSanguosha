@@ -4,7 +4,8 @@
 #include <QObject>
 #include <QTime>
 #include <QThread>
-
+#include <QMutex>
+#include <QSemaphore>
 
 class Recorder : public QObject
 {
@@ -28,15 +29,35 @@ class Replayer: public QThread
 
 public:
     explicit Replayer(QObject *parent, const QString &filename);
+    int getDuration() const;
+    qreal getSpeed();
+
+public slots:
+    void uniform();
+    void toggle();
+    void speedUp();
+    void slowDown();
 
 protected:
     virtual void run();
 
 private:
     QString filename;
+    qreal speed;
+    bool playing;
+    QMutex mutex;
+    QSemaphore play_sem;
+
+    struct Pair{
+        int elapsed;
+        QString cmd;
+    };
+    QList<Pair> pairs;
 
 signals:
     void command_parsed(const QString &cmd);
+    void elasped(int secs);
+    void speed_changed(qreal speed);
 };
 
 #endif // RECORDER_H

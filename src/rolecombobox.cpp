@@ -56,6 +56,16 @@ void RoleCombobox::setupItems(Photo *photo){
     }
 }
 
+void RoleCombobox::hide(){
+    foreach(QGraphicsItem *item, items)
+        item->hide();
+}
+
+void RoleCombobox::show(){
+    foreach(QGraphicsItem *item, items)
+        item->show();
+}
+
 void RoleCombobox::onItemClicked(){
     if(items.length() < 2)
         return;

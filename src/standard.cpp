@@ -5,6 +5,7 @@
 #include "maneuvering.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "client.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -117,8 +118,6 @@ QString AOE::getSubtype() const{
     return "aoe";
 }
 
-#include "client.h"
-
 bool AOE::isAvailable() const{
     QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     int count = 0;
@@ -168,7 +167,7 @@ bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets,
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    :TrickCard(suit, number, true), callback(NULL), movable(movable)
+    :TrickCard(suit, number, true), movable(movable)
 {
 }
 
@@ -197,9 +196,11 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
     log.arg = effect.card->objectName();
     room->sendLog(log);
 
-    Q_ASSERT(callback != NULL);
+    JudgeStruct judge_struct = judge;
+    judge_struct.who = effect.to;
+    room->judge(judge_struct);
 
-    if(room->judge(effect.to, callback) == "bad"){
+    if(judge_struct.isBad()){
         room->throwCard(this);
         takeEffect(effect.to);
     }else if(movable){
@@ -304,20 +305,12 @@ QString Horse::getEffectPath(bool) const{
     return "audio/card/common/horse.ogg";
 }
 
-void Horse::onInstall(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    if(correct > 0)
-        room->setPlayerCorrect(player, "P");
-    else
-        room->setPlayerCorrect(player, "S");
+void Horse::onInstall(ServerPlayer *) const{
+
 }
 
-void Horse::onUninstall(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    if(correct > 0)
-        room->setPlayerCorrect(player, "-P");
-    else
-        room->setPlayerCorrect(player, "-S");
+void Horse::onUninstall(ServerPlayer *) const{
+
 }
 
 QString Horse::label() const{

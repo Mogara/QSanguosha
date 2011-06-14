@@ -6,6 +6,16 @@
 #include <QDialog>
 #include <QMap>
 
+class MagatamaWidget : public QWidget{
+    Q_OBJECT
+
+public:
+    explicit MagatamaWidget(int hp, Qt::Orientation orientation);
+
+    static QPixmap *GetMagatama(int index);
+    static QPixmap *GetSmallMagatama(int index);
+};
+
 class PlayerCardDialog : public QDialog{
     Q_OBJECT
 

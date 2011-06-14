@@ -21,6 +21,8 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
+#include <QInputDialog>
+#include <QLabel>
 
 class FitView : public QGraphicsView
 {
@@ -42,6 +44,8 @@ protected:
     }
 };
 
+#include <QAxObject>
+
 MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -52,30 +56,31 @@ MainWindow::MainWindow(QWidget *parent)
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(show()));    
+    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));   
+    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
-    actions << ui->actionStart_Game            
+    actions << ui->actionStart_Game
             << ui->actionStart_Server
+            << ui->actionPC_Console_Start
             << ui->actionReplay
             << ui->actionConfigure
-            << ui->actionAbout
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
-            << ui->actionExit;
+            << ui->actionAbout
+            << ui->actionAcknowledgement;
 
     foreach(QAction *action, actions)
-        start_scene->addButton(action);    
+        start_scene->addButton(action);
 
     FitView *view = new FitView(scene);
 
@@ -85,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     gotoScene(start_scene);
 
     addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);   
+    addAction(ui->actionFullscreen);
     addAction(ui->actionMinimize_to_system_tray);
 
     systray = NULL;
@@ -116,14 +121,15 @@ void MainWindow::closeEvent(QCloseEvent *event){
 }
 
 MainWindow::~MainWindow()
-{    
+{
     delete ui;
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene){
     QGraphicsView *view = qobject_cast<QGraphicsView *>(centralWidget());
     view->setScene(scene);
-    delete this->scene;
+    if(this->scene)
+        this->scene->deleteLater();
     this->scene = scene;
 
     changeBackground();
@@ -199,18 +205,6 @@ void MainWindow::on_actionReplay_triggered()
     client->signup();
 }
 
-void MainWindow::restartConnection(){
-    if(scene)
-        scene->clear();
-
-    ClientInstance = NULL;
-
-    delete Self;
-    Self = NULL;
-
-    startConnection();
-}
-
 void MainWindow::networkError(const QString &error_msg){
     if(isVisible())
         QMessageBox::warning(this, tr("Network error"), error_msg);
@@ -227,8 +221,7 @@ void MainWindow::enterRoom(){
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
-    RoomScene *room_scene = new RoomScene(player_count, this);
+    RoomScene *room_scene = new RoomScene(this);
 
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);
@@ -243,8 +236,18 @@ void MainWindow::enterRoom(){
     connect(ui->actionKick, SIGNAL(triggered()), room_scene, SLOT(kick()));
     connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
+    connect(ui->actionExpand_dashboard, SIGNAL(triggered()), room_scene, SLOT(adjustDashboard()));
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(restartConnection()));
+    if(ServerInfo.FreeChoose){
+        ui->menuCheat->setEnabled(true);
+
+        connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
+        connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
+        connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
+        connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
+    }
+
+    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
 
     gotoScene(room_scene);
 }
@@ -371,9 +374,10 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
 
     QString address = "http://www.ambiera.com/irrklang/";
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 
-    //QMessageBox::about(this, tr("About irrKlang"), content);
+#ifdef AUDIO_SUPPORT
+    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
+#endif
 
     Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
     scene->addItem(window);
@@ -462,3 +466,73 @@ void MainWindow::on_actionScenario_Overview_triggered()
     dialog->show();
 }
 
+BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
+    :QDialog(parent), server(server)
+{
+    setWindowTitle(tr("Broadcast"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(new QLabel(tr("Please input the message to broadcast")));
+
+    text_edit = new QTextEdit;
+    layout->addWidget(text_edit);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addStretch();
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    hlayout->addWidget(ok_button);
+
+    layout->addLayout(hlayout);
+
+    setLayout(layout);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+}
+
+void BroadcastBox::accept(){
+    QDialog::accept();
+
+    server->broadcast(text_edit->toPlainText());
+}
+
+void MainWindow::on_actionBroadcast_triggered()
+{
+    Server *server = findChild<Server *>();
+    if(server == NULL){
+        QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
+        return;
+    }
+
+    BroadcastBox *dialog = new BroadcastBox(server, this);
+    dialog->exec();
+}
+
+
+void MainWindow::on_actionAcknowledgement_triggered()
+{
+
+}
+
+void MainWindow::on_actionPC_Console_Start_triggered()
+{
+    ServerDialog *dialog = new ServerDialog(this);
+    dialog->ensureEnableAI();
+    if(!dialog->config())
+        return;
+
+    Server *server = new Server(this);
+    if(! server->listen()){
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+
+        return;
+    }
+
+    server->createNewRoom();
+
+    connection_dialog->connectToLocalServer();
+}
+
+void MainWindow::on_actionScript_editor_triggered()
+{
+    QMessageBox::information(this, tr("Warning"), tr("This function is not implemented yet!"));
+}

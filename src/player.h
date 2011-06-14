@@ -6,13 +6,14 @@
 
 #include <QObject>
 #include <QTcpSocket>
-#include <QStack>
 
 class EquipCard;
 class Weapon;
 class Armor;
 class Horse;
 class DelayedTrick;
+class DistanceSkill;
+class TriggerSkill;
 
 class Player : public QObject
 {
@@ -36,10 +37,7 @@ class Player : public QObject
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
-
-    // distance related properties
     Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
-    Q_PROPERTY(QString correct READ getCorrect WRITE setCorrect)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
@@ -53,13 +51,6 @@ public:
     enum Phase {Start, Judge, Draw, Play, Discard, Finish, NotActive};
     enum Place {Hand, Equip, Judging, Special, DiscardedPile, DrawPile};
     enum Role {Lord, Loyalist, Rebel, Renegade};
-
-    struct CorrectStruct{
-        int equip_src;
-        int equip_dest;
-        int skill_src;
-        int skill_dest;
-    };
 
     explicit Player(QObject *parent);
 
@@ -110,40 +101,43 @@ public:
 
     void setAttackRange(int attack_range);
     int getAttackRange() const;
-    QString getCorrect() const;
-    void setCorrect(const QString &correct_str);
     bool inMyAttackRange(const Player *other) const;
-    CorrectStruct getCorrectStruct() const;
 
     bool isAlive() const;
     bool isDead() const;
     void setAlive(bool alive);
 
     QString getFlags() const;
-    void setFlags(const QString &flag);
+    virtual void setFlags(const QString &flag);
     bool hasFlag(const QString &flag) const;
+    void clearFlags();
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
 
     virtual int aliveCount() const = 0;
+    void setFixedDistance(const Player *player, int distance);
     int distanceTo(const Player *other) const;
-    int getGeneralMaxHP() const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
 
+    bool isLord() const;
+
     void acquireSkill(const QString &skill_name);
     void loseSkill(const QString &skill_name);
+    void loseAllSkills();
     bool hasSkill(const QString &skill_name) const;
+    virtual bool hasLordSkill(const QString &skill_name) const = 0;
 
     void setEquip(const EquipCard *card);
     void removeEquip(const EquipCard *equip);
     bool hasEquip(const Card *card) const;
+    bool hasEquip() const;
 
-    QStack<const Card *> getJudgingArea() const;
+    QList<const Card *> getJudgingArea() const;
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
-    QStack<const DelayedTrick *> delayedTricks() const;
+    QList<const DelayedTrick *> delayedTricks() const;
     bool containsTrick(const QString &trick_name) const;
     const DelayedTrick *topDelayedTrick() const;
 
@@ -156,6 +150,7 @@ public:
     const Horse *getDefensiveHorse() const;
     const Horse *getOffensiveHorse() const;
     QList<const Card *> getEquips() const;
+    const EquipCard *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name) const;
     bool hasArmorEffect(const QString &armor_name) const;
@@ -177,10 +172,21 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
+    void addHistory(const QString &name);
+    void clearHistory();
+    bool hasUsed(const QString &card_class);
+    int usedTimes(const QString &card_class);
+    int getSlashCount() const;
+
+    QSet<const TriggerSkill *> getTriggerSkills() const;
+    QSet<const Skill *> getVisibleSkills() const;
+
     QVariantMap tag;
 
 protected:
     QMap<QString, int> marks;
+    QMap<QString, QList<int> > piles;
+    QSet<QString> acquired_skills;
 
 private:    
     QString screen_name;
@@ -193,10 +199,7 @@ private:
     int seat;
     bool alive;
     QSet<QString> flags;
-    QSet<QString> acquired_skills;
-    QMap<QString, QList<int> > piles;
 
-    struct CorrectStruct correct;
     int attack_range;
 
     Phase phase;
@@ -205,19 +208,20 @@ private:
     const Horse *defensive_horse, *offensive_horse;
     bool face_up;
     bool chained;
-    QStack<const Card *> judging_area;
-    QStack<const DelayedTrick *> delayed_tricks;
+    QList<const Card *> judging_area;
+    QList<const DelayedTrick *> delayed_tricks;
+    QHash<const Player *, int> fixed_distance;
+
+    QHash<QString, int> history;
 
 signals:
     void general_changed();
     void general2_changed();
     void role_changed(const QString &new_role);
     void state_changed();
-    void turn_started();
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);
-    void drank_changed(bool drank);
 };
 
 #endif // PLAYER_H

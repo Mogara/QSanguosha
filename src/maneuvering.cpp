@@ -18,7 +18,7 @@ bool NatureSlash::match(const QString &pattern) const{
 
 ThunderSlash::ThunderSlash(Suit suit, int number)
     :NatureSlash(suit, number, DamageStruct::Thunder)
-{    
+{
     setObjectName("thunder_slash");
 }
 
@@ -46,7 +46,7 @@ QString Analeptic::getEffectPath(bool is_male) const{
 }
 
 bool Analeptic::IsAvailable(){
-    return ! ClientInstance->hasUsed("Analeptic");
+    return ! Self->hasUsed("Analeptic");
 }
 
 bool Analeptic::isAvailable() const{
@@ -59,7 +59,27 @@ void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 }
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->setPlayerFlag(effect.to, "drank");
+    Room *room = effect.to->getRoom();
+
+    // do animation
+    QString who = effect.to->objectName();
+    QString animation_str = QString("analeptic:%1:%2").arg(who).arg(who);
+    room->broadcastInvoke("animate", animation_str);
+
+    if(effect.to->hasFlag("dying")){
+        // recover hp
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        room->recover(effect.to, recover);
+    }else{
+        LogMessage log;
+        log.type = "#Drank";
+        log.from = effect.from;
+        room->sendLog(log);
+
+        room->setPlayerFlag(effect.to, "drank");
+    }
 }
 
 class FanSkill: public WeaponSkill{
@@ -68,10 +88,10 @@ public:
         events << SlashEffect;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(effect.nature == DamageStruct::Normal){
-            if(player->getRoom()->askForSkillInvoke(player, objectName())){
+            if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
                 effect.nature = DamageStruct::Fire;
 
                 data = QVariant::fromValue(effect);
@@ -83,7 +103,7 @@ public:
 };
 
 Fan::Fan(Suit suit, int number):Weapon(suit, number, 4){
-    setObjectName("fan");    
+    setObjectName("fan");
     skill = new FanSkill;
 }
 
@@ -152,7 +172,7 @@ public:
 
                 return true;
             }
-        }if(event == Predamaged){
+        }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.nature == DamageStruct::Fire){
                 LogMessage log;
@@ -205,8 +225,11 @@ SilverLion::SilverLion(Suit suit, int number):Armor(suit, number){
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    if(player->isAlive())
-        player->getRoom()->recover(player);
+    if(player->isAlive()){
+        RecoverStruct recover;
+        recover.card = this;
+        player->getRoom()->recover(player, recover);
+    }
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)
@@ -215,7 +238,7 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     setObjectName("fire_attack");
 }
 
-bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
+bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     if(!targets.isEmpty())
         return false;
 
@@ -233,7 +256,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
     if(effect.to->isKongcheng())
         return;
 
-    const Card *card = room->askForCardShow(effect.to, effect.from);
+    const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
     room->showCard(effect.to, card->getEffectiveId());
 
     QString suit_str = card->getSuitString();
@@ -275,7 +298,10 @@ bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const C
 }
 
 bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    return targets.length() <= 2;
+    if(getSkillName() == "guhuo")
+        return targets.length() == 1 || targets.length() == 2;
+    else
+        return targets.length() <= 2;
 }
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -287,7 +313,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         TrickCard::onUse(room, card_use);
 }
 
-void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{   
+void IronChain::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
     room->playCardEffect("@tiesuo", source->getGeneral()->isMale());
@@ -301,18 +327,14 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     effect.to->getRoom()->broadcastProperty(effect.to, "chained");
 }
 
-static QString SupplyShortageCallback(const Card *card, Room *){
-    if(card->getSuit() == Card::Club)
-        return "good";
-    else
-        return "bad";
-}
-
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     :DelayedTrick(suit, number)
 {
     setObjectName("supply_shortage");
-    callback = SupplyShortageCallback;
+
+    judge.pattern = QRegExp("(.*):(club):(.*)");
+    judge.good = true;
+    judge.reason = objectName();
 }
 
 bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
@@ -336,7 +358,7 @@ bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, co
 }
 
 void SupplyShortage::takeEffect(ServerPlayer *target) const{
-    target->getRoom()->skip(Player::Draw);
+    target->skip(Player::Draw);
 }
 
 ManeuveringPackage::ManeuveringPackage()
@@ -410,6 +432,8 @@ ManeuveringPackage::ManeuveringPackage()
 
     foreach(Card *card, cards)
         card->setParent(this);
+
+    type = CardPack;
 }
 
 ADD_PACKAGE(Maneuvering)

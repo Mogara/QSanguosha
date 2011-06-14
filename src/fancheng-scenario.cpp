@@ -15,12 +15,17 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.to->isLord()){
             int x = damage.damage;
             Room *room = player->getRoom();
-            room->recover(damage.to, x*2);
+
+            RecoverStruct recover;
+            recover.card = damage.card;
+            recover.who = damage.from;
+            recover.recover = x*2;
+            room->recover(damage.to, recover);
             player->drawCards(x);
         }
 
@@ -90,20 +95,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Start){
-            int equip_num = 0;
-            if(target->getWeapon())
-                equip_num ++;
-
-            if(target->getArmor())
-                equip_num ++;
-
-            if(target->getDefensiveHorse())
-                equip_num ++;
-
-            if(target->getOffensiveHorse())
-                equip_num ++;
-
-            if(equip_num < 2)
+            if(target->getEquips().length() < 2)
                 return false;
 
             Room *room = target->getRoom();
@@ -201,7 +193,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return ! ClientInstance->hasUsed("TaichenCard");
+        return ! Self->hasUsed("TaichenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -327,11 +319,12 @@ public:
             }
 
         case Death:{
-                QString killer_name = data.toString();
+                DamageStar damage = data.value<DamageStar>();
                 if(player->getGeneralName() == "pangde" &&
-                   killer_name == room->getLord()->objectName())
+                   damage && damage->from && damage->from->isLord())
                 {
-                    data = QString();
+                    damage = NULL;
+                    data = QVariant::fromValue(damage);
                 }
 
                 break;
@@ -360,7 +353,6 @@ FanchengScenario::FanchengScenario()
             << new Flood
             << new Taichen
             << new Xiansheng
-            << new Skill("changqu", Skill::Compulsory)
             << new Zhiyuan;
 
     addMetaObject<DujiangCard>();
@@ -372,8 +364,10 @@ FanchengScenario::FanchengScenario()
 void FanchengScenario::onTagSet(Room *room, const QString &key) const{
     if(key == "Flood"){
         ServerPlayer *xuhuang = room->findPlayer("xuhuang");
-        if(xuhuang)
-            room->acquireSkill(xuhuang, "changqu");
+        if(xuhuang){
+            ServerPlayer *lord = room->getLord();
+            room->setFixedDistance(xuhuang, lord, 1);
+        }
 
         ServerPlayer *caoren = room->findPlayer("caoren");
         if(caoren)

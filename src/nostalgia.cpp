@@ -6,6 +6,10 @@
 #include "engine.h"
 #include "nostalgia.h"
 
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QCommandLinkButton>
+
 class Hongyan: public FilterSkill{
 public:
     Hongyan():FilterSkill("hongyan"){
@@ -28,13 +32,40 @@ public:
     }
 };
 
+class HongyanRetrial: public TriggerSkill{
+public:
+    HongyanRetrial():TriggerSkill("#hongyan-retrial"){
+        frequency = Compulsory;
+
+        events << FinishJudge;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        JudgeStar judge = data.value<JudgeStar>();
+        if(judge->card->getSuit() == Card::Spade){
+            LogMessage log;
+            log.type = "#HongyanJudge";
+            log.from = player;
+
+            Card *new_card = Card::Clone(judge->card);
+            new_card->setSuit(Card::Heart);
+            new_card->setSkillName("hongyan");
+            judge->card = new_card;
+
+            player->getRoom()->sendLog(log);
+        }
+
+        return false;
+    }
+};
+
 TianxiangCard::TianxiangCard()
 {
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    DamageStruct damage = room->getTag("TianxiangDamage").value<DamageStruct>();
+    DamageStruct damage = effect.from->tag["TianxiangDamage"].value<DamageStruct>();
     damage.to = effect.to;
     damage.chain = true;
     room->damage(damage);
@@ -86,7 +117,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             Room *room = xiaoqiao->getRoom();
 
-            room->setTag("TianxiangDamage", QVariant::fromValue(damage));
+            xiaoqiao->tag["TianxiangDamage"] = QVariant::fromValue(damage);
             if(room->askForUseCard(xiaoqiao, "@tianxiang", "@@tianxiang-card"))
                 return true;
         }
@@ -230,14 +261,279 @@ public:
     }
 };
 
+GuhuoCard::GuhuoCard(){
+    mute = true;
+}
+
+bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
+    Room *room = yuji->getRoom();
+    room->setTag("Guhuoing", true);
+
+    room->moveCardTo(this, yuji, Player::Special, false);
+
+    QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
+    QSet<ServerPlayer *> questioned;
+
+    foreach(ServerPlayer *player, players){
+        if(player->getHp() <= 0){
+            LogMessage log;
+            log.type = "#GuhuoCannotQuestion";
+            log.from = player;
+            log.arg = QString::number(player->getHp());
+            room->sendLog(log);
+
+            room->setEmotion(player, "no-question");
+
+            continue;
+        }
+
+        QString choice = room->askForChoice(player, "guhuo", "question+noquestion");
+        if(choice == "question"){
+            room->setEmotion(player, "question");
+            questioned << player;
+        }else
+            room->setEmotion(player, "no-question");
+
+        LogMessage log;
+        log.type = "#GuhuoQuery";
+        log.from = player;
+        log.arg = choice;
+
+        room->sendLog(log);
+    }
+
+    bool success = false;
+    if(questioned.isEmpty()){
+        success = true;
+
+        foreach(ServerPlayer *player, players)
+            room->setEmotion(player, ".");
+
+    }else{
+        const Card *card = Sanguosha->getCard(subcards.first());
+        bool real;
+        if(user_string == "peach+analeptic")
+            real = card->objectName() == "peach" || card->objectName() == "analeptic";
+        else
+            real = card->match(user_string);
+
+        success = real && card->getSuit() == Card::Heart;
+
+        foreach(ServerPlayer *player, players){
+            room->setEmotion(player, ".");
+
+            if(questioned.contains(player)){
+                if(real)
+                    room->loseHp(player);
+                else
+                    player->drawCards(1);
+            }
+        }
+    }
+
+    LogMessage log;
+    log.type = "$GuhuoResult";
+    log.from = yuji;
+    log.card_str = QString::number(subcards.first());
+    room->sendLog(log);
+
+    room->setTag("Guhuoing", false);
+
+    if(!success)
+        room->throwCard(this);
+
+    return success;
+}
+
+GuhuoDialog *GuhuoDialog::GetInstance(){
+    static GuhuoDialog *instance;
+    if(instance == NULL)
+        instance = new GuhuoDialog;
+
+    return instance;
+}
+
+GuhuoDialog::GuhuoDialog()
+{
+    setWindowTitle(tr("Guhuo"));
+
+    group = new QButtonGroup(this);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(createLeft());
+    layout->addWidget(createRight());
+
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(selectCard(QAbstractButton*)));
+}
+
+void GuhuoDialog::popup(){
+    if(ClientInstance->getStatus() != Client::Playing)
+        return;
+
+    foreach(QAbstractButton *button, group->buttons()){
+        const Card *card = map[button->objectName()];
+        button->setEnabled(card->isAvailable());
+    }
+
+    Self->tag.remove("Guhuo");
+    exec();
+}
+
+void GuhuoDialog::selectCard(QAbstractButton *button){
+    CardStar card = map.value(button->objectName());
+    Self->tag["Guhuo"] = QVariant::fromValue(card);
+    accept();
+}
+
+QGroupBox *GuhuoDialog::createLeft(){
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(tr("Basic cards"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards){
+        if(card->getTypeId() == Card::Basic && !map.contains(card->objectName())){
+            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setParent(this);
+
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    layout->addStretch();
+
+    box->setLayout(layout);
+    return box;
+}
+
+QGroupBox *GuhuoDialog::createRight(){
+    QGroupBox *box = new QGroupBox(tr("Non delayed tricks"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(tr("Single target"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(tr("Multiple targets"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards){
+        if(card->isNDTrick() && !map.contains(card->objectName())){
+            Card *c = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+            c->setSkillName("guhuo");
+            c->setParent(this);
+
+            QVBoxLayout *layout = c->inherits("SingleTargetTrick") ? layout1 : layout2;
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+
+QAbstractButton *GuhuoDialog::createButton(const Card *card){
+    QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+    button->setObjectName(card->objectName());
+    button->setToolTip(card->getDescription());
+
+    map.insert(card->objectName(), card);
+    group->addButton(button);
+
+    return button;
+}
+
+bool GuhuoCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    return card && card->targetFilter(targets, to_select) && !ClientInstance->isProhibited(to_select, card);
+}
+
+bool GuhuoCard::targetFixed() const{
+    if(ClientInstance->getStatus() == Client::Responsing)
+        return true;
+
+    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    return card && card->targetFixed();
+}
+
+bool GuhuoCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+    CardStar card = Self->tag.value("Guhuo").value<CardStar>();
+    return card && card->targetsFeasible(targets);
+}
+
+const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{
+    Room *room = card_use->from->getRoom();
+    room->playSkillEffect("guhuo");
+
+    LogMessage log;
+    log.type = card_use->to.isEmpty() ? "#GuhuoNoTarget" : "#Guhuo";
+    log.from = card_use->from;
+    log.to = card_use->to;
+    log.arg = user_string;
+
+    room->sendLog(log);
+
+    if(guhuo(card_use->from)){
+        const Card *card = Sanguosha->getCard(subcards.first());
+        Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
+        use_card->setSkillName("guhuo");
+        use_card->addSubcard(this);
+
+        return use_card;
+    }else
+        return NULL;
+}
+
+const Card *GuhuoCard::validateInResposing(ServerPlayer *yuji, bool *continuable) const{
+    *continuable = true;
+
+    Room *room = yuji->getRoom();
+    room->playSkillEffect("guhuo");
+
+    QString to_guhuo;
+    if(user_string == "peach+analeptic")
+        to_guhuo = room->askForChoice(yuji, "guhuo-saveself", user_string);
+    else
+        to_guhuo = user_string;
+
+    LogMessage log;
+    log.type = "#GuhuoNoTarget";
+    log.from = yuji;
+    log.arg = to_guhuo;
+    room->sendLog(log);
+
+    if(guhuo(yuji)){
+        const Card *card = Sanguosha->getCard(subcards.first());
+        Card *use_card = Sanguosha->cloneCard(to_guhuo, card->getSuit(), card->getNumber());
+        use_card->setSkillName("guhuo");
+        use_card->addSubcard(this);
+
+        return use_card;
+    }else
+        return NULL;
+}
+
 class Guhuo: public OneCardViewAsSkill{
 public:
     Guhuo():OneCardViewAsSkill("guhuo"){
-
     }
 
     virtual bool isEnabledAtResponse() const{
-        return !Self->isKongcheng() && !ClientInstance->card_pattern.startsWith("@");
+        return !Self->isKongcheng()
+                && !ClientInstance->card_pattern.startsWith("@")
+                && !ClientInstance->card_pattern.startsWith(".");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -245,7 +541,26 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        return card_item->getFilteredCard();
+        if(ClientInstance->getStatus() == Client::Responsing){
+            GuhuoCard *card = new GuhuoCard;
+            card->setUserString(ClientInstance->card_pattern);
+            card->addSubcard(card_item->getFilteredCard());
+            return card;
+        }
+
+        CardStar c = Self->tag.value("Guhuo").value<CardStar>();
+        if(c){
+            GuhuoCard *card = new GuhuoCard;
+            card->setUserString(c->objectName());
+            card->addSubcard(card_item->getFilteredCard());
+
+            return card;
+        }else
+            return NULL;
+    }
+
+    virtual QDialog *getDialog() const{
+        return GuhuoDialog::GetInstance();
     }
 };
 
@@ -254,6 +569,7 @@ NostalgiaPackage::NostalgiaPackage()
 {
     General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false);
     xiaoqiao->addSkill(new Hongyan);
+    xiaoqiao->addSkill(new HongyanRetrial);
     xiaoqiao->addSkill(new Tianxiang);
 
     General *yangxiu = new General(this, "yangxiu", "wei", 3);
@@ -261,13 +577,14 @@ NostalgiaPackage::NostalgiaPackage()
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
 
-    //General *yuji = new General(this, "yuji", "qun", 3);
-    //yuji->addSkill(new Guhuo);
+    General *yuji = new General(this, "yuji", "qun", 3);
+    yuji->addSkill(new Guhuo);
 
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
 
     addMetaObject<TianxiangCard>();
+    addMetaObject<GuhuoCard>();
 }
 
 ADD_PACKAGE(Nostalgia);

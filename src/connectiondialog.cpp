@@ -53,6 +53,12 @@ ConnectionDialog::~ConnectionDialog()
     delete ui;
 }
 
+void ConnectionDialog::connectToLocalServer(){
+    ui->hostComboBox->lineEdit()->setText("127.0.0.1");
+
+    accept();
+}
+
 void ConnectionDialog::on_connectButton_clicked()
 {
     QString username = ui->nameLineEdit->text();

@@ -93,14 +93,9 @@ class LiuliCard: public SkillCard{
 
 public:
     Q_INVOKABLE LiuliCard();
-    void setSlashSource(const QString &slash_source);
-    void setIsWeapon(bool is_weapon);
+
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
-
-private:
-    QString slash_source;
-    bool is_weapon;
 };
 
 class JijiangCard: public SkillCard{
@@ -111,6 +106,15 @@ public:
 
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class HuanzhuangCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HuanzhuangCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 class CheatCard: public SkillCard{

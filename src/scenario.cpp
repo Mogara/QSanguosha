@@ -4,6 +4,7 @@
 Scenario::Scenario(const QString &name)
     :Package(name), rule(NULL)
 {
+    type = SpecialPack;
 }
 
 int Scenario::getPlayerCount() const{
@@ -46,4 +47,12 @@ void Scenario::assign(QStringList &generals, QStringList &roles) const{
         else
             roles << "renegade";
     }
+}
+
+bool Scenario::generalSelection() const{
+    return false;
+}
+
+AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    return AI::GetRelation(a, b);
 }

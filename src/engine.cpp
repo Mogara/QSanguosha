@@ -5,10 +5,16 @@
 #include "settings.h"
 #include "scenario.h"
 #include "challengemode.h"
-#include "irrKlang.h"
 #include "lua.hpp"
+#include "banpairdialog.h"
+
+#ifdef AUDIO_SUPPORT
 
 typedef irrklang::ISound SoundType;
+
+extern irrklang::ISoundEngine *SoundEngine;
+
+#endif
 
 #include <QFile>
 #include <QStringList>
@@ -29,14 +35,15 @@ extern "C" {
     Package *NewYitian();
     Package *NewNostalgia();
     Package *NewJoy();
+    Package *NewSP();
+    Package *NewYJCM();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
+    Scenario *NewZombieScenario();
 }
-
-extern irrklang::ISoundEngine *SoundEngine;
 
 extern "C" {
     int luaopen_sgs(lua_State *);
@@ -55,6 +62,8 @@ Engine::Engine()
     addPackage(NewYitian());
     addPackage(NewNostalgia());
     addPackage(NewJoy());
+    addPackage(NewSP());
+    addPackage(NewYJCM());
 
     {
         Package *test_package = new Package("test");
@@ -67,14 +76,18 @@ Engine::Engine()
     addScenario(NewFanchengScenario());
     addScenario(NewCoupleScenario());
     addScenario(NewHongyanScenario());
+    addScenario(NewZombieScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");
+    //modes["02pbb"] = tr("2 players (using blance beam)");
+    modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
+    modes["06_3v3"] = tr("6 players (3v3)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
@@ -82,8 +95,9 @@ Engine::Engine()
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
 
+    //challenge_mode_set = NULL;
     challenge_mode_set = new ChallengeModeSet(this);
-    addPackage(challenge_mode_set);
+    //addPackage(challenge_mode_set);
 
     translations.insert("bossmode", tr("Boss mode"));
 
@@ -131,8 +145,11 @@ void Engine::addTranslationEntry(const char *key, const char *value){
 Engine::~Engine(){
     lua_close(lua);
 
+#ifdef AUDIO_SUPPORT
     if(SoundEngine)
         SoundEngine->drop();
+#endif
+
 }
 
 QStringList Engine::getScenarioNames() const{
@@ -159,6 +176,9 @@ const ChallengeMode *Engine::getChallengeMode(const QString &name) const{
 }
 
 void Engine::addPackage(Package *package){
+    if(findChild<const Package *>(package->objectName()))
+        return;
+
     package->setParent(this);
 
     QList<Card *> all_cards = package->findChildren<Card *>();
@@ -172,6 +192,16 @@ void Engine::addPackage(Package *package){
 
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
+        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
+        foreach(const Skill *skill, all_skills){
+            if(skills.contains(skill->objectName()))
+                QMessageBox::information(NULL, "",
+                                         QString("package %1, skill %2")
+                                         .arg(package->objectName()).arg(skill->objectName()));
+
+            skills.insert(skill->objectName(), skill);
+        }
+
         if(general->isHidden()){
             hidden_generals.insert(general->objectName(), general);
             continue;
@@ -183,10 +213,6 @@ void Engine::addPackage(Package *package){
             nonlord_list << general->objectName();
 
         generals.insert(general->objectName(), general);
-
-        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, all_skills)
-            skills.insert(skill->objectName(), skill);
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
@@ -228,8 +254,6 @@ const General *Engine::getGeneral(const QString &name) const{
         return hidden_generals.value(name, NULL);
 }
 
-#include "banpairdialog.h"
-
 int Engine::getGeneralCount(bool include_banned) const{
     if(include_banned)
         return generals.size();
@@ -263,7 +287,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number) const{
         card_obj->setObjectName(name);
         return qobject_cast<Card *>(card_obj);
     }else
-        return NULL;    
+        return NULL;
 }
 
 SkillCard *Engine::cloneSkillCard(const QString &name) const{
@@ -277,7 +301,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersion() const{
-    return "20110312";
+    return "20110606";
 }
 
 QStringList Engine::getExtensions() const{
@@ -290,7 +314,6 @@ QStringList Engine::getExtensions() const{
         extensions << package->objectName();
     }
 
-    extensions.removeOne("standard");
     extensions.removeOne("challenge_modes");
 
     return extensions;
@@ -315,6 +338,11 @@ QString Engine::getSetupString() const{
         flags.append("A");
     if(Config.DisableChat)
         flags.append("M");
+
+    if(Config.MaxHpScheme == 1)
+        flags.append("1");
+    else if(Config.MaxHpScheme == 2)
+        flags.append("2");
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
@@ -365,6 +393,11 @@ int Engine::getPlayerCount(const QString &mode) const{
 
 void Engine::getRoles(const QString &mode, char *roles) const{
     int n = getPlayerCount(mode);
+
+    if(mode == "02_1v1"){
+        qstrcpy(roles, "ZN");
+        return;
+    }
 
     if(modes.contains(mode)){
         static const char *table1[] = {
@@ -486,8 +519,14 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
+    bool exclude_disaters = Config.GameMode == "06_3v3"
+                            && Config.value("3v3/ExcludeDisasters", true).toBool();
+
     QList<int> list;
     foreach(Card *card, cards){
+        if(exclude_disaters && card->inherits("Disaster"))
+            continue;
+
         if(!ban_package.contains(card->getPackage()))
             list << card->getId();
     }
@@ -506,6 +545,8 @@ void Engine::playAudio(const QString &name) const{
 }
 
 void Engine::playEffect(const QString &filename) const{
+#ifdef AUDIO_SUPPORT
+
     if(!Config.EnableEffects)
         return;
 
@@ -519,6 +560,8 @@ void Engine::playEffect(const QString &filename) const{
         return;
 
     SoundEngine->play2D(filename.toAscii());
+
+#endif
 }
 
 void Engine::playSkillEffect(const QString &skill_name, int index) const{
@@ -549,6 +592,14 @@ const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
     if(skill)
         return qobject_cast<const TriggerSkill *>(skill);
+    else
+        return NULL;
+}
+
+const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
+    const Skill *skill = getSkill(skill_name);
+    if(skill)
+        return qobject_cast<const ViewAsSkill *>(skill);
     else
         return NULL;
 }

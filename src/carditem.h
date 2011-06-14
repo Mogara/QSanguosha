@@ -7,6 +7,7 @@
 #include <QSize>
 
 class FilterSkill;
+class General;
 
 class CardItem : public Pixmap
 {
@@ -14,6 +15,7 @@ class CardItem : public Pixmap
 
 public:
     CardItem(const Card *card);
+    CardItem(const QString &general_name);
 
     void filter(const FilterSkill *filter_skill);
     const Card *getFilteredCard() const;
@@ -25,7 +27,10 @@ public:
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);
+    void showAvatar(const General *general);
     void hideFrame();
+    void setAutoBack(bool auto_back);
+    void changeGeneral(const QString &general_name);
 
     void select();
     void unselect();
@@ -47,26 +52,14 @@ private:
     const Card *card, *filtered_card;
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
-    QGraphicsPixmapItem *frame;
+    QGraphicsPixmapItem *frame, *avatar;
+    bool auto_back;
 
 signals:
     void toggle_discards();
     void clicked();
     void double_clicked();
     void thrown();
-    void grabbed();
-};
-
-class GuanxingCardItem : public CardItem {
-    Q_OBJECT
-
-public:
-    GuanxingCardItem(const Card *card);
-
-protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
     void released();
 };
 

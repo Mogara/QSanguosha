@@ -11,11 +11,8 @@ function load_translation(file)
 	    error(("file %s is should return a table!"):format(file))
 	end
 	
-	for key, value in pairs(t) do
-		sgs.AddTranslationEntry(key, value)		
-	end
+	sgs.LoadTranslationTable(t)
 end
-
 
 function load_translations()
 	local lang = sgs.GetConfig("Language", "zh_CN")
@@ -27,15 +24,25 @@ function load_translations()
 	end
 end
 
-function load_extensions()
+function load_extensions(just_require)
 	local scripts = sgs.GetFileNames("extensions")
 	
-	for _, script in ipairs(scripts) do		
-		local filename = ("extensions/%s"):format(script)
-		local package = dofile(filename)
-		sgs.Sanguosha:addPackage(package)
+	for _, script in ipairs(scripts) do	
+		if script:match(".+%.lua$") then
+			local name = script:sub(script:find("%w+"))
+			local module_name = "extensions." .. name
+			local loaded = require(module_name)
+			
+			sgs.Sanguosha:addPackage(loaded.extension)
+		end
 	end
 end
 
-load_translations()
 load_extensions()
+
+local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()
+if not done_loading then
+	load_translations()
+	done_loading = sgs.QVariant(true)
+	sgs.Sanguosha:setProperty("DoneLoading", done_loading)
+end

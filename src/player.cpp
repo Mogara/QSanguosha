@@ -12,10 +12,6 @@ Player::Player(QObject *parent)
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true), chained(false)
 {
-    correct.equip_dest = 0;
-    correct.equip_src = 0;
-    correct.skill_src = 0;
-    correct.skill_dest = 0;
 }
 
 void Player::setScreenName(const QString &screen_name){
@@ -38,7 +34,7 @@ void Player::setOwner(bool owner){
 }
 
 void Player::setHp(int hp){
-    if(hp >= 0 && hp <= max_hp && this->hp != hp){
+    if(hp <= max_hp && this->hp != hp){
         this->hp = hp;
         emit state_changed();
     }
@@ -64,7 +60,7 @@ void Player::setMaxHP(int max_hp){
 }
 
 int Player::getLostHp() const{
-    return max_hp - hp;
+    return max_hp - qMax(hp, 0);
 }
 
 bool Player::isWounded() const{
@@ -91,9 +87,7 @@ bool Player::isDead() const{
 }
 
 void Player::setAlive(bool alive){
-    if(this->alive && alive == false){
-        this->alive = alive;
-    }
+    this->alive = alive;
 }
 
 QString Player::getFlags() const{
@@ -110,19 +104,17 @@ void Player::setFlags(const QString &flag){
         QString copy = flag;
         copy.remove(unset_symbol);
         flags.remove(copy);
-
-        if(copy == "drank")
-            emit drank_changed(false);
     }else{
-        if(flag == "drank")
-            emit drank_changed(true);
-
         flags.insert(flag);
     }
 }
 
 bool Player::hasFlag(const QString &flag) const{
     return flags.contains(flag);
+}
+
+void Player::clearFlags(){
+    flags.clear();
 }
 
 void Player::setAttackRange(int attack_range){
@@ -133,87 +125,53 @@ int Player::getAttackRange() const{
     return attack_range;
 }
 
-QString Player::getCorrect() const{
-    return QString("%1:%2:%3:%4")
-            .arg(correct.equip_src)
-            .arg(correct.equip_dest)
-            .arg(correct.skill_src)
-            .arg(correct.skill_dest);
-}
-
-void Player::setCorrect(const QString &correct_str){
-    // F : feiying
-    // M : mashu
-    // P : plus, +1 horse
-    // S : subtract, -1 horse
-
-    QRegExp rx("(-?)([FMPS])");
-    if(!rx.exactMatch(correct_str)){
-        qFatal("Unknown correct string!");
-        return;
-    }
-
-    QStringList texts = rx.capturedTexts();
-    bool uninstall = texts.at(1) == "-";
-    QString field_name = texts.at(2);
-
-    if(field_name == "F")
-        correct.skill_dest = +1;
-    else if(field_name == "M")
-        correct.skill_src = -1;
-    else if(field_name == "P")
-        correct.equip_dest = uninstall ? 0 : +1;
-    else if(field_name == "S")
-        correct.equip_src = uninstall ? 0 : -1;
-}
-
 bool Player::inMyAttackRange(const Player *other) const{
     return distanceTo(other) <= attack_range;
 }
 
-Player::CorrectStruct Player::getCorrectStruct() const{
-    return correct;
+void Player::setFixedDistance(const Player *player, int distance){
+    if(distance == -1)
+        fixed_distance.remove(player);
+    else
+        fixed_distance.insert(player, distance);
 }
 
 int Player::distanceTo(const Player *other) const{
     if(this == other)
         return 0;
 
-    if(hasSkill("changqu") && other->getRoleEnum() == Player::Lord)
-        return 1;
+    if(fixed_distance.contains(other))
+        return fixed_distance.value(other);
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
     int distance = qMin(left, right);
 
-    distance += correct.equip_src;
-    distance += correct.skill_src;
+    // the shorten ways of distance
+    if(getOffensiveHorse())
+        distance --;
 
-    distance += other->correct.equip_dest;
-    distance += other->correct.skill_dest;
+    if(hasSkill("mashu"))
+        distance --;
 
+    if(hasSkill("yicong") && getHp() > 2)
+        distance --;
+
+    // the lengthen ways of distance
+    if(other->getDefensiveHorse())
+        distance ++;
+
+    if(other->hasSkill("feiying"))
+        distance ++;
+
+    if(other->hasSkill("yicong") && other->getHp() <= 2)
+        distance ++;
+
+    // keep the distance >=1
     if(distance < 1)
         distance = 1;
+
     return distance;
-}
-
-int Player::getGeneralMaxHP() const{
-    if(general2 == NULL)
-        return general->getMaxHp();
-
-    int first = general->getMaxHp();
-    int second = general2->getMaxHp();
-
-    int max_hp;
-    switch(Config.MaxHpScheme){
-    case 2: max_hp = (first + second)/2; break;
-    case 1: max_hp = qMin(first, second); break;
-    case 0:
-    default:
-        max_hp = first + second - 3; break;
-    }
-
-    return qMin(max_hp, 8);
 }
 
 void Player::setGeneral(const General *new_general){
@@ -307,11 +265,18 @@ const General *Player::getGeneral() const{
     return general;
 }
 
+bool Player::isLord() const{
+    return getRole() == "lord";
+}
+
 bool Player::hasSkill(const QString &skill_name) const{
-    if(general)
-        return general->hasSkill(skill_name) || acquired_skills.contains(skill_name);
-    else
-        return false;
+    if(general && general->hasSkill(skill_name))
+        return true;
+
+    if(general2 && general2->hasSkill(skill_name))
+        return true;
+
+    return acquired_skills.contains(skill_name);
 }
 
 void Player::acquireSkill(const QString &skill_name){
@@ -320,6 +285,10 @@ void Player::acquireSkill(const QString &skill_name){
 
 void Player::loseSkill(const QString &skill_name){
     acquired_skills.remove(skill_name);
+}
+
+void Player::loseAllSkills(){
+    acquired_skills.clear();
 }
 
 QString Player::getPhaseString() const{
@@ -373,6 +342,10 @@ bool Player::hasEquip(const Card *card) const{
     return weapon == card || armor == card || defensive_horse == card || offensive_horse == card;
 }
 
+bool Player::hasEquip() const{
+    return weapon || armor || defensive_horse || offensive_horse;
+}
+
 const Weapon *Player::getWeapon() const{
     return weapon;
 }
@@ -395,12 +368,25 @@ QList<const Card *> Player::getEquips() const{
         equips << weapon;
     if(armor)
         equips << armor;
-    if(offensive_horse)
-        equips << offensive_horse;
     if(defensive_horse)
         equips << defensive_horse;
+    if(offensive_horse)
+        equips << offensive_horse;
 
     return equips;
+}
+
+const EquipCard *Player::getEquip(int index) const{
+    switch(index){
+    case 0: return weapon; break;
+    case 1: return armor; break;
+    case 2: return defensive_horse; break;
+    case 3: return offensive_horse; break;
+    default:
+        break;
+    }
+
+    return NULL;
 }
 
 bool Player::hasWeapon(const QString &weapon_name) const{
@@ -408,10 +394,10 @@ bool Player::hasWeapon(const QString &weapon_name) const{
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
-    return armor && !hasFlag("armor_nullified") && armor->objectName() == armor_name;
+    return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
 }
 
-QStack<const Card *> Player::getJudgingArea() const{
+QList<const Card *> Player::getJudgingArea() const{
     return judging_area;
 }
 
@@ -422,10 +408,6 @@ Player::Phase Player::getPhase() const{
 void Player::setPhase(Phase phase){
     if(this->phase != phase){
         this->phase = phase;
-
-        if(phase == Player::Start){
-            emit turn_started();
-        }
 
         emit phase_changed();
     }
@@ -451,7 +433,7 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    return hp + xueyi + extra;
+    return qMax(hp,0) + xueyi + extra;
 }
 
 int Player::getXueyi() const{
@@ -486,8 +468,7 @@ bool Player::isKongcheng() const{
 }
 
 bool Player::isNude() const{
-    return getHandcardNum() == 0 && getWeapon() == NULL && getArmor() == NULL
-            && getDefensiveHorse() == NULL && getOffensiveHorse() == NULL;
+    return isKongcheng() && !hasEquip();
 }
 
 bool Player::isAllNude() const{
@@ -495,15 +476,15 @@ bool Player::isAllNude() const{
 }
 
 void Player::addDelayedTrick(const Card *trick){
-    judging_area.push(trick);
-    delayed_tricks.push(DelayedTrick::CastFrom(trick));
+    judging_area << trick;
+    delayed_tricks << DelayedTrick::CastFrom(trick);
 }
 
 void Player::removeDelayedTrick(const Card *trick){
     int index = judging_area.indexOf(trick);
     if(index >= 0){
-        judging_area.remove(index);
-        delayed_tricks.remove(index);
+        judging_area.removeAt(index);
+        delayed_tricks.removeAt(index);
     }
 }
 
@@ -511,17 +492,15 @@ const DelayedTrick *Player::topDelayedTrick() const{
     if(delayed_tricks.isEmpty())
         return NULL;
     else
-        return delayed_tricks.top();
+        return delayed_tricks.last();
 }
 
-QStack<const DelayedTrick *> Player::delayedTricks() const{
+QList<const DelayedTrick *> Player::delayedTricks() const{
     return delayed_tricks;
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    QVectorIterator<const DelayedTrick *> itor(delayed_tricks);
-    while(itor.hasNext()){      
-        const DelayedTrick *trick = itor.next();
+    foreach(const DelayedTrick *trick, delayed_tricks){
         if(trick->objectName() == trick_name)
             return true;
     }
@@ -549,7 +528,7 @@ void Player::addMark(const QString &mark){
 void Player::removeMark(const QString &mark){
     int value = marks.value(mark, 0);
     value--;
-    value = qMin(0, value);
+    value = qMax(0, value);
     setMark(mark, value);
 }
 
@@ -598,4 +577,60 @@ int Player::getCardCount(bool include_equip) const{
 
 QList<int> &Player::getPile(const QString &pile_name){
     return piles[pile_name];
+}
+
+void Player::addHistory(const QString &name){
+    ++ history[name];
+}
+
+int Player::getSlashCount() const{
+    return history.value("Slash", 0)
+            + history.value("ThunderSlash", 0)
+            + history.value("FireSlash", 0);
+}
+
+void Player::clearHistory(){
+    history.clear();
+}
+
+bool Player::hasUsed(const QString &card_class){
+    return history.value(card_class, 0) > 0;
+}
+
+int Player::usedTimes(const QString &card_class){
+    return history.value(card_class, 0);
+}
+
+QSet<const TriggerSkill *> Player::getTriggerSkills() const{
+    QSet<const TriggerSkill *> skills;
+    if(general)
+        skills += general->getTriggerSkills();
+
+    if(general2)
+        skills += general2->getTriggerSkills();
+
+    foreach(QString skill_name, acquired_skills){
+        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+        if(skill)
+            skills << skill;
+    }
+
+    return skills;
+}
+
+QSet<const Skill *> Player::getVisibleSkills() const{
+    QSet<const Skill *> skills;
+    if(general)
+        skills += general->getVisibleSkills();
+
+    if(general2)
+        skills += general2->getVisibleSkills();
+
+    foreach(QString skill_name, acquired_skills){
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if(skill->isVisible())
+            skills << skill;
+    }
+
+    return skills;
 }

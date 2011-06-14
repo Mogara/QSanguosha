@@ -3,7 +3,7 @@
 #include "settings.h"
 #include "client.h"
 #include "standard.h"
-#include "magatamawidget.h"
+#include "playercarddialog.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -20,6 +20,8 @@ Dashboard::Dashboard()
     createLeft();
     createMiddle();
     createRight();
+
+    death_item = NULL;
 
     int left_width = left_pixmap.width();
     int middle_width = middle->rect().width();
@@ -108,11 +110,26 @@ void Dashboard::createRight(){
     mark_item = new QGraphicsTextItem(right);
     mark_item->setPos(-128, 0);
     mark_item->setDefaultTextColor(Qt::white);
+
+    action_item = NULL;
+}
+
+void Dashboard::setActionState(){
+    if(action_item == NULL){
+        action_item = new QGraphicsPixmapItem(right);
+        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPos(64, 138);
+    }
+
+    action_item->setVisible(Self->hasFlag("actioned"));
 }
 
 void Dashboard::setFilter(const FilterSkill *filter){
-    if(this->filter == NULL)
-        this->filter = filter;
+    this->filter = filter;
+}
+
+const FilterSkill *Dashboard::getFilter() const{
+    return filter;
 }
 
 void Dashboard::setTrust(bool trust){
@@ -147,6 +164,7 @@ void Dashboard::setPlayer(const ClientPlayer *player){
     connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
+    connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
 
     mark_item->setDocument(player->getMarkDoc());
 
@@ -247,9 +265,9 @@ void Dashboard::hideAvatar(){
 }
 
 void Dashboard::installDelayedTrick(CardItem *card){
-    judging_area.push(card);
+    judging_area << card;
     const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
-    delayed_tricks.push(QPixmap(trick->getIconPath()));
+    delayed_tricks << QPixmap(trick->getIconPath());
 
     card->setHomePos(mapToScene(QPointF(34, 37)));
     card->goBack(true);
@@ -295,26 +313,38 @@ void Dashboard::setWidth(int width){
     }
 }
 
-void Dashboard::addWidget(QWidget *widget, int x, bool from_left){
-    const int y = -25;
+QGraphicsProxyWidget *Dashboard::addWidget(QWidget *widget, int x, bool from_left){
     QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
     proxy_widget->setWidget(widget);
+    proxy_widget->setParentItem(from_left ? left : right);
+    proxy_widget->setPos(x, -32);
 
-    if(from_left)
-        proxy_widget->setParentItem(left);
-    else
-        proxy_widget->setParentItem(right);
-
-    proxy_widget->setPos(x, y);
+    return proxy_widget;
 }
 
-QPushButton *Dashboard::addButton(const QString &label, int x, bool from_left){
-    QPushButton *button = new QPushButton(label);
+QPushButton *Dashboard::createButton(const QString &name){
+    QPushButton *button = new QPushButton;
     button->setEnabled(false);
-    button->setMaximumWidth(55);
 
+    QPixmap icon_pixmap(QString("image/system/button/%1.png").arg(name));
+    QPixmap icon_pixmap_disabled(QString("image/system/button/%1-disabled.png").arg(name));
+
+    QIcon icon(icon_pixmap);
+    icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);
+
+    button->setIcon(icon);    
+    button->setIconSize(icon_pixmap.size());
+    button->setFixedSize(icon_pixmap.size());
+    button->setObjectName(name);
+
+    button->setAttribute(Qt::WA_TranslucentBackground);
+
+    return button;
+}
+
+QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
+    QPushButton *button = createButton(name);
     addWidget(button, x, from_left);
-
     return button;
 }
 
@@ -336,7 +366,7 @@ QProgressBar *Dashboard::addProgressBar(){
 }
 
 void Dashboard::drawHp(QPainter *painter) const{
-    int hp = Self->getHp();
+    int hp = qMax(0, Self->getHp());
     int max_hp = Self->getMaxHP();
     QPixmap *magatama, *zero_magatama;
     int index = Self->isWounded() ? qMin(hp, 5) : 5;
@@ -359,7 +389,26 @@ void Dashboard::drawHp(QPainter *painter) const{
         painter->drawPixmap(start_x + skip *(i+1) + i * magatama->width(), 5, *zero_magatama);
 }
 
-void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void Dashboard::killPlayer(){
+    if(death_item){
+        delete death_item;
+        death_item = NULL;
+    }
+
+    death_item = new QGraphicsPixmapItem(QPixmap(Self->getDeathPixmapPath()), this);
+    death_item->setPos(397, 55);
+
+    filter = NULL;
+}
+
+void Dashboard::revivePlayer(){
+    if(death_item){
+        delete death_item;
+        death_item = NULL;
+    }
+}
+
+void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     // draw the left side and right side
     painter->drawPixmap(left->pos(), left_pixmap);
     painter->drawPixmap(right->pos(), right_pixmap);
@@ -371,14 +420,6 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     if(!Self)
         return;
-
-    if(Self->isDead()){
-        if(death_pixmap.isNull())
-            death_pixmap.load(QString("image/system/death/%1.png").arg(Self->getRole()));
-
-        painter->drawPixmap(397, 82, death_pixmap);
-        return;
-    }
 
     // draw player's equip area
     painter->setPen(Qt::white);
@@ -443,8 +484,6 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         painter->drawRect(start_x, y , width, height);
     }
 }
-
-
 
 void Dashboard::adjustCards(){
     int MaxCards = Config.MaxCards;
@@ -571,17 +610,12 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
         }
 
     }else if(place == Player::Judging){
-        int i;
-        for(i=0; i<judging_area.count(); i++){
-            CardItem *item = judging_area.at(i);
-            if(item->getCard()->getId() == card_id){
-                card_item = item;                
-                card_item->hideFrame();
-
-                judging_area.remove(i);
-                delayed_tricks.remove(i);
-                break;
-            }
+        card_item = CardItem::FindItem(judging_area, card_id);
+        if(card_item){
+            card_item->hideFrame();
+            int index = judging_area.indexOf(card_item);
+            judging_area.removeAt(index);
+            delayed_tricks.removeAt(index);
         }
     }
 
@@ -633,6 +667,34 @@ void Dashboard::sortCards(int sort_type){
         qSort(card_items.begin(), card_items.end(), func);
 
     adjustCards();
+}
+
+void Dashboard::reverseSelection(){
+    if(view_as_skill == NULL)
+        return;
+
+    QSet<CardItem *> selected_set = pendings.toSet();
+    unselectAll();
+
+    foreach(CardItem *item, card_items)
+        item->setEnabled(false);
+
+    pendings.clear();
+
+    foreach(CardItem *item, card_items){
+        if(view_as_skill->viewFilter(pendings, item) && !selected_set.contains(item)){
+            item->select();
+            pendings << item;
+
+            item->setEnabled(true);
+        }
+    }
+
+    if(pending_card && pending_card->isVirtualCard() && pending_card->parent() == NULL)
+        delete pending_card;
+    pending_card = view_as_skill->viewAs(pendings);
+
+    emit card_selected(pending_card);
 }
 
 void Dashboard::disableAllCards(){

@@ -4,6 +4,7 @@
 TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
+CONFIG += warn_on audio joystick qaxcontainer
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/button.cpp \
@@ -32,9 +33,7 @@ SOURCES += src/main.cpp \
     src/standard.cpp \
     src/standard-skillcards.cpp \
     src/gamerule.cpp \
-    src/nullificationdialog.cpp \
     src/playercarddialog.cpp \
-    src/magatamawidget.cpp \
     src/roomthread.cpp \
     src/optionbutton.cpp \
     src/maneuvering.cpp \
@@ -58,18 +57,25 @@ SOURCES += src/main.cpp \
     src/banpairdialog.cpp \
     src/fancheng-scenario.cpp \
     src/scenario-overview.cpp \
-    src/bossmode.cpp \
     src/challengemode.cpp \
     src/nostalgia.cpp \
     src/joypackage.cpp \
     src/rolecombobox.cpp \
-    src/joystick.cpp \
     src/couple-scenario.cpp \
     swig/sanguosha_wrap.cxx \
     src/lua-wrapper.cpp \
     src/window.cpp \
     src/contestdb.cpp \
-    src/hongyan-scenario.cpp
+    src/hongyan-scenario.cpp \
+    src/sp-package.cpp \
+    src/yjcm-package.cpp \
+    src/roomthread3v3.cpp \
+    src/cardcontainer.cpp \
+    src/roomthread1v1.cpp \
+    src/cardeditor.cpp \
+    src/zombie-mode-scenario.cpp \
+    src/generalselector.cpp \
+    src/packagingeditor.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -95,9 +101,7 @@ HEADERS += src/mainwindow.h \
     src/standard.h \
     src/package.h \
     src/gamerule.h \
-    src/nullificationdialog.h \
     src/playercarddialog.h \
-    src/magatamawidget.h \
     src/roomthread.h \
     src/optionbutton.h \
     src/maneuvering.h \
@@ -122,21 +126,27 @@ HEADERS += src/mainwindow.h \
     src/banpairdialog.h \
     src/fancheng-scenario.h \
     src/scenario-overview.h \
-    src/bossmode.h \
     src/challengemode.h \
     src/nostalgia.h \
     src/joypackage.h \
     src/rolecombobox.h \
     src/standard-equips.h \
-    src/joystick.h \
     src/couple-scenario.h \
-    src/standard-commons.h \
     src/standard-skillcards.h \
     src/structs.h \
     src/lua-wrapper.h \
     src/window.h \
     src/contestdb.h \
-    src/hongyan-scenario.h
+    src/hongyan-scenario.h \
+    src/sp-package.h \
+    src/yjcm-package.h \
+    src/roomthread3v3.h \
+    src/cardcontainer.h \
+    src/roomthread1v1.h \
+    src/cardeditor.h \
+    src/zombie-mode-scenario.h \
+    src/generalselector.h \
+    src/packagingeditor.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
@@ -145,18 +155,33 @@ FORMS += src/mainwindow.ui \
     src/distanceviewdialog.ui \
     src/configdialog.ui
 
-INCLUDEPATH += include/irrKlang
+
 INCLUDEPATH += include/lua
 INCLUDEPATH += include
 INCLUDEPATH += src
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += -L. irrKlang.lib -lplibjs -lplibul -lwinmm -llua -lm
+    LIBS += -L. -llua -lm
 }
 
 unix {
-    LIBS += -lm -llua -lIrrKlang -lplibjs -lplibul
+    LIBS += -lm -llua
+}
+
+CONFIG(audio){
+    DEFINES += AUDIO_SUPPORT
+    INCLUDEPATH += include/irrKlang
+    win32: LIBS += irrKlang.lib
+    unix: LIBS += -lIrrKlang
+}
+
+CONFIG(joystick){
+    DEFINES += JOYSTICK_SUPPORT
+    HEADERS += src/joystick.h
+    SOURCES += src/joystick.cpp
+    win32: LIBS += -lplibjs -lplibul -lwinmm
+    unix: LIBS += -lplibjs -lplibul
 }
 
 TRANSLATIONS += sanguosha.ts

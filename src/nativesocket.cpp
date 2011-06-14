@@ -118,8 +118,7 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error){
     case QAbstractSocket::SocketAccessError:
         reason = tr("Socket access error"); break;
     case QAbstractSocket::NetworkError:
-        reason = tr("Server's' firewall blocked the connection or the network cable was plugged out"); break;
-        // FIXME
+        return; // this error is ignore ...
     default: reason = tr("Unknow error"); break;
     }
 

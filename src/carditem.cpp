@@ -12,7 +12,7 @@
 #include <QPropertyAnimation>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true)
 {
     Q_ASSERT(card != NULL);
 
@@ -26,6 +26,27 @@ CardItem::CardItem(const Card *card)
     frame = new QGraphicsPixmapItem(frame_pixmap, this);
     frame->setPos(-6, -6);
     frame->hide();
+
+    avatar = NULL;
+}
+
+CardItem::CardItem(const QString &general_name)
+    :card(NULL), filtered_card(NULL), auto_back(true)
+{
+    changeGeneral(general_name);
+}
+
+void CardItem::changeGeneral(const QString &general_name){
+    setObjectName(general_name);
+
+    const General *general = Sanguosha->getGeneral(general_name);
+    if(general){
+        changePixmap(general->getPixmapPath("card"));
+        setToolTip(general->getSkillDescription());
+    }else{
+        changePixmap("image/system/unknown.png");
+        setToolTip(QString());
+    }
 }
 
 const Card *CardItem::getCard() const{
@@ -99,8 +120,27 @@ void CardItem::setFrame(const QString &result){
     }
 }
 
+void CardItem::showAvatar(const General *general){
+    if(general){
+        if(avatar == NULL){
+            avatar = new QGraphicsPixmapItem(this);
+            avatar->setPos(44, 87);
+        }
+
+        avatar->setPixmap(QPixmap(general->getPixmapPath("tiny")));
+        avatar->show();
+    }else{
+        if(avatar)
+            avatar->hide();
+    }
+}
+
 void CardItem::hideFrame(){
     frame->hide();
+}
+
+void CardItem::setAutoBack(bool auto_back){
+    this->auto_back = auto_back;
 }
 
 static inline bool IsMultilayer(){
@@ -145,28 +185,30 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
     return NULL;
 }
 
-void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
+void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){
     if(hasFocus())
         emit clicked();
     else
         emit toggle_discards();
 }
 
-void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(parentItem()){
-        if(y() < -80)
-            emit thrown();
-    }else{
-        emit grabbed();
-    }
+void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
+    if(auto_back){
+        if(parentItem()){
+            if(y() < -80)
+                emit thrown();
+        }
 
-    goBack();
+        goBack();
+    }else{
+        emit released();
+    }
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     if(hasFocus()){
         QPointF down_pos = event->buttonDownPos(Qt::LeftButton);
-        setPos(this->mapToParent(event->pos()) - down_pos);
+        setPos(this->mapToParent(event->pos() - down_pos));
     }
 }
 
@@ -180,24 +222,17 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
-    static QFont card_number_font("Times", 20, QFont::Bold);
+    if(card){
+        static QFont card_number_font("Times", 20, QFont::Bold);
+        painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
 
-    painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
-
-    painter->setFont(card_number_font);
-    if(card->isRed())
-        painter->setPen(Qt::red);
-    else
-        painter->setPen(Qt::black);
-    painter->drawText(8, 50, card->getNumberString());
+        painter->setFont(card_number_font);
+        if(card->isRed())
+            painter->setPen(Qt::red);
+        else
+            painter->setPen(Qt::black);
+        painter->drawText(8, 50, card->getNumberString());
+    }
 }
 
-GuanxingCardItem::GuanxingCardItem(const Card *card)
-    :CardItem(card)
-{
-}
-
-void GuanxingCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    emit released();
-}
 

@@ -119,27 +119,43 @@ void ClientPlayer::changePile(const QString &name, bool add, int card_id){
     emit pile_changed(name);
 }
 
-QList<int> ClientPlayer::nullifications() const{
-    QList<int> card_ids;
+QString ClientPlayer::getDeathPixmapPath() const{
+    QString basename;
+    if(ServerInfo.GameMode == "06_3v3"){
+        if(getRole() == "lord" || getRole() == "renegade")
+            basename = "marshal";
+        else
+            basename = "guard";
+    }else
+        basename = getRole();
 
-    if(hasSkill("kanpo")){
-        foreach(const Card *card, known_cards){
-            if(card->isBlack() || card->objectName() == "nullification")
-                card_ids << card->getId();
-        }
-    }else if(hasSkill("wushen")){
-        foreach(const Card *card, known_cards){
-            if(card->objectName() == "nullification" && card->getSuit() != Card::Heart)
-                card_ids << card->getId();
-        }
-    }else{
-        foreach(const Card *card, known_cards){
-            if(card->objectName() == "nullification")
-                card_ids << card->getId();
-        }
+    if(basename.isEmpty()){
+        basename = "unknown";
     }
 
-    return card_ids;
+    return QString("image/system/death/%1.png").arg(basename);
+}
+
+bool ClientPlayer::hasLordSkill(const QString &skill_name) const{
+    if(ServerInfo.GameMode == "06_3v3")
+        return false;
+    else if(acquired_skills.contains(skill_name))
+        return true;
+    else
+        return getRole() == "lord" && hasSkill(skill_name);
+}
+
+void ClientPlayer::setHandcardNum(int n){
+    handcard_num = n;
+}
+
+void ClientPlayer::setFlags(const QString &flag){
+    Player::setFlags(flag);
+
+    if(flag.endsWith("drank"))
+        emit drank_changed();
+    else if(flag.endsWith("actioned"))
+        emit action_taken();
 }
 
 void ClientPlayer::setMark(const QString &mark, int value){

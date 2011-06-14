@@ -15,6 +15,22 @@ namespace Ui {
 
 class QGraphicsScene;
 class QSystemTrayIcon;
+class Server;
+class QTextEdit;
+
+class BroadcastBox: public QDialog{
+    Q_OBJECT
+
+public:
+    BroadcastBox(Server *server, QWidget *parent = 0);
+
+protected:
+    virtual void accept();
+
+private:
+    Server *server;
+    QTextEdit *text_edit;
+};
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -35,6 +51,12 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionPackaging_triggered();
+    void on_actionScript_editor_triggered();
+    void on_actionPC_Console_Start_triggered();
+    void on_actionCard_editor_triggered();
+    void on_actionAcknowledgement_triggered();
+    void on_actionBroadcast_triggered();
     void on_actionAbout_irrKlang_triggered();
     void on_actionScenario_Overview_triggered();
     void on_actionRole_assign_table_triggered();
@@ -50,7 +72,6 @@ private slots:
     void on_actionExit_triggered();
 
     void startConnection();
-    void restartConnection();
     void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);

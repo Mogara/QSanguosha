@@ -109,9 +109,9 @@
    <property name="geometry">
     <rect>
      <x>670</x>
-     <y>20</y>
+     <y>80</y>
      <width>221</width>
-     <height>531</height>
+     <height>511</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -126,23 +126,59 @@
       <x>0</x>
       <y>0</y>
       <width>221</width>
-      <height>531</height>
+      <height>511</height>
      </rect>
     </property>
    </widget>
   </widget>
-  <widget class="QLabel" name="cvLabel">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>670</x>
-     <y>570</y>
+     <y>20</y>
      <width>221</width>
-     <height>20</height>
+     <height>48</height>
     </rect>
    </property>
-   <property name="text">
-    <string>CV: official</string>
-   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="designerLabel">
+      <property name="text">
+       <string>Designer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="designerLineEdit">
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="cvLabel">
+      <property name="text">
+       <string>CV</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="cvLineEdit">
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

@@ -19,7 +19,7 @@ class Photo : public Pixmap
     Q_OBJECT
 
 public:
-    explicit Photo(int order);
+    explicit Photo();
     void setPlayer(const ClientPlayer *player);
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
@@ -34,7 +34,9 @@ public:
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
-    void createRoleCombobox();    
+    void createRoleCombobox();
+    void setOrder(int order);
+    void revivePlayer();
 
     enum FrameType{
         Playing,
@@ -53,8 +55,10 @@ public slots:
     void refresh();
     void hideEmotion();
     void hideSkillName();
-    void setDrankState(bool drank);
+    void setDrankState();
+    void setActionState();
     void updateRoleComboboxPos();
+    void killPlayer();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -70,6 +74,8 @@ private:
     QPixmap chain;
     RoleCombobox *role_combobox;
     QList<QGraphicsProxyWidget *> pile_buttons;
+    QGraphicsPixmapItem *action_item, *save_me_item;
+    bool permanent;
 
     QGraphicsTextItem *mark_item;
 
@@ -77,8 +83,8 @@ private:
     QList<CardItem **> equips;
     QGraphicsRectItem *equip_rects[4];
 
-    QStack<QGraphicsPixmapItem *> judging_pixmaps;    
-    QStack<CardItem *> judging_area;
+    QList<QGraphicsPixmapItem *> judging_pixmaps;    
+    QList<CardItem *> judging_area;
 
     QMap<QString, QGraphicsPixmapItem *> mark_items;
     QMap<QString, QGraphicsSimpleTextItem *> mark_texts;

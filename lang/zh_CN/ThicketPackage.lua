@@ -23,6 +23,8 @@ return {
 	["dimeng"] = "缔盟", 
 	["wansha"] = "完杀", 
 	["weimu"] = "帷幕", 
+	["#WanshaOne"] = "%from 的锁定技【完杀】被触发，只能 %from 自救",
+	["#WanshaTwo"] = "%from 的锁定技【完杀】被触发，只有 %from 和 %to 自己才能救 %to",
 	["luanwu"] = "乱武", 
 	["jiuchi"] = "酒池", 
 	["roulin"] = "肉林", 
@@ -99,6 +101,7 @@ return {
 	["$xingshang3"] = "痛神曜之幽潛，哀鼎俎之虛置",
 	["$fangzhu1"] = "罪不至死，赦死从流",
 	["$fangzhu2"] = "特赦天下，奉旨回京",
+	["$fangzhu3"] = "本自同根生，相煎何太急？",
 	["$songwei1"] = "吾主英明",
 	
 	-- last words
@@ -112,7 +115,7 @@ return {
 	["@chaos"] = "乱武",
 	
 	-- CV
-	["cv:caopi"] = "迷宫",
+	["cv:caopi"] = "迷宫, 彩三",
 	["cv:xuhuang"] = "",
 	["cv:menghuo"] = "墨染の飞猫",
 	["cv:zhurong"] = "妙妙",

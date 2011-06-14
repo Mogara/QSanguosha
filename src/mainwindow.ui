@@ -29,6 +29,7 @@
     </property>
     <addaction name="actionStart_Game"/>
     <addaction name="actionStart_Server"/>
+    <addaction name="actionPC_Console_Start"/>
     <addaction name="actionReplay"/>
     <addaction name="actionExit"/>
    </widget>
@@ -40,9 +41,10 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
-    <addaction name="actionScript_editor"/>
+    <addaction name="actionBroadcast"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionExpand_dashboard"/>
     <addaction name="actionView_Discarded"/>
     <addaction name="actionView_distance"/>
     <addaction name="actionServerInformation"/>
@@ -57,6 +59,7 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_irrKlang"/>
+    <addaction name="actionAcknowledgement"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
@@ -68,9 +71,31 @@
     <addaction name="actionFullscreen"/>
     <addaction name="actionMinimize_to_system_tray"/>
    </widget>
+   <widget class="QMenu" name="menuCheat">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>Cheat</string>
+    </property>
+    <addaction name="actionGet_card"/>
+    <addaction name="actionDamage_maker"/>
+    <addaction name="actionDeath_note"/>
+    <addaction name="actionRevive_wand"/>
+   </widget>
+   <widget class="QMenu" name="menuDIY">
+    <property name="title">
+     <string>DIY</string>
+    </property>
+    <addaction name="actionCard_editor"/>
+    <addaction name="actionScript_editor"/>
+    <addaction name="actionPackaging"/>
+   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuDIY"/>
+   <addaction name="menuCheat"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionExit">
@@ -79,6 +104,9 @@
    </property>
   </action>
   <action name="actionConfigure">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
@@ -236,8 +264,73 @@
    </property>
   </action>
   <action name="actionScript_editor">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Script editor</string>
+   </property>
+  </action>
+  <action name="actionBroadcast">
+   <property name="text">
+    <string>Broadcast ...</string>
+   </property>
+  </action>
+  <action name="actionAcknowledgement">
+   <property name="text">
+    <string>Acknowledgement</string>
+   </property>
+  </action>
+  <action name="actionDamage_maker">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Damage maker</string>
+   </property>
+  </action>
+  <action name="actionExpand_dashboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Expand dashboard</string>
+   </property>
+  </action>
+  <action name="actionGet_card">
+   <property name="text">
+    <string>Get card ...</string>
+   </property>
+  </action>
+  <action name="actionDeath_note">
+   <property name="text">
+    <string>Death note ...</string>
+   </property>
+  </action>
+  <action name="actionRevive_wand">
+   <property name="text">
+    <string>Revive wand ...</string>
+   </property>
+  </action>
+  <action name="actionCard_editor">
+   <property name="text">
+    <string>Card editor ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionPC_Console_Start">
+   <property name="text">
+    <string>PC Console Start</string>
+   </property>
+  </action>
+  <action name="actionPackaging">
+   <property name="text">
+    <string>Package manager ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

@@ -2,6 +2,9 @@
 
 -- trigger skills
 function sgs.CreateTriggerSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.on_trigger) == "function")
+
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
 	
@@ -18,6 +21,14 @@ function sgs.CreateTriggerSkill(spec)
 	if spec.can_trigger then
 		skill.can_trigger = spec.can_trigger
 	end
+	
+	if spec.view_as_skill then
+		skill:setViewAsSkill(spec.view_as_skill)
+	end
+
+	if type(spec.priority) == "number" then
+		skill.priority = spec.priority
+	end
 
 	return skill
 end
@@ -33,6 +44,28 @@ function sgs.CreateGameStartSkill(spec)
 	end
 	
 	return sgs.CreateTriggerSkill(spec)
+end
+
+function sgs.CreateProhibitSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.is_prohibit) == "function")
+	
+	local skill = sgs.LuaProhibitSkill(spec.name)	
+	skill.is_prohibit = spec.is_prohibit
+	
+	return skill
+end
+
+function sgs.CreateFilterSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.view_filter) == "function")
+	assert(type(spec.view_as) == "function")
+
+	local skill = sgs.LuaFilterSkill(spec.name)
+	skill.view_filter = spec.view_filter
+	skill.view_as = spec.view_as
+
+	return skill
 end
 
 function sgs.CreateMasochismSkill(spec)
@@ -57,10 +90,14 @@ function sgs.CreateSkillCard(spec)
 	
 	local card = sgs.LuaSkillCard(spec.name)
 	
-	card:setTargetFixed(spec.target_fixed)
-	card:setWillThrow(spec.will_throw)	
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+
+	if type(spec.will_throw) == "boolean" then
+		card:setWillThrow(spec.will_throw)	
+	end
 	
-	card.available = spec.available
 	card.filter = spec.filter
 	card.feasible = spec.feasible
 	card.on_use = spec.on_use
@@ -73,36 +110,30 @@ function sgs.CreateViewAsSkill(spec)
 	assert(spec.name)
 	
 	local skill = sgs.LuaViewAsSkill(spec.name)
-	local n = spec.n
+	local n = spec.n or 0
 	
-	if not n then
-		skill.view_filter = spec.view_filter
-		skill.view_as = spec.view_as
-	elseif n == 0 then
-		function skill:view_as()
-			return spec.view_as(self)
-		end
-	elseif n == 1 then
-		function skill:view_filter(selected, to_select)
-			if next(selected) then
+	function skill:view_as(cards)
+			return spec.view_as(self,cards)
+	end
+	
+	function skill:view_filter(selected, to_select)
+			if #selected>=n then
 				return false
 			end
 			
-			return spec.view_filter(self, to_select)
-		end
-		
-		function skill:view_as(cards)
-			if #cards == 1 then
-				local card = cards[1]
-				return spec.view_as(self, card)
-			end
-		end
-	end	
+			return spec.view_filter(self, selected, to_select)
+	end
 	
 	skill.enabled_at_play = spec.enabled_at_play
 	skill.enabled_at_response = spec.enabled_at_response
 	
 	return skill
+end
+
+function sgs.LoadTranslationTable(t)
+	for key, value in pairs(t) do
+		sgs.AddTranslationEntry(key, value)		
+	end
 end
 
 -- utilities, i.e: convert QList<const Card> to Lua's native table
@@ -133,7 +164,16 @@ function sgs.list(list)
 	else
 		return sgs.qlist(list)
 	end
-end		
+end	
+
+function sgs.reverse(list)
+	local new = {}
+	for i=#list, 1, -1 do
+		table.insert(new, list[i])
+	end
+	
+	return new
+end
 
 -- copied from "Well House Consultants"
 -- used to split string into a table, similar with php' explode function

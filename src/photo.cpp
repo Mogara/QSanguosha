@@ -5,7 +5,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "magatamawidget.h"
+#include "playercarddialog.h"
 #include "rolecombobox.h"
 
 #include <QPainter>
@@ -19,18 +19,15 @@
 #include <QPushButton>
 #include <QMenu>
 
-Photo::Photo(int order)
+Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
     player(NULL),
     handcard("image/system/handcard.png"),
-    chain("image/system/chain.png"),
+    chain("image/system/chain.png"), action_item(NULL), save_me_item(NULL), permanent(false),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-    order_item(new QGraphicsPixmapItem(QPixmap(QString("image/system/number/%1.png").arg(order+1)),this)),
-    hide_avatar(false)
+    order_item(NULL), hide_avatar(false)
 {
     setAcceptHoverEvents(true);
-
-    order_item->setVisible(false);
 
     back_icon = new Pixmap("image/system/small-back.png");
     back_icon->setParentItem(this);
@@ -88,6 +85,24 @@ Photo::Photo(int order)
     role_combobox = NULL;
 }
 
+void Photo::setOrder(int order){
+    QPixmap pixmap(QString("image/system/number/%1.png").arg(order));
+    if(order_item)
+        order_item->setPixmap(pixmap);
+    else{
+        order_item = new QGraphicsPixmapItem(pixmap, this);
+        order_item->setVisible(false);
+        order_item->moveBy(15, 0);
+    }
+}
+
+void Photo::revivePlayer(){
+    updateAvatar();
+    updateSmallAvatar();
+
+    role_combobox->show();
+}
+
 void Photo::createRoleCombobox(){
     role_combobox = new RoleCombobox(this);
 
@@ -130,9 +145,19 @@ void Photo::hideProcessBar(){
 }
 
 void Photo::setEmotion(const QString &emotion, bool permanent){
+    this->permanent = permanent;
+
+    if(emotion == "."){
+        emotion_item->hide();
+        return;
+    }
+
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
     emotion_item->setPixmap(QPixmap(path));
     emotion_item->show();
+
+    if(emotion == "question" || emotion == "no-question")
+        return;
 
     if(!permanent)
         QTimer::singleShot(2000, this, SLOT(hideEmotion()));
@@ -161,15 +186,26 @@ void Photo::hideSkillName(){
     skill_name_item->hide();
 }
 
-void Photo::setDrankState(bool drank){
-    if(drank)
+void Photo::setDrankState(){
+    if(player->hasFlag("drank"))
         avatar_area->setBrush(QColor(0xFF, 0x00, 0x00, 255 * 0.45));
     else
         avatar_area->setBrush(Qt::NoBrush);
 }
 
+void Photo::setActionState(){
+    if(action_item == NULL){
+        action_item = new QGraphicsPixmapItem(this);
+        action_item->setPixmap(QPixmap("image/system/3v3/actioned.png"));
+        action_item->setPos(75, 40);
+    }
+
+    action_item->setVisible(player->hasFlag("actioned"));
+}
+
 void Photo::hideEmotion(){
-    emotion_item->hide();
+    if(!permanent)
+        emotion_item->hide();
 }
 
 void Photo::timerEvent(QTimerEvent *event){
@@ -194,7 +230,8 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
-        connect(player, SIGNAL(drank_changed(bool)), this, SLOT(setDrankState(bool)));
+        connect(player, SIGNAL(drank_changed()), this, SLOT(setDrankState()));
+        connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
 
         mark_item->setDocument(player->getMarkDoc());
@@ -258,10 +295,20 @@ void Photo::updateSmallAvatar(){
 }
 
 void Photo::refresh(){
-    if(player && player->getHp() == 0)
+    if(player && player->getHp() <= 0 && player->isAlive() && player->getMaxHP() > 0){
         setFrame(SOS);
-    else
+
+        if(save_me_item == NULL){
+            QPixmap save_me("image/system/death/save-me.png");
+            save_me_item = new QGraphicsPixmapItem(save_me, this);
+            save_me_item->setPos(5, 15);
+        }
+        save_me_item->show();
+    }else{
+        if(save_me_item)
+            save_me_item->hide();
         updatePhase();
+    }
 
     update();
 }
@@ -295,20 +342,11 @@ CardItem *Photo::takeCardItem(int card_id, Player::Place place){
             }
         }
     }else if(place == Player::Judging){
-        QMutableVectorIterator<CardItem *> itor(judging_area);
-        while(itor.hasNext()){
-            CardItem *item = itor.next();
-            if(item->getCard()->getId() == card_id){
-                card_item = item;
-
-                int index = judging_area.indexOf(item);
-                QGraphicsPixmapItem *pixmap_item = judging_pixmaps.at(index);
-                judging_pixmaps.remove(index);
-                delete pixmap_item;
-                itor.remove();
-
-                break;
-            }
+        card_item = CardItem::FindItem(judging_area, card_id);
+        if(card_item){
+            int index = judging_area.indexOf(card_item);
+            delete judging_pixmaps.takeAt(index);
+            judging_area.removeAt(index);
         }
     }
 
@@ -341,10 +379,11 @@ void Photo::installDelayedTrick(CardItem *trick){
 
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     item->setPixmap(QPixmap(player->topDelayedTrick()->getIconPath()));
+    item->setToolTip(player->topDelayedTrick()->getDescription());
 
     item->setPos(-10, 16 + judging_area.count() * 19);
-    judging_area.push(trick);
-    judging_pixmaps.push(item);
+    judging_area << trick;
+    judging_pixmaps << item;
 }
 
 void Photo::addCardItem(CardItem *card_item){
@@ -373,16 +412,12 @@ void Photo::drawMagatama(QPainter *painter, int index, const QPixmap &pixmap){
     }
 }
 
-
-
 void Photo::drawHp(QPainter *painter){
-    int hp = player->getHp();
-    if(hp <= 0)
-        return;
+    int hp = qMax(0, player->getHp());
 
     int index = 5;
     if(player->isWounded())
-        index = qMin(hp, 5);
+        index = qBound(0, hp, 5);
 
     QPixmap *magatama = MagatamaWidget::GetSmallMagatama(index);
     QPixmap *zero_magatama = MagatamaWidget::GetSmallMagatama(0);
@@ -393,9 +428,6 @@ void Photo::drawHp(QPainter *painter){
         drawMagatama(painter, i, *magatama);
     for(i=hp; i< max_hp; i++)
         drawMagatama(painter, i, *zero_magatama);
-
-    QString text = QString("%1/%2").arg(hp).arg(max_hp);
-    painter->drawText(25, 80, text);
 }
 
 void Photo::setFrame(FrameType type){
@@ -513,13 +545,20 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // kingdom related
     painter->drawPixmap(3, 13, kingdom_frame);
 
-    if(!player->isAlive()){
+    if(player->isDead()){
+        int death_x = 5;
+
         if(death_pixmap.isNull()){
-            death_pixmap.load(QString("image/system/death/%1.png").arg(player->getRole()));
-            death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
+            QString path = player->getDeathPixmapPath();
+            death_pixmap.load(path);
+
+            if(path.contains("unknown"))
+                death_x = 23;
+            else
+                death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
         }
 
-        painter->drawPixmap(5, 30, death_pixmap);
+        painter->drawPixmap(death_x, 30, death_pixmap);
         return;
     }
 
@@ -585,4 +624,18 @@ QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
         order_item->setVisible(flags() & ItemIsSelectable);
 
     return Pixmap::itemChange(change, value);
+}
+
+void Photo::killPlayer(){
+    if(!avatar.isNull())
+        MakeGray(avatar);
+
+    if(!small_avatar.isNull())
+        MakeGray(small_avatar);
+
+    kingdom_frame = QPixmap();
+    role_combobox->hide();
+
+    if(save_me_item)
+        save_me_item->hide();
 }

@@ -20,7 +20,7 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     damage.from = source;
     damage.to = shuangxiong;
 
-    bool success = source->pindian(shuangxiong);
+    bool success = source->pindian(shuangxiong, "zhanshuangxiong");
     if(!success)
         qSwap(damage.from, damage.to);
 
@@ -71,7 +71,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !ClientInstance->hasUsed("ZhanShuangxiongCard");
+        return !Self->isKongcheng() && !Self->hasUsed("ZhanShuangxiongCard");
     }
 
     virtual const Card *viewAs() const{
@@ -155,7 +155,7 @@ public:
     GuanduRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart << PhaseChange << Damaged << Death;
+        events << GameStart << PhaseChange << Damaged << GameOverJudge;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -216,8 +216,6 @@ public:
                     tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
 
                     foreach(QString name, tos){
-                        qDebug("duanliang against %s", qPrintable(name));
-
                         ServerPlayer *to = room->findPlayer(name);
                         if(to == NULL || to->containsTrick("supply_shortage"))
                             continue;
@@ -227,21 +225,21 @@ public:
                             break;
                         }
 
-                        room->moveCardTo(card_id, to, Player::Judging, true);
+                        room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
                     }
                 }
 
                 break;
             }
 
-        case Death:{
-                if(player->getRoleEnum() == Player::Lord){
+        case GameOverJudge:{
+                if(player->isLord()){
                     QStringList roles = room->aliveRoles(player);
                     if(roles.length() == 2){
                         QString first = roles.at(0);
                         QString second = roles.at(1);
                         if(first == "renegade" && second == "renegade"){
-                            player->throwAllCards();
+                            player->bury();
                             room->gameOver("renegade");
                             return true;
                         }
@@ -276,6 +274,13 @@ GuanduScenario::GuanduScenario()
 
     addMetaObject<ZhanShuangxiongCard>();
     addMetaObject<SmallTuxiCard>();
+}
+
+AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    if(a->getRole() == "renegade" && b->getRole() == "renegade")
+        return AI::Friend;
+    else
+        return AI::GetRelation(a, b);
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{

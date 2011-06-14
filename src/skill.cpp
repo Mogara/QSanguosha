@@ -32,8 +32,29 @@ QString Skill::getDescription() const{
     return Sanguosha->translate(":" + objectName());
 }
 
-QString Skill::getDefaultChoice() const{
+QString Skill::getText() const{
+    QString skill_name = Sanguosha->translate(objectName());
+
+    switch(frequency){
+    case Skill::NotFrequent:
+    case Skill::Frequent: break;
+    case Skill::Limited: skill_name.append(tr(" [Limited]")); break;
+    case Skill::Compulsory: skill_name.append(tr(" [Compulsory]")); break;
+    }
+
+    return skill_name;
+}
+
+bool Skill::isVisible() const{
+    return ! objectName().startsWith("#");
+}
+
+QString Skill::getDefaultChoice(ServerPlayer *) const{
     return default_choice;
+}
+
+int Skill::getEffectIndex(ServerPlayer *, const Card *) const{
+    return -1;
 }
 
 void Skill::initMediaSource(){
@@ -91,6 +112,10 @@ Skill::Frequency Skill::getFrequency() const{
 
 QStringList Skill::getSources() const{
     return sources;
+}
+
+QDialog *Skill::getDialog() const{
+    return NULL;
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)

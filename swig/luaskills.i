@@ -3,12 +3,39 @@ class LuaTriggerSkill: public TriggerSkill{
 public:
     LuaTriggerSkill(const char *name, Frequency frequency);
     void addEvent(TriggerEvent event);
+	void setViewAsSkill(ViewAsSkill *view_as_skill);
 	
-	virtual bool triggerable(ServerPlayer *target) const;
+	virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;
+	int priority;
+};
+
+class GameStartSkill: public TriggerSkill{
+public:
+    GameStartSkill(const QString &name);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+    virtual void onGameStart(ServerPlayer *player) const = 0;
+};
+
+class ProhibitSkill: public GameStartSkill{
+public:
+    ProhibitSkill(const QString &name);
+
+    virtual void onGameStart(ServerPlayer *player) const;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
+};
+
+class LuaProhibitSkill: public ProhibitSkill{
+public:
+    LuaProhibitSkill(const char *name);
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const;
+
+    LuaFunction is_prohibited;
 };
 
 class ViewAsSkill:public Skill{
@@ -35,13 +62,40 @@ public:
     LuaFunction enabled_at_response;
 };
 
+class OneCardViewAsSkill: public ViewAsSkill{
+public:
+    OneCardViewAsSkill(const QString &name);
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
+
+    virtual bool viewFilter(const CardItem *to_select) const = 0;
+    virtual const Card *viewAs(CardItem *card_item) const = 0;
+};
+
+class FilterSkill: public OneCardViewAsSkill{
+public:
+    FilterSkill(const QString &name);
+};
+
+class LuaFilterSkill: public FilterSkill{
+public:
+    LuaFilterSkill(const char *name);
+
+    virtual bool viewFilter(const CardItem *to_select) const;
+    virtual const Card *viewAs(CardItem *card_item) const;
+
+    LuaFunction view_filter;
+    LuaFunction view_as;
+};
+
 class LuaSkillCard: public SkillCard{
 public:
     LuaSkillCard(const char *name);
     void setTargetFixed(bool target_fixed);
     void setWillThrow(bool will_throw);
+    LuaSkillCard *clone() const;
 
-    LuaFunction available;
     LuaFunction filter;    
     LuaFunction feasible;
     LuaFunction on_use;
@@ -54,7 +108,7 @@ public:
 #include "clientplayer.h"
 #include "carditem.h"
 
-bool LuaTriggerSkill::triggerable(ServerPlayer *target) const{
+bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
 	if(can_trigger == 0)
 		return TriggerSkill::triggerable(target);
 	
@@ -63,10 +117,7 @@ bool LuaTriggerSkill::triggerable(ServerPlayer *target) const{
 	
 	// the callback function
 	lua_rawgeti(L, LUA_REGISTRYINDEX, can_trigger);	
-	
-	LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
-	SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTriggerSkill, 0);
-	
+	SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);	
 	SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
 
 	int error = lua_pcall(L, 2, 1, 0);
@@ -126,6 +177,80 @@ static void Error(lua_State *L){
     lua_pop(L, 1);
     QMessageBox::warning(NULL, "Lua script error!", error_string);
 }
+
+bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card) const{
+    if(is_prohibited == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, is_prohibited);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaProhibitSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 4, 1, 0);
+    if(error){
+        Error(L);
+        return false;
+    }
+
+    bool result = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
+}
+
+bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{
+    if(view_filter == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, view_filter);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaFilterSkill, 0);
+    SWIG_NewPointerObj(L, to_select->getCard(), SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return false;
+    }
+
+    bool result = lua_toboolean(L, -1);
+    lua_pop(L, 1);
+    return result;
+}
+
+const Card *LuaFilterSkill::viewAs(CardItem *card_item) const{
+    if(view_as == 0)
+        return false;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, view_as);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaFilterSkill, 0);
+    SWIG_NewPointerObj(L, card_item->getCard(), SWIGTYPE_p_Card, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        Error(L);
+        return NULL;
+    }
+    
+    void *card_ptr;
+    int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+    lua_pop(L, 1);
+    if(SWIG_IsOK(result)){
+		const Card *card = static_cast<const Card *>(card_ptr);
+        return card;
+    }else
+        return NULL;
+}
+
 
 // ----------------------
 
@@ -249,28 +374,6 @@ bool LuaViewAsSkill::isEnabledAtResponse() const{
 void LuaSkillCard::pushSelf(lua_State *L) const{
     LuaSkillCard *self = const_cast<LuaSkillCard *>(this);
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaSkillCard, 0);
-}
-
-bool LuaSkillCard::isAvailable() const{
-    if(available == 0)
-        return SkillCard::isAvailable();
-
-    lua_State *L = Sanguosha->getLuaState();
-	
-	// the callback
-	lua_rawgeti(L, LUA_REGISTRYINDEX, available);	
-
-    pushSelf(L);
-
-    int error = lua_pcall(L, 1, 1, 0);
-    if(error){
-        Error(L);
-        return false;
-    }else{
-		bool result = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		return result;
-	}
 }
 
 bool LuaSkillCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{

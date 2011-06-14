@@ -52,13 +52,17 @@ void StartScene::setServerLogBackground(){
     }
 }
 
+#ifdef AUDIO_SUPPORT
 extern irrklang::ISoundEngine *SoundEngine;
+#endif
 
-void StartScene::switchToServer(Server *server){
+void StartScene::switchToServer(Server *server){    
+#ifdef AUDIO_SUPPORT
     if(SoundEngine){
         SoundEngine->drop();
         SoundEngine = NULL;
     }
+#endif
 
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
@@ -82,7 +86,7 @@ void StartScene::switchToServer(Server *server){
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
     server_log->setFont(QFont("Verdana", 12));
-    server_log->setTextColor(QColor("white"));
+    server_log->setTextColor(Config.TextEditColor);
     setServerLogBackground();
 
     addWidget(server_log);

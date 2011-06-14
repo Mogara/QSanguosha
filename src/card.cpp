@@ -14,7 +14,7 @@ const Card::Suit Card::AllSuits[4] = {
 };
 
 Card::Card(Suit suit, int number, bool target_fixed)
-    :target_fixed(target_fixed), once(false), mute(false), suit(suit), number(number), id(-1)
+    :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
 {
     if(number < 1 || number > 13)
         number = 0;
@@ -32,6 +32,26 @@ QString Card::Suit2String(Suit suit){
     case Diamond: return "diamond";
     default: return "no_suit";
     }
+}
+
+QStringList Card::IdsToStrings(const QList<int> &ids){
+    QStringList strings;
+    foreach(int card_id, ids)
+        strings << QString::number(card_id);
+    return strings;
+}
+
+QList<int> Card::StringsToIds(const QStringList &strings){
+    QList<int> ids;
+    foreach(QString str, strings){
+        bool ok;
+        ids << str.toInt(&ok);
+
+        if(!ok)
+            break;
+    }
+
+    return ids;
 }
 
 bool Card::isRed() const{
@@ -237,14 +257,17 @@ bool Card::isVirtualCard() const{
 const Card *Card::Parse(const QString &str){
     if(str.startsWith(QChar('@'))){
         // skill card
-        static QRegExp pattern("@(\\w+)=(.+)");
-        pattern.indexIn(str);
+        static QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
+        if(!pattern.exactMatch(str))
+            return NULL;
+
         QStringList texts = pattern.capturedTexts();
         QString card_name = texts.at(1);
         QStringList subcard_ids;
         QString subcard_str = texts.at(2);
         if(subcard_str != ".")
            subcard_ids = subcard_str.split("+");
+        QString user_string = texts.at(3);
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
         if(card == NULL)
@@ -257,7 +280,12 @@ const Card *Card::Parse(const QString &str){
         QString skill_name = card_name.remove("Card").toLower();
         card->setSkillName(skill_name);
 
-        return card;        
+        if(!user_string.isEmpty()){
+            user_string.remove(0, 1);
+            card->setUserString(user_string);
+        }
+
+        return card;
     }else if(str.startsWith(QChar('$'))){
         QString copy = str;
         copy.remove(QChar('$'));
@@ -360,17 +388,8 @@ bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const Client
 
 static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b){
     Room *room = a->getRoom();
-    int current = room->getCurrent()->getSeat();
 
-    int seat1 = a->getSeat();
-    if(seat1 < current)
-        seat1 += room->alivePlayerCount();
-
-    int seat2 = b->getSeat();
-    if(seat2 < current)
-        seat2 += room->alivePlayerCount();
-
-    return seat1 < seat2;
+    return room->getFront(a, b) == a;
 }
 
 void Card::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -391,13 +410,20 @@ void Card::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    room->throwCard(this);
+    if(will_throw){
+        room->throwCard(this);
+    }
 
     if(targets.length() == 1){
         room->cardEffect(this, source, targets.first());
     }else{
         QList<ServerPlayer *> players = targets;
         qSort(players.begin(), players.end(), CompareByActionOrder);
+
+        if(room->getMode() == "06_3v3"){
+           if(inherits("AOE") || inherits("GlobalEffect"))
+               room->reverseFor3v3(this, source, players);
+        }
 
         foreach(ServerPlayer *target, players){            
             CardEffectStruct effect;
@@ -446,6 +472,15 @@ bool Card::isAvailable() const{
     return true;
 }
 
+const Card *Card::validate(const CardUseStruct *) const{
+    return this;
+}
+
+const Card *Card::validateInResposing(ServerPlayer *, bool *continuable) const{
+    *continuable = false;
+    return this;
+}
+
 bool Card::isOnce() const{
     return once;
 }
@@ -454,15 +489,20 @@ bool Card::isMute() const{
     return mute;
 }
 
+
+bool Card::willThrow() const{
+    return will_throw;
+}
+
 // ---------   Skill card     ------------------
 
 SkillCard::SkillCard()
-    :Card(NoSuit, 0), will_throw(true)
+    :Card(NoSuit, 0)
 {
 }
 
-bool SkillCard::willThrow() const{
-    return will_throw;
+void SkillCard::setUserString(const QString &user_string){
+    this->user_string = user_string;
 }
 
 QString SkillCard::getType() const{
@@ -478,14 +518,18 @@ Card::CardType SkillCard::getTypeId() const{
 }
 
 QString SkillCard::toString() const{
-    return QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+    QString str = QString("@%1=%2").arg(metaObject()->className()).arg(subcardString());
+    if(!user_string.isEmpty())
+        return QString("%1:%2").arg(str).arg(user_string);
+    else
+        return str;
 }
 
 // ---------- Dummy card      -------------------
 
-DummyCard::DummyCard()
-    :Card(NoSuit, 0, true)
+DummyCard::DummyCard()   
 {
+    target_fixed = true;
     setObjectName("dummy");
 }
 
@@ -495,10 +539,6 @@ QString DummyCard::getType() const{
 
 QString DummyCard::getSubtype() const{
     return "dummy_card";
-}
-
-Card::CardType DummyCard::getTypeId() const{
-    return Skill;
 }
 
 QString DummyCard::toString() const{

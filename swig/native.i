@@ -10,6 +10,7 @@
 %native(Print) int Print(lua_State *lua);
 %native(AddTranslationEntry) int AddTranslationEntry(lua_State *lua);
 %native(GetConfig) int GetConfig(lua_State *lua);
+%native(SetConfig) int SetConfig(lua_State *lua);
 %native(GetProperty) int GetProperty(lua_State *lua);
 %native(Alert) int Alert(lua_State *lua);
 
@@ -77,6 +78,39 @@ static int GetConfig(lua_State *lua){
     }
 
     return 1;
+}
+
+static int SetConfig(lua_State *lua){
+    const char *key = luaL_checkstring(lua, 1);
+    int type = lua_type(lua, 2);
+    
+    switch(type){
+    case LUA_TNUMBER:{
+            int n = luaL_checkint(lua, 2);
+            Config.setValue(key, n);
+            
+            break;
+        }
+        
+    case LUA_TBOOLEAN:{
+            bool b = lua_toboolean(lua, 2);
+            Config.setValue(key, b);
+            
+            break;
+        }
+        
+    case LUA_TSTRING:{
+            const char *str = luaL_checkstring(lua, 2);
+            Config.setValue(key, str);
+            
+            break;
+        }
+        
+    default:
+        luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __func__);
+    }
+    
+    return 0;
 }
 
 static int GetProperty(lua_State *lua){

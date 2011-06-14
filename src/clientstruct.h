@@ -12,11 +12,12 @@ struct ServerInfoStruct{
     QString Name;
     QString GameMode;
     int OperationTimeout;
-    QMap<QString, bool> Extensions;
+    QStringList Extensions;
     bool FreeChoose;
     bool Enable2ndGeneral;   
     bool EnableAI;
     bool DisableChat;
+    int MaxHPScheme;
 };
 
 extern ServerInfoStruct ServerInfo;
@@ -40,6 +41,7 @@ private:
     QLabel *game_mode_label;
     QLabel *player_count_label;
     QLabel *two_general_label;
+    QLabel *max_hp_label;
     QLabel *free_choose_label;
     QLabel *enable_ai_label;
     QLabel *time_limit_label;

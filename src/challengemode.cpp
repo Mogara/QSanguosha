@@ -26,6 +26,8 @@ ChallengeModeSet::ChallengeModeSet(QObject *parent)
     addMode("@manshow", "liubei+lumeng+zhangliao+daqiao");
     addMode("@greatrange", "machao+pangde+xiahouyuan+taishici");
     addMode("@p4cure", "liubei+menghuo+huatuo+weiyan");
+
+    type = SpecialPack;
 }
 
 const ChallengeMode *ChallengeModeSet::getMode(const QString &name) const{

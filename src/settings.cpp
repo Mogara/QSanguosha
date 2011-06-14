@@ -80,5 +80,11 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/new-year.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/duanwu.jpg").toString();
+
+    if(!contains("1v1/Banlist")){
+        QStringList banlist;
+        banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
+        setValue("1v1/Banlist", banlist);
+    }
 }

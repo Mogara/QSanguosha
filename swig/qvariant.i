@@ -1,11 +1,20 @@
 class QVariant{
+public:
+	QVariant();
 	QVariant(int);
 	QVariant(const char *);
+	QVariant(bool);
 	int toInt() const;
 	QString toString() const;
+	bool toBool() const;
 };
 
 %extend QVariant {
+
+	void setValue(int value){
+		$self->setValue(QVariant::fromValue(value));
+	}
+
 	DamageStruct toDamage() const{
 		return $self->value<DamageStruct>();
 	}
@@ -68,5 +77,21 @@ class QVariant{
 	
 	void setValue(DyingStruct *dying){
 		$self->setValue(QVariant::fromValue(*dying));
+	}
+
+	DamageStar toDamageStar() const{
+		return $self->value<DamageStar>();
+	}
+
+	void setValue(RecoverStruct *recover){
+		$self->setValue(QVariant::fromValue(*recover));
+	}
+
+	RecoverStruct toRecover() const{
+		return $self->value<RecoverStruct>();
+	}
+
+	JudgeStruct *toJudge() const{
+		return $self->value<JudgeStar>();
 	}
 };
