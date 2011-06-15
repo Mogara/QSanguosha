@@ -280,9 +280,7 @@ void SkillBox::loadConfig(){
     }
 
     Config.endArray();
-
     skill_description->setHtml(Config.value("SkillDescription").toString());
-    setMiddleHeight(Config.value("SkillBoxMiddleHeight").toInt());
 
     Config.endGroup();
 }
@@ -487,7 +485,7 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
     }
 
     skill_box->setKingdom(kingdom);
-    skill_box->setMiddleHeight(-1);
+    skill_box->setMiddleHeight(Config.value("CardEditor/SkillBoxMiddleHeight", -1).toInt());
 
     big_avatar_rect->setKingdom(kingdom);
     small_avatar_rect->setKingdom(kingdom);
@@ -633,8 +631,10 @@ void CardScene::setAvatarNameBox(const QString &text){
 }
 
 void CardScene::resetPhoto(){
-    if(photo)
+    if(photo){
         photo->deleteLater();
+        Config.remove("CardEditor/Photo");
+    }
 
     photo = new Pixmap;
     photo->setZValue(-1);
