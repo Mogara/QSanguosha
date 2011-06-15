@@ -66,7 +66,7 @@ return {
 	["designer:gaoshun"] = "羽柴文理",
 	["designer:chengong"] = "Kaycent",
 	
-	["cv:caozhi"] = "彩三",
+	["cv:caozhi"] = "殆尘",
 	["cv:yujin"] = "",
 	["cv:fazheng"] = "",
 	["cv:masu"] = "",

@@ -115,7 +115,7 @@ return {
 	["@chaos"] = "乱武",
 	
 	-- CV
-	["cv:caopi"] = "迷宫, 彩三",
+	["cv:caopi"] = "迷宫, 殆尘",
 	["cv:xuhuang"] = "",
 	["cv:menghuo"] = "墨染の飞猫",
 	["cv:zhurong"] = "妙妙",
