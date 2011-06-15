@@ -998,6 +998,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,enemy)
 			if not slash_prohibit then
+				self.predictedRange = self.player:getAttackRange()
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy)<=self.predictedRange))) and 
 				self:objectiveLevel(enemy)>3 and
@@ -1582,8 +1583,9 @@ end
 
 -- when self has wizard (zhangjiao, simayi, use it)
 function SmartAI:useCardLightning(card, use)					
-	if self.player:containsTrick("lightning") then return nil end
-
+	if self.player:containsTrick("lightning") then return end
+	if self.player:hasSkill("weimu") and card:isBlack() then return end
+	
 	if not self:hasWizard(self.enemies) then--and self.room:isProhibited(self.player, self.player, card) then
 		if self:hasWizard(self.friends) then
 			use.card = card
@@ -2245,13 +2247,12 @@ function SmartAI:askForCardChosen(who, flags, reason)
 				return indulgence or supply_shortage
 			end
 		elseif flags:match("e") then
+			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
 			if who:hasSkill("xiaoji") then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then
 					return equips:at(0):getId()
 				end
-			else
-				if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
 			end
 		end
 	else 
@@ -2435,7 +2436,8 @@ end
 
 function SmartAI:askForAG(card_ids,refusable)	
 	if refusable and self:hasSkill("xinzhan") then
-		if self:isFriend(self.player:getNextAlive()) then
+		local next_player = self.player:getNextAlive()
+		if self:isFriend(next_player) and next_player:containsTrick("indulgence") then
 			if #card_ids == 1 then return -1 end
 		end
 		return card_ids[1] 
@@ -2510,12 +2512,16 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 			end
 		end		
 	else
-		if from and from:objectName() == to:objectName() then
-			if self:isFriend(from) then return null_card
-			else return nil end
+		if from then
+			if from:objectName() == to:objectName() then
+				if self:isFriend(from) then return null_card
+				else return nil end
+			end
+			if self:isFriend(from) and self:isEnemy(to) then return null_card end
+			if self:isEnemy(from) and self:isFriend(to) then return nil end
+		else
+			if self:isEnemy(to) then return null_card else return end
 		end
-		if self:isFriend(from) and self:isEnemy(to) then return null_card end
-		if self:isEnemy(from) and self:isFriend(to) then return nil end
 --	    local reverse_null=self:askForNullification(trick_name, from, to, true)
 --		if null_card and not reverse_null then return null_card end
 	end

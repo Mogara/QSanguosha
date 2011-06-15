@@ -59,36 +59,4 @@ for(i=0; i<$1.length(); i++){
 SWIG_arg++;
 %}
 
-//-----------------------------------------
-
-%naturalvar QList<int>;
-
-%typemap(in, checkfn="lua_istable") QList<int>
-%{
-size_t len = lua_objlen(L, $input);
-
-int i;
-for(i=0; i<len; i++){
-	lua_rawgeti(L, $input, i+1);
-	int elem = luaL_checkint(L, -1);
-	$1 << elem;
-	lua_pop(L, 1);
-}
-
-%}
-
-%typemap(out) QList<int>
-%{
-lua_createtable(L, $1.length(), 0);
-
-int i;
-for(i=0; i<$1.length(); i++){
-	int elem = $1.at(i);
-	lua_pushnumber(L, elem);
-	lua_rawseti(L, -2, i+1);
-}
-
-SWIG_arg++;
-%}
-
 

@@ -236,12 +236,12 @@ void Client::processReply(char *reply){
         // invoke methods
         buffer_t method_name, arg;
         sscanf(reply, "%s %s", method_name, arg);
-        Callback callback = callbacks.value(method_name, NULL);
-
         QString method = method_name;
+
         if(replayer && (method.startsWith("askFor") || method.startsWith("do") || method == "activate"))
             return;
 
+        Callback callback = callbacks.value(method_name, NULL);
         if(callback){
             QString arg_str = arg;
             (this->*callback)(arg_str);
