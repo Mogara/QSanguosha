@@ -362,6 +362,18 @@ struct JudgeStruct{
 
 typedef JudgeStruct *JudgeStar;
 
+struct PindianStruct{
+    PindianStruct();
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+    const Card *from_card;
+    const Card *to_card;
+    QString reason;
+};
+
+typedef PindianStruct *PindianStar;
+
 enum TriggerEvent{
     GameStart,
 	TurnStart,
@@ -373,6 +385,8 @@ enum TriggerEvent{
 	StartJudge,
 	AskForRetrial,
     FinishJudge,
+
+	Pindian,
 
     Predamage,
     Predamaged,

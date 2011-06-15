@@ -746,7 +746,6 @@ void Server::createNewRoom(){
         QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
     }else{
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
-        connect(current, SIGNAL(player_signuped(ServerPlayer*)), this, SLOT(signupPlayer(ServerPlayer*)));
     }
 }
 

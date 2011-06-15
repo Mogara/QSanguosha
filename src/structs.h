@@ -87,6 +87,16 @@ struct RecoverStruct{
     const Card *card;
 };
 
+struct PindianStruct{
+    PindianStruct();
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+    const Card *from_card;
+    const Card *to_card;
+    QString reason;
+};
+
 struct JudgeStruct{
     JudgeStruct();
     bool isGood(const Card *card = NULL) const;
@@ -110,6 +120,8 @@ enum TriggerEvent{
     StartJudge,
     AskForRetrial,
     FinishJudge,
+
+    Pindian,
 
     Predamage,
     Predamaged,
@@ -145,6 +157,7 @@ typedef const Card *CardStar;
 typedef ServerPlayer *PlayerStar;
 typedef JudgeStruct *JudgeStar;
 typedef DamageStruct *DamageStar;
+typedef PindianStruct *PindianStar;
 
 Q_DECLARE_METATYPE(DamageStruct);
 Q_DECLARE_METATYPE(CardEffectStruct);
@@ -157,5 +170,6 @@ Q_DECLARE_METATYPE(DyingStruct);
 Q_DECLARE_METATYPE(RecoverStruct);
 Q_DECLARE_METATYPE(JudgeStar);
 Q_DECLARE_METATYPE(DamageStar);
+Q_DECLARE_METATYPE(PindianStar);
 
 #endif // STRUCTS_H

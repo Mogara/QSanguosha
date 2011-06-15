@@ -219,7 +219,6 @@ private slots:
 
 signals:
     void room_message(const QString &msg);
-    void player_signuped(ServerPlayer *player);
 };
 
 #endif // ROOM_H

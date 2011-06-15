@@ -119,6 +119,7 @@ public:
     bool listen();
     void daemonize();
     void createNewRoom();
+    void signupPlayer(ServerPlayer *player);
 
 private:
     ServerSocket *server;
@@ -130,7 +131,7 @@ private:
 private slots:
     void processNewConnection(ClientSocket *socket);
     void cleanup();
-    void signupPlayer(ServerPlayer *player);
+
 
 signals:
     void server_message(const QString &);

@@ -333,21 +333,18 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     const Card *card2 = room->askForPindian(target, this, target, reason);
 
-    room->throwCard(card1);
-    log.type = "$PindianResult";
-    log.from = this;
-    log.card_str = card1->getEffectIdString();
-    room->sendLog(log);
-    room->getThread()->delay();
+    PindianStruct pindian_struct;
+    pindian_struct.from = this;
+    pindian_struct.to = target;
+    pindian_struct.from_card = card1;
+    pindian_struct.to_card = card2;
+    pindian_struct.reason = reason;
 
-    room->throwCard(card2);
-    log.type = "$PindianResult";
-    log.from = target;
-    log.card_str = card2->getEffectIdString();
-    room->sendLog(log);
-    room->getThread()->delay();
+    PindianStar pindian_star = &pindian_struct;
+    QVariant data = QVariant::fromValue(pindian_star);
+    room->getThread()->trigger(Pindian, this, data);
 
-    bool success = card1->getNumber() > card2->getNumber();
+    bool success = pindian_star->from_card->getNumber() > pindian_star->to_card->getNumber();
     log.type = success ? "#PindianSuccess" : "#PindianFailure";
     log.from = this;
     log.to.clear();
