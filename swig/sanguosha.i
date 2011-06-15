@@ -174,8 +174,8 @@ public:
 
     QList<int> &getPile(const char *pile_name);
 
-    bool hasUsed(const char *card_class);
-    int usedTimes(const char *card_class);
+    bool hasUsed(const char *card_class) const;
+    int usedTimes(const char *card_class) const;
     int getSlashCount() const;
 };
 
@@ -490,7 +490,7 @@ public:
     bool targetFixed() const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual bool isAvailable() const;
+    virtual bool isAvailable(const Player *player) const;
 
     // it can be used only once a turn or not
     bool isOnce() const;
@@ -706,7 +706,7 @@ public:
     lua_State *getLuaState() const;
 
     void addProhibitSkill(const ProhibitSkill *skill);
-    const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 
     void setTag(const char *key, const QVariant &value);
     QVariant getTag(const char *key) const;

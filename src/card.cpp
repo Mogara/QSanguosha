@@ -339,7 +339,7 @@ const Card *Card::Parse(const QString &str){
 
         Card *card = Sanguosha->cloneCard(name, suit, number);
         if(card == NULL)
-            return NULL;        
+            return NULL;
 
         foreach(QString subcard_id, subcard_ids)
             card->addSubcard(subcard_id.toInt());
@@ -382,7 +382,7 @@ bool Card::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
         return !targets.isEmpty();
 }
 
-bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{    
+bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     return targets.isEmpty() && to_select != Self;
 }
 
@@ -425,7 +425,7 @@ void Card::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &ta
                room->reverseFor3v3(this, source, players);
         }
 
-        foreach(ServerPlayer *target, players){            
+        foreach(ServerPlayer *target, players){
             CardEffectStruct effect;
             effect.card = this;
             effect.from = source;
@@ -468,7 +468,7 @@ void Card::clearSubcards(){
     subcards.clear();
 }
 
-bool Card::isAvailable() const{
+bool Card::isAvailable(const Player *) const{
     return true;
 }
 
@@ -527,7 +527,7 @@ QString SkillCard::toString() const{
 
 // ---------- Dummy card      -------------------
 
-DummyCard::DummyCard()   
+DummyCard::DummyCard()
 {
     target_fixed = true;
     setObjectName("dummy");

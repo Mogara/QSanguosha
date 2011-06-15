@@ -183,3 +183,7 @@ void ClientPlayer::setMark(const QString &mark, int value){
 
     mark_doc->setHtml(text);
 }
+
+bool ClientPlayer::isProhibited(const Player *to, const Card *card) const{
+    return ClientInstance->isProhibited(to, card);
+}

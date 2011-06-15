@@ -452,7 +452,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("jijiang") && Slash::IsAvailable();
+        return Self->hasLordSkill("jijiang") && Slash::IsAvailable(Self);
     }
 
     virtual const Card *viewAs() const{
@@ -505,7 +505,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
+        return Slash::IsAvailable(Self);
     }
 
     virtual bool isEnabledAtResponse() const{
@@ -518,9 +518,9 @@ public:
         if(!card->isRed())
             return false;
 
-        if(card == Self->getWeapon() && card->objectName() == "crossbow"){
-            return ClientInstance->canSlashWithCrossbow();
-        }else
+        if(card == Self->getWeapon() && card->objectName() == "crossbow")
+            return Self->canSlashWithoutCrossbow();
+        else
             return true;
     }
 
@@ -562,7 +562,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
+        return Slash::IsAvailable(Self);
     }
 
     virtual bool isEnabledAtResponse() const{

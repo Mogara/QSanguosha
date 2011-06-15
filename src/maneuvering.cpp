@@ -41,16 +41,16 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
-QString Analeptic::getEffectPath(bool is_male) const{
+QString Analeptic::getEffectPath(bool ) const{
     return Card::getEffectPath();
 }
 
-bool Analeptic::IsAvailable(){
-    return ! Self->hasUsed("Analeptic");
+bool Analeptic::IsAvailable(const Player *player){
+    return ! player->hasUsed("Analeptic");
 }
 
-bool Analeptic::isAvailable() const{
-    return IsAvailable();
+bool Analeptic::isAvailable(const Player *player) const{
+    return IsAvailable(player);
 }
 
 void Analeptic::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{

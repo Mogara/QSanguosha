@@ -464,7 +464,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@tied") > 0 && Slash::IsAvailable();
+        return Self->getMark("@tied") > 0 && Slash::IsAvailable(Self);
     }
 
     virtual const Card *viewAs() const{
@@ -1186,7 +1186,7 @@ public:
         if(Self->hasUsed("LexueCard") && Self->hasFlag("lexue")){
             int card_id = Self->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
-            return card->isAvailable();
+            return card->isAvailable(Self);
         }else
             return true;
     }

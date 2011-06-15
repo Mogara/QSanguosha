@@ -98,7 +98,7 @@ public:
     void marshal(ServerPlayer *player);
 
     void addProhibitSkill(const ProhibitSkill *skill);
-    const ProhibitSkill *isProhibited(Player *from, Player *to, const Card *card) const;
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;

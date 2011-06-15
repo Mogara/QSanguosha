@@ -282,7 +282,7 @@ public:
                 if(has_heart)
                     room->playSkillEffect(objectName(), 2);
                 else
-                    room->playSkillEffect(objectName(), 3);                
+                    room->playSkillEffect(objectName(), 3);
 
                 return true;
             }
@@ -363,7 +363,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return new YinghunCard;        
+        return new YinghunCard;
     }
 
     virtual bool isEnabledAtPlay() const{
@@ -432,7 +432,7 @@ public:
         if(cards.length() != Self->getHandcardNum() / 2)
             return NULL;
 
-        HaoshiCard *card = new HaoshiCard;        
+        HaoshiCard *card = new HaoshiCard;
         card->addSubcards(cards);
         return card;
     }
@@ -636,7 +636,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         distance_list << distance;
 
         nearest = qMin(nearest, distance);
-    }    
+    }
 
     QList<ServerPlayer *> luanwu_targets;
     int i;
@@ -646,7 +646,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
 
-    const Card *slash = NULL;    
+    const Card *slash = NULL;
     if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash"))){
         ServerPlayer *to_slash;
         if(luanwu_targets.length() == 1)
@@ -675,7 +675,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Analeptic::IsAvailable();
+        return Analeptic::IsAvailable(Self);
     }
 
     virtual bool isEnabledAtResponse() const{
@@ -704,7 +704,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{        
+    virtual bool triggerable(const ServerPlayer *target) const{
         return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
     }
 
@@ -766,7 +766,7 @@ public:
         bool trigger_this = false;
         Room *room = dongzhuo->getRoom();
 
-        if(dongzhuo->getPhase() == Player::Finish){            
+        if(dongzhuo->getPhase() == Player::Finish){
             QList<ServerPlayer *> players = room->getOtherPlayers(dongzhuo);
             foreach(ServerPlayer *player, players){
                 if(dongzhuo->getHp() > player->getHp()){

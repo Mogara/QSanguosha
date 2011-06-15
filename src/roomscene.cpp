@@ -1517,7 +1517,7 @@ void RoomScene::callViewAsSkill(){
     if(card == NULL)
         return;
 
-    if(card->isAvailable()){
+    if(card->isAvailable(Self)){
         // use card
         dashboard->stopPending();
         useCard(card);

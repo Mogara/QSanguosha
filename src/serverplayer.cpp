@@ -546,6 +546,10 @@ bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
         return isLord() && hasSkill(skill_name);
 }
 
+bool ServerPlayer::isProhibited(const Player *to, const Card *card) const{
+    return room->isProhibited(this, to, card);
+}
+
 QString ServerPlayer::getIp() const{
     if(socket)
         return socket->peerAddress();

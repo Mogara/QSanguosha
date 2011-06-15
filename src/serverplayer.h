@@ -86,6 +86,8 @@ public:
     int getGeneralMaxHP() const;
     virtual bool hasLordSkill(const QString &skill_name) const;
 
+    virtual bool isProhibited(const Player *to, const Card *card) const;
+
     QString getIp() const;
 
 private:

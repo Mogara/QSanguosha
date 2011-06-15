@@ -562,18 +562,6 @@ bool Client::isJilei(const Card *card) const{
     return false;
 }
 
-bool Client::canSlashWithCrossbow() const{
-    if(Self->hasSkill("paoxiao"))
-        return true;
-    else{
-        int slash_count = Self->getSlashCount();
-        if(Self->hasFlag("tianyi_success"))
-            return slash_count < 2;
-        else
-            return slash_count < 1;
-    }
-}
-
 QString Client::getSkillLine() const{
     return skill_line;
 }

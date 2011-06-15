@@ -141,7 +141,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     card_item->filter(filter);
 
     if(ClientInstance->getStatus() == Client::Playing)
-        card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
+        card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
     else
         card_item->setEnabled(false);
 
@@ -218,7 +218,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward){
     }
 
     if(matches.isEmpty()){
-        unselectAll();        
+        unselectAll();
         return;
     }
 
@@ -332,7 +332,7 @@ QPushButton *Dashboard::createButton(const QString &name){
     QIcon icon(icon_pixmap);
     icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);
 
-    button->setIcon(icon);    
+    button->setIcon(icon);
     button->setIconSize(icon_pixmap.size());
     button->setFixedSize(icon_pixmap.size());
     button->setObjectName(name);
@@ -703,12 +703,12 @@ void Dashboard::disableAllCards(){
     }
 }
 
-void Dashboard::enableCards(){    
+void Dashboard::enableCards(){
     foreach(CardItem *card_item, card_items){
         if(ClientInstance->isJilei(card_item->getFilteredCard()))
             card_item->setEnabled(false);
         else
-            card_item->setEnabled(card_item->getFilteredCard()->isAvailable());
+            card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
     }
 }
 

@@ -230,7 +230,7 @@ void Player::setState(const QString &state){
 
 void Player::setRole(const QString &role){
     if(this->role != role){
-        this->role = role;        
+        this->role = role;
         emit role_changed(role);
     }
 }
@@ -593,11 +593,11 @@ void Player::clearHistory(){
     history.clear();
 }
 
-bool Player::hasUsed(const QString &card_class){
+bool Player::hasUsed(const QString &card_class) const{
     return history.value(card_class, 0) > 0;
 }
 
-int Player::usedTimes(const QString &card_class){
+int Player::usedTimes(const QString &card_class) const{
     return history.value(card_class, 0);
 }
 
@@ -633,4 +633,15 @@ QSet<const Skill *> Player::getVisibleSkills() const{
     }
 
     return skills;
+}
+
+bool Player::canSlashWithoutCrossbow() const{
+    if(hasSkill("paoxiao"))
+        return true;
+
+    int slash_count = getSlashCount();
+    if(hasFlag("tianyi_success"))
+        return slash_count < 2;
+    else
+        return slash_count < 1;
 }

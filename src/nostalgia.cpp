@@ -374,7 +374,7 @@ void GuhuoDialog::popup(){
 
     foreach(QAbstractButton *button, group->buttons()){
         const Card *card = map[button->objectName()];
-        button->setEnabled(card->isAvailable());
+        button->setEnabled(card->isAvailable(Self));
     }
 
     Self->tag.remove("Guhuo");

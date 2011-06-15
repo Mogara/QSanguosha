@@ -56,7 +56,6 @@ public:
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     bool isJilei(const Card *card) const;
-    bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
