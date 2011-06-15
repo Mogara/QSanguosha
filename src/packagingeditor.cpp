@@ -24,10 +24,13 @@ MetaInfoWidget::MetaInfoWidget(bool load_config){
     QLineEdit *programmer_edit = new QLineEdit;
     QLineEdit *version_edit = new QLineEdit;
 
+    description_edit = new QTextEdit;
+
     name_edit->setObjectName("Name");
     designer_edit->setObjectName("Designer");
     programmer_edit->setObjectName("Programmer");
     version_edit->setObjectName("Version");
+    description_edit->setObjectName("Description");
 
     if(load_config){
         Config.beginGroup("PackageManager");
@@ -35,6 +38,7 @@ MetaInfoWidget::MetaInfoWidget(bool load_config){
         designer_edit->setText(Config.value("Designer", tr("Designer")).toString());
         programmer_edit->setText(Config.value("Programmer", "Moligaloo").toString());
         version_edit->setText(Config.value("Version", "1.0").toString());
+        description_edit->setText(Config.value("Description").toString());
         Config.endGroup();
     }
 
@@ -42,6 +46,7 @@ MetaInfoWidget::MetaInfoWidget(bool load_config){
     layout->addRow(tr("Designer"), designer_edit);
     layout->addRow(tr("Programmer"), programmer_edit);
     layout->addRow(tr("Version"), version_edit);
+    layout->addRow(tr("Description"), description_edit);
 
     setLayout(layout);
 }
@@ -52,6 +57,8 @@ void MetaInfoWidget::saveToSettings(QSettings &settings){
     foreach(const QLineEdit *edit, edits){
         settings.setValue(edit->objectName(), edit->text());
     }
+
+    settings.setValue("Description", description_edit->toPlainText());
 }
 
 void MetaInfoWidget::showSettings(const QSettings *settings){
@@ -60,6 +67,8 @@ void MetaInfoWidget::showSettings(const QSettings *settings){
     foreach(QLineEdit *edit, edits){
         edit->setText(settings->value(edit->objectName()).toString());
     }
+
+    description_edit->setText(settings->value("Description").toString());
 }
 
 PackagingEditor::PackagingEditor(QWidget *parent) :
@@ -248,6 +257,14 @@ void PackagingEditor::browseFiles(){
 void PackagingEditor::makePackage(){
     if(file_list->count() == 0)
         return;
+
+    QList<const QLineEdit *> edits = file_list_meta->findChildren<const QLineEdit *>();
+    foreach(const QLineEdit *edit, edits){
+        if(edit->text().isEmpty()){
+            QMessageBox::warning(this, tr("Warning"), tr("Please fill the meta information before making package"));
+            return;
+        }
+    }
 
     Config.beginGroup("PackageManager");
     file_list_meta->saveToSettings(Config);

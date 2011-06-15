@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QGroupBox>
 #include <QSettings>
+#include <QTextEdit>
 
 class MetaInfoWidget: public QGroupBox{
     Q_OBJECT
@@ -13,6 +14,9 @@ public:
     MetaInfoWidget(bool load_config);
     void saveToSettings(QSettings &settings);
     void showSettings(const QSettings *settings);
+
+private:
+    QTextEdit *description_edit;
 };
 
 class PackagingEditor : public QDialog

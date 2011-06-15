@@ -27,17 +27,17 @@
 <context>
     <name>BroadcastBox</name>
     <message>
-        <location filename="src/mainwindow.cpp" line="492"/>
+        <location filename="src/mainwindow.cpp" line="470"/>
         <source>Broadcast</source>
         <translation>广播</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="495"/>
+        <location filename="src/mainwindow.cpp" line="473"/>
         <source>Please input the message to broadcast</source>
         <translation>请输入要广播的信息</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="502"/>
+        <location filename="src/mainwindow.cpp" line="480"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -63,181 +63,186 @@
 <context>
     <name>CardEditor</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="655"/>
+        <location filename="src/cardeditor.cpp" line="669"/>
         <source>Card editor</source>
         <translation>卡牌编辑器</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="682"/>
+        <location filename="src/cardeditor.cpp" line="696"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="683"/>
+        <location filename="src/cardeditor.cpp" line="697"/>
         <source>Import ...</source>
         <translation>导入 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="685"/>
+        <location filename="src/cardeditor.cpp" line="699"/>
         <source>Save ...</source>
         <translation>保存 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="687"/>
+        <location filename="src/cardeditor.cpp" line="701"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="701"/>
+        <location filename="src/cardeditor.cpp" line="715"/>
         <source>Tool</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="702"/>
+        <location filename="src/cardeditor.cpp" line="716"/>
         <source>Add skill</source>
         <translation>添加技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="707"/>
+        <location filename="src/cardeditor.cpp" line="721"/>
         <source>Remove skill</source>
         <translation>删除技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="714"/>
+        <location filename="src/cardeditor.cpp" line="728"/>
         <source>Make big avatar</source>
         <translation>制作大头像</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="719"/>
+        <location filename="src/cardeditor.cpp" line="733"/>
         <source>Make small avatar</source>
         <translation>制作小头像</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="724"/>
+        <location filename="src/cardeditor.cpp" line="738"/>
         <source>Make tiny avatar</source>
         <translation>制作微型头像</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="729"/>
+        <location filename="src/cardeditor.cpp" line="743"/>
         <source>Hide avatar rect</source>
         <translation>隐藏头像框</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="752"/>
+        <location filename="src/cardeditor.cpp" line="750"/>
+        <source>Reset photo</source>
+        <translation>重置武将图</translation>
+    </message>
+    <message>
+        <location filename="src/cardeditor.cpp" line="772"/>
         <source>Select a avatar file</source>
         <translation>选择一个头像文件</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="754"/>
+        <location filename="src/cardeditor.cpp" line="774"/>
         <source>Image file (*.png *.jpg *.bmp)</source>
         <translation>图像 (*.png *.jpg *.bmp)</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="794"/>
+        <location filename="src/cardeditor.cpp" line="814"/>
         <source>Text</source>
         <translation>文本</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="795"/>
+        <location filename="src/cardeditor.cpp" line="815"/>
         <source>Font</source>
         <translation>字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="796"/>
+        <location filename="src/cardeditor.cpp" line="816"/>
         <source>Line spacing</source>
         <translation>行距</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="816"/>
+        <location filename="src/cardeditor.cpp" line="836"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="835"/>
+        <location filename="src/cardeditor.cpp" line="855"/>
         <source>Kingdom</source>
         <translation>所属势力</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="836"/>
+        <location filename="src/cardeditor.cpp" line="856"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="837"/>
+        <location filename="src/cardeditor.cpp" line="857"/>
         <source>Image ratio</source>
         <translation>图像比例</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="860"/>
+        <location filename="src/cardeditor.cpp" line="880"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="872"/>
+        <location filename="src/cardeditor.cpp" line="892"/>
         <source>Title font</source>
         <translation>技能名字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="873"/>
+        <location filename="src/cardeditor.cpp" line="893"/>
         <source>Description font</source>
         <translation>技能描述字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="874"/>
+        <location filename="src/cardeditor.cpp" line="894"/>
         <source>Tiny font</source>
         <translation>小字字体</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="897"/>
+        <location filename="src/cardeditor.cpp" line="917"/>
         <source>Insert suit</source>
         <translation>插入花色</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="903"/>
+        <location filename="src/cardeditor.cpp" line="923"/>
         <source>Lord skill</source>
         <translation>主公技</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="904"/>
+        <location filename="src/cardeditor.cpp" line="924"/>
         <source>Compulsory</source>
         <translation>锁定技</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="905"/>
+        <location filename="src/cardeditor.cpp" line="925"/>
         <source>Limited</source>
         <translation>限定技</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="906"/>
+        <location filename="src/cardeditor.cpp" line="926"/>
         <source>Insert bold text</source>
         <translation>插入粗体文本</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="922"/>
-        <location filename="src/cardeditor.cpp" line="926"/>
+        <location filename="src/cardeditor.cpp" line="942"/>
+        <location filename="src/cardeditor.cpp" line="946"/>
         <source>Title</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="929"/>
-        <location filename="src/cardeditor.cpp" line="937"/>
+        <location filename="src/cardeditor.cpp" line="949"/>
+        <location filename="src/cardeditor.cpp" line="957"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="943"/>
+        <location filename="src/cardeditor.cpp" line="963"/>
         <source>Thanks to BeiwanLufen &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</source>
         <translation>感谢背碗卤粉提供素材 &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="960"/>
-        <location filename="src/cardeditor.cpp" line="973"/>
+        <location filename="src/cardeditor.cpp" line="980"/>
+        <location filename="src/cardeditor.cpp" line="993"/>
         <source>Select a photo file ...</source>
         <translation>选择一张图片 ...</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="962"/>
-        <location filename="src/cardeditor.cpp" line="975"/>
+        <location filename="src/cardeditor.cpp" line="982"/>
+        <location filename="src/cardeditor.cpp" line="995"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
@@ -298,7 +303,7 @@
 <context>
     <name>CardScene</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="455"/>
+        <location filename="src/cardeditor.cpp" line="459"/>
         <source>Done</source>
         <translation>完成</translation>
     </message>
@@ -952,57 +957,57 @@
 <context>
     <name>DamageMakerDialog</name>
     <message>
-        <location filename="src/roomscene.cpp" line="2321"/>
+        <location filename="src/roomscene.cpp" line="2325"/>
         <source>Damage maker</source>
         <translation>伤害制造器</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2330"/>
+        <location filename="src/roomscene.cpp" line="2334"/>
         <source>Normal</source>
         <translation>普通</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2331"/>
+        <location filename="src/roomscene.cpp" line="2335"/>
         <source>Thunder</source>
         <translation>雷电</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2332"/>
+        <location filename="src/roomscene.cpp" line="2336"/>
         <source>Fire</source>
         <translation>火焰</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2333"/>
+        <location filename="src/roomscene.cpp" line="2337"/>
         <source>HP recover</source>
         <translation>体力回复</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2334"/>
+        <location filename="src/roomscene.cpp" line="2338"/>
         <source>Lose HP</source>
         <translation>流失体力</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2340"/>
+        <location filename="src/roomscene.cpp" line="2344"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2348"/>
+        <location filename="src/roomscene.cpp" line="2352"/>
         <source>Damage source</source>
         <translation>伤害来源</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2349"/>
+        <location filename="src/roomscene.cpp" line="2353"/>
         <source>Damage target</source>
         <translation>伤害目标</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2350"/>
+        <location filename="src/roomscene.cpp" line="2354"/>
         <source>Damage nature</source>
         <translation>伤害属性</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2351"/>
+        <location filename="src/roomscene.cpp" line="2355"/>
         <source>Damage point</source>
         <translation>伤害点数</translation>
     </message>
@@ -1019,22 +1024,22 @@
 <context>
     <name>DeathNoteDialog</name>
     <message>
-        <location filename="src/roomscene.cpp" line="2286"/>
+        <location filename="src/roomscene.cpp" line="2290"/>
         <source>Death note</source>
         <translation>死亡笔记</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2294"/>
+        <location filename="src/roomscene.cpp" line="2298"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2298"/>
+        <location filename="src/roomscene.cpp" line="2302"/>
         <source>Killer</source>
         <translation>凶手</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2299"/>
+        <location filename="src/roomscene.cpp" line="2303"/>
         <source>Victim</source>
         <translation>遇害者</translation>
     </message>
@@ -1384,7 +1389,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="src/mainwindow.ui" line="14"/>
-        <location filename="src/mainwindow.cpp" line="152"/>
+        <location filename="src/mainwindow.cpp" line="140"/>
         <source>Sanguosha</source>
         <translation>三国杀</translation>
     </message>
@@ -1628,7 +1633,7 @@
     </message>
     <message>
         <location filename="src/mainwindow.ui" line="253"/>
-        <location filename="src/mainwindow.cpp" line="473"/>
+        <location filename="src/mainwindow.cpp" line="451"/>
         <source>Role assign table</source>
         <translation>身份分配表</translation>
     </message>
@@ -1638,156 +1643,156 @@
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="153"/>
+        <location filename="src/mainwindow.cpp" line="141"/>
         <source>Are you sure to exit?</source>
         <translation>确定要退出?</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="169"/>
-        <location filename="src/mainwindow.cpp" line="522"/>
-        <location filename="src/mainwindow.cpp" line="545"/>
-        <location filename="src/mainwindow.cpp" line="557"/>
+        <location filename="src/mainwindow.cpp" line="157"/>
+        <location filename="src/mainwindow.cpp" line="500"/>
+        <location filename="src/mainwindow.cpp" line="523"/>
+        <location filename="src/mainwindow.cpp" line="535"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="169"/>
-        <location filename="src/mainwindow.cpp" line="545"/>
+        <location filename="src/mainwindow.cpp" line="157"/>
+        <location filename="src/mainwindow.cpp" line="523"/>
         <source>Can not start server!</source>
         <translation>不能启动服务器!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="220"/>
+        <location filename="src/mainwindow.cpp" line="208"/>
         <source>Network error</source>
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="299"/>
+        <location filename="src/mainwindow.cpp" line="284"/>
         <source>Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause</source>
         <translation>青青子衿 悠悠我心 但为君故 沉吟至今</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="303"/>
+        <location filename="src/mainwindow.cpp" line="288"/>
         <source>&quot;A Short Song&quot; by Cao Cao</source>
         <translation>曹操《短歌行》</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="322"/>
+        <location filename="src/mainwindow.cpp" line="307"/>
         <source>Compilation time: %1 %2 &lt;br/&gt;</source>
         <oldsource>Compilation time: %1 %2</oldsource>
         <translation>编译时间: %1 %2 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="325"/>
+        <location filename="src/mainwindow.cpp" line="310"/>
         <source>Project home: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>项目主页: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="328"/>
+        <location filename="src/mainwindow.cpp" line="313"/>
         <source>Forum: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>论坛: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="330"/>
+        <location filename="src/mainwindow.cpp" line="315"/>
         <source>About QSanguosha</source>
         <translation>关于 QSanguosha</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="334"/>
-        <location filename="src/mainwindow.cpp" line="403"/>
-        <location filename="src/mainwindow.cpp" line="477"/>
+        <location filename="src/mainwindow.cpp" line="319"/>
+        <location filename="src/mainwindow.cpp" line="384"/>
+        <location filename="src/mainwindow.cpp" line="455"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="393"/>
+        <location filename="src/mainwindow.cpp" line="374"/>
         <source>Official site: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="522"/>
+        <location filename="src/mainwindow.cpp" line="500"/>
         <source>Server is not started yet!</source>
         <translation>服务器尚未启动!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="557"/>
+        <location filename="src/mainwindow.cpp" line="535"/>
         <source>This function is not implemented yet!</source>
         <translation>此功能尚未实现!</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="389"/>
+        <location filename="src/mainwindow.cpp" line="370"/>
         <source>irrKlang is a cross platform sound library for C++, C# and all .NET languages. &lt;br /&gt;</source>
         <translation>irrKlang 是一个跨平台的音频库，适用的语言有 C++, C# 和所有的 .Net 平台语言 &lt;br /&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="318"/>
+        <location filename="src/mainwindow.cpp" line="303"/>
         <source>Current version: %1 %2&lt;br/&gt;</source>
         <translation>当前版本: %1 %2&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="396"/>
+        <location filename="src/mainwindow.cpp" line="377"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="src/mainwindow.ui" line="263"/>
-        <location filename="src/mainwindow.cpp" line="399"/>
+        <location filename="src/mainwindow.cpp" line="380"/>
         <source>About irrKlang</source>
         <translation>关于 irrKlang</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="415"/>
+        <location filename="src/mainwindow.cpp" line="396"/>
         <source>Show main window</source>
         <translation>显示主窗口</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="442"/>
+        <location filename="src/mainwindow.cpp" line="420"/>
         <source>Count</source>
         <translation>人数</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="442"/>
+        <location filename="src/mainwindow.cpp" line="420"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="442"/>
+        <location filename="src/mainwindow.cpp" line="420"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="442"/>
+        <location filename="src/mainwindow.cpp" line="420"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="442"/>
+        <location filename="src/mainwindow.cpp" line="420"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="459"/>
+        <location filename="src/mainwindow.cpp" line="437"/>
         <source> (double renegade)</source>
         <translation> (双内奸)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="124"/>
-        <location filename="src/mainwindow.cpp" line="428"/>
+        <location filename="src/mainwindow.cpp" line="115"/>
+        <location filename="src/mainwindow.cpp" line="409"/>
         <source>Game is minimized</source>
         <translation>游戏已经最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="200"/>
+        <location filename="src/mainwindow.cpp" line="188"/>
         <source>Select a reply file</source>
         <translation>请选择重放文件</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="202"/>
+        <location filename="src/mainwindow.cpp" line="190"/>
         <source>Replay file (*.txt)</source>
         <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="306"/>
+        <location filename="src/mainwindow.cpp" line="291"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: moligaloo@gmail.com &lt;br/&gt;</source>
         <oldsource>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: moligaloo@gmail.com</oldsource>
         <translation>这是 &lt;b&gt;三国杀&lt;/b&gt; 的开源克隆，完全基于 C++ Qt GUI 框架&lt;br /&gt; 我的电子邮件：moligaloo@gmail.com &lt;br/&gt;</translation>
@@ -1801,25 +1806,30 @@
         <translation>元信息</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="35"/>
-        <location filename="src/packagingeditor.cpp" line="42"/>
+        <location filename="src/packagingeditor.cpp" line="38"/>
+        <location filename="src/packagingeditor.cpp" line="46"/>
         <source>Designer</source>
         <translation>设计者</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="41"/>
+        <location filename="src/packagingeditor.cpp" line="45"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="43"/>
+        <location filename="src/packagingeditor.cpp" line="47"/>
         <source>Programmer</source>
         <translation>编程者</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="44"/>
+        <location filename="src/packagingeditor.cpp" line="48"/>
         <source>Version</source>
         <translation>版本</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="49"/>
+        <source>Description</source>
+        <translation>描述</translation>
     </message>
 </context>
 <context>
@@ -1862,114 +1872,120 @@
 <context>
     <name>PackagingEditor</name>
     <message>
-        <location filename="src/packagingeditor.cpp" line="168"/>
+        <location filename="src/packagingeditor.cpp" line="177"/>
         <source>Browse files</source>
         <translation>浏览文件</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="169"/>
+        <location filename="src/packagingeditor.cpp" line="178"/>
         <source>Select files to package</source>
         <translation>选择要打包的文件</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="75"/>
-        <location filename="src/packagingeditor.cpp" line="171"/>
+        <location filename="src/packagingeditor.cpp" line="84"/>
+        <location filename="src/packagingeditor.cpp" line="180"/>
         <source>Make package</source>
         <translation>打包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="68"/>
+        <location filename="src/packagingeditor.cpp" line="77"/>
         <source>DIY package manager</source>
         <translation>DIY 包管理器</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="71"/>
+        <location filename="src/packagingeditor.cpp" line="80"/>
         <source>Package format is 7z, see its offcial site :&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</source>
         <translation>打包格式为 7z, 官方网站 :&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="74"/>
+        <location filename="src/packagingeditor.cpp" line="83"/>
         <source>Package management</source>
         <translation>包管理</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="115"/>
+        <location filename="src/packagingeditor.cpp" line="124"/>
         <source>Install</source>
         <translation>安装</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="116"/>
+        <location filename="src/packagingeditor.cpp" line="125"/>
         <source>Install a DIY package</source>
         <translation>安装一个 DIY 包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="118"/>
+        <location filename="src/packagingeditor.cpp" line="127"/>
         <source>Uninstall</source>
         <translation>卸载</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="119"/>
+        <location filename="src/packagingeditor.cpp" line="128"/>
         <source>Uninstall a DIY package</source>
         <translation>卸载一个 DIY 包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="121"/>
+        <location filename="src/packagingeditor.cpp" line="130"/>
         <source>Rescan</source>
         <translation>重新扫描</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="122"/>
+        <location filename="src/packagingeditor.cpp" line="131"/>
         <source>Rescan existing packages</source>
         <translation>扫描现存的包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="172"/>
+        <location filename="src/packagingeditor.cpp" line="181"/>
         <source>Export files to a single package</source>
         <translation>将选择的文件打包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="193"/>
+        <location filename="src/packagingeditor.cpp" line="202"/>
         <source>Select a package to install</source>
         <translation>选择要安装的包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="220"/>
+        <location filename="src/packagingeditor.cpp" line="229"/>
         <source>Are you sure</source>
         <translation>你确定么</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="221"/>
+        <location filename="src/packagingeditor.cpp" line="230"/>
         <source>Are you sure to remove ?</source>
         <translation>你真要删除么 ?</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="238"/>
+        <location filename="src/packagingeditor.cpp" line="247"/>
         <source>Select one or more files to package</source>
         <translation>选择一个或多个文件打包</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="240"/>
+        <location filename="src/packagingeditor.cpp" line="249"/>
         <source>Any files (*.*)</source>
         <translation>任何文件 (*.*)</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="257"/>
+        <location filename="src/packagingeditor.cpp" line="264"/>
+        <source>Please fill the meta information before making package</source>
+        <translation>在打包之前请补全所有的元信息</translation>
+    </message>
+    <message>
+        <location filename="src/packagingeditor.cpp" line="274"/>
         <source>Select a package name</source>
         <translation>选择一个包名</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="283"/>
+        <location filename="src/packagingeditor.cpp" line="264"/>
+        <location filename="src/packagingeditor.cpp" line="300"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="283"/>
+        <location filename="src/packagingeditor.cpp" line="300"/>
         <source>Package compress/decompress error!</source>
         <translation>DIY 包 打包或解压出错 !</translation>
     </message>
     <message>
-        <location filename="src/packagingeditor.cpp" line="195"/>
-        <location filename="src/packagingeditor.cpp" line="259"/>
+        <location filename="src/packagingeditor.cpp" line="204"/>
+        <location filename="src/packagingeditor.cpp" line="276"/>
         <source>7z format (*.7z)</source>
         <translation>7z 格式 (*.7z)</translation>
     </message>
@@ -2108,14 +2124,14 @@
         <location filename="src/roomscene.cpp" line="980"/>
         <location filename="src/roomscene.cpp" line="1445"/>
         <location filename="src/roomscene.cpp" line="1465"/>
-        <location filename="src/roomscene.cpp" line="2390"/>
-        <location filename="src/roomscene.cpp" line="2400"/>
-        <location filename="src/roomscene.cpp" line="2410"/>
-        <location filename="src/roomscene.cpp" line="2425"/>
-        <location filename="src/roomscene.cpp" line="3106"/>
-        <location filename="src/roomscene.cpp" line="3111"/>
-        <location filename="src/roomscene.cpp" line="3136"/>
-        <location filename="src/roomscene.cpp" line="3142"/>
+        <location filename="src/roomscene.cpp" line="2394"/>
+        <location filename="src/roomscene.cpp" line="2404"/>
+        <location filename="src/roomscene.cpp" line="2414"/>
+        <location filename="src/roomscene.cpp" line="2429"/>
+        <location filename="src/roomscene.cpp" line="3110"/>
+        <location filename="src/roomscene.cpp" line="3115"/>
+        <location filename="src/roomscene.cpp" line="3140"/>
+        <location filename="src/roomscene.cpp" line="3146"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2215,17 +2231,17 @@
         <translation>前锋</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="1836"/>
+        <location filename="src/roomscene.cpp" line="1840"/>
         <source>Please choose a player</source>
         <translation>请选择一名玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2682"/>
+        <location filename="src/roomscene.cpp" line="2686"/>
         <source>Add a robot</source>
         <translation>添加一个电脑</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2686"/>
+        <location filename="src/roomscene.cpp" line="2690"/>
         <source>Fill robots</source>
         <translation>补全电脑</translation>
     </message>
@@ -2250,165 +2266,165 @@
         <translation>确定按钮在客户端在执行对话框状态下是不能被禁用的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2167"/>
+        <location filename="src/roomscene.cpp" line="2171"/>
         <source>Standoff</source>
         <translation>平局</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2189"/>
+        <location filename="src/roomscene.cpp" line="2193"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2189"/>
+        <location filename="src/roomscene.cpp" line="2193"/>
         <source>Failure</source>
         <translation>败北</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2191"/>
+        <location filename="src/roomscene.cpp" line="2195"/>
         <source>Winner(s)</source>
         <translation>胜利者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2192"/>
+        <location filename="src/roomscene.cpp" line="2196"/>
         <source>Loser(s)</source>
         <translation>失败者</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2250"/>
+        <location filename="src/roomscene.cpp" line="2254"/>
         <source>Save record</source>
         <translation>保存记录</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2269"/>
+        <location filename="src/roomscene.cpp" line="2273"/>
         <source>Save replay record</source>
         <translation>保存重放记录</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2271"/>
+        <location filename="src/roomscene.cpp" line="2275"/>
         <source>Replay file (*.txt)</source>
         <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2366"/>
+        <location filename="src/roomscene.cpp" line="2370"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2390"/>
-        <location filename="src/roomscene.cpp" line="2400"/>
-        <location filename="src/roomscene.cpp" line="2410"/>
+        <location filename="src/roomscene.cpp" line="2394"/>
+        <location filename="src/roomscene.cpp" line="2404"/>
+        <location filename="src/roomscene.cpp" line="2414"/>
         <source>This function is only allowed at your play phase!</source>
         <translation>此功能只能在自己的出牌阶段使用!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2425"/>
+        <location filename="src/roomscene.cpp" line="2429"/>
         <source>No victims now!</source>
         <translation>暂时没有阵亡者!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2430"/>
+        <location filename="src/roomscene.cpp" line="2434"/>
         <source>Reviving wand</source>
         <translation>复活魔杖</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2431"/>
+        <location filename="src/roomscene.cpp" line="2435"/>
         <source>Please select a player to revive</source>
         <translation>请选择要复活的角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2443"/>
+        <location filename="src/roomscene.cpp" line="2447"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2443"/>
+        <location filename="src/roomscene.cpp" line="2447"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2443"/>
-        <location filename="src/roomscene.cpp" line="2462"/>
+        <location filename="src/roomscene.cpp" line="2447"/>
+        <location filename="src/roomscene.cpp" line="2466"/>
         <source>Alive</source>
         <translation>存活</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2443"/>
+        <location filename="src/roomscene.cpp" line="2447"/>
         <source>Role</source>
         <translation>角色</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2570"/>
+        <location filename="src/roomscene.cpp" line="2574"/>
         <source>Select skill</source>
         <translation>选择技能</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2851"/>
+        <location filename="src/roomscene.cpp" line="2855"/>
         <source>------- Game Start --------</source>
         <translation>------- 游戏开始 --------</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2856"/>
+        <location filename="src/roomscene.cpp" line="2860"/>
         <source>Discard cards freely</source>
         <translation>自由扔掉任意手牌和装备</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3093"/>
+        <location filename="src/roomscene.cpp" line="3097"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3106"/>
+        <location filename="src/roomscene.cpp" line="3110"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3111"/>
+        <location filename="src/roomscene.cpp" line="3115"/>
         <source>This function is disabled in contest mode</source>
         <translation>此功能在竞赛模式下是禁用的</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3126"/>
+        <location filename="src/roomscene.cpp" line="3130"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3127"/>
+        <location filename="src/roomscene.cpp" line="3131"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3136"/>
+        <location filename="src/roomscene.cpp" line="3140"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3142"/>
+        <location filename="src/roomscene.cpp" line="3146"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3147"/>
+        <location filename="src/roomscene.cpp" line="3151"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3147"/>
+        <location filename="src/roomscene.cpp" line="3151"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="3352"/>
+        <location filename="src/roomscene.cpp" line="3356"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2245"/>
+        <location filename="src/roomscene.cpp" line="2249"/>
         <source>Restart Game</source>
         <translation>重新开始</translation>
     </message>
     <message>
-        <location filename="src/roomscene.cpp" line="2464"/>
+        <location filename="src/roomscene.cpp" line="2468"/>
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
@@ -2865,17 +2881,17 @@
 <context>
     <name>SkillBox</name>
     <message>
-        <location filename="src/cardeditor.cpp" line="113"/>
+        <location filename="src/cardeditor.cpp" line="114"/>
         <source>Skill description</source>
         <translation>技能描述</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="121"/>
+        <location filename="src/cardeditor.cpp" line="122"/>
         <source>Copyright text</source>
         <translation>™&amp;©  2011 游卡桌游</translation>
     </message>
     <message>
-        <location filename="src/cardeditor.cpp" line="213"/>
+        <location filename="src/cardeditor.cpp" line="214"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>

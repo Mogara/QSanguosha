@@ -1761,6 +1761,10 @@ void RoomScene::updateStatus(Client::Status status){
             if(dashboard->currentSkill())
                 dashboard->stopPending();
 
+            foreach(Photo *photo, photos){
+                photo->setEnabled(true);
+            }
+
             break;
         }
 
