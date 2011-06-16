@@ -52,7 +52,7 @@ void Room::initCallbacks(){
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
-    callbacks["signupCommand"] = &Room::signupCommand;
+    //callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
 
@@ -747,7 +747,7 @@ void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
     broadcastInvoke("setMark", QString("%1.%2=%3").arg(player->objectName()).arg(mark).arg(value));
 }
 
-void Room::addSocket(ClientSocket *socket){
+ServerPlayer *Room::addSocket(ClientSocket *socket){
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     players << player;
@@ -755,8 +755,7 @@ void Room::addSocket(ClientSocket *socket){
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
 
-    player->invoke("checkVersion", Sanguosha->getVersion());
-    player->invoke("setup", Sanguosha->getSetupString());
+    return player;
 }
 
 bool Room::isFull() const
@@ -1268,9 +1267,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
             player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
         }
-
-        Server *server = qobject_cast<Server *>(parent());
-        server->signupPlayer(player);
     }
 
     signup_count ++;
@@ -1289,11 +1285,11 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 void Room::signupCommand(ServerPlayer *player, const QString &arg){
     QStringList words = arg.split(":");
 
-    QString base64 = words[0];
+    QString base64 = words.value(0);
     QByteArray data = QByteArray::fromBase64(base64.toAscii());
     QString screen_name = QString::fromUtf8(data);
 
-    QString avatar = words[1];
+    QString avatar = words.value(1);
 
     if(Config.ContestMode){
         QString password = words.value(2);
@@ -1714,6 +1710,13 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
     return a;
 }
 
+void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
+    player->setSocket(socket);
+    player->setState("online");
+
+    marshal(player);
+}
+
 void Room::marshal(ServerPlayer *player){
     player->invoke("marshal", "start");
 
@@ -1773,6 +1776,12 @@ void Room::startGame(){
 
     broadcastInvoke("startGame");
     game_started = true;
+
+    Server *server = qobject_cast<Server *>(parent());
+    foreach(ServerPlayer *player, players){
+        if(player->getState() == "online")
+            server->signupPlayer(player);
+    }
 
     current = players.first();
 

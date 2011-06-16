@@ -126,13 +126,15 @@ private:
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
+    QHash<QString, ServerPlayer*> players;
     QSet<QString> addresses;
-    QMultiHash<QString, ServerPlayer *> signup_players;
+    QMultiHash<QString, QString> name2objname;
 
 private slots:
     void processNewConnection(ClientSocket *socket);
+    void processRequest(char *request);
     void cleanup();
-
+    void removeRoom(QObject *obj);
 
 signals:
     void server_message(const QString &);

@@ -745,13 +745,17 @@ void Server::daemonize(){
 }
 
 void Server::createNewRoom(){
-    current = new Room(this, Config.GameMode);
-    rooms.insert(current);
-    QString error_msg = current->createLuaState();
+    Room *new_room = new Room(this, Config.GameMode);
+    QString error_msg = new_room->createLuaState();
+
     if(!error_msg.isEmpty()){
         QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
     }else{
+        current = new_room;
+        rooms.insert(current);
+
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+        connect(current, SIGNAL(destroyed(QObject*)), this, SLOT(removeRoom(QObject*)));
     }
 }
 
@@ -766,14 +770,45 @@ void Server::processNewConnection(ClientSocket *socket){
             addresses.insert(addr);
     }
 
-    if(current->isFull()){
-        createNewRoom();
-    }
 
-    current->addSocket(socket);
+
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-
+    socket->send("checkVersion " + Sanguosha->getVersion());
+    socket->send("setup " + Sanguosha->getSetupString());
     emit server_message(tr("%1 connected").arg(socket->peerName()));
+
+    connect(socket, SIGNAL(message_got(char*)), this, SLOT(processRequest(char*)));
+}
+
+void Server::processRequest(char *request){
+    // only process 2 commands: signup & reconnection
+
+    QString request_str = request;
+    QStringList words = request_str.split(" ");
+    QString command = words.first();
+    QString arg = words.last();
+
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    socket->disconnect(this, SLOT(processRequest(char*)));
+
+    if(command == "signup"){
+        if(current->isFull())
+            createNewRoom();
+
+        ServerPlayer *player = current->addSocket(socket);
+        current->signupCommand(player, arg);
+    }else if(command == "reconnection"){
+        QByteArray data = QByteArray::fromBase64(arg.toAscii());
+        QString screen_name = QString::fromUtf8(data);
+
+        foreach(QString objname, name2objname.values(screen_name)){
+            ServerPlayer *player = players.value(objname);
+            if(player && player->getState() == "offline"){
+                player->getRoom()->reconnect(player, socket);
+                break;
+            }
+        }
+    }
 }
 
 void Server::cleanup(){
@@ -783,6 +818,14 @@ void Server::cleanup(){
         addresses.remove(socket->peerAddress());
 }
 
+void Server::removeRoom(QObject *obj){
+    Room *room = qobject_cast<Room *>(obj);
+    rooms.remove(room);
+
+    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>())
+        players.remove(player->objectName());
+}
+
 void Server::signupPlayer(ServerPlayer *player){
-    signup_players.insert(player->screenName(), player);
+    name2objname.insert(player->screenName(), player->objectName());
 }

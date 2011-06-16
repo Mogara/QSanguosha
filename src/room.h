@@ -26,7 +26,7 @@ public:
 
     explicit Room(QObject *parent, const QString &mode);
     QString createLuaState();
-    void addSocket(ClientSocket *socket);
+    ServerPlayer *addSocket(ClientSocket *socket);
     bool isFull() const;
     bool isFinished() const;
     int getLack() const;
@@ -95,7 +95,10 @@ public:
     void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
     bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+
+    void reconnect(ServerPlayer *player, ClientSocket *socket);
     void marshal(ServerPlayer *player);
+
 
     void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
