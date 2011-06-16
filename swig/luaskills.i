@@ -45,7 +45,8 @@ public:
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const = 0;
     virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
 
-    bool isAvailable() const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+    virtual bool isEnabledAtResponse(const Player *player, const char *pattern) const;
 };
 
 class LuaViewAsSkill: public ViewAsSkill{
@@ -325,9 +326,9 @@ const Card *LuaViewAsSkill::viewAs(const QList<CardItem *> &cards) const{
         return NULL;
 }
 
-bool LuaViewAsSkill::isEnabledAtPlay() const{
+bool LuaViewAsSkill::isEnabledAtPlay(const Player *player) const{
     if(enabled_at_play == 0)
-        return ViewAsSkill::isEnabledAtPlay();
+        return ViewAsSkill::isEnabledAtPlay(player);
 
     lua_State *L = Sanguosha->getLuaState();
 
@@ -336,7 +337,9 @@ bool LuaViewAsSkill::isEnabledAtPlay() const{
 
     pushSelf(L);
 
-    int error = lua_pcall(L, 1, 1, 0);
+	SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
     if(error){
         Error(L);
         return false;
@@ -347,9 +350,9 @@ bool LuaViewAsSkill::isEnabledAtPlay() const{
     }
 }
 
-bool LuaViewAsSkill::isEnabledAtResponse() const{
+bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pattern) const{
     if(enabled_at_response == 0)
-        return ViewAsSkill::isEnabledAtResponse();
+        return ViewAsSkill::isEnabledAtResponse(player, pattern);
 
     lua_State *L = Sanguosha->getLuaState();
 
@@ -358,7 +361,11 @@ bool LuaViewAsSkill::isEnabledAtResponse() const{
 
     pushSelf(L);
 
-    int error = lua_pcall(L, 1, 1, 0);
+	SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
+	
+	lua_pushstring(L, pattern.toAscii());
+
+    int error = lua_pcall(L, 3, 1, 0);
     if(error){
         Error(L);
         return false;

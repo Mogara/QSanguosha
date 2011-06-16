@@ -80,12 +80,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@tianxiang";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@tianxiang";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -530,10 +530,10 @@ public:
     Guhuo():OneCardViewAsSkill("guhuo"){
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return !Self->isKongcheng()
-                && !ClientInstance->card_pattern.startsWith("@")
-                && !ClientInstance->card_pattern.startsWith(".");
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return !player->isKongcheng()
+                && ! pattern.startsWith("@")
+                && ! pattern.startsWith(".");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -543,7 +543,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const{
         if(ClientInstance->getStatus() == Client::Responsing){
             GuhuoCard *card = new GuhuoCard;
-            card->setUserString(ClientInstance->card_pattern);
+            card->setUserString(ClientInstance->getPattern());
             card->addSubcard(card_item->getFilteredCard());
             return card;
         }

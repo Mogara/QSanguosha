@@ -76,12 +76,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@fangzhu";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@fangzhu";
     }
 
     virtual const Card *viewAs() const{
@@ -366,12 +366,12 @@ public:
         return new YinghunCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@yinghun";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@yinghun";
     }
 };
 
@@ -437,12 +437,12 @@ public:
         return card;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *){
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@haoshi!";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@haoshi!";
     }
 };
 
@@ -590,8 +590,8 @@ public:
         return new DimengCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("DimengCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("DimengCard");
     }
 };
 
@@ -605,8 +605,8 @@ public:
         return new LuanwuCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@chaos") >= 1;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@chaos") >= 1;
     }
 };
 
@@ -674,12 +674,12 @@ public:
     Jiuchi():OneCardViewAsSkill("jiuchi"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Analeptic::IsAvailable(Self);
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Analeptic::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.contains("analeptic");
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern.contains("analeptic");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

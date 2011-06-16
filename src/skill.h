@@ -39,7 +39,7 @@ public:
     void setFlag(ServerPlayer *player) const;
     void unsetFlag(ServerPlayer *player) const;
     Frequency getFrequency() const;
-    QStringList getSources() const;    
+    QStringList getSources() const;
 
 protected:
     Frequency frequency;
@@ -60,10 +60,8 @@ public:
     virtual const Card *viewAs(const QList<CardItem *> &cards) const = 0;
 
     bool isAvailable() const;
-
-protected:
-    virtual bool isEnabledAtPlay() const;
-    virtual bool isEnabledAtResponse() const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill{
@@ -73,7 +71,7 @@ public:
     ZeroCardViewAsSkill(const QString &name);
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const;
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const;    
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const;
 
     virtual const Card *viewAs() const = 0;
 };
@@ -107,7 +105,7 @@ public:
     QList<TriggerEvent> getTriggerEvents() const;
 
     virtual int getPriority() const;
-    virtual bool triggerable(const ServerPlayer *target) const;    
+    virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
 
 protected:

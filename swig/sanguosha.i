@@ -266,12 +266,6 @@ public:
     virtual bool isLastHandCard(const Card *card) const; 
 };
 
-%extend ClientPlayer {
-	const char *getPattern() const{
-		return ClientInstance->card_pattern.toAscii();
-	}
-};
-
 extern ClientPlayer *Self;
 
 struct DamageStruct{

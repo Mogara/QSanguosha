@@ -120,7 +120,7 @@ public:
         room->playSkillEffect(objectName());
 
         QList<int> card_ids = room->getNCards(5);
-        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);        
+        qSort(card_ids.begin(), card_ids.end(), CompareBySuit);
         room->fillAG(card_ids);
 
         while(!card_ids.isEmpty()){
@@ -158,8 +158,8 @@ public:
         return new GongxinCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return !Self->hasUsed("GongxinCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("GongxinCard");
     }
 };
 
@@ -242,8 +242,8 @@ public:
         frequency = Limited;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@flame") >= 1;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@flame") >= 1;
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -295,8 +295,8 @@ public:
         frequency = Limited;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@flame") >= 1;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@flame") >= 1;
     }
 
     virtual const Card *viewAs() const{
@@ -445,8 +445,8 @@ public:
     Shenfen():ZeroCardViewAsSkill("shenfen"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 6 && !Self->hasUsed("ShenfenCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@wrath") >= 6 && !player->hasUsed("ShenfenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -511,8 +511,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@wrath") >= 2 && !Self->hasUsed("WuqianCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@wrath") >= 2 && !player->hasUsed("WuqianCard");
     }
 
     virtual const Card *viewAs() const{
@@ -718,12 +718,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@kuangfeng";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@kuangfeng";
     }
 
     virtual const Card *viewAs() const{
@@ -835,12 +835,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@dawu";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@dawu";
     }
 
     virtual const Card *viewAs() const{

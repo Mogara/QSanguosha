@@ -582,6 +582,10 @@ QString Client::getPlayerName(const QString &str){
     return Sanguosha->translate(general_name);
 }
 
+QString Client::getPattern() const{
+    return card_pattern;
+}
+
 void Client::setPromptList(const QStringList &texts){
     QString prompt = Sanguosha->translate(texts.at(0));
     if(texts.length() >= 2)

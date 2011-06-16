@@ -51,7 +51,7 @@ FreeDiscardSkill::FreeDiscardSkill(QObject *parent)
     card = new DummyCard;
 }
 
-bool FreeDiscardSkill::isEnabledAtPlay() const{
+bool FreeDiscardSkill::isEnabledAtPlay(const Player *) const{
     return true;
 }
 

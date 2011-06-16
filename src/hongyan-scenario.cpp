@@ -24,8 +24,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("LesbianJieyinCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("LesbianJieyinCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -70,8 +70,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("LesbianLijianCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("LesbianLijianCard");
     }
 
     virtual bool viewFilter(const CardItem *) const{

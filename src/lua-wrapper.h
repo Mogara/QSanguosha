@@ -50,9 +50,8 @@ public:
     LuaFunction enabled_at_play;
     LuaFunction enabled_at_response;
 
-protected:
-    virtual bool isEnabledAtPlay() const;
-    virtual bool isEnabledAtResponse() const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
 };
 
 class LuaFilterSkill: public FilterSkill{

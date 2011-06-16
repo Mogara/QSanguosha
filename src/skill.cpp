@@ -126,18 +126,18 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable() const{
     switch(ClientInstance->getStatus()){
-    case Client::Playing: return isEnabledAtPlay();
-    case Client::Responsing: return isEnabledAtResponse();
+    case Client::Playing: return isEnabledAtPlay(Self);
+    case Client::Responsing: return isEnabledAtResponse(Self, ClientInstance->getPattern());
     default:
         return false;
     }
 }
 
-bool ViewAsSkill::isEnabledAtPlay() const{
+bool ViewAsSkill::isEnabledAtPlay(const Player *) const{
     return true;
 }
 
-bool ViewAsSkill::isEnabledAtResponse() const{
+bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &) const{
     return false;
 }
 
