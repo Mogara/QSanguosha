@@ -287,6 +287,12 @@ private slots:
     void onGameOver(bool victory, const QList<bool> &result_list);
     void onStandoff();
 
+#ifdef AUDIO_SUPPORT
+#ifndef  Q_OS_WIN32
+    void onMusicFinish();
+#endif
+#endif
+
 #ifdef JOYSTICK_SUPPORT
     void onJoyButtonClicked(int bit);
     void onJoyDirectionClicked(int direction);

@@ -10,10 +10,14 @@
 
 #ifdef AUDIO_SUPPORT
 
-typedef irrklang::ISound SoundType;
-
-extern irrklang::ISoundEngine *SoundEngine;
-
+#ifdef  Q_OS_WIN32
+    extern irrklang::ISoundEngine *SoundEngine;
+#else
+    #include <phonon/MediaObject>
+    #include <phonon/AudioOutput>
+    extern Phonon::MediaObject *SoundEngine;
+    extern Phonon::AudioOutput *SoundOutput;
+#endif
 #endif
 
 #include <QFile>
@@ -146,8 +150,14 @@ Engine::~Engine(){
     lua_close(lua);
 
 #ifdef AUDIO_SUPPORT
-    if(SoundEngine)
+    if(SoundEngine) {
+#ifdef  Q_OS_WIN32
         SoundEngine->drop();
+        SoundEngine = NULL;
+#else
+        delete SoundEngine;
+#endif
+    }
 #endif
 
 }
@@ -553,13 +563,21 @@ void Engine::playEffect(const QString &filename) const{
     if(filename.isNull())
         return;
 
+#ifdef  Q_OS_WIN32
     if(SoundEngine == NULL)
         return;
 
     if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))
         return;
-
     SoundEngine->play2D(filename.toAscii());
+#else
+    if(SoundEngine->currentSource().fileName() == filename.toAscii()) {
+        return;
+    }
+    SoundEngine->setCurrentSource(Phonon::MediaSource(filename));
+    SoundEngine->play();
+#endif
+
 
 #endif
 }
