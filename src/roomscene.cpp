@@ -45,11 +45,16 @@
 #endif
 
 #ifdef AUDIO_SUPPORT
-
-#include "irrKlang.h"
-extern irrklang::ISoundEngine *SoundEngine;
-static irrklang::ISound *BackgroundMusic;
-
+#ifdef Q_OS_WIN32
+    #include "irrKlang.h"
+    extern irrklang::ISoundEngine *SoundEngine;
+    static irrklang::ISound *BackgroundMusic;
+#else
+    #include <phonon/MediaObject>
+    #include <phonon/AudioOutput>
+    static Phonon::MediaObject *BackgroundMusic;
+    static Phonon::AudioOutput *SoundOutput;
+#endif
 #endif
 
 static QPointF DiscardedPos(-6, -2);
@@ -2874,9 +2879,13 @@ void RoomScene::onGameStart(){
         photo->createRoleCombobox();
 
 #ifdef AUDIO_SUPPORT
-
-    if(!Config.EnableBgMusic || SoundEngine == NULL)
-        return;
+    if(!Config.EnableBgMusic)
+#ifdef Q_OS_WIN32
+        if(SoundEngine == NULL)
+#else
+        if(BackgroundMusic == NULL)
+#endif
+            return;
 
     bool play_music = false;
     if(memory->isAttached() || memory->attach()){
@@ -2904,15 +2913,33 @@ void RoomScene::onGameStart(){
 
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
+#ifdef  Q_OS_WIN32
     const char *filename = bgmusic_path.toLocal8Bit().data();
     BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
 
     if(BackgroundMusic)
         BackgroundMusic->setVolume(Config.Volume);
+#else
+    if (!BackgroundMusic) {
+        SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
+        BackgroundMusic = new Phonon::MediaObject(this);
+        Phonon::createPath(BackgroundMusic, SoundOutput);
+        BackgroundMusic->setCurrentSource(Phonon::MediaSource(bgmusic_path));
+        BackgroundMusic->play();
+        connect(BackgroundMusic, SIGNAL(aboutToFinish()), SLOT(onMusicFinish()));
+    }
+#endif
 
 #endif
 }
 
+#ifdef AUDIO_SUPPORT
+#ifndef  Q_OS_WIN32
+void RoomScene::onMusicFinish(){
+    BackgroundMusic->seek(0);
+}
+#endif
+#endif
 void RoomScene::freeze(){
     main_window->removeDockWidget(skill_dock);
     delete skill_dock;

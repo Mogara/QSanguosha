@@ -3,7 +3,13 @@
 #include "settings.h"
 
 #ifdef AUDIO_SUPPORT
-#include "irrKlang.h"
+#ifdef  Q_OS_WIN32
+    #include "irrKlang.h"
+    extern irrklang::ISoundEngine *SoundEngine;
+#else
+    #include <phonon/AudioOutput>
+    extern Phonon::AudioOutput *SoundOutput;
+#endif
 #endif
 
 #include <QFileDialog>
@@ -96,10 +102,6 @@ void ConfigDialog::on_resetBgButton_clicked()
     emit bg_changed();
 }
 
-#ifdef AUDIO_SUPPORT
-extern irrklang::ISoundEngine *SoundEngine;
-#endif
-
 void ConfigDialog::saveConfig()
 {
     int count_down = ui->nullificationSpinBox->value();
@@ -111,8 +113,13 @@ void ConfigDialog::saveConfig()
     Config.setValue("Volume", volume);    
 
 #ifdef AUDIO_SUPPORT
+#ifdef  Q_OS_WIN32
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
+#else
+    if(SoundOutput)
+        SoundOutput->setVolume(Config.Volume);
+#endif
 #endif
 
     bool enabled = ui->enableEffectCheckBox->isChecked();

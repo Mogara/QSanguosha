@@ -53,14 +53,25 @@ void StartScene::setServerLogBackground(){
 }
 
 #ifdef AUDIO_SUPPORT
-extern irrklang::ISoundEngine *SoundEngine;
+#ifdef  Q_OS_WIN32
+    extern irrklang::ISoundEngine *SoundEngine;
+#else
+    #include <phonon/MediaObject>
+    #include <phonon/AudioOutput>
+    extern Phonon::MediaObject *SoundEngine;
+    extern Phonon::AudioOutput *SoundOutput;
+#endif
 #endif
 
 void StartScene::switchToServer(Server *server){    
 #ifdef AUDIO_SUPPORT
-    if(SoundEngine){
+    if(SoundEngine) {
+#ifdef  Q_OS_WIN32
         SoundEngine->drop();
         SoundEngine = NULL;
+#else
+        delete SoundEngine;
+#endif
     }
 #endif
 
