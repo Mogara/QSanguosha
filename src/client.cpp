@@ -135,7 +135,6 @@ Client::Client(QObject *parent, const QString &filename)
         connect(socket, SIGNAL(message_got(char*)), recorder, SLOT(record(char*)));
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(processReply(char*)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
-        connect(socket, SIGNAL(connected()), this, SLOT(signup()));
         socket->connectToHost();
 
         replayer = NULL;
@@ -191,8 +190,12 @@ void Client::setup(const QString &setup_str){
     if(socket && !socket->isConnected())
         return;
 
-    ServerInfo.parse(setup_str);
-    emit server_connected();
+    if(ServerInfo.parse(setup_str)){
+        signup();
+        emit server_connected();
+    }else{
+        QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
+    }
 }
 
 void Client::disconnectFromHost(){

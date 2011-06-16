@@ -754,6 +754,9 @@ void Room::addSocket(ClientSocket *socket){
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(request_got(QString)), this, SLOT(processRequest(QString)));
+
+    player->invoke("checkVersion", Sanguosha->getVersion());
+    player->invoke("setup", Sanguosha->getSetupString());
 }
 
 bool Room::isFull() const
@@ -1231,9 +1234,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         player->startRecord();
 
     if(!is_robot){
-        player->invoke("checkVersion", Sanguosha->getVersion());
-        player->invoke("setup", Sanguosha->getSetupString());
-
         player->sendProperty("objectName");
 
         if(owner == NULL){
