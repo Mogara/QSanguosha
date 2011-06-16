@@ -10,6 +10,7 @@
 #include "roomthread3v3.h"
 #include "roomthread1v1.h"
 #include "server.h"
+#include "generalselector.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -1434,8 +1435,6 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     }
 }
 
-#include "generalselector.h"
-
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getGeneral()){
         // the player has chosen player, should ignore it
@@ -1448,7 +1447,7 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
 
     player->setGeneralName(name);
 
-    static const int max_choice = 5;
+    const int max_choice = Config.value("MaxChoice", 5).toInt();
     const int total = Sanguosha->getGeneralCount();
 
     if(player->getRoleEnum() == Player::Lord){
