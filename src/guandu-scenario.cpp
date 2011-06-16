@@ -70,8 +70,8 @@ public:
     ZhanShuangxiong():ZeroCardViewAsSkill("zhanshuangxiong"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && !Self->hasUsed("ZhanShuangxiongCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->isKongcheng() && !player->hasUsed("ZhanShuangxiongCard");
     }
 
     virtual const Card *viewAs() const{
@@ -108,12 +108,12 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@smalltuxi";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@smalltuxi";
     }
 };
 

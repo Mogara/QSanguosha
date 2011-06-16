@@ -118,23 +118,22 @@ QString AOE::getSubtype() const{
     return "aoe";
 }
 
-bool AOE::isAvailable() const{
-    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
-    int count = 0;
-    foreach(const ClientPlayer *player, players){
-        if(player == Self)
+bool AOE::isAvailable(const Player *player) const{
+    QList<const Player *> players = player->parent()->findChildren<const Player *>();
+    foreach(const Player *p, players){
+        if(p == player)
             continue;
 
-        if(player->isDead())
+        if(p->isDead())
             continue;
 
-        if(ClientInstance->isProhibited(player, this))
+        if(player->isProhibited(p, this))
             continue;
 
-        count ++;
+        return true;
     }
 
-    return count > 0;
+    return false;
 }
 
 void AOE::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -214,7 +213,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
 
-        foreach(ServerPlayer *player, players){            
+        foreach(ServerPlayer *player, players){
             if(player->containsTrick(objectName()))
                 continue;
 

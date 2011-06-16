@@ -6,6 +6,7 @@
 #include <QIcon>
 
 class Room;
+class Player;
 class ServerPlayer;
 class Client;
 class ClientPlayer;
@@ -71,12 +72,12 @@ public:
 
     QString getPixmapPath() const;
     QString getIconPath() const;
-    QString getPackage() const;    
+    QString getPackage() const;
     QIcon getSuitIcon() const;
     QString getFullName(bool include_suit = false) const;
     QString getLogName() const;
     QString getName() const;
-    QString getSkillName() const;   
+    QString getSkillName() const;
     void setSkillName(const QString &skill_name);
     QString getDescription() const;
     QString getEffectPath() const;
@@ -103,7 +104,7 @@ public:
     virtual bool targetFixed() const;
     virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
-    virtual bool isAvailable() const;
+    virtual bool isAvailable(const Player *player) const;
     virtual const Card *validate(const CardUseStruct *card_use) const;
     virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;
 
@@ -139,7 +140,7 @@ protected:
 private:
     Suit suit;
     int number;
-    int id;    
+    int id;
 };
 
 class SkillCard: public Card{
@@ -149,10 +150,10 @@ public:
     SkillCard();
     void setUserString(const QString &user_string);
 
-    virtual QString getSubtype() const;    
+    virtual QString getSubtype() const;
     virtual QString getType() const;
     virtual CardType getTypeId() const;
-    virtual QString toString() const;    
+    virtual QString toString() const;
 
 protected:
     QString user_string;

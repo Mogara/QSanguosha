@@ -20,18 +20,18 @@ void Slash::setNature(DamageStruct::Nature nature){
     this->nature = nature;
 }
 
-bool Slash::IsAvailable(){
-    if(Self->hasFlag("tianyi_failed") || Self->hasFlag("xianzhen_failed"))
+bool Slash::IsAvailable(const Player *player){
+    if(player->hasFlag("tianyi_failed") || player->hasFlag("xianzhen_failed"))
         return false;
 
-    if(Self->hasWeapon("crossbow"))
+    if(player->hasWeapon("crossbow"))
         return true;
     else
-        return ClientInstance->canSlashWithCrossbow();
+        return player->canSlashWithoutCrossbow();
 }
 
-bool Slash::isAvailable() const{
-    return IsAvailable();
+bool Slash::isAvailable(const Player *player) const{
+    return IsAvailable(player);
 }
 
 QString Slash::getSubtype() const{
@@ -65,7 +65,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     room->slashEffect(effect);
 }
 
-bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{   
+bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
     return !targets.isEmpty();
 }
 
@@ -102,11 +102,11 @@ QString Jink::getSubtype() const{
     return "defense_card";
 }
 
-bool Jink::isAvailable() const{
+bool Jink::isAvailable(const Player *) const{
     return false;
 }
 
-Peach::Peach(Suit suit, int number):BasicCard(suit, number){    
+Peach::Peach(Suit suit, int number):BasicCard(suit, number){
     setObjectName("peach");
     target_fixed = true;
 }
@@ -144,8 +144,8 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
     room->recover(effect.to, recover);
 }
 
-bool Peach::isAvailable() const{
-    return Self->isWounded();
+bool Peach::isAvailable(const Player *player) const{
+    return player->isWounded();
 }
 
 Crossbow::Crossbow(Suit suit, int number)
@@ -260,12 +260,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "slash";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "slash";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -307,12 +307,12 @@ public:
 
     }
 
-    bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@axe-card";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@axe-card";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -597,10 +597,10 @@ Collateral::Collateral(Card::Suit suit, int number)
     setObjectName("collateral");
 }
 
-bool Collateral::isAvailable() const{
-    QList<const ClientPlayer*> players = ClientInstance->getPlayers();
-    foreach(const ClientPlayer *player, players){
-        if(player->getWeapon() != NULL && player != Self)
+bool Collateral::isAvailable(const Player *player) const{
+    QList<const Player*> players = player->parent()->findChildren<const Player *>();
+    foreach(const Player *p, players){
+        if(p->getWeapon() != NULL && p != player)
             return true;
     }
 
@@ -661,7 +661,7 @@ void Nullification::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     room->throwCard(this);
 }
 
-bool Nullification::isAvailable() const{
+bool Nullification::isAvailable(const Player *) const{
     return false;
 }
 
@@ -834,11 +834,11 @@ Disaster::Disaster(Card::Suit suit, int number)
     target_fixed = true;
 }
 
-bool Disaster::isAvailable() const{
-    if(Self->containsTrick(objectName()))
+bool Disaster::isAvailable(const Player *player) const{
+    if(player->containsTrick(objectName()))
         return false;
 
-    return !ClientInstance->isProhibited(Self, this);
+    return !ClientInstance->isProhibited(player, this);
 }
 
 void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -1072,7 +1072,7 @@ void StandardPackage::addCards(){
           << new Nullification(Card::Diamond, 12);
 
     foreach(Card *card, cards)
-        card->setParent(this);    
+        card->setParent(this);
 
-    skills << new SpearSkill << new AxeViewAsSkill;       
+    skills << new SpearSkill << new AxeViewAsSkill;
 }

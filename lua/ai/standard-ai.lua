@@ -22,7 +22,7 @@ end
 
 sgs.ai_skill_choice.hujia = function(self , choices)
 	if self.player:hasSkill("yongsi") or self.player:hasSkill("hujia") then
-		if self:getJinkNmuber(self.player) <= 0 then return "ignore" end
+		if self:getJinkNumber(self.player) <= 0 then return "ignore" end
 	end
     if self:isFriend(self.room:getLord()) then return "accept" end
     return "ignore"

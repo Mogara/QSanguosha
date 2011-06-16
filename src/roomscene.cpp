@@ -1522,7 +1522,7 @@ void RoomScene::callViewAsSkill(){
     if(card == NULL)
         return;
 
-    if(card->isAvailable()){
+    if(card->isAvailable(Self)){
         // use card
         dashboard->stopPending();
         useCard(card);
@@ -1766,21 +1766,24 @@ void RoomScene::updateStatus(Client::Status status){
             if(dashboard->currentSkill())
                 dashboard->stopPending();
 
+            foreach(Photo *photo, photos)
+                photo->setEnabled(photo->getPlayer()->isAlive());
+
             break;
         }
 
     case Client::Responsing: {
             prompt_box->appear();
-            if(ClientInstance->card_pattern.startsWith("@"))
+            QString pattern = ClientInstance->getPattern();
+            if(pattern.startsWith("@"))
                 dashboard->disableAllCards();
             else
-                dashboard->enableCards(ClientInstance->card_pattern);
+                dashboard->enableCards(pattern);
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);
 
-            QString pattern = ClientInstance->card_pattern;
             QRegExp rx("@@?(\\w+)!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
@@ -1874,7 +1877,7 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
 
-            yiji_skill->setCards(ClientInstance->card_pattern);
+            yiji_skill->setCards(ClientInstance->getPattern());
             dashboard->startPending(yiji_skill);
 
             break;
@@ -2040,7 +2043,8 @@ void RoomScene::doCancelButton(){
         }
 
     case Client::Responsing:{
-            if(!ClientInstance->card_pattern.startsWith("@")){
+            QString pattern = ClientInstance->getPattern();
+            if(! pattern.startsWith("@")){
                 const ViewAsSkill *skill = dashboard->currentSkill();
                 if(skill){
                     cancelViewAsSkill();

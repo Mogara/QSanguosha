@@ -47,6 +47,12 @@ RecoverStruct::RecoverStruct()
 
 }
 
+PindianStruct::PindianStruct()
+    :from(NULL), to(NULL), from_card(NULL), to_card(NULL)
+{
+
+}
+
 JudgeStruct::JudgeStruct()
     :who(NULL), card(NULL), good(true)
 {

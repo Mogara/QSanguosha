@@ -14,7 +14,7 @@ GameRule::GameRule(QObject *parent)
             << AskForPeaches << Death << Dying << GameOverJudge
             << SlashHit << SlashMissed << SlashEffected << SlashProceed
             << DamageDone << DamageComplete
-            << StartJudge << FinishJudge;
+            << StartJudge << FinishJudge << Pindian;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -499,6 +499,28 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             room->sendJudgeResult(judge);
 
+            room->getThread()->delay();
+
+            break;
+        }
+
+    case Pindian:{
+            PindianStar pindian = data.value<PindianStar>();
+
+            LogMessage log;
+
+            room->throwCard(pindian->from_card);
+            log.type = "$PindianResult";
+            log.from = pindian->from;
+            log.card_str = pindian->from_card->getEffectIdString();
+            room->sendLog(log);
+            room->getThread()->delay();
+
+            room->throwCard(pindian->to_card);
+            log.type = "$PindianResult";
+            log.from = pindian->to;
+            log.card_str = pindian->to_card->getEffectIdString();
+            room->sendLog(log);
             room->getThread()->delay();
 
             break;

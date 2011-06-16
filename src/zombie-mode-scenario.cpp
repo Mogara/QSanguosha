@@ -110,7 +110,7 @@ public:
             break;
         }
 
-        case TurnStart:{                
+        case TurnStart:{
                 int round = room->getTag("Round").toInt();
                 if(player->isLord()){
                     room->setTag("Round", ++round);
@@ -301,7 +301,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return true;
     }
 

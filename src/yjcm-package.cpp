@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "standard.h"
 #include "maneuvering.h"
-#include "client.h"
 #include "clientplayer.h"
 #include "carditem.h"
 #include "engine.h"
@@ -115,26 +114,28 @@ public:
 class Jiushi: public ZeroCardViewAsSkill{
 public:
     Jiushi():ZeroCardViewAsSkill("jiushi"){
-
+        analeptic = new Analeptic(Card::NoSuit, 0);
+        analeptic->setSkillName("jiushi");
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Analeptic::IsAvailable() && Self->faceUp();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return analeptic->isAvailable(player) && player->faceUp();
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.contains("analeptic") && Self->faceUp();
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern.contains("analeptic") && player->faceUp();
     }
 
     virtual const Card *viewAs() const{
-        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
-        analeptic->setSkillName("jiushi");
         return analeptic;
     }
 
     virtual int getEffectIndex(ServerPlayer *, const Card *) const{
         return qrand() % 2 + 1;
     }
+
+private:
+    Analeptic *analeptic;
 };
 
 class JiushiFlip: public TriggerSkill{
@@ -255,8 +256,8 @@ public:
         return selected.length() < 3;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("JujianCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("JujianCard");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
@@ -335,8 +336,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("XuanhuoCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("XuanhuoCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -509,8 +510,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("XianzhenCard") || Self->hasFlag("xianzhen_success");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("XianzhenCard") || player->hasFlag("xianzhen_success");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -625,8 +626,8 @@ public:
         default_choice = "draw";
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("MingceCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("MingceCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -760,8 +761,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("GanluCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("GanluCard");
     }
 
     virtual const Card *viewAs() const{
@@ -852,8 +853,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("XinzhanCard") && Self->getHandcardNum() > Self->getMaxHP();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("XinzhanCard") && player->getHandcardNum() > player->getMaxHP();
     }
 
     virtual const Card *viewAs() const{

@@ -9,6 +9,7 @@
 #include "banpairdialog.h"
 #include "roomthread3v3.h"
 #include "roomthread1v1.h"
+#include "server.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -943,7 +944,7 @@ void Room::addProhibitSkill(const ProhibitSkill *skill){
     }
 }
 
-const ProhibitSkill *Room::isProhibited(Player *from, Player *to, const Card *card) const{
+const ProhibitSkill *Room::isProhibited(const Player *from, const Player *to, const Card *card) const{
     foreach(const ProhibitSkill *skill, prohibit_skills){
         if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
             return skill;
@@ -1267,7 +1268,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
         }
 
-        emit player_signuped(player);
+        Server *server = qobject_cast<Server *>(parent());
+        server->signupPlayer(player);
     }
 
     signup_count ++;

@@ -56,10 +56,10 @@ public:
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     bool isJilei(const Card *card) const;
-    bool canSlashWithCrossbow() const;
     QString getSkillLine() const;
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
+    QString getPattern() const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -152,7 +152,6 @@ public:
     void detachSkill(const QString &skill_name);
 
     // public fields
-    QString card_pattern;
     bool refusable;
     bool include_equip;
     int discard_num;
@@ -192,6 +191,7 @@ private:
     QString skill_title, skill_line;
     QString jilei_flags;
     QString choose_command;
+    QString card_pattern;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);

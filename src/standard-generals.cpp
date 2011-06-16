@@ -79,12 +79,12 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@tuxi";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@tuxi";
     }
 };
 
@@ -229,12 +229,12 @@ public:
     GuicaiViewAsSkill():OneCardViewAsSkill(""){
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@guicai";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@guicai";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -403,12 +403,12 @@ public:
         return jink;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "jink";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "jink";
     }
 };
 
@@ -451,8 +451,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("jijiang") && Slash::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->hasLordSkill("jijiang") && Slash::IsAvailable(player);
     }
 
     virtual const Card *viewAs() const{
@@ -504,12 +504,12 @@ public:
     Wusheng():OneCardViewAsSkill("wusheng"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "slash";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "slash";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -518,9 +518,9 @@ public:
         if(!card->isRed())
             return false;
 
-        if(card == Self->getWeapon() && card->objectName() == "crossbow"){
-            return ClientInstance->canSlashWithCrossbow();
-        }else
+        if(card == Self->getWeapon() && card->objectName() == "crossbow")
+            return Self->canSlashWithoutCrossbow();
+        else
             return true;
     }
 
@@ -549,7 +549,7 @@ public:
             }
 
         case Client::Responsing:{
-                QString pattern = ClientInstance->card_pattern;
+                QString pattern =  pattern;
                 if(pattern == "slash")
                     return card->inherits("Jink");
                 else if(pattern == "jink")
@@ -561,12 +561,11 @@ public:
         }
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Slash::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse() const{
-        QString pattern = ClientInstance->card_pattern;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return pattern == "jink" || pattern == "slash";
     }
 
@@ -738,8 +737,8 @@ public:
         return zhiheng_card;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("ZhihengCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("ZhihengCard");
     }
 };
 
@@ -823,8 +822,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return !Self->isKongcheng() && ! Self->hasUsed("FanjianCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->isKongcheng() && ! player->hasUsed("FanjianCard");
     }
 
     virtual const Card *viewAs() const{
@@ -954,12 +953,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@liuli";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@liuli";
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -1043,8 +1042,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("JieyinCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("JieyinCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1119,8 +1118,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("LijianCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("LijianCard");
     }
 
     virtual bool viewFilter(const CardItem *) const{
@@ -1160,8 +1159,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("QingnangCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("QingnangCard");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1182,12 +1181,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.contains("peach") && Self->getPhase() == Player::NotActive;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern.contains("peach") && player->getPhase() == Player::NotActive;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -1209,8 +1208,8 @@ public:
         setObjectName("zhiba");
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->usedTimes("ZhihengCard") < (Self->getLostHp() + 1);
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->usedTimes("ZhihengCard") < (player->getLostHp() + 1);
     }
 };
 
@@ -1220,11 +1219,11 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        if(Self->hasUsed("HuanzhuangCard"))
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->hasUsed("HuanzhuangCard"))
             return false;
 
-        return (Self->getGeneralName() == "diaochan" || Self->getGeneralName() == "sp_diaochan");
+        return (player->getGeneralName() == "diaochan" || player->getGeneralName() == "sp_diaochan");
     }
 
     virtual const Card *viewAs() const{

@@ -127,6 +127,7 @@ public slots:
     void doneMakingAvatar();
     void hideAvatarRects();
     void setAvatarNameBox(const QString &text);
+    void resetPhoto();
 
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

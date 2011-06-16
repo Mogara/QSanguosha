@@ -85,12 +85,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@chengxiang";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@chengxiang";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -262,8 +262,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("JuejiCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("JuejiCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -463,8 +463,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@tied") > 0 && Slash::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@tied") > 0 && Slash::IsAvailable(player);
     }
 
     virtual const Card *viewAs() const{
@@ -548,12 +548,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@lianli";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@lianli";
     }
 
     virtual const Card *viewAs() const{
@@ -667,8 +667,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@tied") == 0 && ! Self->hasUsed("QiaocaiCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@tied") == 0 && ! player->hasUsed("QiaocaiCard");
     }
 
     virtual const Card *viewAs() const{
@@ -851,8 +851,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("GuihanCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("GuihanCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1182,26 +1182,26 @@ public:
             return 3;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        if(Self->hasUsed("LexueCard") && Self->hasFlag("lexue")){
-            int card_id = Self->getMark("lexue");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->hasUsed("LexueCard") && player->hasFlag("lexue")){
+            int card_id = player->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
-            return card->isAvailable();
+            return card->isAvailable(player);
         }else
             return true;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        if(Self->getPhase() == Player::NotActive)
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        if(player->getPhase() == Player::NotActive)
             return false;
 
-        if(!Self->hasFlag("lexue"))
+        if(!player->hasFlag("lexue"))
             return false;
 
-        if(Self->hasUsed("LexueCard")){
-            int card_id = Self->getMark("lexue");
+        if(player->hasUsed("LexueCard")){
+            int card_id = player->getMark("lexue");
             const Card *card = Sanguosha->getCard(card_id);
-            return ClientInstance->card_pattern.contains(card->objectName());
+            return  pattern.contains(card->objectName());
         }else
             return false;
     }
@@ -1277,8 +1277,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getGeneral()->hasSkill("xunzhi");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getGeneral()->hasSkill("xunzhi");
     }
 
     virtual const Card *viewAs() const{

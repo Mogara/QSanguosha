@@ -74,12 +74,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@guidao";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@guidao";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -161,8 +161,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return !Self->hasUsed("HuangtianCard") && Self->getKingdom() == "qun";
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("HuangtianCard") && player->getKingdom() == "qun";
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -199,12 +199,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@leiji";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "@@leiji";
     }
 
     virtual const Card *viewAs() const{
@@ -266,23 +266,23 @@ public:
     ShensuViewAsSkill():ViewAsSkill("shensu"){
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        if(ClientInstance->card_pattern.endsWith("1"))
+        if(ClientInstance->getPattern().endsWith("1"))
             return false;
         else
             return selected.isEmpty() && to_select->getCard()->inherits("EquipCard");
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.startsWith("@@shensu");
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern.startsWith("@@shensu");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(ClientInstance->card_pattern.endsWith("1")){
+        if(ClientInstance->getPattern().endsWith("1")){
             if(cards.isEmpty())
                 return new ShensuCard;
             else

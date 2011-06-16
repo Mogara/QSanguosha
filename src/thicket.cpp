@@ -76,12 +76,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@fangzhu";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@fangzhu";
     }
 
     virtual const Card *viewAs() const{
@@ -282,7 +282,7 @@ public:
                 if(has_heart)
                     room->playSkillEffect(objectName(), 2);
                 else
-                    room->playSkillEffect(objectName(), 3);                
+                    room->playSkillEffect(objectName(), 3);
 
                 return true;
             }
@@ -363,15 +363,15 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return new YinghunCard;        
+        return new YinghunCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@yinghun";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@yinghun";
     }
 };
 
@@ -432,17 +432,17 @@ public:
         if(cards.length() != Self->getHandcardNum() / 2)
             return NULL;
 
-        HaoshiCard *card = new HaoshiCard;        
+        HaoshiCard *card = new HaoshiCard;
         card->addSubcards(cards);
         return card;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *){
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@haoshi!";
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@haoshi!";
     }
 };
 
@@ -590,8 +590,8 @@ public:
         return new DimengCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("DimengCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("DimengCard");
     }
 };
 
@@ -605,8 +605,8 @@ public:
         return new LuanwuCard;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("@chaos") >= 1;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@chaos") >= 1;
     }
 };
 
@@ -636,7 +636,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         distance_list << distance;
 
         nearest = qMin(nearest, distance);
-    }    
+    }
 
     QList<ServerPlayer *> luanwu_targets;
     int i;
@@ -646,7 +646,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
         }
     }
 
-    const Card *slash = NULL;    
+    const Card *slash = NULL;
     if(!luanwu_targets.isEmpty() && (slash = room->askForCard(effect.to, "slash", "@luanwu-slash"))){
         ServerPlayer *to_slash;
         if(luanwu_targets.length() == 1)
@@ -674,12 +674,12 @@ public:
     Jiuchi():OneCardViewAsSkill("jiuchi"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Analeptic::IsAvailable();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Analeptic::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern.contains("analeptic");
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern.contains("analeptic");
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -704,7 +704,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{        
+    virtual bool triggerable(const ServerPlayer *target) const{
         return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
     }
 
@@ -766,7 +766,7 @@ public:
         bool trigger_this = false;
         Room *room = dongzhuo->getRoom();
 
-        if(dongzhuo->getPhase() == Player::Finish){            
+        if(dongzhuo->getPhase() == Player::Finish){
             QList<ServerPlayer *> players = room->getOtherPlayers(dongzhuo);
             foreach(ServerPlayer *player, players){
                 if(dongzhuo->getHp() > player->getHp()){

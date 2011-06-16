@@ -25,12 +25,13 @@ public:
 
     virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;
-    virtual int getHandcardNum() const;    
+    virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
     virtual void addKnownHandCard(const Card *card);
     virtual bool isLastHandCard(const Card *card) const;
     virtual void setMark(const QString &mark, int value);
+    virtual bool isProhibited(const Player *to, const Card *card) const;
 
 private:
     int handcard_num;

@@ -57,12 +57,12 @@ public:
         frequency = Limited;
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@dujiang-card";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@dujiang-card";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -102,7 +102,7 @@ public:
             room->askForUseCard(target, "@dujiang-card", "@@dujiang");
         }
 
-        return false;  
+        return false;
     }
 };
 
@@ -143,8 +143,8 @@ public:
         frequency = Limited;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasFlag("flood");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasFlag("flood");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -192,8 +192,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("TaichenCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("TaichenCard");
     }
 
     virtual const Card *viewAs() const{
@@ -249,8 +249,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("zhiyuan") > 0;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("zhiyuan") > 0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

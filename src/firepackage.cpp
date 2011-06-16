@@ -51,7 +51,7 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
         damage.from = tiger;
         damage.to = wolf;
 
-        room->damage(damage);        
+        room->damage(damage);
 
     }else{
         DamageStruct damage;
@@ -90,12 +90,12 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "@@jieming";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@jieming";
     }
 
     virtual const Card *viewAs() const{
@@ -125,8 +125,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("QuhuCard") && !Self->isKongcheng();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("QuhuCard") && !player->isKongcheng();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -177,8 +177,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("QiangxiCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("QiangxiCard");
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -230,8 +230,8 @@ public:
     ShuangxiongViewAsSkill():OneCardViewAsSkill("shuangxiong"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->getMark("shuangxiong") != 0;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("shuangxiong") != 0;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
@@ -449,12 +449,12 @@ public:
         return to_select->getFilteredCard()->isBlack() && !to_select->isEquipped();
     }
 
-    virtual bool isEnabledAtPlay() const{
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse() const{
-        return ClientInstance->card_pattern == "nullification";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return  pattern == "nullification";
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -491,8 +491,8 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return !Self->hasUsed("TianyiCard") && !Self->isKongcheng();
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("TianyiCard") && !player->isKongcheng();
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

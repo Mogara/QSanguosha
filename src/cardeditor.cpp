@@ -15,6 +15,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QGraphicsRectItem>
+#include <QBitmap>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -256,6 +257,8 @@ void SkillBox::saveConfig(){
         Config.setValue("SkillTitleFont", skill_titles.first()->font());
     }
 
+    Config.setValue("SkillBoxMiddleHeight", middle_height);
+
     Config.endGroup();
 }
 
@@ -277,8 +280,8 @@ void SkillBox::loadConfig(){
     }
 
     Config.endArray();
-
     skill_description->setHtml(Config.value("SkillDescription").toString());
+
     Config.endGroup();
 }
 
@@ -397,7 +400,7 @@ void AvatarRectItem::setName(const QString &name){
 CardScene::CardScene()
     :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL)
 {
-    photo = new Pixmap;
+    photo = NULL;
     frame = new QGraphicsPixmapItem;
 
     name = new BlackEdgeTextItem;
@@ -407,15 +410,14 @@ CardScene::CardScene()
     title = new BlackEdgeTextItem;
     title->setObjectName("Title");
 
-    photo->setFlag(QGraphicsItem::ItemIsMovable);
-
     skill_box = new SkillBox;
 
-    addItem(photo);
     addItem(frame);
     addItem(name);
     addItem(title);
     addItem(skill_box);
+
+    resetPhoto();
 
     int i;
     for(i=0; i<10; i++){
@@ -483,7 +485,7 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
     }
 
     skill_box->setKingdom(kingdom);
-    skill_box->setMiddleHeight(-1);
+    skill_box->setMiddleHeight(Config.value("CardEditor/SkillBoxMiddleHeight", -1).toInt());
 
     big_avatar_rect->setKingdom(kingdom);
     small_avatar_rect->setKingdom(kingdom);
@@ -628,6 +630,18 @@ void CardScene::setAvatarNameBox(const QString &text){
     tiny_avatar_rect->setName(text);
 }
 
+void CardScene::resetPhoto(){
+    if(photo){
+        photo->deleteLater();
+        Config.remove("CardEditor/Photo");
+    }
+
+    photo = new Pixmap;
+    photo->setZValue(-1);
+    photo->setFlag(QGraphicsItem::ItemIsMovable);
+    addItem(photo);
+}
+
 void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
     QGraphicsItem *item = itemAt(event->scenePos());
     if(item){
@@ -731,6 +745,14 @@ CardEditor::CardEditor(QWidget *parent) :
     connect(hiding_rect, SIGNAL(triggered()), card_scene, SLOT(hideAvatarRects()));
     tool_menu->addAction(hiding_rect);
 
+    tool_menu->addSeparator();
+
+    QAction *reset_photo = new QAction(tr("Reset photo"), tool_menu);
+    reset_photo->setShortcut(Qt::ALT + Qt::Key_R);
+    connect(reset_photo, SIGNAL(triggered()), card_scene, SLOT(resetPhoto()));
+    tool_menu->addAction(reset_photo);
+
+
     menu_bar->addMenu(tool_menu);
 
     card_scene->setMenu(tool_menu);
@@ -744,8 +766,6 @@ void CardEditor::updateButtonText(const QFont &font){
             button->setText(QString("%1[%2]").arg(font.family()).arg(font.pointSize()));
     }
 }
-
-#include <QBitmap>
 
 void CardEditor::saveAvatar(const QRectF &rect){
     QString filename = QFileDialog::getSaveFileName(this,

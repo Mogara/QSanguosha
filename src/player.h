@@ -24,7 +24,7 @@ class Player : public QObject
     Q_PROPERTY(int maxhp READ getMaxHP WRITE setMaxHP)
     Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
     Q_PROPERTY(int xueyi READ getXueyi WRITE setXueyi)
-    Q_PROPERTY(bool wounded READ isWounded STORED false)    
+    Q_PROPERTY(bool wounded READ isWounded STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
     Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
     Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name)
@@ -59,16 +59,16 @@ public:
 
     // property setters/getters
     int getHp() const;
-    void setHp(int hp);    
+    void setHp(int hp);
     int getMaxHP() const;
-    void setMaxHP(int max_hp);    
+    void setMaxHP(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
 
     bool isOwner() const;
     void setOwner(bool owner);
 
-    int getMaxCards() const;    
+    int getMaxCards() const;
     int getXueyi() const;
     void setXueyi(int xueyi);
 
@@ -78,12 +78,12 @@ public:
     QString getKingdomFrame() const;
 
     void setRole(const QString &role);
-    QString getRole() const;    
+    QString getRole() const;
     Role getRoleEnum() const;
 
     void setGeneral(const General *general);
     void setGeneralName(const QString &general_name);
-    QString getGeneralName() const;    
+    QString getGeneralName() const;
 
     void setGeneral2Name(const QString &general_name);
     QString getGeneral2Name() const;
@@ -93,7 +93,7 @@ public:
     QString getState() const;
 
     int getSeat() const;
-    void setSeat(int seat);  
+    void setSeat(int seat);
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
@@ -174,12 +174,15 @@ public:
 
     void addHistory(const QString &name);
     void clearHistory();
-    bool hasUsed(const QString &card_class);
-    int usedTimes(const QString &card_class);
+    bool hasUsed(const QString &card_class) const;
+    int usedTimes(const QString &card_class) const;
     int getSlashCount() const;
 
     QSet<const TriggerSkill *> getTriggerSkills() const;
     QSet<const Skill *> getVisibleSkills() const;
+
+    virtual bool isProhibited(const Player *to, const Card *card) const = 0;
+    bool canSlashWithoutCrossbow() const;
 
     QVariantMap tag;
 
@@ -188,7 +191,7 @@ protected:
     QMap<QString, QList<int> > piles;
     QSet<QString> acquired_skills;
 
-private:    
+private:
     QString screen_name;
     bool owner;
     const General *general, *general2;

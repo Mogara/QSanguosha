@@ -44,12 +44,6 @@ protected:
     }
 };
 
-#ifdef  Q_OS_WIN32
-
-#include <QAxObject>
-
-#endif
-
 MainWindow::MainWindow(QWidget *parent)
     :QMainWindow(parent), ui(new Ui::MainWindow)
 {

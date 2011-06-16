@@ -94,4 +94,12 @@ public:
 	JudgeStruct *toJudge() const{
 		return $self->value<JudgeStar>();
 	}
+
+	void setValue(PindianStruct *pindian){
+		$self->setValue(QVariant::fromValue(pindian));
+	}
+
+	PindianStruct *toPindian() const{
+		return $self->value<PindianStar>();
+	}
 };
