@@ -399,6 +399,9 @@ void Dashboard::killPlayer(){
     death_item->setPos(397, 55);
 
     filter = NULL;
+
+    avatar->makeGray();
+    small_avatar->makeGray();
 }
 
 void Dashboard::revivePlayer(){
