@@ -9,11 +9,15 @@
 #include "server.h"
 
 #ifdef AUDIO_SUPPORT
-
-#include "irrKlang.h"
-
-irrklang::ISoundEngine *SoundEngine;
-
+#ifdef  Q_OS_WIN32
+    #include "irrKlang.h"
+    irrklang::ISoundEngine *SoundEngine;
+#else
+    #include <phonon/MediaObject>
+    #include <phonon/AudioOutput>
+    Phonon::MediaObject *SoundEngine;
+    Phonon::AudioOutput *SoundOutput;
+#endif
 #endif
 
 int main(int argc, char *argv[])
@@ -45,9 +49,15 @@ int main(int argc, char *argv[])
 
 #ifdef AUDIO_SUPPORT
 
+#ifdef  Q_OS_WIN32
     SoundEngine = irrklang::createIrrKlangDevice();
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
+#else
+    SoundEngine = new Phonon::MediaObject(&a);
+    SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, &a);
+    Phonon::createPath(SoundEngine, SoundOutput);
+#endif
 
 #endif
 

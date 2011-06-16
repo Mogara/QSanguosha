@@ -19,12 +19,4 @@ make
 # Compile the translation file
 lrelease QSanguosha.pro
 
-# copy irrKlang files and update the dynamic library cache
-echo "Copying irrKlang library files to /usr/lib"
-cp lib/libIrrKlang.so /usr/lib
-cp lib/ikpMP3.so /usr/lib
-
-echo "Updating cache"
-ldconfig
-
 echo "Well, everything is OK. You can run it with ./QSanguosha"

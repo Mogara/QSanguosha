@@ -173,7 +173,7 @@ CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/irrKlang
     win32: LIBS += irrKlang.lib
-    unix: LIBS += -lIrrKlang
+    unix: LIBS += -lphonon
 }
 
 CONFIG(joystick){
