@@ -44,28 +44,39 @@ void DistanceViewDialog::showDistance()
     int left_distance = from->aliveCount() - right_distance;
 
     ui->leftDistanceLineEdit->setText(QString::number(left_distance));
-    ui->rightDistanceLineEdit->setText(QString::number(right_distance));    
+    ui->rightDistanceLineEdit->setText(QString::number(right_distance));
     ui->minorValueLineEdit->setText(QString::number(qMin(left_distance, right_distance)));
     ui->attackRangeLineEdit->setText(QString::number(from->getAttackRange()));
 
     if(from->getOffensiveHorse())
         ui->ohorseLineEdit->setText("-1");
+    else
+        ui->ohorseLineEdit->clear();
 
     if(from->hasSkill("mashu"))
         ui->mashuLineEdit->setText("-1");
+    else
+        ui->mashuLineEdit->clear();
 
     if(from->hasSkill("yicong") && from->getHp() >2)
         ui->ohorseYicongLineEdit->setText("-1");
+    else
+        ui->ohorseYicongLineEdit->clear();
 
     if(to->getDefensiveHorse())
         ui->dhorseLineEdit->setText("+1");
+    else
+        ui->dhorseLineEdit->clear();
 
     if(to->hasSkill("feiying"))
         ui->feiyingLineEdit->setText("+1");
+    else
+        ui->feiyingLineEdit->clear();
 
     if(to->hasSkill("yicong") && to->getHp()<=2)
         ui->dhorseYicongLineEdit->setText("+1");
-
+    else
+        ui->dhorseYicongLineEdit->clear();
 
     ui->finalResultLineEdit->setText(QString::number(from->distanceTo(to)));
     QString result = from->inMyAttackRange(to) ? tr("Yes") : tr("No");

@@ -300,6 +300,10 @@ Horse::Horse(Suit suit, int number, int correct)
 {
 }
 
+int Horse::getCorrect() const{
+    return correct;
+}
+
 QString Horse::getEffectPath(bool) const{
     return "audio/card/common/horse.ogg";
 }
@@ -323,8 +327,8 @@ QString Horse::label() const{
     return format.arg(getName()).arg(correct);
 }
 
-OffensiveHorse::OffensiveHorse(Card::Suit suit, int number)
-    :Horse(suit, number, -1)
+OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)
+    :Horse(suit, number, correct)
 {
 
 }
@@ -333,8 +337,8 @@ QString OffensiveHorse::getSubtype() const{
     return "offensive_horse";
 }
 
-DefensiveHorse::DefensiveHorse(Card::Suit suit, int number)
-    :Horse(suit, number, +1)
+DefensiveHorse::DefensiveHorse(Card::Suit suit, int number, int correct)
+    :Horse(suit, number, correct)
 {
 
 }

@@ -262,6 +262,8 @@ class Horse:public EquipCard{
 
 public:
     Horse(Suit suit, int number, int correct);
+    int getCorrect() const;
+
     virtual QString getEffectPath(bool is_male) const;
 
     virtual Location location() const;
@@ -278,7 +280,7 @@ class OffensiveHorse: public Horse{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number);
+    Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number, int correct = -1);
     virtual QString getSubtype() const;
 };
 
@@ -286,7 +288,7 @@ class DefensiveHorse: public Horse{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE DefensiveHorse(Card::Suit suit, int number);
+    Q_INVOKABLE DefensiveHorse(Card::Suit suit, int number, int correct = +1);
     virtual QString getSubtype() const;
 };
 

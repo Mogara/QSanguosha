@@ -149,7 +149,7 @@ int Player::distanceTo(const Player *other) const{
 
     // the shorten ways of distance
     if(getOffensiveHorse())
-        distance --;
+        distance += getOffensiveHorse()->getCorrect();
 
     if(hasSkill("mashu"))
         distance --;
@@ -159,7 +159,7 @@ int Player::distanceTo(const Player *other) const{
 
     // the lengthen ways of distance
     if(other->getDefensiveHorse())
-        distance ++;
+        distance += other->getDefensiveHorse()->getCorrect();
 
     if(other->hasSkill("feiying"))
         distance ++;
