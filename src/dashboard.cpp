@@ -720,53 +720,6 @@ void Dashboard::enableAllCards(){
         card_item->setEnabled(true);
 }
 
-void Dashboard::enableCards(const QString &pattern){
-    static QRegExp id_rx("\\d+");
-    static QRegExp suit_rx("\\.[SCHD]");
-
-    if(pattern.contains("+")){
-        QStringList subpatterns = pattern.split("+");
-
-        foreach(CardItem *card_item, card_items){
-            const Card *card = card_item->getFilteredCard();
-            bool enabled = false;
-            foreach(QString subpattern, subpatterns){
-                if(card->match(subpattern)){
-                    enabled = true;
-                    break;
-                }
-            }
-
-            card_item->setEnabled(enabled);
-        }
-        return;
-    }else if(id_rx.exactMatch(pattern)){
-        int id = pattern.toInt();
-        foreach(CardItem *card_item, card_items)
-            card_item->setEnabled(card_item->getCard()->getId() == id);
-        return;
-    }else if(pattern == "."){
-        enableAllCards();
-        return;
-    }else if(suit_rx.exactMatch(pattern)){
-        QChar end = pattern.at(1).toLower();
-        foreach(CardItem *card_item, card_items){
-            bool enabled = card_item->getFilteredCard()->getSuitString().startsWith(end);
-            card_item->setEnabled(enabled);
-        }
-    }else{
-        foreach(CardItem *card_item, card_items){
-            card_item->setEnabled(card_item->getFilteredCard()->match(pattern));
-        }
-    }
-
-    // insert jilei
-    foreach(CardItem *card_item, card_items){
-        if(ClientInstance->isJilei(card_item->getFilteredCard()))
-            card_item->setEnabled(false);
-    }
-}
-
 void Dashboard::startPending(const ViewAsSkill *skill){
     view_as_skill = skill;
     pendings.clear();

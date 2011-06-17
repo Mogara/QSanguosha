@@ -40,17 +40,16 @@ public:
 
     void disableAllCards();
     void enableCards();
-    void enableCards(const QString &pattern);
     void enableAllCards();
 
     void installEquip(CardItem *equip);
-    void installDelayedTrick(CardItem *card);    
+    void installDelayedTrick(CardItem *card);
 
     // pending operations
     void startPending(const ViewAsSkill *skill);
     void stopPending();
     void updatePending();
-    const ViewAsSkill *currentSkill() const;    
+    const ViewAsSkill *currentSkill() const;
     const Card *pendingCard() const;
 
     void killPlayer();
@@ -106,8 +105,8 @@ private:
     const FilterSkill *filter;
 
     void adjustCards();
-    void adjustCards(const QList<CardItem *> &list, int y);    
-    void drawEquip(QPainter *painter, const CardItem *equip, int order);    
+    void adjustCards(const QList<CardItem *> &list, int y);
+    void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
     void drawHp(QPainter *painter) const;
 
