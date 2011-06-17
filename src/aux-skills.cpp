@@ -75,15 +75,19 @@ void ResponseSkill::setPattern(const QString &pattern){
         nameset << pattern;
 }
 
+bool ResponseSkill::matchPattern(const Card *card) const{
+    if(suit != Card::NoSuit && card->getSuit() != suit)
+        return false;
+
+    return nameset.isEmpty() || nameset.contains(card->objectName());
+}
+
 bool ResponseSkill::viewFilter(const CardItem *to_select) const{
     if(to_select->isEquipped())
         return false;
 
     const Card *card = to_select->getFilteredCard();
-    if(suit != Card::NoSuit && card->getSuit() != suit)
-        return false;
-
-    return nameset.isEmpty() || nameset.contains(card->objectName());
+    return matchPattern(card);
 }
 
 const Card *ResponseSkill::viewAs(CardItem *card_item) const{

@@ -4,6 +4,7 @@
 class Room;
 class ServerPlayer;
 class TrickCard;
+class ResponseSkill;
 
 struct lua_State;
 
@@ -82,6 +83,9 @@ public:
     virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only);
 
     virtual bool useCard(const Card *card);
+
+private:
+    ResponseSkill *response_skill;
 };
 
 class LuaAI: public TrustAI{
