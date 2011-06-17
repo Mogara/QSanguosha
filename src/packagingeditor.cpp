@@ -14,6 +14,10 @@
 
 #include "settings.h"
 
+typedef const QSettings *SettingsStar;
+
+Q_DECLARE_METATYPE(SettingsStar);
+
 MetaInfoWidget::MetaInfoWidget(bool load_config){
     setTitle(tr("Meta information"));
 
@@ -102,8 +106,8 @@ void PackagingEditor::loadPackageList(){
             name = info.baseName();
 
         QListWidgetItem *item = new QListWidgetItem(icon, name, package_list);
-        int setting_ptr = reinterpret_cast<int>(settings);
-        item->setData(Qt::UserRole, setting_ptr);
+        QVariant data = QVariant::fromValue(settings);
+        item->setData(Qt::UserRole, data);
     }
 }
 
@@ -150,8 +154,7 @@ QWidget *PackagingEditor::createManagerTab(){
 }
 
 void PackagingEditor::updateMetaInfo(QListWidgetItem *item){
-    int setting_ptr = item->data(Qt::UserRole).toInt();
-    const QSettings *settings = reinterpret_cast<const QSettings *>(setting_ptr);
+    SettingsStar settings = item->data(Qt::UserRole).value<SettingsStar>();
     if(settings){
         package_list_meta->showSettings(settings);
     }
