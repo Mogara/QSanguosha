@@ -528,10 +528,7 @@ void Client::setPrompt(const QString &prompt_str){
 }
 
 void Client::jilei(const QString &jilei_str){
-    if(jilei_str == ".")
-        jilei_flags.clear();
-    else
-        jilei_flags.append(jilei_str);
+    Self->jilei(jilei_str);
 }
 
 void Client::judgeResult(const QString &result_str){
@@ -540,29 +537,6 @@ void Client::judgeResult(const QString &result_str){
     QString result = texts.at(1);
 
     emit judge_result(who, result);
-}
-
-bool Client::isJilei(const Card *card) const{
-    if(card->inherits("BasicCard"))
-        return jilei_flags.contains("B");
-    else if(card->inherits("EquipCard"))
-        return jilei_flags.contains("E");
-    else if(card->inherits("TrickCard"))
-        return jilei_flags.contains("T");
-    else if(card->inherits("SkillCard")){
-        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card);
-        if(!skill_card->willThrow())
-            return false;
-
-        QList<int> card_ids = card->getSubcards();
-        foreach(int card_id, card_ids){
-            const Card *subcard = Sanguosha->getCard(card_id);
-            if(isJilei(subcard))
-                return true;
-        }
-    }
-
-    return false;
 }
 
 QString Client::getSkillLine() const{

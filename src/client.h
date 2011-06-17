@@ -54,7 +54,6 @@ public:
     bool save(const QString &filename) const;
     bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
-    bool isJilei(const Card *card) const;
     QString getSkillLine() const;
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
@@ -188,7 +187,6 @@ private:
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_title, skill_line;
-    QString jilei_flags;
     QString choose_command;
     QString card_pattern;
 

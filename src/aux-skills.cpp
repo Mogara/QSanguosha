@@ -27,7 +27,7 @@ bool DiscardSkill::viewFilter(const QList<CardItem *> &selected, const CardItem 
     if(!include_equip && to_select->isEquipped())
         return false;
 
-    if(ClientInstance->isJilei(to_select->getFilteredCard()))
+    if(Self->isJilei(to_select->getFilteredCard()))
         return false;
 
     return true;
@@ -75,8 +75,11 @@ void ResponseSkill::setPattern(const QString &pattern){
         nameset << pattern;
 }
 
-bool ResponseSkill::matchPattern(const Card *card) const{
+bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
     if(suit != Card::NoSuit && card->getSuit() != suit)
+        return false;
+
+    if(player->isJilei(card))
         return false;
 
     return nameset.isEmpty() || nameset.contains(card->objectName());
@@ -87,7 +90,7 @@ bool ResponseSkill::viewFilter(const CardItem *to_select) const{
         return false;
 
     const Card *card = to_select->getFilteredCard();
-    return matchPattern(card);
+    return matchPattern(Self, card);
 }
 
 const Card *ResponseSkill::viewAs(CardItem *card_item) const{

@@ -26,7 +26,7 @@ class ResponseSkill: public OneCardViewAsSkill{
 
 public:
     ResponseSkill();
-    bool matchPattern(const Card *card) const;
+    bool matchPattern(const Player *player, const Card *card) const;
 
     virtual void setPattern(const QString &pattern);
     virtual bool viewFilter(const CardItem *to_select) const;

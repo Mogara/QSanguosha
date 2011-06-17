@@ -174,18 +174,18 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish){
+        if(target->getPhase() == Player::NotActive){
             Room *room = target->getRoom();
             QList<ServerPlayer *> players = room->getAllPlayers();
             foreach(ServerPlayer *player, players){
                 if(player->hasFlag("jilei")){
-
-                    player->setFlags("-jilei");
-                    player->setFlags("-jileiB");
-                    player->setFlags("-jileiE");
-                    player->setFlags("-jileiT");
-
+                    player->jilei(".");
                     player->invoke("jilei");
+
+                    LogMessage log;
+                    log.type = "#JileiClear";
+                    log.from = player;
+                    room->sendLog(log);
                 }
             }
         }
@@ -212,11 +212,9 @@ public:
             QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
             room->playSkillEffect(objectName());
 
-            QString jilei_flag = choice[0].toUpper();
-            damage.from->invoke("jilei", jilei_flag);
-
+            damage.from->jilei(choice);
+            damage.from->invoke("jilei", choice);
             damage.from->setFlags("jilei");
-            damage.from->setFlags("jilei" + jilei_flag);
 
             LogMessage log;
             log.type = "#Jilei";

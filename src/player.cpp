@@ -645,3 +645,31 @@ bool Player::canSlashWithoutCrossbow() const{
     else
         return slash_count < 1;
 }
+
+void Player::jilei(const QString &type){
+    if(type == "basic")
+        jilei_set << Card::Basic;
+    else if(type == "equip")
+        jilei_set << Card::Equip;
+    else if(type == "trick")
+        jilei_set << Card::Trick;
+    else
+        jilei_set.clear();
+}
+
+bool Player::isJilei(const Card *card) const{
+    Card::CardType type = card->getTypeId();
+    if(type == Card::Skill){
+        if(!card->willThrow())
+            return false;
+
+        foreach(int card_id, card->getSubcards()){
+            const Card *c = Sanguosha->getCard(card_id);
+            if(jilei_set.contains(c->getTypeId()))
+                return true;
+        }
+
+        return false;
+    }else
+        return jilei_set.contains(type);
+}

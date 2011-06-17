@@ -273,7 +273,7 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &){
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
-        if(response_skill->matchPattern(card))
+        if(response_skill->matchPattern(self, card))
             return card;
     }
 

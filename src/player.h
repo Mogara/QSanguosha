@@ -184,6 +184,9 @@ public:
     virtual bool isProhibited(const Player *to, const Card *card) const = 0;
     bool canSlashWithoutCrossbow() const;
 
+    void jilei(const QString &type);
+    bool isJilei(const Card *card) const;
+
     QVariantMap tag;
 
 protected:
@@ -216,6 +219,8 @@ private:
     QHash<const Player *, int> fixed_distance;
 
     QHash<QString, int> history;
+
+    QSet<Card::CardType> jilei_set;
 
 signals:
     void general_changed();

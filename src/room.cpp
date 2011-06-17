@@ -1718,11 +1718,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
 }
 
 void Room::marshal(ServerPlayer *player){
-    player->invoke("marshal", "start");
+//    foreach(ServerPlayer *p, players){
 
-
-
-    player->invoke("marshal", "end");
+//    }
 }
 
 void Room::startGame(){
