@@ -351,7 +351,7 @@ ZombieScenario::ZombieScenario()
 
     skills<< new Peaching;
 
-    General *zombie = new General(this,"zombie","zombies",3, true, true);
+    General *zombie = new General(this,"zombie","zombie",3, true, true);
     zombie->addSkill(new Xunmeng);
     zombie->addSkill(new Ganran);
     zombie->addSkill(new Zaibian);

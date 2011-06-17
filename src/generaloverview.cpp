@@ -23,13 +23,6 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 
     QList<const General *> generals = Sanguosha->findChildren<const General *>();
 
-    // remove hidden generals
-    QMutableListIterator<const General *> itor(generals);
-    while(itor.hasNext()){
-        if(itor.next()->isHidden())
-            itor.remove();
-    }
-
     ui->tableWidget->setRowCount(generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
     QIcon lord_icon("image/system/roles/lord.png");
@@ -54,6 +47,9 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
             name_item->setIcon(lord_icon);
             name_item->setTextAlignment(Qt::AlignCenter);
         }
+
+        if(general->isHidden())
+            name_item->setBackgroundColor(Qt::gray);
 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
         kingdom_item->setTextAlignment(Qt::AlignCenter);

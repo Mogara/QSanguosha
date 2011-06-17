@@ -1213,22 +1213,26 @@ public:
     }
 };
 
-class Huanzhuang: public ZeroCardViewAsSkill{
+class Tuoqiao: public ZeroCardViewAsSkill{
 public:
-    Huanzhuang(const QString &name):ZeroCardViewAsSkill(name){
-
+    Tuoqiao():ZeroCardViewAsSkill("tuoqiao"){
+        huanzhuang_card = new HuanzhuangCard;
+        huanzhuang_card->setParent(this);
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         if(player->hasUsed("HuanzhuangCard"))
             return false;
 
-        return (player->getGeneralName() == "diaochan" || player->getGeneralName() == "sp_diaochan");
+        return player->getGeneralName() == "diaochan";
     }
 
     virtual const Card *viewAs() const{
-        return new HuanzhuangCard();
+        return huanzhuang_card;
     }
+
+private:
+    HuanzhuangCard *huanzhuang_card;
 };
 
 class Qianxun: public ProhibitSkill{
@@ -1356,12 +1360,7 @@ void StandardPackage::addGenerals(){
     diaochan = new General(this, "diaochan", "qun", 3, false);
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-    diaochan->addSkill(new Huanzhuang("tuoqiao"));
-
-    General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
-    sp_diaochan->addSkill("lijian");
-    sp_diaochan->addSkill("biyue");
-    sp_diaochan->addSkill(new Huanzhuang("xuwei"));
+    diaochan->addSkill(new Tuoqiao);
 
     // for test only
     General *zhiba_sunquan = new General(this, "zhibasunquan$", "wu", 4, true, true);
