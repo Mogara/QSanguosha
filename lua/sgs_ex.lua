@@ -68,6 +68,16 @@ function sgs.CreateFilterSkill(spec)
 	return skill
 end
 
+function sgs.CreateDistanceSkill(spec)
+	assert(type(spec.name) == "string")
+	assert(type(spec.correct_func) == "function")
+
+	local skill = sgs.LuaDistanceSkill(spec.name)
+	skill.correct_func = spec.correct_func
+
+	return skill
+end
+
 function sgs.CreateMasochismSkill(spec)
 	assert(type(spec.on_damaged) == "function")
 	
