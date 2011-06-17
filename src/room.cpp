@@ -939,14 +939,6 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
     }
 }
 
-void Room::addProhibitSkill(const ProhibitSkill *skill){
-    if(!prohibit_skills.contains(skill)){
-        prohibit_skills << skill;
-
-        broadcastInvoke("addProhibitSkill", skill->objectName());
-    }
-}
-
 const ProhibitSkill *Room::isProhibited(const Player *from, const Player *to, const Card *card) const{
     foreach(const ProhibitSkill *skill, prohibit_skills){
         if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
@@ -1772,6 +1764,7 @@ void Room::startGame(){
         player->setAI(ai);
     }
 
+    prohibit_skills = Sanguosha->getProhibitSkills();
     broadcastInvoke("startGame");
     game_started = true;
 

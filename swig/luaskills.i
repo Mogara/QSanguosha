@@ -21,11 +21,10 @@ public:
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
-class ProhibitSkill: public GameStartSkill{
+class ProhibitSkill: public Skill{
 public:
     ProhibitSkill(const QString &name);
 
-    virtual void onGameStart(ServerPlayer *player) const;
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 

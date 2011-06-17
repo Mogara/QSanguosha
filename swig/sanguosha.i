@@ -177,6 +177,11 @@ public:
     bool hasUsed(const char *card_class) const;
     int usedTimes(const char *card_class) const;
     int getSlashCount() const;
+
+    virtual bool isProhibited(const Player *to, const Card *card) const = 0;
+    bool canSlashWithoutCrossbow() const;
+	void jilei(const char *type);
+    bool isJilei(const Card *card) const;
 };
 
 %extend Player{
@@ -699,7 +704,6 @@ public:
     void transfigure(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true);
     lua_State *getLuaState() const;
 
-    void addProhibitSkill(const ProhibitSkill *skill);
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 
     void setTag(const char *key, const QVariant &value);

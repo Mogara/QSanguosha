@@ -92,13 +92,11 @@ public:
     void doGongxin(const QString &gongxin_str);
     void log(const QString &log_str);
     void speak(const QString &speak_data);
-    void increaseSlashCount(const QString & = QString());
     void addHistory(const QString &card);
     void moveFocus(const QString &focus);
     void setEmotion(const QString &set_str);
     void skillInvoked(const QString &invoke_str);
     void acquireSkill(const QString &acquire_str);
-    void addProhibitSkill(const QString &skill_name);
     void animate(const QString &animate_str);
     void setPrompt(const QString &prompt_str);
     void jilei(const QString &jilei_str);

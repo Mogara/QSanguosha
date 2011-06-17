@@ -44,7 +44,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
-    callbacks["increaseSlashCount"] = &Client::increaseSlashCount;
     callbacks["addHistory"] = &Client::addHistory;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
@@ -52,7 +51,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
     callbacks["acquireSkill"] = &Client::acquireSkill;
-    callbacks["addProhibitSkill"] = &Client::addProhibitSkill;
     callbacks["animate"] = &Client::animate;
     callbacks["setPrompt"] = &Client::setPrompt;
     callbacks["jilei"] = &Client::jilei;
@@ -244,11 +242,17 @@ void Client::processReply(char *reply){
         if(replayer && (method.startsWith("askFor") || method.startsWith("do") || method == "activate"))
             return;
 
-        Callback callback = callbacks.value(method_name, NULL);
+        static QSet<QString> deprecated;
+        if(deprecated.isEmpty()){
+            deprecated << "increaseSlashCount" // replaced by addHistory
+                    << "addProhibitSkill"; // add all prohibit skill at game start
+        }
+
+        Callback callback = callbacks.value(method, NULL);
         if(callback){
             QString arg_str = arg;
             (this->*callback)(arg_str);
-        }else
+        }else if(!deprecated.contains(method))
             QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(method_name));
     }
 }
@@ -478,6 +482,8 @@ void Client::moveNCards(const QString &move_str){
 void Client::startGame(const QString &){
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
+    prohibit_skills = Sanguosha->getProhibitSkills();
+
     emit game_started();
 }
 
@@ -830,10 +836,6 @@ void Client::surrender(){
 void Client::speakToServer(const QString &text){
     QByteArray data = text.toUtf8().toBase64();
     request(QString("speak %1").arg(QString(data)));
-}
-
-void Client::increaseSlashCount(const QString &){
-    // this command is deprecated
 }
 
 void Client::addHistory(const QString &card){
@@ -1463,14 +1465,6 @@ void Client::acquireSkill(const QString &acquire_str){
     who->acquireSkill(skill_name);
 
     emit skill_acquired(who, skill_name);
-}
-
-void Client::addProhibitSkill(const QString &skill_name){
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    const ProhibitSkill *prohibit_skill = qobject_cast<const ProhibitSkill *>(skill);
-    if(prohibit_skill){
-        prohibit_skills << prohibit_skill;
-    }
 }
 
 void Client::animate(const QString &animate_str){

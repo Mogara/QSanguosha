@@ -136,7 +136,6 @@ public:
         if(player->getPhase() != Player::NotActive)
             return false;
 
-
         CardStar card = NULL;
         if(event == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();

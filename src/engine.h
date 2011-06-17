@@ -43,7 +43,7 @@ public:
     QString getVersion() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
-    QString getSetupString() const;    
+    QString getSetupString() const;
 
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
@@ -63,6 +63,7 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const TriggerSkill *getTriggerSkill(const QString &skill_name) const;
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
+    QList<const ProhibitSkill *> getProhibitSkills() const;
 
     int getCardCount() const;
     const Card *getCard(int index) const;
@@ -83,7 +84,7 @@ private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;
-    QHash<QString, const Skill *> skills;    
+    QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
 
     QHash<QString, const Scenario *> scenarios;

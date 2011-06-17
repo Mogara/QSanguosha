@@ -620,3 +620,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
     else
         return NULL;
 }
+
+QList<const ProhibitSkill *> Engine::getProhibitSkills() const{
+    return findChildren<const ProhibitSkill *>();
+}
