@@ -187,6 +187,7 @@ private:
     QList<QAbstractButton *> skill_buttons;
     QMap<QAbstractButton *, const ViewAsSkill *> button2skill;
 
+    ResponseSkill *response_skill;
     DiscardSkill *discard_skill;
     YijiViewAsSkill *yiji_skill;
     ChoosePlayerSkill *choose_skill;

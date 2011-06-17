@@ -1246,12 +1246,10 @@ void Client::askForCardShow(const QString &requestor){
     QString name = Sanguosha->translate(requestor);
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
-    //card_pattern = "."; // any card can be matched
-    //refusable = false;
+    card_pattern = ".";
+    refusable = false;
     use_card = false;
-    //setStatus(Responsing);
-
-    setStatus(AskForCardShow);
+    setStatus(Responsing);
 }
 
 void Client::askForAG(const QString &ask_str){
@@ -1363,7 +1361,7 @@ void Client::askForPindian(const QString &ask_str){
     QStringList words = ask_str.split("->");
     QString from = words.at(0);
 
-    if(from == objectName())
+    if(from == Self->objectName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
     else{
         QString requestor = getPlayerName(from);

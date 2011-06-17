@@ -28,7 +28,6 @@ public:
         ExecDialog,
         AskForAG,
         AskForPlayerChoose,
-        AskForCardShow,
         AskForYiji,
         AskForGuanxing,
         AskForGongxin,

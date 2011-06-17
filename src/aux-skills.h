@@ -21,6 +21,22 @@ private:
     bool include_equip;
 };
 
+class ResponseSkill: public OneCardViewAsSkill{
+    Q_OBJECT
+
+public:
+    ResponseSkill();
+
+    virtual void setPattern(const QString &pattern);
+
+    virtual bool viewFilter(const CardItem *to_select) const;
+    virtual const Card *viewAs(CardItem *card_item) const;
+
+private:
+    QSet<QString> nameset;
+    Card::Suit suit;
+};
+
 class FreeDiscardSkill: public ViewAsSkill{
     Q_OBJECT
 

@@ -44,6 +44,54 @@ const Card *DiscardSkill::viewAs(const QList<CardItem *> &cards) const{
 
 // -------------------------------------------
 
+ResponseSkill::ResponseSkill()
+    :OneCardViewAsSkill("response-skill")
+{
+
+}
+
+void ResponseSkill::setPattern(const QString &pattern){
+    nameset.clear();
+    suit = Card::NoSuit;
+
+    if(pattern == ".")
+        return;
+
+    if(pattern == "slash")
+        nameset << "slash" << "thunder_slash" << "fire_slash";
+    else if(pattern == "peach+analeptic")
+        nameset << "peach" << "analeptic";
+    else if(pattern.startsWith(".")){
+        char suit_char = pattern.toAscii().at(1);
+        switch(suit_char){
+        case 'S': suit = Card::Spade; break;
+        case 'C': suit = Card::Club; break;
+        case 'H': suit = Card::Heart; break;
+        case 'D': suit = Card::Diamond; break;
+        default:
+            break;
+        }
+    }else
+        nameset << pattern;
+}
+
+bool ResponseSkill::viewFilter(const CardItem *to_select) const{
+    if(to_select->isEquipped())
+        return false;
+
+    const Card *card = to_select->getFilteredCard();
+    if(suit != Card::NoSuit && card->getSuit() != suit)
+        return false;
+
+    return nameset.isEmpty() || nameset.contains(card->objectName());
+}
+
+const Card *ResponseSkill::viewAs(CardItem *card_item) const{
+    return card_item->getFilteredCard();
+}
+
+// -------------------------------------------
+
 FreeDiscardSkill::FreeDiscardSkill(QObject *parent)
     :ViewAsSkill("free-discard")
 {

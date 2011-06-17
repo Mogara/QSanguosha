@@ -540,7 +540,7 @@ public:
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        const Card *card = to_select->getCard();
+        const Card *card = to_select->getFilteredCard();
 
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
@@ -549,7 +549,7 @@ public:
             }
 
         case Client::Responsing:{
-                QString pattern =  pattern;
+                QString pattern = ClientInstance->getPattern();
                 if(pattern == "slash")
                     return card->inherits("Jink");
                 else if(pattern == "jink")

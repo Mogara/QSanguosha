@@ -167,7 +167,6 @@ QStringList Engine::getScenarioNames() const{
 }
 
 void Engine::addScenario(Scenario *scenario){
-    scenario->setParent(this);
     scenarios.insert(scenario->objectName(), scenario);
 
     addPackage(scenario);

@@ -114,6 +114,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     if(ClientInstance->getReplayer())
         createReplayControlBar();
 
+    response_skill = new ResponseSkill;
     discard_skill = new DiscardSkill;
     yiji_skill = new YijiViewAsSkill;
     choose_skill = new ChoosePlayerSkill;
@@ -1330,11 +1331,6 @@ void RoomScene::updateRoleComboBox(const QString &new_role){
 }
 
 void RoomScene::enableTargets(const Card *card){
-    if(ClientInstance->getStatus() == Client::AskForCardShow && card){
-        ok_button->setEnabled(true);
-        return;
-    }
-
     if(card && ClientInstance->isJilei(card)){
         ok_button->setEnabled(false);
         return;
@@ -1456,16 +1452,6 @@ void RoomScene::useSelectedCard(){
             return;
         }
 
-    case Client::AskForCardShow:{
-            const Card *card = dashboard->getSelected();
-            if(card){
-                ClientInstance->responseCard(card);
-                dashboard->unselectAll();
-            }
-
-            break;
-        }
-
     case Client::ExecDialog:{
             QMessageBox::warning(main_window, tr("Warning"),
                                  tr("The OK button should be disabled when client is in executing dialog"));
@@ -1530,11 +1516,11 @@ void RoomScene::callViewAsSkill(){
 }
 
 void RoomScene::cancelViewAsSkill(){
-    const ViewAsSkill *skill = dashboard->currentSkill();
+    //const ViewAsSkill *skill = dashboard->currentSkill();
     dashboard->stopPending();
-    QAbstractButton *button = button2skill.key(skill, NULL);
+    //QAbstractButton *button = button2skill.key(skill, NULL);
 
-    if(button)
+    //if(button)
         updateStatus(ClientInstance->getStatus());
 }
 
@@ -1729,11 +1715,6 @@ void RoomScene::doTimeout(){
             break;
         }
 
-    case Client::AskForCardShow:{
-            ClientInstance->responseCard(NULL);
-            break;
-        }
-
     case Client::AskForYiji:{
             cancel_button->click();
             break;
@@ -1774,16 +1755,12 @@ void RoomScene::updateStatus(Client::Status status){
 
     case Client::Responsing: {
             prompt_box->appear();
-            QString pattern = ClientInstance->getPattern();
-            if(pattern.startsWith("@"))
-                dashboard->disableAllCards();
-            else
-                dashboard->enableCards(pattern);
 
             ok_button->setEnabled(false);
             cancel_button->setEnabled(ClientInstance->refusable);
             discard_button->setEnabled(false);
 
+            QString pattern = ClientInstance->getPattern();
             QRegExp rx("@@?(\\w+)!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
@@ -1796,6 +1773,9 @@ void RoomScene::updateStatus(Client::Status status){
                         break;
                     }
                 }
+            }else{
+                response_skill->setPattern(pattern);
+                dashboard->startPending(response_skill);
             }
 
             break;
@@ -1857,17 +1837,6 @@ void RoomScene::updateStatus(Client::Status status){
             discard_button->setEnabled(false);
 
             card_container->startChoose();
-
-            break;
-        }
-
-    case Client::AskForCardShow:{
-            prompt_box->appear();
-            dashboard->enableAllCards();
-
-            ok_button->setEnabled(false);
-            cancel_button->setEnabled(false);
-            discard_button->setEnabled(false);
 
             break;
         }
@@ -2046,7 +2015,7 @@ void RoomScene::doCancelButton(){
             QString pattern = ClientInstance->getPattern();
             if(! pattern.startsWith("@")){
                 const ViewAsSkill *skill = dashboard->currentSkill();
-                if(skill){
+                if(!skill->inherits("ResponseSkill")){
                     cancelViewAsSkill();
                     break;
                 }
