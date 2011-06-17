@@ -1382,7 +1382,7 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if(item->isSelected())
             continue;
 
-        bool enabled = !ClientInstance->isProhibited(player, card) && card->targetFilter(selected_targets, player);
+        bool enabled = !Sanguosha->isProhibited(Self, player, card) && card->targetFilter(selected_targets, player);
         item->setEnabled(enabled);
         item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }

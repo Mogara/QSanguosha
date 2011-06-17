@@ -185,6 +185,15 @@ public:
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 
+class DistanceSkill: public Skill{
+    Q_OBJECT
+
+public:
+    DistanceSkill(const QString &name);
+
+    virtual int getCorrect(const Player *from, const Player *to) const = 0;
+};
+
 class WeaponSkill: public TriggerSkill{
     Q_OBJECT
 

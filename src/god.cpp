@@ -390,6 +390,20 @@ public:
     }
 };
 
+class Feiying: public DistanceSkill{
+public:
+    Feiying():DistanceSkill("feiying"){
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if(to->hasSkill(objectName()))
+            return +1;
+        else
+            return 0;
+    }
+};
+
 class Kuangbao: public TriggerSkill{
 public:
     Kuangbao():TriggerSkill("kuangbao"){
@@ -914,7 +928,7 @@ GodPackage::GodPackage()
 
     General *shencaocao = new General(this, "shencaocao$", "god", 3);
     shencaocao->addSkill(new Guixin);
-    shencaocao->addSkill(new Skill("feiying", Skill::Compulsory));
+    shencaocao->addSkill(new Feiying);
 
     General *shenlubu = new General(this, "shenlubu", "god", 5);
     shenlubu->addSkill(new Kuangbao);

@@ -52,7 +52,6 @@ public:
     void surrender();
     void kick(const QString &to_kick);
     bool save(const QString &filename) const;
-    bool isProhibited(const Player *to, const Card *card) const;
     void setLines(const QString &skill_name);
     QString getSkillLine() const;
     Replayer *getReplayer() const;
@@ -181,7 +180,6 @@ private:
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
-    QList<const ProhibitSkill *> prohibit_skills;
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_title, skill_line;

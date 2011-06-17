@@ -151,21 +151,11 @@ int Player::distanceTo(const Player *other) const{
     if(getOffensiveHorse())
         distance += getOffensiveHorse()->getCorrect();
 
-    if(hasSkill("mashu"))
-        distance --;
-
-    if(hasSkill("yicong") && getHp() > 2)
-        distance --;
-
     // the lengthen ways of distance
     if(other->getDefensiveHorse())
         distance += other->getDefensiveHorse()->getCorrect();
 
-    if(other->hasSkill("feiying"))
-        distance ++;
-
-    if(other->hasSkill("yicong") && other->getHp() <= 2)
-        distance ++;
+    distance += Sanguosha->correctDistance(this, other);
 
     // keep the distance >=1
     if(distance < 1)
@@ -633,6 +623,10 @@ QSet<const Skill *> Player::getVisibleSkills() const{
     }
 
     return skills;
+}
+
+bool Player::isProhibited(const Player *to, const Card *card) const{
+    return Sanguosha->isProhibited(this, to, card);
 }
 
 bool Player::canSlashWithoutCrossbow() const{

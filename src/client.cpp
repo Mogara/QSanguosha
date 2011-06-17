@@ -482,7 +482,6 @@ void Client::moveNCards(const QString &move_str){
 void Client::startGame(const QString &){
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
-    prohibit_skills = Sanguosha->getProhibitSkills();
 
     emit game_started();
 }
@@ -884,15 +883,6 @@ bool Client::save(const QString &filename) const{
         return recorder->save(filename);
     else
         return false;
-}
-
-bool Client::isProhibited(const Player *to, const Card *card) const{
-    foreach(const ProhibitSkill *skill, prohibit_skills){
-        if(to->hasSkill(skill->objectName()) && skill->isProhibited(Self, to, card))
-            return true;
-    }
-
-    return false;
 }
 
 void Client::setLines(const QString &filename){

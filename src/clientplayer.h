@@ -31,7 +31,6 @@ public:
     virtual void addKnownHandCard(const Card *card);
     virtual bool isLastHandCard(const Card *card) const;
     virtual void setMark(const QString &mark, int value);
-    virtual bool isProhibited(const Player *to, const Card *card) const;
 
 private:
     int handcard_num;

@@ -67,6 +67,17 @@ public:
     LuaFunction view_as;
 };
 
+class LuaDistanceSkill: public DistanceSkill{
+    Q_OBJECT
+
+public:
+    LuaDistanceSkill(const char *name);
+
+    virtual int getCorrect(const Player *from, const Player *to) const;
+
+    LuaFunction correct_func;
+};
+
 class LuaSkillCard: public SkillCard{
     Q_OBJECT
 

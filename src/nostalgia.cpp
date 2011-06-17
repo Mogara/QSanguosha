@@ -454,7 +454,7 @@ QAbstractButton *GuhuoDialog::createButton(const Card *card){
 
 bool GuhuoCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
     CardStar card = Self->tag.value("Guhuo").value<CardStar>();
-    return card && card->targetFilter(targets, to_select) && !ClientInstance->isProhibited(to_select, card);
+    return card && card->targetFilter(targets, to_select) && !Self->isProhibited(to_select, card);
 }
 
 bool GuhuoCard::targetFixed() const{

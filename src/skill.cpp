@@ -294,6 +294,12 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 {
 }
 
+DistanceSkill::DistanceSkill(const QString &name)
+    :Skill(name, Skill::Compulsory)
+{
+
+}
+
 WeaponSkill::WeaponSkill(const QString &name)
     :TriggerSkill(name)
 {

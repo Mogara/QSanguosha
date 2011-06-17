@@ -37,6 +37,12 @@ LuaFilterSkill::LuaFilterSkill(const char *name)
 
 }
 
+LuaDistanceSkill::LuaDistanceSkill(const char *name)
+    :DistanceSkill(name), correct_func(0)
+{
+
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 
 LuaSkillCard::LuaSkillCard(const char *name)

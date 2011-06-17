@@ -28,6 +28,13 @@ public:
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 
+class DistanceSkill: public Skill{
+public:
+    DistanceSkill(const QString &name);
+
+    virtual int getCorrect(const Player *from, const Player *to) const = 0;
+};
+
 class LuaProhibitSkill: public ProhibitSkill{
 public:
     LuaProhibitSkill(const char *name);
@@ -87,6 +94,14 @@ public:
 
     LuaFunction view_filter;
     LuaFunction view_as;
+};
+
+class LuaDistanceSkill: public DistanceSkill{
+public:
+    LuaDistanceSkill(const char *name);
+    virtual int getCorrect(const Player *from, const Player *to) const;
+
+    LuaFunction correct_func;
 };
 
 class LuaSkillCard: public SkillCard{
@@ -200,6 +215,30 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
     bool result = lua_toboolean(L, -1);
     lua_pop(L, 1);
     return result;
+}
+
+int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
+    if(correct_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, correct_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaDistanceSkill, 0);
+    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
+
+    int error = lua_pcall(L, 3, 1, 0);
+	if(error){
+		Error(L);
+		return 0;
+	}
+
+    int correct = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+    return correct;
 }
 
 bool LuaFilterSkill::viewFilter(const CardItem *to_select) const{

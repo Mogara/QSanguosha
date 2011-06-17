@@ -85,11 +85,28 @@ public:
     }
 };
 
+class Yicong: public DistanceSkill{
+public:
+    Yicong():DistanceSkill("yicong"){
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        int correct = 0;
+        if(from->hasSkill(objectName()) && from->getHp() > 2)
+            correct --;
+        if(to->hasSkill(objectName()) && to->getHp() <= 2)
+            correct ++;
+
+        return correct;
+    }
+};
+
 SPPackage::SPPackage()
     :Package("sp")
 {
     General *gongsunzan = new General(this, "gongsunzan", "qun");
-    gongsunzan->addSkill(new Skill("yicong", Skill::Compulsory));
+    gongsunzan->addSkill(new Yicong);
 
     General *yuanshu = new General(this, "yuanshu", "qun");
     yuanshu->addSkill(new Yongsi);

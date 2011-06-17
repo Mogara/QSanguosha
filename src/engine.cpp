@@ -209,6 +209,11 @@ void Engine::addPackage(Package *package){
                                          .arg(package->objectName()).arg(skill->objectName()));
 
             skills.insert(skill->objectName(), skill);
+
+            if(skill->inherits("ProhibitSkill"))
+                prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
+            else if(skill->inherits("DistanceSkill"))
+                distance_skills << qobject_cast<const DistanceSkill *>(skill);
         }
 
         if(general->isHidden()){
@@ -621,6 +626,21 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
         return NULL;
 }
 
-QList<const ProhibitSkill *> Engine::getProhibitSkills() const{
-    return findChildren<const ProhibitSkill *>();
+const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card) const{
+    foreach(const ProhibitSkill *skill, prohibit_skills){
+        if(to->hasSkill(skill->objectName()) && skill->isProhibited(from, to, card))
+            return skill;
+    }
+
+    return NULL;
+}
+
+int Engine::correctDistance(const Player *from, const Player *to) const{
+    int correct = 0;
+
+    foreach(const DistanceSkill *skill, distance_skills){
+        correct += skill->getCorrect(from, to);
+    }
+
+    return correct;
 }

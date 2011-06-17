@@ -192,8 +192,6 @@ private:
     QVariantMap tag;
     const Scenario *scenario;
 
-    QList<const ProhibitSkill *> prohibit_skills;
-
     static QString generatePlayerName();
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);

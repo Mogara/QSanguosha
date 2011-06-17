@@ -838,7 +838,7 @@ bool Disaster::isAvailable(const Player *player) const{
     if(player->containsTrick(objectName()))
         return false;
 
-    return !ClientInstance->isProhibited(player, this);
+    return ! player->isProhibited(player, this);
 }
 
 void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{

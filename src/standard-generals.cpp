@@ -1242,10 +1242,17 @@ public:
     }
 };
 
-class Mashu: public Skill{
+class Mashu: public DistanceSkill{
 public:
-    Mashu():Skill("mashu", Skill::Compulsory)
+    Mashu():DistanceSkill("mashu")
     {
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if(from->hasSkill(objectName()))
+            return -1;
+        else
+            return 0;
     }
 };
 

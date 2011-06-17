@@ -63,7 +63,6 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const TriggerSkill *getTriggerSkill(const QString &skill_name) const;
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
-    QList<const ProhibitSkill *> getProhibitSkills() const;
 
     int getCardCount() const;
     const Card *getCard(int index) const;
@@ -80,12 +79,19 @@ public:
     void playSkillEffect(const QString &skill_name, int index) const;
     void playCardEffect(const QString &card_name, bool is_male) const;
 
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
+    int correctDistance(const Player *from, const Player *to) const;
+
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals, hidden_generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
+
+    // special skills
+    QList<const ProhibitSkill *> prohibit_skills;
+    QList<const DistanceSkill *> distance_skills;
 
     QHash<QString, const Scenario *> scenarios;
     ChallengeModeSet *challenge_mode_set;

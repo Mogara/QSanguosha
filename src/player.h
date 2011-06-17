@@ -181,7 +181,7 @@ public:
     QSet<const TriggerSkill *> getTriggerSkills() const;
     QSet<const Skill *> getVisibleSkills() const;
 
-    virtual bool isProhibited(const Player *to, const Card *card) const = 0;
+    virtual bool isProhibited(const Player *to, const Card *card) const;
     bool canSlashWithoutCrossbow() const;
 
     void jilei(const QString &type);
