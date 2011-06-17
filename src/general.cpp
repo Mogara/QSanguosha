@@ -67,6 +67,22 @@ bool General::hasSkill(const QString &skill_name) const{
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
+QList<const Skill *> General::getVisibleSkillList() const{
+    QList<const Skill *> skills;
+    foreach(const Skill *skill, findChildren<const Skill *>()){
+        if(skill->isVisible())
+            skills << skill;
+    }
+
+    foreach(QString skill_name, extra_set){
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if(skill->isVisible())
+            skills << skill;
+    }
+
+    return skills;
+}
+
 QSet<const Skill *> General::getVisibleSkills() const{
     QSet<const Skill *> skills;
     foreach(const Skill *skill, findChildren<const Skill *>()){
@@ -106,7 +122,7 @@ QString General::getPackage() const{
 QString General::getSkillDescription() const{
     QString description;
 
-    foreach(const Skill *skill, getVisibleSkills()){
+    foreach(const Skill *skill, getVisibleSkillList()){
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");

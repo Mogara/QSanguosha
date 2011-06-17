@@ -157,7 +157,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
     ui->generalPhoto->setPixmap(QPixmap(general->getPixmapPath("card")));
-    QSet<const Skill *> skills = general->getVisibleSkills();
+    QList<const Skill *> skills = general->getVisibleSkillList();
     ui->skillTextEdit->clear();
 
     resetButtons();
