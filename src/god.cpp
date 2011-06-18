@@ -340,8 +340,8 @@ public:
             return false;
 
         if(event == CardLost){
-            CardMoveStruct move = data.value<CardMoveStruct>();
-            if(move.to_place == Player::DiscardedPile){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->to_place == Player::DiscardedPile){
                 shenzhouyu->addMark("qinyin");
                 if(shenzhouyu->getMark("qinyin") == 2){
                     if(shenzhouyu->askForSkillInvoke(objectName()))

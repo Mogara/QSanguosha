@@ -158,12 +158,13 @@ typedef ServerPlayer *PlayerStar;
 typedef JudgeStruct *JudgeStar;
 typedef DamageStruct *DamageStar;
 typedef PindianStruct *PindianStar;
+typedef const CardMoveStruct *CardMoveStar;
 
 Q_DECLARE_METATYPE(DamageStruct);
 Q_DECLARE_METATYPE(CardEffectStruct);
 Q_DECLARE_METATYPE(SlashEffectStruct);
 Q_DECLARE_METATYPE(CardUseStruct);
-Q_DECLARE_METATYPE(CardMoveStruct);
+Q_DECLARE_METATYPE(CardMoveStar);
 Q_DECLARE_METATYPE(CardStar);
 Q_DECLARE_METATYPE(PlayerStar);
 Q_DECLARE_METATYPE(DyingStruct);

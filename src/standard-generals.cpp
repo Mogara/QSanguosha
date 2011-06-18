@@ -679,10 +679,10 @@ public:
         events << CardLost;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         if(player->isKongcheng()){
-            CardMoveStruct move = data.value<CardMoveStruct>();
-            if(move.from_place == Player::Hand)
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::Hand)
                 player->getRoom()->playSkillEffect("kongcheng");
         }
 
@@ -1073,14 +1073,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, ServerPlayer *sunshangxiang, QVariant &data) const{
-        if(data.canConvert<CardMoveStruct>()){
-            CardMoveStruct move = data.value<CardMoveStruct>();
-            if(move.from_place == Player::Equip){
-                Room *room = sunshangxiang->getRoom();
-                if(room->askForSkillInvoke(sunshangxiang, objectName())){
-                    room->playSkillEffect(objectName());
-                    sunshangxiang->drawCards(2);
-                }
+        CardMoveStar move = data.value<CardMoveStar>();
+        if(move->from_place == Player::Equip){
+            Room *room = sunshangxiang->getRoom();
+            if(room->askForSkillInvoke(sunshangxiang, objectName())){
+                room->playSkillEffect(objectName());
+                sunshangxiang->drawCards(2);
             }
         }
 

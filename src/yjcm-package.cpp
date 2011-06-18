@@ -393,9 +393,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *lingtong, QVariant &data) const{
-        CardMoveStruct move = data.value<CardMoveStruct>();
+        CardMoveStar move = data.value<CardMoveStar>();
 
-        if(move.from_place == Player::Equip){
+        if(move->from_place == Player::Equip){
             Room *room = lingtong->getRoom();
 
             QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");

@@ -1974,7 +1974,8 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
     }
 
     if(move.from){
-        QVariant data = QVariant::fromValue(move);
+        CardMoveStar move_star = &move;
+        QVariant data = QVariant::fromValue(move_star);
         thread->trigger(CardLost, move.from, data);
     }
 

@@ -47,12 +47,12 @@ public:
 		$self->setValue(QVariant::fromValue(*use));
 	}
 	
-	CardMoveStruct toCardMove() const{
-		return $self->value<CardMoveStruct>();
+	const CardMoveStruct *toCardMove() const{
+		return $self->value<CardMoveStar>();
 	}
 	
-	void setValue(CardMoveStruct *move){
-		$self->setValue(QVariant::fromValue(*move));
+	void setValue(const CardMoveStruct *move){
+		$self->setValue(move);
 	}
 	
 	const Card *toCard() const{
