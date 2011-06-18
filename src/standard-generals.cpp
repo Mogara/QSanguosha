@@ -488,7 +488,7 @@ public:
 
         room->playSkillEffect(objectName());
         foreach(ServerPlayer *liege, lieges){
-            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash");
+            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName());
             if(slash){
                 room->provide(slash);
                 return true;
@@ -1099,7 +1099,7 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *lubu, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         Room *room = lubu->getRoom();
-        QString slasher = lubu->getGeneralName();
+        QString slasher = lubu->objectName();
         bool jinked = false;
         room->playSkillEffect(objectName());
         const Card *first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
@@ -1217,7 +1217,6 @@ class Tuoqiao: public ZeroCardViewAsSkill{
 public:
     Tuoqiao():ZeroCardViewAsSkill("tuoqiao"){
         huanzhuang_card = new HuanzhuangCard;
-        huanzhuang_card->setParent(this);
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

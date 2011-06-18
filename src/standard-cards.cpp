@@ -545,7 +545,7 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->getGeneralName());
+    const Card *slash = room->askForCard(effect.to, "slash", "savage-assault-slash:" + effect.from->objectName());
     if(slash == NULL){
         DamageStruct damage;
         damage.card = this;
@@ -566,7 +566,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->getGeneralName());
+    const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
     if(jink == NULL){
         DamageStruct damage;
         damage.card = this;
@@ -713,16 +713,16 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     forever{
         if(second->hasSkill("wushuang")){
             room->playSkillEffect("wushuang");
-            const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->getGeneralName());
+            const Card *slash = room->askForCard(first, "slash", "@wushuang-slash-1:" + second->objectName());
             if(slash == NULL)
                 break;
 
-            slash = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->getGeneralName());
+            slash = room->askForCard(first, "slash", "@wushuang-slash-2:" + second->objectName());
             if(slash == NULL)
                 break;
 
         }else{
-            const Card *slash = room->askForCard(first, "slash", "duel-slash:" + second->getGeneralName());
+            const Card *slash = room->askForCard(first, "slash", "duel-slash:" + second->objectName());
             if(slash == NULL)
                 break;
         }

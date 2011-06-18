@@ -107,7 +107,6 @@ class Xuwei: public ZeroCardViewAsSkill{
 public:
     Xuwei():ZeroCardViewAsSkill("xuwei"){
         huanzhuang_card = new HuanzhuangCard;
-        huanzhuang_card->setParent(this);
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
