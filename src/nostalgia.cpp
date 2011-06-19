@@ -452,9 +452,9 @@ QAbstractButton *GuhuoDialog::createButton(const Card *card){
     return button;
 }
 
-bool GuhuoCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool GuhuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     CardStar card = Self->tag.value("Guhuo").value<CardStar>();
-    return card && card->targetFilter(targets, to_select) && !Self->isProhibited(to_select, card);
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card);
 }
 
 bool GuhuoCard::targetFixed() const{
@@ -465,9 +465,9 @@ bool GuhuoCard::targetFixed() const{
     return card && card->targetFixed();
 }
 
-bool GuhuoCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool GuhuoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     CardStar card = Self->tag.value("Guhuo").value<CardStar>();
-    return card && card->targetsFeasible(targets);
+    return card && card->targetsFeasible(targets, Self);
 }
 
 const Card *GuhuoCard::validate(const CardUseStruct *card_use) const{

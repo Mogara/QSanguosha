@@ -251,6 +251,13 @@ void ServerPlayer::addCard(const Card *card, Place place){
     }
 }
 
+bool ServerPlayer::isLastHandCard(const Card *card) const{
+    if(handcards.length() != 1)
+        return false;
+
+    return card->getEffectiveId() == handcards.first()->getEffectiveId();
+}
+
 QList<int> ServerPlayer::handCards() const{
     QList<int> card_ids;
     foreach(const Card *card, handcards)

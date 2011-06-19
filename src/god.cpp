@@ -8,7 +8,7 @@ GongxinCard::GongxinCard(){
     once = true;
 }
 
-bool GongxinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && !to_select->isKongcheng();
 }
 
@@ -179,7 +179,7 @@ GreatYeyanCard::GreatYeyanCard(){
 
 }
 
-bool GreatYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool GreatYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty();
 }
 
@@ -197,7 +197,7 @@ MediumYeyanCard::MediumYeyanCard(){
 
 }
 
-bool MediumYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool MediumYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < 2;
 }
 
@@ -221,7 +221,7 @@ SmallYeyanCard::SmallYeyanCard(){
 
 }
 
-bool SmallYeyanCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < 3;
 }
 
@@ -505,7 +505,7 @@ WuqianCard::WuqianCard(){
     once = true;
 }
 
-bool WuqianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *) const{
+bool WuqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty();
 }
 
@@ -715,7 +715,7 @@ KuangfengCard::KuangfengCard(){
 
 }
 
-bool KuangfengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool KuangfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty();
 }
 
@@ -829,7 +829,7 @@ DawuCard::DawuCard(){
 
 }
 
-bool DawuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool DawuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < Self->getMark("@star");
 }
 

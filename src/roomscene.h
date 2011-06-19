@@ -192,7 +192,7 @@ private:
     YijiViewAsSkill *yiji_skill;
     ChoosePlayerSkill *choose_skill;
 
-    QList<const ClientPlayer *> selected_targets;
+    QList<const Player *> selected_targets;
 
     GuanxingBox *guanxing_box;
 

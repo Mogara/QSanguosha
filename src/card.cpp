@@ -375,14 +375,14 @@ bool Card::targetFixed() const{
     return target_fixed;
 }
 
-bool Card::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(target_fixed)
         return true;
     else
         return !targets.isEmpty();
 }
 
-bool Card::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select != Self;
 }
 

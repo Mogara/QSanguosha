@@ -164,7 +164,7 @@ public:
         set = names.toSet();
     }
 
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
         return targets.isEmpty() && set.contains(to_select->objectName());
     }
 

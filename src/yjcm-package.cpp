@@ -464,7 +464,7 @@ XianzhenCard::XianzhenCard(){
     will_throw = false;
 }
 
-bool XianzhenCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool XianzhenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select != Self && ! to_select->isKongcheng();
 }
 
@@ -722,11 +722,11 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second, int index) 
         room->moveCardTo(e1, second, Player::Equip);
 }
 
-bool GanluCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool GanluCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() == 2;
 }
 
-bool GanluCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool GanluCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     switch(targets.length()){
     case 0: return true;
     case 1: {

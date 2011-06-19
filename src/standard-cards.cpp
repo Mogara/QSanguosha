@@ -65,11 +65,11 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
     room->slashEffect(effect);
 }
 
-bool Slash::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return !targets.isEmpty();
 }
 
-bool Slash::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int slash_targets = 1;
     if(Self->hasWeapon("halberd") && Self->isLastHandCard(this)){
         slash_targets = 3;
@@ -607,18 +607,18 @@ bool Collateral::isAvailable(const Player *player) const{
     return false;
 }
 
-bool Collateral::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool Collateral::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() == 2;
 }
 
-bool Collateral::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.isEmpty()){
         if(to_select->hasSkill("weimu") && isBlack())
             return false;
 
         return to_select->getWeapon() && to_select != Self;
     }else if(targets.length() == 1){
-        const ClientPlayer *first = targets.first();
+        const Player *first = targets.first();
         return first != Self && first->canSlash(to_select);
     }else
         return false;
@@ -692,7 +692,7 @@ Duel::Duel(Suit suit, int number)
     setObjectName("duel");
 }
 
-bool Duel::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(to_select->hasSkill("kongcheng") && to_select->isKongcheng())
         return false;
 
@@ -743,7 +743,7 @@ Snatch::Snatch(Suit suit, int number):SingleTargetTrick(suit, number, true) {
     setObjectName("snatch");
 }
 
-bool Snatch::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -777,7 +777,7 @@ Dismantlement::Dismantlement(Suit suit, int number)
     setObjectName("dismantlement");
 }
 
-bool Dismantlement::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -810,7 +810,7 @@ Indulgence::Indulgence(Suit suit, int number)
     judge.reason = objectName();
 }
 
-bool Indulgence::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const
+bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if(!targets.isEmpty())
         return false;

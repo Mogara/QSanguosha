@@ -238,7 +238,7 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     setObjectName("fire_attack");
 }
 
-bool FireAttack::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -290,14 +290,14 @@ QString IronChain::getEffectPath(bool is_male) const{
     return QString();
 }
 
-bool IronChain::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() >= 2)
         return false;
 
     return true;
 }
 
-bool IronChain::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(getSkillName() == "guhuo")
         return targets.length() == 1 || targets.length() == 2;
     else
@@ -337,7 +337,7 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     judge.reason = objectName();
 }
 
-bool SupplyShortage::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 

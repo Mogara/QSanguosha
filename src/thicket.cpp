@@ -397,7 +397,7 @@ HaoshiCard::HaoshiCard(){
     will_throw = false;
 }
 
-bool HaoshiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -519,7 +519,7 @@ DimengCard::DimengCard(){
     once = true;
 }
 
-bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool DimengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(to_select == Self)
         return false;
 
@@ -534,7 +534,7 @@ bool DimengCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return false;
 }
 
-bool DimengCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() == 2;
 }
 

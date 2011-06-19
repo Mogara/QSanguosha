@@ -53,11 +53,11 @@ ChengxiangCard::ChengxiangCard()
 
 }
 
-bool ChengxiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool ChengxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < subcardsLength() && to_select->isWounded();
 }
 
-bool ChengxiangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool ChengxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() <= subcardsLength();
 }
 
@@ -248,7 +248,7 @@ JuejiCard::JuejiCard(){
     once = true;
 }
 
-bool JuejiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.length() < 2 && to_select != Self;
 }
 
@@ -388,7 +388,7 @@ LianliCard::LianliCard(){
 
 }
 
-bool LianliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->getGeneral()->isMale();
 }
 
@@ -438,7 +438,7 @@ LianliSlashCard::LianliSlashCard(){
 
 }
 
-bool LianliSlashCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LianliSlashCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && Self->canSlash(to_select);
 }
 
@@ -1148,7 +1148,7 @@ LexueCard::LexueCard(){
     mute = true;
 }
 
-bool LexueCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LexueCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select != Self && !to_select->isKongcheng();
 }
 

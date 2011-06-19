@@ -9,7 +9,7 @@ ZhanShuangxiongCard::ZhanShuangxiongCard(){
     once = true;
 }
 
-bool ZhanShuangxiongCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool ZhanShuangxiongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->getGeneralName() == "shuangxiong" && !to_select->isKongcheng();
 }
 
@@ -82,7 +82,7 @@ public:
 SmallTuxiCard::SmallTuxiCard(){
 }
 
-bool SmallTuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool SmallTuxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 

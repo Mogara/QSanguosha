@@ -11,7 +11,7 @@ LesbianJieyinCard::LesbianJieyinCard()
 
 }
 
-bool LesbianJieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LesbianJieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -53,7 +53,7 @@ LesbianLijianCard::LesbianLijianCard()
 {
 }
 
-bool LesbianLijianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LesbianLijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!to_select->getGeneral()->isFemale())
         return false;
 
