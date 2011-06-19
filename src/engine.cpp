@@ -184,6 +184,24 @@ const ChallengeMode *Engine::getChallengeMode(const QString &name) const{
     return challenge_mode_set->getMode(name);
 }
 
+void Engine::addSkills(const QList<const Skill *> &all_skills){
+    foreach(const Skill *skill, all_skills){
+        if(skills.contains(skill->objectName()))
+            QMessageBox::warning(NULL, "", tr("Duplicated skill : %1").arg(skill->objectName()));
+
+        skills.insert(skill->objectName(), skill);
+
+        if(skill->inherits("ProhibitSkill"))
+            prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
+        else if(skill->inherits("DistanceSkill"))
+            distance_skills << qobject_cast<const DistanceSkill *>(skill);
+    }
+}
+
+QList<const DistanceSkill *> Engine::getDistanceSkills() const{
+    return distance_skills;
+}
+
 void Engine::addPackage(Package *package){
     if(findChild<const Package *>(package->objectName()))
         return;
@@ -199,22 +217,11 @@ void Engine::addPackage(Package *package){
         metaobjects.insert(card_name, card->metaObject());
     }
 
+    addSkills(package->getSkills());
+
     QList<General *> all_generals = package->findChildren<General *>();
     foreach(General *general, all_generals){
-        QList<const Skill *> all_skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, all_skills){
-            if(skills.contains(skill->objectName()))
-                QMessageBox::information(NULL, "",
-                                         QString("package %1, skill %2")
-                                         .arg(package->objectName()).arg(skill->objectName()));
-
-            skills.insert(skill->objectName(), skill);
-
-            if(skill->inherits("ProhibitSkill"))
-                prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
-            else if(skill->inherits("DistanceSkill"))
-                distance_skills << qobject_cast<const DistanceSkill *>(skill);
-        }
+        addSkills(general->findChildren<const Skill *>());
 
         if(general->isHidden()){
             hidden_generals.insert(general->objectName(), general);
@@ -232,10 +239,6 @@ void Engine::addPackage(Package *package){
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach(const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
-
-    QList<const Skill *> extra_skills = package->getSkills();
-    foreach(const Skill *skill, extra_skills)
-        skills.insert(skill->objectName(), skill);
 }
 
 void Engine::addBanPackage(const QString &package_name){

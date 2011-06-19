@@ -147,14 +147,6 @@ int Player::distanceTo(const Player *other) const{
     int left = aliveCount() - right;
     int distance = qMin(left, right);
 
-    // the shorten ways of distance
-    if(getOffensiveHorse())
-        distance += getOffensiveHorse()->getCorrect();
-
-    // the lengthen ways of distance
-    if(other->getDefensiveHorse())
-        distance += other->getDefensiveHorse()->getCorrect();
-
     distance += Sanguosha->correctDistance(this, other);
 
     // keep the distance >=1

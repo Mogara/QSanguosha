@@ -934,6 +934,23 @@ RenwangShield::RenwangShield(Suit suit, int number)
     skill = new RenwangShieldSkill;
 }
 
+class HorseSkill: public DistanceSkill{
+public:
+    HorseSkill():DistanceSkill("horse"){
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        int correct = 0;
+        if(from->getOffensiveHorse())
+            correct += from->getOffensiveHorse()->getCorrect();
+        if(to->getDefensiveHorse())
+            correct += to->getDefensiveHorse()->getCorrect();
+
+        return correct;
+    }
+};
+
 void StandardPackage::addCards(){
     QList<Card*> cards;
 
@@ -1028,6 +1045,8 @@ void StandardPackage::addCards(){
         horses.at(5)->setObjectName("zixing");
 
         cards << horses;
+
+        skills << new HorseSkill;
     }
 
     cards << new AmazingGrace(Card::Heart, 3)

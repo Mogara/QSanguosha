@@ -63,6 +63,8 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const TriggerSkill *getTriggerSkill(const QString &skill_name) const;
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
+    QList<const DistanceSkill *> getDistanceSkills() const;
+    void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
     const Card *getCard(int index) const;

@@ -87,6 +87,7 @@ public:
     virtual bool hasLordSkill(const QString &skill_name) const;
 
     QString getIp() const;
+    void introduceTo(ServerPlayer *player);
 
 private:
     ClientSocket *socket;

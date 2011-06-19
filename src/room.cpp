@@ -1230,29 +1230,13 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     }
 
     // introduce the new joined player to existing players except himself
-    QString contestant = tr("Contestant").toUtf8().toBase64();
-    QString base64;
-    if(Config.ContestMode)
-        base64 = contestant;
-    else
-        base64 = screen_name.toUtf8().toBase64();
-    broadcastInvoke("addPlayer", QString("%1:%2:%3").arg(player->objectName()).arg(base64).arg(avatar), player);
+    player->introduceTo(NULL);
 
     if(!is_robot){
         // introduce all existing player to the new joined
         foreach(ServerPlayer *p, players){
-            if(p == player)
-                continue;
-
-            QString name = p->objectName();
-            QString base64;
-            if(Config.ContestMode)
-                base64 = contestant;
-            else
-                base64 = p->screenName().toUtf8().toBase64();
-            QString avatar = p->property("avatar").toString();
-
-            player->invoke("addPlayer", QString("%1:%2:%3").arg(name).arg(base64).arg(avatar));
+            if(p != player)
+                p->introduceTo(player);
         }
     }
 
@@ -1705,9 +1689,22 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
 }
 
 void Room::marshal(ServerPlayer *player){
-//    foreach(ServerPlayer *p, players){
+    player->sendProperty("objectName");
+    player->sendProperty("role");
 
-//    }
+    foreach(ServerPlayer *p, players){
+        if(p != player)
+            p->introduceTo(player);
+    }
+
+    QStringList player_circle;
+    foreach(ServerPlayer *player, players)
+        player_circle << player->objectName();
+
+    player->invoke("arrangeSeats", player_circle.join("+"));
+    player->invoke("startGame");
+
+
 }
 
 void Room::startGame(){

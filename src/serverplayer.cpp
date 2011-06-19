@@ -552,3 +552,18 @@ QString ServerPlayer::getIp() const{
     else
         return QString();
 }
+
+void ServerPlayer::introduceTo(ServerPlayer *player){
+    QString screen_name = Config.ContestMode ? tr("Contestant") : screenName();
+    QString avatar = property("avatar").toString();
+
+    QString introduce_str = QString("%1:%2:%3")
+                            .arg(objectName())
+                            .arg(QString(screen_name.toUtf8().toBase64()))
+                            .arg(avatar);
+
+    if(player)
+        player->invoke("addPlayer", introduce_str);
+    else
+        room->broadcastInvoke("addPlayer", introduce_str, this);
+}
