@@ -1882,9 +1882,15 @@ function SmartAI:activate(use)
 	self:printCards(self.kept)
 	self.toUse =self:getTurnUse()
 	self:printCards(self.toUse)
-
+	
+	self:getMove()
+	
+	
 	self:sortByUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
+	
+		self:log(word)
+	
 		local type = card:getTypeId()
 
 		if type == sgs.Card_Basic then
@@ -2820,3 +2826,4 @@ dofile "lua/ai/yjcm-skill-ai.lua"
 dofile "lua/ai/fancheng-ai.lua"
 
 dofile "lua/ai/guanxing-ai.lua"
+dofile "lua/ai/new-ai.lua"
