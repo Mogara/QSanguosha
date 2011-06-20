@@ -1,4 +1,3 @@
-
 -- jianxiong
 sgs.ai_skill_invoke.jianxiong = function(self, data)
         return not sgs.Shit_HasShit(data:toCard())
@@ -472,7 +471,7 @@ liubei_ai:setOnceSkill("rende")
 
 function liubei_ai:activate(use)
 	
-    if self.rende_used <= 1 and self.rende_used == 1 then
+    if not self.rende_used or self.rende_used <= 1 then
 		local cards = self.player:getHandcards()
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getHp() == 1 then
