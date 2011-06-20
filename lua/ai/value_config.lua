@@ -80,6 +80,27 @@ DefensiveHorse = 5,
 OffensiveHorse = 5
 }
 
+sgs.xiahouyuan_keep_value = 
+{
+Shit = 6,
+Peach = 6,
+Jink = 5.1,
+Crossbow = 5,
+Blade = 5,
+Spear = 5,
+DoubleSword =5,
+QinggangSword=5,
+Axe=5,
+KylinBow=5,
+Halberd=5,
+IceSword=5,
+Fan=5,
+MoonSpear=5,
+GudingBlade=5,
+DefensiveHorse = 5,
+OffensiveHorse = 5
+}
+
 
 
 sgs.xiaoqiao_suit_value = 
@@ -140,3 +161,4 @@ sgs.wolong_suit_value =
 spade = 3.9,
 club = 3.9
 }
+

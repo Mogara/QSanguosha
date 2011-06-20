@@ -148,6 +148,20 @@ function fazheng_ai:activate(use)
 		cards=sgs.QList2Table(cards)
 		self:sortByUseValue(cards,true)
 		
+		for _, friend in ipairs(self.friends) do
+			if friend:hasSkill("xiaoji") or friend:hasSkill("xuanfeng") then 
+				for _, card in ipairs(cards) do
+					if card:getSuit() == sgs.Card_Heart and self.player:getHandcardNum() > 1 then
+						use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
+						use.to:append(friend)
+						self.xuanhuo_used = true
+						return
+					end	
+				end		
+			end
+		end
+		if self.xuanhuo_used then return end
+		
 		for _, enemy in ipairs(self.enemies) do
 			if not enemy:isKongcheng() then
 				for _, card in ipairs(cards)do
@@ -163,6 +177,7 @@ function fazheng_ai:activate(use)
 		
 	end
 end
+
 function fazheng_ai:askForPlayerChosen(players, reason)
 	if reason == "xuanhuo" then
 		for _, player in sgs.qlist(players) do
@@ -176,7 +191,6 @@ function fazheng_ai:askForPlayerChosen(players, reason)
 			return player
 		end
 	end
-	
 	
 	return super.askForPlayerChosen(self, players, reason)
 end
@@ -442,18 +456,10 @@ sgs.ai_skill_playerchosen.mingce = function(self,targets)
 	return nil
 end
 
--- local chengong_ai = SmartAI:newSubclass "chengong"
-
 -- function chengong_ai:activate(use)
-	-- super.activate(self, use)
-	-- if use:isValid() and self:getSlashNumber(self.player) > 1 then
-		-- return
-	-- end
-	
     -- if self.mingce_used then return nil end
 		
 	-- local card, target
-		
 	-- local hcards = self.player:getCards("h")
 	-- hcards = sgs.QList2Table(hcards)
 		-- for _, hcard in ipairs(hcards) do
@@ -476,7 +482,6 @@ end
 			-- end
 		-- end
 	-- end	
-	
 	
 	-- if card then 
 		-- local friends = self.friends_noself

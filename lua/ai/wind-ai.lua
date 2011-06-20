@@ -79,55 +79,51 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	cards=sgs.QList2Table(cards)
 	
 	local eCard
-	local hasCard={}
+	local hasCard={0, 0, 0, 0}
 	
 	for _,card in ipairs(cards) do
 		if card:inherits("EquipCard") then 
-			if hasCard[sgs.ai_get_cardType(card)] then 
-				hasCard[sgs.ai_get_cardType(card)]=hasCard[sgs.ai_get_cardType(card)]+1
-			else
-				hasCard[sgs.ai_get_cardType(card)]=1
-			end
+			hasCard[sgs.ai_get_cardType(card)] = hasCard[sgs.ai_get_cardType(card)]+1
 		end		
 	end
 	
 	for _,card in ipairs(cards) do
 		if card:inherits("EquipCard") then 
-			if hasCard[sgs.ai_get_cardType(card)]>1 or sgs.ai_get_cardType(card)==3 then 
-				eCard=card 
+			if hasCard[sgs.ai_get_cardType(card)]>1 or sgs.ai_get_cardType(card)>3 then 
+				eCard = card 
 				break
 			end
+			if not eCard and not card:inherits("Armor") then eCard = card end
 		end
 	end
 	
 	if not eCard then return "." end
 	
-
+	local effectslash, best_target, target
+	local defense = 6
 	for _,enemy in ipairs(self.enemies) do
 		local def=getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not 
 				((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
-				or (amr:objectName()=="eight_diagram"))
+				or (amr:objectName()=="eight_diagram") or enemy:hasSkill("bazhen"))
 		
-                if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
-                elseif self:slashProhibit(nil, enemy) then
-                elseif def<6 and eff then return "@ShensuCard="..eCard:getEffectiveId().."->"..enemy:objectName() end
-		
+        if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
+        elseif self:slashProhibit(nil, enemy) then
+        elseif eff then 
+			if enemy:getHp() == 1 and self:getJinkNumber(enemy) == 0 then best_target = enemy break end
+			if def < defense then
+				best_target = enemy
+				defense = def
+			end
+			target = enemy
+		end
 		if selfSub<0 then return "." end
 	end
 	
-	for _,enemy in ipairs(self.enemies) do
-		local def=getDefense(enemy)
-		local amr=enemy:getArmor()
-		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not 
-				((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
-				or (amr:objectName()=="eight_diagram"))
-		
-                if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
-                elseif self:slashProhibit(nil, enemy) then
-                elseif eff then return "@ShensuCard="..eCard:getEffectiveId().."->"..enemy:objectName() end
-	end
+	if best_target then return "@ShensuCard="..eCard:getEffectiveId().."->"..best_target:objectName() end
+	if target then return "@ShensuCard="..eCard:getEffectiveId().."->"..target:objectName() end
+	
 	return "."
 end
 

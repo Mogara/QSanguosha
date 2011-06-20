@@ -54,11 +54,11 @@ function yuanshao_ai:activate(use)
 		local same_suit=false
 		cards = sgs.QList2Table(cards)
 		for _, fcard in ipairs(cards) do
-			if not fcard:inherits("Peach") then
+			if not (fcard:inherits("Peach") or fcard:inherits("ExNihilo")) then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
-					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and not scard:inherits("Peach") then
+					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and not (scard:inherits("Peach") or scard:inherits("ExNihilo")) then
 						second_card = scard
 						second_found = true
 						break
@@ -74,9 +74,6 @@ function yuanshao_ai:activate(use)
 		local luanji_card = {}
 		local first_suit, first_number, first_id = first_card:getSuitString(), first_card:getNumberString(), first_card:getId()
 		local second_suit, second_number, second_id = second_card:getSuitString(), second_card:getNumberString(), second_card:getId()
---		table.insert(luanji_card, first_card:getId())
---		table.insert(luanji_card, second_card:getId())
---		use.card = sgs.Card_Parse("@LuanjiCard=" .. table.concat(luanji_card,"+")) 
 		local card_str = ("archery_attack:luanji[%s:%s]=%d+%d"):format(first_suit, first_number, first_id, second_id)
 		local archeryattack = sgs.Card_Parse(card_str)
 		assert(archeryattack)
