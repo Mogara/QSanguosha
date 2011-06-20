@@ -52,7 +52,6 @@ void Room::initCallbacks(){
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
-    //callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
 
@@ -1251,32 +1250,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
-}
-
-void Room::signupCommand(ServerPlayer *player, const QString &arg){
-    QStringList words = arg.split(":");
-
-    QString base64 = words.value(0);
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
-
-    QString avatar = words.value(1);
-
-    if(Config.ContestMode){
-        QString password = words.value(2);
-        if(password.isEmpty()){
-            player->invoke("warn", "REQUIRE_PASSWORD");
-            return;
-        }
-
-        ContestDB *db = ContestDB::GetInstance();
-        if(!db->checkPassword(screen_name, password)){
-            player->invoke("warn", "WRONG_PASSWORD");
-            return;
-        }
-    }
-
-    signup(player, screen_name, avatar, false);
 }
 
 void Room::assignRoles(){

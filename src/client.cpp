@@ -150,7 +150,8 @@ void Client::signup(){
         replayer->start();
     else{
         QString base64 = Config.UserName.toUtf8().toBase64();
-        QString signup_str = QString("signup %1:%2").arg(base64).arg(Config.UserAvatar);
+        QString command = Config.value("EnableReconnection", false).toBool() ? "signupr" : "signup";
+        QString signup_str = QString("%1 %2:%3").arg(command).arg(base64).arg(Config.UserAvatar);
         QString password = Config.Password;
         if(!password.isEmpty()){
             password = QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5).toHex();
@@ -1032,6 +1033,7 @@ void Client::revivePlayer(const QString &player_name){
     emit player_revived(player_name);
 }
 
+
 void Client::warn(const QString &reason){
     QString msg;
     if(reason == "GAME_OVER")
@@ -1040,6 +1042,8 @@ void Client::warn(const QString &reason){
         msg = tr("The server require password to signup");
     else if(reason == "WRONG_PASSWORD")
         msg = tr("Your password is wrong");
+    else if(reason == "INVALID_FORMAT")
+        msg = tr("Invalid signup string");
     else
         msg = tr("Unknown warning: %1").arg(reason);
 
