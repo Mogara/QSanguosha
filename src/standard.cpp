@@ -161,7 +161,7 @@ QString SingleTargetTrick::getSubtype() const{
     return "single_target_trick";
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return true;
 }
 

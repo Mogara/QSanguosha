@@ -290,7 +290,7 @@ PeachingCard::PeachingCard()
 
 }
 
-bool PeachingCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool PeachingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() > 0)return false;
     return to_select->isWounded() && (Self->distanceTo(to_select) <= 1);
 }

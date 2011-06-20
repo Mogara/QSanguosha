@@ -353,12 +353,12 @@ void Client::arrange(const QStringList &order){
     request(QString("arrange %1").arg(order.join("+")));
 }
 
-void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets){
+void Client::useCard(const Card *card, const QList<const Player *> &targets){
     if(card == NULL){
         request("useCard .");
     }else{
         QStringList target_names;
-        foreach(const ClientPlayer *target, targets)
+        foreach(const Player *target, targets)
             target_names << target->objectName();
 
         if(target_names.isEmpty())
@@ -807,9 +807,9 @@ void Client::chooseCard(int card_id){
     setStatus(NotActive);
 }
 
-void Client::choosePlayer(const ClientPlayer *player){
+void Client::choosePlayer(const Player *player){
     if(player == NULL)
-        player = findChild<const ClientPlayer *>(players_to_choose.first());
+        player = findChild<const Player *>(players_to_choose.first());
 
     request("choosePlayer " + player->objectName());
     setStatus(NotActive);
@@ -1359,7 +1359,7 @@ void Client::askForGeneral(const QString &generals){
     emit generals_got(generals.split("+"));
 }
 
-void Client::replyYiji(const Card *card, const ClientPlayer *to){
+void Client::replyYiji(const Card *card, const Player *to){
     if(card)
         request(QString("replyYiji %1->%2").arg(card->subcardString()).arg(to->objectName()));
     else

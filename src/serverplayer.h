@@ -68,6 +68,7 @@ public:
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
+    virtual bool isLastHandCard(const Card *card) const;
 
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
@@ -87,6 +88,7 @@ public:
     virtual bool hasLordSkill(const QString &skill_name) const;
 
     QString getIp() const;
+    void introduceTo(ServerPlayer *player);
 
 private:
     ClientSocket *socket;

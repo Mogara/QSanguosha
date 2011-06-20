@@ -1368,7 +1368,7 @@ void RoomScene::enableTargets(const Card *card){
     if(Config.EnableAutoTarget)
         selectNextTarget(false);
 
-    ok_button->setEnabled(card->targetsFeasible(selected_targets));
+    ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
 }
 
 void RoomScene::updateTargetsEnablity(const Card *card){
@@ -1382,7 +1382,8 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if(item->isSelected())
             continue;
 
-        bool enabled = !Sanguosha->isProhibited(Self, player, card) && card->targetFilter(selected_targets, player);
+        bool enabled = !Sanguosha->isProhibited(Self, player, card)
+                       && card->targetFilter(selected_targets, player, Self);
         item->setEnabled(enabled);
         item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
@@ -1404,7 +1405,7 @@ void RoomScene::updateSelectedTargets(){
         }
 
         updateTargetsEnablity(card);
-        ok_button->setEnabled(card->targetsFeasible(selected_targets));
+        ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
     }else{
         selected_targets.clear();
     }
@@ -1496,7 +1497,7 @@ void RoomScene::useSelectedCard(){
 }
 
 void RoomScene::useCard(const Card *card){
-    if(card->targetFixed() || card->targetsFeasible(selected_targets))
+    if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
         ClientInstance->useCard(card, selected_targets);
 
     enableTargets(NULL);
@@ -2024,7 +2025,7 @@ void RoomScene::doCancelButton(){
             if(ClientInstance->noTargetResponsing())
                 ClientInstance->responseCard(NULL);
             else
-                ClientInstance->useCard(NULL, QList<const ClientPlayer *>());
+                ClientInstance->useCard(NULL);
             prompt_box->disappear();
             dashboard->stopPending();
             break;

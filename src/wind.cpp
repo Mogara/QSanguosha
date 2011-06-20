@@ -20,7 +20,7 @@ LeijiCard::LeijiCard(){
 
 }
 
-bool LeijiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LeijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty();
 }
 
@@ -64,7 +64,7 @@ void HuangtianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> 
     }
 }
 
-bool HuangtianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool HuangtianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->hasLordSkill("huangtian") && to_select != Self;
 }
 
@@ -235,7 +235,7 @@ ShensuCard::ShensuCard(){
     mute = true;
 }
 
-bool ShensuCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 

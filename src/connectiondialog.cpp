@@ -44,6 +44,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     ui->avatarList->hide();
 
+    ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
+
     setFixedHeight(height());
     setFixedWidth(ShrinkWidth);
 }
@@ -81,6 +83,7 @@ void ConnectionDialog::on_connectButton_clicked()
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostAddress", Config.HostAddress);
+    Config.setValue("EnableReconnection", ui->reconnectionCheckBox->isChecked());
 
     accept();
 }
@@ -102,7 +105,7 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 }
 
 void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem* item)
-{    
+{
     QString general_name = item->data(Qt::UserRole).toString();
     const General *general = Sanguosha->getGeneral(general_name);
     if(general){
@@ -148,7 +151,7 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
 
     list = new QListWidget;
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(list);    
+    layout->addWidget(list);
     layout->addLayout(hlayout);
 
     setLayout(layout);
@@ -168,7 +171,7 @@ void UdpDetectorDialog::startDetection(){
     connect(detector, SIGNAL(detected(QString,QString)), this, SLOT(addServerAddress(QString,QString)));
     QTimer::singleShot(2000, this, SLOT(stopDetection()));
 
-    detector->detect();    
+    detector->detect();
 }
 
 void UdpDetectorDialog::stopDetection(){

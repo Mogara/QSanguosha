@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>826</width>
-    <height>322</height>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -228,6 +228,19 @@
    </property>
    <property name="text">
     <string>Connect</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="reconnectionCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>290</y>
+     <width>95</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reconnection</string>
    </property>
   </widget>
  </widget>

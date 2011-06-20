@@ -61,12 +61,7 @@ bool ClientPlayer::isLastHandCard(const Card *card) const{
     if(known_cards.length() != 1)
         return false;
 
-    if(!card->isVirtualCard()){
-        return known_cards.first() == card;
-    }else{
-        QList<int> subcards = card->getSubcards();
-        return subcards.length() == 1 && subcards.first() == known_cards.first()->getId();
-    }
+    return known_cards.first()->getEffectiveId() == card->getEffectiveId();
 }
 
 void ClientPlayer::removeCard(const Card *card, Place place){

@@ -251,6 +251,13 @@ void ServerPlayer::addCard(const Card *card, Place place){
     }
 }
 
+bool ServerPlayer::isLastHandCard(const Card *card) const{
+    if(handcards.length() != 1)
+        return false;
+
+    return card->getEffectiveId() == handcards.first()->getEffectiveId();
+}
+
 QList<int> ServerPlayer::handCards() const{
     QList<int> card_ids;
     foreach(const Card *card, handcards)
@@ -551,4 +558,19 @@ QString ServerPlayer::getIp() const{
         return socket->peerAddress();
     else
         return QString();
+}
+
+void ServerPlayer::introduceTo(ServerPlayer *player){
+    QString screen_name = Config.ContestMode ? tr("Contestant") : screenName();
+    QString avatar = property("avatar").toString();
+
+    QString introduce_str = QString("%1:%2:%3")
+                            .arg(objectName())
+                            .arg(QString(screen_name.toUtf8().toBase64()))
+                            .arg(avatar);
+
+    if(player)
+        player->invoke("addPlayer", introduce_str);
+    else
+        room->broadcastInvoke("addPlayer", introduce_str, this);
 }

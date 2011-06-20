@@ -421,9 +421,9 @@ void LuaSkillCard::pushSelf(lua_State *L) const{
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaSkillCard, 0);
 }
 
-bool LuaSkillCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const{
     if(filter == 0)
-        return SkillCard::targetFilter(targets, to_select);
+        return SkillCard::targetFilter(targets, to_select, self);
 
     lua_State *L = Sanguosha->getLuaState();
 	
@@ -435,13 +435,14 @@ bool LuaSkillCard::targetFilter(const QList<const ClientPlayer *> &targets, cons
     lua_createtable(L, targets.length(), 0);
     int i;
     for(i=0; i<targets.length(); i++){
-        SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_ClientPlayer, 0);
+        SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_Player, 0);
         lua_rawseti(L, -2, i+1);
     }
 
-    SWIG_NewPointerObj(L, to_select, SWIGTYPE_p_ClientPlayer, 0);
+    SWIG_NewPointerObj(L, to_select, SWIGTYPE_p_Player, 0);
+	SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
-    int error = lua_pcall(L, 3, 1, 0);
+    int error = lua_pcall(L, 4, 1, 0);
     if(error){
         Error(L);
         return false;
@@ -452,9 +453,9 @@ bool LuaSkillCard::targetFilter(const QList<const ClientPlayer *> &targets, cons
 	}
 }
 
-bool LuaSkillCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const Player *self) const{
     if(feasible == 0)
-        return SkillCard::targetsFeasible(targets);
+        return SkillCard::targetsFeasible(targets, self);
 
     lua_State *L = Sanguosha->getLuaState();
 	
@@ -466,9 +467,11 @@ bool LuaSkillCard::targetsFeasible(const QList<const ClientPlayer *> &targets) c
     lua_createtable(L, targets.length(), 0);
     int i;
     for(i=0; i<targets.length(); i++){
-        SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_ClientPlayer, 0);
+        SWIG_NewPointerObj(L, targets.at(i), SWIGTYPE_p_Player, 0);
         lua_rawseti(L, -2, i+1);
     }
+
+	SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
     int error = lua_pcall(L, 2, 1, 0);
     if(error){

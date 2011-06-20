@@ -37,14 +37,14 @@ public:
 
     void disconnectFromHost();
     void request(const QString &message);
-    void useCard(const Card *card, const QList<const ClientPlayer *> &targets = QList<const ClientPlayer *>());
+    void useCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
     int alivePlayerCount() const;
     void responseCard(const Card *card);
     bool noTargetResponsing() const;
     void discardCards(const Card *card);
-    void replyYiji(const Card *card, const ClientPlayer *to);
+    void replyYiji(const Card *card, const Player *to);
     void replyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);
@@ -160,7 +160,7 @@ public slots:
     void selectChoice();
     void updateFrequentFlags(int state);
     void chooseCard(int card_id = -2);
-    void choosePlayer(const ClientPlayer *player);
+    void choosePlayer(const Player *player);
     void trust();
     void requestCard(int card_id);
     void addRobot();

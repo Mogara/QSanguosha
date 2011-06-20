@@ -487,8 +487,8 @@ public:
 
     // card target selection
     bool targetFixed() const;
-    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
 
     // it can be used only once a turn or not

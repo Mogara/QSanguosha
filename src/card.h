@@ -102,8 +102,8 @@ public:
 
     // card target selection
     virtual bool targetFixed() const;
-    virtual bool targetsFeasible(const QList<const ClientPlayer *> &targets) const;
-    virtual bool targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool isAvailable(const Player *player) const;
     virtual const Card *validate(const CardUseStruct *card_use) const;
     virtual const Card *validateInResposing(ServerPlayer *user, bool *continuable) const;

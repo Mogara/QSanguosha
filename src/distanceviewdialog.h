@@ -5,9 +5,7 @@ class ClientPlayer;
 
 #include <QDialog>
 
-namespace Ui {
-    class DistanceViewDialog;
-}
+struct DistanceViewDialogUI;
 
 class DistanceViewDialog : public QDialog {
     Q_OBJECT
@@ -17,8 +15,7 @@ public:
     ~DistanceViewDialog();
 
 private:
-    Ui::DistanceViewDialog *ui;
-    QList<const ClientPlayer *> players;
+    DistanceViewDialogUI *ui;
 
 private slots:
     void showDistance();

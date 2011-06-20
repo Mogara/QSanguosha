@@ -26,6 +26,7 @@ local t = {
 	["kylin_bow"] = "麒麟弓", 
 	["eight_diagram"] = "八卦阵", 
 	["renwang_shield"] = "仁王盾", 
+	["horse"] = "马",
 	["ice_sword"] = "寒冰剑", 
 	["jueying"] = "绝影", 
 	["dilu"] = "的卢", 

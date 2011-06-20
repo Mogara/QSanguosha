@@ -45,7 +45,7 @@ JieyinCard::JieyinCard(){
     mute = true;
 }
 
-bool JieyinCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool JieyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -80,7 +80,7 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
 TuxiCard::TuxiCard(){
 }
 
-bool TuxiCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(targets.length() >= 2)
         return false;
 
@@ -150,7 +150,7 @@ LijianCard::LijianCard(){
     once = true;
 }
 
-bool LijianCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!to_select->getGeneral()->isMale())
         return false;
 
@@ -161,7 +161,7 @@ bool LijianCard::targetFilter(const QList<const ClientPlayer *> &targets, const 
     return true;
 }
 
-bool LijianCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
+bool LijianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     return targets.length() == 2;
 }
 
@@ -187,16 +187,8 @@ QingnangCard::QingnangCard(){
     once = true;
 }
 
-bool QingnangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && to_select->isWounded();
-}
-
-bool QingnangCard::targetsFeasible(const QList<const ClientPlayer *> &targets) const{
-    if(targets.length() > 1)
-        return false;
-
-    const ClientPlayer *to_cure = targets.isEmpty() ? Self : targets.first();
-    return to_cure->isWounded();
 }
 
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -236,7 +228,7 @@ LiuliCard::LiuliCard()
 }
 
 
-bool LiuliCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if(!targets.isEmpty())
         return false;
 
@@ -261,7 +253,7 @@ JijiangCard::JijiangCard(){
 
 }
 
-bool JijiangCard::targetFilter(const QList<const ClientPlayer *> &targets, const ClientPlayer *to_select) const{
+bool JijiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     return targets.isEmpty() && Self->canSlash(to_select);
 }
 

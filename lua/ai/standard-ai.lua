@@ -1,4 +1,3 @@
-
 -- jianxiong
 sgs.ai_skill_invoke.jianxiong = function(self, data)
         return not sgs.Shit_HasShit(data:toCard())
@@ -472,7 +471,7 @@ liubei_ai:setOnceSkill("rende")
 
 function liubei_ai:activate(use)
 	
-    if self.player:getHandcardNum() >= 2 or ((not self.rendesecond_used) and self.rende_used) then
+    if not self.rende_used or self.rende_used <= 1 then
 		local cards = self.player:getHandcards()
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getHp() == 1 then
@@ -480,10 +479,8 @@ function liubei_ai:activate(use)
 					if hcard:inherits("Analeptic") or hcard:inherits("Peach") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -494,10 +491,8 @@ function liubei_ai:activate(use)
 					if hcard:inherits("Slash") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -507,10 +502,8 @@ function liubei_ai:activate(use)
 					if hcard:isRed() and not (hcard:inherits("ExNihilo") or hcard:inherits("Peach")) then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -520,10 +513,8 @@ function liubei_ai:activate(use)
 					if hcard:getTypeId() == sgs.Card_Trick then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -533,10 +524,8 @@ function liubei_ai:activate(use)
 					if hcard:getTypeId() == sgs.Card_Diamond then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -546,10 +535,8 @@ function liubei_ai:activate(use)
 					if hcard:getTypeId() == sgs.Card_Spade then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -559,10 +546,8 @@ function liubei_ai:activate(use)
 					if hcard:inherits("EquipCard") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used 
-							then self.rendesecond_used=true 
-						else
-							self.rende_used=true
+						if self.rende_used then self.rende_used = self.rende_used+1
+						else self.rende_used=1
 						end
 						return
 					end
@@ -572,7 +557,7 @@ function liubei_ai:activate(use)
 		end
 	end
 	
-	if (not use:isValid()) and (self.player:getHandcardNum()>self.player:getHp()) then 
+	if (not use:isValid()) and (self.player:getHandcardNum()>=self.player:getHp()) then 
 		for _, friend in ipairs(self.friends_noself) do
 			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
 				local card_id = self:getCardRandomly(self.player, "h")
