@@ -187,6 +187,7 @@ public:
 
     void jilei(const QString &type);
     bool isJilei(const Card *card) const;
+    void marshal(ServerPlayer *player) const;
 
     QVariantMap tag;
 

@@ -1659,6 +1659,8 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
     player->setState("online");
 
     marshal(player);
+
+    broadcastProperty(player, "state");
 }
 
 void Room::marshal(ServerPlayer *player){
@@ -1675,9 +1677,12 @@ void Room::marshal(ServerPlayer *player){
         player_circle << player->objectName();
 
     player->invoke("arrangeSeats", player_circle.join("+"));
+    player->invoke("startInXs", "0");
     player->invoke("startGame");
 
-
+    foreach(ServerPlayer *p, players){
+        p->marshal(player);
+    }
 }
 
 void Room::startGame(){

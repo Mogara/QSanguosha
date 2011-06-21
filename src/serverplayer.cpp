@@ -140,14 +140,23 @@ int ServerPlayer::getHandcardNum() const{
 }
 
 void ServerPlayer::setSocket(ClientSocket *socket){
-    this->socket = socket;
-
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(getMessage(char*)));
 
         connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
+    }else{
+        if(this->socket){
+            this->disconnect(this->socket);
+            this->socket->disconnect(this);
+            this->socket->disconnectFromHost();
+            this->socket->deleteLater();
+        }
+
+        disconnect(this, SLOT(castMessage(QString)));
     }
+
+    this->socket = socket;
 }
 
 void ServerPlayer::getMessage(char *message){
@@ -158,7 +167,7 @@ void ServerPlayer::getMessage(char *message){
     emit request_got(request);
 }
 
-void ServerPlayer::unicast(const QString &message){
+void ServerPlayer::unicast(const QString &message) const{
     emit message_cast(message);
 
     if(recorder)
@@ -201,9 +210,15 @@ QString ServerPlayer::reportHeader() const{
     return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
-void ServerPlayer::sendProperty(const char *property_name){
-    QString value = property(property_name).toString();
-    unicast(QString(".%1 %2").arg(property_name).arg(value));
+void ServerPlayer::sendProperty(const char *property_name, const Player *player) const{
+    if(player == NULL)
+        player = this;
+
+    QString value = player->property(property_name).toString();
+    if(player == this)
+        unicast(QString(".%1 %2").arg(property_name).arg(value));
+    else
+        unicast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
 void ServerPlayer::removeCard(const Card *card, Place place){

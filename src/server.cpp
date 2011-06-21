@@ -770,8 +770,6 @@ void Server::processNewConnection(ClientSocket *socket){
             addresses.insert(addr);
     }
 
-
-
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
     socket->send("checkVersion " + Sanguosha->getVersion());
     socket->send("setup " + Sanguosha->getSetupString());
@@ -791,7 +789,7 @@ void Server::processRequest(char *request){
 
     QRegExp rx("(signupr?) (\\w+):(\\w+)(:\\w+)?\n");
     if(!rx.exactMatch(request)){
-        qDebug("%s", request);
+        emit server_message(tr("Invalid signup string: %1").arg(request));
         socket->send("warn INVALID_FORMAT");
         socket->disconnectFromHost();
         return;
@@ -853,4 +851,5 @@ void Server::removeRoom(QObject *obj){
 
 void Server::signupPlayer(ServerPlayer *player){
     name2objname.insert(player->screenName(), player->objectName());
+    players.insert(player->objectName(), player);
 }
