@@ -608,6 +608,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if(isDead()){
         player->sendProperty("alive", this);
         player->sendProperty("role", this);
+        player->invoke("killPlayer", objectName());
     }
 
     if(getPhase() != Player::NotActive)
@@ -651,5 +652,23 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                        QString("%1:_@=->%2@judging")
                        .arg(card->getId())
                        .arg(objectName()));
+    }
+
+    foreach(QString mark_name, marks.keys()){
+        if(mark_name.startsWith("@")){
+            int value = getMark(mark_name);
+            if(value != 0){
+                QString mark_str = QString("%1.%2=%3")
+                                   .arg(objectName())
+                                   .arg(mark_name)
+                                   .arg(value);
+
+                player->invoke("setMark", mark_str);
+            }
+        }
+    }
+
+    foreach(QString skill_name, acquired_skills){
+        player->invoke("acquireSkill", QString("%1:%2").arg(objectName()).arg(skill_name));
     }
 }

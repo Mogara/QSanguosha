@@ -1023,13 +1023,15 @@ void Client::killPlayer(const QString &player_name){
 
     player->loseAllSkills();
 
-    QString general_name = player->getGeneralName();
-    QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
+    if(!Self->hasFlag("marshalling")){
+        QString general_name = player->getGeneralName();
+        QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
 
-    skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
-    skill_line = last_word;
+        skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
+        skill_line = last_word;
 
-    updatePileNum();
+        updatePileNum();
+    }
 
     emit player_killed(player_name);
 }

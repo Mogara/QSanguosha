@@ -601,12 +601,16 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const{
 }
 
 QSet<const Skill *> Player::getVisibleSkills() const{
-    QSet<const Skill *> skills;
+    return getVisibleSkillList().toSet();
+}
+
+QList<const Skill *> Player::getVisibleSkillList() const{
+    QList<const Skill *> skills;
     if(general)
-        skills += general->getVisibleSkills();
+        skills << general->getVisibleSkillList();
 
     if(general2)
-        skills += general2->getVisibleSkills();
+        skills << general2->getVisibleSkillList();
 
     foreach(QString skill_name, acquired_skills){
         const Skill *skill = Sanguosha->getSkill(skill_name);
