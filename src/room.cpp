@@ -1879,12 +1879,19 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             }
         }
 
+        QString from_str = from->objectName();
+        if(from_place == Player::Special)
+            from_str.append("@special");
+
+        QString to_str = to->objectName();
+        if(place == Player::Special)
+            to_str.append("@special");
+
         int n = card->isVirtualCard() ? card->subcardsLength() : 1;
         QString private_move = QString("%1:%2->%3")
                                .arg(n)
-                               .arg(from->objectName())
-                               .arg(to->objectName());
-
+                               .arg(from_str)
+                               .arg(to_str);
 
         foreach(ServerPlayer *player, players){
             if(!scope.contains(player))
