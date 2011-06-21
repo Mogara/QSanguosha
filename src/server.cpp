@@ -770,8 +770,6 @@ void Server::processNewConnection(ClientSocket *socket){
             addresses.insert(addr);
     }
 
-
-
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
     socket->send("checkVersion " + Sanguosha->getVersion());
     socket->send("setup " + Sanguosha->getSetupString());
@@ -780,35 +778,60 @@ void Server::processNewConnection(ClientSocket *socket){
     connect(socket, SIGNAL(message_got(char*)), this, SLOT(processRequest(char*)));
 }
 
+static inline QString ConvertFromBase64(const QString &base64){
+    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    return QString::fromUtf8(data);
+}
+
 void Server::processRequest(char *request){
-    // only process 2 commands: signup & reconnection
-
-    QString request_str = request;
-    QStringList words = request_str.split(" ");
-    QString command = words.first();
-    QString arg = words.last();
-
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     socket->disconnect(this, SLOT(processRequest(char*)));
 
-    if(command == "signup"){
-        if(current->isFull())
-            createNewRoom();
+    QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
+    if(!rx.exactMatch(request)){
+        emit server_message(tr("Invalid signup string: %1").arg(request));
+        socket->send("warn INVALID_FORMAT");
+        socket->disconnectFromHost();
+        return;
+    }
 
-        ServerPlayer *player = current->addSocket(socket);
-        current->signupCommand(player, arg);
-    }else if(command == "reconnection"){
-        QByteArray data = QByteArray::fromBase64(arg.toAscii());
-        QString screen_name = QString::fromUtf8(data);
+    QStringList texts = rx.capturedTexts();
+    QString command = texts.at(1);
+    QString screen_name = ConvertFromBase64(texts.at(2));
+    QString avatar = texts.at(3);
 
+    if(Config.ContestMode){
+        QString password = texts.value(4);
+        if(password.isEmpty()){
+            socket->send("warn REQUIRE_PASSWORD");
+            socket->disconnectFromHost();
+            return;
+        }
+
+        password.remove(QChar(':'));
+        ContestDB *db = ContestDB::GetInstance();
+        if(!db->checkPassword(screen_name, password)){
+            socket->send("warn WRONG_PASSWORD");
+            socket->disconnectFromHost();
+            return;
+        }
+    }
+
+    if(command == "signupr"){
         foreach(QString objname, name2objname.values(screen_name)){
             ServerPlayer *player = players.value(objname);
             if(player && player->getState() == "offline"){
                 player->getRoom()->reconnect(player, socket);
-                break;
+                return;
             }
         }
     }
+
+    if(current->isFull())
+        createNewRoom();
+
+    ServerPlayer *player = current->addSocket(socket);
+    current->signup(player, screen_name, avatar, false);
 }
 
 void Server::cleanup(){
@@ -828,4 +851,5 @@ void Server::removeRoom(QObject *obj){
 
 void Server::signupPlayer(ServerPlayer *player){
     name2objname.insert(player->screenName(), player->objectName());
+    players.insert(player->objectName(), player);
 }

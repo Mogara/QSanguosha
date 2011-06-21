@@ -202,8 +202,8 @@ class ServerPlayer : public Player
 {
 public:
     void invoke(const char *method, const char *arg = ".");
-    void sendProperty(const char *property_name);
-    void unicast(const char *message);
+    void sendProperty(const char *property_name, const Player *player = NULL) const;
+    void unicast(const char *message) const;
     void drawCard(const Card *card);
     Room *getRoom() const;
     void playCardEffect(const Card *card);

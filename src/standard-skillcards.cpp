@@ -191,14 +191,14 @@ bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Play
     return targets.isEmpty() && to_select->isWounded();
 }
 
+bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.value(0, Self)->isWounded();
+}
+
 void QingnangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    ServerPlayer *target;
-    if(!targets.isEmpty())
-        target = targets.first();
-    else
-        target = source;
+    ServerPlayer *target = targets.value(0, source);
 
     CardEffectStruct effect;
     effect.card = this;

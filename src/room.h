@@ -95,6 +95,7 @@ public:
     void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
     bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+    void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
 
     void reconnect(ServerPlayer *player, ClientSocket *socket);
     void marshal(ServerPlayer *player);
@@ -146,7 +147,6 @@ public:
     void kickCommand(ServerPlayer *player, const QString &arg);
     void surrenderCommand(ServerPlayer *player, const QString &);
     void commonCommand(ServerPlayer *player, const QString &arg);
-    void signupCommand(ServerPlayer *player, const QString &arg);
     void addRobotCommand(ServerPlayer *player, const QString &arg);
     void fillRobotsCommand(ServerPlayer *player, const QString &arg);
     void chooseCommand(ServerPlayer *player, const QString &general_name);
@@ -195,7 +195,6 @@ private:
     static QString generatePlayerName();
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);
-    void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void initCallbacks();
     void arrangeCommand(ServerPlayer *player, const QString &arg);

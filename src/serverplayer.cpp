@@ -140,14 +140,23 @@ int ServerPlayer::getHandcardNum() const{
 }
 
 void ServerPlayer::setSocket(ClientSocket *socket){
-    this->socket = socket;
-
     if(socket){
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(char*)), this, SLOT(getMessage(char*)));
 
         connect(this, SIGNAL(message_cast(QString)), this, SLOT(castMessage(QString)));
+    }else{
+        if(this->socket){
+            this->disconnect(this->socket);
+            this->socket->disconnect(this);
+            this->socket->disconnectFromHost();
+            this->socket->deleteLater();
+        }
+
+        disconnect(this, SLOT(castMessage(QString)));
     }
+
+    this->socket = socket;
 }
 
 void ServerPlayer::getMessage(char *message){
@@ -158,7 +167,7 @@ void ServerPlayer::getMessage(char *message){
     emit request_got(request);
 }
 
-void ServerPlayer::unicast(const QString &message){
+void ServerPlayer::unicast(const QString &message) const{
     emit message_cast(message);
 
     if(recorder)
@@ -201,9 +210,15 @@ QString ServerPlayer::reportHeader() const{
     return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
-void ServerPlayer::sendProperty(const char *property_name){
-    QString value = property(property_name).toString();
-    unicast(QString(".%1 %2").arg(property_name).arg(value));
+void ServerPlayer::sendProperty(const char *property_name, const Player *player) const{
+    if(player == NULL)
+        player = this;
+
+    QString value = player->property(property_name).toString();
+    if(player == this)
+        unicast(QString(".%1 %2").arg(property_name).arg(value));
+    else
+        unicast(QString("#%1 %2 %3").arg(player->objectName()).arg(property_name).arg(value));
 }
 
 void ServerPlayer::removeCard(const Card *card, Place place){
@@ -573,4 +588,87 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
         player->invoke("addPlayer", introduce_str);
     else
         room->broadcastInvoke("addPlayer", introduce_str, this);
+}
+
+void ServerPlayer::marshal(ServerPlayer *player) const{
+    player->sendProperty("general", this);
+
+    if(getGeneral2())
+        player->sendProperty("general2", this);
+
+    player->sendProperty("maxhp", this);
+    player->sendProperty("hp", this);
+
+    if(getKingdom() != getGeneral()->getKingdom())
+        player->sendProperty("kingdom", this);
+
+    if(getXueyi() > 0)
+        player->sendProperty("xueyi", this);
+
+    if(isDead()){
+        player->sendProperty("alive", this);
+        player->sendProperty("role", this);
+        player->invoke("killPlayer", objectName());
+    }
+
+    if(getPhase() != Player::NotActive)
+        player->sendProperty("phase", this);
+
+    if(!faceUp())
+        player->sendProperty("faceup", this);
+
+    if(isChained())
+        player->sendProperty("chained", this);
+
+    if(getAttackRange() != 1)
+        player->sendProperty("atk", this);
+
+    if(!isKongcheng()){
+        if(player != this){
+            player->invoke("drawNCards",
+                           QString("%1:%2")
+                           .arg(objectName())
+                           .arg(getHandcardNum()));
+        }else{
+            QStringList card_str;
+            foreach(const Card *card, handcards){
+                card_str << QString::number(card->getId());
+            }
+
+            player->invoke("drawCards", card_str.join("+"));
+        }
+    }
+
+
+    foreach(const Card *equip, getEquips()){
+        player->invoke("moveCard",
+                       QString("%1:_@=->%2@equip")
+                       .arg(equip->getId())
+                       .arg(objectName()));
+    }
+
+    foreach(const Card *card, getJudgingArea()){
+        player->invoke("moveCard",
+                       QString("%1:_@=->%2@judging")
+                       .arg(card->getId())
+                       .arg(objectName()));
+    }
+
+    foreach(QString mark_name, marks.keys()){
+        if(mark_name.startsWith("@")){
+            int value = getMark(mark_name);
+            if(value != 0){
+                QString mark_str = QString("%1.%2=%3")
+                                   .arg(objectName())
+                                   .arg(mark_name)
+                                   .arg(value);
+
+                player->invoke("setMark", mark_str);
+            }
+        }
+    }
+
+    foreach(QString skill_name, acquired_skills){
+        player->invoke("acquireSkill", QString("%1:%2").arg(objectName()).arg(skill_name));
+    }
 }

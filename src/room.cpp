@@ -52,7 +52,6 @@ void Room::initCallbacks(){
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
-    //callbacks["signupCommand"] = &Room::signupCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
     callbacks["choose2Command"] = &Room::choose2Command;
 
@@ -1167,10 +1166,10 @@ void Room::processRequest(const QString &request){
 
         (this->*callback)(player, args.at(1));
 
-#ifndef QT_NO_DEBUG
+//#ifndef QT_NO_DEBUG
         // output client command only in debug version
         emit room_message(player->reportHeader() + request);
-#endif
+//#endif
 
     }else
         emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
@@ -1251,32 +1250,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
-}
-
-void Room::signupCommand(ServerPlayer *player, const QString &arg){
-    QStringList words = arg.split(":");
-
-    QString base64 = words.value(0);
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
-
-    QString avatar = words.value(1);
-
-    if(Config.ContestMode){
-        QString password = words.value(2);
-        if(password.isEmpty()){
-            player->invoke("warn", "REQUIRE_PASSWORD");
-            return;
-        }
-
-        ContestDB *db = ContestDB::GetInstance();
-        if(!db->checkPassword(screen_name, password)){
-            player->invoke("warn", "WRONG_PASSWORD");
-            return;
-        }
-    }
-
-    signup(player, screen_name, avatar, false);
 }
 
 void Room::assignRoles(){
@@ -1686,11 +1659,14 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
     player->setState("online");
 
     marshal(player);
+
+    broadcastProperty(player, "state");
 }
 
 void Room::marshal(ServerPlayer *player){
     player->sendProperty("objectName");
     player->sendProperty("role");
+    player->unicast(".flags marshalling");
 
     foreach(ServerPlayer *p, players){
         if(p != player)
@@ -1702,9 +1678,15 @@ void Room::marshal(ServerPlayer *player){
         player_circle << player->objectName();
 
     player->invoke("arrangeSeats", player_circle.join("+"));
+    player->invoke("startInXs", "0");
     player->invoke("startGame");
 
+    foreach(ServerPlayer *p, players){
+        p->marshal(player);
+    }
 
+    player->unicast(".flags -marshalling");
+    player->invoke("setPileNumber", QString::number(draw_pile->length()));
 }
 
 void Room::startGame(){

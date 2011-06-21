@@ -150,7 +150,8 @@ void Client::signup(){
         replayer->start();
     else{
         QString base64 = Config.UserName.toUtf8().toBase64();
-        QString signup_str = QString("signup %1:%2").arg(base64).arg(Config.UserAvatar);
+        QString command = Config.value("EnableReconnection", false).toBool() ? "signupr" : "signup";
+        QString signup_str = QString("%1 %2:%3").arg(command).arg(base64).arg(Config.UserAvatar);
         QString password = Config.Password;
         if(!password.isEmpty()){
             password = QCryptographicHash::hash(password.toAscii(), QCryptographicHash::Md5).toHex();
@@ -304,14 +305,18 @@ void Client::drawCards(const QString &cards_str){
 
 void Client::drawNCards(const QString &draw_str){
     QRegExp pattern("(\\w+):(\\d+)");
-    pattern.indexIn(draw_str);
+    if(!pattern.exactMatch(draw_str))
+        return;
+
     QStringList texts = pattern.capturedTexts();
     ClientPlayer *player = findChild<ClientPlayer*>(texts.at(1));
     int n = texts.at(2).toInt();
 
     if(player && n>0){
-        pile_num -= n;
-        updatePileNum();
+        if(!Self->hasFlag("marshalling")){
+            pile_num -= n;
+            updatePileNum();
+        }
 
         player->handCardChange(n);
         emit n_cards_drawed(player, n);
@@ -435,12 +440,15 @@ void Client::moveCard(const QString &move_str){
         if(move.from)
             move.from->removeCard(card, move.from_place);
         else{
-            if(move.from_place == Player::DrawPile)
-                pile_num --;
-            else if(move.from_place == Player::DiscardedPile)
+            if(move.from_place == Player::DiscardedPile)
                 ClientInstance->discarded_list.removeOne(card);
 
-            updatePileNum();
+            if(!Self->hasFlag("marshalling")){
+                if(move.from_place == Player::DrawPile)
+                    pile_num --;
+
+                updatePileNum();
+            }
         }
 
         if(move.to)
@@ -1015,13 +1023,15 @@ void Client::killPlayer(const QString &player_name){
 
     player->loseAllSkills();
 
-    QString general_name = player->getGeneralName();
-    QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
+    if(!Self->hasFlag("marshalling")){
+        QString general_name = player->getGeneralName();
+        QString last_word = Sanguosha->translate(QString("~%1").arg(general_name));
 
-    skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
-    skill_line = last_word;
+        skill_title = tr("%1[dead]").arg(Sanguosha->translate(general_name));
+        skill_line = last_word;
 
-    updatePileNum();
+        updatePileNum();
+    }
 
     emit player_killed(player_name);
 }
@@ -1032,6 +1042,7 @@ void Client::revivePlayer(const QString &player_name){
     emit player_revived(player_name);
 }
 
+
 void Client::warn(const QString &reason){
     QString msg;
     if(reason == "GAME_OVER")
@@ -1040,6 +1051,8 @@ void Client::warn(const QString &reason){
         msg = tr("The server require password to signup");
     else if(reason == "WRONG_PASSWORD")
         msg = tr("Your password is wrong");
+    else if(reason == "INVALID_FORMAT")
+        msg = tr("Invalid signup string");
     else
         msg = tr("Unknown warning: %1").arg(reason);
 

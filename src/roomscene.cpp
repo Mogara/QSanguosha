@@ -569,7 +569,10 @@ void RoomScene::addPlayer(ClientPlayer *player){
         if(photo->getPlayer() == NULL){
             photo->setPlayer(player);
             name2photo[player->objectName()] = photo;
-            Sanguosha->playAudio("add-player");
+
+            if(!Self->hasFlag("marshalling"))
+                Sanguosha->playAudio("add-player");
+
             return;
         }
     }
@@ -1282,7 +1285,7 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 }
 
 void RoomScene::updateSkillButtons(){
-    foreach(const Skill* skill, Self->getVisibleSkills()){
+    foreach(const Skill* skill, Self->getVisibleSkillList()){
         if(skill->isLordSkill()){
             if(Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3")
                 continue;
@@ -2240,23 +2243,14 @@ void RoomScene::addRestartButton(QDialog *dialog){
 
 void RoomScene::saveReplayRecord(){
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString last_dir = Config.value("LastReplayDir").toString();
-    if(!last_dir.isEmpty())
-        location = last_dir;
-
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
                                                     tr("Replay file (*.txt)"));
 
-    if(filename.isEmpty())
-        return;
-
-    QFileInfo file_info(filename);
-    last_dir = file_info.absoluteDir().path();
-    Config.setValue("LastReplayDir", last_dir);
-
-    ClientInstance->save(filename);
+    if(!filename.isEmpty()){
+        ClientInstance->save(filename);
+    }
 }
 
 DeathNoteDialog::DeathNoteDialog(QWidget *parent)
@@ -2486,7 +2480,7 @@ void RoomScene::killPlayer(const QString &who){
             enemy_box->killPlayer(general->objectName());
     }
 
-    if(Config.EnableLastWord)
+    if(Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();
 }
 

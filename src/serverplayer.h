@@ -23,8 +23,8 @@ public:
     void setSocket(ClientSocket *socket);
     void invoke(const char *method, const QString &arg = ".");
     QString reportHeader() const;
-    void sendProperty(const char *property_name);
-    void unicast(const QString &message);
+    void sendProperty(const char *property_name, const Player *player = NULL) const;
+    void unicast(const QString &message) const;
     void drawCard(const Card *card);
     Room *getRoom() const;
     void playCardEffect(const Card *card);
@@ -89,6 +89,7 @@ public:
 
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
+    void marshal(ServerPlayer *player) const;
 
 private:
     ClientSocket *socket;
@@ -109,7 +110,7 @@ private slots:
 signals:
     void disconnected();
     void request_got(const QString &request);
-    void message_cast(const QString &message);
+    void message_cast(const QString &message) const;
 };
 
 #endif // SERVERPLAYER_H
