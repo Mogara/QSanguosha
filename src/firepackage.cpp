@@ -41,8 +41,15 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, const QList<ServerPlayer *> 
                 wolves << player;
         }
 
-        if(wolves.isEmpty())
+        if(wolves.isEmpty()){
+            LogMessage log;
+            log.type = "#QuhuNoWolf";
+            log.from = xunyu;
+            log.to << tiger;
+            room->sendLog(log);
+
             return;
+        }
 
         room->playSkillEffect("#tunlang");
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu");
@@ -134,7 +141,7 @@ public:
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
-        Card *card = new QuhuCard;
+        QuhuCard *card = new QuhuCard;
         card->addSubcard(card_item->getFilteredCard());
         return card;
     }
