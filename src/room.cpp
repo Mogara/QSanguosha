@@ -1666,6 +1666,7 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket){
 void Room::marshal(ServerPlayer *player){
     player->sendProperty("objectName");
     player->sendProperty("role");
+    player->unicast(".flags marshalling");
 
     foreach(ServerPlayer *p, players){
         if(p != player)
@@ -1683,6 +1684,9 @@ void Room::marshal(ServerPlayer *player){
     foreach(ServerPlayer *p, players){
         p->marshal(player);
     }
+
+    player->unicast(".flags -marshalling");
+    player->invoke("setPileNumber", QString::number(draw_pile->length()));
 }
 
 void Room::startGame(){

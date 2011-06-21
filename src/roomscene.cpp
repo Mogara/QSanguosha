@@ -569,7 +569,10 @@ void RoomScene::addPlayer(ClientPlayer *player){
         if(photo->getPlayer() == NULL){
             photo->setPlayer(player);
             name2photo[player->objectName()] = photo;
-            Sanguosha->playAudio("add-player");
+
+            if(!Self->hasFlag("marshalling"))
+                Sanguosha->playAudio("add-player");
+
             return;
         }
     }

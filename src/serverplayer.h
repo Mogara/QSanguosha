@@ -89,6 +89,7 @@ public:
 
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
+    void marshal(ServerPlayer *player) const;
 
 private:
     ClientSocket *socket;

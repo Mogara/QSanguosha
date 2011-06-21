@@ -305,14 +305,18 @@ void Client::drawCards(const QString &cards_str){
 
 void Client::drawNCards(const QString &draw_str){
     QRegExp pattern("(\\w+):(\\d+)");
-    pattern.indexIn(draw_str);
+    if(!pattern.exactMatch(draw_str))
+        return;
+
     QStringList texts = pattern.capturedTexts();
     ClientPlayer *player = findChild<ClientPlayer*>(texts.at(1));
     int n = texts.at(2).toInt();
 
     if(player && n>0){
-        pile_num -= n;
-        updatePileNum();
+        if(!Self->hasFlag("marshalling")){
+            pile_num -= n;
+            updatePileNum();
+        }
 
         player->handCardChange(n);
         emit n_cards_drawed(player, n);
@@ -436,12 +440,15 @@ void Client::moveCard(const QString &move_str){
         if(move.from)
             move.from->removeCard(card, move.from_place);
         else{
-            if(move.from_place == Player::DrawPile)
-                pile_num --;
-            else if(move.from_place == Player::DiscardedPile)
+            if(move.from_place == Player::DiscardedPile)
                 ClientInstance->discarded_list.removeOne(card);
 
-            updatePileNum();
+            if(!Self->hasFlag("marshalling")){
+                if(move.from_place == Player::DrawPile)
+                    pile_num --;
+
+                updatePileNum();
+            }
         }
 
         if(move.to)

@@ -589,3 +589,67 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
     else
         room->broadcastInvoke("addPlayer", introduce_str, this);
 }
+
+void ServerPlayer::marshal(ServerPlayer *player) const{
+    player->sendProperty("general", this);
+
+    if(getGeneral2())
+        player->sendProperty("general2", this);
+
+    player->sendProperty("maxhp", this);
+    player->sendProperty("hp", this);
+
+    if(getKingdom() != getGeneral()->getKingdom())
+        player->sendProperty("kingdom", this);
+
+    if(getXueyi() > 0)
+        player->sendProperty("xueyi", this);
+
+    if(isDead()){
+        player->sendProperty("alive", this);
+        player->sendProperty("role", this);
+    }
+
+    if(getPhase() != Player::NotActive)
+        player->sendProperty("phase", this);
+
+    if(!faceUp())
+        player->sendProperty("faceup", this);
+
+    if(isChained())
+        player->sendProperty("chained", this);
+
+    if(getAttackRange() != 1)
+        player->sendProperty("atk", this);
+
+    if(!isKongcheng()){
+        if(player != this){
+            player->invoke("drawNCards",
+                           QString("%1:%2")
+                           .arg(objectName())
+                           .arg(getHandcardNum()));
+        }else{
+            QStringList card_str;
+            foreach(const Card *card, handcards){
+                card_str << QString::number(card->getId());
+            }
+
+            player->invoke("drawCards", card_str.join("+"));
+        }
+    }
+
+
+    foreach(const Card *equip, getEquips()){
+        player->invoke("moveCard",
+                       QString("%1:_@=->%2@equip")
+                       .arg(equip->getId())
+                       .arg(objectName()));
+    }
+
+    foreach(const Card *card, getJudgingArea()){
+        player->invoke("moveCard",
+                       QString("%1:_@=->%2@judging")
+                       .arg(card->getId())
+                       .arg(objectName()));
+    }
+}
