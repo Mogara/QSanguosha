@@ -325,12 +325,13 @@ void Room::gameOver(const QString &winner){
             db->sendResult(this);
     }
 
+    Server *server = qobject_cast<Server *>(parent());
+    server->removeRoom(this);
+
     if(QThread::currentThread() == thread)
         thread->end();
     else
         sem->release();
-
-    deleteLater();
 }
 
 void Room::slashEffect(const SlashEffectStruct &effect){

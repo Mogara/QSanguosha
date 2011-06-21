@@ -121,6 +121,7 @@ public:
     void daemonize();
     void createNewRoom();
     void signupPlayer(ServerPlayer *player);
+    void removeRoom(Room *room);
 
 private:
     ServerSocket *server;
@@ -134,7 +135,6 @@ private slots:
     void processNewConnection(ClientSocket *socket);
     void processRequest(char *request);
     void cleanup();
-    void removeRoom(QObject *obj);
 
 signals:
     void server_message(const QString &);

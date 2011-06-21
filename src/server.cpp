@@ -755,7 +755,6 @@ void Server::createNewRoom(){
         rooms.insert(current);
 
         connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
-        connect(current, SIGNAL(destroyed(QObject*)), this, SLOT(removeRoom(QObject*)));
     }
 }
 
@@ -841,12 +840,13 @@ void Server::cleanup(){
         addresses.remove(socket->peerAddress());
 }
 
-void Server::removeRoom(QObject *obj){
-    Room *room = qobject_cast<Room *>(obj);
+void Server::removeRoom(Room *room){
     rooms.remove(room);
 
-    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>())
+    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()){
+        name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
+    }
 }
 
 void Server::signupPlayer(ServerPlayer *player){
