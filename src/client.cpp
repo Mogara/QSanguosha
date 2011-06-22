@@ -468,18 +468,22 @@ void Client::moveCard(const QString &move_str){
 }
 
 void Client::moveNCards(const QString &move_str){
-    QRegExp rx("(\\d+):(\\w+)->(\\w+)");
+    QRegExp rx("(\\d+):(\\w+)(@special)?->(\\w+)(@special)?");
     if(rx.exactMatch(move_str)){
         QStringList texts = rx.capturedTexts();
         int n = texts.at(1).toInt();
+
         QString from = texts.at(2);
-        QString to = texts.at(3);
+        QString to = texts.at(4);
 
         ClientPlayer *src = getPlayer(from);
         ClientPlayer *dest = getPlayer(to);
 
-        src->handCardChange(-n);
-        dest->handCardChange(n);
+        if(texts.at(3).isEmpty())
+            src->handCardChange(-n);
+
+        if(texts.at(5).isEmpty())
+            dest->handCardChange(n);
 
         emit n_cards_moved(n, from, to);
     }else{
@@ -845,8 +849,21 @@ void Client::speakToServer(const QString &text){
     request(QString("speak %1").arg(QString(data)));
 }
 
-void Client::addHistory(const QString &card){
-    Self->addHistory(card);
+void Client::addHistory(const QString &add_str){
+    QRegExp rx("(.+)(#\\d+)?");
+    if(rx.exactMatch(add_str)){
+        QStringList texts = rx.capturedTexts();
+        QString card_name = texts.at(1);
+        QString times_str = texts.at(2);
+
+        int times = 1;
+        if(!times_str.isEmpty()){
+            times_str.remove(QChar('#'));
+            times = times_str.toInt();
+        }
+
+        Self->addHistory(card_name, times);
+    }
 }
 
 int Client::alivePlayerCount() const{

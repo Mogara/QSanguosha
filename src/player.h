@@ -172,7 +172,7 @@ public:
 
     QList<int> &getPile(const QString &pile_name);
 
-    void addHistory(const QString &name);
+    void addHistory(const QString &name, int times = 1);
     void clearHistory();
     bool hasUsed(const QString &card_class) const;
     int usedTimes(const QString &card_class) const;
@@ -195,6 +195,8 @@ protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QSet<QString> acquired_skills;
+    QSet<QString> flags;
+    QHash<QString, int> history;
 
 private:
     QString screen_name;
@@ -206,8 +208,6 @@ private:
     QString state;
     int seat;
     bool alive;
-    QSet<QString> flags;
-
     int attack_range;
 
     Phase phase;
@@ -219,8 +219,6 @@ private:
     QList<const Card *> judging_area;
     QList<const DelayedTrick *> delayed_tricks;
     QHash<const Player *, int> fixed_distance;
-
-    QHash<QString, int> history;
 
     QSet<Card::CardType> jilei_set;
 

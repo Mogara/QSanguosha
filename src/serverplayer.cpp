@@ -591,11 +591,6 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
-    player->sendProperty("general", this);
-
-    if(getGeneral2())
-        player->sendProperty("general2", this);
-
     player->sendProperty("maxhp", this);
     player->sendProperty("hp", this);
 
@@ -622,6 +617,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if(getAttackRange() != 1)
         player->sendProperty("atk", this);
+
+    player->sendProperty("seat", this);
 
     if(!isKongcheng()){
         if(player != this){
@@ -670,5 +667,15 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     foreach(QString skill_name, acquired_skills){
         player->invoke("acquireSkill", QString("%1:%2").arg(objectName()).arg(skill_name));
+    }
+
+    foreach(QString flag, flags){
+        player->unicast(QString("#%1 flags %2").arg(objectName()).arg(flag));
+    }
+
+    foreach(QString item, history.keys()){
+        int value = history.value(item);
+        if(value > 0)
+            player->invoke("addHistory", QString("%1#%2").arg(item).arg(value));
     }
 }

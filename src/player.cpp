@@ -561,8 +561,8 @@ QList<int> &Player::getPile(const QString &pile_name){
     return piles[pile_name];
 }
 
-void Player::addHistory(const QString &name){
-    ++ history[name];
+void Player::addHistory(const QString &name, int times){
+    history[name] += times;
 }
 
 int Player::getSlashCount() const{
