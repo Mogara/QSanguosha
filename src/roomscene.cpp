@@ -2164,7 +2164,25 @@ void RoomScene::onStandoff(){
 void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     freeze();
 
-    Sanguosha->playAudio(victory ? "win" : "lose");
+#ifdef AUDIO_SUPPORT
+    QString win_effect;
+    if(victory){
+        win_effect = "win";
+        foreach(const Player *player, ClientInstance->getPlayers()){
+            QString name = player->getGeneralName();
+            if(name == "caocao" || name == "shencc" || name == "shencaocao"){
+                if(SoundEngine)
+                    SoundEngine->stopAllSounds();
+
+                win_effect = "win-cc";
+                break;
+            }
+        }
+    }else
+        win_effect = "lose";
+
+    Sanguosha->playAudio(win_effect);
+#endif
 
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(500, 600);
