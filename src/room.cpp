@@ -1674,12 +1674,22 @@ void Room::marshal(ServerPlayer *player){
             p->introduceTo(player);
     }
 
+
+
     QStringList player_circle;
     foreach(ServerPlayer *player, players)
         player_circle << player->objectName();
 
     player->invoke("arrangeSeats", player_circle.join("+"));
     player->invoke("startInXs", "0");
+
+    foreach(ServerPlayer *p, players){
+        player->sendProperty("general", p);
+
+        if(p->getGeneral2())
+            player->sendProperty("general2", p);
+    }
+
     player->invoke("startGame");
 
     foreach(ServerPlayer *p, players){
