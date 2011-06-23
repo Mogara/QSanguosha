@@ -285,7 +285,7 @@ private slots:
     void speak();
 
     void onGameStart();
-    void onGameOver(bool victory, const QList<bool> &result_list);
+    void onGameOver();
     void onStandoff();
 
 #ifdef AUDIO_SUPPORT
