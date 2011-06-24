@@ -1004,6 +1004,9 @@ void CardEditor::saveImage(){
 
 void MainWindow::on_actionCard_editor_triggered()
 {
-    CardEditor *editor = new CardEditor(this);
+    static CardEditor *editor;
+    if(editor == NULL)
+        editor = new CardEditor(this);
+
     editor->show();
 }

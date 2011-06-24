@@ -2531,6 +2531,7 @@ void Room::makeReviving(const QStringList &texts){
     ServerPlayer *player = findChild<ServerPlayer *>(texts.at(1));
     Q_ASSERT(player);
     revivePlayer(player);
+    setPlayerProperty(player, "maxhp", player->getGeneralMaxHP());
     setPlayerProperty(player, "hp", player->getMaxHP());
 }
 

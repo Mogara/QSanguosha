@@ -541,7 +541,6 @@ int ServerPlayer::getGeneralMaxHP() const{
         int first = getGeneral()->getMaxHp();
         int second = getGeneral2()->getMaxHp();
 
-
         switch(Config.MaxHpScheme){
         case 2: max_hp = (first + second)/2; break;
         case 1: max_hp = qMin(first, second); break;
@@ -597,17 +596,17 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if(getKingdom() != getGeneral()->getKingdom())
         player->sendProperty("kingdom", this);
 
-    if(getXueyi() > 0)
-        player->sendProperty("xueyi", this);
-
-    if(isDead()){
+    if(isAlive()){
+        player->sendProperty("seat", this);
+        if(getXueyi() > 0)
+            player->sendProperty("xueyi", this);
+        if(getPhase() != Player::NotActive)
+            player->sendProperty("phase", this);
+    }else{
         player->sendProperty("alive", this);
         player->sendProperty("role", this);
         player->invoke("killPlayer", objectName());
     }
-
-    if(getPhase() != Player::NotActive)
-        player->sendProperty("phase", this);
 
     if(!faceUp())
         player->sendProperty("faceup", this);
@@ -617,8 +616,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if(getAttackRange() != 1)
         player->sendProperty("atk", this);
-
-    player->sendProperty("seat", this);
 
     if(!isKongcheng()){
         if(player != this){
