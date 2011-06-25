@@ -1537,11 +1537,27 @@ public:
 };
 
 YisheCard::YisheCard(){
-    target_fixed = true;
+
 }
 
-void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    if(subcards.isEmpty()){
+        foreach(int card_id, source->getPile("rice")){
+            source->obtainCard(Sanguosha->getCard(card_id));
+            QString pile_str = QString("%1:rice-%2").arg(source->objectName()).arg(card_id);
+            room->broadcastInvoke("pile", pile_str);
+        }
 
+        source->getPile("rice").clear();
+    }else{
+        foreach(int card_id, subcards){
+            source->addCardToPile("rice", card_id);
+        }
+    }
+}
+
+bool YisheCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return true;
 }
 
 class YisheViewAsSkill: public ViewAsSkill{
@@ -1553,14 +1569,14 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const{
         Player *self = const_cast<Player *>(player);
 
-        if(self->getPile("@yishe").isEmpty())
+        if(self->getPile("rice").isEmpty())
             return !player->isKongcheng();
         else
             return true;
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        int n = Self->getPile("@yishe").length();
+        int n = Self->getPile("rice").length();
         if(selected.length() + n >= 5)
             return false;
 
@@ -1568,6 +1584,9 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(Self->getPile("rice").isEmpty() && cards.isEmpty())
+            return NULL;
+
         card->clearSubcards();
         card->addSubcards(cards);
         return card;
@@ -1586,7 +1605,7 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     if(zhanglu == NULL)
         return;
 
-    QList<int> &yishe = zhanglu->getPile("@yishe");
+    QList<int> &yishe = zhanglu->getPile("rice");
     if(yishe.isEmpty())
         return;
 
@@ -1602,7 +1621,7 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     room->showCard(source, card_id);
 
     if(room->askForChoice(zhanglu, "yishe-ask", "allow+disallow") == "disallow"){
-        zhanglu->addCardToPile("@yishe", card_id);
+        zhanglu->addCardToPile("rice", card_id);
     }
 }
 
@@ -1627,7 +1646,7 @@ public:
             }
         }
 
-        return zhanglu && !zhanglu->getPile("@yishe").isEmpty();
+        return zhanglu && !zhanglu->getPile("rice").isEmpty();
     }
 
     virtual const Card *viewAs() const{
@@ -1664,7 +1683,7 @@ public:
         if(zhanglu == NULL)
             return false;
 
-        QList<int> &yishe = zhanglu->getPile("@yishe");
+        QList<int> &yishe = zhanglu->getPile("rice");
         if(yishe.isEmpty())
             return false;
 
@@ -1679,6 +1698,11 @@ public:
             card_id = room->askForAG(player, yishe, false, objectName());
             player->invoke("clearAG");
         }
+
+
+        yishe.removeOne(card_id);
+        QString pile_str = QString("%1:rice-%2").arg(zhanglu->objectName()).arg(card_id);
+        room->broadcastInvoke("pile", pile_str);
 
         JudgeStar judge = data.value<JudgeStar>();
         judge->card = Sanguosha->getCard(card_id);
@@ -1723,18 +1747,29 @@ public:
         if(zhanglu == NULL)
             return false;
 
+        CardStar card = data.value<CardStar>();
+        QList<const Card *> red_cards;
+        foreach(int card_id, card->getSubcards()){
+            const Card *c = Sanguosha->getCard(card_id);
+            if(c->isRed())
+                red_cards << c;
+        }
+
+        if(red_cards.isEmpty())
+            return false;
+
         if(!zhanglu->askForSkillInvoke(objectName(), data))
             return false;
 
-        CardStar card = data.value<CardStar>();
-
-        bool can_put = 5 - zhanglu->getPile("@yishe").length() >= card->subcardsLength();
+        bool can_put = 5 - zhanglu->getPile("rice").length() >= red_cards.length();
         if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
-            foreach(int card_id, card->getSubcards()){
-                zhanglu->addCardToPile("@yishe", card_id);
+            foreach(const Card *card, red_cards){
+                zhanglu->addCardToPile("rice", card->getId());
             }
         }else{
-            zhanglu->obtainCard(card);
+            foreach(const Card *card, red_cards){
+                zhanglu->obtainCard(card);
+            }
         }
 
         return false;
@@ -1814,12 +1849,10 @@ YitianPackage::YitianPackage()
     dengshizai->addSkill(new Zhenggong);
     dengshizai->addSkill(new Toudu);
 
-    /*
     General *zhanggongqi = new General(this, "zhanggongqi", "qun", 3);
     zhanggongqi->addSkill(new Yishe);
     zhanggongqi->addSkill(new Midao);
     zhanggongqi->addSkill(new Xiliang);
-    */
 
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 
