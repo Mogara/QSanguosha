@@ -25,8 +25,7 @@ public:
         Room *room = player->getRoom();
         ServerPlayer *caopi = room->findPlayerBySkillName(objectName());
         if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName())){
-            QString general_name = player->getGeneralName();
-            if(general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc"){
+            if(player->isCaoCao()){
                 room->playSkillEffect(objectName(), 3);
             }else if(player->getGeneral()->isMale())
                 room->playSkillEffect(objectName(), 1);

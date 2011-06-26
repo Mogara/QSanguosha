@@ -2174,8 +2174,7 @@ void RoomScene::onGameOver(){
             if(player->property("win").toBool())
                 continue;
 
-            QString name = player->getGeneralName();
-            if(name == "caocao" || name == "shencc" || name == "shencaocao"){
+            if(player->isCaoCao()){
                 if(SoundEngine)
                     SoundEngine->stopAllSounds();
 

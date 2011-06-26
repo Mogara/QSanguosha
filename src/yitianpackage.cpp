@@ -1603,20 +1603,25 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         card_id = yishe.first();
     else{
         room->fillAG(yishe, source);
-        card_id = room->askForAG(source, yishe, false, "yishe-ask");
+        card_id = room->askForAG(source, yishe, false, "yisheask");
         source->invoke("clearAG");
     }
 
+    QString pile_str = QString("%1:rice-%2").arg(zhanglu->objectName()).arg(card_id);
+    room->broadcastInvoke("pile", pile_str);
+    yishe.removeOne(card_id);
+
+    source->obtainCard(Sanguosha->getCard(card_id));
     room->showCard(source, card_id);
 
-    if(room->askForChoice(zhanglu, "yishe-ask", "allow+disallow") == "disallow"){
+    if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "disallow"){
         zhanglu->addCardToPile("rice", card_id);
     }
 }
 
 class YisheAsk: public ZeroCardViewAsSkill{
 public:
-    YisheAsk():ZeroCardViewAsSkill("yishe-ask"){
+    YisheAsk():ZeroCardViewAsSkill("yisheask"){
         default_choice = "disallow";
     }
 
@@ -1652,7 +1657,7 @@ public:
     virtual void onGameStart(ServerPlayer *player) const{
         Room *room = player->getRoom();
         foreach(ServerPlayer *p, room->getOtherPlayers(player))
-            room->attachSkillToPlayer(p, "yishe-ask");
+            room->attachSkillToPlayer(p, "yisheask");
     }
 };
 

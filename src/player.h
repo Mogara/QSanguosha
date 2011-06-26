@@ -42,6 +42,7 @@ class Player : public QObject
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
+    Q_PROPERTY(bool caocao READ isCaoCao)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
@@ -188,6 +189,8 @@ public:
 
     void jilei(const QString &type);
     bool isJilei(const Card *card) const;
+
+    bool isCaoCao() const;
 
     QVariantMap tag;
 

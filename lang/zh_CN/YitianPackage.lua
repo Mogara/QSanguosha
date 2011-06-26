@@ -207,6 +207,9 @@ return {
 	["rice"] = "米",
 	["xiliang:put"] = "收为\"米\"",
 	["xiliang:obtain"] = "加入手牌",
+	["yisheask"] = "义舍要牌",
+	["yisheask:allow"] = "同意",
+	["yisheask:disallow"] = "不同意",
 	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
