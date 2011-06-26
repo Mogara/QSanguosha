@@ -13,6 +13,7 @@ namespace Ui {
     class MainWindow;
 }
 
+class FitView;
 class QGraphicsScene;
 class QSystemTrayIcon;
 class Server;
@@ -41,7 +42,8 @@ public:
 protected:
     virtual void closeEvent(QCloseEvent *);
 
-private:    
+private:
+    FitView *view;
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;

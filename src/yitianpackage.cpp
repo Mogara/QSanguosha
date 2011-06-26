@@ -1530,7 +1530,7 @@ public:
 };
 
 YisheCard::YisheCard(){
-
+    target_fixed = true;
 }
 
 void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
@@ -1547,10 +1547,6 @@ void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
             source->addCardToPile("rice", card_id);
         }
     }
-}
-
-bool YisheCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return true;
 }
 
 class YisheViewAsSkill: public ViewAsSkill{

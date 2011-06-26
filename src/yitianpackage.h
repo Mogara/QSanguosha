@@ -106,7 +106,6 @@ public:
     Q_INVOKABLE YisheCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 };
 
 class YisheAskCard: public SkillCard{
