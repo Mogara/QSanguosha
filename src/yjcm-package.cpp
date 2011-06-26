@@ -788,8 +788,10 @@ public:
             const Card *card = NULL;
             if(player == wuguotai)
                 card = room->askForCardShow(player, wuguotai, objectName());
-            else
-                card = player->getRandomHandCard();
+            else{
+                int card_id = room->askForCardChosen(wuguotai, player, "h", "buyi");
+                card = Sanguosha->getCard(card_id);
+            }
 
             room->showCard(player, card->getEffectiveId());
 

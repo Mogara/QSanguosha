@@ -1245,22 +1245,15 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     source->drawCards(3);
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
+    QSet<QString> general_names;
+    foreach(ServerPlayer *player, players)
+        general_names << player->getGeneralName();
+
     QStringList all_generals = Sanguosha->getLimitedGeneralNames();
     QStringList shu_generals;
     foreach(QString name, all_generals){
         const General *general = Sanguosha->getGeneral(name);
-        if(general->getKingdom() != "shu")
-            continue;
-
-        bool duplicated = false;
-        foreach(ServerPlayer *player, players){
-            if(player->getGeneralName() == name){
-                duplicated = true;
-                break;
-            }
-        }
-
-        if(!duplicated)
+        if(general->getKingdom() == "shu" && !general_names.contains(name))
             shu_generals << name;
     }
 
@@ -1293,7 +1286,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish &&
+        if(target->getPhase() == Player::NotActive &&
            target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();
