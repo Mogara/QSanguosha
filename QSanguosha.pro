@@ -75,7 +75,8 @@ SOURCES += src/main.cpp \
     src/cardeditor.cpp \
     src/zombie-mode-scenario.cpp \
     src/generalselector.cpp \
-    src/packagingeditor.cpp
+    src/packagingeditor.cpp \
+    src/boss-mode-scenario.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -146,7 +147,8 @@ HEADERS += src/mainwindow.h \
     src/cardeditor.h \
     src/zombie-mode-scenario.h \
     src/generalselector.h \
-    src/packagingeditor.h
+    src/packagingeditor.h \
+    src/boss-mode-scenario.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
