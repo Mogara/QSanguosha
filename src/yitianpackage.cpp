@@ -1534,17 +1534,15 @@ YisheCard::YisheCard(){
 }
 
 void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    if(subcards.isEmpty()){
-        foreach(int card_id, source->getPile("rice")){
-            source->obtainCard(Sanguosha->getCard(card_id));
-            QString pile_str = QString("%1:rice-%2").arg(source->objectName()).arg(card_id);
-            room->broadcastInvoke("pile", pile_str);
-        }
+    const QList<int> rice = source->getPile("rice");
 
-        source->getPile("rice").clear();
+    if(subcards.isEmpty()){
+        foreach(int card_id, rice){
+            room->obtainCard(source, card_id);
+        }
     }else{
         foreach(int card_id, subcards){
-            source->addCardToPile("rice", card_id);
+            source->addToPile("rice", card_id);
         }
     }
 }
@@ -1556,9 +1554,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        Player *self = const_cast<Player *>(player);
-
-        if(self->getPile("rice").isEmpty())
+        if(player->getPile("rice").isEmpty())
             return !player->isKongcheng();
         else
             return true;
@@ -1594,7 +1590,7 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
     if(zhanglu == NULL)
         return;
 
-    QList<int> &yishe = zhanglu->getPile("rice");
+    const QList<int> &yishe = zhanglu->getPile("rice");
     if(yishe.isEmpty())
         return;
 
@@ -1607,15 +1603,11 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlaye
         source->invoke("clearAG");
     }
 
-    QString pile_str = QString("%1:rice-%2").arg(zhanglu->objectName()).arg(card_id);
-    room->broadcastInvoke("pile", pile_str);
-    yishe.removeOne(card_id);
-
     source->obtainCard(Sanguosha->getCard(card_id));
     room->showCard(source, card_id);
 
     if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "disallow"){
-        zhanglu->addCardToPile("rice", card_id);
+        zhanglu->addToPile("rice", card_id);
     }
 }
 
@@ -1677,7 +1669,7 @@ public:
         if(zhanglu == NULL)
             return false;
 
-        QList<int> &yishe = zhanglu->getPile("rice");
+        QList<int> yishe = zhanglu->getPile("rice");
         if(yishe.isEmpty())
             return false;
 
@@ -1692,11 +1684,6 @@ public:
             card_id = room->askForAG(player, yishe, false, objectName());
             player->invoke("clearAG");
         }
-
-
-        yishe.removeOne(card_id);
-        QString pile_str = QString("%1:rice-%2").arg(zhanglu->objectName()).arg(card_id);
-        room->broadcastInvoke("pile", pile_str);
 
         JudgeStar judge = data.value<JudgeStar>();
         judge->card = Sanguosha->getCard(card_id);
@@ -1758,7 +1745,7 @@ public:
         bool can_put = 5 - zhanglu->getPile("rice").length() >= red_cards.length();
         if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
             foreach(const Card *card, red_cards){
-                zhanglu->addCardToPile("rice", card->getId());
+                zhanglu->addToPile("rice", card->getEffectiveId());
             }
         }else{
             foreach(const Card *card, red_cards){

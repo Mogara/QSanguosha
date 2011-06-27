@@ -417,13 +417,13 @@ public:
 
     static void Remove(ServerPlayer *zhoutai){
         Room *room = zhoutai->getRoom();
-        QList<int> &buqu = zhoutai->getPile("buqu");
+        const QList<int> buqu(zhoutai->getPile("buqu"));
 
         int need = 1 - zhoutai->getHp();
         if(need <= 0){
             // clear all the buqu cards
-            while(!buqu.isEmpty()){
-                zhoutai->removeCardFromPile("buqu", buqu.takeFirst());
+            foreach(int card_id, buqu){
+                room->throwCard(card_id);
             }
         }else{
             int to_remove = buqu.length() - need;
@@ -433,7 +433,7 @@ public:
             int i;
             for(i=0; i<to_remove; i++){
                 int card_id = room->askForAG(zhoutai, buqu, false, "buqu");
-                zhoutai->removeCardFromPile("buqu", card_id);
+                room->throwCard(card_id);
             }
 
             room->broadcastInvoke("clearAG");
@@ -457,7 +457,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &) const{
         Room *room = zhoutai->getRoom();
-        QList<int> &buqu = zhoutai->getPile("buqu");
+        const QList<int> &buqu = zhoutai->getPile("buqu");
 
         if(event == Dying){
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
@@ -465,7 +465,7 @@ public:
             if(n > 0){
                 QList<int> card_ids = room->getNCards(n);
                 foreach(int card_id, card_ids){
-                    zhoutai->addCardToPile("buqu", card_id);
+                    zhoutai->addToPile("buqu", card_id);
                 }
             }
         }else if(event == AskForPeachesDone){

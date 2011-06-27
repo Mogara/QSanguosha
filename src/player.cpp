@@ -557,8 +557,18 @@ int Player::getCardCount(bool include_equip) const{
     return count;
 }
 
-QList<int> &Player::getPile(const QString &pile_name){
+QList<int> Player::getPile(const QString &pile_name) const{
     return piles[pile_name];
+}
+
+QString Player::getPileName(int card_id) const{
+    foreach(QString pile_name, piles.keys()){
+        QList<int> pile = piles[pile_name];
+        if(pile.contains(card_id))
+            return pile_name;
+    }
+
+    return QString();
 }
 
 void Player::addHistory(const QString &name, int times){
