@@ -1245,22 +1245,15 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     source->drawCards(3);
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
+    QSet<QString> general_names;
+    foreach(ServerPlayer *player, players)
+        general_names << player->getGeneralName();
+
     QStringList all_generals = Sanguosha->getLimitedGeneralNames();
     QStringList shu_generals;
     foreach(QString name, all_generals){
         const General *general = Sanguosha->getGeneral(name);
-        if(general->getKingdom() != "shu")
-            continue;
-
-        bool duplicated = false;
-        foreach(ServerPlayer *player, players){
-            if(player->getGeneralName() == name){
-                duplicated = true;
-                break;
-            }
-        }
-
-        if(!duplicated)
+        if(general->getKingdom() == "shu" && !general_names.contains(name))
             shu_generals << name;
     }
 
@@ -1293,7 +1286,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Finish &&
+        if(target->getPhase() == Player::NotActive &&
            target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();
@@ -1536,6 +1529,234 @@ public:
     }
 };
 
+YisheCard::YisheCard(){
+    target_fixed = true;
+}
+
+void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    const QList<int> rice = source->getPile("rice");
+
+    if(subcards.isEmpty()){
+        foreach(int card_id, rice){
+            room->obtainCard(source, card_id);
+        }
+    }else{
+        foreach(int card_id, subcards){
+            source->addToPile("rice", card_id);
+        }
+    }
+}
+
+class YisheViewAsSkill: public ViewAsSkill{
+public:
+    YisheViewAsSkill():ViewAsSkill(""){
+        card = new YisheCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->getPile("rice").isEmpty())
+            return !player->isKongcheng();
+        else
+            return true;
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        int n = Self->getPile("rice").length();
+        if(selected.length() + n >= 5)
+            return false;
+
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(Self->getPile("rice").isEmpty() && cards.isEmpty())
+            return NULL;
+
+        card->clearSubcards();
+        card->addSubcards(cards);
+        return card;
+    }
+
+private:
+    YisheCard *card;
+};
+
+YisheAskCard::YisheAskCard(){
+    target_fixed = true;
+}
+
+void YisheAskCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    ServerPlayer *zhanglu = room->findPlayerBySkillName("yishe");
+    if(zhanglu == NULL)
+        return;
+
+    const QList<int> &yishe = zhanglu->getPile("rice");
+    if(yishe.isEmpty())
+        return;
+
+    int card_id;
+    if(yishe.length() == 1)
+        card_id = yishe.first();
+    else{
+        room->fillAG(yishe, source);
+        card_id = room->askForAG(source, yishe, false, "yisheask");
+        source->invoke("clearAG");
+    }
+
+    source->obtainCard(Sanguosha->getCard(card_id));
+    room->showCard(source, card_id);
+
+    if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "disallow"){
+        zhanglu->addToPile("rice", card_id);
+    }
+}
+
+class YisheAsk: public ZeroCardViewAsSkill{
+public:
+    YisheAsk():ZeroCardViewAsSkill("yisheask"){
+        default_choice = "disallow";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->hasSkill("yishe"))
+            return false;
+
+        if(player->usedTimes("YisheAskCard") >= 2)
+            return false;
+
+        Player *zhanglu = NULL;
+        foreach(Player *p, player->parent()->findChildren<Player *>()){
+            if(p->isAlive() && p->hasSkill("yishe")){
+                zhanglu = p;
+                break;
+            }
+        }
+
+        return zhanglu && !zhanglu->getPile("rice").isEmpty();
+    }
+
+    virtual const Card *viewAs() const{
+        return new YisheAskCard;
+    }
+};
+
+class Yishe: public GameStartSkill{
+public:
+    Yishe():GameStartSkill("yishe"){
+        view_as_skill = new YisheViewAsSkill;
+    }
+
+    virtual void onGameStart(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            room->attachSkillToPlayer(p, "yisheask");
+    }
+};
+
+class Midao: public TriggerSkill{
+public:
+    Midao():TriggerSkill("midao"){
+        events << StartJudge;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *zhanglu = room->findPlayerBySkillName(objectName());
+        if(zhanglu == NULL)
+            return false;
+
+        QList<int> yishe = zhanglu->getPile("rice");
+        if(yishe.isEmpty())
+            return false;
+
+        if(!zhanglu->askForSkillInvoke(objectName(), data))
+            return false;
+
+        int card_id;
+        if(yishe.length() == 1)
+            card_id = yishe.first();
+        else{
+            room->fillAG(yishe, player);
+            card_id = room->askForAG(player, yishe, false, objectName());
+            player->invoke("clearAG");
+        }
+
+        JudgeStar judge = data.value<JudgeStar>();
+        judge->card = Sanguosha->getCard(card_id);
+        room->moveCardTo(judge->card, NULL, Player::Special);
+
+        LogMessage log;
+        log.type = "$InitialJudge";
+        log.from = player;
+        log.card_str = judge->card->getEffectIdString();
+        room->sendLog(log);
+
+        room->sendJudgeResult(judge);
+
+        room->getThread()->delay();
+
+        return true;
+    }
+};
+
+class Xiliang: public TriggerSkill{
+public:
+    Xiliang():TriggerSkill("xiliang"){
+        events << CardDiscarded;
+
+        default_choice = "obtain";
+
+        frequency = Frequent;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill(objectName());
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+
+        if(player->getPhase() != Player::Discard)
+            return false;
+
+        ServerPlayer *zhanglu = room->findPlayerBySkillName(objectName());
+
+        if(zhanglu == NULL)
+            return false;
+
+        CardStar card = data.value<CardStar>();
+        QList<const Card *> red_cards;
+        foreach(int card_id, card->getSubcards()){
+            const Card *c = Sanguosha->getCard(card_id);
+            if(c->isRed())
+                red_cards << c;
+        }
+
+        if(red_cards.isEmpty())
+            return false;
+
+        if(!zhanglu->askForSkillInvoke(objectName(), data))
+            return false;
+
+        bool can_put = 5 - zhanglu->getPile("rice").length() >= red_cards.length();
+        if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
+            foreach(const Card *card, red_cards){
+                zhanglu->addToPile("rice", card->getEffectiveId());
+            }
+        }else{
+            foreach(const Card *card, red_cards){
+                zhanglu->obtainCard(card);
+            }
+        }
+
+        return false;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1609,7 +1830,12 @@ YitianPackage::YitianPackage()
     dengshizai->addSkill(new Zhenggong);
     dengshizai->addSkill(new Toudu);
 
-    skills << new LianliSlashViewAsSkill;
+    General *zhanggongqi = new General(this, "zhanggongqi", "qun", 3);
+    zhanggongqi->addSkill(new Yishe);
+    zhanggongqi->addSkill(new Midao);
+    zhanggongqi->addSkill(new Xiliang);
+
+    skills << new LianliSlashViewAsSkill << new YisheAsk;
 
     addMetaObject<ChengxiangCard>();
     addMetaObject<JuejiCard>();
@@ -1619,6 +1845,8 @@ YitianPackage::YitianPackage()
     addMetaObject<GuihanCard>();
     addMetaObject<LexueCard>();
     addMetaObject<XunzhiCard>();
+    addMetaObject<YisheAskCard>();
+    addMetaObject<YisheCard>();
 }
 
 ADD_PACKAGE(Yitian);

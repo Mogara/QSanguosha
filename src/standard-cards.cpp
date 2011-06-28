@@ -732,7 +732,6 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
     DamageStruct damage;
     damage.card = this;
-    damage.damage = 1;
     damage.from = second;
     damage.to = first;
 

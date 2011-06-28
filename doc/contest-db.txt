@@ -1,0 +1,57 @@
+= 太阳神三国杀竞赛模式数据库格式说明
+
+Moligaloo <moligaloo@gmail.com>
+
+== 数据库格式
+数据库使用 _SQLite 3.x_ , 默认将数据库文件保存为文件名为 users.db，
+也可以修改 config.ini 下 [Contest] 下的 Database 键的值来调整数据库文件路径。
+
+.config.ini
+=========================
+ [Contest]
+Database=contest.db
+=========================
+
+数据库的建立和编辑可以使用 SQLite 的相关工具，如 _SQLiteSpy_ , _SQLiteManager_,
+_Navicat for SQLite_ 等，也可以用支持 SQLite 的脚本语言动态生成。
+数据库的编码请使用 *UTF-8*。
+
+== 数据库表
+数据库表共有3个，用户表，房间表和战局结果表。除用户表需要用外部工具导入、生成或录入外，
+其余2表皆由游戏服务器本身维护。
+
+=== 用户表(users)
+用于保存所有的登录用户信息，共有4个字段：
+
+* uid 整数，用户的整数编号，用户表的主键
+* username 用户的登录名，
+* password 用盐渍MD5加密后的密码
+* salt 盐渍值
+
+.加密算法：
+----------------------------------
+password = md5(md5(text) + salt)
+----------------------------------
+其中text为密码原文，salt 和 password 对应的数据库字段
+
+=== 房间表(rooms)
+用于保存一局游戏本身
+
+* start_time, 游戏的开始时间，格式为 MMDD-HHMMSS，例如
+0130-182246 表示1月30日18时22分46秒开始的一场游戏，也是表的主键
+* end_time, 游戏的结束时间，格式与 start_time 相同
+* winner 本局游戏的胜利者，有3种格式：
+	** lord+loyalist 主公和忠臣胜利
+	** rebel 反贼胜利
+	** renegade 内奸胜利
+
+=== 战局结果表 (results)
+用于表示每名玩家在一局游戏的战局结果
+
+* start_time, 一局游戏的开始时间，rooms 表的外键
+* username, 玩家的用户名
+* general, 玩家在本局游戏所选的武将
+* role, 玩家在本局游戏中的身份
+* score, 玩家在本局游戏中的积分
+* victims, 玩家在本局游戏杀死的武将，多名武将用 + 隔开
+* alive, 玩家在游戏结束时是否存活, 存活为 true 反之为 false

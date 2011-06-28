@@ -154,7 +154,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
-    connect(ClientInstance, SIGNAL(game_over(bool,QList<bool>)), this, SLOT(onGameOver(bool,QList<bool>)));
+    connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
     connect(ClientInstance, SIGNAL(standoff()), this, SLOT(onStandoff()));
 
     connect(ClientInstance, SIGNAL(card_moved(CardMoveStructForClient)), this, SLOT(moveCard(CardMoveStructForClient)));
@@ -2161,10 +2161,29 @@ void RoomScene::onStandoff(){
     dialog->exec();
 }
 
-void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
+void RoomScene::onGameOver(){
     freeze();
 
-    Sanguosha->playAudio(victory ? "win" : "lose");
+    bool victory = Self->property("win").toBool();
+
+#ifdef AUDIO_SUPPORT
+    QString win_effect;
+    if(victory){
+        win_effect = "win";
+        foreach(const Player *player, ClientInstance->getPlayers()){
+            if(player->property("win").toBool() && player->isCaoCao()){
+                if(SoundEngine)
+                    SoundEngine->stopAllSounds();
+
+                win_effect = "win-cc";
+                break;
+            }
+        }
+    }else
+        win_effect = "lose";
+
+    Sanguosha->playAudio(win_effect);
+#endif
 
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(500, 600);
@@ -2192,21 +2211,17 @@ void RoomScene::onGameOver(bool victory, const QList<bool> &result_list){
     winner_table->setColumnCount(4);
     loser_table->setColumnCount(4);
 
-    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
     QList<const ClientPlayer *> winner_list, loser_list;
-    int i;
-    for(i=0; i<players.length(); i++){
-        const ClientPlayer *player = players.at(i);
-        bool result = result_list.at(i);
-
-        if(result)
+    foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
+        bool win = player->property("win").toBool();
+        if(win)
             winner_list << player;
         else
             loser_list << player;
 
         if(player != Self){
             Photo *photo = name2photo.value(player->objectName());
-            photo->setEmotion(result ? "good" : "bad", true);
+            photo->setEmotion(win ? "good" : "bad", true);
         }
     }
 

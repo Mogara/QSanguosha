@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     foreach(QAction *action, actions)
         start_scene->addButton(action);
 
-    FitView *view = new FitView(scene);
+    view = new FitView(scene);
 
     setCentralWidget(view);
     restoreFromConfig();
@@ -124,7 +124,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene){
-    QGraphicsView *view = qobject_cast<QGraphicsView *>(centralWidget());
     view->setScene(scene);
     if(this->scene)
         this->scene->deleteLater();

@@ -601,7 +601,7 @@ public:
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
-        QList<int> &stars = shenzhuge->getPile("stars");
+        const QList<int> stars = shenzhuge->getPile("stars");
         if(stars.isEmpty())
             return;
 
@@ -611,37 +611,28 @@ public:
         int ai_delay = Config.AIDelay;
         Config.AIDelay = 0;
 
-        QList<int> to_exchange;
+        int n = 0;
         while(!stars.isEmpty()){
             int card_id = room->askForAG(shenzhuge, stars, true, "qixing");
             if(card_id == -1)
                 break;
 
-            stars.removeOne(card_id);
-            to_exchange << card_id;
+            ++ n;
 
-            const Card *card = Sanguosha->getCard(card_id);
-            shenzhuge->addCard(card, Player::Hand);
-            room->setCardMapping(card_id, shenzhuge, Player::Hand);
-            QString take_str = QString("%1:%2").arg(shenzhuge->objectName()).arg(card_id);
-            shenzhuge->invoke("takeAG", take_str);
-
-            shenzhuge->invoke("pile", QString("%1:stars-%2").arg(shenzhuge->objectName()).arg(card_id));
+            room->moveCardTo(Sanguosha->getCard(card_id), shenzhuge, Player::Hand, false);
         }
 
         Config.AIDelay = ai_delay;
 
         shenzhuge->invoke("clearAG");
 
-        if(to_exchange.isEmpty())
+        if(n == 0)
             return;
 
-        int n = to_exchange.length();
         const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", n);
 
-        foreach(int card_id, exchange_card->getSubcards()){
-            shenzhuge->invoke("pile", QString("%1:stars+%2").arg(shenzhuge->objectName()).arg(card_id));
-        }
+        foreach(int card_id, exchange_card->getSubcards())
+            shenzhuge->addToPile("stars", card_id, false);
 
         LogMessage log;
         log.type = "#QixingExchange";
@@ -649,27 +640,19 @@ public:
         log.arg = QString::number(n);
         room->sendLog(log);
 
-        room->moveCardTo(exchange_card, shenzhuge, Player::Special, false);
-
-        stars.append(exchange_card->getSubcards());
-
         delete exchange_card;
     }
 
     static void DiscardStar(ServerPlayer *shenzhuge, int n){
         Room *room = shenzhuge->getRoom();
-        QList<int> &stars = shenzhuge->getPile("stars");
+        const QList<int> stars = shenzhuge->getPile("stars");
 
         room->fillAG(stars, shenzhuge);
 
         int i;
         for(i=0; i<n; i++){
             int card_id = room->askForAG(shenzhuge, stars, false, "qixing-discard");
-
-            stars.removeOne(card_id);
             room->throwCard(card_id);
-
-            shenzhuge->invoke("pile", QString("%1:stars-%2").arg(shenzhuge->objectName()).arg(card_id));
         }
 
         shenzhuge->invoke("clearAG");
@@ -696,16 +679,12 @@ public:
 
     virtual void onGameStart(ServerPlayer *shenzhuge) const{
         shenzhuge->gainMark("@star", 7);
+        shenzhuge->drawCards(7);
 
-        Room *room = shenzhuge->getRoom();
-        QList<int> stars = room->getNCards(7);
-        foreach(int star, stars)
-            room->setCardMapping(star, shenzhuge, Player::Special);
-        shenzhuge->getPile("stars") = stars;
+        QList<int> stars = shenzhuge->handCards().mid(0, 7);
 
-        foreach(int star, stars){
-            shenzhuge->invoke("pile", QString("%1:stars+%2").arg(shenzhuge->objectName()).arg(star));
-        }
+        foreach(int card_id, stars)
+            shenzhuge->addToPile("stars", card_id, false);
 
         Qixing::Exchange(shenzhuge);
     }

@@ -196,6 +196,21 @@ return {
 	[":toudu"] = "当你的武将牌背面向上时,若你受到伤害,你可以弃一张手牌并将你的武将牌翻面,若如此做,视为对任 意一名其他角色使用了一张【杀】.",
 	["@zhenggong"] = "争功",
 	
+	-- 张鲁
+	["zhanggongqi"] = "张公祺",
+	["yishe"] = "义舍",
+	[":yishe"] = "出牌阶段,你可将任意数量手牌正面朝上移出游戏称为\"米\"(至多存在五张)或收回.其他角色在其出牌阶段可选择任意一张\"米\"询问你,若你同意,该角色获得这张牌,每回合限两次.",
+	["midao"] = "米道",
+	[":midao"] = "当任意角色须要进行判定时,你可令其从\"米\"中选取判定牌.",
+	["xiliang"] = "惜粮",
+	[":xiliang"] = "你可将其他角色弃牌阶段弃掉的红牌收为\"米\"或加入手牌.",
+	["rice"] = "米",
+	["xiliang:put"] = "收为\"米\"",
+	["xiliang:obtain"] = "加入手牌",
+	["yisheask"] = "义舍要牌",
+	["yisheask:allow"] = "同意",
+	["yisheask:disallow"] = "不同意",
+	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
@@ -214,6 +229,7 @@ return {
 	["cv:jiawenhe"] = "",
 	["cv:guzhielai"] = "",
 	["cv:dengshizai"] = "",
+	["cv:zhanggongqi"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -228,5 +244,6 @@ return {
 	["designer:jiawenhe"] = "氢弹",
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["designer:dengshizai"] = "Bu懂",
+	["designer:zhanggongqi"] = "背碗卤粉, Jr. Wakaran",
 }
 

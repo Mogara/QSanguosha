@@ -260,6 +260,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
         layout->addLayout(HLay(scenario_button, scenario_combobox));
     }
 
+#if 0
 
     {
         // add challenge modes
@@ -304,6 +305,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
         //layout->addWidget(challenge_combobox);
         //layout->addLayout(challenge_layout);
     }
+
+#endif
 
     mode_box->setLayout(layout);
 

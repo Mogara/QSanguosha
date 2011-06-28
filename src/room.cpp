@@ -1936,19 +1936,48 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         return;
 
     const Card *card = Sanguosha->getCard(move.card_id);
-    if(move.from)
+    if(move.from){
+        if(move.from_place == Player::Special){
+            QString pile_name = move.from->getPileName(move.card_id);
+            Q_ASSERT(!pile_name.isEmpty());
+            QString pile_str = QString("%1:%2-%3")
+                               .arg(move.from->objectName()).arg(pile_name).arg(move.card_id);
+
+            if(move.open)
+                broadcastInvoke("pile", pile_str);
+            else{
+                foreach(ServerPlayer *p, scope)
+                    p->invoke("pile", pile_str);
+            }
+        }
+
         move.from->removeCard(card, move.from_place);
-    else{
-        if(move.from_place == Player::DiscardedPile)
-            discard_pile->removeOne(move.card_id);
-        else if(move.from_place == Player::DrawPile)
-            draw_pile->removeOne(move.card_id);
-        else if(move.from_place == Player::Special)
-            table_cards.removeOne(move.card_id);
+    }else{
+        switch(move.from_place){
+        case Player::DiscardedPile: discard_pile->removeOne(move.card_id); break;
+        case Player::DrawPile: draw_pile->removeOne(move.card_id); break;
+        case Player::Special: table_cards.removeOne(move.card_id); break;
+        default:
+            break;
+        }
     }
 
     if(move.to){
         move.to->addCard(card, move.to_place);
+
+        if(move.to_place == Player::Special){
+            QString pile_name = move.to->getPileName(move.card_id);
+            Q_ASSERT(!pile_name.isEmpty());
+            QString pile_str = QString("%1:%2+%3")
+                               .arg(move.to->objectName()).arg(pile_name).arg(move.card_id);
+
+            if(move.open)
+                broadcastInvoke("pile", pile_str);
+            else{
+                foreach(ServerPlayer *p, scope)
+                    p->invoke("pile", pile_str);
+            }
+        }
     }else{
         if(move.to_place == Player::DiscardedPile)
             discard_pile->prepend(move.card_id);
@@ -1962,9 +1991,8 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
 
     QString move_str = move.toString();
     if(!move.open){
-        foreach(ServerPlayer *player, players){
-            if(scope.contains(player))
-                player->invoke("moveCard", move_str);
+        foreach(ServerPlayer *player, scope){
+            player->invoke("moveCard", move_str);
         }
     }else{
         broadcastInvoke("moveCard", move_str);
@@ -2531,6 +2559,7 @@ void Room::makeReviving(const QStringList &texts){
     ServerPlayer *player = findChild<ServerPlayer *>(texts.at(1));
     Q_ASSERT(player);
     revivePlayer(player);
+    setPlayerProperty(player, "maxhp", player->getGeneralMaxHP());
     setPlayerProperty(player, "hp", player->getMaxHP());
 }
 

@@ -99,4 +99,22 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class YisheCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YisheCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class YisheAskCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YisheAskCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
 #endif // YITIANPACKAGE_H

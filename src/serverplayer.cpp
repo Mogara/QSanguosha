@@ -223,7 +223,11 @@ void ServerPlayer::sendProperty(const char *property_name, const Player *player)
 
 void ServerPlayer::removeCard(const Card *card, Place place){
     switch(place){
-    case Hand: handcards.removeOne(card); break;
+    case Hand: {
+            handcards.removeOne(card);
+            break;
+        }
+
     case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             removeEquip(equip);
@@ -237,10 +241,22 @@ void ServerPlayer::removeCard(const Card *card, Place place){
             equip->onUninstall(this);
             break;
         }
+
     case Judging:{
             removeDelayedTrick(card);
             break;
         }
+
+    case Special:{
+            int card_id = card->getEffectiveId();
+            QString pile_name = getPileName(card_id);
+            Q_ASSERT(!pile_name.isEmpty());
+
+            piles[pile_name].removeOne(card_id);
+
+            break;
+        }
+
     default:
         // FIXME
         ;
@@ -249,17 +265,23 @@ void ServerPlayer::removeCard(const Card *card, Place place){
 
 void ServerPlayer::addCard(const Card *card, Place place){
     switch(place){
-    case Hand: handcards << card; break;
+    case Hand: {
+            handcards << card;
+            break;
+        }
+
     case Equip: {
             const EquipCard *equip = qobject_cast<const EquipCard *>(card);
             setEquip(equip);
             equip->onInstall(this);
             break;
         }
+
     case Judging:{
             addDelayedTrick(card);
             break;
         }
+
     default:
         // FIXME
         ;
@@ -472,24 +494,6 @@ void ServerPlayer::loseAllMarks(const QString &mark_name){
     }
 }
 
-void ServerPlayer::addCardToPile(const QString &pile_name, int card_id){
-    getPile(pile_name).append(card_id);
-
-    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special);
-
-    QString pile_str = QString("%1:%2+%3").arg(objectName()).arg(pile_name).arg(card_id);
-    room->broadcastInvoke("pile", pile_str);
-}
-
-void ServerPlayer::removeCardFromPile(const QString &pile_name, int card_id){
-    getPile(pile_name).removeOne(card_id);
-
-    room->throwCard(card_id);
-
-    QString pile_str = QString("%1:%2-%3").arg(objectName()).arg(pile_name).arg(card_id);
-    room->broadcastInvoke("pile", pile_str);
-}
-
 void ServerPlayer::setAI(AI *ai) {
     this->ai = ai;
 }
@@ -540,7 +544,6 @@ int ServerPlayer::getGeneralMaxHP() const{
     else{
         int first = getGeneral()->getMaxHp();
         int second = getGeneral2()->getMaxHp();
-
 
         switch(Config.MaxHpScheme){
         case 2: max_hp = (first + second)/2; break;
@@ -597,17 +600,17 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if(getKingdom() != getGeneral()->getKingdom())
         player->sendProperty("kingdom", this);
 
-    if(getXueyi() > 0)
-        player->sendProperty("xueyi", this);
-
-    if(isDead()){
+    if(isAlive()){
+        player->sendProperty("seat", this);
+        if(getXueyi() > 0)
+            player->sendProperty("xueyi", this);
+        if(getPhase() != Player::NotActive)
+            player->sendProperty("phase", this);
+    }else{
         player->sendProperty("alive", this);
         player->sendProperty("role", this);
         player->invoke("killPlayer", objectName());
     }
-
-    if(getPhase() != Player::NotActive)
-        player->sendProperty("phase", this);
 
     if(!faceUp())
         player->sendProperty("faceup", this);
@@ -617,8 +620,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if(getAttackRange() != 1)
         player->sendProperty("atk", this);
-
-    player->sendProperty("seat", this);
 
     if(!isKongcheng()){
         if(player != this){
@@ -678,4 +679,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         if(value > 0)
             player->invoke("addHistory", QString("%1#%2").arg(item).arg(value));
     }
+}
+
+void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
+    piles[pile_name] << card_id;
+
+    room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
 }

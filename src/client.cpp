@@ -1015,18 +1015,16 @@ void Client::gameOver(const QString &result_str){
         return;
     }
 
-    bool victory = false;
-    QList<bool> result_list;
+    QSet<QString> winners = winner.split("+").toSet();
     foreach(const ClientPlayer *player, players){
         QString role = player->getRole();
-        bool result = winner.contains(player->objectName()) || winner.contains(role);
-        result_list << result;
+        bool win = winners.contains(player->objectName()) || winners.contains(role);
 
-        if(player == Self)
-            victory = result;
+        ClientPlayer *p = const_cast<ClientPlayer *>(player);
+        p->setProperty("win", win);
     }
 
-    emit game_over(victory, result_list);
+    emit game_over();
 }
 
 void Client::killPlayer(const QString &player_name){

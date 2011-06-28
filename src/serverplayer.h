@@ -57,9 +57,6 @@ public:
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
 
-    void addCardToPile(const QString &pile_name, int card_id);
-    void removeCardFromPile(const QString &pile_name, int card_id);
-
     void setAI(AI *ai);
     AI *getAI() const;
     AI *getSmartAI() const;
@@ -90,6 +87,8 @@ public:
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
+
+    void addToPile(const QString &pile_name, int card_id, bool open = true);
 
 private:
     ClientSocket *socket;

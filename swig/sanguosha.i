@@ -172,7 +172,7 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true) const;
     int getCardCount(bool include_equip) const;
 
-    QList<int> &getPile(const char *pile_name);
+    QList<int> getPile(const char *pile_name);
 
     bool hasUsed(const char *card_class) const;
     int usedTimes(const char *card_class) const;
@@ -232,9 +232,6 @@ public:
     void gainMark(const char *mark, int n = 1);
     void loseMark(const char *mark, int n = 1);
 
-	void addCardToPile(const char *pile_name, int card_id);
-    void removeCardFromPile(const char *pile_name, int card_id);
-
 	void setNext(ServerPlayer *next);
     ServerPlayer *getNext() const;
     ServerPlayer *getNextAlive() const;
@@ -246,6 +243,9 @@ public:
 
 	int getGeneralMaxHP() const;
 	bool hasLordSkill(const char *skill_name) const;
+	
+	QString getIp() const;
+	void addToPile(const char *pile_name, int card_id, bool open = true);
 };
 
 %extend ServerPlayer{

@@ -227,7 +227,7 @@ signals:
     void judge_result(const QString &who, const QString &result);
 
     void game_started();
-    void game_over(bool victory, const QList<bool> &result_list);
+    void game_over();
     void standoff();
 
     void cards_drawed(const QList<const Card *> &cards);

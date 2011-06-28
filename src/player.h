@@ -42,6 +42,7 @@ class Player : public QObject
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
+    Q_PROPERTY(bool caocao READ isCaoCao)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
@@ -170,7 +171,8 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true) const;
     int getCardCount(bool include_equip) const;
 
-    QList<int> &getPile(const QString &pile_name);
+    QList<int> getPile(const QString &pile_name) const;
+    QString getPileName(int card_id) const;
 
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
@@ -188,6 +190,8 @@ public:
 
     void jilei(const QString &type);
     bool isJilei(const Card *card) const;
+
+    bool isCaoCao() const;
 
     QVariantMap tag;
 

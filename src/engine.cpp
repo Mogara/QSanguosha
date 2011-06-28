@@ -47,6 +47,7 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
     Scenario *NewZombieScenario();
+    Scenario *NewImpasseScenario();
 }
 
 extern "C" {
@@ -81,6 +82,7 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewHongyanScenario());
     addScenario(NewZombieScenario());
+    addScenario(NewImpasseScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");

@@ -498,7 +498,7 @@ void Photo::updatePile(const QString &pile_name){
     if(who == NULL)
         return;
 
-    QList<int> &pile = who->getPile(pile_name);
+    const QList<int> &pile = who->getPile(pile_name);
     if(pile.isEmpty())
         button_widget->hide();
     else{
