@@ -301,7 +301,7 @@ public:
                     bool is_spec_skill = skill->objectName().startsWith("#");
                     bool has_skill = false, has_spec_skill = false;
                     foreach(ServerPlayer *target, players){
-                        if(target->hasFlag(skill->objectName())){
+                        if(target->getMark(skill->objectName()) > 0){
                             if(is_spec_skill)
                                 has_spec_skill = true;
                             else
@@ -322,7 +322,7 @@ public:
         const QString got_skill = all_skills[index];
 
         room->acquireSkill(player, got_skill);
-        player->setFlags(got_skill);
+        player->addMark(got_skill);
 
         if(got_skill == "niepan")
             player->gainMark("@nirvana");
@@ -334,7 +334,7 @@ public:
         foreach(QString spec_skill, special_skills){
             if(spec_skill.contains(got_skill)){
                 room->acquireSkill(player, spec_skill);
-                player->setFlags(spec_skill);
+                player->addMark(spec_skill);
             }
         }
     }
@@ -348,15 +348,19 @@ public:
         }
     }
 
-    void removeSelfFlags(ServerPlayer *player, bool is_first_round) const{
+    void removeSelfMarks(ServerPlayer *player, bool is_first_round) const{
         if(!is_first_round) return;
-        player->getRoom()->setTag("FirstRound", false);
+        Room *room = player->getRoom();
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        room->setTag("FirstRound", false);
 
-        const General *general = Sanguosha->getGeneral(player->getGeneralName());
-        QList<const Skill *> skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, skills){
-            if(player->hasFlag(skill->objectName()))
-                player->setFlags("-"+skill->objectName());
+        foreach(ServerPlayer *p, players){
+            const General *general = Sanguosha->getGeneral(p->getGeneralName());
+            QList<const Skill *> skills = general->findChildren<const Skill *>();
+            foreach(const Skill *skill, skills){
+                if(player->getMark(skill->objectName()) > 0)
+                    player->removeMark(skill->objectName());
+            }
         }
     }
 
@@ -414,7 +418,7 @@ public:
             }
 
         case TurnStart:{
-                removeSelfFlags(player, room->getTag("FirstRound").toBool());
+                removeSelfMarks(player, room->getTag("FirstRound").toBool());
 
                 if(player->isLord() && player->faceUp()){
                     bool hasLoseMark = false;
