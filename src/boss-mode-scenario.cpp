@@ -251,9 +251,9 @@ public:
     }
 };
 
-class ChallengeRule: public ScenarioRule{
+class ImpasseRule: public ScenarioRule{
 public:
-    ChallengeRule(Scenario *scenario)
+    ImpasseRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
         events << GameStart << TurnStart << PhaseChange
@@ -301,7 +301,7 @@ public:
                     bool is_spec_skill = skill->objectName().startsWith("#");
                     bool has_skill = false, has_spec_skill = false;
                     foreach(ServerPlayer *target, players){
-                        if(target->hasFlag(skill->objectName())){
+                        if(target->getMark(skill->objectName()) > 0){
                             if(is_spec_skill)
                                 has_spec_skill = true;
                             else
@@ -322,7 +322,7 @@ public:
         const QString got_skill = all_skills[index];
 
         room->acquireSkill(player, got_skill);
-        player->setFlags(got_skill);
+        player->addMark(got_skill);
 
         if(got_skill == "niepan")
             player->gainMark("@nirvana");
@@ -334,7 +334,7 @@ public:
         foreach(QString spec_skill, special_skills){
             if(spec_skill.contains(got_skill)){
                 room->acquireSkill(player, spec_skill);
-                player->setFlags(spec_skill);
+                player->addMark(spec_skill);
             }
         }
     }
@@ -348,15 +348,19 @@ public:
         }
     }
 
-    void removeSelfFlags(ServerPlayer *player, bool is_first_round) const{
+    void removeSelfMarks(ServerPlayer *player, bool is_first_round) const{
         if(!is_first_round) return;
-        player->getRoom()->setTag("FirstRound", false);
+        Room *room = player->getRoom();
+        QList<ServerPlayer *> players = room->getAllPlayers();
+        room->setTag("FirstRound", false);
 
-        const General *general = Sanguosha->getGeneral(player->getGeneralName());
-        QList<const Skill *> skills = general->findChildren<const Skill *>();
-        foreach(const Skill *skill, skills){
-            if(player->hasFlag(skill->objectName()))
-                player->setFlags("-"+skill->objectName());
+        foreach(ServerPlayer *p, players){
+            const General *general = Sanguosha->getGeneral(p->getGeneralName());
+            QList<const Skill *> skills = general->findChildren<const Skill *>();
+            foreach(const Skill *skill, skills){
+                if(player->getMark(skill->objectName()) > 0)
+                    player->removeMark(skill->objectName());
+            }
         }
     }
 
@@ -414,7 +418,7 @@ public:
             }
 
         case TurnStart:{
-                removeSelfFlags(player, room->getTag("FirstRound").toBool());
+                removeSelfMarks(player, room->getTag("FirstRound").toBool());
 
                 if(player->isLord() && player->faceUp()){
                     bool hasLoseMark = false;
@@ -447,8 +451,15 @@ public:
             if(damage && damage->from){
                 if(damage->from->getRole() == damage->to->getRole())
                     damage->from->throwAllHandCards();
-                else
+                else{
+                    if(damage->to->hasSkill("huilei")){
+                        damage->from->throwAllHandCards();
+                        damage->from->throwAllEquips();
+                    }
+
                     damage->from->drawCards(2);
+                }
+
                 damage = NULL;
                 data = QVariant::fromValue(damage);
             }
@@ -509,11 +520,11 @@ private:
     QStringList dummy_skills;
 };
 
-bool ChallengeScenario::exposeRoles() const{
+bool ImpasseScenario::exposeRoles() const{
     return true;
 }
 
-void ChallengeScenario::assign(QStringList &generals, QStringList &roles) const{
+void ImpasseScenario::assign(QStringList &generals, QStringList &roles) const{
     Q_UNUSED(generals);
 
     roles << "lord";
@@ -524,35 +535,35 @@ void ChallengeScenario::assign(QStringList &generals, QStringList &roles) const{
     qShuffle(roles);
 }
 
-int ChallengeScenario::getPlayerCount() const{
+int ImpasseScenario::getPlayerCount() const{
     return 8;
 }
 
-void ChallengeScenario::getRoles(char *roles) const{
+void ImpasseScenario::getRoles(char *roles) const{
     strcpy(roles, "ZFFFFFFF");
 }
 
-void ChallengeScenario::onTagSet(Room *room, const QString &key) const{
+void ImpasseScenario::onTagSet(Room *room, const QString &key) const{
     // dummy
 }
 
-bool ChallengeScenario::generalSelection() const{
+bool ImpasseScenario::generalSelection() const{
     return true;
 }
 
-AI::Relation ChallengeScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
-    bool aChallenge=true;
-    bool bChallenge=true;
-    if(a->isLord()) aChallenge=false;
-    if(b->isLord()) bChallenge=false;
-    if(aChallenge==bChallenge)return AI::Friend;
+AI::Relation ImpasseScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    bool aImpasse=true;
+    bool bImpasse=true;
+    if(a->isLord()) aImpasse=false;
+    if(b->isLord()) bImpasse=false;
+    if(aImpasse==bImpasse)return AI::Friend;
     return AI::Enemy;
 }
 
-ChallengeScenario::ChallengeScenario()
-    :Scenario("boss_challenge")
+ImpasseScenario::ImpasseScenario()
+    :Scenario("impasse_fight")
 {
-    rule = new ChallengeRule(this);
+    rule = new ImpasseRule(this);
 
     skills << new Silue << new Kedi
             << new Daji << new Jishi
@@ -560,4 +571,4 @@ ChallengeScenario::ChallengeScenario()
 
 }
 
-ADD_SCENARIO(Challenge);
+ADD_SCENARIO(Impasse);
