@@ -2171,10 +2171,7 @@ void RoomScene::onGameOver(){
     if(victory){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
-            if(player->property("win").toBool())
-                continue;
-
-            if(player->isCaoCao()){
+            if(player->property("win").toBool() && player->isCaoCao()){
                 if(SoundEngine)
                     SoundEngine->stopAllSounds();
 
