@@ -251,9 +251,9 @@ public:
     }
 };
 
-class ChallengeRule: public ScenarioRule{
+class ImpasseRule: public ScenarioRule{
 public:
-    ChallengeRule(Scenario *scenario)
+    ImpasseRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
         events << GameStart << TurnStart << PhaseChange
@@ -447,8 +447,15 @@ public:
             if(damage && damage->from){
                 if(damage->from->getRole() == damage->to->getRole())
                     damage->from->throwAllHandCards();
-                else
+                else{
+                    if(damage->to->hasSkill("huilei")){
+                        damage->from->throwAllHandCards();
+                        damage->from->throwAllEquips();
+                    }
+
                     damage->from->drawCards(2);
+                }
+
                 damage = NULL;
                 data = QVariant::fromValue(damage);
             }
@@ -509,11 +516,11 @@ private:
     QStringList dummy_skills;
 };
 
-bool ChallengeScenario::exposeRoles() const{
+bool ImpasseScenario::exposeRoles() const{
     return true;
 }
 
-void ChallengeScenario::assign(QStringList &generals, QStringList &roles) const{
+void ImpasseScenario::assign(QStringList &generals, QStringList &roles) const{
     Q_UNUSED(generals);
 
     roles << "lord";
@@ -524,35 +531,35 @@ void ChallengeScenario::assign(QStringList &generals, QStringList &roles) const{
     qShuffle(roles);
 }
 
-int ChallengeScenario::getPlayerCount() const{
+int ImpasseScenario::getPlayerCount() const{
     return 8;
 }
 
-void ChallengeScenario::getRoles(char *roles) const{
+void ImpasseScenario::getRoles(char *roles) const{
     strcpy(roles, "ZFFFFFFF");
 }
 
-void ChallengeScenario::onTagSet(Room *room, const QString &key) const{
+void ImpasseScenario::onTagSet(Room *room, const QString &key) const{
     // dummy
 }
 
-bool ChallengeScenario::generalSelection() const{
+bool ImpasseScenario::generalSelection() const{
     return true;
 }
 
-AI::Relation ChallengeScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
-    bool aChallenge=true;
-    bool bChallenge=true;
-    if(a->isLord()) aChallenge=false;
-    if(b->isLord()) bChallenge=false;
-    if(aChallenge==bChallenge)return AI::Friend;
+AI::Relation ImpasseScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
+    bool aImpasse=true;
+    bool bImpasse=true;
+    if(a->isLord()) aImpasse=false;
+    if(b->isLord()) bImpasse=false;
+    if(aImpasse==bImpasse)return AI::Friend;
     return AI::Enemy;
 }
 
-ChallengeScenario::ChallengeScenario()
-    :Scenario("boss_challenge")
+ImpasseScenario::ImpasseScenario()
+    :Scenario("impasse_fight")
 {
-    rule = new ChallengeRule(this);
+    rule = new ImpasseRule(this);
 
     skills << new Silue << new Kedi
             << new Daji << new Jishi
@@ -560,4 +567,4 @@ ChallengeScenario::ChallengeScenario()
 
 }
 
-ADD_SCENARIO(Challenge);
+ADD_SCENARIO(Impasse);

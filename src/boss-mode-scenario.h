@@ -4,11 +4,11 @@
 #include "scenario.h"
 #include "maneuvering.h"
 
-class ChallengeScenario : public Scenario{
+class ImpasseScenario : public Scenario{
     Q_OBJECT
 
 public:
-    explicit ChallengeScenario();
+    explicit ImpasseScenario();
 
     virtual bool exposeRoles() const;
     virtual void assign(QStringList &generals, QStringList &roles) const;
