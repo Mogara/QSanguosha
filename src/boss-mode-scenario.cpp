@@ -556,15 +556,6 @@ bool ImpasseScenario::generalSelection() const{
     return true;
 }
 
-AI::Relation ImpasseScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
-    bool aImpasse=true;
-    bool bImpasse=true;
-    if(a->isLord()) aImpasse=false;
-    if(b->isLord()) bImpasse=false;
-    if(aImpasse==bImpasse)return AI::Friend;
-    return AI::Enemy;
-}
-
 ImpasseScenario::ImpasseScenario()
     :Scenario("impasse_fight")
 {
