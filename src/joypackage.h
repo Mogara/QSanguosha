@@ -78,11 +78,11 @@ private:
     TriggerSkill *grab_peach;
 };
 
-class AngryShell:public Armor{
+class GaleShell:public Armor{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE AngryShell(Card::Suit suit, int number);
+    Q_INVOKABLE GaleShell(Card::Suit suit, int number);
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };
 
