@@ -104,6 +104,7 @@ function SmartAI:initialize(player)
 	self.room = player:getRoom()
 	
 	self.role =player:getRole()
+	self.historian=sgs.newHistorian(player)
 
 	if sgs.ai_assumed[self.role] then sgs.ai_assumed[self.role] = sgs.ai_assumed[self.role] +1
 	elseif self.role~="lord" then sgs.ai_assumed[self.role] =1
@@ -514,6 +515,9 @@ function SmartAI:sort(players, key)
 end
 
 function SmartAI:filterEvent(event, player, data)
+	
+	self:intentionFilter(event,player,data)
+	
 	if event == sgs.CardUsed then
 		self:updatePlayers()
 	elseif event == sgs.CardEffect then
@@ -549,6 +553,7 @@ function SmartAI:filterEvent(event, player, data)
 	end
 
 	if self~=sgs.recorder then return end
+	
 
 	if event == sgs.TurnStart then
 		self:updateRoyalty(self.room:getCurrent())
@@ -1036,6 +1041,15 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			
 		use.card = card	
 	end
+end
+
+function SmartAI:getPeachNumer(player)
+	local peaches=0
+	local cards = player:getHandcards()
+	for _,card in ipairs(cards) do
+		if card:inherits("Peach") then peaches=peaches+1 end
+	end
+	return peaches
 end
 
 function SmartAI:aoeIsEffective(card, to)
@@ -1875,9 +1889,20 @@ function SmartAI:activate(use)
 	self:printCards(self.kept)
 	self.toUse =self:getTurnUse()
 	self:printCards(self.toUse)
-
+	
+	if sgs.GetConfig("EnableNewAI", "") then
+		local move=self:getMove() or {}
+		use.card=move.card
+		use.to=move.to or use.to
+		return
+	end
+	
+	
 	self:sortByUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
+	
+		self:log(word)
+	
 		local type = card:getTypeId()
 
 		if type == sgs.Card_Basic then
@@ -2821,3 +2846,4 @@ dofile "lua/ai/yjcm-skill-ai.lua"
 dofile "lua/ai/fancheng-ai.lua"
 
 dofile "lua/ai/guanxing-ai.lua"
+dofile "lua/ai/new-ai.lua"
