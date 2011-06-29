@@ -32,33 +32,32 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
+    callbacks["warn"] = &Client::warn;
+
     callbacks["startGame"] = &Client::startGame;
-    callbacks["hpChange"] = &Client::hpChange;
-    callbacks["clearPile"] = &Client::clearPile;
-    callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["gameOver"] = &Client::gameOver;
+
+    callbacks["hpChange"] = &Client::hpChange;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
-    callbacks["warn"] = &Client::warn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
-    callbacks["addHistory"] = &Client::addHistory;
+    callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
-    callbacks["acquireSkill"] = &Client::acquireSkill;
+    callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
-    callbacks["setPrompt"] = &Client::setPrompt;
-    callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
-    callbacks["pile"] = &Client::pile;
     callbacks["transfigure"] = &Client::transfigure;
+    callbacks["jilei"] = &Client::jilei;
+    callbacks["pile"] = &Client::pile;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -66,8 +65,10 @@ Client::Client(QObject *parent, const QString &filename)
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
-    callbacks["drawCards"] = &Client::drawCards;
     callbacks["drawNCards"] = &Client::drawNCards;
+    callbacks["drawCards"] = &Client::drawCards;
+    callbacks["clearPile"] = &Client::clearPile;
+    callbacks["setPileNumber"] = &Client::setPileNumber;
 
     // interactive methods
     callbacks["activate"] = &Client::activate;
@@ -537,11 +538,6 @@ void Client::updateFrequentFlags(int state){
         frequent_flags.insert(flag);
     else
         frequent_flags.remove(flag);
-}
-
-void Client::setPrompt(const QString &prompt_str){
-    QStringList texts = prompt_str.split(":");
-    setPromptList(texts);
 }
 
 void Client::jilei(const QString &jilei_str){
