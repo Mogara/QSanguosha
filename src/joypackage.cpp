@@ -284,6 +284,44 @@ QString Monkey::getEffectPath(bool ) const{
     return "audio/card/common/monkey.ogg";
 }
 
+class AngryShellSkill: public ArmorSkill{
+public:
+    AngryShellSkill():ArmorSkill("angry-shell"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature == DamageStruct::Fire){
+                LogMessage log;
+                log.type = "#AngryDamage";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(damage.damage + 1);
+                player->getRoom()->sendLog(log);
+
+                damage.damage ++;
+                data = QVariant::fromValue(damage);
+            }
+        return false;
+    }
+};
+
+AngryShell::AngryShell(Suit suit, int number) :Armor(suit, number){
+    setObjectName("angry-shell");
+    skill = new AngryShellSkill;
+}
+
+void AngryShell::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+    ServerPlayer *target = source;
+    if(room->askForSkillInvoke(source, objectName()))
+      target = room->askForPlayerChosen(source, room->getAllPlayers(), objectName());
+    if(target->getArmor())
+       room->throwCard(target->getArmor());
+    room->moveCardTo(this, target, Player::Equip, true);
+}
+
+
 JoyPackage::JoyPackage()
     :Package("joy")
 {
@@ -299,7 +337,8 @@ JoyPackage::JoyPackage()
             << new Volcano(Card::Heart, 13)
             << new MudSlide(Card::Heart, 7);
 
-    cards << new Monkey(Card::Diamond, 13);
+    cards << new Monkey(Card::Diamond, 5)
+//			<< new AngryShell(Card::Heart, 1);
 
     foreach(Card *card, cards)
         card->setParent(this);
