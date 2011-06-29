@@ -344,7 +344,7 @@ JoyPackage::JoyPackage()
             << new MudSlide(Card::Heart, 7);
 
     cards << new Monkey(Card::Diamond, 5)
-//			<< new GaleShell(Card::Heart, 1);
+			<< new GaleShell(Card::Heart, 1);
 
     foreach(Card *card, cards)
         card->setParent(this);
