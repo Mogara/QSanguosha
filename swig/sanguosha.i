@@ -414,7 +414,9 @@ enum TriggerEvent{
 
     CardEffect,
     CardEffected,
-    CardFinished
+    CardFinished,
+	
+	ChoiceMade
 };
 
 class Card: public QObject

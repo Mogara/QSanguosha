@@ -150,7 +150,9 @@ enum TriggerEvent{
 
     CardEffect,
     CardEffected,
-    CardFinished
+    CardFinished,
+
+    ChoiceMade,
 };
 
 typedef const Card *CardStar;

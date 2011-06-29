@@ -89,7 +89,7 @@ sgs.ai_use_priority = {
 		JujianCard = 5.6,
 --
 
-        Collateral=5.8,
+        
         Peach = 4.1,
 
         Dismantlement=4.5,
@@ -104,15 +104,40 @@ sgs.ai_use_priority = {
         
         Duel=2.9,
         IronChain = 2.8,
+		
+		Collateral=2.75,
 
         Analeptic = 2.7,
 
+		OffensiveHorse = 2.69,
+		Halberd=2.685,
+		KylinBow=2.68,
+		Blade = 2.675,
+		GudingBlade=2.67,
+		DoubleSword =2.665,
+		Spear = 2.66,
+		Fan=2.655,
+		IceSword=2.65,
+		QinggangSword=2.645,
+		Axe=2.64,
+		MoonSpear=2.635,
+		Crossbow = 2.63,
+		
+		
         FireSlash = 2.6,
         ThunderSlash = 2.5,
         Slash = 2.4,
 
         FireAttack=2,
         AmazingGrace=1.0,
+		
+		
+		SilverLion=0.9,
+		EightDiagram=0.8,
+		RenwangShield=0.7,
+		Vine=0.6,
+		
+		DefensiveHorse = 0,
 
 
         --god_salvation

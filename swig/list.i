@@ -7,6 +7,7 @@ public:
 	void append(const T &elem);
 	void prepend(const T &elem);
 	bool isEmpty() const;
+	bool contains ( const T & value ) const;
 	T first() const;
 	T last() const;
 	void removeAt(int i);
@@ -19,6 +20,7 @@ public:
 }
 
 %template(SPlayerList) QList<ServerPlayer *>;
+%template(PlayerList)  QList<const Player *>;
 %template(CardList) QList<const Card *>;
 %template(IntList) QList<int>;
-
+%template(SkillList) QList<const Skill *>;

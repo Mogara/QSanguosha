@@ -2270,6 +2270,7 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     CardStar card_star = dummy_card;
     QVariant data = QVariant::fromValue(card_star);
     thread->trigger(CardDiscarded, target, data);
+    data=QString("%1:%2").arg("cardDiscard").arg(dummy_card->toString());
     thread->trigger(ChoiceMade, target, data);
     dummy_card->deleteLater();
 
