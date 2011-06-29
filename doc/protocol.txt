@@ -292,8 +292,51 @@ startGame 命令没有任何参数，不过为了符合格式要求，arg 用 '.
 
 === 告知式命令
 
-. drawNCards 摸牌命令
-. ...
+. checkVersion 版本检查
+. setup 告知服务器端配置
+. addPlayer 房间加入玩家
+. removePlayer 房间退出玩家
+. startInXs 倒计时
+. arrangeSeats 调整座位
+. warn 登录警告
+
+. startGame 开始游戏
+. gameOver 游戏结束
+
+. hpChange 角色体力值变化
+. killPlayer 角色阵亡
+. revivePlayer 角色复活
+. showCard 角色展示卡牌
+. setMark 角色设置标记
+. log 战斗日志
+. speak 玩家聊天
+. addHistory 加入出牌历史
+. acqureSkill 获得技能
+. attachSkill 附着技能
+. detachSkill 失去技能
+. moveFocus 移动焦点
+. setEmotion 设置角色表情
+. skillInvoked 告知技能的触发
+. animate 动画
+. jilei 鸡肋指令（杨修专用）
+. judgeResult 告知判定的结果
+. setScreenName 设置所有玩家屏显名（仅在竞赛模式中游戏结束时触发）
+. setFixedDistance
+. pile 通知私有牌堆更新
+. transfigure 变身
+
+. playSkillEffect 播放技能配音
+. playCardEffect 播放卡牌配音
+. playAudio 播放其他音频
+
+. clearPile 弃牌堆清空
+. setPileNumber 设置摸牌堆数量
+. moveNCards 卡牌移动（隐藏）
+. moveCard 卡牌移动（公开）
+. drawNCards 摸牌命令(其他人摸牌，他人)
+. drawCards 摸牌命令（自己摸牌）
+
+
 
 ==== activate
 ----------------
@@ -410,7 +453,10 @@ winner_list:
 	. 玩家身份，例如 gameOver lord+loyalist 表示主公和忠臣取得胜利
 	. 玩家对象名，例如 gameOver sgs7+sgs5 表示 sgs7 和 sgs5 一起胜利
 
-	平局时，winner_list 为 '.'，此时无人胜利 -_-!
+.Note
+--------------------
+平局时，winner_list 为 '.'，此时无人胜利 -_-!
+--------------------
 
 == 卡牌字符串 
 

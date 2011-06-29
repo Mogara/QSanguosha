@@ -78,4 +78,14 @@ private:
     TriggerSkill *grab_peach;
 };
 
+class GaleShell:public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GaleShell(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+};
+
 #endif // JOYPACKAGE_H
