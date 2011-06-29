@@ -293,15 +293,15 @@ public:
     virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if(damage.nature == DamageStruct::Fire){
-          LogMessage log;
-          log.type = "#GaleShellDamage";
-          log.from = player;
-          log.arg = QString::number(damage.damage);
-          log.arg2 = QString::number(damage.damage + 1);
-          player->getRoom()->sendLog(log);
+            LogMessage log;
+            log.type = "#GaleShellDamage";
+            log.from = player;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            player->getRoom()->sendLog(log);
 
-          damage.damage ++;
-          data = QVariant::fromValue(damage);
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
         }
         return false;
     }
@@ -317,13 +317,13 @@ void GaleShell::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
     if(room->askForSkillInvoke(source, objectName())){
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *player, room->getAllPlayers()){
-           if(source->inMyAttackRange(player))
-              players << player;
+            if(source->inMyAttackRange(player))
+                players << player;
         }
-          target = room->askForPlayerChosen(source, players, objectName());
+            target = room->askForPlayerChosen(source, players, objectName());
     }
     if(target->getArmor())
-       room->throwCard(target->getArmor());
+        room->throwCard(target->getArmor());
     room->moveCardTo(this, target, Player::Equip, true);
 }
 
