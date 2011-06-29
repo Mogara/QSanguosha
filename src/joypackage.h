@@ -83,6 +83,8 @@ class GaleShell:public Armor{
 
 public:
     Q_INVOKABLE GaleShell(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
 };
 

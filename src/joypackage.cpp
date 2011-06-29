@@ -310,20 +310,20 @@ public:
 GaleShell::GaleShell(Suit suit, int number) :Armor(suit, number){
     setObjectName("gale-shell");
     skill = new GaleShellSkill;
+
+    target_fixed = false;
 }
 
-void GaleShell::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    ServerPlayer *target = source;
-    if(room->askForSkillInvoke(source, objectName())){
-        QList<ServerPlayer *> players;
-        foreach(ServerPlayer *player, room->getAllPlayers()){
-            if(source->inMyAttackRange(player))
-                players << player;
-        }
-            target = room->askForPlayerChosen(source, players, objectName());
-    }
+bool GaleShell::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && Self->distanceTo(to_select) <= 1;
+}
+
+void GaleShell::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.first();
+
     if(target->getArmor())
         room->throwCard(target->getArmor());
+
     room->moveCardTo(this, target, Player::Equip, true);
 }
 
@@ -343,8 +343,8 @@ JoyPackage::JoyPackage()
             << new Volcano(Card::Heart, 13)
             << new MudSlide(Card::Heart, 7);
 
-    cards << new Monkey(Card::Diamond, 5);
-                        // << new GaleShell(Card::Heart, 1);
+    cards << new Monkey(Card::Diamond, 5)
+            << new GaleShell(Card::Heart, 1);
 
     foreach(Card *card, cards)
         card->setParent(this);
