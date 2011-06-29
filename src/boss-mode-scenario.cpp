@@ -259,7 +259,9 @@ public:
         events << GameStart << TurnStart << PhaseChange
                << Death << GameOverJudge << Damaged << HpLost;
 
-        boss_banlist << "yuanshao" << "shuangxiong" << "zhaoyun" << "guanyu";
+        boss_banlist << "yuanshao" << "shuangxiong" << "zhaoyun" << "guanyu" << "shencaocao";
+
+        boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin";
 
         dummy_skills << "chujia" << "xuwei" << "tuoqiao" << "shenli" << "midao"
                      << "kuangfeng" << "dawu" << "kuangbao" << "shenfen" << "wuqian"
@@ -318,7 +320,10 @@ public:
             }
         }
 
-        int index = qrand() % all_skills.length();
+        int index;
+        do{
+            index = qrand() % all_skills.length();
+        }while(player->isLord() && boss_skillbanned.contains(all_skills[index]));
         const QString got_skill = all_skills[index];
 
         room->acquireSkill(player, got_skill);
@@ -447,23 +452,6 @@ public:
             }
 
         case Death:{
-            DamageStar damage = data.value<DamageStar>();
-            if(damage && damage->from){
-                if(damage->from->getRole() == damage->to->getRole())
-                    damage->from->throwAllHandCards();
-                else{
-                    if(damage->to->hasSkill("huilei")){
-                        damage->from->throwAllHandCards();
-                        damage->from->throwAllEquips();
-                    }
-
-                    damage->from->drawCards(2);
-                }
-
-                damage = NULL;
-                data = QVariant::fromValue(damage);
-            }
-
             QList<ServerPlayer *> players = room->getAlivePlayers();
             bool hasRebel = false, hasLord = false;
             foreach(ServerPlayer *each, players){
@@ -482,6 +470,23 @@ public:
                 room->gameOver("lord");
             if(!hasLord)
                 room->gameOver("rebel");
+
+            DamageStar damage = data.value<DamageStar>();
+            if(damage && damage->from){
+                if(damage->from->getRole() == damage->to->getRole())
+                    damage->from->throwAllHandCards();
+                else{
+                    if(damage->to->hasSkill("huilei")){
+                        damage->from->throwAllHandCards();
+                        damage->from->throwAllEquips();
+                    }
+
+                    damage->from->drawCards(2);
+                }
+
+                damage = NULL;
+                data = QVariant::fromValue(damage);
+            }
             break;
         }
 
@@ -516,7 +521,7 @@ public:
     }
 
 private:
-    QStringList boss_banlist;
+    QStringList boss_banlist, boss_skillbanned;
     QStringList dummy_skills;
 };
 
@@ -549,15 +554,6 @@ void ImpasseScenario::onTagSet(Room *room, const QString &key) const{
 
 bool ImpasseScenario::generalSelection() const{
     return true;
-}
-
-AI::Relation ImpasseScenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) const{
-    bool aImpasse=true;
-    bool bImpasse=true;
-    if(a->isLord()) aImpasse=false;
-    if(b->isLord()) bImpasse=false;
-    if(aImpasse==bImpasse)return AI::Friend;
-    return AI::Enemy;
 }
 
 ImpasseScenario::ImpasseScenario()
