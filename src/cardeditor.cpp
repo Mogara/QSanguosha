@@ -250,7 +250,7 @@ void SkillBox::saveConfig(){
 
     Config.endArray();
 
-    Config.setValue("SkillDescription", skill_description->toHtml());
+    Config.setValue("SkillDescription", skill_description->toPlainText());
     Config.setValue("SkillDescriptionFont", skill_description->font());
     Config.setValue("TinyFont", copyright_text->font());
     if(!skill_titles.isEmpty()){
@@ -280,8 +280,9 @@ void SkillBox::loadConfig(){
     }
 
     Config.endArray();
-    skill_description->setHtml(Config.value("SkillDescription").toString());
-
+    // TODO: we only support plain text now to enable the font changing.
+    // We'll find a way to support rich text in the future.
+    skill_description->setPlainText(Config.value("SkillDescription").toString());
     Config.endGroup();
 }
 
