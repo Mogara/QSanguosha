@@ -1531,6 +1531,7 @@ public:
 
 YisheCard::YisheCard(){
     target_fixed = true;
+    will_throw = false;
 }
 
 void YisheCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
