@@ -32,11 +32,11 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class TaichenCard: public SkillCard{
+class TaichenFightCard: public SkillCard{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE TaichenCard();
+    Q_INVOKABLE TaichenFightCard();
 
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };

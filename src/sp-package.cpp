@@ -2,6 +2,7 @@
 #include "general.h"
 #include "skill.h"
 #include "standard-skillcards.h"
+#include "carditem.h"
 
 class Yongsi: public TriggerSkill{
 public:
@@ -124,6 +125,48 @@ private:
     HuanzhuangCard *huanzhuang_card;
 };
 
+TaichenCard::TaichenCard(){
+}
+
+bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && Self->inMyAttackRange(to_select) && !to_select->isAllNude();
+}
+
+void TaichenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    if(subcards.isEmpty())
+        room->loseHp(effect.from);
+    else
+        room->throwCard(this);
+
+    int i;
+    for(i=0; i<2; i++){
+        if(!effect.to->isAllNude())
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
+    }
+}
+
+class Taichen: public ViewAsSkill{
+public:
+    Taichen():ViewAsSkill("taichen"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getFilteredCard()->inherits("Armor");
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() <= 1){
+            TaichenCard *taichen_card = new TaichenCard;
+            taichen_card->addSubcards(cards);
+            return taichen_card;
+        }else
+            return NULL;
+    }
+};
+
 SPPackage::SPPackage()
     :Package("sp")
 {
@@ -142,6 +185,11 @@ SPPackage::SPPackage()
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
     sp_sunshangxiang->addSkill("xiaoji");
+
+    General *sp_pangde = new General(this, "sp_pangde", "wei");
+    sp_pangde->addSkill(new Taichen);
+
+    addMetaObject<TaichenCard>();
 }
 
 ADD_PACKAGE(SP);

@@ -695,6 +695,9 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         card_id = result.toInt();
     }
 
+    if(!card_ids.contains(card_id))
+        card_id = card_ids.first();
+
     QVariant decisionData = QVariant::fromValue("AGChosen:"+reason+":"+QString::number(card_id));
     thread->trigger(ChoiceMade, player, decisionData);
 

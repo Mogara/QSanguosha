@@ -12,12 +12,25 @@ return {
 	["weidi"] = "伪帝",
 	[":weidi"] = "锁定技，你视为拥有当前主公的主公技。",
 	
+	["tuoqiao"] = "脱壳",
+	["xuwei"] = "续尾",
+	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
+	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
+	
 	["#YongsiGood"] = "%from 的锁定技【庸肆】被触发，额外摸了 %arg 张牌",
 	["#YongsiBad"] = "%from 的锁定技【庸肆】被触发，必须至少弃掉 %arg 张牌",
-	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",	
+	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",
+	
+	["taichen"] = "抬榇",
+	[":taichen"] = "出牌阶段，你可以自减1点体力或弃一张防具牌，弃掉你攻击范围内的一名角色处（手牌、装备区、判定区）的两张牌，每回合中，你可以多次使用抬榇",
 	
 	["cv:gongsunzan"] = "",
 	["cv:yuanshu"] = "名将三国",
+	["cv:sp_sunshangxiang"] = "",
+	["cv:sp_diaochan"] = "",
+	["cv:sp_pangde"] = "",
+	
+	["designer:sp_pangde"] = "太阳神上",
 	
 	["$yongsi1"] = "嘿呀，还不错",
 	["$yongsi2"] = "呐~哈哈哈哈哈",
@@ -26,4 +39,6 @@ return {
 	["~yuanshu"] = "呃呀~~~~~~~",
 	
 	["sp_sunshangxiang"] = "SP孙尚香",
+	["sp_pangde"] = "SP庞德",
+	["sp_diaochan"] = "SP貂蝉",
 }
