@@ -508,6 +508,10 @@ public:
                     if(player->getWeapon() == NULL){
                         room->acquireSkill(player, "paoxiao");
                     }
+
+                    QList<const Card *> judges = player->getCards("j");
+                    foreach(const Card *card, judges)
+                        room->throwCard(card->getEffectiveId());
                 }
             }
             break;
