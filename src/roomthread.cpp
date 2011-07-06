@@ -233,12 +233,12 @@ void RoomThread::run(){
         if(shenlvbu->getGeneralName() == "shenlvbu1"){
             QList<ServerPlayer *> circle;
 
-            circle << shenlvbu
-                    << room->players.at(1)
+            circle  << room->players.at(1)
                     << shenlvbu
                     << room->players.at(2)
                     << shenlvbu
-                    << room->players.at(3);
+                    << room->players.at(3)
+                    << shenlvbu;
 
             forever{
                 foreach(ServerPlayer *player, circle){

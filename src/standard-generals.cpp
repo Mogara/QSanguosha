@@ -417,15 +417,19 @@ public:
     RendeViewAsSkill():ViewAsSkill("rende"){
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
-        return !to_select->isEquipped();
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(ServerInfo.GameMode == "04_1v3"
+           && selected.length() + Self->getMark("rende") >= 2)
+           return false;
+        else
+            return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
-        SkillCard *rende_card = new RendeCard;
+        RendeCard *rende_card = new RendeCard;
         rende_card->addSubcards(cards);
         return rende_card;
     }
@@ -437,9 +441,14 @@ public:
         view_as_skill = new RendeViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::NotActive
+                && target->hasUsed("RendeCard");
+    }
+
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Start)
-            target->setMark("rende", 0);
+        target->getRoom()->setPlayerMark(target, "rende", 0);
 
         return false;
     }
