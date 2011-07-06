@@ -90,6 +90,7 @@ Engine::Engine()
     modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
+    modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");

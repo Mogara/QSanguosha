@@ -695,7 +695,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         card_id = result.toInt();
     }
 
-    if(!card_ids.contains(card_id))
+    if(!card_ids.contains(card_id) && !refusable)
         card_id = card_ids.first();
 
     QVariant decisionData = QVariant::fromValue("AGChosen:"+reason+":"+QString::number(card_id));
@@ -1083,6 +1083,17 @@ void Room::prepareForStart(){
             broadcastProperty(players.at(i), "role");
         }
 
+    }else if(mode == "04_1v3"){
+        ServerPlayer *lord = players.at(qrand() % 4);
+        int i = 0;
+        for(i=0; i<4; i++){
+            ServerPlayer *player = players.at(i);
+            if(player == lord)
+                player->setRole("lord");
+            else
+                player->setRole("rebel");
+            broadcastProperty(player, "role");
+        }
     }else{
         assignRoles();
     }
