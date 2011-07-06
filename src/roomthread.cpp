@@ -218,13 +218,13 @@ void RoomThread::action3v3(ServerPlayer *player){
 }
 
 void RoomThread::run(){
+    if(setjmp(env) == GameOver)
+        return;
+
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
         trigger(GameStart, player);
     }
-
-    if(setjmp(env) == GameOver)
-        return;
 
     if(room->mode == "06_3v3"){
         run3v3();

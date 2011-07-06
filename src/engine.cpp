@@ -542,7 +542,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
-    if(Config.GameMode == "02_1v3"){
+    if(Config.GameMode == "04_1v3"){
         const Package *stdpack = findChild<const Package *>("standard");
         QList<const Card *> stdcards = stdpack->findChildren<const Card *>();
         QList<int> card_ids;

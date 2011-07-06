@@ -184,6 +184,7 @@ private:
     QString skill_title, skill_line;
     QString choose_command;
     QString card_pattern;
+    int swap_pile;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);

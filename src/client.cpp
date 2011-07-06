@@ -22,7 +22,7 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
-    :QObject(parent), refusable(true), status(NotActive), alive_count(1)
+    :QObject(parent), refusable(true), status(NotActive), alive_count(1), swap_pile(0)
 {
     ClientInstance = this;
 
@@ -932,6 +932,8 @@ QTextDocument *Client::getPromptDoc() const{
 
 void Client::clearPile(const QString &){
     discarded_list.clear();
+    swap_pile ++;
+    updatePileNum();
 
     emit pile_cleared();
 }
@@ -943,8 +945,8 @@ void Client::setPileNumber(const QString &pile_str){
 }
 
 void Client::updatePileNum(){
-    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>")
-                       .arg(pile_num).arg(discarded_list.length());
+    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>")
+                       .arg(pile_num).arg(discarded_list.length()).arg(swap_pile);
 
     if(skill_title.isEmpty())
         lines_doc->setHtml(pile_str);
