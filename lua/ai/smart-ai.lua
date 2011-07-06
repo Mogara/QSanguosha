@@ -2264,7 +2264,9 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			if indulgence or supply_shortage then
 				return indulgence or supply_shortage
 			end
-		elseif flags:match("e") then
+		end
+		
+		if flags:match("e") then
 			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
 			if who:hasSkill("xiaoji") or who:hasSkill("xuanfeng") then
 				local equips = who:getEquips()

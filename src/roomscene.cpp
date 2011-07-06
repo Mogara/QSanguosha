@@ -1163,6 +1163,9 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 }
 
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
+    if(ClientInstance->getReplayer())
+        return;
+
     // check duplication
     foreach(QAbstractButton *button, skill_buttons){
         if(button->objectName() == skill->objectName())
