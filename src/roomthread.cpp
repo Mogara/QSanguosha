@@ -231,22 +231,24 @@ void RoomThread::run(){
     }else if(room->getMode() == "04_1v3"){
         ServerPlayer *shenlvbu = room->getLord();
         if(shenlvbu->getGeneralName() == "shenlvbu1"){
-            QList<ServerPlayer *> circle;
-
-            circle  << room->players.at(1)
-                    << shenlvbu
-                    << room->players.at(2)
-                    << shenlvbu
-                    << room->players.at(3)
-                    << shenlvbu;
+            QList<ServerPlayer *> league = room->players;
+            league.removeOne(shenlvbu);
 
             forever{
-                foreach(ServerPlayer *player, circle){
+                foreach(ServerPlayer *player, league){
                     room->setCurrent(player);
                     trigger(TurnStart, room->getCurrent());
 
                     if(shenlvbu->getGeneralName() == "shenlvbu2")
                         goto second_phase;
+
+                    if(player->isAlive()){
+                        room->setCurrent(shenlvbu);
+                        trigger(TurnStart, room->getCurrent());
+
+                        if(shenlvbu->getGeneralName() == "shenlvbu2")
+                            goto second_phase;
+                    }
                 }
             }
 
