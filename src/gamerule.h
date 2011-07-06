@@ -30,5 +30,29 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
 };
 
+class HulaoPassMode: public GameRule{
+    Q_OBJECT
+
+public:
+    HulaoPassMode(QObject *parent);
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
+
+private:
+    mutable jmp_buf env;
+};
+
+class HulaoPassThread: public QThread{
+    Q_OBJECT
+
+public:
+    HulaoPassThread(Room *room);
+
+    virtual void run();
+
+private:
+    Room *room;
+};
+
 
 #endif // GAMERULE_H

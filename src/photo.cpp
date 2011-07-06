@@ -558,8 +558,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
                 death_pixmap = death_pixmap.scaled(death_pixmap.size() / (1.5));
         }
 
-        painter->drawPixmap(death_x, 30, death_pixmap);
-        return;
+        painter->drawPixmap(death_x, 25, death_pixmap);
     }
 
     int n = player->getHandcardNum();

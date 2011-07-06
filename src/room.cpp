@@ -849,6 +849,13 @@ void Room::swapPile(){
         gameOver(".");
     }
 
+    int times = tag.value("SwapPile", 0).toInt();
+    tag.insert("SwapPile", ++times);
+    if(times == 2 && mode == "04_1v3")
+        gameOver(".");
+    else if(times == 10)
+        gameOver(".");
+
     qSwap(draw_pile, discard_pile);
 
     broadcastInvoke("clearPile");
@@ -1033,6 +1040,11 @@ void Room::timerEvent(QTimerEvent *event){
             thread_1v1->start();
 
             connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
+        }else if(mode == "04_1v3"){
+            HulaoPassThread *hulao_thread = new HulaoPassThread(this);
+            hulao_thread->start();
+
+            connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
             QStringList lord_list = Sanguosha->getRandomLords();
             QString default_lord = lord_list[qrand() % lord_list.length()];
@@ -1790,7 +1802,7 @@ void Room::startGame(){
         }
     }
 
-    if((Config.Enable2ndGeneral || mode == "08boss") && mode != "02_1v1" && mode != "06_3v3"){
+    if((Config.Enable2ndGeneral || mode == "08boss") && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3"){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
@@ -1839,6 +1851,8 @@ void Room::startGame(){
     GameRule *game_rule;
     if(mode == "08boss")
         game_rule = new BossMode(this);
+    else if(mode == "04_1v3")
+        game_rule = new HulaoPassMode(this);
     else
         game_rule = new GameRule(this);
 
@@ -2528,17 +2542,17 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals){
-    AI *ai = player->getAI();
-    if(ai)
-        return generals.first();
+    if(player->getState() == "online"){
+        player->invoke("askForGeneral", generals.join("+"));
+        getResult("chooseGeneralCommand", player);
 
-    player->invoke("askForGeneral", generals.join("+"));
-    getResult("chooseGeneralCommand", player);
+        if(result.isEmpty() || result == ".")
+            return generals.first();
+        else
+            return result;
+    }
 
-    if(result.isEmpty() || result == ".")
-        return generals.first();
-    else
-        return result;
+    return generals.first();
 }
 
 void Room::kickCommand(ServerPlayer *player, const QString &arg){
