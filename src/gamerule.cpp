@@ -701,6 +701,8 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     :GameRule(parent)
 {
     setObjectName("hulaopass_mode");
+
+    events << HpChanged;
 }
 
 static int Transfiguration = 1;
@@ -712,11 +714,17 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     case GameStart:{
             if(player->isLord()){
                 if(setjmp(env) == Transfiguration){
+                    player = room->getLord();
                     room->transfigure(player, "shenlvbu2", true, true);
 
                     QList<const Card *> tricks = player->getJudgingArea();
                     foreach(const Card *trick, tricks)
                         room->throwCard(trick);
+
+                    foreach(ServerPlayer *p, room->getAlivePlayers()){
+                        if(!p->isLord())
+                            room->setPlayerProperty(p, "phase", "not_active");
+                    }
 
                 }else{
                     player->drawCards(8, false);
@@ -727,12 +735,28 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             return false;
         }
 
+    case CardUsed:{
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
+                room->throwCard(use.card);
+                player->drawCards(1, false);
+                return false;
+            }
+
+            break;
+        }
+
+    case HpChanged:{
+            if(player->getGeneralName() == "shenlvbu1" && player->getHp() <= 4){
+                longjmp(env, Transfiguration);
+            }
+
+            return false;
+        }
+
     case Death:{
             if(player->isLord()){
-                if(player->getGeneralName() == "shenlvbu1"){
-                    longjmp(env, Transfiguration);
-                }else
-                    room->gameOver("rebel");
+                room->gameOver("rebel");
             }else{
                 if(room->aliveRoles(player).length() == 1)
                     room->gameOver("lord");
@@ -817,6 +841,8 @@ void HulaoPassThread::run(){
         names << general->objectName();
     }
     names << "xiaoqiao" << "yuji";
+    names.removeOne("wuxingzhuge");
+    names.removeOne("zhibasunquan");
 
     foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()){
         if(player == lord)

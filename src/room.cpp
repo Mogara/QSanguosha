@@ -796,6 +796,10 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag){
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value){
     player->setProperty(property_name, value);
     broadcastProperty(player, property_name);
+
+    if(strcmp(property_name, "hp") == 0){
+        thread->trigger(HpChanged, player);
+    }
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value){
@@ -1717,6 +1721,8 @@ void Room::sendDamageLog(const DamageStruct &data){
 bool Room::hasWelfare(const ServerPlayer *player) const{
     if(mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
+    else if(mode == "04_1v3")
+        return false;
     else
         return player->isLord() && player_count > 4;
 }

@@ -117,6 +117,7 @@ enum TriggerEvent{
     DrawNCards,
     HpRecover,
     HpLost,
+    HpChanged,
 
     StartJudge,
     AskForRetrial,

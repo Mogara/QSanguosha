@@ -54,4 +54,6 @@ return {
 	["#Reforming"] = "%from 进入重整状态",
 	["#ReformingRecover"] = "%from 在重整状态中回复了1点体力",
 	["#ReformingRevive"] = "%from 从重整状态中复活!",
+	["draw_1v3"] = "重整摸牌",
+	["weapon_recast"] = "武器重铸",
 }

@@ -1750,7 +1750,7 @@ public:
 class Yitian: public TriggerSkill{
 public:
     Yitian():TriggerSkill("yitian"){
-        events << Predamaged;
+        events << Predamage;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
