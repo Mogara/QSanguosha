@@ -305,6 +305,7 @@ struct SlashEffectStruct{
     SlashEffectStruct();
 
     const Slash *slash;
+	const Jink *jink;
 
     ServerPlayer *from;
     ServerPlayer *to;
@@ -665,7 +666,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const char *winner);
     void slashEffect(const SlashEffectStruct &effect);
-    void slashResult(const SlashEffectStruct &effect, bool hit);
+    void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);

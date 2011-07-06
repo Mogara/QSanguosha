@@ -607,7 +607,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
-                room->slashResult(effect, true);
+                room->slashResult(effect, NULL);
                 return true;
             }
         }
@@ -1097,14 +1097,23 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *lubu, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         Room *room = lubu->getRoom();
-        QString slasher = lubu->objectName();
-        bool jinked = false;
         room->playSkillEffect(objectName());
-        const Card *first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
-        if(first_jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
-            jinked = true;
 
-        room->slashResult(effect, !jinked);
+        QString slasher = lubu->objectName();
+
+        const Card *first_jink = NULL, *second_jink = NULL;
+        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
+        if(first_jink)
+            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher);
+
+        Card *jink = NULL;
+        if(first_jink && second_jink){
+            jink = new DummyCard;
+            jink->addSubcard(first_jink);
+            jink->addSubcard(second_jink);
+        }
+
+        room->slashResult(effect, jink);
 
         return true;
     }

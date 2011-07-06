@@ -364,7 +364,7 @@ public:
             log.to << effect.to;
             room->sendLog(log);
 
-            room->slashResult(effect, true);
+            room->slashResult(effect, NULL);
         }
 
         return false;

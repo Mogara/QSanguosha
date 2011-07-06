@@ -1654,56 +1654,6 @@ public:
     }
 };
 
-class Midao: public TriggerSkill{
-public:
-    Midao():TriggerSkill("midao"){
-        events << StartJudge;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        ServerPlayer *zhanglu = room->findPlayerBySkillName(objectName());
-        if(zhanglu == NULL)
-            return false;
-
-        QList<int> yishe = zhanglu->getPile("rice");
-        if(yishe.isEmpty())
-            return false;
-
-        if(!zhanglu->askForSkillInvoke(objectName(), data))
-            return false;
-
-        int card_id;
-        if(yishe.length() == 1)
-            card_id = yishe.first();
-        else{
-            room->fillAG(yishe, player);
-            card_id = room->askForAG(player, yishe, false, objectName());
-            player->invoke("clearAG");
-        }
-
-        JudgeStar judge = data.value<JudgeStar>();
-        judge->card = Sanguosha->getCard(card_id);
-        room->moveCardTo(judge->card, NULL, Player::Special);
-
-        LogMessage log;
-        log.type = "$InitialJudge";
-        log.from = player;
-        log.card_str = judge->card->getEffectIdString();
-        room->sendLog(log);
-
-        room->sendJudgeResult(judge);
-
-        room->getThread()->delay();
-
-        return true;
-    }
-};
-
 class Xiliang: public TriggerSkill{
 public:
     Xiliang():TriggerSkill("xiliang"){
@@ -1752,6 +1702,70 @@ public:
             foreach(const Card *card, red_cards){
                 zhanglu->obtainCard(card);
             }
+        }
+
+        return false;
+    }
+};
+
+class Zhengfeng: public TriggerSkill{
+public:
+    Zhengfeng():TriggerSkill("zhengfeng"){
+        events << GameStart << CardLost;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        if(event == GameStart)
+            room->setPlayerProperty(player, "atk", player->getHp());
+        else if(event == CardLost){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::Equip){
+                const Card *card = Sanguosha->getCard(move->card_id);
+                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+                if(equip && equip->location() == EquipCard::WeaponLocation)
+                    room->setPlayerProperty(player, "atk", player->getHp());
+            }
+        }
+
+        return false;
+    }
+};
+
+class Zhenwei: public TriggerSkill{
+public:
+    Zhenwei():TriggerSkill("zhenwei"){
+        events << SlashMissed;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(player->getRoom()->obtainable(effect.jink, player) && player->askForSkillInvoke(objectName(), data))
+            player->obtainCard(effect.jink);
+
+        return false;
+    }
+};
+
+class Yitian: public TriggerSkill{
+public:
+    Yitian():TriggerSkill("yitian"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.to->isCaoCao() && player->askForSkillInvoke(objectName(), data)){
+            LogMessage log;
+            log.type = "#YitianSolace";
+            log.from = player;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg = QString::number(damage.damage - 1);
+            player->getRoom()->sendLog(log);
+
+            damage.damage --;
+            data = QVariant::fromValue(data);
         }
 
         return false;
@@ -1833,8 +1847,12 @@ YitianPackage::YitianPackage()
 
     General *zhanggongqi = new General(this, "zhanggongqi", "qun", 3);
     zhanggongqi->addSkill(new Yishe);
-    zhanggongqi->addSkill(new Midao);
     zhanggongqi->addSkill(new Xiliang);
+
+    General *yitianjian = new General(this, "yitianjian", "wei");
+    yitianjian->addSkill(new Zhengfeng);
+    yitianjian->addSkill(new Zhenwei);
+    yitianjian->addSkill(new Yitian);
 
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 

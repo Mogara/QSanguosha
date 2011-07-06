@@ -360,7 +360,7 @@ public:
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
             if(huangzhong->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
                 room->playSkillEffect(objectName());
-                room->slashResult(effect, true);
+                room->slashResult(effect, NULL);
 
                 return true;
             }

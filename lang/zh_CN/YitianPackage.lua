@@ -210,6 +210,16 @@ return {
 	["yisheask"] = "义舍要牌",
 	["yisheask:allow"] = "同意",
 	["yisheask:disallow"] = "不同意",
+
+	-- 倚天剑
+	["yitianjian"] = "倚天剑",
+	["zhengfeng"] = "争锋",
+	[":zhengfeng"] = " <b>锁定技</b>,当你的装备区没有武器时,你的攻击范围为X,X为你当前体力值.",	
+	["zhenwei"] = "镇威",
+	[":zhenwei"] = "你的【杀】被手牌中的【闪】抵消时,可立即获得该【闪】.",
+	["yitian"] = "倚天",
+	[":yitian"] = "<b>联动技</b>,当你对曹操造成伤害时，可令该伤害-1",
+	["#YitianSolace"] = "%from 发动了技能【倚天】，对 %to 的 %arg 点伤害减至 %arg2 点",
 	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
@@ -230,6 +240,7 @@ return {
 	["cv:guzhielai"] = "",
 	["cv:dengshizai"] = "",
 	["cv:zhanggongqi"] = "",
+	["cv:yitianjian"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -245,5 +256,6 @@ return {
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["designer:dengshizai"] = "Bu懂",
 	["designer:zhanggongqi"] = "背碗卤粉, Jr. Wakaran",
+	["designer:yitianjian"] = "太阳神上",
 }
 

@@ -32,7 +32,7 @@ CardEffectStruct::CardEffectStruct()
 }
 
 SlashEffectStruct::SlashEffectStruct()
-    :slash(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
+    :slash(NULL), jink(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
 {
 }
 

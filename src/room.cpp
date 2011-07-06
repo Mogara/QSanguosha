@@ -350,10 +350,13 @@ void Room::slashEffect(const SlashEffectStruct &effect){
         thread->trigger(SlashEffected, effect.to, data);
 }
 
-void Room::slashResult(const SlashEffectStruct &effect, bool hit){
-    QVariant data = QVariant::fromValue(effect);
+void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
+    SlashEffectStruct result_effect = effect;
+    result_effect.jink = jink;
 
-    if(hit)
+    QVariant data = QVariant::fromValue(result_effect);
+
+    if(jink == NULL)
         thread->trigger(SlashHit, effect.from, data);
     else
         thread->trigger(SlashMissed, effect.from, data);

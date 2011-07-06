@@ -703,6 +703,24 @@ public:
         frequency = Compulsory;
     }
 
+    const Card *askForDoubleJink(ServerPlayer *player, const QString &reason) const{
+        Room *room = player->getRoom();
+
+        const Card *first_jink = NULL, *second_jink = NULL;
+        first_jink = room->askForCard(player, "jink", QString("@%1-jink-1").arg(reason));
+        if(first_jink)
+            second_jink = room->askForCard(player, "jink", QString("@%1-jink-2").arg(reason));
+
+        Card *jink = NULL;
+        if(first_jink && second_jink){
+            jink = new DummyCard;
+            jink->addSubcard(first_jink);
+            jink->addSubcard(second_jink);
+        }
+
+        return jink;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return target->hasSkill(objectName()) || target->getGeneral()->isFemale();
     }
@@ -717,12 +735,7 @@ public:
 
             room->playSkillEffect(objectName(), 1);
 
-            bool jinked = false;
-            const Card *jink = room->askForCard(female, "jink", "@roulin1-jink-1");
-            if(jink && room->askForCard(female, "jink", "@roulin1-jink-2"))
-                jinked = true;
-
-            room->slashResult(effect, !jinked);
+            room->slashResult(effect, askForDoubleJink(female, "roulin1"));
             return true;
 
         }else if(effect.from->getGeneral()->isFemale() && effect.to->hasSkill(objectName())){
@@ -733,13 +746,7 @@ public:
             Room *room = female->getRoom();
 
             room->playSkillEffect(objectName(), 2);
-
-            bool jinked = false;
-            const Card *jink = room->askForCard(dongzhuo, "jink", "@roulin2-jink-1");
-            if(jink && room->askForCard(dongzhuo, "jink", "@roulin2-jink-2"))
-                jinked = true;
-
-            room->slashResult(effect, !jinked);
+            room->slashResult(effect, askForDoubleJink(dongzhuo, "roulin2"));
 
             return true;
         }
