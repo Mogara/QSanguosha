@@ -229,26 +229,39 @@ void RoomThread::run(){
     if(room->mode == "06_3v3"){
         run3v3();
     }else if(room->getMode() == "04_1v3"){
-        QList<ServerPlayer *> circle;
-
         ServerPlayer *shenlvbu = room->getLord();
         if(shenlvbu->getGeneralName() == "shenlvbu1"){
+            QList<ServerPlayer *> circle;
+
             circle << shenlvbu
                     << room->players.at(1)
                     << shenlvbu
                     << room->players.at(2)
                     << shenlvbu
                     << room->players.at(3);
-        }else{
-            circle = room->players;
-        }
 
-        forever{
-            foreach(ServerPlayer *player, circle){
-                room->setCurrent(player);
+            forever{
+                foreach(ServerPlayer *player, circle){
+                    room->setCurrent(player);
+                    trigger(TurnStart, room->getCurrent());
+
+                    if(shenlvbu->getGeneralName() == "shenlvbu2")
+                        goto second_phase;
+                }
+            }
+
+        }else{
+            second_phase:
+
+            room->setCurrent(shenlvbu);
+
+            forever{
                 trigger(TurnStart, room->getCurrent());
+                room->setCurrent(room->getCurrent()->getNext());
             }
         }
+
+
     }else{
         if(room->getMode() == "02_1v1")
             room->setCurrent(room->players.at(1));
