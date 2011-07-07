@@ -21,7 +21,7 @@
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
 {
-    setFlag(ItemIsMovable);
+    setFlags(ItemIsMovable | ItemIsFocusable);
 }
 
 QRectF BlackEdgeTextItem::boundingRect() const{
@@ -105,6 +105,13 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
 
         painter->fillPath(path, color);
     }
+
+    if(hasFocus()){
+        QPen red_pen(Qt::red);
+        painter->setPen(red_pen);
+        QRectF rect = boundingRect();
+        painter->drawRect(-1, -1, rect.width()+2, rect.height()+2);
+    }
 }
 
 static QAction *EditAction;
@@ -112,22 +119,27 @@ static QAction *DeleteAction;
 
 class SkillTitle: public QGraphicsPixmapItem{
 public:
-    SkillTitle(const QString &kingdom, const QString &text):title_text(NULL){
-        setKingdom(kingdom);
-        setFlag(QGraphicsItem::ItemIsFocusable);
-
+    SkillTitle(const QString &kingdom, const QString &text)
+        :title_text(NULL), frame(NULL)
+    {
         title_text = new AATextItem(text, this);
         title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>());
         title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, -2)).toPointF());
         title_text->document()->setDocumentMargin(0);
+
+        setKingdom(kingdom);
+        setFlag(QGraphicsItem::ItemIsFocusable);
+
+        frame = new QGraphicsRectItem(this);
+        frame->setRect(-1, -1, 70+2, 30+2);
+        QPen red_pen(Qt::red);
+        frame->setPen(red_pen);
+        frame->hide();
     }
 
     void setKingdom(const QString &kingdom){
         QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));
         setPixmap(title_pixmap);
-
-        if(title_text == NULL)
-            return;
 
         if(kingdom == "god")
             title_text->setDefaultTextColor(QColor(255, 255, 102));
@@ -164,6 +176,7 @@ public:
         case Qt::Key_Delete:{
                 if(DeleteAction)
                     DeleteAction->trigger();
+                return;
             }
 
         default:
@@ -195,8 +208,17 @@ public:
             EditAction->trigger();
     }
 
+    virtual void focusInEvent(QFocusEvent *event){
+        frame->show();
+    }
+
+    virtual void focusOutEvent(QFocusEvent *event){
+        frame->hide();
+    }
+
 private:
     AATextItem *title_text;
+    QGraphicsRectItem *frame;
 };
 
 SkillBox::SkillBox()
