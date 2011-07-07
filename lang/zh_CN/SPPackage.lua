@@ -56,4 +56,5 @@ return {
 	["#ReformingRevive"] = "%from 从重整状态中复活!",
 	["draw_1v3"] = "重整摸牌",
 	["weapon_recast"] = "武器重铸",
+	["hulaopass"] = "虎牢关模式",
 }
