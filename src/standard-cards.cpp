@@ -315,7 +315,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@axe-card";
+        return pattern == "@axe";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -349,7 +349,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         Room *room = player->getRoom();
-        CardStar card = room->askForCard(player, "@axe-card", "axe-card");
+        CardStar card = room->askForCard(player, "@axe", "@axe");
         if(card){
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){
