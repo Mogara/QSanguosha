@@ -196,6 +196,13 @@ public:
             Room *room = player->getRoom();
             ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
             if(menghuo){
+                LogMessage log;
+                log.type = "#HuoshouTransfer";
+                log.from = menghuo;
+                log.to << damage.to;
+                log.arg = player->getGeneralName();
+                room->sendLog(log);
+
                 room->playSkillEffect(objectName());
 
                 damage.from = menghuo;

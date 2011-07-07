@@ -25,6 +25,7 @@ return {
 	["weimu"] = "帷幕", 
 	["#WanshaOne"] = "%from 的锁定技【完杀】被触发，只能 %from 自救",
 	["#WanshaTwo"] = "%from 的锁定技【完杀】被触发，只有 %from 和 %to 自己才能救 %to",
+	["#HuoshouTransfer"] = "%from 的锁定技【祸首】被触发，将 %arg 对 %to 所造成的伤害视为 %from 造成",
 	["luanwu"] = "乱武", 
 	["jiuchi"] = "酒池", 
 	["roulin"] = "肉林", 
