@@ -236,8 +236,16 @@ void RoomThread::run(){
 
             forever{
                 foreach(ServerPlayer *player, league){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
+                }
+
+                foreach(ServerPlayer *player, league){
                     room->setCurrent(player);
                     trigger(TurnStart, room->getCurrent());
+
+                    if(!player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "actioned");
 
                     if(shenlvbu->getGeneralName() == "shenlvbu2")
                         goto second_phase;
@@ -256,9 +264,14 @@ void RoomThread::run(){
             second_phase:
 
             foreach(ServerPlayer *player, room->players){
-                if(player != shenlvbu && player->getPhase() != Player::NotActive){
-                    room->setPlayerProperty(player, "phase", "not_active");
-                    trigger(PhaseChange, player);
+                if(player != shenlvbu){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
+
+                    if(player->getPhase() != Player::NotActive){
+                        room->setPlayerProperty(player, "phase", "not_active");
+                        trigger(PhaseChange, player);
+                    }
                 }
             }
 
