@@ -2066,12 +2066,13 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
             }
         }
     }else{
-        if(move.to_place == Player::DiscardedPile)
-            discard_pile->prepend(move.card_id);
-        else if(move.to_place == Player::DrawPile)
-            draw_pile->prepend(move.card_id);
-        else if(move.to_place == Player::Special)
-            table_cards.append(move.card_id);
+        switch(move.to_place){
+        case Player::DiscardedPile: discard_pile->prepend(move.card_id); break;
+        case Player::DrawPile: draw_pile->prepend(move.card_id); break;
+        case Player::Special: table_cards.append(move.card_id); break;
+        default:
+            break;
+        }
     }
 
     setCardMapping(move.card_id, move.to, move.to_place);

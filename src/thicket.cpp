@@ -298,14 +298,14 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return !target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->inherits("SavageAssault") && !player->hasSkill(objectName())){
+        if(use.card->inherits("SavageAssault")){
             Room *room = player->getRoom();
-            if(room->getCardPlace(use.card->getId()) == Player::DiscardedPile){
+            if(room->getCardPlace(use.card->getEffectiveId()) == Player::DiscardedPile){
                 // finding zhurong;
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *p, players){
