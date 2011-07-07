@@ -255,6 +255,13 @@ void RoomThread::run(){
         }else{
             second_phase:
 
+            foreach(ServerPlayer *player, room->players){
+                if(player != shenlvbu && player->getPhase() != Player::NotActive){
+                    room->setPlayerProperty(player, "phase", "not_active");
+                    trigger(PhaseChange, player);
+                }
+            }
+
             room->setCurrent(shenlvbu);
 
             forever{

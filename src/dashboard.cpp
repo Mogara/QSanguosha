@@ -409,6 +409,8 @@ void Dashboard::revivePlayer(){
         delete death_item;
         death_item = NULL;
     }
+
+    updateAvatar();
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){

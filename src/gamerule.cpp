@@ -721,11 +721,6 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                     foreach(const Card *trick, tricks)
                         room->throwCard(trick);
 
-                    foreach(ServerPlayer *p, room->getAlivePlayers()){
-                        if(!p->isLord())
-                            room->setPlayerProperty(p, "phase", "not_active");
-                    }
-
                 }else{
                     player->drawCards(8, false);
                 }
