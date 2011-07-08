@@ -7,12 +7,17 @@ function SmartAI:intentionFilter(event,player,data)
 		if info.from then 
 			if not info.card then return end
 			decisionType=decisionType or "cardUse"
+			if self==sgs.recorder then
+				self:log(info.from:getGeneralName()..":"..info.card:className())
+			end
 		end
 		
 		if not info.from then 
 			info=data:toString() 
 			decisionType=decisionType or info:split(":")[1]
-			--self:log(info)
+			if self==sgs.recorder then
+				self:log(info)
+			end
 		end
 		
 		
@@ -26,8 +31,10 @@ function SmartAI:intentionFilter(event,player,data)
 	end
 	
 	if event==sgs.Death then
-		sgs.ai_transMX(sgs.role_mx,player,player:getRole(),10)
+		sgs.ai_transMX(sgs.role_mx,player,player:getRole(),10,true)
 	end
+	
+	
 	
 	-- if event==sgs.TurnStart then
 		-- for _,item in ipairs(sgs.ai_tracker) do
@@ -88,7 +95,7 @@ function SmartAI:historianReport()
 		for _,value in ipairs(self.historian[aplayer:objectName()][bplayer:objectName()]) do
 			astring=astring..","..value
 		end
-		self:log(astring)
+		--self:log(astring)
 	end
 
 	end
@@ -98,14 +105,33 @@ function SmartAI:historianReport()
 	for _,aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 		
 			self:log(
-			math.ceil((sgs.role_mx.rebel[aplayer:objectName()] or 0)*100)/100 ..
+			math.ceil((sgs.role_mx.rebel[aplayer:objectName()] or 0)*100) ..
 			" ; "..
-			math.ceil((sgs.role_mx.renegade[aplayer:objectName()] or 0)*100)/100 ..
+			math.ceil((sgs.role_mx.renegade[aplayer:objectName()] or 0)*100) ..
 			" ; "..
-			math.ceil((sgs.role_mx.loyalist[aplayer:objectName()] or 0)*100)/100 ..
+			math.ceil((sgs.role_mx.loyalist[aplayer:objectName()] or 0)*100) ..
 			" : "..
 			aplayer:getGeneralName()
 			)
+		
+	end
+	
+	if not sgs.ai_copyMX then return end
+	if not self.player:isLord() then
+		local mx=sgs.ai_copyMX()
+		sgs.ai_transMX(mx,self.player,self.player:getRole(),10,true)
+		for _,aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+		
+			self:log(
+			math.ceil((mx.rebel[aplayer:objectName()] or 0)*100) ..
+			" ; "..
+			math.ceil((mx.renegade[aplayer:objectName()] or 0)*100) ..
+			" ; "..
+			math.ceil((mx.loyalist[aplayer:objectName()] or 0)*100) ..
+			" : "..
+			aplayer:getGeneralName()
+			)
+		end
 		
 	end
 end
@@ -208,102 +234,141 @@ sgs.newGuessing{
 		end
 		
 		if player:isLord() then return end
-			
-		local function transfer(mx,from,fr,to,tr,value)
-			mx[fr][from:objectName()]=mx[fr][from:objectName()]+value
-			mx[tr][to:objectName()]  =mx[tr][to:objectName()]  +value
-			mx[fr][to:objectName()]  =mx[fr][to:objectName()]  -value
-			mx[tr][from:objectName()]=mx[tr][from:objectName()]-value
+		
+		local function bond(value)
+			if value>self.player_sum then return self.player_sum
+			elseif value<0 then return 0
+			else return value end
 		end
-
-		local function findRoom(mx,from,fr,to,tr,inc)
+		
+		local function findRoom(mx,to,tr,inc)
 			local v
-			local sum=self.player_sum
-			if inc then
-				v=sum-mx[tr][to:objectName()]
-				if v>mx[tr][from:objectName()] then v=mx[tr][from:objectName()] end
-				if v>mx[fr][to:objectName()] then v=mx[fr][to:objectName()] end
-			else 
-				v=sum-mx[tr][to:objectName()]
-				if v<mx[tr][from:objectName()] then v=mx[tr][from:objectName()] end
-				if v<mx[fr][to:objectName()] then v=mx[fr][to:objectName()] end
-				v=sum-v
-			end
-			if v>0 then return v else return 0 end
-		end	
+			v= self.player_sum-mx[tr][to:objectName()]
+			if v/self.player_sum>0.5 then v= mx[tr][to:objectName()] end
+			if v/self.player_sum<0.1 then v=self.player_sum*0.1 end
+			return v
+		end
 			
-		local function transMX(mx,player,role,value)
+		local function transfer(mx,from,fr,to,tr,toTransfer)
+
+			mx[fr][from:objectName()]=mx[fr][from:objectName()] +toTransfer
+			mx[tr][to:objectName()]	 =mx[tr][to:objectName()]   +toTransfer
+			mx[fr][to:objectName()]  =mx[fr][to:objectName()]   -toTransfer
+			mx[tr][from:objectName()]=mx[tr][from:objectName()] -toTransfer
+
+		end
+			
+		local function transMX(mx,player,role,value,complete)
 			local roles={"rebel","renegade","loyalist"}
 			local sum=self.player_sum
+			local original=mx[role][player:objectName()]
 			
-			if mx[role][player:objectName()]+value>sum then value=sum-mx[role][player:objectName()] end
-			if mx[role][player:objectName()]+value<0   then value=-mx[role][player:objectName()] end
-			
-			
+			value=bond(mx[role][player:objectName()]+value)-mx[role][player:objectName()]
+				
 				local room=0
+				local planRoom={}
 				for _,arole in ipairs(roles) do
+					planRoom[arole]={}
 					for _,aplayer in sgs.qlist(player:getRoom():getAlivePlayers()) do
 						if not aplayer:isLord() then
-							if not (arole==role or aplayer:objectName()==player:objectName()) then
-								room=room+findRoom(mx,player,role,aplayer,arole,value>0)
+							if not 
+							(arole==role 
+							or aplayer:objectName()==player:objectName()
+							) then								
+								room=room+findRoom(mx,aplayer,arole,value>0)
+								planRoom[arole][aplayer:objectName()]=findRoom(mx,aplayer,arole,value>0)
 							end
-							
 						end
 					end
 				end
 				
-				if room<=0 then return end
+				self:log("room:"..room)
 				
+				
+				local ratio=value/room
 				for _,arole in ipairs(roles) do
 					for _,aplayer in sgs.qlist(player:getRoom():getAlivePlayers()) do
 						if not aplayer:isLord() then
-							if not (arole==role or aplayer:objectName()==player:objectName()) then
-								local transValue=findRoom(mx,player,role,aplayer,arole,value>0)*value/room
+							if not (arole==role 
+							or aplayer:objectName()==player:objectName()
+							) then
+								local transValue=planRoom[arole][aplayer:objectName()]*ratio
 								transfer(mx,player,role,aplayer,arole,transValue)
 							end
 							
 						end
 					end
 				end
+				
+				for _,arole in ipairs(roles) do
+					for _,aplayer in sgs.qlist(player:getRoom():getAlivePlayers()) do
+						if not aplayer:isLord() then
+							
+								if (mx[arole][aplayer:objectName()]>sum+0.1) or (mx[arole][aplayer:objectName()]<-0.1) then
+									
+									transMX(mx,aplayer,arole,bond(mx[arole][aplayer:objectName()])-mx[arole][aplayer:objectName()])
+								end
+							
+							
+						end
+					end
+				end
+				
+				if complete and math.abs(mx[role][player:objectName()]-original-value)>0.1 then
+					transMX(mx,player,role,original+value-mx[role][player:objectName()],true)
+				end
 			
-			
+			--if (not_transfered>0.0001 or not_transfered<-0.0001) then self:log(not_transfered) transMX(mx,player,role,not_transfered) end
 		end
 		
 		sgs.ai_transMX=transMX
 		
+		local function copyMX()
+			local mx={}
+			mx.rebel={}
+			mx.renegade={}
+			mx.loyalist={}
+			
+			for _,aplayer in sgs.qlist(player:getRoom():getAllPlayers()) do
+					
+				if not aplayer:isLord() then 	
+					mx.rebel[aplayer:objectName()]=sgs.role_mx.rebel[aplayer:objectName()]
+					mx.loyalist[aplayer:objectName()]=sgs.role_mx.loyalist[aplayer:objectName()]
+					mx.renegade[aplayer:objectName()]=sgs.role_mx.renegade[aplayer:objectName()]
+				end
+			end
+			return mx
+		end
 		
-		
+		sgs.ai_copyMX=copyMX
 		
 		for _,target in sgs.qlist(use.to) do
 			
 			if intention=="Attack" or intention=="Jeopardize" then
-				if target:isLord() then transMX(sgs.role_mx,player,"rebel",10) 
+				if target:isLord() then transMX(sgs.role_mx,player,"rebel",10,true) 
 				else
 				
 				local sum=self.player_sum
-				local v=sgs.role_mx.rebel[target:objectName()]-sum/2
-				if v>3 then v=3
-				elseif v<-1 then v=-1 end 
+				local v=sgs.role_mx.rebel[target:objectName()]/sum
+				v=v*v*7
 				transMX(sgs.role_mx,player,"rebel",-v)
-				v=sgs.role_mx.loyalist[target:objectName()]-sum/2
-				if v>3 then v=3
-				elseif v<-1 then v=-1 end 
+				v=sgs.role_mx.loyalist[target:objectName()]/sum
+				v=v*v*7
 				transMX(sgs.role_mx,player,"loyalist",-v)
 				
 				end
 			elseif intention=="Save" or intention=="Support" then 
-				if target:isLord() then transMX(sgs.role_mx,player,"rebel",-10) 
+				if target:isLord() then transMX(sgs.role_mx,player,"rebel",-10,true) 
 				else
 				
 				local sum=self.player_sum
-				local v=sgs.role_mx.rebel[target:objectName()]-sum/2
-				if v>1 then v=1
-				elseif v<-3 then v=-3 end 
-				transMX(sgs.role_mx,player,"rebel",v)
-				v=sgs.role_mx.loyalist[target:objectName()]-sum/2
-				if v>1 then v=1
-				elseif v<-3 then v=-3 end 
-				transMX(sgs.role_mx,player,"loyalist",v)
+				local v=sgs.role_mx.rebel[target:objectName()]/sum
+				v=v*v*7
+				transMX(sgs.role_mx,player,"loyalist",-v)
+				v=sgs.role_mx.loyalist[target:objectName()]/sum
+				v=v*v*7
+				transMX(sgs.role_mx,player,"rebel",-v)
+				
 				
 				end
 			end
