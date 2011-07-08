@@ -218,8 +218,10 @@ void RoomThread::action3v3(ServerPlayer *player){
 }
 
 void RoomThread::run(){
-    if(setjmp(env) == GameOver)
+    if(setjmp(env) == GameOver){
+        quit();
         return;
+    }
 
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
@@ -366,7 +368,8 @@ void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
 }
 
 void RoomThread::delay(unsigned long secs){
-    msleep(secs);
+    if(room->property("to_test").toString().isEmpty())
+        msleep(secs);
 }
 
 void RoomThread::end(){

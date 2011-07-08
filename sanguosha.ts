@@ -1634,6 +1634,11 @@
         <translation>AI 混战</translation>
     </message>
     <message>
+        <location filename="src/mainwindow.ui" line="342"/>
+        <source>Ctrl+M</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="src/mainwindow.ui" line="233"/>
         <source>Alt+M</source>
         <translation></translation>
@@ -1828,47 +1833,52 @@
         <translation>AI 混战</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="566"/>
+        <location filename="src/mainwindow.cpp" line="571"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="579"/>
+        <location filename="src/mainwindow.cpp" line="584"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="581"/>
-        <source>Times</source>
-        <translation>次数</translation>
+        <location filename="src/mainwindow.cpp" line="587"/>
+        <source>Test times</source>
+        <translation>测试次数</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="595"/>
+        <location filename="src/mainwindow.cpp" line="681"/>
+        <source>Winner(s): %1 &lt;br/&gt; Losers: %2 &lt;br /&gt; Shuffle times: %3</source>
+        <translation>获胜者: %1 &lt;br/&gt; 失败者: %2 &lt;br /&gt; 洗牌次数: %3</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="690"/>
         <source>Winning result</source>
         <translation>胜率</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="611"/>
+        <location filename="src/mainwindow.cpp" line="706"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="612"/>
+        <location filename="src/mainwindow.cpp" line="707"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="613"/>
+        <location filename="src/mainwindow.cpp" line="708"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="614"/>
+        <location filename="src/mainwindow.cpp" line="709"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.cpp" line="615"/>
+        <location filename="src/mainwindow.cpp" line="710"/>
         <source>Total</source>
         <translation>总计</translation>
     </message>
@@ -2164,7 +2174,7 @@
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2207"/>
+        <location filename="src/room.cpp" line="2233"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2548,18 +2558,18 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="769"/>
+        <location filename="src/server.cpp" line="773"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="778"/>
+        <location filename="src/server.cpp" line="782"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="794"/>
+        <location filename="src/server.cpp" line="798"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>

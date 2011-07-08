@@ -325,8 +325,7 @@ void Room::gameOver(const QString &winner){
             db->sendResult(this);
     }
 
-    Server *server = qobject_cast<Server *>(parent());
-    server->removeRoom(this);
+    emit game_over(winner);
 
     if(QThread::currentThread() == thread)
         thread->end();
@@ -1026,11 +1025,12 @@ const Card *Room::peek(){
 }
 
 void Room::timerEvent(QTimerEvent *event){
-    if(left_seconds > 0){
+    if(event && left_seconds > 0){
         left_seconds --;
         broadcastInvoke("startInXs", QString::number(left_seconds));
     }else{
-        killTimer(event->timerId());
+        if(event)
+            killTimer(event->timerId());
 
         if(scenario && !scenario->generalSelection())
             startGame();
@@ -1260,7 +1260,7 @@ void Room::processRequest(const QString &request){
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QString &){
-    if(player != owner)
+    if(player && player != owner)
         return;
 
     if(isFull())
@@ -1331,6 +1331,9 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 #ifndef QT_NO_DEBUG
         left_seconds = 1;
 #endif
+        if(!property("to_test").toString().isEmpty())
+            timerEvent(NULL);
+
         broadcastInvoke("startInXs", QString::number(left_seconds));
         startTimer(1000);
     }
@@ -1789,6 +1792,23 @@ void Room::startGame(){
     if(Config.ContestMode)
         tag.insert("StartTime", QDateTime::currentDateTime());
 
+    QString to_test = property("to_test").toString();
+    if(!to_test.isEmpty()){
+        bool found = false;
+
+        foreach(ServerPlayer *p, players){
+            if(p->getGeneralName() == to_test){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            int r = qrand() % players.length();
+            players.at(r)->setGeneralName(to_test);
+        }
+    }
+
     int i;
     if(true){
         int start_index = 1;
@@ -1853,6 +1873,7 @@ void Room::startGame(){
     broadcastInvoke("setPileNumber", QString::number(draw_pile->length()));
 
     thread = new RoomThread(this);
+    connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
     GameRule *game_rule;
     if(mode == "08boss")
@@ -2121,6 +2142,11 @@ void Room::playSkillEffect(const QString &skill_name, int index){
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except){
     broadcast(QString("%1 %2").arg(method).arg(arg), except);
+}
+
+void Room::startTest(const QString &to_test){
+    fillRobotsCommand(NULL, ".");
+    setProperty("to_test", to_test);
 }
 
 void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool move_focus){

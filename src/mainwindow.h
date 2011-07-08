@@ -44,12 +44,16 @@ public:
 private slots:
     void selectGeneral();
     void setGeneral(const QString &general_name);
+    void startTest();
+    void onGameStart();
+    void onGameOver(const QString &winner);
 
 private:
     QGroupBox *createGeneralBox();
     QGroupBox *createResultBox();
 
     QToolButton *avatar_button;
+    QGraphicsScene *record_scene;
 };
 
 class MainWindow : public QMainWindow {
