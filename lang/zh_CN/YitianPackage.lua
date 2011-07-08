@@ -200,8 +200,6 @@ return {
 	["zhanggongqi"] = "张公祺",
 	["yishe"] = "义舍",
 	[":yishe"] = "出牌阶段,你可将任意数量手牌正面朝上移出游戏称为\"米\"(至多存在五张)或收回.其他角色在其出牌阶段可选择任意一张\"米\"询问你,若你同意,该角色获得这张牌,每回合限两次.",
-	["midao"] = "米道",
-	[":midao"] = "当任意角色须要进行判定时,你可令其从\"米\"中选取判定牌.",
 	["xiliang"] = "惜粮",
 	[":xiliang"] = "你可将其他角色弃牌阶段弃掉的红牌收为\"米\"或加入手牌.",
 	["rice"] = "米",
@@ -210,6 +208,16 @@ return {
 	["yisheask"] = "义舍要牌",
 	["yisheask:allow"] = "同意",
 	["yisheask:disallow"] = "不同意",
+
+	-- 倚天剑
+	["yitianjian"] = "倚天剑",
+	["zhengfeng"] = "争锋",
+	[":zhengfeng"] = " <b>锁定技</b>,当你的装备区没有武器时,你的攻击范围为X,X为你当前体力值.",	
+	["zhenwei"] = "镇威",
+	[":zhenwei"] = "你的【杀】被手牌中的【闪】抵消时,可立即获得该【闪】.",
+	["yitian"] = "倚天",
+	[":yitian"] = "<b>联动技</b>,当你对曹操造成伤害时，可令该伤害-1",
+	["#YitianSolace"] = "%from 发动了技能【倚天】，对 %to 的 %arg 点伤害减至 %arg2 点",
 	
 	["yanghu"] = "羊祜",
 	["jinshen"] = "谨慎",
@@ -230,6 +238,7 @@ return {
 	["cv:guzhielai"] = "",
 	["cv:dengshizai"] = "",
 	["cv:zhanggongqi"] = "",
+	["cv:yitianjian"] = "",
 	
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -245,5 +254,6 @@ return {
 	["designer:guzhielai"] = "Jr. Wakaran, 太阳神上",
 	["designer:dengshizai"] = "Bu懂",
 	["designer:zhanggongqi"] = "背碗卤粉, Jr. Wakaran",
+	["designer:yitianjian"] = "太阳神上",
 }
 

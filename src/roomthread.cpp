@@ -32,7 +32,7 @@ CardEffectStruct::CardEffectStruct()
 }
 
 SlashEffectStruct::SlashEffectStruct()
-    :slash(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
+    :slash(NULL), jink(NULL), from(NULL), to(NULL), drank(false), nature(DamageStruct::Normal)
 {
 }
 
@@ -218,16 +218,74 @@ void RoomThread::action3v3(ServerPlayer *player){
 }
 
 void RoomThread::run(){
+    if(setjmp(env) == GameOver){
+        quit();
+        return;
+    }
+
     // start game, draw initial 4 cards
     foreach(ServerPlayer *player, room->players){
         trigger(GameStart, player);
     }
 
-    if(setjmp(env) == GameOver)
-        return;
-
     if(room->mode == "06_3v3"){
         run3v3();
+    }else if(room->getMode() == "04_1v3"){
+        ServerPlayer *shenlvbu = room->getLord();
+        if(shenlvbu->getGeneralName() == "shenlvbu1"){
+            QList<ServerPlayer *> league = room->players;
+            league.removeOne(shenlvbu);
+
+            forever{
+                foreach(ServerPlayer *player, league){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
+                }
+
+                foreach(ServerPlayer *player, league){
+                    room->setCurrent(player);
+                    trigger(TurnStart, room->getCurrent());
+
+                    if(!player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "actioned");
+
+                    if(shenlvbu->getGeneralName() == "shenlvbu2")
+                        goto second_phase;
+
+                    if(player->isAlive()){
+                        room->setCurrent(shenlvbu);
+                        trigger(TurnStart, room->getCurrent());
+
+                        if(shenlvbu->getGeneralName() == "shenlvbu2")
+                            goto second_phase;
+                    }
+                }
+            }
+
+        }else{
+            second_phase:
+
+            foreach(ServerPlayer *player, room->players){
+                if(player != shenlvbu){
+                    if(player->hasFlag("actioned"))
+                        room->setPlayerFlag(player, "-actioned");
+
+                    if(player->getPhase() != Player::NotActive){
+                        room->setPlayerProperty(player, "phase", "not_active");
+                        trigger(PhaseChange, player);
+                    }
+                }
+            }
+
+            room->setCurrent(shenlvbu);
+
+            forever{
+                trigger(TurnStart, room->getCurrent());
+                room->setCurrent(room->getCurrent()->getNext());
+            }
+        }
+
+
     }else{
         if(room->getMode() == "02_1v1")
             room->setCurrent(room->players.at(1));
@@ -310,7 +368,8 @@ void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
 }
 
 void RoomThread::delay(unsigned long secs){
-    msleep(secs);
+    if(room->property("to_test").toString().isEmpty())
+        msleep(secs);
 }
 
 void RoomThread::end(){

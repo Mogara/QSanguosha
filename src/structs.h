@@ -44,6 +44,7 @@ struct SlashEffectStruct{
     SlashEffectStruct();
 
     const Slash *slash;
+    const Card *jink;
 
     ServerPlayer *from;
     ServerPlayer *to;
@@ -116,6 +117,7 @@ enum TriggerEvent{
     DrawNCards,
     HpRecover,
     HpLost,
+    HpChanged,
 
     StartJudge,
     AskForRetrial,

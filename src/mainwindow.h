@@ -18,6 +18,8 @@ class QGraphicsScene;
 class QSystemTrayIcon;
 class Server;
 class QTextEdit;
+class QToolButton;
+class QGroupBox;
 
 class BroadcastBox: public QDialog{
     Q_OBJECT
@@ -31,6 +33,27 @@ protected:
 private:
     Server *server;
     QTextEdit *text_edit;
+};
+
+class MeleeDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    MeleeDialog(QWidget *parent);
+
+private slots:
+    void selectGeneral();
+    void setGeneral(const QString &general_name);
+    void startTest();
+    void onGameStart();
+    void onGameOver(const QString &winner);
+
+private:
+    QGroupBox *createGeneralBox();
+    QGroupBox *createResultBox();
+
+    QToolButton *avatar_button;
+    QGraphicsScene *record_scene;
 };
 
 class MainWindow : public QMainWindow {
@@ -53,6 +76,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionAI_Melee_triggered();
     void on_actionPackaging_triggered();
     void on_actionScript_editor_triggered();
     void on_actionPC_Console_Start_triggered();

@@ -82,6 +82,9 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         slash_targets ++;
     }
 
+    if(Self->hasSkill("shenji") && Self->getWeapon() == NULL)
+        slash_targets = 3;
+
     if(targets.length() >= slash_targets)
         return false;
 
@@ -312,7 +315,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@axe-card";
+        return pattern == "@axe";
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -346,7 +349,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         Room *room = player->getRoom();
-        CardStar card = room->askForCard(player, "@axe-card", "axe-card");
+        CardStar card = room->askForCard(player, "@axe", "@axe");
         if(card){
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){
@@ -364,7 +367,7 @@ public:
             log.to << effect.to;
             room->sendLog(log);
 
-            room->slashResult(effect, true);
+            room->slashResult(effect, NULL);
         }
 
         return false;

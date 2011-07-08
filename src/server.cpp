@@ -747,18 +747,22 @@ void Server::daemonize(){
     createNewRoom();
 }
 
-void Server::createNewRoom(){
+Room *Server::createNewRoom(){
     Room *new_room = new Room(this, Config.GameMode);
     QString error_msg = new_room->createLuaState();
 
     if(!error_msg.isEmpty()){
         QMessageBox::information(NULL, tr("Lua scripts error"), error_msg);
-    }else{
-        current = new_room;
-        rooms.insert(current);
-
-        connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+        return NULL;
     }
+
+    current = new_room;
+    rooms.insert(current);
+
+    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+    connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
+
+    return current;
 }
 
 void Server::processNewConnection(ClientSocket *socket){
@@ -843,16 +847,17 @@ void Server::cleanup(){
         addresses.remove(socket->peerAddress());
 }
 
-void Server::removeRoom(Room *room){
+void Server::signupPlayer(ServerPlayer *player){
+    name2objname.insert(player->screenName(), player->objectName());
+    players.insert(player->objectName(), player);
+}
+
+void Server::gameOver(){
+    Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
     foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()){
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
     }
-}
-
-void Server::signupPlayer(ServerPlayer *player){
-    name2objname.insert(player->screenName(), player->objectName());
-    players.insert(player->objectName(), player);
 }

@@ -142,8 +142,10 @@ void Dashboard::addCardItem(CardItem *card_item){
 
     if(ClientInstance->getStatus() == Client::Playing)
         card_item->setEnabled(card_item->getFilteredCard()->isAvailable(Self));
-    else
+    else{
+        card_item->setEnabled(true);
         card_item->setEnabled(false);
+    }
 
     card_item->setPos(mapFromScene(card_item->pos()));
     card_item->setParentItem(this);
@@ -409,6 +411,8 @@ void Dashboard::revivePlayer(){
         delete death_item;
         death_item = NULL;
     }
+
+    updateAvatar();
 }
 
 void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){

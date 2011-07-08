@@ -90,6 +90,7 @@ Engine::Engine()
     modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
+    modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
@@ -416,6 +417,9 @@ void Engine::getRoles(const QString &mode, char *roles) const{
     if(mode == "02_1v1"){
         qstrcpy(roles, "ZN");
         return;
+    }else if(mode == "04_1v3"){
+        qstrcpy(roles, "ZFFF");
+        return;
     }
 
     if(modes.contains(mode)){
@@ -538,6 +542,22 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
+    if(Config.GameMode == "04_1v3"){
+        const Package *stdpack = findChild<const Package *>("standard");
+        QList<const Card *> stdcards = stdpack->findChildren<const Card *>();
+        QList<int> card_ids;
+
+        foreach(const Card *card, stdcards){
+            if(card->inherits("Disaster"))
+                continue;
+
+            card_ids << card->getId();
+        }
+
+        qShuffle(card_ids);
+        return card_ids;
+    }
+
     bool exclude_disaters = Config.GameMode == "06_3v3"
                             && Config.value("3v3/ExcludeDisasters", true).toBool();
 

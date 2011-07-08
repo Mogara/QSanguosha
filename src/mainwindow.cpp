@@ -533,3 +533,214 @@ void MainWindow::on_actionScript_editor_triggered()
 {
     QMessageBox::information(this, tr("Warning"), tr("This function is not implemented yet!"));
 }
+
+#include <QGroupBox>
+#include <QToolButton>
+#include <QCommandLinkButton>
+#include <QFormLayout>
+
+MeleeDialog::MeleeDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("AI Melee"));
+
+    QGroupBox *general_box = createGeneralBox();
+    QGroupBox *result_box = createResultBox();
+    QGraphicsView *record_view = new QGraphicsView;
+    record_view->setMinimumWidth(500);
+
+    record_scene = new QGraphicsScene;
+    record_view->setScene(record_scene);
+
+    general_box->setMaximumWidth(250);
+    result_box->setMaximumWidth(250);
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(general_box);
+    vlayout->addWidget(result_box);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addLayout(vlayout);
+    layout->addWidget(record_view);
+    setLayout(layout);
+
+    setGeneral(Config.value("MeleeGeneral", "zhangliao").toString());
+}
+
+QGroupBox *MeleeDialog::createGeneralBox(){
+    QGroupBox *box = new QGroupBox(tr("General"));
+
+    avatar_button = new QToolButton;
+    avatar_button->setIconSize(QSize(200, 290));
+    avatar_button->setObjectName("avatar");
+
+    connect(avatar_button, SIGNAL(clicked()), this, SLOT(selectGeneral()));
+
+    QFormLayout *form_layout = new QFormLayout;
+    QSpinBox *spinbox = new QSpinBox;
+    spinbox->setRange(1, 2000);
+    spinbox->setValue(10);
+
+    QPushButton *start_button = new QPushButton(tr("Start"));
+    connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
+
+    form_layout->addRow(tr("Test times"), spinbox);
+    form_layout->addWidget(start_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(avatar_button);
+    layout->addLayout(form_layout);
+
+    box->setLayout(layout);
+
+    return box;
+}
+
+void MeleeDialog::startTest(){
+    Server *server = new Server(this);
+    server->listen();
+
+    Config.AIDelay = 0;
+
+    Room *room = server->createNewRoom();
+    connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
+    connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
+
+    room->startTest(avatar_button->property("to_test").toString());
+}
+
+class RoomItem: public Pixmap{
+public:
+    RoomItem(Room *room){
+        changePixmap("image/system/frog/playing.png");
+
+        const qreal radius = 50;
+        const qreal pi = 3.1415926;
+
+        QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
+        int n = players.length();
+        qreal angle = 2 * pi / n;
+
+        foreach(const ServerPlayer *player, players){
+            qreal theta = (player->getSeat() -1) * angle;
+            qreal x = radius * cos(theta) + 5;
+            qreal y = radius * sin(theta) + 5;
+
+            qreal role_x = (radius + 30) * cos(theta) + 5;
+            qreal role_y = (radius + 30) * sin(theta) + 5;
+
+            QGraphicsPixmapItem *avatar = new QGraphicsPixmapItem(this);
+            avatar->setPixmap(QPixmap(player->getGeneral()->getPixmapPath("tiny")));
+            avatar->setPos(x, y);
+
+            QGraphicsPixmapItem *role = new QGraphicsPixmapItem(this);
+            role->setPixmap(QString("image/system/roles/small-%1.png").arg(player->getRole()));
+            role->setPos(role_x, role_y);
+        }
+
+        setFlag(ItemIsMovable);
+    }
+
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
+        foreach(QGraphicsItem *item, childItems()){
+            item->setVisible(! item->isVisible());
+        }
+    }
+};
+
+typedef RoomItem *RoomItemStar;
+Q_DECLARE_METATYPE(RoomItemStar);
+
+void MeleeDialog::onGameStart(){
+    Room *room = qobject_cast<Room *>(sender());
+
+    RoomItemStar room_item = new RoomItem(room);
+    room->setTag("RoomItem", QVariant::fromValue(room_item));
+
+    record_scene->addItem(room_item);
+}
+
+void MeleeDialog::onGameOver(const QString &winner){
+    Room *room = qobject_cast<Room *>(sender());
+    RoomItemStar room_item = room->getTag("RoomItem").value<RoomItemStar>();
+    QString to_test = room->property("to_test").toString();
+
+    QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
+
+    QStringList winners, losers;
+    foreach(const ServerPlayer *p, players){
+        bool won = winner.contains(p->getRole()) || winner.contains(p->objectName());
+        if(won)
+            winners << Sanguosha->translate(p->getGeneralName());
+        else
+            losers << Sanguosha->translate(p->getGeneralName());
+
+        if(p->getGeneralName() == to_test){
+
+            if(won)
+                room_item->changePixmap("image/system/frog/good.png");
+            else
+                room_item->changePixmap("image/system/frog/bad.png");
+        }
+    }
+
+    QString tooltip = tr("Winner(s): %1 <br/> Losers: %2 <br /> Shuffle times: %3")
+                      .arg(winners.join(","))
+                      .arg(losers.join(","))
+                      .arg(room->getTag("SwapPile").toInt());
+
+    room_item->setToolTip(tooltip);
+}
+
+QGroupBox *MeleeDialog::createResultBox(){
+    QGroupBox *box = new QGroupBox(tr("Winning result"));
+
+    QFormLayout *layout = new QFormLayout;
+
+    QLineEdit *lord_edit = new QLineEdit;
+    QLineEdit *loyalist_edit = new QLineEdit;
+    QLineEdit *rebel_edit = new QLineEdit;
+    QLineEdit *renegade_edit = new QLineEdit;
+    QLineEdit *total_edit = new QLineEdit;
+
+    lord_edit->setReadOnly(true);
+    loyalist_edit->setReadOnly(true);
+    rebel_edit->setReadOnly(true);
+    renegade_edit->setReadOnly(true);
+    total_edit->setReadOnly(true);
+
+    layout->addRow(tr("Lord"), lord_edit);
+    layout->addRow(tr("Loyalist"), loyalist_edit);
+    layout->addRow(tr("Rebel"), rebel_edit);
+    layout->addRow(tr("Renegade"), renegade_edit);
+    layout->addRow(tr("Total"), total_edit);
+
+    box->setLayout(layout);
+
+    return box;
+}
+
+#include "choosegeneraldialog.h"
+
+void MeleeDialog::selectGeneral(){
+    FreeChooseDialog *dialog = new FreeChooseDialog(this);
+    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(setGeneral(QString)));
+
+    dialog->exec();
+}
+
+void MeleeDialog::setGeneral(const QString &general_name){
+    const General *general = Sanguosha->getGeneral(general_name);
+
+    if(general){
+        avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
+        Config.setValue("MeleeGeneral", general_name);
+        avatar_button->setProperty("to_test", general_name);
+    }
+}
+
+void MainWindow::on_actionAI_Melee_triggered()
+{
+    MeleeDialog *dialog = new MeleeDialog(this);
+    dialog->exec();
+}

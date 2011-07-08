@@ -162,12 +162,12 @@ public:
     }
 };
 
-TaichenCard::TaichenCard(){
+TaichenFightCard::TaichenFightCard(){
     target_fixed = true;
     once = true;
 }
 
-void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->loseHp(source);
 
     if(source->isAlive()){
@@ -186,18 +186,18 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 }
 
-class Taichen: public ZeroCardViewAsSkill{
+class TaichenFight: public ZeroCardViewAsSkill{
 public:
-    Taichen():ZeroCardViewAsSkill("taichen"){
+    TaichenFight():ZeroCardViewAsSkill("taichen_fight"){
 
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("TaichenCard");
+        return ! player->hasUsed("TaichenFightCard");
     }
 
     virtual const Card *viewAs() const{
-        return new TaichenCard;
+        return new TaichenFightCard;
     }
 };
 
@@ -300,8 +300,8 @@ public:
                     room->acquireSkill(player, "flood");
                     room->acquireSkill(player, "xiansheng");
 
-                    ServerPlayer *pangde = room->findPlayer("pangde");
-                    room->acquireSkill(pangde, "taichen");
+                    ServerPlayer *sp_pangde = room->findPlayer("sp_pangde");
+                    room->acquireSkill(sp_pangde, "taichen_fight");
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
                     room->installEquip(huatuo, "hualiu");
@@ -320,7 +320,7 @@ public:
 
         case Death:{
                 DamageStar damage = data.value<DamageStar>();
-                if(player->getGeneralName() == "pangde" &&
+                if(player->getGeneralName() == "sp_pangde" &&
                    damage && damage->from && damage->from->isLord())
                 {
                     damage = NULL;
@@ -343,7 +343,7 @@ FanchengScenario::FanchengScenario()
 {
     lord = "guanyu";
     loyalists << "huatuo";
-    rebels << "caoren" << "pangde" << "xuhuang";
+    rebels << "caoren" << "sp_pangde" << "xuhuang";
     renegades << "lumeng";
 
     rule = new FanchengRule(this);
@@ -351,13 +351,13 @@ FanchengScenario::FanchengScenario()
     skills << new Guagu
             << new Dujiang
             << new Flood
-            << new Taichen
+            << new TaichenFight
             << new Xiansheng
             << new Zhiyuan;
 
     addMetaObject<DujiangCard>();
     addMetaObject<FloodCard>();
-    addMetaObject<TaichenCard>();
+    addMetaObject<TaichenFightCard>();
     addMetaObject<ZhiyuanCard>();
 }
 

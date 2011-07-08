@@ -345,6 +345,15 @@ bool ServerPlayer::hasNullification() const{
         }
     }else if(hasSkill("guhuo")){
         return !isKongcheng();
+    }else if(hasFlag("lexue")){
+        int card_id = getMark("lexue");
+        const Card *card = Sanguosha->getCard(card_id);
+        if(card->objectName() == "nullification"){
+            foreach(const Card *c, handcards + getEquips()){
+                if(c->objectName() == "nullification" || c->getSuit() == card->getSuit())
+                    return true;
+            }
+        }
     }else{
         foreach(const Card *card, handcards){
             if(card->objectName() == "nullification")
@@ -563,7 +572,7 @@ int ServerPlayer::getGeneralMaxHP() const{
 }
 
 bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
-    if(room->getMode() == "06_3v3")
+    if(room->getMode() == "06_3v3" || room->getMode() == "02_1v1")
         return false;
     else if(acquired_skills.contains(skill_name))
         return true;

@@ -417,15 +417,19 @@ public:
     RendeViewAsSkill():ViewAsSkill("rende"){
     }
 
-    virtual bool viewFilter(const QList<CardItem *> &, const CardItem *to_select) const{
-        return !to_select->isEquipped();
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        if(ServerInfo.GameMode == "04_1v3"
+           && selected.length() + Self->getMark("rende") >= 2)
+           return false;
+        else
+            return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
         if(cards.isEmpty())
             return NULL;
 
-        SkillCard *rende_card = new RendeCard;
+        RendeCard *rende_card = new RendeCard;
         rende_card->addSubcards(cards);
         return rende_card;
     }
@@ -437,9 +441,14 @@ public:
         view_as_skill = new RendeViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::NotActive
+                && target->hasUsed("RendeCard");
+    }
+
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Start)
-            target->setMark("rende", 0);
+        target->getRoom()->setPlayerMark(target, "rende", 0);
 
         return false;
     }
@@ -607,7 +616,7 @@ public:
 
             room->judge(judge);
             if(judge.isGood()){
-                room->slashResult(effect, true);
+                room->slashResult(effect, NULL);
                 return true;
             }
         }
@@ -1097,14 +1106,23 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *lubu, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         Room *room = lubu->getRoom();
-        QString slasher = lubu->objectName();
-        bool jinked = false;
         room->playSkillEffect(objectName());
-        const Card *first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
-        if(first_jink && room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher))
-            jinked = true;
 
-        room->slashResult(effect, !jinked);
+        QString slasher = lubu->objectName();
+
+        const Card *first_jink = NULL, *second_jink = NULL;
+        first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
+        if(first_jink)
+            second_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-2:" + slasher);
+
+        Card *jink = NULL;
+        if(first_jink && second_jink){
+            jink = new DummyCard;
+            jink->addSubcard(first_jink);
+            jink->addSubcard(second_jink);
+        }
+
+        room->slashResult(effect, jink);
 
         return true;
     }

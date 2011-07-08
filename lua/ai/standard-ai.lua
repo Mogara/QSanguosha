@@ -62,7 +62,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	if first_index and not second_index then
 		local others = self.room:getOtherPlayers(self.player)
 		for _, other in sgs.qlist(others) do
-			if self:isFair(other) and (self.enemies[first_index]:objectName()) ~= (other:objectName()) and not other:isKongcheng() then 
+			if (self.enemies[first_index]:objectName()) ~= (other:objectName()) and not other:isKongcheng() then 
 				return ("@TuxiCard=.->%s+%s"):format(self.enemies[first_index]:objectName(), other:objectName())
 			end
 		end

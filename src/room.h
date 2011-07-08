@@ -47,7 +47,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);
-    void slashResult(const SlashEffectStruct &effect, bool hit);
+    void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
@@ -153,6 +153,7 @@ public:
     void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
+    void startTest(const QString &to_test);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -217,6 +218,8 @@ private slots:
 
 signals:
     void room_message(const QString &msg);
+    void game_start();
+    void game_over(const QString &winner);
 };
 
 #endif // ROOM_H

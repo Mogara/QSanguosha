@@ -1117,7 +1117,6 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             }
 
         case Player::Hand:{
-                card_item->setEnabled(false);
                 dashboard->addCardItem(card_item);
                 break;
             }
@@ -1163,6 +1162,9 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 }
 
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
+    if(ClientInstance->getReplayer())
+        return;
+
     // check duplication
     foreach(QAbstractButton *button, skill_buttons){
         if(button->objectName() == skill->objectName())
@@ -2208,9 +2210,6 @@ void RoomScene::onGameOver(){
     layout->addWidget(loser_box);
     dialog->setLayout(layout);
 
-    winner_table->setColumnCount(4);
-    loser_table->setColumnCount(4);
-
     QList<const ClientPlayer *> winner_list, loser_list;
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         bool win = player->property("win").toBool();
@@ -2224,9 +2223,6 @@ void RoomScene::onGameOver(){
             photo->setEmotion(win ? "good" : "bad", true);
         }
     }
-
-    winner_table->setRowCount(winner_list.length());
-    loser_table->setRowCount(loser_list.length());
 
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
@@ -2424,6 +2420,8 @@ void RoomScene::makeReviving(){
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
+    table->setColumnCount(4);
+    table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;

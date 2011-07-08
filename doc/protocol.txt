@@ -284,10 +284,27 @@ startGame 命令没有任何参数，不过为了符合格式要求，arg 用 '.
 === 询问式命令
 
 . activate 出牌阶段请求出牌
-. askForSkillInvoke 询问是否发动技能
-. askForChoice 询问技能的选项
+. doChooseGeneral 选择武将
+. doChooseGeneral2 选择双将中的副将
+. doGuanxing 观星
+. doGongxin 攻心
+. askForDiscard 请求弃牌
+. askForExchange 请求换牌
+. askForSuit 询问花色选择
+. askForKingdom 询问势力选择
+. askForSinglePeach 询问出桃
+. askForCardChosen 选择卡牌
 . askForCard 请求打出某种类型的卡牌
 . askForUseCard 请求使用某种类型的卡牌
+. askForSkillInvoke 询问是否发动技能
+. askForChoice 询问技能的选项
+. askForNullification 请求无懈可击
+. askForCardShow 请求展示手牌
+. askForPindian 请求拼点
+. askForYiji 请求遗计
+. askForPlayerChosen 请求选择角色
+. askForGeneral 请求选择武将
+
 . ....
 
 === 告知式命令
@@ -335,8 +352,6 @@ startGame 命令没有任何参数，不过为了符合格式要求，arg 用 '.
 . moveCard 卡牌移动（公开）
 . drawNCards 摸牌命令(其他人摸牌，他人)
 . drawCards 摸牌命令（自己摸牌）
-
-
 
 ==== activate
 ----------------
