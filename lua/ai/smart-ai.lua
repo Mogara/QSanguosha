@@ -105,6 +105,7 @@ function SmartAI:initialize(player)
 	
 	self.role =player:getRole()
 	self.historian=sgs.newHistorian(player)
+	self.player_sum=self.room:getAllPlayers():length()-1
 
 	if sgs.ai_assumed[self.role] then sgs.ai_assumed[self.role] = sgs.ai_assumed[self.role] +1
 	elseif self.role~="lord" then sgs.ai_assumed[self.role] =1
@@ -516,7 +517,7 @@ end
 
 function SmartAI:filterEvent(event, player, data)
 	
-	self:intentionFilter(event,player,data)
+	self:intentionFilter(event,player,data) 
 	
 	if event == sgs.CardUsed then
 		self:updatePlayers()
@@ -1890,7 +1891,8 @@ function SmartAI:activate(use)
 	self.toUse =self:getTurnUse()
 	self:printCards(self.toUse)
 	
-	if sgs.GetConfig("EnableNewAI", "") then
+	local move=self:getMove() or {}
+	if false then--sgs.GetConfig("EnableNewAI", "") then
 		local move=self:getMove() or {}
 		use.card=move.card
 		use.to=move.to or use.to
