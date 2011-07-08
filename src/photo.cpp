@@ -115,9 +115,6 @@ void Photo::createRoleCombobox(){
 
 void Photo::updateRoleComboboxPos()
 {
-    if(role_combobox)
-        role_combobox->setupItems(this);
-
     int i, n = pile_buttons.length();
     for(i=0; i<n; i++){
         QGraphicsProxyWidget *button_widget = pile_buttons.at(i);

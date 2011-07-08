@@ -533,3 +533,114 @@ void MainWindow::on_actionScript_editor_triggered()
 {
     QMessageBox::information(this, tr("Warning"), tr("This function is not implemented yet!"));
 }
+
+#include <QGroupBox>
+#include <QToolButton>
+#include <QCommandLinkButton>
+#include <QFormLayout>
+
+MeleeDialog::MeleeDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("AI Melee"));
+
+    QGroupBox *general_box = createGeneralBox();
+    QGroupBox *result_box = createResultBox();
+    QTableWidget *record_table = new QTableWidget();
+
+    general_box->setMaximumWidth(250);
+    result_box->setMaximumWidth(250);
+
+    record_table->setColumnCount(9);
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(general_box);
+    vlayout->addWidget(result_box);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addLayout(vlayout);
+    layout->addWidget(record_table);
+    setLayout(layout);
+
+    setGeneral(Config.value("MeleeGeneral", "zhangliao").toString());
+}
+
+QGroupBox *MeleeDialog::createGeneralBox(){
+    QGroupBox *box = new QGroupBox(tr("General"));
+
+    avatar_button = new QToolButton;
+    avatar_button->setIconSize(QSize(200, 290));
+    avatar_button->setObjectName("avatar");
+
+    connect(avatar_button, SIGNAL(clicked()), this, SLOT(selectGeneral()));
+
+    QFormLayout *form_layout = new QFormLayout;
+    QSpinBox *spinbox = new QSpinBox;
+    spinbox->setRange(1, 2000);
+    spinbox->setValue(10);
+
+    QPushButton *start_button = new QPushButton(tr("Start"));
+
+    form_layout->addRow(tr("Times"), spinbox);
+    form_layout->addWidget(start_button);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(avatar_button);
+    layout->addLayout(form_layout);
+
+    box->setLayout(layout);
+
+    return box;
+}
+
+QGroupBox *MeleeDialog::createResultBox(){
+    QGroupBox *box = new QGroupBox(tr("Winning result"));
+
+    QFormLayout *layout = new QFormLayout;
+
+    QLineEdit *lord_edit = new QLineEdit;
+    QLineEdit *loyalist_edit = new QLineEdit;
+    QLineEdit *rebel_edit = new QLineEdit;
+    QLineEdit *renegade_edit = new QLineEdit;
+    QLineEdit *total_edit = new QLineEdit;
+
+    lord_edit->setReadOnly(true);
+    loyalist_edit->setReadOnly(true);
+    rebel_edit->setReadOnly(true);
+    renegade_edit->setReadOnly(true);
+    total_edit->setReadOnly(true);
+
+    layout->addRow(tr("Lord"), lord_edit);
+    layout->addRow(tr("Loyalist"), loyalist_edit);
+    layout->addRow(tr("Rebel"), rebel_edit);
+    layout->addRow(tr("Renegade"), renegade_edit);
+    layout->addRow(tr("Total"), total_edit);
+
+    box->setLayout(layout);
+
+    return box;
+}
+
+#include "choosegeneraldialog.h"
+
+void MeleeDialog::selectGeneral(){
+    FreeChooseDialog *dialog = new FreeChooseDialog(this);
+    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(setGeneral(QString)));
+
+    dialog->exec();
+}
+
+void MeleeDialog::setGeneral(const QString &general_name){
+    const General *general = Sanguosha->getGeneral(general_name);
+
+    if(general){
+        avatar_button->setIcon(QIcon(general->getPixmapPath("card")));
+        Config.setValue("MeleeGeneral", general_name);
+    }
+}
+
+void MainWindow::on_actionAI_Melee_triggered()
+{
+    MeleeDialog *dialog = new MeleeDialog(this);
+    dialog->exec();
+}

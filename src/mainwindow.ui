@@ -42,6 +42,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionBroadcast"/>
+    <addaction name="actionAI_Melee"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -331,6 +332,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionAI_Melee">
+   <property name="text">
+    <string>AI Melee</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>

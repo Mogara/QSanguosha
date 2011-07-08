@@ -1117,7 +1117,6 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             }
 
         case Player::Hand:{
-                card_item->setEnabled(false);
                 dashboard->addCardItem(card_item);
                 break;
             }
