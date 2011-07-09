@@ -2404,7 +2404,7 @@ function SmartAI:askForCard(pattern,prompt)
 			end
 		end	
 		return "."
-	elseif parsedPrompt[1]=="axe-card" then
+	elseif parsedPrompt[1]=="@axe" then
 		local players = self.room:getAllPlayers()
 		local player
 		for _, target in sgs.qlist(players) do

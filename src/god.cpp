@@ -601,7 +601,7 @@ public:
     }
 
     static void Exchange(ServerPlayer *shenzhuge){
-        const QList<int> stars = shenzhuge->getPile("stars");
+        QList<int> stars = shenzhuge->getPile("stars");
         if(stars.isEmpty())
             return;
 
@@ -617,6 +617,7 @@ public:
             if(card_id == -1)
                 break;
 
+            stars.removeOne(card_id);
             ++ n;
 
             room->moveCardTo(Sanguosha->getCard(card_id), shenzhuge, Player::Hand, false);
