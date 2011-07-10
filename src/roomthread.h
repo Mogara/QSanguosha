@@ -49,7 +49,7 @@ private:
     jmp_buf env;
     QString order;
 
-    QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
+    QList<const TriggerSkill *> skill_table[NumOfEvents];
     QMap<const TriggerSkill *, int> refcount;
 };
 

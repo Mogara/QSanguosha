@@ -304,21 +304,12 @@ static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b){
 bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &data){
     Q_ASSERT(QThread::currentThread() == this);
 
-    QList<const TriggerSkill *> skills = skill_table[event];
-    QMutableListIterator<const TriggerSkill *> itor(skills);
-    while(itor.hasNext()){
-        const TriggerSkill *skill = itor.next();
-        if(!skill->triggerable(target))
-            itor.remove();
-    }
-
-    qStableSort(skills.begin(), skills.end(), CompareByPriority);
-
     bool broken = false;
-    foreach(const TriggerSkill *skill, skills){
-        if(skill->trigger(event, target, data)){
-            broken = true;
-            break;
+    foreach(const TriggerSkill *skill, skill_table[event]){
+        if(skill->triggerable(target)){
+            broken = skill->trigger(event, target, data);
+            if(broken)
+                break;
         }
     }
 
@@ -344,6 +335,9 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
     QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
         skill_table[event] << skill;
+        qStableSort(skill_table[event].begin(),
+                    skill_table[event].end(),
+                    CompareByPriority);
     }
 }
 
