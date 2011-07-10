@@ -2148,6 +2148,10 @@ void RoomScene::clearPile(){
 void RoomScene::onStandoff(){
     freeze();
 
+#ifdef AUDIO_SUPPORT
+    Sanguosha->playAudio("standoff");
+#endif
+
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(500, 600);
     dialog->setWindowTitle(tr("Standoff"));
