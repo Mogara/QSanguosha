@@ -1350,7 +1350,7 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card == NULL){
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setEnabled(false);
+            item->setOpacity(0.7);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1360,7 +1360,7 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setEnabled(true);
+            item->setOpacity(1.0);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1389,7 +1389,8 @@ void RoomScene::updateTargetsEnablity(const Card *card){
 
         bool enabled = !Sanguosha->isProhibited(Self, player, card)
                        && card->targetFilter(selected_targets, player, Self);
-        item->setEnabled(enabled);
+
+        item->setOpacity(enabled ? 1.0 : 0.7);
         item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
 }
@@ -1753,8 +1754,9 @@ void RoomScene::updateStatus(Client::Status status){
             if(dashboard->currentSkill())
                 dashboard->stopPending();
 
-            foreach(Photo *photo, photos)
-                photo->setEnabled(photo->getPlayer()->isAlive());
+            foreach(Photo *photo, photos){
+                photo->setOpacity(photo->getPlayer()->isAlive() ? 1.0 : 0.7);
+            }
 
             break;
         }
@@ -2474,20 +2476,11 @@ void RoomScene::killPlayer(const QString &who){
         Photo *photo = name2photo[who];
         photo->killPlayer();
         photo->setFrame(Photo::NoFrame);
-        photo->setEnabled(false);
+        photo->setOpacity(0.7);
         photo->update();
+        item2player.remove(photo);
 
         general = photo->getPlayer()->getGeneral();
-
-        QMutableMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
-        while(itor.hasNext()){
-            itor.next();
-            if(itor.value()->objectName() == who){
-                itor.key()->setEnabled(false);
-                itor.remove();
-                break;
-            }
-        }
 
         if(ServerInfo.GameMode == "02_1v1")
             enemy_box->killPlayer(general->objectName());
@@ -2752,8 +2745,6 @@ void KOFOrderBox::killPlayer(const QString &general_name){
     for(i=0; i<revealed; i++){
         Pixmap *avatar = avatars[i];
         if(avatar->isEnabled() && avatar->objectName() == general_name){
-            avatar->setEnabled(false);
-
             QPixmap pixmap("image/system/death/unknown.png");
             QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
             death->moveBy(10, 0);
