@@ -1040,7 +1040,7 @@ public:
 
     virtual void onGameStart(ServerPlayer *player) const{
         if(player->askForSkillInvoke(objectName())){
-            player->getRoom()->transfigure(player, "sp_sunshangxiang", true, true);
+            player->getRoom()->transfigure(player, "sp_sunshangxiang", true, false);
         }
     }
 };
