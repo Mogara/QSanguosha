@@ -155,6 +155,8 @@ enum TriggerEvent{
     CardFinished,
 
     ChoiceMade,
+
+    NumOfEvents,
 };
 
 typedef const Card *CardStar;
