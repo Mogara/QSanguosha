@@ -1224,36 +1224,41 @@
     </message>
     <message>
         <location filename="src/engine.cpp" line="102"/>
+        <source>8 players (same mode)</source>
+        <translation>8 人局 (同将模式)</translation>
+    </message>
+    <message>
+        <location filename="src/engine.cpp" line="103"/>
         <source>9 players</source>
         <translation>9 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="103"/>
+        <location filename="src/engine.cpp" line="104"/>
         <source>10 players</source>
         <translation>10 人局</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="109"/>
+        <location filename="src/engine.cpp" line="110"/>
         <source>Boss mode</source>
         <translation>魔王模式</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="116"/>
+        <location filename="src/engine.cpp" line="117"/>
         <source>Lua script error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="193"/>
+        <location filename="src/engine.cpp" line="194"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="386"/>
+        <location filename="src/engine.cpp" line="387"/>
         <source>%1 [Challenge mode]</source>
         <translation>%1 【挑战模式】</translation>
     </message>
     <message>
-        <location filename="src/engine.cpp" line="388"/>
+        <location filename="src/engine.cpp" line="389"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2149,37 +2154,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="1130"/>
+        <location filename="src/room.cpp" line="1133"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1247"/>
+        <location filename="src/room.cpp" line="1250"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1280"/>
+        <location filename="src/room.cpp" line="1283"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1239"/>
+        <location filename="src/room.cpp" line="1242"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1259"/>
+        <location filename="src/room.cpp" line="1262"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1284"/>
+        <location filename="src/room.cpp" line="1287"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2232"/>
+        <location filename="src/room.cpp" line="2257"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
