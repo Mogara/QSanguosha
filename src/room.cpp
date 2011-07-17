@@ -854,10 +854,13 @@ void Room::swapPile(){
 
     int times = tag.value("SwapPile", 0).toInt();
     tag.insert("SwapPile", ++times);
-    if(times == 2 && mode == "04_1v3")
+    if(times == 6)
         gameOver(".");
-    else if(times == 10)
-        gameOver(".");
+    if(mode == "04_1v3"){
+        int limit = Config.BanPackages.contains("maneuvering") ? 3 : 2;
+        if(times == limit)
+            gameOver(".");
+    }
 
     qSwap(draw_pile, discard_pile);
 
