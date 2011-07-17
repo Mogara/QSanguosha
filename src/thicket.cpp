@@ -443,7 +443,7 @@ public:
         return card;
     }
 
-    virtual bool isEnabledAtPlay(const Player *){
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 

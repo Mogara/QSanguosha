@@ -622,7 +622,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
         return to_select->getWeapon() && to_select != Self;
     }else if(targets.length() == 1){
         const Player *first = targets.first();
-        return first != Self && first->canSlash(to_select);
+        return first != Self && first->getWeapon() && first->canSlash(to_select);
     }else
         return false;
 }
