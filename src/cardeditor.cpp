@@ -556,7 +556,8 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
     frame->setPixmap(QPixmap(path));
 
     foreach(QGraphicsPixmapItem *item, magatamas){
-        item->setPixmap(QPixmap(QString("diy/%1-magatama.png").arg(kingdom)));
+        item->setPixmap(QPixmap(QString("diy/%1-magatama.png")
+                                .arg(is_lord ? "god" : kingdom)));
     }
 
     skill_box->setKingdom(kingdom);
