@@ -30,6 +30,8 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlayer *> &targets) const{
+    room->throwCard(this);
+
     if(zhanghe->getPhase() == Player::Draw){
         foreach(ServerPlayer *target, targets){
             int card_id = room->askForCardChosen(zhanghe, target, "h", "qiaobian");
@@ -37,7 +39,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         }
     }else if(zhanghe->getPhase() == Player::Play){
         ServerPlayer *from = targets.first();
-        int card_id = room->askForCardChosen(zhanghe, from , "ej", "qiaobian-from");
+        int card_id = room->askForCardChosen(zhanghe, from , "ej", "qiaobian");
         const Card *card = Sanguosha->getCard(card_id);
         Player::Place place = room->getCardPlace(card_id);
 
@@ -63,7 +65,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
 
         delete trick;
 
-        ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian-to");
+        ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
         room->moveCardTo(card, to, place);
     }
 }
@@ -117,7 +119,7 @@ public:
 
         case Player::Judge: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-judge");
         case Player::Draw: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-draw");
-        case Player::Play: return room->askForUseCard(zhanghe, "@qianbian", "@qiaobian-play");
+        case Player::Play: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-play");
         case Player::Discard: return room->askForUseCard(zhanghe, "@qiaobian", "@qiaobian-discard");
         }
 

@@ -8,7 +8,7 @@ class QiaobianCard: public SkillCard{
     Q_OBJECT
 
 public:
-    QiaobianCard();
+    Q_INVOKABLE QiaobianCard();
 
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
