@@ -58,7 +58,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
                 if(p->getEquip(equip_index) == NULL)
                     tos << p;
             }else{
-                if(!zhanghe->isProhibited(p, trick))
+                if(!zhanghe->isProhibited(p, trick) && !p->containsTrick(trick->objectName()))
                     tos << p;
             }
         }
