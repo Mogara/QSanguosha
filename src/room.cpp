@@ -1349,7 +1349,7 @@ void Room::assignRoles(){
     Sanguosha->getRoles(mode, roles);
 
     for(i=0; i<n; i++){
-        int r = qrand() % n;
+        int r = qrand() % (n - i) + i;
 
         qSwap(roles[i], roles[r]);
     }
