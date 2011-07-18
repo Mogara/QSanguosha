@@ -63,7 +63,8 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             }
         }
 
-        delete trick;
+        if(trick->isVirtualCard())
+            delete trick;
 
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
         room->moveCardTo(card, to, place);
