@@ -1524,8 +1524,10 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(chosen_generals != player_count)
         return;
 
-    if(!Config.Enable2ndGeneral)
+    if(!Config.Enable2ndGeneral){
         startGame();
+        return;
+    }
 
     const int max_available = (total - player_count) / player_count;
     const int choice_count = qMin(max_choice, max_available);

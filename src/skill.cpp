@@ -246,7 +246,11 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 }
 
 bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
-    return onPhaseChange(player);
+    bool skipped = onPhaseChange(player);
+    if(skipped)
+        player->skip(player->getPhase());
+
+    return skipped;
 }
 
 DrawCardsSkill::DrawCardsSkill(const QString &name)

@@ -34,6 +34,7 @@ extern "C" {
     Package *NewWind();
     Package *NewFire();
     Package *NewThicket();
+    Package *NewMountain();
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
@@ -62,6 +63,7 @@ Engine::Engine()
     addPackage(NewWind());
     addPackage(NewFire());
     addPackage(NewThicket());
+    addPackage(NewMountain());
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
