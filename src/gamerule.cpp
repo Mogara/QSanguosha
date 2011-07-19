@@ -835,7 +835,7 @@ void HulaoPassThread::run(){
     foreach(const General *general, generals){
         names << general->objectName();
     }
-    names << "xiaoqiao" << "yuji";
+    names << "xiaoqiao";
     names.removeOne("wuxingzhuge");
     names.removeOne("zhibasunquan");
 

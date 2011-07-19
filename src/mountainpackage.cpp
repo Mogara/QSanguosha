@@ -152,6 +152,7 @@ public:
             judge.pattern = QRegExp("(.*):(.*):(.*)");
             judge.good = true;
             judge.who = player;
+            judge.reason = objectName();
 
             room->judge(judge);
 
@@ -202,6 +203,10 @@ public:
         events << Death;
 
         frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
