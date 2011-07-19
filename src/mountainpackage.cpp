@@ -12,7 +12,7 @@ QiaobianCard::QiaobianCard(){
 
 bool QiaobianCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if(Self->getPhase() == Player::Draw)
-        return targets.length() <= 2;
+        return targets.length() <= 2 && !targets.isEmpty();
     else if(Self->getPhase() == Player::Play)
         return targets.length() == 1;
     else
@@ -128,12 +128,102 @@ public:
     }
 };
 
+class Beige: public TriggerSkill{
+public:
+    Beige():TriggerSkill("beige"){
+        events << Damaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.card == NULL || !damage.card->inherits("Slash"))
+            return false;
+
+        Room *room = player->getRoom();
+        ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
+        if(caiwenji && !caiwenji->isKongcheng() && caiwenji->askForSkillInvoke(objectName(), data)){
+            room->askForDiscard(caiwenji, "beige", 1);
+
+            JudgeStruct judge;
+            judge.pattern = QRegExp("(.*):(.*):(.*)");
+            judge.good = true;
+            judge.who = player;
+
+            room->judge(judge);
+
+            switch(judge.card->getSuit()){
+            case Card::Heart:{
+                    RecoverStruct recover;
+                    recover.who = caiwenji;
+                    room->recover(player, recover);
+
+                    break;
+                }
+
+            case Card::Diamond:{
+                    player->drawCards(2);
+
+                    break;
+                }
+
+            case Card::Club:{
+                    if(damage.from){
+                        int to_discard = qMin(2, damage.from->getCardCount(true));
+                        if(to_discard != 0)
+                            room->askForDiscard(damage.from, "beige", to_discard, false, true);
+                    }
+
+                    break;
+                }
+
+            case Card::Spade:{
+                    if(damage.from)
+                        damage.from->turnOver();
+
+                    break;
+                }
+
+            default:
+                break;
+            }
+        }
+
+        return false;
+    }
+};
+
+class Duanchang: public TriggerSkill{
+public:
+    Duanchang():TriggerSkill("duanchang"){
+        events << Death;
+
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStar damage = data.value<DamageStar>();
+
+        if(damage && damage->from){
+            //
+        }
+
+        return false;
+    }
+};
+
 MountainPackage::MountainPackage()
     :Package("mountain")
 {
     General *zhanghe = new General(this, "zhanghe", "wei");
-
     zhanghe->addSkill(new Qiaobian);
+
+    General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
+    caiwenji->addSkill(new Beige);
+    caiwenji->addSkill(new Duanchang);
 
     addMetaObject<QiaobianCard>();
 }
