@@ -241,17 +241,303 @@ public:
     }
 };
 
+class Tuntian: public DistanceSkill{
+public:
+    Tuntian():DistanceSkill("tuntian"){
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *) const{
+        if(from->hasSkill(objectName()))
+            return -from->getMark("@field");
+        else
+            return 0;
+    }
+};
+
+class TuntianGet: public MasochismSkill{
+public:
+    TuntianGet():MasochismSkill("#tuntian"){
+        frequency = Frequent;
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        if(target->askForSkillInvoke("tuntian")){
+            target->gainMark("@field", damage.damage);
+        }
+    }
+};
+
+class Jiang: public TriggerSkill{
+public:
+    Jiang():TriggerSkill("jiang"){
+        events << CardUsed << CardEffected;
+
+        frequency = Frequent;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *sunce, QVariant &data) const{
+        const Card *card = NULL;
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+        }else if(event == CardEffected){
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            card = effect.card;
+        }
+
+        if(card == NULL)
+            return false;
+
+        if(card->inherits("Duel") || (card->inherits("Slash") && card->isRed())){
+            if(sunce->askForSkillInvoke(objectName(), data))
+                sunce->drawCards(1);
+        }
+
+        return false;
+    }
+};
+
+class Hunzi: public PhaseChangeSkill{
+public:
+    Hunzi():PhaseChangeSkill("hunzi"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getMark("hunzi") == 0
+                && target->getPhase() == Player::Start
+                && target->getHp() == 1;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *sunce) const{
+        Room *room = sunce->getRoom();
+
+        room->acquireSkill(sunce, "yinghun");
+        room->acquireSkill(sunce, "yingzi");
+
+        room->setPlayerMark(sunce, "hunzi", 1);
+
+        room->loseMaxHp(sunce);
+
+        return false;
+    }
+};
+
+TiaoxinCard::TiaoxinCard(){
+
+}
+
+bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select->canSlash(Self);
+}
+
+void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash");
+
+    if(slash){
+        CardUseStruct use;
+        use.card = slash;
+        use.to << effect.from;
+        use.from = effect.to;
+        room->useCard(use);
+    }else if(!effect.to->isNude()){
+        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin"));
+    }
+}
+
+class Tiaoxin: public ZeroCardViewAsSkill{
+public:
+    Tiaoxin():ZeroCardViewAsSkill("tiaoxin"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("TiaoxinCard");
+    }
+
+    virtual const Card *viewAs() const{
+        return new TiaoxinCard;
+    }
+};
+
+class Zhiji: public PhaseChangeSkill{
+public:
+    Zhiji():PhaseChangeSkill("zhiji"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getMark("zhiji") == 0
+                && target->getPhase() == Player::Start
+                && target->isKongcheng();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *jiangwei) const{
+        Room *room = jiangwei->getRoom();
+        if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
+            RecoverStruct recover;
+            recover.who = jiangwei;
+            room->recover(jiangwei, recover);
+        }else
+            room->drawCards(jiangwei, 2);
+
+        room->setPlayerMark(jiangwei, "zhiji", 1);
+        room->acquireSkill(jiangwei, "guanxing");
+
+        room->loseMaxHp(jiangwei);
+
+        return false;
+    }
+};
+
+ZhijianCard::ZhijianCard(){
+
+}
+
+bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty())
+        return false;
+
+    const Card *card = Sanguosha->getCard(subcards.first());
+    const EquipCard *equip = qobject_cast<const EquipCard *>(card);
+    int equip_index = static_cast<int>(equip->location());
+    return to_select->getEquip(equip_index) == NULL;
+}
+
+void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *erzhang = effect.from;
+    erzhang->getRoom()->moveCardTo(this, effect.to, Player::Equip);
+    erzhang->drawCards(1);
+}
+
+class Zhijian: public OneCardViewAsSkill{
+public:
+    Zhijian():OneCardViewAsSkill("zhijian"){
+
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped() && to_select->getFilteredCard()->getTypeId() == Card::Equip;
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ZhijianCard *zhijian_card = new ZhijianCard();
+        zhijian_card->addSubcard(card_item->getFilteredCard());
+        return zhijian_card;
+    }
+};
+
+/*
+
+class Guzheng: public TriggerSkill{
+public:
+    Guzheng():TriggerSkill("guzheng"){
+
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+
+    }
+};
+
+*/
+
+class Xiangle: public TriggerSkill{
+public:
+    Xiangle():TriggerSkill("xiangle"){
+        events << CardEffected;
+
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+
+        if(effect.card->inherits("Slash")){
+            Room *room = player->getRoom();
+            return !room->askForCard(effect.from, "basic", "@xiangle-discard");
+        }
+
+        return false;
+    }
+};
+
+class Ruoyu: public PhaseChangeSkill{
+public:
+    Ruoyu():PhaseChangeSkill("ruoyu$"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getMark("ruoyu") == 0
+                && target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *liushan) const{
+        Room *room = liushan->getRoom();
+
+        bool can_invoke = true;
+        foreach(ServerPlayer *p, room->getAllPlayers()){
+            if(liushan->getHp() > p->getHp()){
+                can_invoke = false;
+                break;
+            }
+        }
+
+        if(can_invoke){
+            room->setPlayerMark(liushan, "ruoyu", 1);
+            room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHP() + 1);
+
+            RecoverStruct recover;
+            recover.who = liushan;
+            room->recover(liushan, recover);
+
+            room->acquireSkill(liushan, "jijiang");
+        }
+
+        return false;
+    }
+};
+
 MountainPackage::MountainPackage()
     :Package("mountain")
 {
     General *zhanghe = new General(this, "zhanghe", "wei");
     zhanghe->addSkill(new Qiaobian);
 
+    General *dengai = new General(this, "dengai", "wei", 3);
+    dengai->addSkill(new Tuntian);
+    dengai->addSkill(new TuntianGet);
+
+    General *liushan = new General(this, "liushan$", "shu", 3);
+    liushan->addSkill(new Xiangle);
+    liushan->addSkill(new Ruoyu);
+
+    General *jiangwei = new General(this, "jiangwei", "shu");
+    jiangwei->addSkill(new Tiaoxin);
+    jiangwei->addSkill(new Zhiji);
+
+    General *sunce = new General(this, "sunce$", "wu");
+    sunce->addSkill(new Jiang);
+    sunce->addSkill(new Hunzi);
+
+    General *erzhang = new General(this, "erzhang", "wu", 3);
+    erzhang->addSkill(new Zhijian);
+    //erzhang->addSkill(new Guzheng);
+
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
 
+
     addMetaObject<QiaobianCard>();
+    addMetaObject<TiaoxinCard>();
 }
 
 ADD_PACKAGE(Mountain);

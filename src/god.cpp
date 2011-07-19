@@ -938,6 +938,25 @@ public:
     }
 };
 
+class Yinren: public TriggerSkill{
+public:
+    Yinren():TriggerSkill("yinren"){
+        events << Damaged << CardLost;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == CardLost){
+            if(player->getPhase() == Player::NotActive)
+                player->gainMark("@bear");
+        }else if(event == Damaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            player->gainMark("@bear", damage.damage);
+        }
+
+        return false;
+    }
+};
+
 GodPackage::GodPackage()
     :Package("god")
 {
@@ -979,6 +998,9 @@ GodPackage::GodPackage()
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
     shenzhaoyun->addSkill(new Longpo);
     shenzhaoyun->addSkill(new Longnu);
+
+    General *shensimayi = new General(this, "shensimayi", "god", 4);
+    shensimayi->addSkill(new Yinren);
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
