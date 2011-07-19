@@ -204,11 +204,19 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
         if(damage && damage->from){
             Room *room = player->getRoom();
+
+            QList<const Skill *> skills = damage->from->getVisibleSkillList();
+            foreach(const Skill *skill, skills){
+                if(skill->inherits("WeaponSkill") || skill->inherits("ArmorSkill"))
+                    continue;
+
+                room->detachSkillFromPlayer(damage->from, skill->objectName());
+            }
 
             int max_hp = damage->from->getMaxHP();
             int hp = damage->from->getHp();
