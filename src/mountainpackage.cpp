@@ -390,6 +390,13 @@ public:
     virtual bool onPhaseChange(ServerPlayer *sunce) const{
         Room *room = sunce->getRoom();
 
+        LogMessage log;
+        log.type = "#HunziWake";
+        log.from = sunce;
+        room->sendLog(log);
+
+        room->loseMaxHp(sunce);
+
         const Skill *yinghun_skill = Sanguosha->getSkill("yinghun");
         const PhaseChangeSkill *yinghun = qobject_cast<const PhaseChangeSkill *>(yinghun_skill);
         int refcount = room->getThread()->getRefCount(yinghun);
@@ -402,13 +409,6 @@ public:
         }
 
         room->setPlayerMark(sunce, "hunzi", 1);
-
-        LogMessage log;
-        log.type = "#HunziWake";
-        log.from = sunce;
-        room->sendLog(log);
-
-        room->loseMaxHp(sunce);
 
         return false;
     }
