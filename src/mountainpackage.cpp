@@ -390,12 +390,105 @@ public:
     virtual bool onPhaseChange(ServerPlayer *sunce) const{
         Room *room = sunce->getRoom();
 
+        const Skill *yinghun_skill = Sanguosha->getSkill("yinghun");
+        const PhaseChangeSkill *yinghun = qobject_cast<const PhaseChangeSkill *>(yinghun_skill);
+        int refcount = room->getThread()->getRefCount(yinghun);
+
         room->acquireSkill(sunce, "yinghun");
         room->acquireSkill(sunce, "yingzi");
 
+        if(refcount == 0){
+            yinghun->onPhaseChange(sunce);
+        }
+
         room->setPlayerMark(sunce, "hunzi", 1);
 
+        LogMessage log;
+        log.type = "#HunziWake";
+        log.from = sunce;
+        room->sendLog(log);
+
         room->loseMaxHp(sunce);
+
+        return false;
+    }
+};
+
+ZhibaCard::ZhibaCard(){
+    will_throw = false;
+}
+
+bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select->hasLordSkill("sunce_zhiba") && to_select != Self && !to_select->isKongcheng();
+}
+
+void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *sunce = targets.first();
+    if(sunce->getMark("hunzi") > 0 &&
+       room->askForChoice(sunce, objectName(), "accept+reject") == "reject")
+    {
+        return;
+    }
+
+    source->pindian(sunce, "zhiba", this);
+}
+
+class ZhibaPindian: public OneCardViewAsSkill{
+public:
+    ZhibaPindian():OneCardViewAsSkill("zhiba_pindian"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("ZhibaCard") && player->getKingdom() == "wu" && !player->isKongcheng();
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return ! to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ZhibaCard *card = new ZhibaCard;
+        card->addSubcard(card_item->getFilteredCard());
+
+        return card;
+    }
+};
+
+class SunceZhiba: public TriggerSkill{
+public:
+    SunceZhiba():TriggerSkill("sunce_zhiba$"){
+        events << GameStart << Pindian;
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == GameStart){
+            if(!player->hasSkill(objectName()))
+                return false;
+
+            Room *room = player->getRoom();
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                if(!p->hasSkill("zhiba_pindian"))
+                    room->attachSkillToPlayer(p, "zhiba_pindian");
+            }
+        }else if(event == Pindian){
+            PindianStar pindian = data.value<PindianStar>();
+            if(pindian->reason == "zhiba" &&
+               pindian->to->hasSkill(objectName()) &&
+               pindian->from_card->getNumber() <= pindian->to_card->getNumber())
+            {
+                pindian->to->obtainCard(pindian->from_card);
+                pindian->to->obtainCard(pindian->to_card);
+            }
+        }
 
         return false;
     }
@@ -739,6 +832,7 @@ MountainPackage::MountainPackage()
     General *sunce = new General(this, "sunce$", "wu");
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Hunzi);
+    sunce->addSkill(new SunceZhiba);
 
     General *erzhang = new General(this, "erzhang", "wu", 3);
     erzhang->addSkill(new Zhijian);
@@ -756,6 +850,9 @@ MountainPackage::MountainPackage()
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();
     addMetaObject<ZhijianCard>();
+    addMetaObject<ZhibaCard>();
+
+    skills << new ZhibaPindian;
 }
 
 ADD_PACKAGE(Mountain);

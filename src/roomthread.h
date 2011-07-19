@@ -32,6 +32,7 @@ public:
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
     void removePlayerSkills(ServerPlayer *player);
+    int getRefCount(const TriggerSkill *skill) const;
 
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);

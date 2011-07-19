@@ -301,7 +301,7 @@ void Photo::updateSmallAvatar(){
         bool success = small_avatar.load(general2->getPixmapPath("tiny"));
         small_avatar_area->setToolTip(general2->getSkillDescription());
 
-        if(success){
+        if(!success){
             QPixmap pixmap(General::TinyIconSize);
             pixmap.fill(Qt::black);
 

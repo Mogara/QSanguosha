@@ -136,6 +136,10 @@ void RoomThread::removePlayerSkills(ServerPlayer *player){
     }
 }
 
+int RoomThread::getRefCount(const TriggerSkill *skill) const{
+    return refcount.value(skill, 0);
+}
+
 void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
         addPlayerSkills(player, false);
