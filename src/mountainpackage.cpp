@@ -208,7 +208,20 @@ public:
         DamageStar damage = data.value<DamageStar>();
 
         if(damage && damage->from){
-            //
+            Room *room = player->getRoom();
+
+            int max_hp = damage->from->getMaxHP();
+            int hp = damage->from->getHp();
+            QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
+            room->transfigure(damage->from, to_transfigure, false, false);
+            if(damage->from->getGeneral2())
+                room->setPlayerProperty(damage->from, "general2", to_transfigure);
+
+            if(max_hp != damage->from->getMaxHP())
+                room->setPlayerProperty(damage->from, "maxhp", max_hp);
+
+            if(hp != damage->from->getHp())
+                room->setPlayerProperty(damage->from, "hp", hp);
         }
 
         return false;
