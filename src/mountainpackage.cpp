@@ -225,6 +225,8 @@ public:
 
             int max_hp = damage->from->getMaxHP();
             int hp = damage->from->getHp();
+            QString kingdom = damage->from->getKingdom();
+
             QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
             room->transfigure(damage->from, to_transfigure, false, false);
             if(damage->from->getGeneral2())
@@ -235,6 +237,8 @@ public:
 
             if(hp != damage->from->getHp())
                 room->setPlayerProperty(damage->from, "hp", hp);
+
+            room->setPlayerProperty(damage->from, "kingdom", kingdom);
         }
 
         return false;
@@ -535,6 +539,9 @@ MountainPackage::MountainPackage()
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
 
+    General *zuoci = new General(this, "zuoci", "qun", 3);
+    zuoci->addSkill(new Skill("qimen"));
+    zuoci->addSkill(new Skill("dunjia"));
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();
