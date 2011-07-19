@@ -102,8 +102,15 @@ return {
 	["cv:shenzhugeliang"] = "背后灵",
 	["cv:shencaocao"] = "倚天の剑",
 	["cv:shenlubu"] = "",
+	["cv:shenzhaoyun"] = "",
 	
 	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
 	["#KuangbaoDamaged"] = "%from 的锁定技【狂暴】被触发，受到 %arg 点伤害获得 %arg 枚暴怒标记",
 	["#WuhunRevenge"] = "%from 的锁定技【武魂】被触发，持有最多梦魇标记的角色 %to(%arg个)将立即死亡",
+	
+	["shenzhaoyun"] = "神赵云",
+	["longpo"] = "龙魄",
+	[":longpo"] = "你可以将任意一张红桃牌当做【桃】使用，任意一张方片牌当做【闪】使用或打出，任意一张黑桃牌当做【酒】使用，任意一张草花牌当做【杀】使用或打出。",
+	["longnu"] = "龙怒",
+	[":longnu"] = "<b>锁定技</b>。你不能成为体力值或手牌数比你多的角色使用的任意的牌的目标。",
 }
