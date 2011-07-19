@@ -272,6 +272,52 @@ public:
     }
 };
 
+class JixiWake: public TriggerSkill{
+public:
+    JixiWake():TriggerSkill("#jixi-wake"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if(dengai && dengai->getMark("jixi") == 0){
+            DamageStruct damage = data.value<DamageStruct>();
+            if(damage.nature == DamageStruct::Thunder){
+                room->setPlayerMark(dengai, "jixi", 1);
+                room->drawCards(dengai, 2);
+                room->loseMaxHp(dengai);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Jixi: public ZeroCardViewAsSkill{
+public:
+    Jixi():ZeroCardViewAsSkill("jixi"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(player->getMark("jixi") == 0)
+            return player->getPile("field").length() >= 3;
+        else
+            return player->getPile("field").length() > 0;
+    }
+
+    virtual const Card *viewAs() const{
+        Snatch *snatch = new Snatch(Card::NoSuit, 0);
+        snatch->setSkillName("jixi");
+        return snatch;
+    }
+};
+
 class Jiang: public TriggerSkill{
 public:
     Jiang():TriggerSkill("jiang"){
@@ -330,7 +376,7 @@ public:
 };
 
 TiaoxinCard::TiaoxinCard(){
-
+    once = true;
 }
 
 bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -518,6 +564,8 @@ MountainPackage::MountainPackage()
     General *dengai = new General(this, "dengai", "wei", 3);
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
+    dengai->addSkill(new Jixi);
+    dengai->addSkill(new JixiWake);
 
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
