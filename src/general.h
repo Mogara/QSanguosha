@@ -42,6 +42,8 @@ public:
     QString getPackage() const;
     QString getSkillDescription() const;
 
+    static QSize BigIconSize;
+    static QSize SmallIconSize;
     static QSize TinyIconSize;
 
 public slots:

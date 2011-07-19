@@ -265,9 +265,12 @@ public:
         frequency = Frequent;
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        if(target->askForSkillInvoke("tuntian")){
-            target->gainMark("@field", damage.damage);
+    virtual void onDamaged(ServerPlayer *dengai, const DamageStruct &damage) const{
+        if(dengai->askForSkillInvoke("tuntian")){
+            dengai->gainMark("@field", damage.damage);
+
+            foreach(int card_id, dengai->getRoom()->getNCards(damage.damage))
+                dengai->addToPile("field", card_id, false);
         }
     }
 };
@@ -301,7 +304,8 @@ public:
 class Jixi: public ZeroCardViewAsSkill{
 public:
     Jixi():ZeroCardViewAsSkill("jixi"){
-
+        snatch = new Snatch(Card::NoSuit, 0);
+        snatch->setSkillName("jixi");
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -312,9 +316,31 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Snatch *snatch = new Snatch(Card::NoSuit, 0);
-        snatch->setSkillName("jixi");
         return snatch;
+    }
+
+private:
+    Snatch *snatch;
+};
+
+class JixiThrow: public TriggerSkill{
+public:
+    JixiThrow():TriggerSkill("#jixi-throw"){
+        events << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if(use.card->objectName() == "snatch" && use.card->getSkillName() == "jixi"){
+            if(player->getMark("jixi") == 0){
+                foreach(int card_id, player->getPile("field").mid(0, 3)){
+                    player->getRoom()->throwCard(card_id);
+                }
+            }else
+                player->getRoom()->throwCard(player->getPile("field").first());
+        }
+
+        return false;
     }
 };
 
@@ -510,7 +536,64 @@ public:
 
         if(effect.card->inherits("Slash")){
             Room *room = player->getRoom();
+
+            LogMessage log;
+            log.type = "#Xiangle";
+            log.from = effect.from;
+            log.to << effect.to;
+            room->sendLog(log);
+
             return !room->askForCard(effect.from, "basic", "@xiangle-discard");
+        }
+
+        return false;
+    }
+};
+
+class Fangquan: public PhaseChangeSkill{
+public:
+    Fangquan():PhaseChangeSkill("fangquan"){
+
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *liushan) const{
+        switch(liushan->getPhase()){
+        case Player::Play: {
+                bool invoked = liushan->askForSkillInvoke(objectName());
+                if(invoked)
+                    liushan->setFlags("fangquan");
+                return invoked;
+            }
+
+        case Player::Finish: {
+                if(liushan->hasFlag("fangquan")){
+                    Room *room = liushan->getRoom();
+
+                    if(!liushan->isKongcheng())
+                        room->askForDiscard(liushan, objectName(), 1);
+
+                    ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
+
+                    LogMessage log;
+                    log.type = "#Fangquan";
+                    log.from = liushan;
+                    log.to << player;
+                    room->sendLog(log);
+
+                    room->setCurrent(player);
+                    room->getThread()->trigger(TurnStart, player);
+                    room->setCurrent(liushan);
+                }
+
+                break;
+            }
+
+        default:
+            break;
         }
 
         return false;
@@ -541,6 +624,12 @@ public:
         }
 
         if(can_invoke){
+            LogMessage log;
+            log.type = "#RuoyuWake";
+            log.from = liushan;
+            log.arg = QString::number(liushan->getHp());
+            room->sendLog(log);
+
             room->setPlayerMark(liushan, "ruoyu", 1);
             room->setPlayerProperty(liushan, "maxhp", liushan->getMaxHP() + 1);
 
@@ -566,9 +655,11 @@ MountainPackage::MountainPackage()
     dengai->addSkill(new TuntianGet);
     dengai->addSkill(new Jixi);
     dengai->addSkill(new JixiWake);
+    dengai->addSkill(new JixiThrow);
 
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
+    liushan->addSkill(new Fangquan);
     liushan->addSkill(new Ruoyu);
 
     General *jiangwei = new General(this, "jiangwei", "shu");
