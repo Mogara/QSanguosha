@@ -472,7 +472,7 @@ public:
 };
 
 ZhijianCard::ZhijianCard(){
-
+    will_throw = false;
 }
 
 bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -508,20 +508,90 @@ public:
     }
 };
 
-/*
+
 
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
+        events << CardDiscarded;
+    }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("guzheng");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
 
+        if(erzhang == NULL)
+            return false;
+
+        if(player->getPhase() == Player::Discard){
+            QVariantList guzheng = erzhang->tag["Guzheng"].toList();
+
+            CardStar card = data.value<CardStar>();
+            foreach(int card_id, card->getSubcards()){
+                guzheng << card_id;
+            }
+
+            erzhang->tag["Guzheng"] = guzheng;
+        }
+
+        return false;
     }
 };
 
-*/
+class GuzhengGet: public PhaseChangeSkill{
+public:
+    GuzhengGet():PhaseChangeSkill("#guzheng-get"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->hasSkill("guzheng");
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
+        if(erzhang == NULL)
+            return false;
+
+        QVariantList guzheng_cards = erzhang->tag["Guzheng"].toList();
+        erzhang->tag.remove("Guzheng");
+
+        QList<int> cards;
+        foreach(QVariant card_data, guzheng_cards){
+            int card_id = card_data.toInt();
+            if(room->getCardPlace(card_id) == Player::DiscardedPile)
+                cards << card_id;
+        }
+
+        if(cards.isEmpty())
+            return false;
+
+        if(erzhang->askForSkillInvoke("guzheng", QVariant::fromValue(player))){
+            room->fillAG(cards, erzhang);
+
+            int to_back = room->askForAG(erzhang, cards, false, objectName());
+            player->obtainCard(Sanguosha->getCard(to_back));
+
+            cards.removeOne(to_back);
+
+            erzhang->invoke("clearAG");
+
+            foreach(int card_id, cards)
+                erzhang->obtainCard(Sanguosha->getCard(card_id));
+        }
+
+        return false;
+    }
+};
 
 class Xiangle: public TriggerSkill{
 public:
@@ -672,7 +742,8 @@ MountainPackage::MountainPackage()
 
     General *erzhang = new General(this, "erzhang", "wu", 3);
     erzhang->addSkill(new Zhijian);
-    //erzhang->addSkill(new Guzheng);
+    erzhang->addSkill(new Guzheng);
+    erzhang->addSkill(new GuzhengGet);
 
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
@@ -684,6 +755,7 @@ MountainPackage::MountainPackage()
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();
+    addMetaObject<ZhijianCard>();
 }
 
 ADD_PACKAGE(Mountain);
