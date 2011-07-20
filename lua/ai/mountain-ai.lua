@@ -6,6 +6,6 @@ end
 
 -- guzheng
 sgs.ai_skill_invoke.guzheng = function(self, data)
-	local player = data:toPlayer()
-	return self:isFriend(player)
+	local player = self.room:getCurrent()	
+	return self:isFriend(player) or data:toInt() >= 3		
 end

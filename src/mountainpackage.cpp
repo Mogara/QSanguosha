@@ -650,6 +650,9 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
+        if(player->isDead())
+            return false;
+
         Room *room = player->getRoom();
         ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
         if(erzhang == NULL)
@@ -668,7 +671,7 @@ public:
         if(cards.isEmpty())
             return false;
 
-        if(erzhang->askForSkillInvoke("guzheng", QVariant::fromValue(player))){
+        if(erzhang->askForSkillInvoke("guzheng", cards.length())){
             room->fillAG(cards, erzhang);
 
             int to_back = room->askForAG(erzhang, cards, false, objectName());
