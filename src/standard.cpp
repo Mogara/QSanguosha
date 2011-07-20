@@ -354,11 +354,76 @@ EquipCard::Location Horse::location() const{
         return OffensiveHorseLocation;
 }
 
+class HandcardPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card);
+    }
+};
+
+class SuitPattern: public CardPattern{
+public:
+    SuitPattern(Card::Suit suit)
+        :suit(suit)
+    {
+    }
+
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) && card->getSuit() == suit;
+    }
+
+private:
+    Card::Suit suit;
+};
+
+class SlashPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) && card->inherits("Slash");
+    }
+};
+
+class NamePattern: public CardPattern{
+public:
+    NamePattern(const QString &name)
+        :name(name)
+    {
+
+    }
+
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) && card->objectName() == name;
+    }
+
+private:
+    QString name;
+};
+
+class PAPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) &&
+                (card->objectName() == "peach" || card->objectName() == "analeptic");
+    }
+};
+
 StandardPackage::StandardPackage()
     :Package("standard")
 {
     addCards();
     addGenerals();
+
+    patterns["."] = new HandcardPattern;
+    patterns[".S"] = new SuitPattern(Card::Spade);
+    patterns[".C"] = new SuitPattern(Card::Club);
+    patterns[".H"] = new SuitPattern(Card::Heart);
+    patterns[".D"] = new SuitPattern(Card::Diamond);
+
+    patterns["slash"] = new SlashPattern;
+    patterns["jink"] = new NamePattern("jink");
+    patterns["peach"] = new NamePattern("peach");
+    patterns["nullification"] = new NamePattern("nullification");
+    patterns["peach+analeptic"] = new PAPattern;
 }
 
 ADD_PACKAGE(Standard)

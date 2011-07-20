@@ -245,6 +245,8 @@ void Engine::addPackage(Package *package){
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach(const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
+
+    patterns.unite(package->getPatterns());
 }
 
 void Engine::addBanPackage(const QString &package_name){
@@ -268,6 +270,10 @@ int Engine::getRoleIndex() const{
         return 4;
     }else
         return 1;
+}
+
+const CardPattern *Engine::getPattern(const QString &name) const{
+    return patterns.value(name, NULL);
 }
 
 const General *Engine::getGeneral(const QString &name) const{

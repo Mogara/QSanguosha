@@ -26,6 +26,7 @@ return {
 	["#Xiangle"] = "%to 的锁定技【享乐】被触发， %from 必须再额外弃掉一张基本牌才能使杀生效",
 	["#Fangquan"] = "%from 使用了放权，%to 将进行一个额外的回合",
 	["#RuoyuWake"] = "%from 的体力值(%arg)为场上为低，若愚觉醒技触发",
+	["@xiangle-discard"] = "你必须再弃掉一张基本牌才能使此杀生效",
 	
 	["jiangwei"] = "姜维",
 	["tiaoxin"] = "挑衅",

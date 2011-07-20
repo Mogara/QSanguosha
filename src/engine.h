@@ -51,6 +51,8 @@ public:
     void getRoles(const QString &mode, char *roles) const;
     int getRoleIndex() const;
 
+    const CardPattern *getPattern(const QString &name) const;
+
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
@@ -90,6 +92,7 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
+    QMap<QString, const CardPattern *> patterns;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;

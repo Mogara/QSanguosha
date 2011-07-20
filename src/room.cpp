@@ -623,6 +623,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, player, decisionData);
 
+        CardStar card_ptr = card;
+        QVariant card_star = QVariant::fromValue(card_ptr);
+
         if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
             log.card_str = card->toString();
@@ -632,10 +635,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
             player->playCardEffect(card);
 
-            CardStar card_ptr = card;
-            QVariant card_star = QVariant::fromValue(card_ptr);
+
             thread->trigger(CardResponsed, player, card_star);
+        }else{
+            thread->trigger(CardDiscarded, player, card_star);
         }
+
     }else if(continuable)
         return askForCard(player, pattern, prompt, throw_it);
 

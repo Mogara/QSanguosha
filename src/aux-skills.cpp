@@ -4,6 +4,7 @@
 #include "standard.h"
 #include "clientplayer.h"
 #include "standard-skillcards.h"
+#include "engine.h"
 
 DiscardSkill::DiscardSkill()
     :ViewAsSkill("discard"), card(new DummyCard),
@@ -51,38 +52,14 @@ ResponseSkill::ResponseSkill()
 }
 
 void ResponseSkill::setPattern(const QString &pattern){
-    nameset.clear();
-    suit = Card::NoSuit;
-
-    if(pattern == ".")
-        return;
-
-    if(pattern == "slash")
-        nameset << "slash" << "thunder_slash" << "fire_slash";
-    else if(pattern == "peach+analeptic")
-        nameset << "peach" << "analeptic";
-    else if(pattern.startsWith(".")){
-        char suit_char = pattern.toAscii().at(1);
-        switch(suit_char){
-        case 'S': suit = Card::Spade; break;
-        case 'C': suit = Card::Club; break;
-        case 'H': suit = Card::Heart; break;
-        case 'D': suit = Card::Diamond; break;
-        default:
-            break;
-        }
-    }else
-        nameset << pattern;
+    this->pattern = Sanguosha->getPattern(pattern);
 }
 
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
-    if(suit != Card::NoSuit && card->getSuit() != suit)
-        return false;
-
     if(player->isJilei(card))
         return false;
 
-    return nameset.isEmpty() || nameset.contains(card->objectName());
+    return pattern && pattern->match(player, card);
 }
 
 bool ResponseSkill::viewFilter(const CardItem *to_select) const{

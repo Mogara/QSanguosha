@@ -158,15 +158,18 @@ public:
 
             switch(judge.card->getSuit()){
             case Card::Heart:{
-                    RecoverStruct recover;
-                    recover.who = caiwenji;
-                    room->recover(player, recover);
+                    if(player->isAlive()){
+                        RecoverStruct recover;
+                        recover.who = caiwenji;
+                        room->recover(player, recover);
+                    }
 
                     break;
                 }
 
             case Card::Diamond:{
-                    player->drawCards(2);
+                    if(player->isAlive())
+                        player->drawCards(2);
 
                     break;
                 }
@@ -601,8 +604,6 @@ public:
     }
 };
 
-
-
 class Guzheng: public TriggerSkill{
 public:
     Guzheng():TriggerSkill("guzheng"){
@@ -689,6 +690,13 @@ public:
     }
 };
 
+class BasicPattern: public CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const{
+        return ! player->hasEquip(card) && card->getTypeId() == Card::Basic;
+    }
+};
+
 class Xiangle: public TriggerSkill{
 public:
     Xiangle():TriggerSkill("xiangle"){
@@ -709,7 +717,7 @@ public:
             log.to << effect.to;
             room->sendLog(log);
 
-            return !room->askForCard(effect.from, "basic", "@xiangle-discard");
+            return !room->askForCard(effect.from, ".basic", "@xiangle-discard");
         }
 
         return false;
@@ -856,6 +864,8 @@ MountainPackage::MountainPackage()
     addMetaObject<ZhibaCard>();
 
     skills << new ZhibaPindian;
+
+    patterns[".basic"] = new BasicPattern;
 }
 
 ADD_PACKAGE(Mountain);
