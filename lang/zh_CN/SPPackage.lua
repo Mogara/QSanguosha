@@ -38,10 +38,12 @@ return {
 	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
 	["~yuanshu"] = "呃呀~~~~~~~",
 	
+	["~gongsunzan"] = "如今阵败吾已无颜苟活于世",
+        
 	["sp_sunshangxiang"] = "SP孙尚香",
 	["sp_pangde"] = "SP庞德",
 	["sp_diaochan"] = "SP貂蝉",
-
+        
 	["shenlvbu1"] = "神吕布(1)",
 	["shenlvbu2"] = "神吕布(2)",
 	["xiuluo"] = "修罗",
@@ -50,7 +52,7 @@ return {
 	[":shenwei"] = "<b>锁定技</b>，摸牌阶段，你额外摸两张牌，你的手牌上限+2。",	
 	["shenji"] = "神戟",
 	[":shenji"] = "没装备武器时，你使用的杀可指定至多3名角色为目标。",
-
+        
 	["#Reforming"] = "%from 进入重整状态",
 	["#ReformingRecover"] = "%from 在重整状态中回复了1点体力",
 	["#ReformingRevive"] = "%from 从重整状态中复活!",
