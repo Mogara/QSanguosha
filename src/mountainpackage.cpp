@@ -615,7 +615,7 @@ public:
         return !target->hasSkill("guzheng");
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         ServerPlayer *erzhang = room->findPlayerBySkillName(objectName());
 
