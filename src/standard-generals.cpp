@@ -300,26 +300,28 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *xuchu, QVariant &data) const{
-        if(xuchu->hasFlag("luoyi")){
-            DamageStruct damage = data.value<DamageStruct>();
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasFlag("luoyi") && target->isAlive();
+    }
 
-            const Card *reason = damage.card;
-            if(reason == NULL)
-                return false;
+    virtual bool trigger(TriggerEvent , ServerPlayer *xuchu, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
 
-            if(reason->inherits("Slash") || reason->inherits("Duel")){
-                LogMessage log;
-                log.type = "#LuoyiBuff";
-                log.from = xuchu;
-                log.to << damage.to;
-                log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(damage.damage + 1);
-                xuchu->getRoom()->sendLog(log);
+        const Card *reason = damage.card;
+        if(reason == NULL)
+            return false;
 
-                damage.damage ++;
-                data = QVariant::fromValue(damage);
-            }
+        if(reason->inherits("Slash") || reason->inherits("Duel")){
+            LogMessage log;
+            log.type = "#LuoyiBuff";
+            log.from = xuchu;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            xuchu->getRoom()->sendLog(log);
+
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
         }
 
         return false;
