@@ -429,7 +429,7 @@ bool ZhibaCard::targetFilter(const QList<const Player *> &targets, const Player 
 void ZhibaCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     ServerPlayer *sunce = targets.first();
     if(sunce->getMark("hunzi") > 0 &&
-       room->askForChoice(sunce, objectName(), "accept+reject") == "reject")
+       room->askForChoice(sunce, "zhiba_pindian", "accept+reject") == "reject")
     {
         return;
     }
