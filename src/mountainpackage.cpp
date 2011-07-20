@@ -569,7 +569,7 @@ ZhijianCard::ZhijianCard(){
 }
 
 bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty())
+    if(!targets.isEmpty() || to_select == Self)
         return false;
 
     const Card *card = Sanguosha->getCard(subcards.first());
