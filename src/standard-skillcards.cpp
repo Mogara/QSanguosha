@@ -175,12 +175,11 @@ void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &ta
     duel->setSkillName("lijian");
     duel->setCancelable(false);
 
-    CardEffectStruct effect;
-    effect.card = duel;
-    effect.from = from;
-    effect.to = to;
-
-    room->cardEffect(effect);
+    CardUseStruct use;
+    use.from = from;
+    use.to << to;
+    use.card = duel;
+    room->useCard(use);
 }
 
 QingnangCard::QingnangCard(){

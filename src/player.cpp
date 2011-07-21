@@ -159,9 +159,9 @@ int Player::distanceTo(const Player *other) const{
 void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;
-        if(new_general){
-            setKingdom(general->getKingdom());
-        }
+
+        if(new_general && kingdom.isEmpty())
+            setKingdom(new_general->getKingdom());
 
         emit general_changed();
     }
@@ -423,7 +423,10 @@ int Player::getXueyi() const{
 }
 
 QString Player::getKingdom() const{
-    return kingdom;
+    if(kingdom.isEmpty() && general)
+        return general->getKingdom();
+    else
+        return kingdom;
 }
 
 void Player::setKingdom(const QString &kingdom){

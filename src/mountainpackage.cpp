@@ -761,8 +761,8 @@ public:
                 if(liushan->hasFlag("fangquan")){
                     Room *room = liushan->getRoom();
 
-                    if(!liushan->isKongcheng())
-                        room->askForDiscard(liushan, objectName(), 1);
+                    if(liushan->isKongcheng())
+                        return false;
 
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
 
@@ -842,18 +842,12 @@ public:
         QStringList list = GetAvailableGenerals(zuoci).toList();
         qShuffle(list);
 
-        Room *room = zuoci->getRoom();
-
         QStringList acquired = list.mid(0, n);
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         foreach(QString huashen, acquired){
             huashens << huashen;
 
-            LogMessage log;
-            log.type = "#Huashen";
-            log.from = zuoci;
-            log.arg = huashen;
-            room->sendLog(log);
+            // FIXME: do general move animation
         }
 
         zuoci->tag["Huashens"] = huashens;
@@ -887,8 +881,12 @@ public:
 
         QString general_name = room->askForGeneral(zuoci, huashen_generals);
         const General *general = Sanguosha->getGeneral(general_name);
-        QStringList skill_names;
+        if(zuoci->getKingdom() != general->getKingdom())
+            room->setPlayerProperty(zuoci, "kingdom", general->getKingdom());
+        if(zuoci->getGeneral()->isMale() != general->isMale())
+            room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
 
+        QStringList skill_names;
         foreach(const Skill *skill, general->getVisibleSkillList()){
             if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
                || skill->getFrequency() == Skill::Wake)
@@ -979,12 +977,14 @@ MountainPackage::MountainPackage()
     General *zhanghe = new General(this, "zhanghe", "wei");
     zhanghe->addSkill(new Qiaobian);
 
+    /*
     General *dengai = new General(this, "dengai", "wei", 3);
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
     dengai->addSkill(new Jixi);
     dengai->addSkill(new JixiWake);
     dengai->addSkill(new JixiThrow);
+    */
 
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
@@ -1016,6 +1016,12 @@ MountainPackage::MountainPackage()
     zuoci->addSkill(new HuashenBegin);
     zuoci->addSkill(new HuashenEnd);
     zuoci->addSkill(new Xinsheng);
+
+    General *zuocif = new General(this, "zuocif", "qun", 3, false, true);
+    zuocif->addSkill("huashen");
+    zuocif->addSkill("#huashen-begin");
+    zuocif->addSkill("#huashen-end");
+    zuocif->addSkill("xinsheng");
 
     related_skills.insertMulti("huashen", "#huashen-begin");
     related_skills.insertMulti("huashen", "#huashen-end");
