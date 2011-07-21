@@ -457,9 +457,10 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &) const{
         Room *room = zhoutai->getRoom();
-        const QList<int> &buqu = zhoutai->getPile("buqu");
 
         if(event == Dying){
+            const QList<int> &buqu = zhoutai->getPile("buqu");
+
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
             int n = need - buqu.length();
             if(n > 0){
@@ -470,6 +471,7 @@ public:
             }
         }else if(event == AskForPeachesDone){
             BuquRemove::Remove(zhoutai);
+            const QList<int> &buqu = zhoutai->getPile("buqu");
 
             if(zhoutai->getHp() > 0)
                 return false;
@@ -480,7 +482,7 @@ public:
                 numbers << card->getNumber();
             }
 
-            bool duplicated =  numbers.size() < buqu.size();
+            bool duplicated = numbers.size() < buqu.size();
             if(!duplicated){
                 QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
                 if(choice == "alive"){
