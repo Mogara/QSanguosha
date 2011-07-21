@@ -990,7 +990,7 @@ GodPackage::GodPackage()
     related_skills.insertMulti("qixing", "#qixing-ask");
     related_skills.insertMulti("qixing", "#qixing-clear");
 
-    General *shencaocao = new General(this, "shencaocao$", "god", 3);
+    General *shencaocao = new General(this, "shencaocao", "god", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 

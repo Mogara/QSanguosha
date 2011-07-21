@@ -1782,7 +1782,7 @@ YitianPackage::YitianPackage()
     (new YitianSword)->setParent(this);
 
     // generals
-    General *shencc = new General(this, "shencc$", "god", 3);
+    General *shencc = new General(this, "shencc", "god", 3);
     shencc->addSkill(new Guixin2);
     shencc->addSkill("feiying");
 
