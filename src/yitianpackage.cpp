@@ -1795,6 +1795,8 @@ YitianPackage::YitianPackage()
     zhangjunyi->addSkill(new Jueji);
     zhangjunyi->addSkill(new JuejiClear);
 
+    related_skills.insertMulti("jueji", "#jueji-clear");
+
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill("qianxun");
     lukang->addSkill(new LukangWeiyan);
@@ -1803,6 +1805,9 @@ YitianPackage::YitianPackage()
     jinxuandi->addSkill(new Wuling);
     jinxuandi->addSkill(new WulingEffect);
     jinxuandi->addSkill(new WulingExEffect);
+
+    related_skills.insertMulti("wuling", "#wuling-effect");
+    related_skills.insertMulti("wuling", "#wuling-ex-effect");
 
     General *xiahoujuan = new General(this, "xiahoujuan", "wei", 3, false);
     xiahoujuan->addSkill(new LianliStart);
@@ -1813,6 +1818,11 @@ YitianPackage::YitianPackage()
     xiahoujuan->addSkill(new Tongxin);
     xiahoujuan->addSkill(new Skill("liqian", Skill::Compulsory));
     xiahoujuan->addSkill(new Qiaocai);
+
+    related_skills.insertMulti("lianli", "#lianli-start");
+    related_skills.insertMulti("lianli", "#lianli-slash");
+    related_skills.insertMulti("lianli", "#lianli-jink");
+    related_skills.insertMulti("lianli", "#lianli-clear");
 
     General *caizhaoji = new General(this, "caizhaoji", "qun", 3, false);
     caizhaoji->addSkill(new Guihan);
@@ -1831,6 +1841,8 @@ YitianPackage::YitianPackage()
     General *zhongshiji = new General(this, "zhongshiji", "wei");
     zhongshiji->addSkill(new Gongmou);
     zhongshiji->addSkill(new GongmouExchange);
+
+    related_skills.insertMulti("gongmou", "#gongmou-exchange");
 
     General *jiangboyue = new General(this, "jiangboyue", "shu");
     jiangboyue->addSkill(new Lexue);

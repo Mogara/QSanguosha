@@ -965,6 +965,8 @@ GodPackage::GodPackage()
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
 
+    related_skills.insertMulti("wuhun", "#wuhun");
+
     General *shenlumeng = new General(this, "shenlumeng", "god", 3);
     shenlumeng->addSkill(new Shelie);
     shenlumeng->addSkill(new Gongxin);
@@ -984,6 +986,10 @@ GodPackage::GodPackage()
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);
 
+    related_skills.insertMulti("qixing", "#qixing");
+    related_skills.insertMulti("qixing", "#qixing-ask");
+    related_skills.insertMulti("qixing", "#qixing-clear");
+
     General *shencaocao = new General(this, "shencaocao$", "god", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
@@ -995,12 +1001,17 @@ GodPackage::GodPackage()
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);
 
+    related_skills.insertMulti("kuangbao", "#@wrath");
+
+    /*
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
     shenzhaoyun->addSkill(new Longpo);
     shenzhaoyun->addSkill(new Longnu);
 
     General *shensimayi = new General(this, "shensimayi", "god", 4);
     shensimayi->addSkill(new Yinren);
+
+    */
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();

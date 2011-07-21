@@ -407,7 +407,7 @@ public:
 
 class BuquRemove: public TriggerSkill{
 public:
-    BuquRemove():TriggerSkill("#buqu_remove"){
+    BuquRemove():TriggerSkill("#buqu-remove"){
         events << HpRecover;
     }
 
@@ -520,6 +520,8 @@ WindPackage::WindPackage()
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);
     zhoutai->addSkill(new BuquRemove);
+
+    related_skills.insertMulti("buqu", "#buqu-remove");
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();
