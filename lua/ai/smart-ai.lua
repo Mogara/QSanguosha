@@ -2779,6 +2779,18 @@ function SmartAI:hasSameEquip(card)
 	return false
 end
 
+sgs.lose_equip_skill = "xiaoji|xuanfeng"
+
+function SmartAI:hasSkills(skill_names, player)
+	player = player or self.player
+	for _, skill_name in ipairs(skill_names:split("|")) do
+		if player:hasSkill(skill_name) then
+			return true
+		end
+	end
+end
+
+
 function SmartAI:askForGuanxing(cards, up_only)
 	--zhugeliang
 	if not up_only then return GuanXing(self,cards)
