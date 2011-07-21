@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "generaloverview.h"
 
 class QiaobianCard: public SkillCard{
     Q_OBJECT
@@ -43,6 +44,16 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+};
+
+class HuashenDialog: public GeneralOverview{
+    Q_OBJECT
+
+public:
+    HuashenDialog();
+
+public slots:
+    void popup();
 };
 
 class MountainPackage : public Package

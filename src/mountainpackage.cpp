@@ -5,6 +5,8 @@
 #include "engine.h"
 #include "standard.h"
 #include "carditem.h"
+#include "generaloverview.h"
+#include "clientplayer.h"
 
 QiaobianCard::QiaobianCard(){
 
@@ -844,13 +846,12 @@ public:
 
         QStringList acquired = list.mid(0, n);
         QVariantList huashens = zuoci->tag["Huashens"].toList();
-        foreach(QString huashen, acquired){
+        foreach(QString huashen, acquired)
             huashens << huashen;
 
-            // FIXME: do general move animation
-        }
-
         zuoci->tag["Huashens"] = huashens;
+
+        zuoci->invoke("animate", "huashen:" + acquired.join(":"));
     }
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
@@ -921,7 +922,32 @@ public:
         AcquireGenerals(zuoci, 2);
         SelectSkill(zuoci);
     }
+
+    virtual QDialog *getDialog() const{
+        static HuashenDialog *dialog;
+
+        if(dialog == NULL)
+            dialog = new HuashenDialog;
+
+        return dialog;
+    }
 };
+
+HuashenDialog::HuashenDialog()
+{
+    setWindowTitle(tr("Incarnation"));
+}
+
+void HuashenDialog::popup(){
+    QVariantList huashen_list = Self->tag["Huashens"].toList();
+    QList<const General *> huashens;
+    foreach(QVariant huashen, huashen_list)
+        huashens << Sanguosha->getGeneral(huashen.toString());
+
+    fillGenerals(huashens);
+
+    show();
+}
 
 class HuashenBegin: public PhaseChangeSkill{
 public:

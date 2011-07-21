@@ -252,6 +252,7 @@ private:
     void doMovingAnimation(const QString &name, const QStringList &args);
     void doAppearingAnimation(const QString &name, const QStringList &args);
     void doLightboxAnimation(const QString &name, const QStringList &args);
+    void doHuashen(const QString &name, const QStringList &args);
 
 private slots:
     void updateSkillButtons();

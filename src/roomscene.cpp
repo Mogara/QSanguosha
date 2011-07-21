@@ -3061,6 +3061,21 @@ void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args
     connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
 }
 
+void RoomScene::doHuashen(const QString &name, const QStringList &args){
+    QVariantList huashen_list = Self->tag["Huashens"].toList();
+    foreach(QString arg, args){
+        huashen_list << arg;
+        CardItem *item = new CardItem(arg);
+        item->scaleSmoothly(0.5);
+
+        addItem(item);
+        item->setHomePos(avatar->scenePos());
+        item->goBack(true);
+    }
+
+    Self->tag["Huashens"] = huashen_list;
+}
+
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
@@ -3073,6 +3088,8 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["typhoon"] = &RoomScene::doAppearingAnimation;
 
         map["lightbox"] = &RoomScene::doLightboxAnimation;
+
+        map["huashen"] = &RoomScene::doHuashen;
     }
 
     AnimationFunc func = map.value(name, NULL);
