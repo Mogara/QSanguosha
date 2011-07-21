@@ -1067,7 +1067,12 @@ void Room::timerEvent(QTimerEvent *event){
 
             connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
-            QStringList lord_list = Sanguosha->getRandomLords();
+            QStringList lord_list;
+            if(mode == "08same")
+                lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+            else
+                lord_list = Sanguosha->getRandomLords();
+
             QString default_lord = lord_list[qrand() % lord_list.length()];
 
             ServerPlayer *the_lord = getLord();
