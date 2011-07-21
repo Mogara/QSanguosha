@@ -307,6 +307,8 @@ public:
     Jixi():ZeroCardViewAsSkill("jixi"){
         snatch = new Snatch(Card::NoSuit, 0);
         snatch->setSkillName("jixi");
+
+        frequency = Wake;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -460,6 +462,8 @@ class SunceZhiba: public TriggerSkill{
 public:
     SunceZhiba():TriggerSkill("sunce_zhiba$"){
         events << GameStart << Pindian;
+
+        frequency = Wake;
     }
 
     virtual int getPriority() const{
@@ -537,7 +541,7 @@ public:
 class Zhiji: public PhaseChangeSkill{
 public:
     Zhiji():PhaseChangeSkill("zhiji"){
-
+        frequency = Wake;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -787,7 +791,7 @@ public:
 class Ruoyu: public PhaseChangeSkill{
 public:
     Ruoyu():PhaseChangeSkill("ruoyu$"){
-
+        frequency = Wake;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -838,10 +842,20 @@ public:
         QStringList list = GetAvailableGenerals(zuoci).toList();
         qShuffle(list);
 
+        Room *room = zuoci->getRoom();
+
         QStringList acquired = list.mid(0, n);
         QVariantList huashens = zuoci->tag["Huashens"].toList();
-        foreach(QString huashen, acquired)
+        foreach(QString huashen, acquired){
             huashens << huashen;
+
+            LogMessage log;
+            log.type = "#Huashen";
+            log.from = zuoci;
+            log.arg = huashen;
+            room->sendLog(log);
+        }
+
         zuoci->tag["Huashens"] = huashens;
     }
 
@@ -859,8 +873,46 @@ public:
         return Sanguosha->getLimitedGeneralNames().toSet() - huashen_set - room_set;
     }
 
+    static void SelectSkill(ServerPlayer *zuoci){
+        Room *room = zuoci->getRoom();
+
+        QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
+        if(!huashen_skill.isEmpty())
+            room->detachSkillFromPlayer(zuoci, huashen_skill);
+
+        QVariantList huashens = zuoci->tag["Huashens"].toList();
+        QStringList huashen_generals;
+        foreach(QVariant huashen, huashens)
+            huashen_generals << huashen.toString();
+
+        QString general_name = room->askForGeneral(zuoci, huashen_generals);
+        const General *general = Sanguosha->getGeneral(general_name);
+        QStringList skill_names;
+
+        foreach(const Skill *skill, general->getVisibleSkillList()){
+            if(skill->isLordSkill() || skill->getFrequency() == Skill::Limited
+               || skill->getFrequency() == Skill::Wake)
+                continue;
+
+            skill_names << skill->objectName();
+        }
+
+        if(skill_names.isEmpty())
+            return;
+
+        QString skill_name;
+        if(skill_names.length() == 1)
+            skill_name = skill_names.first();
+        else
+            skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
+
+        zuoci->tag["HuashenSkill"] = skill_name;
+        room->acquireSkill(zuoci, skill_name);
+    }
+
     virtual void onGameStart(ServerPlayer *zuoci) const{
         AcquireGenerals(zuoci, 2);
+        SelectSkill(zuoci);
     }
 };
 
@@ -879,6 +931,8 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{
+        Huashen::SelectSkill(zuoci);
+
         return false;
     }
 };
@@ -898,6 +952,8 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{
+        Huashen::SelectSkill(zuoci);
+
         return false;
     }
 };
