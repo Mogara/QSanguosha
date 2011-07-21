@@ -247,6 +247,7 @@ void Engine::addPackage(Package *package){
         metaobjects.insert(meta->className(), meta);
 
     patterns.unite(package->getPatterns());
+    related_skills.unite(package->getRelatedSkills());
 }
 
 void Engine::addBanPackage(const QString &package_name){
@@ -274,6 +275,14 @@ int Engine::getRoleIndex() const{
 
 const CardPattern *Engine::getPattern(const QString &name) const{
     return patterns.value(name, NULL);
+}
+
+QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
+    QList<const Skill *> skills;
+    foreach(QString skill_name, related_skills.values(skill_name))
+        skills << getSkill(skill_name);
+
+    return skills;
 }
 
 const General *Engine::getGeneral(const QString &name) const{

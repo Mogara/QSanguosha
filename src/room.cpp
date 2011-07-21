@@ -367,8 +367,17 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name){
+    if(!player->hasSkill(skill_name))
+        return;
+
     player->loseSkill(skill_name);
     player->invoke("detachSkill", skill_name);
+
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill && skill->isVisible()){
+        foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
+            detachSkillFromPlayer(player, skill->objectName());
+    }
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -2196,6 +2205,9 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
     QString skill_name = skill->objectName();
+    if(player->hasSkill(skill_name))
+        return;
+
     player->acquireSkill(skill_name);
 
     if(skill->inherits("TriggerSkill")){
@@ -2203,9 +2215,15 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
         thread->addTriggerSkill(trigger_skill);
     }
 
-    if(open){
-        QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
-        broadcastInvoke("acquireSkill", acquire_str);
+    if(skill->isVisible()){
+        if(open){
+            QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
+            broadcastInvoke("acquireSkill", acquire_str);
+        }
+
+        foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)){
+            acquireSkill(player, related_skill);
+        }
     }
 }
 

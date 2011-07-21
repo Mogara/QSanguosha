@@ -45,6 +45,10 @@ public:
         return patterns;
     }
 
+    QMultiMap<QString, QString> getRelatedSkills() const{
+        return related_skills;
+    }
+
     Type getType() const{
         return type;
     }
@@ -58,6 +62,7 @@ protected:
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
     QMap<QString, const CardPattern *> patterns;
+    QMultiMap<QString, QString> related_skills;
     Type type;
 };
 

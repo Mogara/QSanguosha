@@ -141,13 +141,13 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if(damage.card == NULL || !damage.card->inherits("Slash"))
+        if(damage.card == NULL || !damage.card->inherits("Slash") || damage.to->isDead())
             return false;
 
         Room *room = player->getRoom();
         ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
         if(caiwenji && !caiwenji->isKongcheng() && caiwenji->askForSkillInvoke(objectName(), data)){
-            room->askForDiscard(caiwenji, "beige", 1);
+            room->askForDiscard(caiwenji, "beige", 1, false, true);
 
             JudgeStruct judge;
             judge.pattern = QRegExp("(.*):(.*):(.*)");
@@ -159,24 +159,21 @@ public:
 
             switch(judge.card->getSuit()){
             case Card::Heart:{
-                    if(player->isAlive()){
-                        RecoverStruct recover;
-                        recover.who = caiwenji;
-                        room->recover(player, recover);
-                    }
+                    RecoverStruct recover;
+                    recover.who = caiwenji;
+                    room->recover(player, recover);
 
                     break;
                 }
 
             case Card::Diamond:{
-                    if(player->isAlive())
-                        player->drawCards(2);
+                    player->drawCards(2);
 
                     break;
                 }
 
             case Card::Club:{
-                    if(damage.from){
+                    if(damage.from && damage.from->isAlive()){
                         int to_discard = qMin(2, damage.from->getCardCount(true));
                         if(to_discard != 0)
                             room->askForDiscard(damage.from, "beige", to_discard, false, true);
@@ -186,7 +183,7 @@ public:
                 }
 
             case Card::Spade:{
-                    if(damage.from)
+                    if(damage.from && damage.from->isAlive())
                         damage.from->turnOver();
 
                     break;
@@ -570,6 +567,12 @@ public:
 
         room->loseMaxHp(jiangwei);
 
+        const TriggerSkill *guanxing = Sanguosha->getTriggerSkill("guanxing");
+        if(room->getThread()->getRefCount(guanxing) == 0){
+            QVariant void_data;
+            guanxing->trigger(PhaseChange, jiangwei, void_data);
+        }
+
         return false;
     }
 };
@@ -825,41 +828,92 @@ public:
     }
 };
 
+class Huashen: public GameStartSkill{
+public:
+    Huashen():GameStartSkill("huashen"){
+
+    }
+
+    static void AcquireGenerals(ServerPlayer *zuoci, int n){
+        QStringList list = GetAvailableGenerals(zuoci).toList();
+        qShuffle(list);
+
+        QStringList acquired = list.mid(0, n);
+        QVariantList huashens = zuoci->tag["Huashens"].toList();
+        foreach(QString huashen, acquired)
+            huashens << huashen;
+        zuoci->tag["Huashens"] = huashens;
+    }
+
+    static QSet<QString> GetAvailableGenerals(ServerPlayer *zuoci){
+        QSet<QString> huashen_set, room_set;
+        QVariantList huashens = zuoci->tag["Huashens"].toList();
+        foreach(QVariant huashen, huashens)
+            huashen_set << huashen.toString();
+
+        Room *room = zuoci->getRoom();
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        foreach(ServerPlayer *player, players)
+            room_set << player->getGeneralName();
+
+        return Sanguosha->getLimitedGeneralNames().toSet() - huashen_set - room_set;
+    }
+
+    virtual void onGameStart(ServerPlayer *zuoci) const{
+        AcquireGenerals(zuoci, 2);
+    }
+};
+
+class HuashenBegin: public PhaseChangeSkill{
+public:
+    HuashenBegin():PhaseChangeSkill("#huashen-begin"){
+
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Start;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zuoci) const{
+        return false;
+    }
+};
+
+class HuashenEnd: public PhaseChangeSkill{
+public:
+    HuashenEnd():PhaseChangeSkill("#huashen-end"){
+
+    }
+
+    virtual int getPriority() const{
+        return -2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::NotActive;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zuoci) const{
+        return false;
+    }
+};
+
 class Xinsheng: public MasochismSkill{
 public:
     Xinsheng():MasochismSkill("xinsheng"){
 
     }
 
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *zuoci, const DamageStruct &damage) const{
         int n = damage.damage;
         if(n == 0)
             return;
 
-        QSet<QString> general_names;
-        QVariantList huashens = target->tag["Huashen"].toList();
-        foreach(QVariant huashen, huashens)
-            general_names << huashen.toString();
-
-        Room *room = target->getRoom();
-        QList<ServerPlayer *> players = room->getAlivePlayers();
-        foreach(ServerPlayer *player, players)
-            general_names << player->getGeneralName();
-
-        QStringList choices, all_generals = Sanguosha->getLimitedGeneralNames();
-        foreach(QString name, all_generals){
-            if(!general_names.contains(name))
-                choices << name;
-        }
-
-        qShuffle(choices);
-        n = qMin(n, choices.length());
-
-        int i;
-        for(i=0; i<n; i++)
-            huashens << choices.at(i);
-
-        target->tag["Huashen"] = huashens;
+        Huashen::AcquireGenerals(zuoci, n);
     }
 };
 
@@ -895,13 +949,20 @@ MountainPackage::MountainPackage()
     erzhang->addSkill(new Guzheng);
     erzhang->addSkill(new GuzhengGet);
 
+    related_skills.insertMulti("guzheng", "#guzheng-get");
+
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
-    zuoci->addSkill(new Skill("huashen"));
+    zuoci->addSkill(new Huashen);
+    zuoci->addSkill(new HuashenBegin);
+    zuoci->addSkill(new HuashenEnd);
     zuoci->addSkill(new Xinsheng);
+
+    related_skills.insertMulti("huashen", "#huashen-begin");
+    related_skills.insertMulti("huashen", "#huashen-end");
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();
