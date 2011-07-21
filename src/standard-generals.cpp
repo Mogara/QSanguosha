@@ -1350,7 +1350,7 @@ void StandardPackage::addGenerals(){
     lumeng->addSkill(new Keji);
     lumeng->addSkill(new KejiSkip);
 
-    related_skills.insertMulti("#keji", "#keji-skip");
+    related_skills.insertMulti("keji", "#keji-skip");
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);

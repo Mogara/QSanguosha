@@ -389,11 +389,15 @@ public:
         view_as_skill = new YinghunViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->isWounded();
+    }
+
     virtual bool onPhaseChange(ServerPlayer *sunjian) const{
-        if(sunjian->getPhase() == Player::Start && sunjian->isWounded()){
-            Room *room = sunjian->getRoom();
-            room->askForUseCard(sunjian, "@@yinghun", "@yinghun");
-        }
+        Room *room = sunjian->getRoom();
+        room->askForUseCard(sunjian, "@@yinghun", "@yinghun");
 
         return false;
     }

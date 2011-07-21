@@ -1199,13 +1199,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
                 break;
         }
 
-        case Skill::Compulsory:{
-                button = new QPushButton();
-                break;
-            }
-
-        default:
-            break;
+        case Skill::Wake:
+        case Skill::Compulsory: button = new QPushButton(); break;
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
@@ -2586,6 +2581,10 @@ void RoomScene::detachSkill(const QString &skill_name){
 
             return;
         }
+    }
+
+    if(dashboard->getFilter() == Sanguosha->getSkill(skill_name)){
+        dashboard->setFilter(NULL);
     }
 }
 

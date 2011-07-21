@@ -891,6 +891,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     caozhi->addSkill(new Jiushi);
     caozhi->addSkill(new JiushiFlip);
 
+    related_skills.insertMulti("jiushi", "#jiushi-flip");
+
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
 
@@ -920,6 +922,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     chengong->addSkill(new Zhichi);
     chengong->addSkill(new ZhichiClear);
     chengong->addSkill(new Mingce);
+
+    related_skills.insertMulti("zhichi", "#zhichi-clear");
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);

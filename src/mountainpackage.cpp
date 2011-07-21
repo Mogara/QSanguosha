@@ -146,7 +146,7 @@ public:
 
         Room *room = player->getRoom();
         ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
-        if(caiwenji && !caiwenji->isKongcheng() && caiwenji->askForSkillInvoke(objectName(), data)){
+        if(caiwenji && !caiwenji->isNude() && caiwenji->askForSkillInvoke(objectName(), data)){
             room->askForDiscard(caiwenji, "beige", 1, false, true);
 
             JudgeStruct judge;
@@ -839,7 +839,7 @@ public:
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n){
-        QStringList list = GetAvailableGenerals(zuoci).toList();
+        QStringList list = GetAvailableGenerals(zuoci);
         qShuffle(list);
 
         QStringList acquired = list.mid(0, n);
@@ -853,21 +853,28 @@ public:
         zuoci->tag["Huashens"] = huashens;
     }
 
-    static QSet<QString> GetAvailableGenerals(ServerPlayer *zuoci){
+    static QStringList GetAvailableGenerals(ServerPlayer *zuoci){
+        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
         QSet<QString> huashen_set, room_set;
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         foreach(QVariant huashen, huashens)
             huashen_set << huashen.toString();
 
         Room *room = zuoci->getRoom();
-        QList<ServerPlayer *> players = room->getAlivePlayers();
-        foreach(ServerPlayer *player, players)
+        QList<const ServerPlayer *> players = room->findChildren<const ServerPlayer *>();
+        foreach(const ServerPlayer *player, players){
             room_set << player->getGeneralName();
+            if(player->getGeneral2())
+                room_set << player->getGeneral2Name();
+        }
 
-        return Sanguosha->getLimitedGeneralNames().toSet() - huashen_set - room_set;
+        all.remove("zuoci");
+        all.remove("zuocif");
+
+        return (all - huashen_set - room_set).toList();
     }
 
-    static void SelectSkill(ServerPlayer *zuoci){
+    static QString SelectSkill(ServerPlayer *zuoci){
         Room *room = zuoci->getRoom();
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
@@ -896,7 +903,7 @@ public:
         }
 
         if(skill_names.isEmpty())
-            return;
+            return QString();
 
         QString skill_name;
         if(skill_names.length() == 1)
@@ -906,6 +913,8 @@ public:
 
         zuoci->tag["HuashenSkill"] = skill_name;
         room->acquireSkill(zuoci, skill_name);
+
+        return skill_name;
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{
@@ -929,7 +938,16 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{
-        Huashen::SelectSkill(zuoci);
+        QString skill_name = Huashen::SelectSkill(zuoci);
+        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+        if(skill && zuoci->getRoom()->getThread()->getRefCount(skill) == 1
+           && skill->getTriggerEvents().contains(PhaseChange)
+            && skill->triggerable(zuoci)){
+
+            QVariant void_data;
+            skill->trigger(PhaseChange, zuoci, void_data);
+        }
+
 
         return false;
     }

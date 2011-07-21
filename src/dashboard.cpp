@@ -126,6 +126,11 @@ void Dashboard::setActionState(){
 
 void Dashboard::setFilter(const FilterSkill *filter){
     this->filter = filter;
+
+    if(filter == NULL){
+        foreach(CardItem *card_item, card_items)
+            card_item->filter(NULL);
+    }
 }
 
 const FilterSkill *Dashboard::getFilter() const{
