@@ -552,6 +552,12 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *jiangwei) const{
         Room *room = jiangwei->getRoom();
+
+        LogMessage log;
+        log.type = "#ZhijiWake";
+        log.from = jiangwei;
+        room->sendLog(log);
+
         if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
             RecoverStruct recover;
             recover.who = jiangwei;
@@ -819,6 +825,44 @@ public:
     }
 };
 
+class Xinsheng: public MasochismSkill{
+public:
+    Xinsheng():MasochismSkill("xinsheng"){
+
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        int n = damage.damage;
+        if(n == 0)
+            return;
+
+        QSet<QString> general_names;
+        QVariantList huashens = target->tag["Huashen"].toList();
+        foreach(QVariant huashen, huashens)
+            general_names << huashen.toString();
+
+        Room *room = target->getRoom();
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        foreach(ServerPlayer *player, players)
+            general_names << player->getGeneralName();
+
+        QStringList choices, all_generals = Sanguosha->getLimitedGeneralNames();
+        foreach(QString name, all_generals){
+            if(!general_names.contains(name))
+                choices << name;
+        }
+
+        qShuffle(choices);
+        n = qMin(n, choices.length());
+
+        int i;
+        for(i=0; i<n; i++)
+            huashens << choices.at(i);
+
+        target->tag["Huashen"] = huashens;
+    }
+};
+
 MountainPackage::MountainPackage()
     :Package("mountain")
 {
@@ -856,8 +900,8 @@ MountainPackage::MountainPackage()
     caiwenji->addSkill(new Duanchang);
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
-    zuoci->addSkill(new Skill("qimen"));
-    zuoci->addSkill(new Skill("dunjia"));
+    zuoci->addSkill(new Skill("huashen"));
+    zuoci->addSkill(new Xinsheng);
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();
