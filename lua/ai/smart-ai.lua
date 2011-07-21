@@ -598,13 +598,6 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			self.room:output(eachTo:objectName())
 		end
-	elseif event == sgs.CardDiscarded then
-		local card = data:toCard()
-		local cards= card:getSubcards()
-		if type(cards)=="QList" then
-			cards=sgs.QList2Table(cards)
-			self.room:output(player:getGeneralName().." discards "..table.concat(cards,"+"))
-		end
 	elseif event == sgs.CardLost then
 		local move=data:toCardMove()
 		local from=move.from

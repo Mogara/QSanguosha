@@ -65,8 +65,10 @@ void ServerPlayer::throwAllEquips(){
 
 void ServerPlayer::throwAllHandCards(){
     DummyCard *card = wholeHandCards();
-    room->throwCard(card);
+    if(card == NULL)
+        return;
 
+    room->throwCard(card);
     CardStar card_star = card;
     QVariant data = QVariant::fromValue(card_star);
     room->getThread()->trigger(CardDiscarded, this, data);
