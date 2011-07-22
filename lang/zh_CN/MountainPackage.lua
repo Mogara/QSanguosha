@@ -49,7 +49,7 @@ return {
 	["sunce_zhiba"] = "制霸",
 	["zhiba_pindian"] = "制霸拼点",
 	[":sunce_zhiba"] = "<b>主公技</b>,其他吴势力角色的出牌阶段,可与你进行一次拼点,若该角色没赢,你可以获得双方拼点的牌;你的觉醒技发动后,你可以拒绝此拼点.每回合限一次",
-	["#HunzhiWake"] = "%from 的体力为1，触发了觉醒技【魂姿】",
+	["#HunziWake"] = "%from 的体力为1，触发了觉醒技【魂姿】",
 	["zhiba_pindian:accept"] = "接受",
 	["zhiba_pindian:reject"] = "拒绝",
 

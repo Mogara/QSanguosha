@@ -297,7 +297,7 @@ public:
             }
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(shuangxiong->hasFlag("shuangxiong")){
+            if(judge->reason == "shuangxiong"){
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }

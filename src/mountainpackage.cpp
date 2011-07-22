@@ -268,7 +268,7 @@ public:
 class TuntianGet: public TriggerSkill{
 public:
     TuntianGet():TriggerSkill("#tuntian-get"){
-        events << CardLost << CardLostDone;
+        events << CardLost << CardLostDone << FinishJudge;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -281,7 +281,9 @@ public:
 
             if(move->from_place == Player::Hand || move->from_place == Player::Equip)
                 player->tag["InvokeTuntian"] = true;
-        }else if(event == CardLostDone && player->tag.value("InvokeTuntian", false).toBool()){
+        }else if(event == CardLostDone){
+            if(!player->tag.value("InvokeTuntian", false).toBool())
+                return false;
             player->tag.remove("InvokeTuntian");
 
             if(player->askForSkillInvoke("tuntian", data)){
@@ -294,9 +296,12 @@ public:
                 judge.who = player;
 
                 room->judge(judge);
-
-                if(judge.isGood())
-                    player->addToPile("field", judge.card->getEffectiveId());
+            }
+        }else if(event == FinishJudge){
+            JudgeStar judge = data.value<JudgeStar>();
+            if(judge->reason == "tuntian" && judge->isGood()){
+                player->addToPile("field", judge->card->getEffectiveId());
+                return true;
             }
         }
 
@@ -517,8 +522,6 @@ class SunceZhiba: public TriggerSkill{
 public:
     SunceZhiba():TriggerSkill("sunce_zhiba$"){
         events << GameStart << Pindian;
-
-        frequency = Wake;
     }
 
     virtual int getPriority() const{
