@@ -624,7 +624,7 @@ public:
         room->loseMaxHp(jiangwei);
 
         const TriggerSkill *guanxing = Sanguosha->getTriggerSkill("guanxing");
-        if(room->getThread()->getRefCount(guanxing) == 0){
+        if(room->getThread()->getRefCount(guanxing) == 1){
             QVariant void_data;
             guanxing->trigger(PhaseChange, jiangwei, void_data);
         }

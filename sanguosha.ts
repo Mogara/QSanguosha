@@ -1392,17 +1392,9 @@
 <context>
     <name>HuashenDialog</name>
     <message>
-        <location filename="src/mountainpackage.cpp" line="1000"/>
+        <location filename="src/mountainpackage.cpp" line="990"/>
         <source>Incarnation</source>
         <translation>化身</translation>
-    </message>
-</context>
-<context>
-    <name>JixiDialog</name>
-    <message>
-        <location filename="src/mountainpackage.cpp" line="333"/>
-        <source>Jixi</source>
-        <translation>急袭</translation>
     </message>
 </context>
 <context>
@@ -2561,17 +2553,17 @@
 <context>
     <name>Select3v3GeneralDialog</name>
     <message>
-        <location filename="src/server.cpp" line="529"/>
+        <location filename="src/server.cpp" line="530"/>
         <source>Select generals in extend 3v3 mode</source>
         <translation>选择在扩展 3v3 模式中启用的武将</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="538"/>
+        <location filename="src/server.cpp" line="539"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="597"/>
+        <location filename="src/server.cpp" line="598"/>
         <source>Check/Uncheck all</source>
         <translation>全部勾选或取消勾选</translation>
     </message>
@@ -2579,23 +2571,23 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server.cpp" line="755"/>
+        <location filename="src/server.cpp" line="757"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="773"/>
+        <location filename="src/server.cpp" line="775"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="782"/>
+        <location filename="src/server.cpp" line="784"/>
         <source>%1 connected</source>
         <oldsource>%1 connected, port = %2</oldsource>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="798"/>
+        <location filename="src/server.cpp" line="800"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -2684,12 +2676,17 @@
         <translation>需要密码才能登录，隐藏玩家昵称且禁止主公T人</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="389"/>
+        <location filename="src/server.cpp" line="381"/>
+        <source>Assign role and seat freely</source>
+        <translation>自由分配身份和座位</translation>
+    </message>
+    <message>
+        <location filename="src/server.cpp" line="391"/>
         <source>Disable chat</source>
         <translation>禁止聊天</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="393"/>
+        <location filename="src/server.cpp" line="394"/>
         <source>Enable second general</source>
         <translation>启用双将</translation>
     </message>
@@ -2709,12 +2706,12 @@
         <translation>平均值</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="434"/>
+        <location filename="src/server.cpp" line="435"/>
         <source>Upperlimit for general</source>
         <translation>选将上限</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="436"/>
+        <location filename="src/server.cpp" line="437"/>
         <source>Max HP scheme</source>
         <translation>体力上限分配方案</translation>
     </message>
@@ -2734,7 +2731,7 @@
         <translation>公网 IP 或域名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="438"/>
+        <location filename="src/server.cpp" line="439"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
@@ -2744,33 +2741,33 @@
         <translation>探测我的广域网IP</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="446"/>
+        <location filename="src/server.cpp" line="447"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="453"/>
+        <location filename="src/server.cpp" line="454"/>
         <source>Role predictable</source>
         <translation>身份预知</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="460"/>
+        <location filename="src/server.cpp" line="461"/>
         <source> millisecond</source>
         <translation> 毫秒</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="464"/>
+        <location filename="src/server.cpp" line="465"/>
         <source>AI delay</source>
         <translation>电脑延迟</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="506"/>
-        <location filename="src/server.cpp" line="521"/>
+        <location filename="src/server.cpp" line="507"/>
+        <location filename="src/server.cpp" line="522"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="521"/>
+        <location filename="src/server.cpp" line="522"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -2801,7 +2798,7 @@
         <translation>自由选择武将与卡牌</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="385"/>
+        <location filename="src/server.cpp" line="388"/>
         <source>Forbid same IP with multiple connection</source>
         <translation>禁止同一个IP建立多个连接</translation>
     </message>
@@ -2811,22 +2808,22 @@
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="440"/>
+        <location filename="src/server.cpp" line="441"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="450"/>
+        <location filename="src/server.cpp" line="451"/>
         <source>Enable AI</source>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="480"/>
+        <location filename="src/server.cpp" line="481"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server.cpp" line="481"/>
+        <location filename="src/server.cpp" line="482"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>

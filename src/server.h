@@ -77,6 +77,7 @@ private:
     QCheckBox *nolimit_checkbox;
     QCheckBox *contest_mode_checkbox;
     QCheckBox *free_choose_checkbox;
+    QCheckBox *free_assign_checkbox;
     QSpinBox *maxchoice_spinbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;

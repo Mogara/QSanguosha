@@ -378,6 +378,9 @@ QLayout *ServerDialog::createRight(){
         free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
         free_choose_checkbox->setChecked(Config.FreeChoose);
 
+        free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
+        free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
+
         maxchoice_spinbox = new QSpinBox;
         maxchoice_spinbox->setRange(5, 10);
         maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
@@ -385,13 +388,10 @@ QLayout *ServerDialog::createRight(){
         forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
         forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
 
-
         disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
         disable_chat_checkbox->setChecked(Config.DisableChat);
 
-
         second_general_checkbox = new QCheckBox(tr("Enable second general"));
-
 
         max_hp_scheme_combobox = new QComboBox;
         max_hp_scheme_combobox->addItem(tr("Sum - 3"));
@@ -431,6 +431,7 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(forbid_same_ip_checkbox);
         layout->addWidget(disable_chat_checkbox);
         layout->addWidget(free_choose_checkbox);
+        layout->addWidget(free_assign_checkbox);
         layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
         layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
@@ -679,6 +680,7 @@ bool ServerDialog::config(){
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("ContestMode", Config.ContestMode);
     Config.setValue("FreeChoose", Config.FreeChoose);
+    Config.setValue("FreeAssign", free_assign_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
