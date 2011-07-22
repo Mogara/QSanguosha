@@ -321,8 +321,10 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target, QVariant &dat
         }
     }
 
-    foreach(AI *ai, room->ais)
-        ai->filterEvent(event, target, data);
+    if(target){
+        foreach(AI *ai, room->ais)
+            ai->filterEvent(event, target, data);
+    }
 
     return broken;
 }

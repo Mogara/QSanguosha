@@ -7,6 +7,9 @@
 #include "carditem.h"
 #include "generaloverview.h"
 #include "clientplayer.h"
+#include "client.h"
+
+#include <QCommandLinkButton>
 
 QiaobianCard::QiaobianCard(){
 
@@ -256,47 +259,44 @@ public:
 
     virtual int getCorrect(const Player *from, const Player *) const{
         if(from->hasSkill(objectName()))
-            return -from->getMark("@field");
+            return -from->getPile("field").length();
         else
             return 0;
     }
 };
 
-class TuntianGet: public MasochismSkill{
+class TuntianGet: public TriggerSkill{
 public:
-    TuntianGet():MasochismSkill("#tuntian"){
-        frequency = Frequent;
-    }
-
-    virtual void onDamaged(ServerPlayer *dengai, const DamageStruct &damage) const{
-        if(dengai->askForSkillInvoke("tuntian")){
-            dengai->gainMark("@field", damage.damage);
-
-            foreach(int card_id, dengai->getRoom()->getNCards(damage.damage))
-                dengai->addToPile("field", card_id, false);
-        }
-    }
-};
-
-class JixiWake: public TriggerSkill{
-public:
-    JixiWake():TriggerSkill("#jixi-wake"){
-
+    TuntianGet():TriggerSkill("#tuntian-get"){
+        events << CardLost << CardLostDone;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::NotActive;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        if(dengai && dengai->getMark("jixi") == 0){
-            DamageStruct damage = data.value<DamageStruct>();
-            if(damage.nature == DamageStruct::Thunder){
-                room->setPlayerMark(dengai, "jixi", 1);
-                room->drawCards(dengai, 2);
-                room->loseMaxHp(dengai);
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == CardLost){
+            CardMoveStar move = data.value<CardMoveStar>();
+
+            if(move->from_place == Player::Hand || move->from_place == Player::Equip)
+                player->tag["InvokeTuntian"] = true;
+        }else if(event == CardLostDone && player->tag.value("InvokeTuntian", false).toBool()){
+            player->tag.remove("InvokeTuntian");
+
+            if(player->askForSkillInvoke("tuntian", data)){
+                Room *room = player->getRoom();
+
+                JudgeStruct judge;
+                judge.pattern = QRegExp("(.*):(heart):(.*)");
+                judge.good = false;
+                judge.reason = "tuntian";
+                judge.who = player;
+
+                room->judge(judge);
+
+                if(judge.isGood())
+                    player->addToPile("field", judge.card->getEffectiveId());
             }
         }
 
@@ -304,48 +304,117 @@ public:
     }
 };
 
-class Jixi: public ZeroCardViewAsSkill{
+class Zaoxian: public PhaseChangeSkill{
+public:
+    Zaoxian():PhaseChangeSkill("zaoxian"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("zaoxian") == 0
+                && target->getPile("field").length() >= 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *dengai) const{
+        Room *room = dengai->getRoom();
+
+        room->setPlayerMark(dengai, "zaoxian", 1);
+        room->loseMaxHp(dengai);
+
+        LogMessage log;
+        log.type = "#ZaoxianWake";
+        log.from = dengai;
+        log.arg = QString::number(dengai->getPile("field").length());
+        room->sendLog(log);
+
+        room->acquireSkill(dengai, "jixi");
+
+        return false;
+    }
+};
+
+JixiDialog::JixiDialog(){
+    setWindowTitle(tr("Jixi"));
+}
+
+void JixiDialog::popup(){
+    if(ClientInstance->getStatus() != Client::Playing)
+        return;
+
+    QList<int> fields = Self->getPile("field");
+    if(fields.isEmpty())
+        return;
+
+    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(this->layout());
+    if(layout){
+        while(layout->count()){
+            QLayoutItem *item = layout->takeAt(0);
+            if(item->widget())
+                item->widget()->deleteLater();
+
+            delete item;
+        }
+    }else
+        layout = new QVBoxLayout;
+
+    foreach(int card_id, fields){
+        const Card *card = Sanguosha->getCard(card_id);
+
+        QCommandLinkButton *button = new QCommandLinkButton;
+        button->setIcon(card->getSuitIcon());
+        button->setText(card->getFullName(false));
+        button->setObjectName(QString::number(card_id));
+
+        connect(button, SIGNAL(clicked()), this, SLOT(selectCard()));
+
+        layout->addWidget(button);
+    }
+
+    setLayout(layout);
+
+    exec();
+}
+
+void JixiDialog::selectCard(){
+    int card_id = sender()->objectName().toInt();
+    if(Self->getPile("field").contains(card_id)){
+        CardStar card = Sanguosha->getCard(card_id);
+        Self->tag["Jixi"] = QVariant::fromValue(card);
+    }
+
+    accept();
+}
+
+class Jixi:public ZeroCardViewAsSkill{
 public:
     Jixi():ZeroCardViewAsSkill("jixi"){
-        snatch = new Snatch(Card::NoSuit, 0);
-        snatch->setSkillName("jixi");
 
-        frequency = Wake;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if(player->getMark("jixi") == 0)
-            return player->getPile("field").length() >= 3;
-        else
-            return player->getPile("field").length() > 0;
+        return !player->getPile("field").isEmpty();
     }
 
     virtual const Card *viewAs() const{
+        CardStar card = Self->tag.value("Jixi").value<CardStar>();
+        if(card == NULL)
+            return NULL;
+
+        Snatch *snatch = new Snatch(card->getSuit(), card->getNumber());
+        snatch->addSubcard(card);
+        snatch->setSkillName("jixi");
         return snatch;
     }
 
-private:
-    Snatch *snatch;
-};
+    virtual QDialog *getDialog() const{
+        static JixiDialog *dialog;
 
-class JixiThrow: public TriggerSkill{
-public:
-    JixiThrow():TriggerSkill("#jixi-throw"){
-        events << CardUsed;
-    }
+        if(dialog == NULL)
+            dialog = new JixiDialog;
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if(use.card->objectName() == "snatch" && use.card->getSkillName() == "jixi"){
-            if(player->getMark("jixi") == 0){
-                foreach(int card_id, player->getPile("field").mid(0, 3)){
-                    player->getRoom()->throwCard(card_id);
-                }
-            }else
-                player->getRoom()->throwCard(player->getPile("field").first());
-        }
-
-        return false;
+        return dialog;
     }
 };
 
@@ -766,6 +835,8 @@ public:
                     if(liushan->isKongcheng())
                         return false;
 
+                    room->askForDiscard(liushan, "fangquan", 1);
+
                     ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
 
                     LogMessage log;
@@ -1021,14 +1092,12 @@ MountainPackage::MountainPackage()
     General *zhanghe = new General(this, "zhanghe", "wei");
     zhanghe->addSkill(new Qiaobian);
 
-    /*
-    General *dengai = new General(this, "dengai", "wei", 3);
+    General *dengai = new General(this, "dengai", "wei", 4);
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianGet);
-    dengai->addSkill(new Jixi);
-    dengai->addSkill(new JixiWake);
-    dengai->addSkill(new JixiThrow);
-    */
+    dengai->addSkill(new Zaoxian);
+
+    related_skills.insertMulti("tuntian", "#tuntian-get");
 
     General *liushan = new General(this, "liushan$", "shu", 3);
     liushan->addSkill(new Xiangle);
@@ -1075,7 +1144,7 @@ MountainPackage::MountainPackage()
     addMetaObject<ZhijianCard>();
     addMetaObject<ZhibaCard>();
 
-    skills << new ZhibaPindian;
+    skills << new ZhibaPindian << new Jixi;
 
     patterns[".basic"] = new BasicPattern;
 }

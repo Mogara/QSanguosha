@@ -398,17 +398,20 @@ public:
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
-        events << CardLost;
+        events << CardLost << CardLostDone;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *lingtong, QVariant &data) const{
-        CardMoveStar move = data.value<CardMoveStar>();
-
-        if(move->from_place == Player::Equip){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
+        if(event == CardLost){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::Equip)
+                lingtong->tag["InvokeXuanfeng"] = true;
+        }else if(event == CardLostDone && lingtong->tag.value("InvokeXuanfeng", false).toBool()){
+            lingtong->tag.remove("InvokeXuanfeng");
             Room *room = lingtong->getRoom();
 
             QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");

@@ -56,6 +56,17 @@ public slots:
     void popup();
 };
 
+class JixiDialog: public QDialog{
+    Q_OBJECT
+
+public:
+    JixiDialog();
+
+public slots:
+    void popup();
+    void selectCard();
+};
+
 class MountainPackage : public Package
 {
     Q_OBJECT

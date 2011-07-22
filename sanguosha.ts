@@ -1392,9 +1392,17 @@
 <context>
     <name>HuashenDialog</name>
     <message>
-        <location filename="src/mountainpackage.cpp" line="938"/>
+        <location filename="src/mountainpackage.cpp" line="1000"/>
         <source>Incarnation</source>
         <translation>化身</translation>
+    </message>
+</context>
+<context>
+    <name>JixiDialog</name>
+    <message>
+        <location filename="src/mountainpackage.cpp" line="333"/>
+        <source>Jixi</source>
+        <translation>急袭</translation>
     </message>
 </context>
 <context>
@@ -2162,37 +2170,37 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/room.cpp" line="1147"/>
+        <location filename="src/room.cpp" line="1152"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1264"/>
+        <location filename="src/room.cpp" line="1269"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1297"/>
+        <location filename="src/room.cpp" line="1302"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1256"/>
+        <location filename="src/room.cpp" line="1261"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1276"/>
+        <location filename="src/room.cpp" line="1281"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="1301"/>
+        <location filename="src/room.cpp" line="1306"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2283"/>
+        <location filename="src/room.cpp" line="2299"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
