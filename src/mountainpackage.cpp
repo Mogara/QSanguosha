@@ -335,62 +335,59 @@ public:
     }
 };
 
-JixiDialog::JixiDialog(){
-    setWindowTitle(tr("Jixi"));
+JixiCard::JixiCard(){
+    target_fixed = true;
 }
 
-void JixiDialog::popup(){
-    if(ClientInstance->getStatus() != Client::Playing)
-        return;
+void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *dengai = card_use.from;
 
-    QList<int> fields = Self->getPile("field");
+    QList<int> fields = dengai->getPile("field");
     if(fields.isEmpty())
+        return ;
+
+    int card_id;
+    if(fields.length() == 1)
+        card_id = fields.first();
+    else{
+        room->fillAG(fields, dengai);
+        card_id = room->askForAG(dengai, fields, false, "jixi");
+        dengai->invoke("clearAG");
+    }
+
+    const Card *card = Sanguosha->getCard(card_id);
+    Snatch *snatch = new Snatch(card->getSuit(), card->getNumber());
+    snatch->setSkillName("jixi");
+    snatch->addSubcard(card_id);
+
+    QList<ServerPlayer *> targets;
+    QList<const Player *> empty_list;
+    foreach(ServerPlayer *p, room->getAlivePlayers()){
+        if(!snatch->targetFilter(empty_list, p, dengai))
+            continue;
+
+        if(dengai->isProhibited(p, snatch))
+            continue;
+
+        targets << p;
+    }
+
+    if(targets.isEmpty())
         return;
 
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(this->layout());
-    if(layout){
-        while(layout->count()){
-            QLayoutItem *item = layout->takeAt(0);
-            if(item->widget())
-                item->widget()->deleteLater();
+    ServerPlayer *target = room->askForPlayerChosen(dengai, targets, "jixi");
 
-            delete item;
-        }
-    }else
-        layout = new QVBoxLayout;
+    CardUseStruct use;
+    use.card = snatch;
+    use.from = dengai;
+    use.to << target;
 
-    foreach(int card_id, fields){
-        const Card *card = Sanguosha->getCard(card_id);
-
-        QCommandLinkButton *button = new QCommandLinkButton;
-        button->setIcon(card->getSuitIcon());
-        button->setText(card->getFullName(false));
-        button->setObjectName(QString::number(card_id));
-
-        connect(button, SIGNAL(clicked()), this, SLOT(selectCard()));
-
-        layout->addWidget(button);
-    }
-
-    setLayout(layout);
-
-    exec();
-}
-
-void JixiDialog::selectCard(){
-    int card_id = sender()->objectName().toInt();
-    if(Self->getPile("field").contains(card_id)){
-        CardStar card = Sanguosha->getCard(card_id);
-        Self->tag["Jixi"] = QVariant::fromValue(card);
-    }
-
-    accept();
+    room->useCard(use);
 }
 
 class Jixi:public ZeroCardViewAsSkill{
 public:
     Jixi():ZeroCardViewAsSkill("jixi"){
-
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -398,23 +395,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        CardStar card = Self->tag.value("Jixi").value<CardStar>();
-        if(card == NULL)
-            return NULL;
-
-        Snatch *snatch = new Snatch(card->getSuit(), card->getNumber());
-        snatch->addSubcard(card);
-        snatch->setSkillName("jixi");
-        return snatch;
-    }
-
-    virtual QDialog *getDialog() const{
-        static JixiDialog *dialog;
-
-        if(dialog == NULL)
-            dialog = new JixiDialog;
-
-        return dialog;
+        return new JixiCard;
     }
 };
 
@@ -1143,6 +1124,7 @@ MountainPackage::MountainPackage()
     addMetaObject<TiaoxinCard>();
     addMetaObject<ZhijianCard>();
     addMetaObject<ZhibaCard>();
+    addMetaObject<JixiCard>();
 
     skills << new ZhibaPindian << new Jixi;
 

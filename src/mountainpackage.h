@@ -46,6 +46,15 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class JixiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JixiCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
 class HuashenDialog: public GeneralOverview{
     Q_OBJECT
 
@@ -54,17 +63,6 @@ public:
 
 public slots:
     void popup();
-};
-
-class JixiDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    JixiDialog();
-
-public slots:
-    void popup();
-    void selectCard();
 };
 
 class MountainPackage : public Package
