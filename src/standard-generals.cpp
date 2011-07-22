@@ -895,13 +895,17 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &data) const{
         if(luxun->isKongcheng()){
-            Room *room = luxun->getRoom();
-            if(room->askForSkillInvoke(luxun, objectName())){
-                room->playSkillEffect(objectName());
+            CardMoveStar move = data.value<CardMoveStar>();
 
-                luxun->drawCards(1);
+            if(move->from_place == Player::Hand){
+                Room *room = luxun->getRoom();
+                if(room->askForSkillInvoke(luxun, objectName())){
+                    room->playSkillEffect(objectName());
+
+                    luxun->drawCards(1);
+                }
             }
         }
 

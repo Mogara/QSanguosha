@@ -307,7 +307,7 @@ public:
 class Zaoxian: public PhaseChangeSkill{
 public:
     Zaoxian():PhaseChangeSkill("zaoxian"){
-
+        frequency = Wake;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -351,8 +351,11 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         card_id = fields.first();
     else{
         room->fillAG(fields, dengai);
-        card_id = room->askForAG(dengai, fields, false, "jixi");
+        card_id = room->askForAG(dengai, fields, true, "jixi");
         dengai->invoke("clearAG");
+
+        if(card_id == -1)
+            return;
     }
 
     const Card *card = Sanguosha->getCard(card_id);
@@ -432,7 +435,7 @@ public:
 class Hunzi: public PhaseChangeSkill{
 public:
     Hunzi():PhaseChangeSkill("hunzi"){
-
+        frequency = Wake;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
