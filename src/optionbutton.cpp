@@ -13,7 +13,13 @@ OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *p
     if(!caption.isEmpty()){
         setText(caption);
         setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        setFont(Config.SmallFont);
+
+        if(caption.length()>= 4){
+            QFont font = Config.SmallFont;
+            font.setPixelSize(Config.SmallFont.pixelSize() - 5);
+            setFont(font);
+        }else
+            setFont(Config.SmallFont);
     }
 }
 
