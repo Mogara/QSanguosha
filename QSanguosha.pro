@@ -35,7 +35,6 @@ SOURCES += src/main.cpp \
     src/gamerule.cpp \
     src/playercarddialog.cpp \
     src/roomthread.cpp \
-    src/optionbutton.cpp \
     src/maneuvering.cpp \
     src/wind.cpp \
     src/thicket.cpp \
@@ -105,7 +104,6 @@ HEADERS += src/mainwindow.h \
     src/gamerule.h \
     src/playercarddialog.h \
     src/roomthread.h \
-    src/optionbutton.h \
     src/maneuvering.h \
     src/wind.h \
     src/thicket.h \
