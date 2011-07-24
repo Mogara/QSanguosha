@@ -229,21 +229,12 @@ public:
                 room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
 
-            int max_hp = damage->from->getMaxHP();
-            int hp = damage->from->getHp();
             QString kingdom = damage->from->getKingdom();
 
             QString to_transfigure = damage->from->getGeneral()->isMale() ? "sujiang" : "sujiangf";
-            room->transfigure(damage->from, to_transfigure, false, false);
+            room->setPlayerProperty(damage->from, "general", to_transfigure);
             if(damage->from->getGeneral2())
                 room->setPlayerProperty(damage->from, "general2", to_transfigure);
-
-            if(max_hp != damage->from->getMaxHP())
-                room->setPlayerProperty(damage->from, "maxhp", max_hp);
-
-            if(hp != damage->from->getHp())
-                room->setPlayerProperty(damage->from, "hp", hp);
-
             room->setPlayerProperty(damage->from, "kingdom", kingdom);
         }
 
@@ -927,10 +918,12 @@ public:
                 room_set << player->getGeneral2Name();
         }
 
-        all.remove("zuoci");
-        all.remove("zuocif");
+        static QSet<QString> banned;
+        if(banned.isEmpty()){
+            banned << "zuoci" << "zuocif" << "guzhielai" << "dengshizai";
+        }
 
-        return (all - huashen_set - room_set).toList();
+        return (all - banned - huashen_set - room_set).toList();
     }
 
     static QString SelectSkill(ServerPlayer *zuoci){
