@@ -256,6 +256,7 @@ void MainWindow::startGameInAnotherInstance(){
 void MainWindow::on_actionGeneral_Overview_triggered()
 {
     GeneralOverview *overview = new GeneralOverview(this);
+    overview->fillGenerals(Sanguosha->findChildren<const General *>());
     overview->show();
 }
 

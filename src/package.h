@@ -2,10 +2,18 @@
 #define PACKAGE_H
 
 class Skill;
+class Card;
+class Player;
 
 #include <QObject>
 #include <QHash>
 #include <QStringList>
+#include <QMap>
+
+class CardPattern{
+public:
+    virtual bool match(const Player *player, const Card *card) const = 0;
+};
 
 class Package: public QObject{
     Q_OBJECT
@@ -33,6 +41,14 @@ public:
         return skills;
     }
 
+    QMap<QString, const CardPattern *> getPatterns() const{
+        return patterns;
+    }
+
+    QMultiMap<QString, QString> getRelatedSkills() const{
+        return related_skills;
+    }
+
     Type getType() const{
         return type;
     }
@@ -45,6 +61,8 @@ public:
 protected:
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
+    QMap<QString, const CardPattern *> patterns;
+    QMultiMap<QString, QString> related_skills;
     Type type;
 };
 

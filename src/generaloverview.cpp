@@ -20,9 +20,10 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
     group_box->setTitle(tr("Effects"));
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
+}
 
-    QList<const General *> generals = Sanguosha->findChildren<const General *>();
-
+void GeneralOverview::fillGenerals(const QList<const General *> &generals){
+    ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
     QIcon lord_icon("image/system/roles/lord.png");

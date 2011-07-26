@@ -389,11 +389,15 @@ public:
         view_as_skill = new YinghunViewAsSkill;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->isWounded();
+    }
+
     virtual bool onPhaseChange(ServerPlayer *sunjian) const{
-        if(sunjian->getPhase() == Player::Start && sunjian->isWounded()){
-            Room *room = sunjian->getRoom();
-            room->askForUseCard(sunjian, "@@yinghun", "@yinghun");
-        }
+        Room *room = sunjian->getRoom();
+        room->askForUseCard(sunjian, "@@yinghun", "@yinghun");
 
         return false;
     }
@@ -443,7 +447,7 @@ public:
         return card;
     }
 
-    virtual bool isEnabledAtPlay(const Player *){
+    virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
 
@@ -875,10 +879,14 @@ ThicketPackage::ThicketPackage()
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
 
+    related_skills.insertMulti("huoshou", "#sa_avoid_huoshou");
+
     zhurong = new General(this, "zhurong", "shu", 4, false);
     zhurong->addSkill(new SavageAssaultAvoid("juxiang"));
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
+
+    related_skills.insertMulti("juxiang", "#sa_avoid_juxiang");
 
     sunjian = new General(this, "sunjian", "wu");
     sunjian->addSkill(new Yinghun);
@@ -889,11 +897,16 @@ ThicketPackage::ThicketPackage()
     lusu->addSkill(new HaoshiGive);
     lusu->addSkill(new Dimeng);
 
+    related_skills.insertMulti("haoshi", "#haoshi");
+    related_skills.insertMulti("haoshi", "#haoshi-give");
+
     jiaxu = new General(this, "jiaxu", "qun", 3);
     jiaxu->addSkill(new Skill("wansha", Skill::Compulsory));
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
+
+    related_skills.insertMulti("luanwu", "#@chaos");
 
     dongzhuo = new General(this, "dongzhuo$", "qun", 8);
     dongzhuo->addSkill(new Jiuchi);

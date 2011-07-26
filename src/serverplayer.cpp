@@ -47,15 +47,32 @@ void ServerPlayer::obtainCard(const Card *card){
 }
 
 void ServerPlayer::throwAllEquips(){
-    room->throwCard(getWeapon());
-    room->throwCard(getArmor());
-    room->throwCard(getDefensiveHorse());
-    room->throwCard(getOffensiveHorse());
+    QList<const Card *> equips = getEquips();
+
+    if(equips.isEmpty())
+        return;
+
+    DummyCard *card = new DummyCard;
+    foreach(const Card *equip, equips)
+        card->addSubcard(equip);
+    room->throwCard(card);
+
+    CardStar card_star = card;
+    QVariant data = QVariant::fromValue(card_star);
+    room->getThread()->trigger(CardDiscarded, this, data);
+    card->deleteLater();
 }
 
 void ServerPlayer::throwAllHandCards(){
-    foreach(const Card *card, handcards)
-        room->throwCard(card);
+    DummyCard *card = wholeHandCards();
+    if(card == NULL)
+        return;
+
+    room->throwCard(card);
+    CardStar card_star = card;
+    QVariant data = QVariant::fromValue(card_star);
+    room->getThread()->trigger(CardDiscarded, this, data);
+    card->deleteLater();
 }
 
 void ServerPlayer::throwAllMarks(){

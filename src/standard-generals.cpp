@@ -300,26 +300,28 @@ public:
         events << Predamage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *xuchu, QVariant &data) const{
-        if(xuchu->hasFlag("luoyi")){
-            DamageStruct damage = data.value<DamageStruct>();
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasFlag("luoyi") && target->isAlive();
+    }
 
-            const Card *reason = damage.card;
-            if(reason == NULL)
-                return false;
+    virtual bool trigger(TriggerEvent , ServerPlayer *xuchu, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
 
-            if(reason->inherits("Slash") || reason->inherits("Duel")){
-                LogMessage log;
-                log.type = "#LuoyiBuff";
-                log.from = xuchu;
-                log.to << damage.to;
-                log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(damage.damage + 1);
-                xuchu->getRoom()->sendLog(log);
+        const Card *reason = damage.card;
+        if(reason == NULL)
+            return false;
 
-                damage.damage ++;
-                data = QVariant::fromValue(damage);
-            }
+        if(reason->inherits("Slash") || reason->inherits("Duel")){
+            LogMessage log;
+            log.type = "#LuoyiBuff";
+            log.from = xuchu;
+            log.to << damage.to;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            xuchu->getRoom()->sendLog(log);
+
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
         }
 
         return false;
@@ -893,13 +895,17 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *luxun, QVariant &data) const{
         if(luxun->isKongcheng()){
-            Room *room = luxun->getRoom();
-            if(room->askForSkillInvoke(luxun, objectName())){
-                room->playSkillEffect(objectName());
+            CardMoveStar move = data.value<CardMoveStar>();
 
-                luxun->drawCards(1);
+            if(move->from_place == Player::Hand){
+                Room *room = luxun->getRoom();
+                if(room->askForSkillInvoke(luxun, objectName())){
+                    room->playSkillEffect(objectName());
+
+                    luxun->drawCards(1);
+                }
             }
         }
 
@@ -1300,6 +1306,8 @@ void StandardPackage::addGenerals(){
     xuchu->addSkill(new Luoyi);
     xuchu->addSkill(new LuoyiBuff);
 
+    related_skills.insertMulti("luoyi", "#luoyi");
+
     zhenji = new General(this, "zhenji", "wei", 3, false);
     zhenji->addSkill(new Luoshen);
     zhenji->addSkill(new Qingguo);
@@ -1327,6 +1335,8 @@ void StandardPackage::addGenerals(){
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
 
+    related_skills.insertMulti("kongcheng", "#kongcheng-effect");
+
     huangyueying = new General(this, "huangyueying", "shu", 3, false);
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
@@ -1343,6 +1353,8 @@ void StandardPackage::addGenerals(){
     lumeng = new General(this, "lumeng", "wu");
     lumeng->addSkill(new Keji);
     lumeng->addSkill(new KejiSkip);
+
+    related_skills.insertMulti("keji", "#keji-skip");
 
     luxun = new General(this, "luxun", "wu", 3);
     luxun->addSkill(new Qianxun);

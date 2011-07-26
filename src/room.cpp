@@ -367,8 +367,17 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name){
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name){
+    if(!player->hasSkill(skill_name))
+        return;
+
     player->loseSkill(skill_name);
     player->invoke("detachSkill", skill_name);
+
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill && skill->isVisible()){
+        foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill_name))
+            detachSkillFromPlayer(player, skill->objectName());
+    }
 }
 
 bool Room::obtainable(const Card *card, ServerPlayer *player){
@@ -623,6 +632,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
         thread->trigger(ChoiceMade, player, decisionData);
 
+        CardStar card_ptr = card;
+        QVariant card_star = QVariant::fromValue(card_ptr);
+
         if(!card->inherits("DummyCard") && !pattern.startsWith(".")){
             LogMessage log;
             log.card_str = card->toString();
@@ -632,10 +644,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
             player->playCardEffect(card);
 
-            CardStar card_ptr = card;
-            QVariant card_star = QVariant::fromValue(card_ptr);
+
             thread->trigger(CardResponsed, player, card_star);
+        }else{
+            thread->trigger(CardDiscarded, player, card_star);
         }
+
     }else if(continuable)
         return askForCard(player, pattern, prompt, throw_it);
 
@@ -854,10 +868,13 @@ void Room::swapPile(){
 
     int times = tag.value("SwapPile", 0).toInt();
     tag.insert("SwapPile", ++times);
-    if(times == 2 && mode == "04_1v3")
+    if(times == 6)
         gameOver(".");
-    else if(times == 10)
-        gameOver(".");
+    if(mode == "04_1v3"){
+        int limit = Config.BanPackages.contains("maneuvering") ? 3 : 2;
+        if(times == limit)
+            gameOver(".");
+    }
 
     qSwap(draw_pile, discard_pile);
 
@@ -1050,7 +1067,12 @@ void Room::timerEvent(QTimerEvent *event){
 
             connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
         }else{
-            QStringList lord_list = Sanguosha->getRandomLords();
+            QStringList lord_list;
+            if(mode == "08same")
+                lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+            else
+                lord_list = Sanguosha->getRandomLords();
+
             QString default_lord = lord_list[qrand() % lord_list.length()];
 
             ServerPlayer *the_lord = getLord();
@@ -1346,10 +1368,9 @@ void Room::assignRoles(){
     Sanguosha->getRoles(mode, roles);
 
     for(i=0; i<n; i++){
-        int r1 = qrand() % n;
-        int r2 = qrand() % n;
+        int r = qrand() % (n - i) + i;
 
-        qSwap(roles[r1], roles[r2]);
+        qSwap(roles[i], roles[r]);
     }
 
     for(i=0; i<n; i++){
@@ -1480,6 +1501,18 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     if(player->getRoleEnum() == Player::Lord){
         broadcastProperty(player, "general");
 
+        if(Config.GameMode == "08same"){
+            foreach(ServerPlayer *p, players){
+                if(!p->isLord())
+                    p->setGeneralName(name);
+            }
+
+            Config.Enable2ndGeneral = false;
+            startGame();
+
+            return;
+        }
+
         const int max_available = (total-1) / (player_count-1);
         const int choice_count = qMin(max_choice, max_available);
         QSet<QString> the_lord;
@@ -1507,49 +1540,62 @@ void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
         player->sendProperty("general");
 
     chosen_generals ++;
-    if(chosen_generals == player_count){
-        if(Config.Enable2ndGeneral){
-            const int max_available = (total - player_count) / player_count;
-            const int choice_count = qMin(max_choice, max_available);
+    if(chosen_generals != player_count)
+        return;
 
-            QSet<QString> exists;
-            foreach(ServerPlayer *player, players){
-                exists << player->getGeneralName();
-            }
+    if(!Config.Enable2ndGeneral){
+        startGame();
+        return;
+    }
 
-            QStringList general_list = Sanguosha->getRandomGenerals(total - exists.size(), exists);
-            int i, j;
-            for(i=0; i<player_count; i++){
-                QStringList choices;
-                ServerPlayer *p = players.at(i);
-                for(j=0; j< choice_count; j++){
-                    QString choice;
-                    foreach(QString general, general_list){
-                        if(!BanPair::isBanned(p->getGeneralName(), general)){
-                            choice = general;
-                            break;
-                        }
-                    }
+    const int max_available = (total - player_count) / player_count;
+    const int choice_count = qMin(max_choice, max_available);
 
-                    if(choice.isNull())
-                        choice = general_list.first();
+    QSet<QString> exists;
+    foreach(ServerPlayer *player, players){
+        exists << player->getGeneralName();
+    }
 
-                    general_list.removeOne(choice);
-                    choices << choice;
-                }
-
-                GeneralSelector *selector = GeneralSelector::GetInstance();
-                QString default_general2 = selector->selectSecond(p, choices);
-                if(p->getState() != "online"){
-                    choose2Command(p, default_general2);
-                }else{
-                    p->setProperty("default_general2", default_general2);
-                    p->invoke("doChooseGeneral2", choices.join("+"));
+    QStringList general_list = Sanguosha->getRandomGenerals(total - exists.size(), exists);
+    int i, j;
+    for(i=0; i<player_count; i++){
+        QStringList choices;
+        ServerPlayer *p = players.at(i);
+        for(j=0; j< choice_count; j++){
+            QString choice;
+            foreach(QString general, general_list){
+                if(!BanPair::isBanned(p->getGeneralName(), general)){
+                    choice = general;
+                    break;
                 }
             }
 
-        }else
-            startGame();
+            if(choice.isNull())
+                choice = general_list.first();
+
+            general_list.removeOne(choice);
+            choices << choice;
+        }
+
+        GeneralSelector *selector = GeneralSelector::GetInstance();
+        QString default_general2 = selector->selectSecond(p, choices);
+        if(p->getState() != "online"){
+            choose2Command(p, default_general2);
+        }else{
+            p->setProperty("default_general2", default_general2);
+            p->invoke("doChooseGeneral2", choices.join("+"));
+        }
+
+        if(Config.GameMode == "08same" && p->isLord()){
+            QString lord_general = p->getGeneralName();
+            foreach(ServerPlayer *p, players){
+                if(!p->isLord()){
+                    choose2Command(p, lord_general);
+                }
+            }
+
+            return;
+        }
     }
 }
 
@@ -2022,6 +2068,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
     move.to_place = place;
     move.open = open;
 
+    ServerPlayer *from = NULL;
+
     if(card->isVirtualCard()){
         QList<int> subcards = card->getSubcards();
         foreach(int subcard, subcards){
@@ -2029,13 +2077,22 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
             move.from = getCardOwner(subcard);
             move.from_place = getCardPlace(subcard);
             doMove(move, scope);
+
+            if(move.from)
+                from = move.from;
         }
     }else{
         move.card_id = card->getId();
         move.from = getCardOwner(move.card_id);
         move.from_place = getCardPlace(move.card_id);
         doMove(move, scope);
+
+        if(move.from)
+            from = move.from;
     }
+
+    if(from)
+        thread->trigger(CardLostDone, from);
 }
 
 void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope){
@@ -2164,6 +2221,9 @@ void Room::getResult(const QString &reply_func, ServerPlayer *reply_player, bool
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
     QString skill_name = skill->objectName();
+    if(player->hasSkill(skill_name))
+        return;
+
     player->acquireSkill(skill_name);
 
     if(skill->inherits("TriggerSkill")){
@@ -2171,9 +2231,15 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open){
         thread->addTriggerSkill(trigger_skill);
     }
 
-    if(open){
-        QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
-        broadcastInvoke("acquireSkill", acquire_str);
+    if(skill->isVisible()){
+        if(open){
+            QString acquire_str = QString("%1:%2").arg(player->objectName()).arg(skill_name);
+            broadcastInvoke("acquireSkill", acquire_str);
+        }
+
+        foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)){
+            acquireSkill(player, related_skill);
+        }
     }
 }
 
@@ -2334,8 +2400,10 @@ bool Room::askForDiscard(ServerPlayer *target, const QString &reason, int discar
     CardStar card_star = dummy_card;
     QVariant data = QVariant::fromValue(card_star);
     thread->trigger(CardDiscarded, target, data);
+
     data=QString("%1:%2").arg("cardDiscard").arg(dummy_card->toString());
     thread->trigger(ChoiceMade, target, data);
+
     dummy_card->deleteLater();
 
     return true;

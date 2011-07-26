@@ -51,6 +51,9 @@ public:
     void getRoles(const QString &mode, char *roles) const;
     int getRoleIndex() const;
 
+    const CardPattern *getPattern(const QString &name) const;
+    QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
+
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
@@ -90,6 +93,8 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
+    QMap<QString, const CardPattern *> patterns;
+    QMultiMap<QString, QString> related_skills;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;
@@ -111,7 +116,7 @@ template<typename T>
 void qShuffle(QList<T> &list){
     int i, n = list.length();
     for(i=0; i<n; i++){
-        int r = qrand() % n;
+        int r = qrand() % (n - i) + i;
         list.swap(i, r);
     }
 }

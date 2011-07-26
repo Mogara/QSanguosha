@@ -149,6 +149,7 @@ enum TriggerEvent{
     CardResponsed,
     CardDiscarded,
     CardLost,
+    CardLostDone,
 
     CardEffect,
     CardEffected,

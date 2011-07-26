@@ -17,6 +17,7 @@
 #include <QGraphicsRectItem>
 #include <QInputDialog>
 #include <QBitmap>
+#include <QClipboard>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -493,6 +494,8 @@ CardScene::CardScene()
 
     resetPhoto();
 
+    QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
+
     int i;
     for(i=0; i<10; i++){
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
@@ -501,7 +504,11 @@ CardScene::CardScene()
         addItem(item);
 
         item->setPos(94 + i*(115-94), 18);
+
+        magatama_group->addToGroup(item);
     }
+
+    magatama_group->setFlag(QGraphicsItem::ItemIsMovable);
 
     loadConfig();
 
@@ -555,7 +562,8 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
     frame->setPixmap(QPixmap(path));
 
     foreach(QGraphicsPixmapItem *item, magatamas){
-        item->setPixmap(QPixmap(QString("diy/%1-magatama.png").arg(kingdom)));
+        item->setPixmap(QPixmap(QString("diy/%1-magatama.png")
+                                .arg(is_lord ? "god" : kingdom)));
     }
 
     skill_box->setKingdom(kingdom);
@@ -828,6 +836,11 @@ CardEditor::CardEditor(QWidget *parent) :
     connect(reset_photo, SIGNAL(triggered()), card_scene, SLOT(resetPhoto()));
     tool_menu->addAction(reset_photo);
 
+    QAction *copy_photo = new QAction(tr("Copy photo to clipboard"), tool_menu);
+    copy_photo->setShortcut(Qt::CTRL + Qt::Key_C);
+    connect(copy_photo, SIGNAL(triggered()), this, SLOT(copyPhoto()));
+    tool_menu->addAction(copy_photo);
+
     menu_bar->addMenu(tool_menu);
 
     card_scene->setMenu(tool_menu);
@@ -1080,6 +1093,15 @@ void CardEditor::saveImage(){
         QPixmap::grabWidget(card_scene->views().first()).save(filename);
         Config.setValue("CardEditor/ExportPath", QFileInfo(filename).absolutePath());
     }
+}
+
+
+
+void CardEditor::copyPhoto(){
+    card_scene->clearFocus();
+
+    QPixmap pixmap = QPixmap::grabWidget(card_scene->views().first());
+    qApp->clipboard()->setPixmap(pixmap);
 }
 
 void CardEditor::addSkill(){

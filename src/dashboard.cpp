@@ -126,6 +126,11 @@ void Dashboard::setActionState(){
 
 void Dashboard::setFilter(const FilterSkill *filter){
     this->filter = filter;
+
+    if(filter == NULL){
+        foreach(CardItem *card_item, card_items)
+            card_item->filter(NULL);
+    }
 }
 
 const FilterSkill *Dashboard::getFilter() const{
@@ -176,7 +181,20 @@ void Dashboard::setPlayer(const ClientPlayer *player){
 void Dashboard::updateAvatar(){
     const General *general = Self->getAvatarGeneral();
     avatar->setToolTip(general->getSkillDescription());
-    avatar->changePixmap(general->getPixmapPath("big"));
+    if(!avatar->changePixmap(general->getPixmapPath("big"))){
+        QPixmap pixmap(General::BigIconSize);
+        pixmap.fill(Qt::black);
+
+        QPainter painter(&pixmap);
+
+        painter.setPen(Qt::white);
+        painter.setFont(Config.SmallFont);
+        painter.drawText(0, 0, pixmap.width(), pixmap.height(),
+                         Qt::AlignCenter,
+                         Sanguosha->translate(Self->getGeneralName()));
+
+        avatar->setPixmap(pixmap);
+    }
 
     kingdom->setPixmap(QPixmap(Self->getKingdomIcon()));
 
@@ -190,7 +208,21 @@ void Dashboard::updateSmallAvatar(){
     const General *general2 = Self->getGeneral2();
     if(general2){
         small_avatar->setToolTip(general2->getSkillDescription());
-        small_avatar->changePixmap(general2->getPixmapPath("tiny"));
+        bool success = small_avatar->changePixmap(general2->getPixmapPath("tiny"));
+
+        if(!success){
+            QPixmap pixmap(General::TinyIconSize);
+            pixmap.fill(Qt::black);
+
+            QPainter painter(&pixmap);
+
+            painter.setPen(Qt::white);
+            painter.drawText(0, 0, pixmap.width(), pixmap.height(),
+                             Qt::AlignCenter,
+                             Sanguosha->translate(Self->getGeneral2Name()));
+
+            small_avatar->setPixmap(pixmap);
+        }
     }
 
     update();

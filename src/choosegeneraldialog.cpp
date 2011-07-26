@@ -1,6 +1,5 @@
 #include "choosegeneraldialog.h"
 #include "general.h"
-#include "optionbutton.h"
 #include "engine.h"
 #include "client.h"
 #include "settings.h"
@@ -13,6 +12,33 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QCheckBox>
+
+OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *parent)
+    :QToolButton(parent)
+{
+    QPixmap pixmap(icon_path);
+    QIcon icon(pixmap);
+
+    setIcon(icon);
+    setIconSize(pixmap.size());
+
+    if(!caption.isEmpty()){
+        setText(caption);
+        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+        if(caption.length()>= 4){
+            QFont font = Config.SmallFont;
+            font.setPixelSize(Config.SmallFont.pixelSize() - 5);
+            setFont(font);
+        }else
+            setFont(Config.SmallFont);
+    }
+}
+
+void OptionButton::mouseDoubleClickEvent(QMouseEvent *){
+    emit double_clicked();
+}
+
 
 ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidget *parent)
     :QDialog(parent), free_chooser(NULL)

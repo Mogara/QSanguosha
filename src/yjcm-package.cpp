@@ -21,6 +21,8 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         if(effect.slash->isBlack()){
+            player->getRoom()->playSkillEffect(objectName());
+
             LogMessage log;
             log.type = "#SkillNullify";
             log.from = player;
@@ -192,6 +194,8 @@ public:
 
                 room->sendLog(log);
 
+                room->playSkillEffect(objectName());
+
                 return true;
             }
 
@@ -203,6 +207,8 @@ public:
                 log.arg = effect.card->objectName();
 
                 room->sendLog(log);
+
+                room->playSkillEffect(objectName());
 
                 return true;
             }
@@ -291,11 +297,16 @@ public:
                 log.arg = QString::number(recover.recover);
 
                 room->sendLog(log);
+
+                room->playSkillEffect(objectName(), qrand() % 2 + 1);
+
             }
         }else if(event == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if(source && source != player){
+                room->playSkillEffect(objectName(), qrand() % 2 + 3);
+
                 const Card *card = room->askForCard(source, ".H", "@enyuan", false);
                 if(card){
                     room->showCard(source, card->getEffectiveId());
@@ -376,6 +387,8 @@ public:
 
             killer->throwAllEquips();
             killer->throwAllHandCards();
+
+            room->playSkillEffect(objectName());
         }
 
         return false;
@@ -385,20 +398,25 @@ public:
 class Xuanfeng: public TriggerSkill{
 public:
     Xuanfeng():TriggerSkill("xuanfeng"){
-        events << CardLost;
+        events << CardLost << CardLostDone;
     }
 
     virtual QString getDefaultChoice(ServerPlayer *) const{
         return "nothing";
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *lingtong, QVariant &data) const{
-        CardMoveStar move = data.value<CardMoveStar>();
-
-        if(move->from_place == Player::Equip){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *lingtong, QVariant &data) const{
+        if(event == CardLost){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->from_place == Player::Equip)
+                lingtong->tag["InvokeXuanfeng"] = true;
+        }else if(event == CardLostDone && lingtong->tag.value("InvokeXuanfeng", false).toBool()){
+            lingtong->tag.remove("InvokeXuanfeng");
             Room *room = lingtong->getRoom();
 
             QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
+            room->playSkillEffect(objectName());
+
             if(choice == "slash"){
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *target, room->getAlivePlayers()){
@@ -450,6 +468,8 @@ public:
         if(damage.card && damage.card->inherits("Slash") &&
            player->askForSkillInvoke(objectName(), data))
         {
+            player->getRoom()->playSkillEffect(objectName());
+
             int x = qMin(5, damage.to->getHp());
             damage.to->drawCards(x);
             damage.to->turnOver();
@@ -678,6 +698,8 @@ public:
         if(event == Damaged){
             room->setTag("Zhichi", player->objectName());
 
+            room->playSkillEffect(objectName());
+
             LogMessage log;
             log.type = "#ZhichiDamaged";
             log.from = player;
@@ -798,6 +820,8 @@ public:
             if(card->getTypeId() != Card::Basic){
                 room->throwCard(card);
 
+                room->playSkillEffect(objectName());
+
                 RecoverStruct recover;
                 recover.who = wuguotai;
                 room->recover(player, recover);
@@ -870,6 +894,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     caozhi->addSkill(new Jiushi);
     caozhi->addSkill(new JiushiFlip);
 
+    related_skills.insertMulti("jiushi", "#jiushi-flip");
+
     General *yujin = new General(this, "yujin", "wei");
     yujin->addSkill(new Yizhong);
 
@@ -899,6 +925,8 @@ YJCMPackage::YJCMPackage():Package("YJCM"){
     chengong->addSkill(new Zhichi);
     chengong->addSkill(new ZhichiClear);
     chengong->addSkill(new Mingce);
+
+    related_skills.insertMulti("zhichi", "#zhichi-clear");
 
     General *gaoshun = new General(this, "gaoshun", "qun");
     gaoshun->addSkill(new Xianzhen);

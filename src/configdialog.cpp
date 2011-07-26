@@ -32,7 +32,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
-    ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);    
+    ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->fitInViewCheckBox->setChecked(Config.FitInView);
     ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
 
@@ -95,7 +95,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
 
-    QString filename = "backdrop/duanwu.jpg";
+    QString filename = "backdrop/guixin.jpg";
     Config.BackgroundBrush = filename;
     Config.setValue("BackgroundBrush", filename);
 
@@ -110,7 +110,7 @@ void ConfigDialog::saveConfig()
 
     float volume = ui->volumeSlider->value() / 100.0;
     Config.Volume = volume;
-    Config.setValue("Volume", volume);    
+    Config.setValue("Volume", volume);
 
 #ifdef AUDIO_SUPPORT
 #ifdef  Q_OS_WIN32
@@ -146,7 +146,7 @@ void ConfigDialog::saveConfig()
     Config.setValue("Contest/Sender", ui->senderLineEdit->text());
     Config.setValue("Contest/Password", ui->passwordLineEdit->text());
     Config.setValue("Contest/Receiver", ui->receiverLineEdit->text());
-    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());    
+    Config.setValue("Contest/OnlySaveLordRecord", ui->onlySaveLordCheckBox->isChecked());
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

@@ -566,10 +566,13 @@ QString Client::getPlayerName(const QString &str){
     if(rx.exactMatch(str)){
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
-    }else
-        general_name = str;
+        general_name = Sanguosha->translate(general_name);
+        if(ServerInfo.GameMode == "08same")
+            general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
+        return general_name;
 
-    return Sanguosha->translate(general_name);
+    }else
+        return Sanguosha->translate(str);
 }
 
 QString Client::getPattern() const{
@@ -687,9 +690,12 @@ void Client::askForChoice(const QString &ask_str){
     foreach(QString option, options){
         QCommandLinkButton *button = new QCommandLinkButton;
         QString text = QString("%1:%2").arg(skill_name).arg(option);
+        QString translated = Sanguosha->translate(text);
+        if(text == translated)
+            translated = Sanguosha->translate(option);
 
         button->setObjectName(option);
-        button->setText(Sanguosha->translate(text));
+        button->setText(translated);
 
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(button, SIGNAL(clicked()), this, SLOT(selectChoice()));

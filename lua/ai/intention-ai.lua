@@ -62,7 +62,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,to,source)
     if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
     local value=sgs.ai_card_intention.general(to,80+modifier)
     
-    if to:hasSkill("leiji") and (to:getJinkNumber(to)>0) and (to:getHandcardNum()>2) then 
+    if to:hasSkill("leiji") and (SmartAI.getJinkNumber(nil,to)>0) and (to:getHandcardNum()>2) then 
         return -value/1.5
     end
     speakTrigger(card,from,to)

@@ -297,7 +297,7 @@ public:
             }
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(shuangxiong->hasFlag("shuangxiong")){
+            if(judge->reason == "shuangxiong"){
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }
@@ -580,6 +580,8 @@ FirePackage::FirePackage()
     pangtong->addSkill(new Lianhuan);
     pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
+
+    related_skills.insertMulti("niepan", "#@nirvana");
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);

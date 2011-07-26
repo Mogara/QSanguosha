@@ -91,7 +91,7 @@ void Photo::setOrder(int order){
         order_item->setPixmap(pixmap);
     else{
         order_item = new QGraphicsPixmapItem(pixmap, this);
-        order_item->setVisible(false);
+        order_item->setVisible(ServerInfo.GameMode == "08same");
         order_item->moveBy(15, 0);
     }
 }
@@ -262,10 +262,25 @@ void Photo::updateAvatar(){
     if(player){
         const General *general = player->getAvatarGeneral();
         avatar_area->setToolTip(general->getSkillDescription());
-        avatar.load(general->getPixmapPath("small"));
+        bool success = avatar.load(general->getPixmapPath("small"));
         QPixmap kingdom_icon(player->getKingdomIcon());
         kingdom_item->setPixmap(kingdom_icon);
         kingdom_frame.load(player->getKingdomFrame());
+
+        if(!success){
+            QPixmap pixmap(General::SmallIconSize);
+            pixmap.fill(Qt::black);
+            QPainter painter(&pixmap);
+
+            painter.setPen(Qt::white);
+            painter.setFont(Config.SmallFont);
+            painter.drawText(0, 0, pixmap.width(), pixmap.height(),
+                             Qt::AlignCenter,
+                             Sanguosha->translate(player->getGeneralName()));
+
+            avatar = pixmap;
+        }
+
     }else{
         avatar = QPixmap();
         kingdom_frame = QPixmap();
@@ -283,8 +298,22 @@ void Photo::updateAvatar(){
 void Photo::updateSmallAvatar(){
     const General *general2 = player->getGeneral2();
     if(general2){
-        small_avatar.load(general2->getPixmapPath("tiny"));
+        bool success = small_avatar.load(general2->getPixmapPath("tiny"));
         small_avatar_area->setToolTip(general2->getSkillDescription());
+
+        if(!success){
+            QPixmap pixmap(General::TinyIconSize);
+            pixmap.fill(Qt::black);
+
+            QPainter painter(&pixmap);
+
+            painter.setPen(Qt::white);
+            painter.drawText(0, 0, pixmap.width(), pixmap.height(),
+                             Qt::AlignCenter,
+                             Sanguosha->translate(player->getGeneral2Name()));
+
+            small_avatar = pixmap;
+        }
     }
 
     hide_avatar = false;
@@ -616,8 +645,10 @@ void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){
 }
 
 QVariant Photo::itemChange(GraphicsItemChange change, const QVariant &value){
-    if(change == ItemFlagsHaveChanged)
-        order_item->setVisible(flags() & ItemIsSelectable);
+    if(change == ItemFlagsHaveChanged){
+        if(ServerInfo.GameMode != "08same")
+            order_item->setVisible(flags() & ItemIsSelectable);
+    }
 
     return Pixmap::itemChange(change, value);
 }

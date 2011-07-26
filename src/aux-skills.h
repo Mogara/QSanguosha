@@ -21,6 +21,8 @@ private:
     bool include_equip;
 };
 
+class CardPattern;
+
 class ResponseSkill: public OneCardViewAsSkill{
     Q_OBJECT
 
@@ -33,8 +35,7 @@ public:
     virtual const Card *viewAs(CardItem *card_item) const;
 
 private:
-    QSet<QString> nameset;
-    Card::Suit suit;
+    const CardPattern *pattern;
 };
 
 class FreeDiscardSkill: public ViewAsSkill{

@@ -608,7 +608,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     QList<QPointF> positions = getPhotoPositions();
     for(i=0; i<positions.length(); i++){
         Photo *photo = photos.at(i);
-        photo->setOrder(i+1);
+        photo->setOrder(photo->getPlayer()->getSeat());
 
         QPropertyAnimation *translation = new QPropertyAnimation(photo, "pos");
         translation->setEndValue(positions.at(i));
@@ -786,7 +786,19 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_4:
     case Qt::Key_5:
     case Qt::Key_6:
-    case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
+    case Qt::Key_7:
+    case Qt::Key_8:
+    case Qt::Key_9:{
+            int seat = event->key() - Qt::Key_0 + 1;
+            int i;
+            for(i=0; i<photos.length(); i++){
+                if(photos.at(i)->getPlayer()->getSeat() == seat){
+                    selectTarget(i, control_is_down);
+                    break;
+                }
+            }
+            break;
+        }
 
     case Qt::Key_D:{
             // for debugging use
@@ -1199,13 +1211,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
                 break;
         }
 
-        case Skill::Compulsory:{
-                button = new QPushButton();
-                break;
-            }
-
-        default:
-            break;
+        case Skill::Wake:
+        case Skill::Compulsory: button = new QPushButton(); break;
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
@@ -2587,6 +2594,10 @@ void RoomScene::detachSkill(const QString &skill_name){
             return;
         }
     }
+
+    if(dashboard->getFilter() == Sanguosha->getSkill(skill_name)){
+        dashboard->setFilter(NULL);
+    }
 }
 
 void RoomScene::viewDistance(){
@@ -3062,6 +3073,21 @@ void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args
     connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
 }
 
+void RoomScene::doHuashen(const QString &name, const QStringList &args){
+    QVariantList huashen_list = Self->tag["Huashens"].toList();
+    foreach(QString arg, args){
+        huashen_list << arg;
+        CardItem *item = new CardItem(arg);
+        item->scaleSmoothly(0.5);
+
+        addItem(item);
+        item->setHomePos(avatar->scenePos());
+        item->goBack(true);
+    }
+
+    Self->tag["Huashens"] = huashen_list;
+}
+
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
@@ -3074,6 +3100,8 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["typhoon"] = &RoomScene::doAppearingAnimation;
 
         map["lightbox"] = &RoomScene::doLightboxAnimation;
+
+        map["huashen"] = &RoomScene::doHuashen;
     }
 
     AnimationFunc func = map.value(name, NULL);

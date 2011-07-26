@@ -187,6 +187,7 @@ private slots:
     void setCardFrame();
     void import();
     void saveImage();
+    void copyPhoto();
     void updateButtonText(const QFont &font);
     void saveAvatar(const QRectF &rect);
     void addSkill();

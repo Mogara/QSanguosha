@@ -879,6 +879,84 @@ public:
     }
 };
 
+class Longpo: public OneCardViewAsSkill{
+public:
+    Longpo():OneCardViewAsSkill("longpo"){
+        slash = new Slash(Card::NoSuit, 0);
+        jink = new Jink(Card::NoSuit, 0);
+        peach = new Peach(Card::NoSuit, 0);
+        jink = new Jink(Card::NoSuit, 0);
+    }
+
+    const Card *getCard(const Card *card) const{
+        switch(card->getSuit()){
+        case Card::Spade: return analeptic;
+        case Card::Heart: return peach;
+        case Card::Club: return slash;
+        case Card::Diamond: return jink;
+        default:
+            return NULL;
+        }
+
+        return NULL;
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return getCard(to_select->getFilteredCard())->isAvailable(Self);
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        const Card *card = card_item->getFilteredCard();
+        Card::Suit suit = card->getSuit();
+        int number = card->getNumber();
+        card = getCard(card);
+        QObject *card_obj = card->metaObject()->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+
+        Card *c = qobject_cast<Card *>(card_obj);
+        c->setSkillName("longpo");
+        return c;
+    }
+
+private:
+    const Card *slash;
+    const Card *jink;
+    const Card *peach;
+    const Card *analeptic;
+};
+
+class Longnu: public ProhibitSkill{
+public:
+    Longnu():ProhibitSkill("longnu"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
+        if(card->getTypeId() == Card::Skill)
+            return false;
+
+        return from->getHp() > to->getHp() || from->getHandcardNum() > to->getHp();
+    }
+};
+
+class Yinren: public TriggerSkill{
+public:
+    Yinren():TriggerSkill("yinren"){
+        events << Damaged << CardLost;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == CardLost){
+            if(player->getPhase() == Player::NotActive)
+                player->gainMark("@bear");
+        }else if(event == Damaged){
+            DamageStruct damage = data.value<DamageStruct>();
+            player->gainMark("@bear", damage.damage);
+        }
+
+        return false;
+    }
+};
+
 GodPackage::GodPackage()
     :Package("god")
 {
@@ -886,6 +964,8 @@ GodPackage::GodPackage()
     shenguanyu->addSkill(new Wushen);
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
+
+    related_skills.insertMulti("wuhun", "#wuhun");
 
     General *shenlumeng = new General(this, "shenlumeng", "god", 3);
     shenlumeng->addSkill(new Shelie);
@@ -906,7 +986,11 @@ GodPackage::GodPackage()
     shenzhugeliang->addSkill(new Kuangfeng);
     shenzhugeliang->addSkill(new Dawu);
 
-    General *shencaocao = new General(this, "shencaocao$", "god", 3);
+    related_skills.insertMulti("qixing", "#qixing");
+    related_skills.insertMulti("qixing", "#qixing-ask");
+    related_skills.insertMulti("qixing", "#qixing-clear");
+
+    General *shencaocao = new General(this, "shencaocao", "god", 3);
     shencaocao->addSkill(new Guixin);
     shencaocao->addSkill(new Feiying);
 
@@ -916,6 +1000,18 @@ GodPackage::GodPackage()
     shenlubu->addSkill(new Wumou);
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);
+
+    related_skills.insertMulti("kuangbao", "#@wrath");
+
+    /*
+    General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
+    shenzhaoyun->addSkill(new Longpo);
+    shenzhaoyun->addSkill(new Longnu);
+
+    General *shensimayi = new General(this, "shensimayi", "god", 4);
+    shensimayi->addSkill(new Yinren);
+
+    */
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();

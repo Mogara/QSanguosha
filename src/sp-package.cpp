@@ -4,6 +4,7 @@
 #include "standard-skillcards.h"
 #include "carditem.h"
 #include "engine.h"
+#include "standard.h"
 
 class Yongsi: public TriggerSkill{
 public:
@@ -130,7 +131,13 @@ TaichenCard::TaichenCard(){
 }
 
 bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && Self->inMyAttackRange(to_select) && !to_select->isAllNude();
+    if(!targets.isEmpty() || to_select->isAllNude())
+        return false;
+
+    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
+        return Self->distanceTo(to_select) == 1;
+    else
+        return Self->inMyAttackRange(to_select);
 }
 
 void TaichenCard::onEffect(const CardEffectStruct &effect) const{

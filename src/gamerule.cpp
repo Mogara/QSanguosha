@@ -727,6 +727,11 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             }else
                 player->drawCards(player->getSeat() + 1, false);
 
+            if(player->getGeneralName() == "zhangchunhua"){
+                if(qrand() % 3 == 0)
+                    room->killPlayer(player);
+            }
+
             return false;
         }
 
@@ -835,7 +840,7 @@ void HulaoPassThread::run(){
     foreach(const General *general, generals){
         names << general->objectName();
     }
-    names << "xiaoqiao" << "yuji";
+    names << "xiaoqiao";
     names.removeOne("wuxingzhuge");
     names.removeOne("zhibasunquan");
 

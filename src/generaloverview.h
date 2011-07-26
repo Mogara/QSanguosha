@@ -19,6 +19,7 @@ class GeneralOverview : public QDialog {
 public:
     GeneralOverview(QWidget *parent = 0);
     ~GeneralOverview();
+    void fillGenerals(const QList<const General *> &generals);
 
 private:
     Ui::GeneralOverview *ui;
