@@ -388,7 +388,11 @@ public:
             killer->throwAllEquips();
             killer->throwAllHandCards();
 
-            room->playSkillEffect(objectName());
+            QString killer_name = killer->getGeneralName();
+            if(killer_name == "zhugeliang" || killer_name == "wolong" || killer_name == "shenzhugeliang")
+                room->playSkillEffect(objectName(), 1);
+            else
+                room->playSkillEffect(objectName(), 2);
         }
 
         return false;
