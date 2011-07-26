@@ -938,20 +938,223 @@ public:
     }
 };
 
-class Yinren: public TriggerSkill{
+class Renjie: public TriggerSkill{
 public:
-    Yinren():TriggerSkill("yinren"){
-        events << Damaged << CardLost;
+    Renjie():TriggerSkill("renjie"){
+        events << DamageDone << CardDiscarded;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardLost){
-            if(player->getPhase() == Player::NotActive)
-                player->gainMark("@bear");
-        }else if(event == Damaged){
+        if(event == CardDiscarded){
+            if(player->getPhase() == Player::Discard){
+                CardStar card = data.value<CardStar>();
+                int n = card->subcardsLength();
+                if(n > 0)
+                    player->gainMark("@bear", n);
+            }
+        }else if(event == DamageDone){
             DamageStruct damage = data.value<DamageStruct>();
             player->gainMark("@bear", damage.damage);
         }
+
+        return false;
+    }
+};
+
+class LianpoCount: public TriggerSkill{
+public:
+    LianpoCount():TriggerSkill("#lianpo-count"){
+        events << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        DamageStar damage = data.value<DamageStar>();
+        ServerPlayer *killer = damage ? damage->from : NULL;
+
+        if(killer && killer->hasSkill("lianpo"))
+            killer->addMark("lianpo");
+
+        return false;
+    }
+};
+
+class Baiyin: public PhaseChangeSkill{
+public:
+    Baiyin():PhaseChangeSkill("baiyin"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("baiyin") == 0
+                && target->getMark("@bear") >= 4;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shensimayi) const{
+        Room *room = shensimayi->getRoom();
+
+        LogMessage log;
+        log.type = "#BaiyinWake";
+        log.from = shensimayi;
+        log.arg = QString::number(shensimayi->getMark("@bear"));
+        room->sendLog(log);
+
+        room->loseMaxHp(shensimayi);
+        room->acquireSkill(shensimayi, "jilve");
+
+        shensimayi->setMark("baiyin", 1);
+
+        return false;
+    }
+};
+
+JilveCard::JilveCard(){
+    target_fixed = true;
+}
+
+void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *shensimayi = card_use.from;
+
+    QStringList choices;
+    if(!shensimayi->hasUsed("ZhihengCard"))
+        choices << "zhiheng";
+
+    if(!shensimayi->tag.value("JilveWansha", false).toBool())
+        choices << "wansha";
+
+    if(choices.isEmpty())
+        return;
+
+    QString choice;
+    if(choices.length() == 1)
+        choice = choices.first();
+    else
+        choice = room->askForChoice(shensimayi, "jilve", "zhiheng+wansha");
+
+    if(choice == "wansha"){
+        room->acquireSkill(shensimayi, "wansha");
+        shensimayi->tag["JilveWansha"] = true;
+    }else
+        room->askForUseCard(shensimayi, "@zhiheng", "@jilve-zhiheng");
+}
+
+// wansha & zhiheng
+class JilveViewAsSkill: public ZeroCardViewAsSkill{
+public:
+    JilveViewAsSkill():ZeroCardViewAsSkill(""){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->usedTimes("JilveCard") < 2 && player->getMark("@bear") > 0;
+    }
+
+    virtual const Card *viewAs() const{
+        return new JilveCard;
+    }
+};
+
+class Jilve: public TriggerSkill{
+public:
+    Jilve():TriggerSkill("jilve"){
+        events << CardUsed << CardResponsed // jizhi
+                << AskForRetrial // guicai
+                << Damaged; // fangzhu
+
+        view_as_skill = new JilveViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target)
+                && target->getMark("@bear") > 0;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == CardUsed || event == CardResponsed){
+            CardStar card = NULL;
+            if(event == CardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardStar>();
+
+            if(card->isNDTrick() && player->askForSkillInvoke("jilve", data)){
+                player->loseMark("@bear");
+                player->drawCards(1);
+            }
+        }else if(event == AskForRetrial){
+            const TriggerSkill *guicai = Sanguosha->getTriggerSkill("guicai");
+            if(guicai && !player->isKongcheng() && player->askForSkillInvoke("jilve", data)){
+                player->loseMark("@bear");
+                guicai->trigger(event, player, data);
+            }
+        }else if(event == Damaged){
+            const TriggerSkill *fangzhu = Sanguosha->getTriggerSkill("fangzhu");
+            if(fangzhu){
+                player->loseMark("@bear");
+                fangzhu->trigger(event, player, data);
+            }
+        }
+
+        return false;
+    }
+};
+
+class JilveClear: public PhaseChangeSkill{
+public:
+    JilveClear():PhaseChangeSkill("#jilve-clear"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::NotActive
+                && target->tag.value("JilveWansha").toBool();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        target->getRoom()->detachSkillFromPlayer(target, "wansha");
+        target->tag.remove("JilveWansha");
+        return false;
+    }
+};
+
+class Lianpo: public PhaseChangeSkill{
+public:
+    Lianpo():PhaseChangeSkill("lianpo"){
+    }
+
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::NotActive
+                && target->getMark("lianpo") > 0;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *shensimayi) const{
+        int n = shensimayi->getMark("lianpo");
+        shensimayi->setMark("lianpo", 0);
+
+        if(!shensimayi->askForSkillInvoke("lianpo"))
+            return false;
+
+        Room *room = shensimayi->getRoom();
+
+        LogMessage log;
+        log.type = "#LianpoCanInvoke";
+        log.from = shensimayi;
+        log.arg = QString::number(n);
+        room->sendLog(log);
+
+        room->getThread()->trigger(TurnStart, shensimayi);
 
         return false;
     }
@@ -1003,15 +1206,18 @@ GodPackage::GodPackage()
 
     related_skills.insertMulti("kuangbao", "#@wrath");
 
-    /*
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
     shenzhaoyun->addSkill(new Longpo);
     shenzhaoyun->addSkill(new Longnu);
 
     General *shensimayi = new General(this, "shensimayi", "god", 4);
-    shensimayi->addSkill(new Yinren);
+    shensimayi->addSkill(new Renjie);
+    shensimayi->addSkill(new Baiyin);
+    shensimayi->addSkill(new Lianpo);
+    shensimayi->addSkill(new LianpoCount);
 
-    */
+    related_skills.insertMulti("jilve", "#jilve-clear");
+    related_skills.insertMulti("lianpo", "#lianpo-count");
 
     addMetaObject<GongxinCard>();
     addMetaObject<GreatYeyanCard>();
@@ -1023,6 +1229,9 @@ GodPackage::GodPackage()
     addMetaObject<KuangfengCard>();
     addMetaObject<DawuCard>();
     addMetaObject<WuqianCard>();
+    addMetaObject<JilveCard>();
+
+    skills << new Jilve << new JilveClear;
 }
 
 ADD_PACKAGE(God)

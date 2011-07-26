@@ -716,7 +716,7 @@ public:
         }else if(event == CardResponsed)
             card = data.value<CardStar>();
 
-        if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
+        if(card->isNDTrick()){
             Room *room = yueying->getRoom();
             if(room->askForSkillInvoke(yueying, objectName())){
                 room->playSkillEffect(objectName());

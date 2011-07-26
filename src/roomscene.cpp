@@ -1779,15 +1779,9 @@ void RoomScene::updateStatus(Client::Status status){
             QRegExp rx("@@?(\\w+)!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
-
-                foreach(QAbstractButton *button, skill_buttons){
-                    if(button->objectName() == skill_name){
-                        const ViewAsSkill *skill = button2skill.value(button);
-                        if(skill)
-                            dashboard->startPending(skill);
-                        break;
-                    }
-                }
+                const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
+                if(skill)
+                    dashboard->startPending(skill);
             }else{
                 response_skill->setPattern(pattern);
                 dashboard->startPending(response_skill);
