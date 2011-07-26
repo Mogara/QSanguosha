@@ -12,7 +12,7 @@ zhugeliang 136 5 123 15
 zhangfei 21 4 59 15
 zhaoyun 122 10 57 10
 machao 4 6 124 15
-huangyueyin 88 12 81 16
+huangyueying 88 12 81 16
 
 sunquan 97 8 53 15
 ganning 114 5 109 10

@@ -96,7 +96,7 @@ void ChuanqiDialog::popup(){
        else if(button->objectName()=="1")
         {
             int req=ChuanqiCard::thresh_map.value(Self->getGeneralName());
-            int cur=Self->getMark("@Chuanqi");
+            int cur=Self->getMark("@chuanqi");
             button->setEnabled((cur>=req) && (req>=0));
         }
         else button->setEnabled(false);
@@ -184,7 +184,7 @@ void ChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
         room->sendLog(log);
         return;
     }
-        room->setPlayerMark(source,"@Chuanqi",0);
+        room->setPlayerMark(source,"@chuanqi",0);
         room->obtainCard(source,code);
 
         const Card* c=Sanguosha->getCard(this->subcards.first());
@@ -250,7 +250,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *hero, QVariant &data) const{
         if(hero->getPhase() == Player::Start){
-                        hero->gainMark("@Chuanqi",hero->getHandcardNum());
+                        hero->gainMark("@chuanqi",hero->getHandcardNum());
                         return false;
         }
         return false;
