@@ -48,6 +48,7 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
     Scenario *NewZombieScenario();
+    Scenario *NewLegendScenario();
     Scenario *NewImpasseScenario();
 }
 
@@ -84,6 +85,7 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewHongyanScenario());
     addScenario(NewZombieScenario());
+    addScenario(NewLegendScenario());
     addScenario(NewImpasseScenario());
 
     // available game modes
