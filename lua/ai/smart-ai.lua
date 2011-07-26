@@ -955,7 +955,8 @@ end
 
 function SmartAI:useBasicCard(card, use,no_distance)
 	if card:getSkillName()=="wushen" then no_distance=true end
-	if (self.player:getHandcardNum()==1) and self.player:getWeapon() and self.player:getWeapon():inherits("Halberd") then
+	if (self.player:getHandcardNum()==1) and self.player:getWeapon() and self.player:getWeapon():inherits("Halberd")
+	or self.player:hasSkill("shenji") and not self.player:getWeapon() then
 		self.slash_targets=3
 	end	
 	
@@ -966,7 +967,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 			slash_prohibit=self:slashProhibit(card,friend)
 			if (self.player:hasSkill("pojun") and friend:getHp() >3 and self:getJinkNumber(friend) == 0) 
 			or (self.player:hasSkill("wushuang") and friend:hasSkill("leiji") and self:getJinkNumber(friend) > 1 and self.player:getHandcardNum() > 2 and #self.enemies > 0)
-			or (friend:hasSkill("leiji") and self:getJinkNumber(friend) > 0)		--zhangjiao
+			or (friend:hasSkill("leiji") and self:getJinkNumber(friend) > 0)
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp()>=1 and self:getJinkNumber(friend)==0)
 			then
 				if not slash_prohibit then
