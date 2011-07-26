@@ -2824,5 +2824,6 @@ dofile "lua/ai/fire-skill-ai.lua"
 dofile "lua/ai/yjcm-skill-ai.lua"
 
 dofile "lua/ai/fancheng-ai.lua"
+dofile "lua/ai/hulaoguan-ai.lua"
 
 dofile "lua/ai/guanxing-ai.lua"
