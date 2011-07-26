@@ -4,7 +4,7 @@
 #include "nullificationdialog.h"
 #include "playercarddialog.h"
 #include "standard.h"
-#include "optionbutton.h"
+#include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
 
