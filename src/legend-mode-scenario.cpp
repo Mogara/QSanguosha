@@ -97,8 +97,14 @@ void ChuanqiDialog::popup(){
         {
             int req=ChuanqiCard::thresh_map.value(Self->getGeneralName());
             int cur=Self->getMark("@chuanqi");
-            button->setEnabled((cur>=req) && (req>=0));
+            button->setEnabled((cur>=req) && (req>0));
         }
+        else if(button->objectName()=="2")
+         {
+             int req=ArcChuanqiCard::thresh_map.value(Self->getGeneralName());
+             int cur=Self->getMark("@chuanqi");
+             button->setEnabled((cur>=req) && (req>0));
+         }
         else button->setEnabled(false);
     }
     exec();
@@ -180,7 +186,7 @@ void ChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     {
         LogMessage log;
         log.type = "#ChuanqiUnavailable";
-        log.arg = ChuanqiCard::card_map.value(source->getGeneralName());
+        log.arg = Sanguosha->getCard(ChuanqiCard::card_map.value(source->getGeneralName()))->objectName();
         room->sendLog(log);
         return;
     }
@@ -270,6 +276,7 @@ LegendScenario::LegendScenario()
     skills<< new Chuanqi;
 
     addMetaObject<ChuanqiCard>();
+    addMetaObject<ArcChuanqiCard>();
 }
 
 ADD_SCENARIO(Legend)
