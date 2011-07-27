@@ -371,6 +371,18 @@ bool ServerPlayer::hasNullification() const{
                     return true;
             }
         }
+    }else if(hasSkill("longhun")){
+        int n = qMax(1, getHp());
+        int count = 0;
+        foreach(const Card *card, handcards + getEquips()){
+            if(card->objectName() == "nullification")
+                return true;
+
+            if(card->getSuit() == Card::Spade)
+                count ++;
+        }
+
+        return count >= n;
     }else{
         foreach(const Card *card, handcards){
             if(card->objectName() == "nullification")
