@@ -1107,19 +1107,19 @@ public:
 class Juejing: public TriggerSkill{
 public:
     Juejing():TriggerSkill("juejing"){
-        events << PhaseChange;
+        events << PhaseChange << GameStart;
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
-        if(player->getPhase() == Player::Draw){
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &) const{
+        if(event == PhaseChange && player->getPhase() == Player::Draw){
             QVariant n = 2 + player->getLostHp();
             player->getRoom()->getThread()->trigger(DrawNCards, player, n);
             player->drawCards(n.toInt());
 
             return true;
         }
-        if(player->getPhase() == Player::Discard)
+        if(event == GameStart)
             player->setXueyi(2);
 
         return false;
