@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "carditem.h"
+#include "choosegeneraldialog.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -70,8 +71,8 @@ ChuanqiDialog *ChuanqiDialog::GetInstance(){
 
 ChuanqiDialog::ChuanqiDialog()
 {
-    setWindowTitle(tr("Chuanqi"));
-
+    setWindowTitle(Sanguosha->translate("ChuanqiSelect"));
+    //setStyleSheet("background-image: url(./image/system/state.png)");
     group = new QButtonGroup(this);
 
     QHBoxLayout *layout = new QHBoxLayout;
@@ -121,7 +122,8 @@ QGroupBox *ChuanqiDialog::createSelection(int code, int thresh,int id){
 
     QString name="..";
     if(code>=0)name=Sanguosha->getCard(code)->objectName();
-    box->setTitle(QString("%1").arg(thresh));
+    QString caption=Sanguosha->translate("Chuanqi mark cost");
+    box->setTitle(QString("%1:%2").arg(caption).arg(thresh));
 
     QVBoxLayout *layout = new QVBoxLayout;
 
@@ -135,11 +137,15 @@ QGroupBox *ChuanqiDialog::createSelection(int code, int thresh,int id){
 
 QAbstractButton *ChuanqiDialog::createButton(int code,int id){
     QString name;
-    if(code<0)name=Sanguosha->translate("Cancel");
-    else name=Sanguosha->translate(Sanguosha->getCard(code)->objectName());
-    QCommandLinkButton *button = new QCommandLinkButton(name);
+    //if(code<0)name=Sanguosha->translate("Cancel");
+    const Card* c=Sanguosha->getCard(code);
+    name=Sanguosha->translate(c->objectName());
+    QString suit=Sanguosha->translate(c->getSuitString());
+    QString caption=QString("%1 %2").arg(suit).arg(c->getNumberString());
+    OptionButton *button = new OptionButton(Sanguosha->getCard(code)->getPixmapPath(),caption);
     button->setObjectName(QString("%1").arg(id));
     button->setToolTip(name);
+
 
     group->addButton(button);
 
@@ -232,7 +238,9 @@ void ArcChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPla
         room->sendLog(log);
         return;
     }
-        room->setPlayerMark(source,"@chuanqi",0);
+        int marks=source->getMark("@chuanqi");
+        int cost= thresh_map.value(source->getGeneralName());
+        room->setPlayerMark(source,"@chuanqi",marks-cost);
         room->obtainCard(source,code);
 
         const Card* c=Sanguosha->getCard(this->subcards.first());
