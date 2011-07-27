@@ -415,8 +415,7 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    int longhun = hasSkill("longhun") ? 2 : 0;
-    return qMax(hp,0) + xueyi + extra + longhun;
+    return qMax(hp,0) + xueyi + extra;
 }
 
 int Player::getXueyi() const{
@@ -445,8 +444,12 @@ QString Player::getKingdomFrame() const{
     return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
-void Player::setXueyi(int xueyi){
-    this->xueyi = xueyi;
+void Player::setXueyi(int xueyi, bool superimpose){
+    if(superimpose)
+        this->xueyi += xueyi;
+    else{
+        this->xueyi = xueyi;
+    }
 }
 
 bool Player::isKongcheng() const{

@@ -552,7 +552,7 @@ public:
             Room *room = yuanshao->getRoom();
             int n = room->getLieges("qun", yuanshao).length();
             int xueyi = n * 2;
-            yuanshao->setXueyi(xueyi);
+            yuanshao->setXueyi(xueyi, false);
         }
 
         return false;
