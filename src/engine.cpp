@@ -665,9 +665,15 @@ const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
 
 const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if(skill)
+    if(skill == NULL)
+        return NULL;
+
+    if(skill->inherits("ViewAsSkill"))
         return qobject_cast<const ViewAsSkill *>(skill);
-    else
+    else if(skill->inherits("TriggerSkill")){
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        return trigger_skill->getViewAsSkill();
+    }else
         return NULL;
 }
 

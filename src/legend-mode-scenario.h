@@ -40,6 +40,7 @@ class ArcChuanqiCard: public ChuanqiCard{
 public:
     Q_INVOKABLE ArcChuanqiCard();
 
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
     static QMap<QString,int>card_map;
     static QMap<QString,int>thresh_map;
 };

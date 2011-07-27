@@ -97,8 +97,14 @@ void ChuanqiDialog::popup(){
         {
             int req=ChuanqiCard::thresh_map.value(Self->getGeneralName());
             int cur=Self->getMark("@chuanqi");
-            button->setEnabled((cur>=req) && (req>=0));
+            button->setEnabled((cur>=req) && (req>0));
         }
+        else if(button->objectName()=="2")
+         {
+             int req=ArcChuanqiCard::thresh_map.value(Self->getGeneralName());
+             int cur=Self->getMark("@chuanqi");
+             button->setEnabled((cur>=req) && (req>0));
+         }
         else button->setEnabled(false);
     }
     exec();
@@ -180,11 +186,13 @@ void ChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     {
         LogMessage log;
         log.type = "#ChuanqiUnavailable";
-        log.arg = ChuanqiCard::card_map.value(source->getGeneralName());
+        log.arg = Sanguosha->getCard(card_map.value(source->getGeneralName()))->objectName();
         room->sendLog(log);
         return;
     }
-        room->setPlayerMark(source,"@chuanqi",0);
+        int marks=source->getMark("@chuanqi");
+        int cost= thresh_map.value(source->getGeneralName());
+        room->setPlayerMark(source,"@chuanqi",marks-cost);
         room->obtainCard(source,code);
 
         const Card* c=Sanguosha->getCard(this->subcards.first());
@@ -211,6 +219,36 @@ ArcChuanqiCard::ArcChuanqiCard(){
     target_fixed = true;
     will_throw=false;
     if(card_map.size()<1)loadChuanqiConfig();
+}
+
+void ArcChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+
+    int code=card_map.value(source->getGeneralName());
+    if(!(room->getCardPlace(code)==Player::DiscardedPile))
+    {
+        LogMessage log;
+        log.type = "#ChuanqiUnavailable";
+        log.arg = Sanguosha->getCard(card_map.value(source->getGeneralName()))->objectName();
+        room->sendLog(log);
+        return;
+    }
+        room->setPlayerMark(source,"@chuanqi",0);
+        room->obtainCard(source,code);
+
+        const Card* c=Sanguosha->getCard(this->subcards.first());
+        int suit=c->getSuit();
+        QString kingdom=source->getKingdom();
+
+        static QMap<QString,int> amap;
+        if(amap.isEmpty()){
+            amap.insert("wu",Card::Diamond);
+            amap.insert("shu",Card::Heart);
+            amap.insert("wei",Card::Spade);
+            amap.insert("qun",Card::Club);
+        }
+
+        if(amap.value(kingdom)!=suit)room->throwCard(this);
+        else room->showCard(source,this->subcards.first());
 }
 
 class ChuanqiViewAs: public OneCardViewAsSkill{
@@ -270,6 +308,7 @@ LegendScenario::LegendScenario()
     skills<< new Chuanqi;
 
     addMetaObject<ChuanqiCard>();
+    addMetaObject<ArcChuanqiCard>();
 }
 
 ADD_SCENARIO(Legend)

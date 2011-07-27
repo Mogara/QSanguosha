@@ -24,7 +24,7 @@ daqiao 44 10 160 15
 zhouyu 146 5 159 3
 
 huatuo 71 10 160 15
-lubu 68 10 61 10
+lubu 68 5 61 5
 diaochan 96 10 101 15
 
 xiahouyuan 62 10 83 20

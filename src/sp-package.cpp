@@ -223,6 +223,40 @@ public:
     }
 };
 
+class Danji: public PhaseChangeSkill{
+public:
+    Danji():PhaseChangeSkill("danji"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("danji") == 0
+                && target->getHandcardNum() > target->getHp();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *guanyu) const{
+        Room *room = guanyu->getRoom();
+        ServerPlayer *the_lord = room->getLord();
+        if(the_lord && the_lord->getGeneralName() == "caocao"){
+            LogMessage log;
+            log.type = "#DanjiWake";
+            log.from = guanyu;
+            log.arg = QString::number(guanyu->getHandcardNum());
+            log.arg2 = QString::number(guanyu->getHp());
+            room->sendLog(log);
+
+            guanyu->setMark("danji", 1);
+
+            room->loseMaxHp(guanyu);
+            room->acquireSkill(guanyu, "mashu");
+        }
+
+        return false;
+    }
+};
+
 SPPackage::SPPackage()
     :Package("sp")
 {
@@ -255,6 +289,10 @@ SPPackage::SPPackage()
     shenlvbu2->addSkill(new Xiuluo);
     shenlvbu2->addSkill(new Shenwei);
     shenlvbu2->addSkill(new Skill("shenji"));
+
+    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
+    sp_guanyu->addSkill("wusheng");
+    sp_guanyu->addSkill(new Danji);
 
     addMetaObject<TaichenCard>();
 }
