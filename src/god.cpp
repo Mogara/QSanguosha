@@ -1037,6 +1037,8 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
     else
         choice = room->askForChoice(shensimayi, "jilve", "zhiheng+wansha");
 
+    shensimayi->loseMark("@bear");
+
     if(choice == "wansha"){
         room->acquireSkill(shensimayi, "wansha");
         shensimayi->tag["JilveWansha"] = true;
@@ -1095,7 +1097,7 @@ public:
             }
         }else if(event == Damaged){
             const TriggerSkill *fangzhu = Sanguosha->getTriggerSkill("fangzhu");
-            if(fangzhu){
+            if(fangzhu && player->askForSkillInvoke("jilve", data)){
                 player->loseMark("@bear");
                 fangzhu->trigger(event, player, data);
             }
