@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "carditem.h"
 #include "settings.h"
+#include "maneuvering.h"
 
 GongxinCard::GongxinCard(){
     once = true;
@@ -879,65 +880,6 @@ public:
     }
 };
 
-class Longpo: public OneCardViewAsSkill{
-public:
-    Longpo():OneCardViewAsSkill("longpo"){
-        slash = new Slash(Card::NoSuit, 0);
-        jink = new Jink(Card::NoSuit, 0);
-        peach = new Peach(Card::NoSuit, 0);
-        jink = new Jink(Card::NoSuit, 0);
-    }
-
-    const Card *getCard(const Card *card) const{
-        switch(card->getSuit()){
-        case Card::Spade: return analeptic;
-        case Card::Heart: return peach;
-        case Card::Club: return slash;
-        case Card::Diamond: return jink;
-        default:
-            return NULL;
-        }
-
-        return NULL;
-    }
-
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return getCard(to_select->getFilteredCard())->isAvailable(Self);
-    }
-
-    virtual const Card *viewAs(CardItem *card_item) const{
-        const Card *card = card_item->getFilteredCard();
-        Card::Suit suit = card->getSuit();
-        int number = card->getNumber();
-        card = getCard(card);
-        QObject *card_obj = card->metaObject()->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-
-        Card *c = qobject_cast<Card *>(card_obj);
-        c->setSkillName("longpo");
-        return c;
-    }
-
-private:
-    const Card *slash;
-    const Card *jink;
-    const Card *peach;
-    const Card *analeptic;
-};
-
-class Longnu: public ProhibitSkill{
-public:
-    Longnu():ProhibitSkill("longnu"){
-
-    }
-
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const{
-        if(card->getTypeId() == Card::Skill)
-            return false;
-
-        return from->getHp() > to->getHp() || from->getHandcardNum() > to->getHp();
-    }
-};
-
 class Renjie: public TriggerSkill{
 public:
     Renjie():TriggerSkill("renjie"){
@@ -1037,6 +979,8 @@ void JilveCard::onUse(Room *room, const CardUseStruct &card_use) const{
     else
         choice = room->askForChoice(shensimayi, "jilve", "zhiheng+wansha");
 
+    shensimayi->loseMark("@bear");
+
     if(choice == "wansha"){
         room->acquireSkill(shensimayi, "wansha");
         shensimayi->tag["JilveWansha"] = true;
@@ -1095,7 +1039,7 @@ public:
             }
         }else if(event == Damaged){
             const TriggerSkill *fangzhu = Sanguosha->getTriggerSkill("fangzhu");
-            if(fangzhu){
+            if(fangzhu && player->askForSkillInvoke("jilve", data)){
                 player->loseMark("@bear");
                 fangzhu->trigger(event, player, data);
             }
@@ -1160,6 +1104,112 @@ public:
     }
 };
 
+class Juejing: public TriggerSkill{
+public:
+    Juejing():TriggerSkill("juejing"){
+        events << PhaseChange;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+        if(player->getPhase() == Player::Draw){
+            QVariant n = 2 + player->getLostHp();
+            player->getRoom()->getThread()->trigger(DrawNCards, player, n);
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
+class Longhun: public ViewAsSkill{
+public:
+    Longhun():ViewAsSkill("longhun"){
+
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash"
+                || pattern == "jink"
+                || pattern.contains("peach")
+                || pattern == "nullification";
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        const Card *card = to_select->getFilteredCard();
+        int n = qMax(1, Self->getHp());
+
+        if(selected.length() >= n)
+            return false;
+
+        switch(ClientInstance->getStatus()){
+        case Client::Playing:{
+                // diamond as fire slash
+                return card->getSuit() == Card::Diamond;
+            }
+
+        case Client::Responsing:{
+                QString pattern = ClientInstance->getPattern();
+                if(pattern == "jink")
+                    return card->getSuit() == Card::Club;
+                else if(pattern == "nullification")
+                    return card->getSuit() == Card::Spade;
+                else if(pattern == "peach" || pattern == "peach+analeptic")
+                    return card->getSuit() == Card::Heart;
+            }
+
+        default:
+            break;
+        }
+
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        int n = qMax(1, Self->getHp());
+
+        if(cards.length() != n)
+            return NULL;
+
+        const Card *card = cards.first()->getFilteredCard();
+        Card *new_card = NULL;
+
+        Card::Suit suit = card->getSuit();
+        int number = card->getNumber();
+        switch(card->getSuit()){
+        case Card::Spade:{
+                new_card = new Nullification(suit, number);
+                new_card->setSkillName(objectName());
+                break;
+            }
+
+        case Card::Heart:{
+                new_card = new Peach(suit, number);
+                new_card->setSkillName(objectName());
+                break;
+            }
+
+        case Card::Club:{
+                new_card = new Jink(suit, number);
+                new_card->setSkillName(objectName());
+                break;
+            }
+
+        case Card::Diamond:{
+                new_card = new FireSlash(suit, number);
+                new_card->setSkillName(objectName());
+                break;
+            }
+        default:
+            break;
+        }
+
+        return new_card;
+    }
+};
+
+
 GodPackage::GodPackage()
     :Package("god")
 {
@@ -1207,8 +1257,8 @@ GodPackage::GodPackage()
     related_skills.insertMulti("kuangbao", "#@wrath");
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
-    shenzhaoyun->addSkill(new Longpo);
-    shenzhaoyun->addSkill(new Longnu);
+    shenzhaoyun->addSkill(new Juejing);
+    shenzhaoyun->addSkill(new Longhun);
 
     General *shensimayi = new General(this, "shensimayi", "god", 4);
     shensimayi->addSkill(new Renjie);
