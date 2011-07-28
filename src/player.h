@@ -192,6 +192,7 @@ public:
     bool isJilei(const Card *card) const;
 
     bool isCaoCao() const;
+    void copyFrom(Player* p);
 
     QVariantMap tag;
 

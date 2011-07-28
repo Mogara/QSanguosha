@@ -100,6 +100,11 @@ public:
     void reconnect(ServerPlayer *player, ClientSocket *socket);
     void marshal(ServerPlayer *player);
 
+    bool isVirtual();
+    void setVirtual();
+    void copyFrom(Room* rRoom);
+    Room* duplicate();
+
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 
     void setTag(const QString &key, const QVariant &value);
@@ -192,6 +197,8 @@ private:
 
     QVariantMap tag;
     const Scenario *scenario;
+
+    bool _virtual;
 
     static QString generatePlayerName();
     void prepareForStart();

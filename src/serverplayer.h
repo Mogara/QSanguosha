@@ -90,6 +90,8 @@ public:
 
     void addToPile(const QString &pile_name, int card_id, bool open = true);
 
+    void copyFrom(ServerPlayer* sp);
+
 private:
     ClientSocket *socket;
     QList<const Card *> handcards;
