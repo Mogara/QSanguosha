@@ -134,7 +134,7 @@ sgs.ai_skill_invoke.xiansheng=function(self)
     end
     
     if rebel*2+3>(self:getEquipNumber()*2+self.player:getHandcardNum()) then return true end
-    if self:getHp()==1 and self:getHandcardNum()<=1 then return true end
+    if self.player:getHp()==1 and self.player:getHandcardNum()<=1 then return true end
     return false
 end
 
