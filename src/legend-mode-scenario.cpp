@@ -25,8 +25,9 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-
-                room->acquireSkill(player, "chuanqi");
+        for(int i=player->getMaxHP();i>0;i--)
+            room->throwCard(room->drawCard());
+        room->acquireSkill(player, "chuanqi");
         return false;
     }
 private:
@@ -198,7 +199,7 @@ void ChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
         int marks=source->getMark("@chuanqi");
         int cost= thresh_map.value(source->getGeneralName());
-        room->setPlayerMark(source,"@chuanqi",marks-cost);
+        room->setPlayerMark(source,"@chuanqi",(marks-cost)/2);
         room->obtainCard(source,code);
 
         const Card* c=Sanguosha->getCard(this->subcards.first());
@@ -240,7 +241,7 @@ void ArcChuanqiCard::use(Room *room, ServerPlayer *source, const QList<ServerPla
     }
         int marks=source->getMark("@chuanqi");
         int cost= thresh_map.value(source->getGeneralName());
-        room->setPlayerMark(source,"@chuanqi",marks-cost);
+        room->setPlayerMark(source,"@chuanqi",(marks-cost)/2);
         room->obtainCard(source,code);
 
         const Card* c=Sanguosha->getCard(this->subcards.first());
