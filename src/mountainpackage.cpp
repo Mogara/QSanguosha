@@ -945,7 +945,7 @@ public:
         if(zuoci->getGeneralName() == "zuoci" || zuoci->getGeneralName() == "zuocif"){
             if(zuoci->getGeneral()->isMale() != general->isMale())
                 room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
-        }else{
+        }else if(zuoci->getGeneral2Name() == "zuoci" || zuoci->getGeneral2Name() == "zuocif"){
             if(zuoci->getGeneral2()->isMale() != general->isMale())
                 room->setPlayerProperty(zuoci, "general2", general->isMale() ? "zuoci" : "zuocif");
         }
