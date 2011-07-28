@@ -1139,6 +1139,15 @@ public:
                 || pattern == "nullification";
     }
 
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if(Slash::IsAvailable(player))
+            Self->setFlags("can_slash");
+        else
+            Self->setFlags("-can_slash");
+
+        return player->isWounded() || Self->hasFlag("can_slash");
+    }
+
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
         const Card *card = to_select->getFilteredCard();
         int n = qMax(1, Self->getHp());
@@ -1148,8 +1157,17 @@ public:
 
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
-                // diamond as fire slash
-                return card->getSuit() == Card::Diamond;
+                if(!selected.isEmpty()){
+                    return card->getSuit() == selected.first()->getFilteredCard()->getSuit();
+                }
+
+                bool can_filter = false;
+                if(Self->isWounded())
+                    can_filter = can_filter || (card->getSuit() == Card::Heart);
+                if(Self->hasFlag("can_slash"))
+                    can_filter = can_filter || (card->getSuit() == Card::Diamond);
+
+                return can_filter;
             }
 
         case Client::Responsing:{
@@ -1160,6 +1178,8 @@ public:
                     return card->getSuit() == Card::Spade;
                 else if(pattern == "peach" || pattern == "peach+analeptic")
                     return card->getSuit() == Card::Heart;
+                else if(pattern == "slash")
+                    return card->getSuit() == Card::Diamond;
             }
 
         default:
