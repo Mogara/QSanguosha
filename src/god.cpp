@@ -1180,29 +1180,30 @@ public:
         switch(card->getSuit()){
         case Card::Spade:{
                 new_card = new Nullification(suit, number);
-                new_card->setSkillName(objectName());
                 break;
             }
 
         case Card::Heart:{
                 new_card = new Peach(suit, number);
-                new_card->setSkillName(objectName());
                 break;
             }
 
         case Card::Club:{
                 new_card = new Jink(suit, number);
-                new_card->setSkillName(objectName());
                 break;
             }
 
         case Card::Diamond:{
                 new_card = new FireSlash(suit, number);
-                new_card->setSkillName(objectName());
                 break;
             }
         default:
             break;
+        }
+
+        if(new_card){
+            new_card->setSkillName(objectName());
+            new_card->addSubcard(card);
         }
 
         return new_card;
