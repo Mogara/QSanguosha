@@ -1206,7 +1206,7 @@ public:
 
         if(new_card){
             new_card->setSkillName(objectName());
-            new_card->addSubcard(card);
+            new_card->addSubcards(cards);
         }
 
         return new_card;
