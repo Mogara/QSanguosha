@@ -71,7 +71,7 @@ public:
 
     int getMaxCards() const;
     int getXueyi() const;
-    void setXueyi(int xueyi);
+    void setXueyi(int xueyi, bool superimpose = true);
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
@@ -192,6 +192,7 @@ public:
     bool isJilei(const Card *card) const;
 
     bool isCaoCao() const;
+    void copyFrom(Player* p);
 
     QVariantMap tag;
 

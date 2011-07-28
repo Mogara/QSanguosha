@@ -24,7 +24,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL)
+    L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -1353,7 +1353,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 #ifndef QT_NO_DEBUG
         left_seconds = 1;
 #endif
-        if(!property("to_test").toString().isEmpty())
+        if(_virtual || !property("to_test").toString().isEmpty())
             timerEvent(NULL);
 
         broadcastInvoke("startInXs", QString::number(left_seconds));
@@ -1937,7 +1937,7 @@ void Room::startGame(){
             thread->addTriggerSkill(rule);
     }
 
-    thread->start();
+    if(!_virtual)thread->start();
 }
 
 void Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value){
@@ -2943,4 +2943,72 @@ void Room::selectRoleCommand(ServerPlayer *player, const QString &arg){
         result = "abstained";
 
     sem->release();
+}
+
+bool Room::isVirtual()
+{
+    return _virtual;
+}
+
+void Room::setVirtual()
+{
+    _virtual = true;
+}
+
+void Room::copyFrom(Room* rRoom)
+{
+    QMap<ServerPlayer*, ServerPlayer*> player_map;
+
+    for(int i=0; i<players.length(); i++)
+    {
+
+        ServerPlayer* a = rRoom->players.at(i);
+        ServerPlayer* b = players.at(i);
+        player_map.insert(a, b);
+
+        transfigure(b, a->getGeneralName(), false);
+
+        b->copyFrom(a);
+    }
+    for(int i=0; i<players.length(); i++)
+    {
+        ServerPlayer* a = rRoom->players.at(i);
+        ServerPlayer* b = players.at(i);
+        b->setNext(player_map.value(a->getNext()));
+    }
+
+    foreach(ServerPlayer* a,alive_players)
+    {
+        if(!a->isAlive())alive_players.removeOne(a);
+    }
+    current = player_map.value(rRoom->getCurrent());
+
+    pile1 = QList<int> (rRoom->pile1);
+    pile2 = QList<int> (rRoom->pile2);
+    table_cards = QList<int> (rRoom->table_cards);
+    draw_pile = &pile1;
+    discard_pile = &pile2;
+
+    place_map = QMap<int, Player::Place> (rRoom->place_map);
+    owner_map = QMap<int, ServerPlayer*>();
+
+    QList<int> keys = rRoom->owner_map.keys();
+
+    foreach(int i, keys)
+        owner_map.insert(i, rRoom->owner_map.value(i));
+
+    provided = rRoom->provided;
+
+    tag = QVariantMap(rRoom->tag);
+
+}
+
+Room* Room::duplicate()
+{
+    Server* svr = qobject_cast<Server *> (parent());
+    Room* room = svr->createNewRoom();
+    room->setVirtual();
+    room->fillRobotsCommand(NULL, 0);
+    room->copyFrom(this);
+    return room;
 }

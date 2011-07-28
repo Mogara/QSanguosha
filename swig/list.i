@@ -24,3 +24,4 @@ public:
 %template(CardList) QList<const Card *>;
 %template(IntList) QList<int>;
 %template(SkillList) QList<const Skill *>;
+%template(ItemList) QList<CardItem *>;

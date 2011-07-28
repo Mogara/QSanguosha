@@ -415,8 +415,7 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    int longhun = hasSkill("longhun") ? 2 : 0;
-    return qMax(hp,0) + xueyi + extra + longhun;
+    return qMax(hp,0) + xueyi + extra;
 }
 
 int Player::getXueyi() const{
@@ -445,8 +444,12 @@ QString Player::getKingdomFrame() const{
     return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
-void Player::setXueyi(int xueyi){
-    this->xueyi = xueyi;
+void Player::setXueyi(int xueyi, bool superimpose){
+    if(superimpose)
+        this->xueyi += xueyi;
+    else{
+        this->xueyi = xueyi;
+    }
 }
 
 bool Player::isKongcheng() const{
@@ -681,4 +684,40 @@ bool Player::isJilei(const Card *card) const{
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
     return general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc";
+}
+
+void Player::copyFrom(Player* p)
+{
+    Player *b = this;
+    Player *a = p;
+
+    b->marks            = QMap<QString, int> (a->marks);
+    b->piles            = QMap<QString, QList<int> > (a->piles);
+    b->acquired_skills  = QSet<QString> (a->acquired_skills);
+    b->flags            = QSet<QString> (a->flags);
+    b->history          = QHash<QString, int> (a->history);
+
+    b->hp               = a->hp;
+    b->max_hp           = a->max_hp;
+    b->xueyi            = a->xueyi;
+    b->kingdom          = a->kingdom;
+    b->role             = a->role;
+    b->seat             = a->seat;
+    b->alive            = a->alive;
+    b->attack_range     = a->attack_range;
+
+    b->phase            = a->phase;
+    b->weapon           = a->weapon;
+    b->armor            = a->armor;
+    b->defensive_horse  = a->defensive_horse;
+    b->offensive_horse  = a->offensive_horse;
+    b->face_up          = a->face_up;
+    b->chained          = a->chained;
+    b->judging_area     = QList<const Card *> (a->judging_area);
+    b->delayed_tricks   = QList<const DelayedTrick *> (a->delayed_tricks);
+    b->fixed_distance   = QHash<const Player *, int> (a->fixed_distance);
+    b->jilei_set        = QSet<Card::CardType> (a->jilei_set);
+
+    b->tag              = QVariantMap(a->tag);
+
 }
