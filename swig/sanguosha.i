@@ -78,7 +78,7 @@ public:
 
     int getMaxCards() const;    
     int getXueyi() const;
-    void setXueyi(int xueyi);
+    void setXueyi(int xueyi, bool superimpose = true);
 
     QString getKingdom() const;
     void setKingdom(const char *kingdom);

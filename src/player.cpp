@@ -444,8 +444,12 @@ QString Player::getKingdomFrame() const{
     return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
-void Player::setXueyi(int xueyi){
-    this->xueyi = xueyi;
+void Player::setXueyi(int xueyi, bool superimpose){
+    if(superimpose)
+        this->xueyi += xueyi;
+    else{
+        this->xueyi = xueyi;
+    }
 }
 
 bool Player::isKongcheng() const{
