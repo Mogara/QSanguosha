@@ -1140,12 +1140,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if(Slash::IsAvailable(player))
-            Self->setFlags("can_slash");
-        else
-            Self->setFlags("-can_slash");
-
-        return player->isWounded() || Self->hasFlag("can_slash");
+        return player->isWounded() || Slash::IsAvailable(player);
     }
 
     virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
@@ -1155,19 +1150,19 @@ public:
         if(selected.length() >= n)
             return false;
 
+        if(n > 1 && !selected.isEmpty()){
+            Card::Suit suit = selected.first()->getFilteredCard()->getSuit();
+            return card->getSuit() == suit;
+        }
+
         switch(ClientInstance->getStatus()){
         case Client::Playing:{
-                if(!selected.isEmpty()){
-                    return card->getSuit() == selected.first()->getFilteredCard()->getSuit();
-                }
-
-                bool can_filter = false;
-                if(Self->isWounded())
-                    can_filter = can_filter || (card->getSuit() == Card::Heart);
-                if(Self->hasFlag("can_slash"))
-                    can_filter = can_filter || (card->getSuit() == Card::Diamond);
-
-                return can_filter;
+                if(Self->isWounded() && card->getSuit() == Card::Heart)
+                    return true;
+                else if(Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond)
+                    return true;
+                else
+                    return false;
             }
 
         case Client::Responsing:{
