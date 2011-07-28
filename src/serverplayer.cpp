@@ -727,12 +727,13 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
 
 void ServerPlayer::copyFrom(ServerPlayer* sp)
 {
-    ServerPlayer *b=this;
-    ServerPlayer *a=sp;
+    ServerPlayer *b = this;
+    ServerPlayer *a = sp;
 
-    b->handcards=QList<const Card *>(a->handcards);
-    b->phases=QList<ServerPlayer::Phase>(a->phases);
-    b->selected=QStringList(a->selected);
-    Player* c=b;
+    b->handcards    = QList<const Card *> (a->handcards);
+    b->phases       = QList<ServerPlayer::Phase> (a->phases);
+    b->selected     = QStringList (a->selected);
+
+    Player* c = b;
     c->copyFrom(a);
 }
