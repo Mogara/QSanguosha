@@ -638,6 +638,10 @@ QList<const Skill *> Player::getVisibleSkillList() const{
     return skills;
 }
 
+QSet<QString> Player::getAcquiredSkills() const{
+    return acquired_skills;
+}
+
 bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
