@@ -2781,6 +2781,7 @@ function SmartAI:hasSameEquip(card)
 end
 
 sgs.lose_equip_skill = "xiaoji|xuanfeng"
+sgs.need_kongcheng = "lianying|kongcheng"
 
 function SmartAI:hasSkills(skill_names, player)
 	player = player or self.player
