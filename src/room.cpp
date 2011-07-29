@@ -752,10 +752,8 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     if(player->isKongcheng()){
         // jijiu special case
         if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
-            ServerPlayer *huatuo = player;
-            QList<const Card *> equips = huatuo->getEquips();
             bool has_red = false;
-            foreach(const Card *equip, equips){
+            foreach(const Card *equip, player->getEquips()){
                 if(equip->isRed()){
                     has_red = true;
                     break;
@@ -766,6 +764,17 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                 return NULL;
         }else if(player->hasSkill("jiushi")){
             if(!player->faceUp())
+                return NULL;
+        }else if(player->hasSkill("longhun")){
+            bool has_heart = false;
+            foreach(const Card *equip, player->getEquips()){
+                if(equip->getSuit() == Card::Heart){
+                    has_heart = true;
+                    break;
+                }
+            }
+
+            if(!has_heart)
                 return NULL;
         }else
             return NULL;
