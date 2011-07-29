@@ -155,9 +155,6 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(to_select == Self)
-        return false;
-
     if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first()))
         return Self->distanceTo(to_select) <= 1;
 
