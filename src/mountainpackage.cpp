@@ -942,8 +942,13 @@ public:
         const General *general = Sanguosha->getGeneral(general_name);
         if(zuoci->getKingdom() != general->getKingdom())
             room->setPlayerProperty(zuoci, "kingdom", general->getKingdom());
-        if(zuoci->getGeneral()->isMale() != general->isMale())
-            room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+        if(zuoci->getGeneralName() == "zuoci" || zuoci->getGeneralName() == "zuocif"){
+            if(zuoci->getGeneral()->isMale() != general->isMale())
+                room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
+        }else if(zuoci->getGeneral2Name() == "zuoci" || zuoci->getGeneral2Name() == "zuocif"){
+            if(zuoci->getGeneral2()->isMale() != general->isMale())
+                room->setPlayerProperty(zuoci, "general2", general->isMale() ? "zuoci" : "zuocif");
+        }
 
         QStringList skill_names;
         foreach(const Skill *skill, general->getVisibleSkillList()){
