@@ -2549,8 +2549,8 @@ void Room::doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only
         draw_pile->append(i.next());
 }
 
-void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
-    if(shenlvmeng->getState() != "online"){
+void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
+    if(shenlumeng->getState() != "online"){
         // throw the first card which suit is Heart
         QList<const Card *> cards = target->getHandcards();
         foreach(const Card *card, cards){
@@ -2571,8 +2571,8 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
     foreach(int handcard, handcards)
         handcards_str << QString::number(handcard);
 
-    shenlvmeng->invoke("doGongxin", QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+")));
-    getResult("replyGongxinCommand", shenlvmeng);
+    shenlumeng->invoke("doGongxin", QString("%1:%2").arg(target->objectName()).arg(handcards_str.join("+")));
+    getResult("replyGongxinCommand", shenlumeng);
 
     if(result.isEmpty() || result == ".")
         return;
@@ -2580,7 +2580,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target){
     int card_id = result.toInt();
     showCard(target, card_id);
 
-    QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
+    QString result = askForChoice(shenlumeng, "gongxin", "discard+put");
     if(result == "discard")
         throwCard(card_id);
     else{

@@ -177,7 +177,7 @@ sgs.ai_chaofeng = {
         daqiao = 2,
         dianwei = 2,
 
-        lvbu = 1,
+        lubu = 1,
         huangzhong = 1,
         machao = 1,
         shuangxiong = 1,

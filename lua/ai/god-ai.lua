@@ -32,9 +32,9 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
     end
 end
 
-local shenlvbu_ai = SmartAI:newSubclass "shenlvbu"
+local shenlubu_ai = SmartAI:newSubclass "shenlubu"
 
-function shenlvbu_ai:useTrickCard(card, use)
+function shenlubu_ai:useTrickCard(card, use)
 	if self.player:getMark("@wrath") > 0 then
 		return super.useTrickCard(self, card, use)
 	end

@@ -69,7 +69,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
-    void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
+    void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
     int drawCard();
     const Card *peek();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL);

@@ -28,7 +28,7 @@ caocao 4
 xuchu 4
 machao 4
 ganning 4
-lvbu 4
+lubu 4
 xiahouyuan 4
 huangzhong 4
 pangde 4
@@ -44,7 +44,7 @@ pangtong 3
 xiahoudun 2
 guanyu 2
 zhaoyun 2
-lvmeng 2
+lumeng 2
 luxun 2
 weiyan 2
 menghuo 2
