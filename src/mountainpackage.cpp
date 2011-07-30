@@ -940,11 +940,11 @@ public:
 
         QString general_name = room->askForGeneral(zuoci, huashen_generals);
         const General *general = Sanguosha->getGeneral(general_name);
-        if(zuoci->getKingdom()!= general->getKingdom())
+        if(zuoci->getKingdom()!= general->getKingdom()){
             if(general->getKingdom()!="god")
                 room->setPlayerProperty(zuoci, "kingdom", general->getKingdom());
             else
-                room->setPlayerProperty(zuoci, "kingdom", "qun");
+                room->setPlayerProperty(zuoci, "kingdom", "qun");}
         if(zuoci->getGeneral()->isMale() != general->isMale())
             room->setPlayerProperty(zuoci, "general", general->isMale() ? "zuoci" : "zuocif");
 
