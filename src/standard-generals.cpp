@@ -276,6 +276,15 @@ public:
         if(card){
             // the only difference for Guicai & Guidao
             room->throwCard(judge->card);
+            const Card *clubcard = NULL;
+            if(room->getCardPlace(judge->card->getEffectiveId()) == Player::DiscardedPile
+              && judge->card->getSuit() == Card::Club)
+              clubcard = judge->card;
+            ServerPlayer *caozhi = room->findPlayerBySkillName("luoying");
+            if(clubcard && caozhi && caozhi->askForSkillInvoke("luoying", data)){
+               room->playSkillEffect("luoying");
+               caozhi->obtainCard(clubcard);
+            }
 
             judge->card = Sanguosha->getCard(card->getEffectiveId());
             room->moveCardTo(judge->card, NULL, Player::Special);
