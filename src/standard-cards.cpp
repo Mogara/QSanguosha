@@ -243,7 +243,11 @@ public:
             if(player->hasFlag("drank"))
                 room->setPlayerFlag(player, "-drank");
 
-            room->cardEffect(card, player, effect.to);
+            CardUseStruct use;
+            use.card = card;
+            use.from = player;
+            use.to << effect.to;
+            room->useCard(use, false);
         }
 
         return false;
