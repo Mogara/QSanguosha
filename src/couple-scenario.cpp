@@ -19,7 +19,7 @@ public:
                 if(player->isLord()){
                     scenario->marryAll(room);
                     room->setTag("SkipNormalDeathProcess", true);
-                }else if(player->getGeneralName() == "lubu"){
+                }else if(player->getGeneralName() == "lvbu"){
                     if(player->askForSkillInvoke("reselect"))
                         room->transfigure(player, "dongzhuo", true);
                 }else if(player->getGeneralName() == "zhugeliang"){
@@ -113,7 +113,7 @@ CoupleScenario::CoupleScenario()
     :Scenario("couple")
 {
     lord = "caocao";
-    renegades << "lubu" << "diaochan";
+    renegades << "lvbu" << "diaochan";
     rule = new CoupleScenarioRule(this);
 
     map["caopi"] = "zhenji";
@@ -122,7 +122,7 @@ CoupleScenario::CoupleScenario()
     map["zhugeliang"] = "huangyueying";
     map["menghuo"] = "zhurong";
     map["zhouyu"] = "xiaoqiao";
-    map["lubu"] = "diaochan";
+    map["lvbu"] = "diaochan";
     map["zhangfei"] = "xiahoujuan";
     map["sunjian"] = "wuguotai";
     map["sunce"] = "daqiao";
