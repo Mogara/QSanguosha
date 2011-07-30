@@ -112,3 +112,22 @@ sgs.ai_skill_invoke.guzheng = function(self, data)
 	local player = self.room:getCurrent()	
 	return self:isFriend(player) or data:toInt() >= 3		
 end
+
+sgs.ai_skill_invoke.tuntian = true
+
+sgs.ai_skill_invoke.fangquan = function(self, data)
+	if #self.friends == 1 then
+		return false
+	end
+
+	local limit = self.player:getMaxCards()
+	return self.player:getHandcardNum() <= limit
+end
+
+sgs.ai_skill_playerchosen.fangquan = function(self, targets)
+	for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) then
+			return target
+		end
+	end
+end

@@ -799,6 +799,12 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
     room->throwCard(card_id);
+
+    LogMessage log;
+    log.type = "$Dismantlement";
+    log.from = effect.to;
+    log.card_str = QString::number(card_id);
+    room->sendLog(log);
 }
 
 Indulgence::Indulgence(Suit suit, int number)

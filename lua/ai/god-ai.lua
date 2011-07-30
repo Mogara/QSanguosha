@@ -74,8 +74,8 @@ wushen_skill.getTurnUseCard=function(self)
         return slash
 	end
 end
-local shenguanyu_ai = SmartAI:newSubclass "shenguanyu"
 
+local shenguanyu_ai = SmartAI:newSubclass "shenguanyu"
 function shenguanyu_ai:askForCard(pattern,prompt)
 	local card = super.askForCard(self, pattern, prompt)
 	if card then return card end
@@ -92,6 +92,7 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 				return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id)
 			end
 		end
-	end
-    
+	end    
 end
+
+sgs.ai_skill_invoke.lianpo = true
