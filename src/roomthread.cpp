@@ -239,10 +239,10 @@ void RoomThread::run(){
     if(room->mode == "06_3v3"){
         run3v3();
     }else if(room->getMode() == "04_1v3"){
-        ServerPlayer *shenlvbu = room->getLord();
-        if(shenlvbu->getGeneralName() == "shenlvbu1"){
+        ServerPlayer *shenlubu = room->getLord();
+        if(shenlubu->getGeneralName() == "shenlvbu1"){
             QList<ServerPlayer *> league = room->players;
-            league.removeOne(shenlvbu);
+            league.removeOne(shenlubu);
 
             forever{
                 foreach(ServerPlayer *player, league){
@@ -257,14 +257,14 @@ void RoomThread::run(){
                     if(!player->hasFlag("actioned"))
                         room->setPlayerFlag(player, "actioned");
 
-                    if(shenlvbu->getGeneralName() == "shenlvbu2")
+                    if(shenlubu->getGeneralName() == "shenlvbu2")
                         goto second_phase;
 
                     if(player->isAlive()){
-                        room->setCurrent(shenlvbu);
+                        room->setCurrent(shenlubu);
                         trigger(TurnStart, room->getCurrent());
 
-                        if(shenlvbu->getGeneralName() == "shenlvbu2")
+                        if(shenlubu->getGeneralName() == "shenlvbu2")
                             goto second_phase;
                     }
                 }
@@ -274,7 +274,7 @@ void RoomThread::run(){
             second_phase:
 
             foreach(ServerPlayer *player, room->players){
-                if(player != shenlvbu){
+                if(player != shenlubu){
                     if(player->hasFlag("actioned"))
                         room->setPlayerFlag(player, "-actioned");
 
@@ -285,7 +285,7 @@ void RoomThread::run(){
                 }
             }
 
-            room->setCurrent(shenlvbu);
+            room->setCurrent(shenlubu);
 
             forever{
                 trigger(TurnStart, room->getCurrent());

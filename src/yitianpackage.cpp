@@ -185,25 +185,25 @@ public:
 
     }
 
-    virtual bool onPhaseChange(ServerPlayer *weiwudi) const{
-        if(weiwudi->getPhase() != Player::Finish)
+    virtual bool onPhaseChange(ServerPlayer *shencc) const{
+        if(shencc->getPhase() != Player::Finish)
             return false;
 
-        Room *room = weiwudi->getRoom();
-        if(!room->askForSkillInvoke(weiwudi, objectName()))
+        Room *room = shencc->getRoom();
+        if(!room->askForSkillInvoke(shencc, objectName()))
             return false;
 
-        QString choice = room->askForChoice(weiwudi, objectName(), "modify+obtain");
+        QString choice = room->askForChoice(shencc, objectName(), "modify+obtain");
 
         if(choice == "modify"){
-            ServerPlayer *to_modify = room->askForPlayerChosen(weiwudi, room->getOtherPlayers(weiwudi), objectName());
-            QString kingdom = room->askForKingdom(weiwudi);
+            ServerPlayer *to_modify = room->askForPlayerChosen(shencc, room->getOtherPlayers(shencc), objectName());
+            QString kingdom = room->askForKingdom(shencc);
             QString old_kingdom = to_modify->getKingdom();
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
 
             LogMessage log;
             log.type = "#ChangeKingdom";
-            log.from = weiwudi;
+            log.from = shencc;
             log.to << to_modify;
             log.arg = old_kingdom;
             log.arg2 = kingdom;
@@ -211,7 +211,7 @@ public:
 
         }else if(choice == "obtain"){
             QStringList lords = Sanguosha->getLords();
-            QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
+            QList<ServerPlayer *> players = room->getOtherPlayers(shencc);
             foreach(ServerPlayer *player, players){
                 lords.removeOne(player->getGeneralName());
             }
@@ -221,20 +221,20 @@ public:
                 const General *general = Sanguosha->getGeneral(lord);
                 QList<const Skill *> skills = general->findChildren<const Skill *>();
                 foreach(const Skill *skill, skills){
-                    if(skill->isLordSkill() && !weiwudi->hasSkill(skill->objectName()))
+                    if(skill->isLordSkill() && !shencc->hasSkill(skill->objectName()))
                         lord_skills << skill->objectName();
                 }
             }
 
             if(!lord_skills.isEmpty()){
-                QString skill_name = room->askForChoice(weiwudi, objectName(), lord_skills.join("+"));
+                QString skill_name = room->askForChoice(shencc, objectName(), lord_skills.join("+"));
 
                 const Skill *skill = Sanguosha->getSkill(skill_name);
-                room->acquireSkill(weiwudi, skill);
+                room->acquireSkill(shencc, skill);
 
                 if(skill->inherits("GameStartSkill")){
                     const GameStartSkill *game_start_skill = qobject_cast<const GameStartSkill *>(skill);
-                    game_start_skill->onGameStart(weiwudi);
+                    game_start_skill->onGameStart(shencc);
                 }
             }
         }
@@ -1782,9 +1782,9 @@ YitianPackage::YitianPackage()
     (new YitianSword)->setParent(this);
 
     // generals
-    General *weiwudi = new General(this, "weiwudi", "god", 3);
-    weiwudi->addSkill(new Guixin2);
-    weiwudi->addSkill("feiying");
+    General *shencc = new General(this, "shencc", "god", 3);
+    shencc->addSkill(new Guixin2);
+    shencc->addSkill("feiying");
 
     General *caochong = new General(this, "caochong", "wei", 3);
     caochong->addSkill(new Chengxiang);

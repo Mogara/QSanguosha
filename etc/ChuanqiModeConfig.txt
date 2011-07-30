@@ -16,7 +16,7 @@ huangyueying 88 8 81 12
 
 sunquan 97 8 53 15
 ganning 114 5 109 10
-lvmeng 95 8 55 50
+lumeng 95 8 55 50
 huanggai 46 8 55 15
 luxun 34 5 138 5
 sunshangxiang 45 8 56 15
@@ -24,7 +24,7 @@ daqiao 44 10 160 15
 zhouyu 146 5 159 3
 
 huatuo 71 10 160 10
-lvbu 68 6 61 6
+lubu 68 6 61 6
 diaochan 96 10 101 10
 
 xiahouyuan 62 7 83 15

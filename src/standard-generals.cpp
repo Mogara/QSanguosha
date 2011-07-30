@@ -850,10 +850,10 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *lvmeng, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *lumeng, QVariant &data) const{
         CardStar card_star = data.value<CardStar>();
         if(card_star->inherits("Slash"))
-            lvmeng->setFlags("keji_use_slash");
+            lumeng->setFlags("keji_use_slash");
 
         return false;
     }
@@ -868,16 +868,16 @@ public:
         return 3;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *lvmeng) const{
-        if(lvmeng->getPhase() == Player::Start){
-            lvmeng->setFlags("-keji_use_slash");
-        }else if(lvmeng->getPhase() == Player::Discard){
-            if(!lvmeng->hasFlag("keji_use_slash") &&
-               lvmeng->getSlashCount() == 0 &&
-               lvmeng->askForSkillInvoke("keji"))
+    virtual bool onPhaseChange(ServerPlayer *lumeng) const{
+        if(lumeng->getPhase() == Player::Start){
+            lumeng->setFlags("-keji_use_slash");
+        }else if(lumeng->getPhase() == Player::Discard){
+            if(!lumeng->hasFlag("keji_use_slash") &&
+               lumeng->getSlashCount() == 0 &&
+               lumeng->askForSkillInvoke("keji"))
             {
-                lvmeng->getRoom()->playSkillEffect("keji");
-                lvmeng->skip(Player::Discard);
+                lumeng->getRoom()->playSkillEffect("keji");
+                lumeng->skip(Player::Discard);
 
                 return true;
             }
@@ -1109,12 +1109,12 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *lvbu, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *lubu, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        Room *room = lvbu->getRoom();
+        Room *room = lubu->getRoom();
         room->playSkillEffect(objectName());
 
-        QString slasher = lvbu->objectName();
+        QString slasher = lubu->objectName();
 
         const Card *first_jink = NULL, *second_jink = NULL;
         first_jink = room->askForCard(effect.to, "jink", "@wushuang-jink-1:" + slasher);
@@ -1341,7 +1341,7 @@ void StandardPackage::addGenerals(){
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Skill("qicai", Skill::Compulsory));
 
-    General *sunquan, *zhouyu, *lvmeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
+    General *sunquan, *zhouyu, *lumeng, *luxun, *ganning, *huanggai, *daqiao, *sunshangxiang;
     sunquan = new General(this, "sunquan$", "wu");
     sunquan->addSkill(new Zhiheng);
     sunquan->addSkill(new Jiuyuan);
@@ -1350,9 +1350,9 @@ void StandardPackage::addGenerals(){
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
 
-    lvmeng = new General(this, "lvmeng", "wu");
-    lvmeng->addSkill(new Keji);
-    lvmeng->addSkill(new KejiSkip);
+    lumeng = new General(this, "lumeng", "wu");
+    lumeng->addSkill(new Keji);
+    lumeng->addSkill(new KejiSkip);
 
     related_skills.insertMulti("keji", "#keji-skip");
 
@@ -1375,10 +1375,10 @@ void StandardPackage::addGenerals(){
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
 
-    General *lvbu, *huatuo, *diaochan;
+    General *lubu, *huatuo, *diaochan;
 
-    lvbu = new General(this, "lvbu", "qun");
-    lvbu->addSkill(new Wushuang);
+    lubu = new General(this, "lubu", "qun");
+    lubu->addSkill(new Wushuang);
 
     huatuo = new General(this, "huatuo", "qun", 3);
     huatuo->addSkill(new Qingnang);
