@@ -54,7 +54,7 @@ local t = {
 	["collateral-slash"] = "%src 使用了【借刀杀人】，目标是 %dest，请打出一张【杀】以响应", 
 	["blade-slash"] = "您可以再打出一张【杀】发动青龙偃月刀的追杀效果", 
 	["double-sword-card"] = "%src 发动了雌雄双股剑特效，您必须弃一张手牌或让 %src 摸一张牌", 
-	["axe-card"] = "你可再弃两张牌（包括装备）使此杀强制命中", 
+	["@axe"] = "你可再弃两张牌（包括装备）使此杀强制命中", 
 	["double_sword:yes"] = "您可以让对方让您摸一张牌或自弃一牌", 
 	["ice_sword:yes"] = "您可以弃掉弃两张牌", 
 	["kylin_bow:yes"] = "弃置对方的一匹马", 
@@ -148,13 +148,13 @@ local t = {
 	["huangyueying"] = "黄月英", 
 	["sunquan"] = "孙权", 
 	["zhouyu"] = "周瑜", 
-	["lumeng"] = "吕蒙", 
+	["lvmeng"] = "吕蒙", 
 	["luxun"] = "陆逊", 
 	["ganning"] = "甘宁", 
 	["huanggai"] = "黄盖", 
 	["daqiao"] = "大乔", 
 	["sunshangxiang"] = "孙尚香", 
-	["lubu"] = "吕布", 
+	["lvbu"] = "吕布", 
 	["huatuo"] = "华佗", 
 	["diaochan"] = "貂蝉", 
 	["jianxiong"] = "奸雄", 
@@ -302,7 +302,7 @@ local t = {
 	["$longdan1"] = "能进能退乃真正法器", 
 	["$longdan2"] = "喝~", 
 	["$luoshen1"] = "仿佛兮若轻云之蔽月，飘飘兮若流风之回雪", 
-	["$luoshen2"] = "休迅飞凫，飘忽若神", 
+	["$luoshen2"] = "体迅飞凫，飘忽若神", 
 	["$luoyi1"] = "谁来与我大战三百回合", 
 	["$luoyi2"] = "破", 
 	["$paoxiao1"] = "啊～", 
@@ -368,18 +368,18 @@ local t = {
 	
 	["~sunquan"] = "父亲，大哥，仲谋溃矣……",
 	["~zhouyu"] = "既生瑜，何生……",
-	["~lumeng"] = "呃，被看穿了吗？",
+	["~lvmeng"] = "呃，被看穿了吗？",
 	["~luxun"] = "我还是太年轻了……",
 	["~ganning"] = "二十年后，又是一条好汉。",
 	["~huanggai"] = "失血过多了……",
 	["~daqiao"] = "伯符，我去了",
 	["~sunshangxiang"] = "不！还不可以死！",
 	
-	["~lubu"] = "不可能！",
+	["~lvbu"] = "不可能！",
 	["~huatuo"] = "医者不能自医啊",
 	["~diaochan"] = "父亲大人，对不起",	
 	
-	["cv:lumeng"] = "腾讯英雄杀勾践",
+	["cv:lvmeng"] = "腾讯英雄杀勾践",
 	["cv:sunquan"] = "官方，宇文天启",
 	["cv:sunshangxiang"] = "官方，背碗卤粉",
 	
@@ -392,11 +392,7 @@ local t = {
 	["super_guanxing"] = "超级观星",
 	[":super_guanxing"] = "回合开始阶段，你可以观看牌堆顶的5张牌，将其中任意数量的牌以任意顺序置于牌堆顶，其余则以任意顺序置于牌堆底。",
 	
-	["sp_diaochan"] = "SP貂蝉",
-	["tuoqiao"] = "脱壳",
-	["xuwei"] = "续尾",
-	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
-	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
+	["$Dismantlement"] = "%from 被拆掉了 %card",
 }
 
 local ohorses = {"chitu", "dayuan", "zixing"}

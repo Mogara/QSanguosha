@@ -71,7 +71,7 @@ public:
 
     int getMaxCards() const;
     int getXueyi() const;
-    void setXueyi(int xueyi);
+    void setXueyi(int xueyi, bool superimpose = true);
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
@@ -183,6 +183,7 @@ public:
     QSet<const TriggerSkill *> getTriggerSkills() const;
     QSet<const Skill *> getVisibleSkills() const;
     QList<const Skill *> getVisibleSkillList() const;
+    QSet<QString> getAcquiredSkills() const;
 
     virtual bool isProhibited(const Player *to, const Card *card) const;
     bool canSlashWithoutCrossbow() const;
@@ -192,6 +193,7 @@ public:
     bool isJilei(const Card *card) const;
 
     bool isCaoCao() const;
+    void copyFrom(Player* p);
 
     QVariantMap tag;
 

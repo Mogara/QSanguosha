@@ -47,15 +47,32 @@ void ServerPlayer::obtainCard(const Card *card){
 }
 
 void ServerPlayer::throwAllEquips(){
-    room->throwCard(getWeapon());
-    room->throwCard(getArmor());
-    room->throwCard(getDefensiveHorse());
-    room->throwCard(getOffensiveHorse());
+    QList<const Card *> equips = getEquips();
+
+    if(equips.isEmpty())
+        return;
+
+    DummyCard *card = new DummyCard;
+    foreach(const Card *equip, equips)
+        card->addSubcard(equip);
+    room->throwCard(card);
+
+    CardStar card_star = card;
+    QVariant data = QVariant::fromValue(card_star);
+    room->getThread()->trigger(CardDiscarded, this, data);
+    card->deleteLater();
 }
 
 void ServerPlayer::throwAllHandCards(){
-    foreach(const Card *card, handcards)
-        room->throwCard(card);
+    DummyCard *card = wholeHandCards();
+    if(card == NULL)
+        return;
+
+    room->throwCard(card);
+    CardStar card_star = card;
+    QVariant data = QVariant::fromValue(card_star);
+    room->getThread()->trigger(CardDiscarded, this, data);
+    card->deleteLater();
 }
 
 void ServerPlayer::throwAllMarks(){
@@ -345,6 +362,27 @@ bool ServerPlayer::hasNullification() const{
         }
     }else if(hasSkill("guhuo")){
         return !isKongcheng();
+    }else if(hasFlag("lexue")){
+        int card_id = getMark("lexue");
+        const Card *card = Sanguosha->getCard(card_id);
+        if(card->objectName() == "nullification"){
+            foreach(const Card *c, handcards + getEquips()){
+                if(c->objectName() == "nullification" || c->getSuit() == card->getSuit())
+                    return true;
+            }
+        }
+    }else if(hasSkill("longhun")){
+        int n = qMax(1, getHp());
+        int count = 0;
+        foreach(const Card *card, handcards + getEquips()){
+            if(card->objectName() == "nullification")
+                return true;
+
+            if(card->getSuit() == Card::Spade)
+                count ++;
+        }
+
+        return count >= n;
     }else{
         foreach(const Card *card, handcards){
             if(card->objectName() == "nullification")
@@ -563,7 +601,7 @@ int ServerPlayer::getGeneralMaxHP() const{
 }
 
 bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
-    if(room->getMode() == "06_3v3")
+    if(room->getMode() == "06_3v3" || room->getMode() == "02_1v1")
         return false;
     else if(acquired_skills.contains(skill_name))
         return true;
@@ -685,4 +723,17 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     piles[pile_name] << card_id;
 
     room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
+}
+
+void ServerPlayer::copyFrom(ServerPlayer* sp)
+{
+    ServerPlayer *b = this;
+    ServerPlayer *a = sp;
+
+    b->handcards    = QList<const Card *> (a->handcards);
+    b->phases       = QList<ServerPlayer::Phase> (a->phases);
+    b->selected     = QStringList (a->selected);
+
+    Player* c = b;
+    c->copyFrom(a);
 }

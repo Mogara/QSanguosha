@@ -4,11 +4,11 @@
 #include "scenario.h"
 #include "maneuvering.h"
 
-class ChallengeScenario : public Scenario{
+class ImpasseScenario : public Scenario{
     Q_OBJECT
 
 public:
-    explicit ChallengeScenario();
+    explicit ImpasseScenario();
 
     virtual bool exposeRoles() const;
     virtual void assign(QStringList &generals, QStringList &roles) const;
@@ -16,7 +16,6 @@ public:
     virtual void getRoles(char *roles) const;
     virtual void onTagSet(Room *room, const QString &key) const;
     virtual bool generalSelection() const;
-    virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
 };
 
 #endif // BOSSCHALLENGE_H

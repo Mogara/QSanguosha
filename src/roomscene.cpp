@@ -608,7 +608,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     QList<QPointF> positions = getPhotoPositions();
     for(i=0; i<positions.length(); i++){
         Photo *photo = photos.at(i);
-        photo->setOrder(i+1);
+        photo->setOrder(photo->getPlayer()->getSeat());
 
         QPropertyAnimation *translation = new QPropertyAnimation(photo, "pos");
         translation->setEndValue(positions.at(i));
@@ -786,7 +786,19 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event){
     case Qt::Key_4:
     case Qt::Key_5:
     case Qt::Key_6:
-    case Qt::Key_7: selectTarget(event->key() - Qt::Key_0, control_is_down); break;
+    case Qt::Key_7:
+    case Qt::Key_8:
+    case Qt::Key_9:{
+            int seat = event->key() - Qt::Key_0 + 1;
+            int i;
+            for(i=0; i<photos.length(); i++){
+                if(photos.at(i)->getPlayer()->getSeat() == seat){
+                    selectTarget(i, control_is_down);
+                    break;
+                }
+            }
+            break;
+        }
 
     case Qt::Key_D:{
             // for debugging use
@@ -826,10 +838,27 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         menu->addSeparator();
 
         if(cards.isEmpty()){
-            menu->addAction(tr("There is no known cards"));
+            menu->addAction(tr("There is no known cards"))->setEnabled(false);
         }else{
             foreach(const Card *card, cards)
                 menu->addAction(card->getSuitIcon(), card->getFullName());
+        }
+
+        // acquired skills
+        QSet<QString> skill_names = player->getAcquiredSkills();
+        QList<const Skill *> skills;
+        foreach(QString skill_name, skill_names){
+            const Skill *skill = Sanguosha->getSkill(skill_name);
+            if(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
+                skills << skill;
+        }
+
+        if(!skills.isEmpty()){
+            menu->addSeparator();
+            foreach(const Skill *skill, skills){
+                QString tooltip = skill->getDescription();
+                menu->addAction(Sanguosha->translate(skill->objectName()))->setToolTip(tooltip);
+            }
         }
 
         menu->popup(event->screenPos());
@@ -1117,7 +1146,6 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             }
 
         case Player::Hand:{
-                card_item->setEnabled(false);
                 dashboard->addCardItem(card_item);
                 break;
             }
@@ -1163,6 +1191,9 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 }
 
 void RoomScene::addSkillButton(const Skill *skill, bool from_left){
+    if(ClientInstance->getReplayer())
+        return;
+
     // check duplication
     foreach(QAbstractButton *button, skill_buttons){
         if(button->objectName() == skill->objectName())
@@ -1197,13 +1228,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
                 break;
         }
 
-        case Skill::Compulsory:{
-                button = new QPushButton();
-                break;
-            }
-
-        default:
-            break;
+        case Skill::Wake:
+        case Skill::Compulsory: button = new QPushButton(); break;
         }
     }else if(skill->inherits("FilterSkill")){
         const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
@@ -1348,7 +1374,7 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card == NULL){
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setEnabled(false);
+            item->setOpacity(0.7);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1358,7 +1384,7 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setEnabled(true);
+            item->setOpacity(1.0);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1387,7 +1413,8 @@ void RoomScene::updateTargetsEnablity(const Card *card){
 
         bool enabled = !Sanguosha->isProhibited(Self, player, card)
                        && card->targetFilter(selected_targets, player, Self);
-        item->setEnabled(enabled);
+
+        item->setOpacity(enabled ? 1.0 : 0.7);
         item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
 }
@@ -1751,8 +1778,9 @@ void RoomScene::updateStatus(Client::Status status){
             if(dashboard->currentSkill())
                 dashboard->stopPending();
 
-            foreach(Photo *photo, photos)
-                photo->setEnabled(photo->getPlayer()->isAlive());
+            foreach(Photo *photo, photos){
+                photo->setOpacity(photo->getPlayer()->isAlive() ? 1.0 : 0.7);
+            }
 
             break;
         }
@@ -1768,15 +1796,9 @@ void RoomScene::updateStatus(Client::Status status){
             QRegExp rx("@@?(\\w+)!?");
             if(rx.exactMatch(pattern)){
                 QString skill_name = rx.capturedTexts().at(1);
-
-                foreach(QAbstractButton *button, skill_buttons){
-                    if(button->objectName() == skill_name){
-                        const ViewAsSkill *skill = button2skill.value(button);
-                        if(skill)
-                            dashboard->startPending(skill);
-                        break;
-                    }
-                }
+                const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
+                if(skill)
+                    dashboard->startPending(skill);
             }else{
                 response_skill->setPattern(pattern);
                 dashboard->startPending(response_skill);
@@ -2144,6 +2166,10 @@ void RoomScene::clearPile(){
 void RoomScene::onStandoff(){
     freeze();
 
+#ifdef AUDIO_SUPPORT
+    Sanguosha->playAudio("standoff");
+#endif
+
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(500, 600);
     dialog->setWindowTitle(tr("Standoff"));
@@ -2171,10 +2197,7 @@ void RoomScene::onGameOver(){
     if(victory){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
-            if(player->property("win").toBool())
-                continue;
-
-            if(player->isCaoCao()){
+            if(player->property("win").toBool() && player->isCaoCao()){
                 if(SoundEngine)
                     SoundEngine->stopAllSounds();
 
@@ -2211,9 +2234,6 @@ void RoomScene::onGameOver(){
     layout->addWidget(loser_box);
     dialog->setLayout(layout);
 
-    winner_table->setColumnCount(4);
-    loser_table->setColumnCount(4);
-
     QList<const ClientPlayer *> winner_list, loser_list;
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         bool win = player->property("win").toBool();
@@ -2227,9 +2247,6 @@ void RoomScene::onGameOver(){
             photo->setEmotion(win ? "good" : "bad", true);
         }
     }
-
-    winner_table->setRowCount(winner_list.length());
-    loser_table->setRowCount(loser_list.length());
 
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
@@ -2427,6 +2444,8 @@ void RoomScene::makeReviving(){
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players){
+    table->setColumnCount(4);
+    table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;
@@ -2479,20 +2498,11 @@ void RoomScene::killPlayer(const QString &who){
         Photo *photo = name2photo[who];
         photo->killPlayer();
         photo->setFrame(Photo::NoFrame);
-        photo->setEnabled(false);
+        photo->setOpacity(0.7);
         photo->update();
+        item2player.remove(photo);
 
         general = photo->getPlayer()->getGeneral();
-
-        QMutableMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
-        while(itor.hasNext()){
-            itor.next();
-            if(itor.value()->objectName() == who){
-                itor.key()->setEnabled(false);
-                itor.remove();
-                break;
-            }
-        }
 
         if(ServerInfo.GameMode == "02_1v1")
             enemy_box->killPlayer(general->objectName());
@@ -2594,6 +2604,10 @@ void RoomScene::detachSkill(const QString &skill_name){
 
             return;
         }
+    }
+
+    if(dashboard->getFilter() == Sanguosha->getSkill(skill_name)){
+        dashboard->setFilter(NULL);
     }
 }
 
@@ -2757,8 +2771,6 @@ void KOFOrderBox::killPlayer(const QString &general_name){
     for(i=0; i<revealed; i++){
         Pixmap *avatar = avatars[i];
         if(avatar->isEnabled() && avatar->objectName() == general_name){
-            avatar->setEnabled(false);
-
             QPixmap pixmap("image/system/death/unknown.png");
             QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
             death->moveBy(10, 0);
@@ -3072,6 +3084,21 @@ void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args
     connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
 }
 
+void RoomScene::doHuashen(const QString &name, const QStringList &args){
+    QVariantList huashen_list = Self->tag["Huashens"].toList();
+    foreach(QString arg, args){
+        huashen_list << arg;
+        CardItem *item = new CardItem(arg);
+        item->scaleSmoothly(0.5);
+
+        addItem(item);
+        item->setHomePos(avatar->scenePos());
+        item->goBack(true);
+    }
+
+    Self->tag["Huashens"] = huashen_list;
+}
+
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
@@ -3084,6 +3111,8 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["typhoon"] = &RoomScene::doAppearingAnimation;
 
         map["lightbox"] = &RoomScene::doLightboxAnimation;
+
+        map["huashen"] = &RoomScene::doHuashen;
     }
 
     AnimationFunc func = map.value(name, NULL);

@@ -4,7 +4,7 @@
 #include "nullificationdialog.h"
 #include "playercarddialog.h"
 #include "standard.h"
-#include "optionbutton.h"
+#include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
 
@@ -22,7 +22,7 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
-    :QObject(parent), refusable(true), status(NotActive), alive_count(1)
+    :QObject(parent), refusable(true), status(NotActive), alive_count(1), swap_pile(0)
 {
     ClientInstance = this;
 
@@ -32,33 +32,32 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
+    callbacks["warn"] = &Client::warn;
+
     callbacks["startGame"] = &Client::startGame;
-    callbacks["hpChange"] = &Client::hpChange;
-    callbacks["clearPile"] = &Client::clearPile;
-    callbacks["setPileNumber"] = &Client::setPileNumber;
     callbacks["gameOver"] = &Client::gameOver;
+
+    callbacks["hpChange"] = &Client::hpChange;
     callbacks["killPlayer"] = &Client::killPlayer;
     callbacks["revivePlayer"] = &Client::revivePlayer;
-    callbacks["warn"] = &Client::warn;
     callbacks["showCard"] = &Client::showCard;
     callbacks["setMark"] = &Client::setMark;
     callbacks["log"] = &Client::log;
     callbacks["speak"] = &Client::speak;
-    callbacks["addHistory"] = &Client::addHistory;
+    callbacks["acquireSkill"] = &Client::acquireSkill;
     callbacks["attachSkill"] = &Client::attachSkill;
     callbacks["detachSkill"] = &Client::detachSkill;
     callbacks["moveFocus"] = &Client::moveFocus;
     callbacks["setEmotion"] = &Client::setEmotion;
     callbacks["skillInvoked"] = &Client::skillInvoked;
-    callbacks["acquireSkill"] = &Client::acquireSkill;
+    callbacks["addHistory"] = &Client::addHistory;
     callbacks["animate"] = &Client::animate;
-    callbacks["setPrompt"] = &Client::setPrompt;
-    callbacks["jilei"] = &Client::jilei;
     callbacks["judgeResult"] = &Client::judgeResult;
     callbacks["setScreenName"] = &Client::setScreenName;
     callbacks["setFixedDistance"] = &Client::setFixedDistance;
-    callbacks["pile"] = &Client::pile;
     callbacks["transfigure"] = &Client::transfigure;
+    callbacks["jilei"] = &Client::jilei;
+    callbacks["pile"] = &Client::pile;
 
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
@@ -66,8 +65,10 @@ Client::Client(QObject *parent, const QString &filename)
 
     callbacks["moveNCards"] = &Client::moveNCards;
     callbacks["moveCard"] = &Client::moveCard;
-    callbacks["drawCards"] = &Client::drawCards;
     callbacks["drawNCards"] = &Client::drawNCards;
+    callbacks["drawCards"] = &Client::drawCards;
+    callbacks["clearPile"] = &Client::clearPile;
+    callbacks["setPileNumber"] = &Client::setPileNumber;
 
     // interactive methods
     callbacks["activate"] = &Client::activate;
@@ -539,11 +540,6 @@ void Client::updateFrequentFlags(int state){
         frequent_flags.remove(flag);
 }
 
-void Client::setPrompt(const QString &prompt_str){
-    QStringList texts = prompt_str.split(":");
-    setPromptList(texts);
-}
-
 void Client::jilei(const QString &jilei_str){
     Self->jilei(jilei_str);
 }
@@ -570,10 +566,13 @@ QString Client::getPlayerName(const QString &str){
     if(rx.exactMatch(str)){
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
-    }else
-        general_name = str;
+        general_name = Sanguosha->translate(general_name);
+        if(ServerInfo.GameMode == "08same")
+            general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
+        return general_name;
 
-    return Sanguosha->translate(general_name);
+    }else
+        return Sanguosha->translate(str);
 }
 
 QString Client::getPattern() const{
@@ -691,9 +690,12 @@ void Client::askForChoice(const QString &ask_str){
     foreach(QString option, options){
         QCommandLinkButton *button = new QCommandLinkButton;
         QString text = QString("%1:%2").arg(skill_name).arg(option);
+        QString translated = Sanguosha->translate(text);
+        if(text == translated)
+            translated = Sanguosha->translate(option);
 
         button->setObjectName(option);
-        button->setText(Sanguosha->translate(text));
+        button->setText(translated);
 
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(button, SIGNAL(clicked()), this, SLOT(selectChoice()));
@@ -936,6 +938,8 @@ QTextDocument *Client::getPromptDoc() const{
 
 void Client::clearPile(const QString &){
     discarded_list.clear();
+    swap_pile ++;
+    updatePileNum();
 
     emit pile_cleared();
 }
@@ -947,8 +951,8 @@ void Client::setPileNumber(const QString &pile_str){
 }
 
 void Client::updatePileNum(){
-    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>")
-                       .arg(pile_num).arg(discarded_list.length());
+    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>")
+                       .arg(pile_num).arg(discarded_list.length()).arg(swap_pile);
 
     if(skill_title.isEmpty())
         lines_doc->setHtml(pile_str);

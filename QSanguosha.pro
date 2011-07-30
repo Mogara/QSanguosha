@@ -35,7 +35,6 @@ SOURCES += src/main.cpp \
     src/gamerule.cpp \
     src/playercarddialog.cpp \
     src/roomthread.cpp \
-    src/optionbutton.cpp \
     src/maneuvering.cpp \
     src/wind.cpp \
     src/thicket.cpp \
@@ -76,7 +75,10 @@ SOURCES += src/main.cpp \
     src/zombie-mode-scenario.cpp \
     src/generalselector.cpp \
     src/packagingeditor.cpp \
-    src/boss-mode-scenario.cpp
+    src/boss-mode-scenario.cpp \
+    src/legend-mode-scenario.cpp \
+    src/mountainpackage.cpp \
+    src/scenerule.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -104,7 +106,6 @@ HEADERS += src/mainwindow.h \
     src/gamerule.h \
     src/playercarddialog.h \
     src/roomthread.h \
-    src/optionbutton.h \
     src/maneuvering.h \
     src/wind.h \
     src/thicket.h \
@@ -148,7 +149,10 @@ HEADERS += src/mainwindow.h \
     src/zombie-mode-scenario.h \
     src/generalselector.h \
     src/packagingeditor.h \
-    src/boss-mode-scenario.h
+    src/boss-mode-scenario.h \
+    src/legend-mode-scenario.h \
+    src/mountainpackage.h \
+    src/scenerule.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \

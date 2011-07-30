@@ -159,9 +159,9 @@ int Player::distanceTo(const Player *other) const{
 void Player::setGeneral(const General *new_general){
     if(this->general != new_general){
         this->general = new_general;
-        if(new_general){
-            setKingdom(general->getKingdom());
-        }
+
+        if(new_general && kingdom.isEmpty())
+            setKingdom(new_general->getKingdom());
 
         emit general_changed();
     }
@@ -415,7 +415,9 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    return qMax(hp,0) + xueyi + extra;
+    int longhun = hasSkill("longhun") ? 2 : 0;
+
+    return qMax(hp,0) + xueyi + extra + longhun;
 }
 
 int Player::getXueyi() const{
@@ -423,7 +425,10 @@ int Player::getXueyi() const{
 }
 
 QString Player::getKingdom() const{
-    return kingdom;
+    if(kingdom.isEmpty() && general)
+        return general->getKingdom();
+    else
+        return kingdom;
 }
 
 void Player::setKingdom(const QString &kingdom){
@@ -441,8 +446,12 @@ QString Player::getKingdomFrame() const{
     return QString("image/kingdom/frame/%1.png").arg(kingdom);
 }
 
-void Player::setXueyi(int xueyi){
-    this->xueyi = xueyi;
+void Player::setXueyi(int xueyi, bool superimpose){
+    if(superimpose)
+        this->xueyi += xueyi;
+    else{
+        this->xueyi = xueyi;
+    }
 }
 
 bool Player::isKongcheng() const{
@@ -631,6 +640,10 @@ QList<const Skill *> Player::getVisibleSkillList() const{
     return skills;
 }
 
+QSet<QString> Player::getAcquiredSkills() const{
+    return acquired_skills;
+}
+
 bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
@@ -676,5 +689,41 @@ bool Player::isJilei(const Card *card) const{
 
 bool Player::isCaoCao() const{
     QString general_name = getGeneralName();
-    return general_name == "caocao" || general_name == "shencaocao" || general_name == "shencc";
+    return general_name == "caocao" || general_name == "shencaocao" || general_name == "weiwudi";
+}
+
+void Player::copyFrom(Player* p)
+{
+    Player *b = this;
+    Player *a = p;
+
+    b->marks            = QMap<QString, int> (a->marks);
+    b->piles            = QMap<QString, QList<int> > (a->piles);
+    b->acquired_skills  = QSet<QString> (a->acquired_skills);
+    b->flags            = QSet<QString> (a->flags);
+    b->history          = QHash<QString, int> (a->history);
+
+    b->hp               = a->hp;
+    b->max_hp           = a->max_hp;
+    b->xueyi            = a->xueyi;
+    b->kingdom          = a->kingdom;
+    b->role             = a->role;
+    b->seat             = a->seat;
+    b->alive            = a->alive;
+    b->attack_range     = a->attack_range;
+
+    b->phase            = a->phase;
+    b->weapon           = a->weapon;
+    b->armor            = a->armor;
+    b->defensive_horse  = a->defensive_horse;
+    b->offensive_horse  = a->offensive_horse;
+    b->face_up          = a->face_up;
+    b->chained          = a->chained;
+    b->judging_area     = QList<const Card *> (a->judging_area);
+    b->delayed_tricks   = QList<const DelayedTrick *> (a->delayed_tricks);
+    b->fixed_distance   = QHash<const Player *, int> (a->fixed_distance);
+    b->jilei_set        = QSet<Card::CardType> (a->jilei_set);
+
+    b->tag              = QVariantMap(a->tag);
+
 }

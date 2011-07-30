@@ -54,9 +54,11 @@ const Card *CardItem::getCard() const{
 }
 
 void CardItem::filter(const FilterSkill *filter_skill){
-    if(filter_skill && filter_skill->viewFilter(this)){
-        filtered_card = filter_skill->viewAs(this);
-    }
+    if(filter_skill){
+        if(filter_skill->viewFilter(this))
+            filtered_card = filter_skill->viewAs(this);
+    }else
+        filtered_card = card;
 }
 
 const Card *CardItem::getFilteredCard() const{
@@ -79,7 +81,7 @@ void CardItem::goBack(bool kieru){
     }
 
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
-    goback->setEndValue(home_pos);   
+    goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutBounce);
 
     if(kieru){

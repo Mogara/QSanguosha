@@ -97,7 +97,6 @@ public:
     void skillInvoked(const QString &invoke_str);
     void acquireSkill(const QString &acquire_str);
     void animate(const QString &animate_str);
-    void setPrompt(const QString &prompt_str);
     void jilei(const QString &jilei_str);
     void judgeResult(const QString &result_str);
     void setScreenName(const QString &set_str);
@@ -185,6 +184,7 @@ private:
     QString skill_title, skill_line;
     QString choose_command;
     QString card_pattern;
+    int swap_pile;
 
     void updatePileNum();
     void setPromptList(const QStringList &text);

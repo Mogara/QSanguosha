@@ -155,9 +155,6 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(to_select == Self)
-        return false;
-
     if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first()))
         return Self->distanceTo(to_select) <= 1;
 
@@ -297,7 +294,7 @@ public:
             }
         }else if(event == FinishJudge){
             JudgeStar judge = data.value<JudgeStar>();
-            if(shuangxiong->hasFlag("shuangxiong")){
+            if(judge->reason == "shuangxiong"){
                 shuangxiong->obtainCard(judge->card);
                 return true;
             }
@@ -552,7 +549,7 @@ public:
             Room *room = yuanshao->getRoom();
             int n = room->getLieges("qun", yuanshao).length();
             int xueyi = n * 2;
-            yuanshao->setXueyi(xueyi);
+            yuanshao->setXueyi(xueyi, false);
         }
 
         return false;
@@ -580,6 +577,8 @@ FirePackage::FirePackage()
     pangtong->addSkill(new Lianhuan);
     pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
+
+    related_skills.insertMulti("niepan", "#@nirvana");
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);

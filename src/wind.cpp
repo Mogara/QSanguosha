@@ -360,7 +360,7 @@ public:
         if(num >= huangzhong->getHp() || num <= huangzhong->getAttackRange()){
             if(huangzhong->askForSkillInvoke(objectName(), QVariant::fromValue(effect))){
                 room->playSkillEffect(objectName());
-                room->slashResult(effect, true);
+                room->slashResult(effect, NULL);
 
                 return true;
             }
@@ -407,7 +407,7 @@ public:
 
 class BuquRemove: public TriggerSkill{
 public:
-    BuquRemove():TriggerSkill("#buqu_remove"){
+    BuquRemove():TriggerSkill("#buqu-remove"){
         events << HpRecover;
     }
 
@@ -457,9 +457,10 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *zhoutai, QVariant &) const{
         Room *room = zhoutai->getRoom();
-        const QList<int> &buqu = zhoutai->getPile("buqu");
 
         if(event == Dying){
+            const QList<int> &buqu = zhoutai->getPile("buqu");
+
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
             int n = need - buqu.length();
             if(n > 0){
@@ -470,6 +471,7 @@ public:
             }
         }else if(event == AskForPeachesDone){
             BuquRemove::Remove(zhoutai);
+            const QList<int> &buqu = zhoutai->getPile("buqu");
 
             if(zhoutai->getHp() > 0)
                 return false;
@@ -480,7 +482,7 @@ public:
                 numbers << card->getNumber();
             }
 
-            bool duplicated =  numbers.size() < buqu.size();
+            bool duplicated = numbers.size() < buqu.size();
             if(!duplicated){
                 QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
                 if(choice == "alive"){
@@ -520,6 +522,8 @@ WindPackage::WindPackage()
     zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);
     zhoutai->addSkill(new BuquRemove);
+
+    related_skills.insertMulti("buqu", "#buqu-remove");
 
     addMetaObject<GuidaoCard>();
     addMetaObject<HuangtianCard>();

@@ -77,10 +77,12 @@ private:
     QCheckBox *nolimit_checkbox;
     QCheckBox *contest_mode_checkbox;
     QCheckBox *free_choose_checkbox;
+    QCheckBox *free_assign_checkbox;
     QSpinBox *maxchoice_spinbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
+    QCheckBox *scene_checkbox;	//changjing
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
@@ -119,9 +121,8 @@ public:
     void broadcast(const QString &msg);
     bool listen();
     void daemonize();
-    void createNewRoom();
+    Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
-    void removeRoom(Room *room);
 
 private:
     ServerSocket *server;
@@ -135,6 +136,7 @@ private slots:
     void processNewConnection(ClientSocket *socket);
     void processRequest(char *request);
     void cleanup();
+    void gameOver();
 
 signals:
     void server_message(const QString &);

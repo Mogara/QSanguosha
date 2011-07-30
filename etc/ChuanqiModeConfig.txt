@@ -1,0 +1,58 @@
+caocao 108 8 65 10
+zhangliao 90 10 69 15
+simayi 98 10 107 15
+xiahoudun 129 5 111 6
+guojia 104 8 64 12
+xuchu 79 6 60 15
+zhenji 8 7 54 12
+
+liubei 73 8 56 12
+guanyu 68 6 58 8
+zhugeliang 136 5 123 10
+zhangfei 21 3 59 12
+zhaoyun 122 8 57 8
+machao 4 6 124 10
+huangyueying 88 8 81 12
+
+sunquan 97 8 53 15
+ganning 114 5 109 10
+lvmeng 95 8 55 50
+huanggai 46 8 55 15
+luxun 34 5 138 5
+sunshangxiang 45 8 56 15
+daqiao 44 10 160 15
+zhouyu 146 5 159 3
+
+huatuo 71 10 160 10
+lvbu 68 6 61 6
+diaochan 96 10 101 10
+
+xiahouyuan 62 7 83 15
+caoren 100 6 67 10
+weiyan 80 10 70 10
+huangzhong 62 12 124 12
+zhoutai 69 6 82 15
+xiaoqiao 86 10 103 15
+yuji 145 8 84 15
+zhangjiao 42 10 63 20
+
+taishici 116 8 121 15
+dianwei 130 8 61 10
+
+shuangxiong 1 5 22 5
+xunyu 135 10 96 15
+pangtong 138 6 128 12
+pangde 78 10 2 10
+yuanshao 77 10 106 10
+wolong 120 5 148 10
+
+xuhuang 94 10 5 10
+caopi 87 10 65 15
+sunjian 30 5 109 15
+dongzhuo 12 5 77 15
+
+zhurong 144 5 110 15
+menghuo 74 8 123 15
+
+jiaxu 97 5 33 7
+lusu 72 3 99 10

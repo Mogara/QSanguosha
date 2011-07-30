@@ -46,7 +46,7 @@ void DujiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     log.arg = "dujiang";
     room->sendLog(log);
 
-    room->transfigure(source, "shenlumeng", false);
+    room->transfigure(source, "shenlvmeng", false);
 
     room->setTag("Dujiang", true);
 }
@@ -90,7 +90,7 @@ public:
         if(!PhaseChangeSkill::triggerable(target))
             return false;
 
-        return target->getGeneralName() != "shenlumeng";
+        return target->getGeneralName() != "shenlvmeng";
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -162,12 +162,12 @@ public:
     }
 };
 
-TaichenCard::TaichenCard(){
+TaichenFightCard::TaichenFightCard(){
     target_fixed = true;
     once = true;
 }
 
-void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->loseHp(source);
 
     if(source->isAlive()){
@@ -186,18 +186,18 @@ void TaichenCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer
     }
 }
 
-class Taichen: public ZeroCardViewAsSkill{
+class TaichenFight: public ZeroCardViewAsSkill{
 public:
-    Taichen():ZeroCardViewAsSkill("taichen"){
+    TaichenFight():ZeroCardViewAsSkill("taichen_fight"){
 
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return ! player->hasUsed("TaichenCard");
+        return ! player->hasUsed("TaichenFightCard");
     }
 
     virtual const Card *viewAs() const{
-        return new TaichenCard;
+        return new TaichenFightCard;
     }
 };
 
@@ -300,15 +300,15 @@ public:
                     room->acquireSkill(player, "flood");
                     room->acquireSkill(player, "xiansheng");
 
-                    ServerPlayer *pangde = room->findPlayer("pangde");
-                    room->acquireSkill(pangde, "taichen");
+                    ServerPlayer *sp_pangde = room->findPlayer("sp_pangde");
+                    room->acquireSkill(sp_pangde, "taichen_fight");
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
                     room->installEquip(huatuo, "hualiu");
                     room->acquireSkill(huatuo, "guagu");
 
-                    ServerPlayer *lumeng = room->findPlayer("lumeng");
-                    room->acquireSkill(lumeng, "dujiang");
+                    ServerPlayer *lvmeng = room->findPlayer("lvmeng");
+                    room->acquireSkill(lvmeng, "dujiang");
 
                     ServerPlayer *caoren = room->findPlayer("caoren");
                     room->installEquip(caoren, "renwang_shield");
@@ -320,7 +320,7 @@ public:
 
         case Death:{
                 DamageStar damage = data.value<DamageStar>();
-                if(player->getGeneralName() == "pangde" &&
+                if(player->getGeneralName() == "sp_pangde" &&
                    damage && damage->from && damage->from->isLord())
                 {
                     damage = NULL;
@@ -343,21 +343,21 @@ FanchengScenario::FanchengScenario()
 {
     lord = "guanyu";
     loyalists << "huatuo";
-    rebels << "caoren" << "pangde" << "xuhuang";
-    renegades << "lumeng";
+    rebels << "caoren" << "sp_pangde" << "xuhuang";
+    renegades << "lvmeng";
 
     rule = new FanchengRule(this);
 
     skills << new Guagu
             << new Dujiang
             << new Flood
-            << new Taichen
+            << new TaichenFight
             << new Xiansheng
             << new Zhiyuan;
 
     addMetaObject<DujiangCard>();
     addMetaObject<FloodCard>();
-    addMetaObject<TaichenCard>();
+    addMetaObject<TaichenFightCard>();
     addMetaObject<ZhiyuanCard>();
 }
 

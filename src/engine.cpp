@@ -34,6 +34,7 @@ extern "C" {
     Package *NewWind();
     Package *NewFire();
     Package *NewThicket();
+    Package *NewMountain();
     Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
@@ -47,7 +48,8 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewHongyanScenario();
     Scenario *NewZombieScenario();
-    Scenario *NewChallengeScenario();
+    Scenario *NewLegendScenario();
+    Scenario *NewImpasseScenario();
 }
 
 extern "C" {
@@ -62,6 +64,7 @@ Engine::Engine()
     addPackage(NewWind());
     addPackage(NewFire());
     addPackage(NewThicket());
+    addPackage(NewMountain());
     addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
@@ -82,7 +85,8 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewHongyanScenario());
     addScenario(NewZombieScenario());
-    addScenario(NewChallengeScenario());
+    addScenario(NewLegendScenario());
+    addScenario(NewImpasseScenario());
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -90,6 +94,7 @@ Engine::Engine()
     modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
+    modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
@@ -98,6 +103,7 @@ Engine::Engine()
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
     modes["08boss"] = tr("8 players (boss mode)");
+    modes["08same"] = tr("8 players (same mode)");
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
 
@@ -241,6 +247,9 @@ void Engine::addPackage(Package *package){
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach(const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
+
+    patterns.unite(package->getPatterns());
+    related_skills.unite(package->getRelatedSkills());
 }
 
 void Engine::addBanPackage(const QString &package_name){
@@ -264,6 +273,18 @@ int Engine::getRoleIndex() const{
         return 4;
     }else
         return 1;
+}
+
+const CardPattern *Engine::getPattern(const QString &name) const{
+    return patterns.value(name, NULL);
+}
+
+QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
+    QList<const Skill *> skills;
+    foreach(QString skill_name, related_skills.values(skill_name))
+        skills << getSkill(skill_name);
+
+    return skills;
 }
 
 const General *Engine::getGeneral(const QString &name) const{
@@ -320,7 +341,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersion() const{
-    return "20110622";
+    return "20110718";
 }
 
 QStringList Engine::getExtensions() const{
@@ -415,6 +436,9 @@ void Engine::getRoles(const QString &mode, char *roles) const{
 
     if(mode == "02_1v1"){
         qstrcpy(roles, "ZN");
+        return;
+    }else if(mode == "04_1v3"){
+        qstrcpy(roles, "ZFFF");
         return;
     }
 
@@ -538,6 +562,22 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
+    if(Config.GameMode == "04_1v3"){
+        const Package *stdpack = findChild<const Package *>("standard");
+        QList<const Card *> stdcards = stdpack->findChildren<const Card *>();
+        QList<int> card_ids;
+
+        foreach(const Card *card, stdcards){
+            if(card->inherits("Disaster"))
+                continue;
+
+            card_ids << card->getId();
+        }
+
+        qShuffle(card_ids);
+        return card_ids;
+    }
+
     bool exclude_disaters = Config.GameMode == "06_3v3"
                             && Config.value("3v3/ExcludeDisasters", true).toBool();
 
@@ -625,9 +665,15 @@ const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const{
 
 const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if(skill)
+    if(skill == NULL)
+        return NULL;
+
+    if(skill->inherits("ViewAsSkill"))
         return qobject_cast<const ViewAsSkill *>(skill);
-    else
+    else if(skill->inherits("TriggerSkill")){
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        return trigger_skill->getViewAsSkill();
+    }else
         return NULL;
 }
 

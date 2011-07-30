@@ -131,7 +131,7 @@ QString ClientPlayer::getDeathPixmapPath() const{
 }
 
 bool ClientPlayer::hasLordSkill(const QString &skill_name) const{
-    if(ServerInfo.GameMode == "06_3v3")
+    if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1")
         return false;
     else if(acquired_skills.contains(skill_name))
         return true;

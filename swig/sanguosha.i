@@ -78,7 +78,7 @@ public:
 
     int getMaxCards() const;    
     int getXueyi() const;
-    void setXueyi(int xueyi);
+    void setXueyi(int xueyi, bool superimpose = true);
 
     QString getKingdom() const;
     void setKingdom(const char *kingdom);
@@ -182,6 +182,7 @@ public:
     bool canSlashWithoutCrossbow() const;
 	void jilei(const char *type);
     bool isJilei(const Card *card) const;
+	QList<const Skill *> getVisibleSkillList() const;
 };
 
 %extend Player{
@@ -305,6 +306,7 @@ struct SlashEffectStruct{
     SlashEffectStruct();
 
     const Slash *slash;
+	const Jink *jink;
 
     ServerPlayer *from;
     ServerPlayer *to;
@@ -380,6 +382,7 @@ enum TriggerEvent{
     DrawNCards,
     HpRecover,
 	HpLost,
+	HpChanged,
 
 	StartJudge,
 	AskForRetrial,
@@ -414,7 +417,9 @@ enum TriggerEvent{
 
     CardEffect,
     CardEffected,
-    CardFinished
+    CardFinished,
+
+	ChoiceMade,
 };
 
 class Card: public QObject
@@ -615,6 +620,8 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const = 0;
 };
 
+
+
 class QThread: public QObject{
 };
 
@@ -663,7 +670,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const char *winner);
     void slashEffect(const SlashEffectStruct &effect);
-    void slashResult(const SlashEffectStruct &effect, bool hit);
+    void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const char *skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const char *skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
@@ -684,7 +691,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
-    void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
+    void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
     int drawCard(); 
 	const Card *peek();
     void takeAG(ServerPlayer *player, int card_id);
@@ -745,6 +752,11 @@ public:
 
     void broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = QString());
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
+	
+	bool isVirtual();
+    void setVirtual();
+    void copyFrom(Room* rRoom);
+    Room* duplicate();
 };
 
 %extend Room {
@@ -767,6 +779,7 @@ public:
 	QRegExp(const char *);
 	bool exactMatch(const char *);
 };
+
 
 %include "luaskills.i"
 %include "card.i"

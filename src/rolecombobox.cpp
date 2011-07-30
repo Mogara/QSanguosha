@@ -29,13 +29,12 @@ RoleCombobox::RoleCombobox(Photo *photo)
             << new RoleComboboxItem("lord", index)
             << new RoleComboboxItem("loyalist", index)
             << new RoleComboboxItem("rebel", index)
-            << new RoleComboboxItem("renegade", index);    
+            << new RoleComboboxItem("renegade", index);
 
-    QGraphicsScene *scene = photo->scene();
-    setupItems(photo);
+    setupItems();
 
     foreach(RoleComboboxItem *item, items){
-        scene->addItem(item);
+        item->setParentItem(photo);
         item->hide();
 
         connect(item, SIGNAL(clicked()), this, SLOT(onItemClicked()));
@@ -44,12 +43,12 @@ RoleCombobox::RoleCombobox(Photo *photo)
     items.first()->show();
 }
 
-void RoleCombobox::setupItems(Photo *photo){
+void RoleCombobox::setupItems(){
     qreal height = items.first()->boundingRect().height();
     int i;
     for(i=0; i<items.length(); i++){
-        qreal x = photo->x() + 85;
-        qreal y = photo->y() + 15 + i*height;
+        qreal x = 85;
+        qreal y = 15 + i*height;
 
         RoleComboboxItem *item = items.at(i);
         item->setPos(x, y);
@@ -98,7 +97,7 @@ void RoleCombobox::fix(const QString &role){
     fixed->setPos(first_pos);
     fixed->show();
     fixed->setEnabled(false);
-    items.first()->scene()->addItem(fixed);
+    fixed->setParentItem(qobject_cast<QGraphicsObject *>(parent()));
 
     // delete all
     foreach(RoleComboboxItem *item, items)

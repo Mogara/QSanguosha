@@ -50,6 +50,7 @@ void Settings::init(){
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
+    EnableScene = value("EnableScene", false).toBool();	//changjing
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     AnnounceIP = value("AnnounceIP", false).toBool();
     Address = value("Address", QString()).toString();
@@ -80,7 +81,7 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/duanwu.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/guixin.jpg").toString();
 
     if(!contains("1v1/Banlist")){
         QStringList banlist;

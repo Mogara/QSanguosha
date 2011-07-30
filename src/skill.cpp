@@ -40,6 +40,7 @@ QString Skill::getText() const{
     case Skill::Frequent: break;
     case Skill::Limited: skill_name.append(tr(" [Limited]")); break;
     case Skill::Compulsory: skill_name.append(tr(" [Compulsory]")); break;
+    case Skill::Wake: skill_name.append(tr(" [Wake]")); break;
     }
 
     return skill_name;
@@ -246,7 +247,11 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
 }
 
 bool PhaseChangeSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) const{
-    return onPhaseChange(player);
+    bool skipped = onPhaseChange(player);
+    if(skipped)
+        player->skip(player->getPhase());
+
+    return skipped;
 }
 
 DrawCardsSkill::DrawCardsSkill(const QString &name)

@@ -30,7 +30,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *
 
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
-    source->setMark("rende", new_value);
+    room->setPlayerMark(source, "rende", new_value);
 
     if(old_value < 2 && new_value >= 2){
         RecoverStruct recover;
@@ -175,12 +175,11 @@ void LijianCard::use(Room *room, ServerPlayer *, const QList<ServerPlayer *> &ta
     duel->setSkillName("lijian");
     duel->setCancelable(false);
 
-    CardEffectStruct effect;
-    effect.card = duel;
-    effect.from = from;
-    effect.to = to;
-
-    room->cardEffect(effect);
+    CardUseStruct use;
+    use.from = from;
+    use.to << to;
+    use.card = duel;
+    room->useCard(use);
 }
 
 QingnangCard::QingnangCard(){

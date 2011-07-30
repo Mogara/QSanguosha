@@ -32,6 +32,7 @@ public:
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
     void removePlayerSkills(ServerPlayer *player);
+    int getRefCount(const TriggerSkill *skill) const;
 
     void addTriggerSkill(const TriggerSkill *skill);
     void removeTriggerSkill(const TriggerSkill *skill);
@@ -49,7 +50,7 @@ private:
     jmp_buf env;
     QString order;
 
-    QMap<TriggerEvent, QList<const TriggerSkill *> > skill_table;
+    QList<const TriggerSkill *> skill_table[NumOfEvents];
     QMap<const TriggerSkill *, int> refcount;
 };
 

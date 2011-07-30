@@ -284,6 +284,50 @@ QString Monkey::getEffectPath(bool ) const{
     return "audio/card/common/monkey.ogg";
 }
 
+class GaleShellSkill: public ArmorSkill{
+public:
+    GaleShellSkill():ArmorSkill("gale-shell"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if(damage.nature == DamageStruct::Fire){
+            LogMessage log;
+            log.type = "#GaleShellDamage";
+            log.from = player;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.damage + 1);
+            player->getRoom()->sendLog(log);
+
+            damage.damage ++;
+            data = QVariant::fromValue(damage);
+        }
+        return false;
+    }
+};
+
+GaleShell::GaleShell(Suit suit, int number) :Armor(suit, number){
+    setObjectName("gale-shell");
+    skill = new GaleShellSkill;
+
+    target_fixed = false;
+}
+
+bool GaleShell::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && Self->distanceTo(to_select) <= 1;
+}
+
+void GaleShell::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.value(0, source);
+
+    if(target->getArmor())
+        room->throwCard(target->getArmor());
+
+    room->moveCardTo(this, target, Player::Equip, true);
+}
+
+
 JoyPackage::JoyPackage()
     :Package("joy")
 {
@@ -299,7 +343,8 @@ JoyPackage::JoyPackage()
             << new Volcano(Card::Heart, 13)
             << new MudSlide(Card::Heart, 7);
 
-    cards << new Monkey(Card::Diamond, 13);
+    cards << new Monkey(Card::Diamond, 5)
+            << new GaleShell(Card::Heart, 1);
 
     foreach(Card *card, cards)
         card->setParent(this);

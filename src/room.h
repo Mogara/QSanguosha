@@ -47,7 +47,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner);
     void slashEffect(const SlashEffectStruct &effect);
-    void slashResult(const SlashEffectStruct &effect, bool hit);
+    void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name);
     void detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name);
     bool obtainable(const Card *card, ServerPlayer *player);
@@ -69,7 +69,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void doGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
-    void doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target);
+    void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
     int drawCard();
     const Card *peek();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL);
@@ -99,6 +99,11 @@ public:
 
     void reconnect(ServerPlayer *player, ClientSocket *socket);
     void marshal(ServerPlayer *player);
+
+    bool isVirtual();
+    void setVirtual();
+    void copyFrom(Room* rRoom);
+    Room* duplicate();
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card) const;
 
@@ -153,6 +158,7 @@ public:
     void choose2Command(ServerPlayer *player, const QString &general_name);
     void broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
+    void startTest(const QString &to_test);
 
 protected:
     virtual void timerEvent(QTimerEvent *);
@@ -192,6 +198,8 @@ private:
     QVariantMap tag;
     const Scenario *scenario;
 
+    bool _virtual;
+
     static QString generatePlayerName();
     void prepareForStart();
     AI *cloneAI(ServerPlayer *player);
@@ -217,6 +225,8 @@ private slots:
 
 signals:
     void room_message(const QString &msg);
+    void game_start();
+    void game_over(const QString &winner);
 };
 
 #endif // ROOM_H

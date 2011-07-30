@@ -12,7 +12,7 @@ ServerInfoStruct ServerInfo;
 
 bool ServerInfoStruct::parse(const QString &str){
     static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSAM12]*)");
-    if(!rx.exactMatch(str)){        
+    if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
         GameMode = QString("%1p").arg(count, 2, 10, QChar('0'));
@@ -72,6 +72,8 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     max_hp_label = new QLabel;
 
     list_widget = new QListWidget;
+    list_widget->setViewMode(QListView::IconMode);
+    list_widget->setMovement(QListView::Static);
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Server name"), name_label);

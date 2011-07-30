@@ -30,8 +30,16 @@ QRectF Pixmap::boundingRect() const{
     return QRectF(0, 0, pixmap.width(), pixmap.height());
 }
 
-void Pixmap::changePixmap(const QString &filename){
-    pixmap.load(filename);
+bool Pixmap::changePixmap(const QString &filename){
+    bool success = pixmap.load(filename);
+    if(success)
+        prepareGeometryChange();
+
+    return success;
+}
+
+void Pixmap::setPixmap(const QPixmap &pixmap){
+    this->pixmap = pixmap;
     prepareGeometryChange();
 }
 
@@ -81,7 +89,7 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
             setGraphicsEffect(NULL);
 
         emit selected_changed();
-    }else if(change == ItemEnabledChange){
+    }else if(change == ItemEnabledHasChanged){
         if(value.toBool()){
             setOpacity(1.0);
         }else{

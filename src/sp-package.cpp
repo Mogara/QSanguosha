@@ -2,6 +2,9 @@
 #include "general.h"
 #include "skill.h"
 #include "standard-skillcards.h"
+#include "carditem.h"
+#include "engine.h"
+#include "standard.h"
 
 class Yongsi: public TriggerSkill{
 public:
@@ -124,6 +127,136 @@ private:
     HuanzhuangCard *huanzhuang_card;
 };
 
+TaichenCard::TaichenCard(){
+}
+
+bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty() || to_select->isAllNude())
+        return false;
+
+    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
+        return Self->distanceTo(to_select) == 1;
+    else
+        return Self->inMyAttackRange(to_select);
+}
+
+void TaichenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    if(subcards.isEmpty())
+        room->loseHp(effect.from);
+    else
+        room->throwCard(this);
+
+    int i;
+    for(i=0; i<2; i++){
+        if(!effect.to->isAllNude())
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
+    }
+}
+
+class Taichen: public ViewAsSkill{
+public:
+    Taichen():ViewAsSkill("taichen"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getFilteredCard()->inherits("Weapon");
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() <= 1){
+            TaichenCard *taichen_card = new TaichenCard;
+            taichen_card->addSubcards(cards);
+            return taichen_card;
+        }else
+            return NULL;
+    }
+};
+
+class Xiuluo: public PhaseChangeSkill{
+public:
+    Xiuluo():PhaseChangeSkill("xiuluo"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && !target->isKongcheng()
+                && !target->getJudgingArea().isEmpty();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(!target->askForSkillInvoke(objectName()))
+            return false;
+
+        Room *room = target->getRoom();
+        int card_id = room->askForCardChosen(target, target, "j", objectName());
+        const Card *card = Sanguosha->getCard(card_id);
+
+        QString suit_str = card->getSuitString();
+        QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+        QString prompt = QString("@xiuluo:::%1").arg(suit_str);
+        if(room->askForCard(target, pattern, prompt)){
+            room->throwCard(card);
+        }
+
+        return false;
+    }
+};
+
+class Shenwei: public TriggerSkill{
+public:
+    Shenwei():TriggerSkill("shenwei"){
+        events << DrawNCards << GameStart;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(event == DrawNCards)
+            data = data.toInt() + 2;
+        else if(event == GameStart)
+            player->setXueyi(2);
+
+        return false;
+    }
+};
+
+class Danji: public PhaseChangeSkill{
+public:
+    Danji():PhaseChangeSkill("danji"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("danji") == 0
+                && target->getHandcardNum() > target->getHp();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *guanyu) const{
+        Room *room = guanyu->getRoom();
+        ServerPlayer *the_lord = room->getLord();
+        if(the_lord && the_lord->getGeneralName() == "caocao"){
+            LogMessage log;
+            log.type = "#DanjiWake";
+            log.from = guanyu;
+            log.arg = QString::number(guanyu->getHandcardNum());
+            log.arg2 = QString::number(guanyu->getHp());
+            room->sendLog(log);
+
+            guanyu->setMark("danji", 1);
+
+            room->loseMaxHp(guanyu);
+            room->acquireSkill(guanyu, "mashu");
+        }
+
+        return false;
+    }
+};
+
 SPPackage::SPPackage()
     :Package("sp")
 {
@@ -142,6 +275,26 @@ SPPackage::SPPackage()
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
     sp_sunshangxiang->addSkill("xiaoji");
+
+    General *sp_pangde = new General(this, "sp_pangde", "wei");
+    sp_pangde->addSkill(new Taichen);
+
+    General *shenlvbu1 = new General(this, "shenlvbu1", "god", 8, true, true);
+    shenlvbu1->addSkill("mashu");
+    shenlvbu1->addSkill("wushuang");
+
+    General *shenlvbu2 = new General(this, "shenlvbu2", "god", 4, true, true);
+    shenlvbu2->addSkill("mashu");
+    shenlvbu2->addSkill("wushuang");
+    shenlvbu2->addSkill(new Xiuluo);
+    shenlvbu2->addSkill(new Shenwei);
+    shenlvbu2->addSkill(new Skill("shenji"));
+
+    General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
+    sp_guanyu->addSkill("wusheng");
+    sp_guanyu->addSkill(new Danji);
+
+    addMetaObject<TaichenCard>();
 }
 
 ADD_PACKAGE(SP);

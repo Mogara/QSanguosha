@@ -47,18 +47,18 @@ sgs.ai_skill_use_func["ZhiyuanCard"]=function(card,use,self)
     end
 end
 
-local taichen_skill={}
-taichen_skill.name="taichen"
-table.insert(sgs.ai_skills,taichen_skill)
-taichen_skill.getTurnUseCard=function(self)
-		local card_str = ("@TaichenCard=.")
+local taichen_fight_skill={}
+taichen_fight_skill.name="taichen_fight"
+table.insert(sgs.ai_skills,taichen_fight_skill)
+taichen_fight_skill.getTurnUseCard=function(self)
+		local card_str = ("@TaichenFightCard=.")
 		local taichen_card = sgs.Card_Parse(card_str)
 		assert(taichen_card)
         return taichen_card
 end
 
-sgs.ai_skill_use_func["TaichenCard"]=function(card,use,self)
-    if self.player:usedTimes("TaichenCard")>0 then return end
+sgs.ai_skill_use_func["TaichenFightCard"]=function(card,use,self)
+    if self.player:usedTimes("TaichenFightCard")>0 then return end
     local lord=self.room:getLord()
     if self.player:getHp()>=lord:getHp() then
         if (self:getSlashNumber(self.player)+1)*2>self:getSlashNumber(lord) then
@@ -134,7 +134,7 @@ sgs.ai_skill_invoke.xiansheng=function(self)
     end
     
     if rebel*2+3>(self:getEquipNumber()*2+self.player:getHandcardNum()) then return true end
-    if self:getHp()==1 and self:getHandcardNum()<=1 then return true end
+    if self.player:getHp()==1 and self.player:getHandcardNum()<=1 then return true end
     return false
 end
 
