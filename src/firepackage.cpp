@@ -365,8 +365,13 @@ public:
 
         Room *room = pangtong->getRoom();
         if(pangtong->askForSkillInvoke(objectName(), data)){
-            room->broadcastInvoke("animate", "lightbox:$niepan");
-            room->playSkillEffect(objectName());
+            int n = qrand() % 2 + 1;
+            if(n==1){
+                room->broadcastInvoke("animate", "lightbox:$niepan1");
+            }else{
+                room->broadcastInvoke("animate", "lightbox:$niepan2");
+            }
+            room->playSkillEffect(objectName(),n);
 
             pangtong->loseMark("@nirvana");
 

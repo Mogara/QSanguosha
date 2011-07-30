@@ -41,8 +41,8 @@ QString Analeptic::getSubtype() const{
     return "buff_card";
 }
 
-QString Analeptic::getEffectPath(bool ) const{
-    return Card::getEffectPath();
+QString Analeptic::getEffectPath(bool is_male) const{
+    return Card::getEffectPath(is_male);
 }
 
 bool Analeptic::IsAvailable(const Player *player){
