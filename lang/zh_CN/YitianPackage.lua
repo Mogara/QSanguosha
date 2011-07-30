@@ -11,7 +11,7 @@ return {
 	["jilei:basic"] = "基本牌", 
 	["jilei:equip"] = "装备牌", 
 	["jilei:trick"] = "锦囊牌", 
-	["shencc"] = "魏武帝", 
+	["weiwudi"] = "魏武帝", 
 	["caochong"] = "曹冲", 
 	["caozhi"] = "曹植", 
 	["zhangjunyi"] = "张儁乂", 
@@ -217,7 +217,7 @@ return {
 	[":jinshen"] = "锁定技，你不能成为【乐不思蜀】与【兵粮寸断】的目标。",
 	
 	-- CV
-	["cv:shencc"] = "",
+	["cv:weiwudi"] = "",
 	["cv:caochong"] = "",
 	["cv:zhangjunyi"] = "",
 	["cv:lukang"] = "",
@@ -233,7 +233,7 @@ return {
 	["cv:zhanggongqi"] = "",
 	["cv:yitianjian"] = "",
 	
-	["designer:shencc"] = "官方内测第三版",
+	["designer:weiwudi"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
 	["designer:zhangjunyi"] = "孔孟老庄胡",
 	["designer:lukang"] = "冢冢的青藤",

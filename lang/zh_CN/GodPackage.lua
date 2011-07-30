@@ -3,7 +3,7 @@
 return {
 	["god"] = "神", 
 	["shenguanyu"] = "神关羽", 
-	["shenlumeng"] = "神吕蒙", 
+	["shenlvmeng"] = "神吕蒙", 
 	["wushen"] = "武神", 
 	["wuhun"] = "武魂", 
 	["shelie"] = "涉猎", 
@@ -44,7 +44,7 @@ return {
 	["mediumyeyan"] = "中业炎", 
 	["smallyeyan"] = "小业炎", 
 	["shencaocao"] = "神曹操", 
-	["shenlubu"] = "神吕布", 
+	["shenlvbu"] = "神吕布", 
 	["guixin"] = "归心", 
 	["feiying"] = "飞影", 
 	["kuangbao"] = "狂暴", 
@@ -92,16 +92,16 @@ return {
 	["stars"] = "七星堆",
 	
 	["~shencaocao"] = "神龟虽寿，犹有竟时。腾蛇乘雾，终为土灰",
-	["~shenlumeng"] = "死去元知万事空",
+	["~shenlvmeng"] = "死去元知万事空",
 	["~shenzhugeliang"] = "吾命将至，再不能临阵讨贼矣",
 	["~shenzhouyu"] = "残炎黯然，弦歌不复",
 	
 	["cv:shenguanyu"] = "",
-	["cv:shenlumeng"] = "宇文天启",
+	["cv:shenlvmeng"] = "宇文天启",
 	["cv:shenzhouyu"] = "血桜の涙",
 	["cv:shenzhugeliang"] = "背后灵",
 	["cv:shencaocao"] = "倚天の剑",
-	["cv:shenlubu"] = "",
+	["cv:shenlvbu"] = "",
 	["cv:shenzhaoyun"] = "",
 	
 	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
