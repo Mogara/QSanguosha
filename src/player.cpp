@@ -415,9 +415,9 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    int longhun = hasSkill("longhun") ? 2 : 0;
+    int juejing = hasSkill("juejing") ? 2 : 0;
 
-    return qMax(hp,0) + xueyi + extra + longhun;
+    return qMax(hp,0) + xueyi + extra +juejing;
 }
 
 int Player::getXueyi() const{

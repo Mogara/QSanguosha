@@ -1,29 +1,26 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
     "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.3" />
+<meta name="generator" content="AsciiDoc 8.6.5" />
 <title>传奇模式</title>
 <style type="text/css">
-/* Sans-serif font. */
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
 h1, h2, h3, h4, h5, h6,
 div.title, caption.title,
 thead, p.table.header,
-div#toctitle,
-span#author, span#revnumber, span#revdate, span#revremark,
-div#footer {
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
   font-family: Arial,Helvetica,sans-serif;
-}
-
-/* Serif font. */
-div.sectionbody {
-  font-family: Georgia,"Times New Roman",Times,serif;
-}
-
-/* Monospace font. */
-tt {
-  font-size: inherit;
 }
 
 body {
@@ -48,11 +45,6 @@ strong {
   color: #083194;
 }
 
-tt {
-  font-size: inherit;
-  color: navy;
-}
-
 h1, h2, h3, h4, h5, h6 {
   color: #527bbd;
   margin-top: 1.2em;
@@ -71,6 +63,9 @@ h3 {
 }
 h3 + * {
   clear: left;
+}
+h5 {
+  font-size: 1.0em;
 }
 
 div.sectionbody {
@@ -97,36 +92,36 @@ pre {
   margin: 0;
 }
 
-span#author {
+#author {
   color: #527bbd;
   font-weight: bold;
   font-size: 1.1em;
 }
-span#email {
+#email {
 }
-span#revnumber, span#revdate, span#revremark {
+#revnumber, #revdate, #revremark {
 }
 
-div#footer {
+#footer {
   font-size: small;
   border-top: 2px solid silver;
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
-div#footer-text {
+#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
-div#footer-badges {
+#footer-badges {
   float: right;
   padding-bottom: 0.5em;
 }
 
-div#preamble {
+#preamble {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
   margin-top: 1.0em;
@@ -267,35 +262,12 @@ div.compact div, div.compact div {
   margin-bottom: 0.1em;
 }
 
-div.tableblock > table {
-  border: 3px solid #527bbd;
-}
-thead, p.table.header {
-  font-weight: bold;
-  color: #527bbd;
-}
 tfoot {
   font-weight: bold;
 }
 td > div.verse {
   white-space: pre;
 }
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
-
 
 div.hdlist {
   margin-top: 0.8em;
@@ -362,14 +334,14 @@ div.colist td img {
 }
 
 @media print {
-  div#footer-badges { display: none; }
+  #footer-badges { display: none; }
 }
 
-div#toc {
+#toc {
   margin-bottom: 2.5em;
 }
 
-div#toctitle {
+#toctitle {
   color: #527bbd;
   font-size: 1.1em;
   font-weight: bold;
@@ -394,10 +366,157 @@ div.toclevel4 {
   font-size: 0.9em;
 }
 
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -459,6 +578,25 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName == 'DIV'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -486,24 +624,44 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  var cont = document.getElementById("content");
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
   var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      // Use [\s\S] in place of . so multi-line matches work.
-      // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
-      spans[i].innerHTML =
-        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -523,9 +681,32 @@ footnotes: function () {
       }
     }
   }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
 
 }
+asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -535,55 +716,55 @@ footnotes: function () {
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_">概述</h2>
+<h2 id="_说明">说明</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>本模式为八人身份局的一个武将强化模式。每名武将对应两张游戏牌，称为该武将的“传奇牌”，每张“传奇牌”对应一个费用。你可以用传奇标记来支付传奇牌的费用，然后将其从弃牌堆回收到手牌。</p></div>
+<div class="paragraph"><p>本模式为八人身份局的一个武将强化模式。每名武将对应两张游戏牌，称为该武将的“传奇牌”，每张“传奇牌”对应一个费用。你可以用传奇标记来支付传奇牌的费用，然后将其从弃牌堆回收到手牌。传奇标记在回合开始时获得。</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="__2">传奇标记</h2>
+<h2 id="_流程">流程</h2>
 <div class="sectionbody">
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
-每名玩家在回合开始时获得X枚传奇标记，X为当前手牌数，其余与八人身份局完全相同。
+游戏开始时，将相当于所有玩家的总生命值数目的牌从牌堆弃入弃牌区。所有玩家获得技能【传奇】
 </p>
 </li>
 <li>
-
+<p>
+其余流程与八人身份局完全相同。
+</p>
 </li>
 </ol></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="__4">传奇牌的获取</h2>
+<h2 id="_专有技能_传奇">专有技能：传奇</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>出牌阶段，你可以支付你的某张传奇牌的费用，然后弃掉一张手牌以将其从弃牌堆加入手牌。如果你弃掉的牌的花色与你的势力相对应，则你只需展示而不用弃掉该牌。</p></div>
-<div class="paragraph"><p>花色与势力的对应为，吴国对应方片，蜀国对应红心，魏国对应黑桃，群雄对应草花。</p></div>
+<div class="paragraph"><p>锁定技，回合开始时你获得X枚传奇标记，x为你当前手牌数。</p></div>
+<div class="paragraph"><p>出牌阶段，若你的传奇标记数不少于你的某张传奇牌的费用，你可以弃掉该数目加上剩余标记数一半的传奇标记，然后用一张手牌将目标传奇牌从弃牌堆换入手牌。</p></div>
+<div class="paragraph"><p>若你用于换回传奇牌的手牌花色是你的势力所对应的花色，则你只需展示该牌不需弃置。</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="__5">例子说明</h2>
+<h2 id="_传奇技能的一些说明">传奇技能的一些说明</h2>
 <div class="sectionbody">
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-关羽：传奇牌 赤兔 费用8 青龙刀 费用15 
-</p>
-</li>
-<li>
-<p>
-张飞：传奇牌 梅花J杀 费用4 黑桃Q 丈八蛇矛 费用15
-</p>
-</li>
-</ol></div>
+<div class="paragraph"><p>＊本技能发动方法与于吉相似，发动后选择传奇牌然后选择用于换回传奇牌的手牌，然后点确定。</p></div>
+<div class="paragraph"><p>＊每名玩家的传奇牌为两张固定的游戏牌，如张飞的传奇牌1为卡牌编号21的杀。你可以在etc/ChuanqiModeConfig.txt中添加或修改每名玩家的传奇牌数据，格式为卡牌编号（卡牌一览中该牌的序号）、费用、第二传奇牌卡牌编号、费用。</p></div>
+<div class="paragraph"><p>＊若该传奇牌不在弃牌堆中，则发动技能后没有事情发生，房间会有消息提醒。</p></div>
+<div class="paragraph"><p>＊不仅会支付传奇牌的费用，还会失去剩下的一半传奇标记。</p></div>
+<div class="paragraph"><p>＊势力对应花色为：吴国对应方片，蜀国对应红心，魏国对应黑桃，群雄对应草花。如张飞用红桃闪发动传奇，则支付传奇标记，将传奇牌加入手牌，然后展示该红桃闪。如果他用黑桃杀发动传奇，则在该传奇牌加入手牌后，需将该黑桃杀弃置。</p></div>
+<div class="paragraph"><p>＊由于技术原因，重新开始游戏后传奇牌选择窗口依然是前一局游戏你的人物的传奇牌，但发动效果是当前人物的传奇牌。</p></div>
+<div class="sect2">
+<h3 id="_design_and_code_by_hypercross">Design and code by hypercross</h3>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-26 18:22:49 中国标准时间
+Last updated 2011-07-31 22:43:41 东部夏令时
 </div>
 </div>
 </body>

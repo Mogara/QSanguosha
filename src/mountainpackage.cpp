@@ -1054,7 +1054,7 @@ public:
 class Xinsheng: public MasochismSkill{
 public:
     Xinsheng():MasochismSkill("xinsheng"){
-
+        frequency = Frequent;
     }
 
     virtual void onDamaged(ServerPlayer *zuoci, const DamageStruct &damage) const{
@@ -1062,7 +1062,8 @@ public:
         if(n == 0)
             return;
 
-        Huashen::AcquireGenerals(zuoci, n);
+        if(zuoci->getRoom()->askForSkillInvoke(zuoci, objectName()))
+            Huashen::AcquireGenerals(zuoci, n);
     }
 };
 

@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSAM12]*)");
+    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCAM12]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -45,6 +45,7 @@ bool ServerInfoStruct::parse(const QString &str){
 
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
+    EnableScene = flags.contains("C");
     EnableAI = flags.contains("A");
     DisableChat = flags.contains("M");
 
@@ -66,6 +67,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     game_mode_label = new QLabel;
     player_count_label = new QLabel;
     two_general_label = new QLabel;
+    scene_label = new QLabel;
     free_choose_label = new QLabel;
     enable_ai_label = new QLabel;
     time_limit_label = new QLabel;
@@ -82,6 +84,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
     layout->addRow(tr("Game mode"), game_mode_label);
     layout->addRow(tr("Player count"), player_count_label);
     layout->addRow(tr("2nd general mode"), two_general_label);
+    layout->addRow(tr("Scene Mode"), scene_label);
     layout->addRow(tr("Max HP scheme"), max_hp_label);
     layout->addRow(tr("Free choose"), free_choose_label);
     layout->addRow(tr("Enable AI"), enable_ai_label);
@@ -105,6 +108,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
+    scene_label->setText(info.EnableScene ? tr("Enabled") : tr("Disabled"));
 
     if(info.Enable2ndGeneral){
         switch(info.MaxHPScheme){
@@ -157,6 +161,7 @@ void ServerInfoWidget::clear(){
     game_mode_label->clear();
     player_count_label->clear();
     two_general_label->clear();
+    scene_label->clear();
     free_choose_label->clear();
     time_limit_label->clear();
     list_widget->clear();
