@@ -5,6 +5,7 @@
 #include "ai.h"
 #include "scenario.h"
 #include "gamerule.h"
+#include "scenerule.h"	//changjing
 #include "contestdb.h"
 #include "banpairdialog.h"
 #include "roomthread3v3.h"
@@ -24,7 +25,7 @@ Room::Room(QObject *parent, const QString &mode)
     :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
     chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
-    L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL) ,_virtual(false)
+    L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
@@ -751,10 +752,8 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
     if(player->isKongcheng()){
         // jijiu special case
         if(player->hasSkill("jijiu") && player->getPhase() == Player::NotActive){
-            ServerPlayer *huatuo = player;
-            QList<const Card *> equips = huatuo->getEquips();
             bool has_red = false;
-            foreach(const Card *equip, equips){
+            foreach(const Card *equip, player->getEquips()){
                 if(equip->isRed()){
                     has_red = true;
                     break;
@@ -765,6 +764,17 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying){
                 return NULL;
         }else if(player->hasSkill("jiushi")){
             if(!player->faceUp())
+                return NULL;
+        }else if(player->hasSkill("longhun")){
+            bool has_heart = false;
+            foreach(const Card *equip, player->getEquips()){
+                if(equip->getSuit() == Card::Heart){
+                    has_heart = true;
+                    break;
+                }
+            }
+
+            if(!has_heart)
                 return NULL;
         }else
             return NULL;
@@ -1353,7 +1363,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 #ifndef QT_NO_DEBUG
         left_seconds = 1;
 #endif
-        if(_virtual||!property("to_test").toString().isEmpty())
+        if(_virtual || !property("to_test").toString().isEmpty())
             timerEvent(NULL);
 
         broadcastInvoke("startInXs", QString::number(left_seconds));
@@ -1926,6 +1936,8 @@ void Room::startGame(){
         game_rule = new BossMode(this);
     else if(mode == "04_1v3")
         game_rule = new HulaoPassMode(this);
+    else if(Config.EnableScene)	//changjing
+        game_rule = new SceneRule(this);	//changjing
     else
         game_rule = new GameRule(this);
 
@@ -2952,28 +2964,28 @@ bool Room::isVirtual()
 
 void Room::setVirtual()
 {
-    _virtual=true;
+    _virtual = true;
 }
 
 void Room::copyFrom(Room* rRoom)
 {
-    QMap<ServerPlayer*,ServerPlayer*> player_map;
+    QMap<ServerPlayer*, ServerPlayer*> player_map;
 
-    for(int i=0;i<players.length();i++)
+    for(int i=0; i<players.length(); i++)
     {
 
-        ServerPlayer* a=rRoom->players.at(i);
-        ServerPlayer* b=players.at(i);
-        player_map.insert(a,b);
+        ServerPlayer* a = rRoom->players.at(i);
+        ServerPlayer* b = players.at(i);
+        player_map.insert(a, b);
 
-        transfigure(b,a->getGeneralName(),false);
+        transfigure(b, a->getGeneralName(), false);
 
         b->copyFrom(a);
     }
-    for(int i=0;i<players.length();i++)
+    for(int i=0; i<players.length(); i++)
     {
-        ServerPlayer* a=rRoom->players.at(i);
-        ServerPlayer* b=players.at(i);
+        ServerPlayer* a = rRoom->players.at(i);
+        ServerPlayer* b = players.at(i);
         b->setNext(player_map.value(a->getNext()));
     }
 
@@ -2981,33 +2993,34 @@ void Room::copyFrom(Room* rRoom)
     {
         if(!a->isAlive())alive_players.removeOne(a);
     }
-    current=player_map.value(rRoom->getCurrent());
+    current = player_map.value(rRoom->getCurrent());
 
-    pile1=QList<int>(rRoom->pile1);
-    pile2=QList<int>(rRoom->pile2);
-    table_cards=QList<int>(rRoom->table_cards);
-    draw_pile=&pile1;
-    discard_pile=&pile2;
+    pile1 = QList<int> (rRoom->pile1);
+    pile2 = QList<int> (rRoom->pile2);
+    table_cards = QList<int> (rRoom->table_cards);
+    draw_pile = &pile1;
+    discard_pile = &pile2;
 
-    place_map=QMap<int,Player::Place>(rRoom->place_map);
-    owner_map=QMap<int,ServerPlayer*>();
+    place_map = QMap<int, Player::Place> (rRoom->place_map);
+    owner_map = QMap<int, ServerPlayer*>();
 
-    QList<int> keys=rRoom->owner_map.keys();
+    QList<int> keys = rRoom->owner_map.keys();
 
-    foreach(int i,keys)owner_map.insert(i,rRoom->owner_map.value(i));
+    foreach(int i, keys)
+        owner_map.insert(i, rRoom->owner_map.value(i));
 
-    provided=rRoom->provided;
+    provided = rRoom->provided;
 
-    tag=QVariantMap(rRoom->tag);
+    tag = QVariantMap(rRoom->tag);
 
 }
 
 Room* Room::duplicate()
 {
-    Server* svr=qobject_cast<Server *>(parent());
-    Room* room=svr->createNewRoom();
+    Server* svr = qobject_cast<Server *> (parent());
+    Room* room = svr->createNewRoom();
     room->setVirtual();
-    room->fillRobotsCommand(NULL,0);
+    room->fillRobotsCommand(NULL, 0);
     room->copyFrom(this);
     return room;
 }

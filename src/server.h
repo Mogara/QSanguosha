@@ -82,6 +82,7 @@ private:
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
+    QCheckBox *scene_checkbox;	//changjing
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;

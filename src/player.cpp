@@ -415,7 +415,9 @@ int Player::getMaxCards() const{
             extra = 1;
     }
 
-    return qMax(hp,0) + xueyi + extra;
+    int juejing = hasSkill("juejing") ? 2 : 0;
+
+    return qMax(hp,0) + xueyi + extra +juejing;
 }
 
 int Player::getXueyi() const{
@@ -638,6 +640,10 @@ QList<const Skill *> Player::getVisibleSkillList() const{
     return skills;
 }
 
+QSet<QString> Player::getAcquiredSkills() const{
+    return acquired_skills;
+}
+
 bool Player::isProhibited(const Player *to, const Card *card) const{
     return Sanguosha->isProhibited(this, to, card);
 }
@@ -688,35 +694,36 @@ bool Player::isCaoCao() const{
 
 void Player::copyFrom(Player* p)
 {
-    Player *b=this;
-    Player *a=p;
-    b->marks=QMap<QString,int>(a->marks);
-    b->piles=QMap<QString, QList<int> >(a->piles);
-    b->acquired_skills=QSet<QString>(a->acquired_skills);
-    b->flags=QSet<QString>(a->flags);
-    b->history=QHash<QString,int> (a->history);
+    Player *b = this;
+    Player *a = p;
 
-    b->hp=a->hp;
-    b->max_hp=a->max_hp;
-    b->xueyi=a->xueyi;
-    b->kingdom=a->kingdom;
-    b->role=a->role;
-    b->seat=a->seat;
-    b->alive=a->alive;
-    b->attack_range=a->attack_range;
+    b->marks            = QMap<QString, int> (a->marks);
+    b->piles            = QMap<QString, QList<int> > (a->piles);
+    b->acquired_skills  = QSet<QString> (a->acquired_skills);
+    b->flags            = QSet<QString> (a->flags);
+    b->history          = QHash<QString, int> (a->history);
 
-    b->phase=a->phase;
-    b->weapon=a->weapon;
-    b->armor=a->armor;
-    b->defensive_horse=a->defensive_horse;
-    b->offensive_horse=a->offensive_horse;
-    b->face_up=a->face_up;
-    b->chained=a->chained;
-    b->judging_area=QList<const Card *>(a->judging_area);
-    b->delayed_tricks=QList<const DelayedTrick *> (a->delayed_tricks);
-    b->fixed_distance=QHash<const Player *, int> (a->fixed_distance);
-    b->jilei_set=QSet<Card::CardType>(a->jilei_set);
+    b->hp               = a->hp;
+    b->max_hp           = a->max_hp;
+    b->xueyi            = a->xueyi;
+    b->kingdom          = a->kingdom;
+    b->role             = a->role;
+    b->seat             = a->seat;
+    b->alive            = a->alive;
+    b->attack_range     = a->attack_range;
 
-    b->tag=QVariantMap(a->tag);
+    b->phase            = a->phase;
+    b->weapon           = a->weapon;
+    b->armor            = a->armor;
+    b->defensive_horse  = a->defensive_horse;
+    b->offensive_horse  = a->offensive_horse;
+    b->face_up          = a->face_up;
+    b->chained          = a->chained;
+    b->judging_area     = QList<const Card *> (a->judging_area);
+    b->delayed_tricks   = QList<const DelayedTrick *> (a->delayed_tricks);
+    b->fixed_distance   = QHash<const Player *, int> (a->fixed_distance);
+    b->jilei_set        = QSet<Card::CardType> (a->jilei_set);
+
+    b->tag              = QVariantMap(a->tag);
 
 }

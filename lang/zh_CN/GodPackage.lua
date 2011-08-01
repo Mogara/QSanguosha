@@ -126,4 +126,5 @@ return {
 	["@bear"] = "忍",
 	["#BaiyinWake"] = "%from 的忍标记达到 %arg 个(大于4)，达到拜印的觉醒条件",
 	["@jilve-zhiheng"] = "请发动【制衡】技能",
+	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【连破】的发动条件",
 }

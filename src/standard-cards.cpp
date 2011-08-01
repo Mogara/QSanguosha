@@ -243,7 +243,11 @@ public:
             if(player->hasFlag("drank"))
                 room->setPlayerFlag(player, "-drank");
 
-            room->cardEffect(card, player, effect.to);
+            CardUseStruct use;
+            use.card = card;
+            use.from = player;
+            use.to << effect.to;
+            room->useCard(use, false);
         }
 
         return false;
@@ -799,6 +803,12 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
     room->throwCard(card_id);
+
+    LogMessage log;
+    log.type = "$Dismantlement";
+    log.from = effect.to;
+    log.card_str = QString::number(card_id);
+    room->sendLog(log);
 }
 
 Indulgence::Indulgence(Suit suit, int number)

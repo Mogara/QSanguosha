@@ -838,10 +838,27 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
         menu->addSeparator();
 
         if(cards.isEmpty()){
-            menu->addAction(tr("There is no known cards"));
+            menu->addAction(tr("There is no known cards"))->setEnabled(false);
         }else{
             foreach(const Card *card, cards)
                 menu->addAction(card->getSuitIcon(), card->getFullName());
+        }
+
+        // acquired skills
+        QSet<QString> skill_names = player->getAcquiredSkills();
+        QList<const Skill *> skills;
+        foreach(QString skill_name, skill_names){
+            const Skill *skill = Sanguosha->getSkill(skill_name);
+            if(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"))
+                skills << skill;
+        }
+
+        if(!skills.isEmpty()){
+            menu->addSeparator();
+            foreach(const Skill *skill, skills){
+                QString tooltip = skill->getDescription();
+                menu->addAction(Sanguosha->translate(skill->objectName()))->setToolTip(tooltip);
+            }
         }
 
         menu->popup(event->screenPos());
