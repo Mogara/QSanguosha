@@ -87,12 +87,13 @@ setup TW9saWdhbG9v55qE5pyN5Yqh5Zmo:08p:0:test+god+joy:FSA
 	为 wind+fire
 
 * flags:
-	具体的标记，目前可用的标记有4个，标记与标记之间 *没有* 分隔，也 *没有* 先后顺序：
+	具体的标记，目前可用的标记有5个，标记与标记之间 *没有* 分隔，也 *没有* 先后顺序：
 	例如 FS 和 SF 是表示相同的含义
 
 -----------------------------
 	F: 表示可自由选将	(F= Free choose)
 	S: 是否启用双将		(S= Secondard general)
+	C: 是否启用场景模式	(C= sCene Mode)
 	A: 是否启用AI		(A= AI)
 	M: 是否禁用聊天		(M= Mute)
 -----------------------------
