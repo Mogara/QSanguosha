@@ -96,7 +96,7 @@ return {
 	["~shenzhugeliang"] = "吾命将至，再不能临阵讨贼矣",
 	["~shenzhouyu"] = "残炎黯然，弦歌不复",
 	
-	["cv:shenguanyu"] = "",
+	["cv:shenguanyu"] = "奈何",
 	["cv:shenlumeng"] = "宇文天启",
 	["cv:shenzhouyu"] = "血桜の涙",
 	["cv:shenzhugeliang"] = "背后灵",
@@ -127,4 +127,11 @@ return {
 	["#BaiyinWake"] = "%from 的忍标记达到 %arg 个(大于4)，达到拜印的觉醒条件",
 	["@jilve-zhiheng"] = "请发动【制衡】技能",
 	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【连破】的发动条件",
+	
+	["~shenguanyu"] = "吾一世英名,竟葬于小人之手！",
+	["$wushen1"] = "武神现世,天下莫敌！",
+	["$wushen2"] = "战意,化为青龙翱翔吧！",
+	["$wuhun1"] = "关某记下了",
+	["$wuhun2"] = "我生不能啖汝之肉,死当追汝之魂！",
+	["$wuhun3"] = "桃园之梦,再也不会回来了。。。"
 }

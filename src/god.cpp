@@ -27,8 +27,10 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.from && damage.from != player)
+        if(damage.from && damage.from != player){
             damage.from->gainMark("@nightmare", damage.damage);
+            damage.from->getRoom()->playSkillEffect(objectName(), 1);
+        }
 
         return false;
     }
@@ -88,7 +90,9 @@ public:
             room->sendLog(log);
 
             room->killPlayer(foe);
-        }
+            room->playSkillEffect("wuhun", 2);
+        }else
+            room->playSkillEffect("wuhun", 3);
 
         return false;
     }
