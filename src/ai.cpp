@@ -300,9 +300,13 @@ static bool CompareByNumber(const Card *c1, const Card *c2){
     return c1->getNumber() < c2->getNumber();
 }
 
-const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &){
+const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reason){
     QList<const Card *> cards = self->getHandcards();
     qSort(cards.begin(), cards.end(), CompareByNumber);
+
+    // zhiba special case
+    if(reason == "zhiba" && self->hasLordSkill("zhiba"))
+        return cards.last();
 
     if(requestor != self && isFriend(requestor))
         return cards.first();

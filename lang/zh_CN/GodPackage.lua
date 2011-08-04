@@ -124,7 +124,7 @@ return {
 	["lianpo"] = "连破",
 	[":lianpo"] = "若你于一回合内杀死至少一名角色，可于此回合结束后，进行一个额外的回合。",
 	["@bear"] = "忍",
-	["#BaiyinWake"] = "%from 的忍标记达到 %arg 个(大于4)，达到拜印的觉醒条件",
+	["#BaiyinWake"] = "%from 的忍标记达到 %arg 个(大于或等于4)，达到拜印的觉醒条件",
 	["@jilve-zhiheng"] = "请发动【制衡】技能",
 	["#LianpoCanInvoke"] = "%from 在本回合内杀死了 %arg 名角色，达成【连破】的发动条件",
 	
