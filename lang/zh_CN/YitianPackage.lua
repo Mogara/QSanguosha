@@ -188,6 +188,9 @@ return {
 	["toudu"] = "偷渡",
 	[":toudu"] = "当你的武将牌背面向上时,若你受到伤害,你可以弃一张手牌并将你的武将牌翻面,若如此做,视为对任 意一名其他角色使用了一张【杀】.",
 	["@zhenggong"] = "争功",
+	["$zhenggong"] = "不肯屈人后,看某第一功",
+	["$toudu"] = "攻其不意,掩其无备",
+	["~dengshizai"] = "蹇利西南,不利东北；破蜀功高,难以北回。。",
 	
 	-- 张鲁
 	["zhanggongqi"] = "张公祺",
@@ -229,7 +232,7 @@ return {
 	["cv:jiangboyue"] = "Jr. Wakaran",
 	["cv:jiawenhe"] = "",
 	["cv:guzhielai"] = "",
-	["cv:dengshizai"] = "",
+	["cv:dengshizai"] = "阿澈",
 	["cv:zhanggongqi"] = "",
 	["cv:yitianjian"] = "",
 	
