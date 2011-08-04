@@ -1373,8 +1373,11 @@ void RoomScene::enableTargets(const Card *card){
     }
 
     if(card == NULL){
+        bool inactive = ClientInstance->getStatus() == Client::NotActive;
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setOpacity(0.7);
+            if(!inactive)
+                item->setOpacity(0.7);
+
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
