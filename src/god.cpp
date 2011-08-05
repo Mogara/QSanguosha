@@ -426,6 +426,7 @@ public:
         player->getRoom()->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
+        player->getRoom()->playSkillEffect(objectName());
 
         return false;
     }
@@ -448,6 +449,8 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = player->getRoom();
+            room->playSkillEffect(objectName());
+
             int num = player->getMark("@wrath");
             if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
                 player->loseMark("@wrath");
