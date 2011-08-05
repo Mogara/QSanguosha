@@ -117,7 +117,7 @@ class Scene27Skill : public OneCardViewAsSkill {
 SceneRule::SceneRule(QObject *parent) : GameRule(parent) {
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    events << Predamaged << Damaged;
+    events << CardEffect << Predamaged << Damaged;
 
     if(!Sanguosha->getSkill("#scene_dst_effect")) {
         QList<const Skill *> skillList;
@@ -421,6 +421,7 @@ bool SceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data
                 room->sendLog(log);
 
                 room->throwCard(use.card);
+                room->recover(effectTo, recover);
                 return true;
             }
             break;

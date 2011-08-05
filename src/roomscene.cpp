@@ -2201,8 +2201,11 @@ void RoomScene::onGameOver(){
         win_effect = "win";
         foreach(const Player *player, ClientInstance->getPlayers()){
             if(player->property("win").toBool() && player->isCaoCao()){
+
+#ifdef Q_OS_WIN
                 if(SoundEngine)
                     SoundEngine->stopAllSounds();
+#endif
 
                 win_effect = "win-cc";
                 break;

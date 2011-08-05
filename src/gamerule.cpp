@@ -535,6 +535,9 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     room->transfigure(player, new_general, true, true);
     room->revivePlayer(player);
 
+    if(player->getKingdom() != player->getGeneral()->getKingdom())
+        room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+
     room->broadcastInvoke("revealGeneral",
                           QString("%1:%2").arg(player->objectName()).arg(new_general),
                           player);

@@ -1046,7 +1046,9 @@ public:
 
     virtual void onGameStart(ServerPlayer *player) const{
         if(player->askForSkillInvoke(objectName())){
-            player->getRoom()->transfigure(player, "sp_sunshangxiang", true, false);
+            Room *room = player->getRoom();
+            room->transfigure(player, "sp_sunshangxiang", true, false);
+            room->setPlayerProperty(player, "kingdom", "shu");
         }
     }
 };
