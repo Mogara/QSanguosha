@@ -362,7 +362,7 @@ local t = {
 	["~guanyu"] = "什么？此地叫麦城？",
 	["~zhangfei"] = "实在是杀不动啦……",
 	["~zhaoyun"] = "这就是失败的滋味吗？",
-	["~machao"] = "(马蹄声...)",
+	["~machao"] = "(马蹄声……)",
 	["~zhugeliang"] = "将星陨落，天命难违",
 	["~huangyueying"] = "亮",
 	
