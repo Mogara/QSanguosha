@@ -23,12 +23,14 @@ return {
 	
 	["taichen"] = "抬榇",
 	[":taichen"] = "出牌阶段，你可以自减1点体力或弃一张武器牌，弃掉你攻击范围内的一名角色处（手牌、装备区、判定区）的两张牌，每回合中，你可以多次使用抬榇",
+	["$taichen"] = "良将不惧死以苟免，烈士不毁节以求生",
+	["~sp_pangde"] = "吾宁死于刀下，岂降汝乎",
 	
 	["cv:gongsunzan"] = "",
 	["cv:yuanshu"] = "名将三国",
 	["cv:sp_sunshangxiang"] = "",
 	["cv:sp_diaochan"] = "",
-	["cv:sp_pangde"] = "",
+	["cv:sp_pangde"] = "Glory",
 	
 	["designer:sp_pangde"] = "太阳神上",
 	

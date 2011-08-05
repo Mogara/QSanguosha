@@ -2608,7 +2608,7 @@ void RoomScene::detachSkill(const QString &skill_name){
             button->deleteLater();
             itor.remove();
 
-            return;
+            break;
         }
     }
 
