@@ -101,7 +101,7 @@ return {
 	["cv:shenzhouyu"] = "血桜の涙",
 	["cv:shenzhugeliang"] = "背后灵",
 	["cv:shencaocao"] = "倚天の剑",
-	["cv:shenlubu"] = "",
+	["cv:shenlubu"] = "笑傲糨糊",
 	["cv:shenzhaoyun"] = "",
 	
 	["#KuangbaoDamage"] = "%from 的锁定技【狂暴】被触发，造成 %arg 点伤害获得 %arg 枚暴怒标记",
