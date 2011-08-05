@@ -298,22 +298,12 @@ end
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
-    --    if self.player:getRole()=="renegade" then
-	--	elseif player:getRole()=="renegade" then
-    --    elseif self:isFriend(player) then return -2
-     --   elseif player:isLord() then return 5
-    -- --   elseif player:getRole()=="renegade" then return 4.1
-     --  else return 4.5 end
-	   
-	   if self.player:getRole() == "rebel" then
-			if self:isFriend(player) then return -2 
-			elseif player:getRole() == "renegade" then return 4.1
-			else return 5 
-			end
-		elseif self.player:getRole() == "loyalist" or self.player:isLord() then
-			if self:isFriend(player) then return -2 else return 4.5 end
-		elseif self.player:getRole() == "renegade" then return 0 
-		end
+        if self.player:getRole()=="renegade" then
+		elseif player:getRole()=="renegade" then
+        elseif self:isFriend(player) then return -2
+        elseif player:isLord() then return 5
+        elseif player:getRole()=="renegade" then return 4.1
+        else return 4.5 end
     end
     
     if player:objectName()==self.player:objectName() then return -2 end
