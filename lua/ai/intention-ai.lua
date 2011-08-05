@@ -62,7 +62,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,to,source)
     if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
     local value=sgs.ai_card_intention.general(to,80+modifier)
     
-    if to:hasSkill("leiji") and (SmartAI.getJinkNumber(nil,to)>0) and (to:getHandcardNum()>2) then 
+    if to:hasSkill("leiji") and (getJinkNumber(to)>0) and (to:getHandcardNum()>2) then 
         return -value/1.5
     end
     speakTrigger(card,from,to)
@@ -82,7 +82,7 @@ sgs.ai_card_intention["ThunderSlash"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Peach"]=function(card,from,to,source)
-        return sgs.ai_card_intention.general(to,-80)
+   return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_card_intention["Duel"]=function(card,from,to,source)
@@ -196,68 +196,66 @@ end
 
 sgs.ai_carduse_intention["HuangtianCard"]=function(card,from,to,source)
         sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1
---        from:getRoom():output("a JieyinCard")
         return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_carduse_intention["JiemingCard"]=function(card,from,to,source)
---        from:getRoom():output("a JieyinCard")
         return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_carduse_intention["HaoshiCard"]=function(card,from,to,source)
---        from:getRoom():output("a HaoCard")
         return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_carduse_intention["FanjianCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,70)
 end
 
 sgs.ai_carduse_intention["TianyiCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,70)
 end
 
 sgs.ai_carduse_intention["QuhuCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
 		speakTrigger(card,from,to)
         return sgs.ai_card_intention.general(to,70)
 end
 
 sgs.ai_carduse_intention["JujianCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,-70)
 end
 
 sgs.ai_carduse_intention["MingceCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,-70)
 end
 
 sgs.ai_carduse_intention["XianzhenCard"]=function(card,from,to,source)
---        from:getRoom():output("a FanjianCard")
         return sgs.ai_card_intention.general(to,70)
 end
 
 sgs.ai_carduse_intention["LiuliCard"]=function(card,from,to,source)
---        from:getRoom():output("a LiuliCard")
         sgs.ai_liuliEffect=true
         return sgs.ai_card_intention.general(to,70)
 end
 
 sgs.ai_card_intention["QingnangCard"]=function(card,from,to,source)
---        from:getRoom():output("a ShensuCard")
         return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_card_intention["JujianCard"]=function(card,from,to,source)
---        from:getRoom():output("a ShensuCard")
         return sgs.ai_card_intention.general(to,-80)
 end
 
+sgs.ai_card_intention["TiaoxinCard"]=function(card,from,to,source)
+        return sgs.ai_card_intention.general(to,80)
+end
 
+sgs.ai_card_intention["ZhijianCard"]=function(card,from,to,source)
+        return sgs.ai_card_intention.general(to,-80)
+end
+
+sgs.ai_card_intention["JixiCard"]=function(card,from,to,source)
+        return sgs.ai_card_intention.general(to,80)
+end
 
 sgs.ai_explicit={}
 sgs.ai_royalty={}
