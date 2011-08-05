@@ -108,6 +108,9 @@ return {
 	["$duanliang1"] = "断汝粮草,以绝后路",
 	["$duanliang2"] = "焚其辎重,乱其军心",
 	
+	["$yinghun1"] = "同举义兵,戮力一心",
+	["$yinghun2"] = "孙文台在此,此贼可诛！",	
+	
 	-- last words
 	["~jiaxu"] = "大势已去，吾不能自保矣",
 	["~dongzhuo"] = "吾儿奉先何在？呃...",
@@ -116,6 +119,7 @@ return {
 	["~lusu"] = "荆襄未还，虽死难安",
 	["~caopi"] = "嗟我白发，生一何早。长吟永叹，怀我圣考。",
 	["~xuhuang"] = "生遇明主,死亦无憾！",
+	["~sunjian"] = "死去何愁无勇将，英魂依旧卫江东",
 	
 	["@chaos"] = "乱武",
 	
@@ -124,7 +128,7 @@ return {
 	["cv:xuhuang"] = "",
 	["cv:menghuo"] = "墨染の飞猫",
 	["cv:zhurong"] = "妙妙",
-	["cv:sunjian"] = "",
+	["cv:sunjian"] = "木津川",
 	["cv:lusu"] = "听雨",
 	["cv:jiaxu"] = "落凤一箭",
 	["cv:dongzhuo"] = "やまもとみ，迷宫女友(肉林2)",
