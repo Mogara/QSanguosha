@@ -769,10 +769,10 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
         if(target->getPhase() == Player::Finish){
-            if(target->getMark("@star") > 0)
+            if(target->getMark("@star") > 0 && target->hasSkill("kuangfeng"))
                 room->askForUseCard(target, "@kuangfeng", "@@kuangfeng-card");
 
-            if(target->getMark("@star") > 0)
+            if(target->getMark("@star") > 0 && target->hasSkill("dawu"))
                 room->askForUseCard(target, "@dawu", "@@dawu-card");
         }else if(target->getPhase() == Player::Start){
             QList<ServerPlayer *> players = room->getAllPlayers();
