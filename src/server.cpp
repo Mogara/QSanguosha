@@ -436,7 +436,7 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(forbid_same_ip_checkbox);
         layout->addWidget(disable_chat_checkbox);
         layout->addWidget(free_choose_checkbox);
-        layout->addWidget(free_assign_checkbox);
+        //layout->addWidget(free_assign_checkbox);
         layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
         layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));

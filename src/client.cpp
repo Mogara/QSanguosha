@@ -110,6 +110,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["recoverGeneral"] = &Client::recoverGeneral;
     callbacks["revealGeneral"] = &Client::revealGeneral;
 
+    callbacks["askForAssign"] = &Client::askForAssign;
+
     ask_dialog = NULL;
     use_card = false;
 
@@ -118,6 +120,8 @@ Client::Client(QObject *parent, const QString &filename)
     Self->setProperty("avatar", Config.UserAvatar);
     connect(Self, SIGNAL(phase_changed()), this, SLOT(clearTurnTag()));
     connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+
+    players << Self;
 
     if(!filename.isEmpty()){
         socket = NULL;
@@ -271,6 +275,8 @@ void Client::addPlayer(const QString &player_info){
     player->setObjectName(name);
     player->setScreenName(screen_name);
     player->setProperty("avatar", avatar);
+
+    players << player;
 
     alive_count ++;
 
@@ -1307,6 +1313,10 @@ void Client::attachSkill(const QString &skill_name){
 void Client::detachSkill(const QString &skill_name){
     Self->loseSkill(skill_name);
     emit skill_detached(skill_name);
+}
+
+void Client::askForAssign(const QString &){
+    emit assign_asked();
 }
 
 void Client::doGuanxing(const QString &guanxing_str){

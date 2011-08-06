@@ -163,6 +163,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(cards_drawed(QList<const Card*>)), this, SLOT(drawCards(QList<const Card*>)));
     connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
+    connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
+
     {
         guanxing_box = new GuanxingBox;
         guanxing_box->hide();
@@ -3469,4 +3471,12 @@ void RoomScene::finishArrange(){
         names << item->objectName();
 
     ClientInstance->request("arrange " + names.join("+"));
+}
+
+void RoomScene::startAssign(){
+
+}
+
+void RoomScene::finishAssign(){
+
 }

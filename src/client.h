@@ -145,6 +145,8 @@ public:
     void attachSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
 
+    void askForAssign(const QString &);
+
     // public fields
     bool refusable;
     bool include_equip;
@@ -249,6 +251,8 @@ signals:
     void arrange_started();
     void general_recovered(int index, const QString &name);
     void general_revealed(bool self, const QString &general);
+
+    void assign_asked();
 };
 
 extern Client *ClientInstance;

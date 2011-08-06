@@ -2192,7 +2192,7 @@
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/room.cpp" line="2311"/>
+        <location filename="src/room.cpp" line="2320"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -3107,6 +3107,11 @@
         <location filename="src/startscene.cpp" line="161"/>
         <source>Scene Mode is enabled</source>
         <translation>启用场景模式</translation>
+    </message>
+    <message>
+        <location filename="src/startscene.cpp" line="163"/>
+        <source>Scene Mode is disabled</source>
+        <translation>禁用场景模式</translation>
     </message>
     <message>
         <location filename="src/startscene.cpp" line="166"/>

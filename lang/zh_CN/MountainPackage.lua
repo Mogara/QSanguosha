@@ -47,6 +47,7 @@ return {
 	["zhiji:draw"] = "摸2张牌",
 	["zhiji:recover"] = "回复1点体力",
 	["#ZhijiWake"] = "%from 没有手牌，触发了觉醒技【志继】",
+	["@tiaoxin-slash"] = "%from 向你发动【挑衅】，请对其使用一张杀",
 	
 	["sunce"] = "孙策",
 	["jiang"] = "激昂",

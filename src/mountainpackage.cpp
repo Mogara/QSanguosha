@@ -559,7 +559,7 @@ bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash");
+    const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash:" + effect.from->objectName());
 
     if(slash){
         CardUseStruct use;
