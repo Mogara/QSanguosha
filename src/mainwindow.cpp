@@ -300,7 +300,10 @@ void MainWindow::on_actionAbout_triggered()
     config = "debug";
 #endif
 
-    content.append(tr("Current version: %1 %2<br/>").arg(Sanguosha->getVersion()).arg(config));
+    content.append(tr("Current version: %1 %2 (%3)<br/>")
+                   .arg(Sanguosha->getVersion())
+                   .arg(config)
+                   .arg(Sanguosha->getVersionName()));
 
     const char *date = __DATE__;
     const char *time = __TIME__;
