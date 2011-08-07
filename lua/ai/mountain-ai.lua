@@ -287,6 +287,13 @@ sgs.ai_skill_use_func["TiaoxinCard"] = function(card,use,self)
 	end
 	use.card = sgs.Card_Parse("@TiaoxinCard=.")
 end
+
+--zhiji
+sgs.ai_skill_choice["zhiji"] = function(self, choice)
+	if self.player:getHp() < self.player:getMaxHP() then return "recover" end
+	
+	return "draw"
+end
 	
 --zhiba
 local zhiba_skill={}
