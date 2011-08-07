@@ -4,6 +4,7 @@
 #include <QTranslator>
 #include <QDir>
 #include <cstring>
+#include <QDateTime>
 
 #include "mainwindow.h"
 #include "settings.h"
@@ -28,11 +29,13 @@ int main(int argc, char *argv[])
     if(dir_name == "release" || dir_name == "debug")
         QDir::setCurrent("..");
 
-
     if(argc > 1 && strcmp(argv[1], "-server") == 0)
         new QCoreApplication(argc, argv);
     else
         new QApplication(argc, argv);
+
+    // initialize random seed for later use
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     QTranslator qt_translator, translator;
     qt_translator.load("qt_zh_CN.qm");
