@@ -126,9 +126,7 @@ zhijian_skill.getTurnUseCard = function(self)
 	end
 	if #equips == 0 then return end
 	
-	local zhijian_str = "@ZhijianCard=" .. equips[1]:getEffectiveId()
-	assert(zhijian_str)
-	return sgs.Card_Parse(zhijian_str)
+	return sgs.Card_Parse("@ZhijianCard=.")
 end
 
 sgs.ai_skill_use_func["ZhijianCard"] = function(card, use, self)
@@ -139,7 +137,7 @@ sgs.ai_skill_use_func["ZhijianCard"] = function(card, use, self)
 			else
 				table.insert(equips, card)
 			end
-		else
+		elseif card:getTypeId() == sgs.Card_Equip then
 			table.insert(equips, card)
 		end
 	end
@@ -162,7 +160,7 @@ sgs.ai_skill_use_func["ZhijianCard"] = function(card, use, self)
 	if use.to then
 		use.to:append(target)
 	end
-	local zhijian = sgs.Card_Parse("@ZhijianCard="..select_equip:getEffectiveId())
+	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId())
 	use.card = zhijian
 end
 
