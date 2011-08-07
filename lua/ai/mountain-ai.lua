@@ -83,22 +83,10 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 end
 
 sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
-	local has_delay = false;
-	for _, friend in ipairs(self.friends_noself) do
-		if friend:getCards("j") and friend:getCards("j"):length() > 0 then
-			has_delay = true
-			break
-		end
-	end
+	targets = QList2Table(targets)
+	self:sort(targets, "hp")
 	
-	for _, target in sgs.qlist(targets) do
-		if not has_delay and self:isFriend(target) then
-			return friend
-		end
-		if has_delay and self:isEnemy(target) then 
-			return enemy
-		end
-	end
+	return targets[1]
 end
 
 -- beige
