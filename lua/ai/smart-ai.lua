@@ -87,6 +87,7 @@ end
 
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
+super = SmartAI
 
 --- Calculate the value for a player, 1 hp = 2 handcard
 -- @param player The ServerPlayer object 
