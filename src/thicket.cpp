@@ -331,7 +331,7 @@ public:
 
 
 YinghunCard::YinghunCard(){
-
+    mute = true;
 }
 
 void YinghunCard::onEffect(const CardEffectStruct &effect) const{

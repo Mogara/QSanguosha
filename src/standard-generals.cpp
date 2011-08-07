@@ -877,7 +877,6 @@ public:
                lumeng->askForSkillInvoke("keji"))
             {
                 lumeng->getRoom()->playSkillEffect("keji");
-                lumeng->skip(Player::Discard);
 
                 return true;
             }

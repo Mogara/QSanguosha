@@ -9,6 +9,7 @@
 #include "scenario-overview.h"
 #include "window.h"
 
+#include <cmath>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>

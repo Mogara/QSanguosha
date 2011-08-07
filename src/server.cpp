@@ -420,7 +420,10 @@ QLayout *ServerDialog::createRight(){
 
         address_edit = new QLineEdit;
         address_edit->setText(Config.Address);
+
+#if QT_VERSION >= 0x040700
         address_edit->setPlaceholderText(tr("Public IP or domain"));
+#endif
 
         QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
         connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
