@@ -178,7 +178,21 @@ local jixi_skill={}
 jixi_skill.name="jixi"
 table.insert(sgs.ai_skills, jixi_skill)
 jixi_skill.getTurnUseCard = function(self)
-	if self.player:getPile("field"):isEmpty() or self.player:getHandcardNum()>self.player:getHp() then return end
+	local players = self.room:getOtherPlayers(self.player)
+	local targets = {}
+	for _, p in sgs.qlist(players) do
+		if self.player:distanceTo(p) <= 1 
+			and self:isEnemy(p)
+			and p:getCards("he") then 
+			table.insert(targets, p) 
+		end
+	end
+	
+	if self.player:getPile("field"):isEmpty() 
+		or #targets == 0
+		or self.player:getHandcardNum()>self.player:getHp() then 
+		return 
+	end
 	return sgs.Card_Parse("@JixiCard=.")
 end
 
@@ -187,10 +201,15 @@ sgs.ai_skill_use_func["JixiCard"] = function(card, use, self)
 end
 
 sgs.ai_skill_playerchosen.jixi = function(self, targets)
-	targets = sgs.QList2Table(targets)
-	self:sort(targets, "defense")
+	local enemies = {}
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and target:getCards("he") then table.insert(enemies, target) end
+	end
 	
-	return targets[1]
+	if #enemies == 0 then return targets:at(0) end
+	
+	self:sort(enemies, "defense")
+	return enemies[1]
 end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
