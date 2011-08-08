@@ -259,16 +259,16 @@ sgs.ai_skill_use_func["TiaoxinCard"] = function(card,use,self)
 			end
 		end
 		
-		local slash_useless = true
+		local slash_useless = false
 		local has_armor = self.player:getArmor()
 		if has_armor then
 			if self.player:getArmor():objectName() == "vine" then
-				if (sgs.slash_property["is_fire"] or sgs.slash_property["is_thunder"]) then
-					slash_useless = false
+				if not (sgs.slash_property["is_fire"] or sgs.slash_property["is_thunder"]) then
+					slash_useless = true
 				end
 			elseif self.player:getArmor():objectName() == "renwang_shield" then
-				if sgs.slash_property["is_red"] then 
-					slash_useless = false
+				if not sgs.slash_property["is_red"] then 
+					slash_useless = true
 				end
 			end
 		end
