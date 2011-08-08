@@ -1505,7 +1505,6 @@ public:
             return;
 
         Room *room = dengshizai->getRoom();
-        room->playSkillEffect(objectName());
 
         if(!room->askForDiscard(dengshizai, "toudu", 1, false, false))
             return;

@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
     if(SoundEngine)
         SoundEngine->setSoundVolume(Config.Volume);
 #else
-    SoundEngine = new Phonon::MediaObject(&a);
-    SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, &a);
+    SoundEngine = new Phonon::MediaObject(qApp);
+    SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, qApp);
     Phonon::createPath(SoundEngine, SoundOutput);
 #endif
 
