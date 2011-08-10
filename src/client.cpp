@@ -1384,6 +1384,9 @@ void Client::askForPindian(const QString &ask_str){
 }
 
 void Client::askForYiji(const QString &card_list){
+    int count = card_list.count(QChar('+')) + 1;
+    prompt_doc->setHtml(tr("Please distribute %1 cards as you wish").arg(count));
+
     card_pattern = card_list;
     setStatus(AskForYiji);
 }

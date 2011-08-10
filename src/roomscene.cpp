@@ -1880,6 +1880,8 @@ void RoomScene::updateStatus(Client::Status status){
             yiji_skill->setCards(ClientInstance->getPattern());
             dashboard->startPending(yiji_skill);
 
+            prompt_box->appear();
+
             break;
         }
     case Client::AskForGuanxing:{
