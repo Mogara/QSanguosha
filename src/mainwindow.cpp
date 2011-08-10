@@ -528,7 +528,8 @@ void MainWindow::on_actionPC_Console_Start_triggered()
 
     server->createNewRoom();
 
-    connection_dialog->connectToLocalServer();
+    Config.HostAddress = "127.0.0.1";
+    startConnection();
 }
 
 void MainWindow::on_actionScript_editor_triggered()
