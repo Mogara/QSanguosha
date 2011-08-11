@@ -18,7 +18,6 @@ class ConnectionDialog : public QDialog {
 public:
     ConnectionDialog(QWidget *parent);
     ~ConnectionDialog();
-    void connectToLocalServer();
 
 private:
     Ui::ConnectionDialog *ui;

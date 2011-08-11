@@ -39,7 +39,7 @@ return {
 	["sujiang"] = "素将",
 	["sujiangf"] = "素将(女)",
 	
-		["#Murder"] = "%to【%arg】 挂了，凶手是 %from", 
+	["#Murder"] = "%to【%arg】 挂了，凶手是 %from", 
 	["#Suicide"] = "%to【%arg】 自杀身亡", 
 	["#InvokeSkill"] = "%from 使用了技能【%arg】", 
 	["#Pindian"] = "%from 向 %to 发起了拼点", 

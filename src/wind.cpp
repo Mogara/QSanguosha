@@ -353,7 +353,7 @@ public:
     virtual bool buff(const SlashEffectStruct &effect) const{
         ServerPlayer *huangzhong = effect.from;
         Room *room = huangzhong->getRoom();
-        if(room->getCurrent() != huangzhong)
+        if(huangzhong->getPhase() != Player::Play)
             return false;
 
         int num = effect.to->getHandcardNum();

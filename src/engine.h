@@ -41,6 +41,7 @@ public:
     Card *cloneCard(const QString &name, Card::Suit suit, int number) const;
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersion() const;
+    QString getVersionName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QString getSetupString() const;

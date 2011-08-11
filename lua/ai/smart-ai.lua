@@ -87,6 +87,7 @@ end
 
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
+super = SmartAI
 
 --- Calculate the value for a player, 1 hp = 2 handcard
 -- @param player The ServerPlayer object 
@@ -298,22 +299,12 @@ end
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
-    --    if self.player:getRole()=="renegade" then
-	--	elseif player:getRole()=="renegade" then
-    --    elseif self:isFriend(player) then return -2
-     --   elseif player:isLord() then return 5
-    -- --   elseif player:getRole()=="renegade" then return 4.1
-     --  else return 4.5 end
-	   
-	   if self.player:getRole() == "rebel" then
-			if self:isFriend(player) then return -2 
-			elseif player:getRole() == "renegade" then return 4.1
-			else return 5 
-			end
-		elseif self.player:getRole() == "loyalist" or self.player:isLord() then
-			if self:isFriend(player) then return -2 else return 4.5 end
-		elseif self.player:getRole() == "renegade" then return 0 
-		end
+        if self.player:getRole()=="renegade" then
+		elseif player:getRole()=="renegade" then
+        elseif self:isFriend(player) then return -2
+        elseif player:isLord() then return 5
+        elseif player:getRole()=="renegade" then return 4.1
+        else return 4.5 end
     end
     
     if player:objectName()==self.player:objectName() then return -2 end
@@ -2428,7 +2419,15 @@ function SmartAI:askForCard(pattern,prompt)
 	return nil
 end
 
-function SmartAI:askForAG(card_ids,refusable)	
+sgs.ai_skill_askforag = {}
+
+function SmartAI:askForAG(card_ids, refusable, reason)	
+	local cardchosen = sgs.ai_skill_askforag[string.gsub(reason, "%-", "_")]
+	if type(cardchosen) == "function" then
+		local card_id = cardchosen(self, card_ids)
+		if card_id then return card_id end
+	end
+	
 	if refusable and self:hasSkill("xinzhan") then
 		local next_player = self.player:getNextAlive()
 		if self:isFriend(next_player) and next_player:containsTrick("indulgence") then
@@ -2436,13 +2435,13 @@ function SmartAI:askForAG(card_ids,refusable)
 		end
 		return card_ids[1] 
 	end
-    local ids=card_ids
-    local cards={}
-    for _,id in ipairs(ids) do
-        table.insert(cards,sgs.Sanguosha:getCard(id))
-    end
-    self:sortByCardNeed(cards)
-    return cards[#cards]:getEffectiveId()
+	local ids = card_ids
+	local cards = {}
+	for _, id in ipairs(ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	self:sortByCardNeed(cards, true)
+	return cards[#cards]:getEffectiveId()
 end
 
 function SmartAI:askForNullification(trick_name, from, to, positive)   							
@@ -2766,16 +2765,17 @@ function SmartAI:hasTrickEffective(card, player)
 	return true
 end
 	
-function SmartAI:hasSameEquip(card)
-	if self.player:getEquips():isEmpty() then return false end
+function SmartAI:hasSameEquip(card, player)
+	player = player or self.player
+	if player:getEquips():isEmpty() then return false end
 	if card:inherits("Weapon") then 
-		if self.player:getWeapon() then return true end
+		if player:getWeapon() then return true end
 	elseif card:inherits("Armor") then
-		if self.player:getArmor() then return true end
+		if player:getArmor() then return true end
 	elseif card:inherits("DefensiveHorse") then
-		if self.player:getDefensiveHorse() then return true end
+		if player:getDefensiveHorse() then return true end
 	elseif card:inherits("OffensiveHorse") then 
-		if self.player:getOffensiveHorse() then return true end
+		if player:getOffensiveHorse() then return true end
 	end
 	return false
 end

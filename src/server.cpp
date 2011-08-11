@@ -420,7 +420,10 @@ QLayout *ServerDialog::createRight(){
 
         address_edit = new QLineEdit;
         address_edit->setText(Config.Address);
+
+        #if QT_VERSION >= 0x040700
         address_edit->setPlaceholderText(tr("Public IP or domain"));
+        #endif  
 
         QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
         connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
@@ -436,7 +439,7 @@ QLayout *ServerDialog::createRight(){
         layout->addWidget(forbid_same_ip_checkbox);
         layout->addWidget(disable_chat_checkbox);
         layout->addWidget(free_choose_checkbox);
-        layout->addWidget(free_assign_checkbox);
+        //layout->addWidget(free_assign_checkbox);
         layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
         layout->addLayout(HLay(second_general_checkbox, banpair_button));
         layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
@@ -460,6 +463,9 @@ QLayout *ServerDialog::createRight(){
         role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
         role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
 
+        ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
+        ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
+
         ai_delay_spinbox = new QSpinBox;
         ai_delay_spinbox->setMinimum(0);
         ai_delay_spinbox->setMaximum(5000);
@@ -468,6 +474,7 @@ QLayout *ServerDialog::createRight(){
 
         layout->addWidget(ai_enable_checkbox);
         layout->addWidget(role_predictable_checkbox);
+        layout->addWidget(ai_chat_checkbox);
         layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     }
 
@@ -696,6 +703,7 @@ bool ServerDialog::config(){
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());
+    Config.setValue("AIChat", ai_chat_checkbox->isChecked());
     Config.setValue("AIDelay", Config.AIDelay);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("AnnounceIP", Config.AnnounceIP);

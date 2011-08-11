@@ -9,6 +9,7 @@
 #include "scenario-overview.h"
 #include "window.h"
 
+#include <cmath>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -49,9 +50,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     scene = NULL;
-
-    // initialize random seed for later use
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
@@ -300,7 +298,10 @@ void MainWindow::on_actionAbout_triggered()
     config = "debug";
 #endif
 
-    content.append(tr("Current version: %1 %2<br/>").arg(Sanguosha->getVersion()).arg(config));
+    content.append(tr("Current version: %1 %2 (%3)<br/>")
+                   .arg(Sanguosha->getVersion())
+                   .arg(config)
+                   .arg(Sanguosha->getVersionName()));
 
     const char *date = __DATE__;
     const char *time = __TIME__;
@@ -527,7 +528,8 @@ void MainWindow::on_actionPC_Console_Start_triggered()
 
     server->createNewRoom();
 
-    connection_dialog->connectToLocalServer();
+    Config.HostAddress = "127.0.0.1";
+    startConnection();
 }
 
 void MainWindow::on_actionScript_editor_triggered()

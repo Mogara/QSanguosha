@@ -158,12 +158,16 @@ public:
             return;
 
         room->playSkillEffect(objectName());
-        int n = damage.damage * 2;
-        guojia->drawCards(n);
-        QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - n);
 
-        while(room->askForYiji(guojia, yiji_cards))
-            ; // empty loop
+        int x = damage.damage, i;
+        for(i=0; i<x; i++){
+            guojia->drawCards(2);
+            QList<int> yiji_cards = guojia->handCards().mid(guojia->getHandcardNum() - 2);
+
+            while(room->askForYiji(guojia, yiji_cards))
+                ; // empty loop
+        }
+
     }
 };
 
@@ -877,7 +881,6 @@ public:
                lumeng->askForSkillInvoke("keji"))
             {
                 lumeng->getRoom()->playSkillEffect("keji");
-                lumeng->skip(Player::Discard);
 
                 return true;
             }
@@ -1046,7 +1049,9 @@ public:
 
     virtual void onGameStart(ServerPlayer *player) const{
         if(player->askForSkillInvoke(objectName())){
-            player->getRoom()->transfigure(player, "sp_sunshangxiang", true, false);
+            Room *room = player->getRoom();
+            room->transfigure(player, "sp_sunshangxiang", true, false);
+            room->setPlayerProperty(player, "kingdom", "shu");
         }
     }
 };

@@ -331,7 +331,7 @@ public:
 
 
 YinghunCard::YinghunCard(){
-
+    mute = true;
 }
 
 void YinghunCard::onEffect(const CardEffectStruct &effect) const{
@@ -340,17 +340,23 @@ void YinghunCard::onEffect(const CardEffectStruct &effect) const{
 
     bool good = false;
     if(x == 1){
+        room->playSkillEffect("yinghun", 1);
+
         effect.to->drawCards(1);
         room->askForDiscard(effect.to, "yinghun", 1, false, true);
         good = true;
     }else{
         QString choice = room->askForChoice(effect.from, "yinghun", "d1tx+dxt1");
         if(choice == "d1tx"){
+            room->playSkillEffect("yinghun", 2);
+
             effect.to->drawCards(1);
             x = qMin(x, effect.to->getCardCount(true));
             room->askForDiscard(effect.to, "yinghun", x, false, true);
             good = false;
         }else{
+            room->playSkillEffect("yinghun", 1);
+
             effect.to->drawCards(x);
             room->askForDiscard(effect.to, "yinghun", 1, false, true);
             good = true;

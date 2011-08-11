@@ -92,6 +92,7 @@ private:
     QLineEdit *port_edit;
     QCheckBox *ai_enable_checkbox;
     QCheckBox *role_predictable_checkbox;
+    QCheckBox *ai_chat_checkbox;
     QSpinBox *ai_delay_spinbox;
     QRadioButton *standard_3v3_radiobutton;
     QComboBox *role_choose_combobox;

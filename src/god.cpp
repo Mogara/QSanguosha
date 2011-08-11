@@ -27,8 +27,10 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
-        if(damage.from && damage.from != player)
+        if(damage.from && damage.from != player){
             damage.from->gainMark("@nightmare", damage.damage);
+            damage.from->getRoom()->playSkillEffect(objectName(), 1);
+        }
 
         return false;
     }
@@ -88,7 +90,9 @@ public:
             room->sendLog(log);
 
             room->killPlayer(foe);
-        }
+            room->playSkillEffect("wuhun", 2);
+        }else
+            room->playSkillEffect("wuhun", 3);
 
         return false;
     }
@@ -422,6 +426,7 @@ public:
         player->getRoom()->sendLog(log);
 
         player->gainMark("@wrath", damage.damage);
+        player->getRoom()->playSkillEffect(objectName());
 
         return false;
     }
@@ -444,6 +449,8 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = player->getRoom();
+            room->playSkillEffect(objectName());
+
             int num = player->getMark("@wrath");
             if(num >= 1 && room->askForChoice(player, objectName(), "discard+losehp") == "discard"){
                 player->loseMark("@wrath");
@@ -765,10 +772,10 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
         if(target->getPhase() == Player::Finish){
-            if(target->getMark("@star") > 0)
+            if(target->getMark("@star") > 0 && target->hasSkill("kuangfeng"))
                 room->askForUseCard(target, "@kuangfeng", "@@kuangfeng-card");
 
-            if(target->getMark("@star") > 0)
+            if(target->getMark("@star") > 0 && target->hasSkill("dawu"))
                 room->askForUseCard(target, "@dawu", "@@dawu-card");
         }else if(target->getPhase() == Player::Start){
             QList<ServerPlayer *> players = room->getAllPlayers();

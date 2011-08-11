@@ -29,6 +29,8 @@ end
 
 
 function SmartAI:speak(type, isFemale) 
+	if not sgs.GetConfig("AIChat", true) then return end
+	
     local i =math.random(1,#sgs.ai_chat[type])
 	if isFemale then 
 		type = type .. "_female" 

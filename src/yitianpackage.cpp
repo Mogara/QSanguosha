@@ -1459,6 +1459,8 @@ public:
         ServerPlayer *dengshizai = room->findPlayerBySkillName(objectName());
 
         if(dengshizai && dengshizai->faceUp() && dengshizai->askForSkillInvoke(objectName())){
+            room->playSkillEffect(objectName());
+
             dengshizai->turnOver();
 
             PlayerStar zhenggong = room->getTag("Zhenggong").value<PlayerStar>();
@@ -1503,6 +1505,7 @@ public:
             return;
 
         Room *room = dengshizai->getRoom();
+
         if(!room->askForDiscard(dengshizai, "toudu", 1, false, false))
             return;
 

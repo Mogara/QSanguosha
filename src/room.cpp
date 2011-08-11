@@ -1357,18 +1357,29 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     signup_count ++;
 
-    if(isFull()){
-        prepareForStart();
+    if(!isFull())
+        return;
+
+    /*
+    if(Config.value("FreeAssign", false).toBool() && scenario == NULL
+       && !QRegExp("\\d\\d_\\dv\\d").exactMatch(mode) && owner->getState() == "online")
+    {
+        owner->invoke("askForAssign");
+        return;
+    }
+    */
+
+    prepareForStart();
+
+    if(_virtual || !property("to_test").toString().isEmpty())
+        timerEvent(NULL);
 
 #ifndef QT_NO_DEBUG
-        left_seconds = 1;
+    left_seconds = 1;
 #endif
-        if(_virtual || !property("to_test").toString().isEmpty())
-            timerEvent(NULL);
 
-        broadcastInvoke("startInXs", QString::number(left_seconds));
-        startTimer(1000);
-    }
+    broadcastInvoke("startInXs", QString::number(left_seconds));
+    startTimer(1000);
 }
 
 void Room::assignRoles(){
