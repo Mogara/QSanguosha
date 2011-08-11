@@ -155,7 +155,8 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     if(!targets.isEmpty())
         return false;
 
-    if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first()))
+    if(!subcards.isEmpty() && Self->getWeapon() == Sanguosha->getCard(subcards.first())
+        && !Self->hasFlag("tianyi_success"))
         return Self->distanceTo(to_select) <= 1;
 
     return Self->inMyAttackRange(to_select);
@@ -484,6 +485,7 @@ void TianyiCard::use(Room *room, ServerPlayer *taishici, const QList<ServerPlaye
     bool success = taishici->pindian(targets.first(), "tianyi", this);
     if(success){
         room->setPlayerFlag(taishici, "tianyi_success");
+        room->setPlayerProperty(taishici, "atk", 10);
     }else{
         room->setPlayerFlag(taishici, "tianyi_failed");
     }
@@ -521,9 +523,32 @@ public:
             Room *room = target->getRoom();
             if(target->hasFlag("tianyi_failed"))
                 room->setPlayerFlag(target, "-tianyi_failed");
-            if(target->hasFlag("tianyi_success"))
+            if(target->hasFlag("tianyi_success")){
+                room->setPlayerProperty(target, "atk", target->getWeapon() ? target->getWeapon()->getRange() : 1);
                 room->setPlayerFlag(target, "-tianyi_success");
+            }
         }
+
+        return false;
+    }
+};
+
+class Tianyiatk: public TriggerSkill{
+public:
+    Tianyiatk():TriggerSkill("#tianyiatk"){
+        frequency = Compulsory;
+        events << PhaseChange << CardUsed << CardResponsed << CardLost;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasFlag("tianyi_success");
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *taishi, QVariant &data) const{
+        if(event == PhaseChange && taishi->getPhase() == Player::Finish)
+            taishi->getRoom()->setPlayerProperty(taishi, "atk", taishi->getWeapon() ? taishi->getWeapon()->getRange() : 1);
+        else
+            taishi->getRoom()->setPlayerProperty(taishi, "atk", 10);
 
         return false;
     }
@@ -582,6 +607,9 @@ FirePackage::FirePackage()
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
+    taishici->addSkill(new Tianyiatk);
+
+    related_skills.insertMulti("tianyi", "#tianyiatk");
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
