@@ -569,14 +569,14 @@ NostalgiaPackage::NostalgiaPackage()
     xiaoqiao->addSkill(new HongyanRetrial);
     xiaoqiao->addSkill(new Tianxiang);
 	
-	related_skills.insertMulti("hongyan", "#hongyan-retrial");
+    related_skills.insertMulti("hongyan", "#hongyan-retrial");
 
     General *yangxiu = new General(this, "yangxiu", "wei", 3);
     yangxiu->addSkill(new Jilei);
     yangxiu->addSkill(new JileiClear);
     yangxiu->addSkill(new Danlao);
 	
-	related_skills.insertMulti("jilei", "#jilei-clear");
+    related_skills.insertMulti("jilei", "#jilei-clear");
 
     General *yuji = new General(this, "yuji", "qun", 3);
     yuji->addSkill(new Guhuo);
