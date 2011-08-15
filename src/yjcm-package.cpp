@@ -11,6 +11,7 @@ class Yizhong: public TriggerSkill{
 public:
     Yizhong():TriggerSkill("yizhong"){
         events << SlashEffected;
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -280,6 +281,7 @@ class Enyuan: public TriggerSkill{
 public:
     Enyuan():TriggerSkill("enyuan"){
         events << HpRecover << Damaged;
+        frequency = Compulsory;
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
@@ -601,7 +603,7 @@ public:
 class Jiejiu: public FilterSkill{
 public:
     Jiejiu():FilterSkill("jiejiu"){
-
+        frequency = Compulsory;
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
