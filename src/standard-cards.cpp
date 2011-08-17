@@ -353,7 +353,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         Room *room = player->getRoom();
-        CardStar card = room->askForCard(player, "@axe", "@axe");
+        CardStar card = room->askForCard(player, "@axe", "@axe:" + effect.to->objectName());
         if(card){
             QList<int> card_ids = card->getSubcards();
             foreach(int card_id, card_ids){

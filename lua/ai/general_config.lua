@@ -172,6 +172,7 @@ sgs.ai_chaofeng = {
         xuchu = 3,
         zhouyu = 3,
         huanggai = 3,
+        xunyu = 3,
  
         ganning = 2,
         daqiao = 2,
@@ -189,19 +190,19 @@ sgs.ai_chaofeng = {
         
         simayi = -2,
         liubei = -2,
-        
-        weiyan = -3,
+        weiyan = -2,
 		
-		xiahoudun = -4,
-		    
-        caopi = -5,
-        fazheng = -5,
-        xunyu = -5,
+		xiahoudun = -3,
+        caopi = -3,
+        fazheng = -3,
         
-        zhoutai = -6,
-        guojia = -6,
+        zhoutai = -4,
+        guojia = -4,
+		masu = -4,
 
-        shencaocao = -8,
-        shenguanyu = -8,
+		caiwenji = -5,
+		
+        shencaocao = -6,
+        shenguanyu = -6,
 }
 

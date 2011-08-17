@@ -2314,60 +2314,126 @@ function SmartAI:askForCardChosen(who, flags, reason)
     return self:getCardRandomly(who, new_flag)							
 end
 
-function SmartAI:askForCard(pattern,prompt)
+function SmartAI:askForCard(pattern, prompt)
 	self.room:output(prompt)
-	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self,prompt) end
-
+	
+	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
+	local target, target2
 	if not prompt then return end
-	local parsedPrompt=prompt:split(":")
-
-	if parsedPrompt[1]=="collateral-slash" then 
-		local target 
+	local parsedPrompt = prompt:split(":")
+	if parsedPrompt[2] then
 		local others = self.room:getOtherPlayers(self.player)
 		others = sgs.QList2Table(others)
 		for _, other in ipairs(others) do
-			if other:objectName() == parsedPrompt[3] then target = other break end
+			if other:getGeneralName() == parsedPrompt[2] or other:objectName() == parsedPrompt[2] then target = other break end
 		end
-		if target and (target:getHp() > 2 or self:getJinkNumber(target) > 0) and self:getSlashNumber(self.player) > 0 and not self.player:hasSkill("xiaoji") then 
-			local cards = self.player:getHandcards()
-			for _, card in sgs.qlist(cards) do
-				if card:inherits("Slash") then 
-					return card
-				elseif self.player:hasSkill("wushen") then 
-					if card:getTypeId() == sgs.Card_Heart then return card end
-				elseif self.player:hasSkill("jiejiu") then 
-					if card:inherits("Analeptic") then return card end 
-				end
+		if parsedPrompt[3] then
+			for _, other in ipairs(others) do
+				if other:getGeneralName() == parsedPrompt[3] or other:objectName() == parsedPrompt[3] then target2 = other break end
 			end
 		end
-		self:speak("collateral", self.player:getGeneral():isFemale())
-		return "."
-	elseif (parsedPrompt[1]=="@jijiang-slash") then
-		if self:isFriend(self.room:getLord()) then 
-			if (self.player:hasSkill("longdan") and self:getSlashNumber(self.player) > 1) or 
-				self:getSlashNumber(self.player) > 0 then 
-				self:speak("jijiang", self.player:getGeneral():isFemale()) 
-				return self:getSlash()
-			end 
-		else return "." end
-	elseif parsedPrompt[1]=="double-sword-card" then 							
+	end
+	
+	if parsedPrompt[1] == "@xiuluo" then
+		local hand_card = self.player:getHandcards()
+		for _, card in sgs.qlist(hand_card) do
+			if card:getSuitString() == parsedPrompt[2] then return "$"..card:getEffectiveId() end
+		end
+	end
+	
+	-- aoe
+	if parsedPrompt[1] == "savage-assault-slash" or parsedPrompt[1] == "archery-attack-jink" then
+		local objectName , aoe
+		if parsedPrompt[1] == "savage-assault-slash" then 
+			objectName = "savage_assault" 
+		else
+			objectName = "archery_attack" 
+		end
+		aoe = sgs.Sanguosha:cloneCard(objectName, sgs.Card_NoSuit , 0)	
+		if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+		if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
+		if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
+ 	end
+	
+	if pattern == "slash" and self:getSlashNumber(self.player) > 0 then
+		if parsedPrompt[1] == "@jijiang-slash" then
+			if not target then target = self.room:getLord() end
+			if not self:isFriend(target) then return "." end
+		end	
+		if parsedPrompt[1] == "@wushuang-slash-1" and self:getSlashNumber(self.player) < 2 and 
+			not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
+		if parsedPrompt[1] == "collateral-slash" then 
+			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getJinkNumber(target2) > 0) and not self:hasSkills(sgs.lose_equip_skill) then 
+				return self:getCardId("Slash")
+			end
+			self:speak("collateral", self.player:getGeneral():isFemale())
+			return "."
+		elseif (parsedPrompt[1] == "duel-slash") then
+			if (not self:isFriend(target) or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getPeachNum() == 0 and not self.player:hasSkill("buqu"))) then 
+				return self:getCardId("Slash")
+			else return "." end
+		elseif (parsedPrompt[1] == "@jijiang-slash") then
+			if target and self:isFriend(target) then 
+				if (self.player:hasSkill("longdan") and self:getJinkNumber(self.player) > 1) then 
+					self:speak("jijiang", self.player:getGeneral():isFemale()) 
+					return self:getCardId("Slash")
+				end 
+			else return "." end	
+		else
+			return self:getCardId("Slash") or "."
+		end
+	elseif pattern == "jink" then
+		if parsedPrompt[1] == "@hujia-jink" then
+			if not target then target = self.room:getLord() end
+			if not self:isFriend(target) then return "." end
+		end
+		if (parsedPrompt[1] == "@wushuang-jink-1" or parsedPrompt[1] == "@roulin1-jink-1" or parsedPrompt[1] == "@roulin2-jink-1") 
+			and self:getJinkNumber(self.player) < 2 then return "." end
+		if target then
+			if self:isFriend(target) then
+				if self.player:hasSkill("yiji") and (self.player:getLostHp()<2) then return "." end
+				if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 then return "." end
+				if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
+				if target:hasSkill("guagu") and self.player:isLord() then return "." end
+				if (target:hasSkill("jieyin") and (not self.player:isWounded()) and self.player:getGeneral():isMale()) and not self.player:hasSkill("leiji") then return "." end
+			else
+				if not target:hasFlag("drank") then
+					if target:hasSkill("mengjin") and self.player:hasSkill("jijiu") then return "." end
+				end
+				if not self:hasSkills(sgs.need_kongcheng, player) then
+					if self:isEquip("Axe", target) then
+						if self:hasSkills(sgs.lose_equip_skill, target) and target:getEquips():length() > 1 then return "." end
+						if target:getHandcardNum() - target:getHp() > 2 then return "." end
+					elseif self:isEquip("Blade", target) then
+						if self:getJinkNumber(self.player) <= self:getSlashNumber(target) then return "." end
+					end
+				end
+								
+			end
+		end
+		return self:getCardId("Jink") or "."
+	end
+
+	if parsedPrompt[1] == "double-sword-card" then 
+		if target and self:isFriend(target) then return "." end					
 		local cards = self.player:getHandcards()
 		for _, card in sgs.qlist(cards) do
-			if card:inherits("Slash") or card:inherits("Shit") or
-			   card:inherits("Lightning") or card:inherits("EquipCard") or card:inherits("AmazingGrace") then
-				return card
+			if card:inherits("Slash") or card:inherits("Shit") or card:inherits("Collateral") or card:inherits("GodSalvation")
+			  or card:inherits("Lightning") or card:inherits("EquipCard") or card:inherits("AmazingGrace") then
+				return "$"..card:getEffectiveId()
 			end
 		end	
 		return "."
-	elseif parsedPrompt[1]=="axe-card" then
+	elseif parsedPrompt[1] == "@axe" then
+		if target and self:isFriend(target) then return "." end
+		
 		local allcards = self.player:getCards("he")
 		allcards = sgs.QList2Table(allcards)
-		if self.player:hasFlag("drank") or #allcards-2>= self.player:getHp()
-			or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
+		if self.player:hasFlag("drank") or #allcards-2>= self.player:getHp() or (self.player:hasSkill("kuanggu") and self.player:isWounded()) then
 			local cards = self.player:getCards("h")
-			cards=sgs.QList2Table(cards)
+			cards = sgs.QList2Table(cards)
 			local index
-			if (self.player:hasSkill("lianying") or self.player:hasSkill("kongcheng")) then index = #cards end
+			if self:hasSkills(sgs.need_kongcheng) then index = #cards end
 			if self.player:getOffensiveHorse() then 
 				if index then 
 					if index < 2 then 
@@ -2395,28 +2461,27 @@ function SmartAI:askForCard(pattern,prompt)
 				end
 				table.insert(cards, self.player:getDefensiveHorse()) 
 			end
-			self:log(#cards)
-			if #cards>=2 then
-				self:sortByKeepValue(cards, true)
+			--self:log(#cards)
+			if #cards>= 2 then
+				self:sortByUseValue(cards, true)
 				return "$"..cards[1]:getEffectiveId().."+"..cards[2]:getEffectiveId()
 			end
 		end
-	elseif parsedPrompt[1]=="@wushuang-slash-1" and (self:getSlashNumber(self.player)<2)then
+	elseif parsedPrompt[1] == "@enyuan" then
+		local cards = self.player:getHandcards()
+		for _, card in sgs.qlist(cards) do
+			if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihio")) then 
+				return card:getEffectiveId()
+			end
+		end	
 		return "."
-	elseif (parsedPrompt[1]=="@wushuang-jink-1") and (self:getJinkNumber(self.player)<2) then return "." 
-	elseif (parsedPrompt[1]=="@roulin1-jink-1") and (self:getJinkNumber(self.player)<2) then return "." 
-	elseif (parsedPrompt[1]=="@roulin2-jink-1") and (self:getJinkNumber(self.player)<2) then return "." end
-	
-	if self.player:hasSkill("yiji") and (self.player:getLostHp()<1) then 
-		if (parsedPrompt[1]=="slash-jink") then return "." end		
-	end																	
+	end
+																	
 	if self.player:hasSkill("tianxiang") then							
-		local dmgStr={damage=1,nature=0}
-		local willTianxiang=sgs.ai_skill_use["@tianxiang"](self, dmgStr)
-		if willTianxiang~="." then return "." end
+		local dmgStr = {damage = 1, nature = 0}
+		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
+		if willTianxiang~= "." then return "." end
 	end		
-
-	return nil
 end
 
 sgs.ai_skill_askforag = {}
@@ -2792,14 +2857,87 @@ function SmartAI:hasSkills(skill_names, player)
 	end
 end
 
-
-function SmartAI:askForGuanxing(cards, up_only)
-	--zhugeliang
-	if not up_only then return GuanXing(self,cards)
-	else return XinZhan(self, cards)
+function SmartAI:isEquip(equip_name, player)
+	player = player or self.player
+	local cards = player:getCards("e")
+	for _, card in sgs.qlist(cards) do
+		if card:inherits(equip_name) then return true end
 	end
-	-- keep it unchanged
-	return cards, {}
+	if equip_name == "EightDiagram" and player:hasSkill("bazhen") and not player:getArmor() then return true end
+	return false
+end
+
+function SmartAI:getCardId(class_name, player)
+	player = player or self.player
+	local cards = player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByUsePriority(cards)
+	for _, card in ipairs(cards) do
+		if card:inherits(class_name) then
+			return card:getEffectiveId()
+		elseif self:isCompulsoryView(card, class_name, player) then 
+			return self:isCompulsoryView(card, class_name, player)
+		end
+	end
+	local skill_card
+	for _, card in ipairs(cards) do
+		skill_card = self:getSkillViewCard(card, class_name, false, player)
+		if skill_card then return skill_card end
+	end
+	local cards = self.player:getCards("e")
+	cards = sgs.QList2Table(cards)
+	for _, card in ipairs(cards) do
+		skill_card = self:getSkillViewCard(card, class_name, true, player)
+		if skill_card then return skill_card end
+	end
+end
+
+function SmartAI:isCompulsoryView(card,class_name,player)
+	player = player or self.player
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if class_name == "Slash" then
+	    if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id) end
+		if self.player:hasSkill("jiejiu") and card:inherits("Analeptic") then return ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id) end
+	end	
+end
+
+function SmartAI:getSkillViewCard(card,class_name,only_equip,player)
+	player = player or self.player
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if class_name == "Slash" then
+		if player:hasSkill("wusheng") then
+			if card:isRed() and not card:inherits("Peach") then
+				return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end	
+		if not only_equip then
+			if player:hasSkill("longdan") and card:inherits("Jink") then
+				return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end
+	elseif class_name == "Jink" then
+		if not only_equip then
+			if player:hasSkill("longdan") and card:inherits("Slash") then
+				return ("jink:longdan[%s:%s]=%d"):format(suit, number, card_id)
+			elseif player:hasSkill("qingguo") and card:isBlack() then
+				return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end
+	elseif class_name == "Peach" then
+		if player:hasSkill("jijiu") and card:isRed() then 
+			return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
+		end
+	elseif class_name == "Analeptic" then
+		if not only_equip then
+			if player:hasSkill("jiuchi") and card:getSuit() == sgs.Card_Spade then 
+				return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end	
+	end
 end
 
 -- load other ai scripts

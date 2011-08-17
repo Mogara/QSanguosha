@@ -181,10 +181,12 @@ jixi_skill.getTurnUseCard = function(self)
 	local players = self.room:getOtherPlayers(self.player)
 	local targets = {}
 	for _, p in sgs.qlist(players) do
-		if self.player:distanceTo(p) <= 1 
-			and self:isEnemy(p)
-			and p:getCards("he") then 
-			table.insert(targets, p) 
+		if self.player:distanceTo(p) <= 1 then
+			if self:isEnemy(p) and p:getCards("he") and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), p) then 
+				table.insert(targets, p) 
+			elseif self:isFriend(p) and p:getCards("j") then
+				table.insert(targets, p) 
+			end
 		end
 	end
 	
@@ -201,15 +203,17 @@ sgs.ai_skill_use_func["JixiCard"] = function(card, use, self)
 end
 
 sgs.ai_skill_playerchosen.jixi = function(self, targets)
-	local enemies = {}
+	local choices = {}
 	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) and target:getCards("he") then table.insert(enemies, target) end
+		if self:isEnemy(target) and target:getCards("he") then table.insert(choices, target)
+		elseif self:isFriend(target) and target:getCards("j") then table.insert(choices, target)
+		end
 	end
 	
-	if #enemies == 0 then return targets:at(0) end
+	if #choices == 0 then return targets:at(0) end
 	
-	self:sort(enemies, "defense")
-	return enemies[1]
+	self:sort(choices, "defense")
+	return choices[1]
 end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
@@ -290,7 +294,7 @@ end
 
 --zhiji
 sgs.ai_skill_choice["zhiji"] = function(self, choice)
-	if self.player:getHp() < self.player:getMaxHP() then return "recover" end
+	if self.player:getHp() < self.player:getMaxHP()-1 then return "recover" end
 	
 	return "draw"
 end
@@ -372,4 +376,10 @@ sgs.ai_skill_choice["zhiba_pindian"] = function(self, choices)
 	if self:isEnemy(who) then return "reject"
 	else return "accept"
 	end
+end
+
+sgs.ai_skill_choice["huashen"] = function(self, choices)
+	local parseprompt = choices:split("+")
+	local index = math.random(1, #parseprompt)
+	return choices[index]
 end
