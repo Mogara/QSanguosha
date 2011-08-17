@@ -1180,6 +1180,9 @@ void Room::reportDisconnection(){
             player->setParent(NULL);
             players.removeOne(player);
 
+            QString screen_name = Config.ContestMode ? tr("Contestant") : player->screenName();
+            broadcastInvoke("removeSpeak", QString(screen_name.toUtf8().toBase64()));
+
             broadcastInvoke("removePlayer", player->objectName());
             signup_count --;
         }
@@ -1346,6 +1349,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     // introduce the new joined player to existing players except himself
     player->introduceTo(NULL);
+    player->introduceSelf();
 
     if(!is_robot){
         // introduce all existing player to the new joined

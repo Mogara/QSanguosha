@@ -86,6 +86,7 @@ public:
 
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
+    void introduceSelf();
     void marshal(ServerPlayer *player) const;
 
     void addToPile(const QString &pile_name, int card_id, bool open = true);
