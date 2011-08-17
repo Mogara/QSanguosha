@@ -603,7 +603,7 @@ public:
 class Jiejiu: public FilterSkill{
 public:
     Jiejiu():FilterSkill("jiejiu"){
-        frequency = Compulsory;
+
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{

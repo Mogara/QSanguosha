@@ -19,6 +19,11 @@ void Shit::onMove(const CardMoveStruct &move) const{
        && move.to == NULL
        && from->isAlive()){
 
+        if(getSuit() == Spade){
+            from->getRoom()->loseHp(from);
+            return;
+        }
+
         DamageStruct damage;
         damage.from = damage.to = from;
         damage.card = this;
@@ -335,7 +340,8 @@ JoyPackage::JoyPackage()
 
     cards << new Shit(Card::Club, 1)
             << new Shit(Card::Heart, 8)
-            << new Shit(Card::Diamond, 13);
+            << new Shit(Card::Diamond, 13)
+            << new Shit(Card::Spade, 10);
 
     cards << new Deluge(Card::Spade, 1)
             << new Typhoon(Card::Spade, 4)
