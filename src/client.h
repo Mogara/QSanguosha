@@ -67,6 +67,8 @@ public:
     void setup(const QString &setup_str);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
+    void introduceSelf(const QString &hash_name);
+    void removeSpeak(const QString &hash_name);
     void drawCards(const QString &cards_str);
     void drawNCards(const QString &draw_str);
     void doChooseGeneral(const QString &generals_str);

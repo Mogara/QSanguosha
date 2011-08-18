@@ -772,7 +772,12 @@ public:
         Room *room =  sunquan->getRoom();
         switch(event){
         case Dying: {
-                room->playSkillEffect("jiuyuan", 1);
+                foreach(ServerPlayer *wu, room->getOtherPlayers(sunquan)){
+                    if(wu->getKingdom() == "wu"){
+                        room->playSkillEffect("jiuyuan", 1);
+                        break;
+                    }
+                }
                 break;
             }
 
@@ -783,6 +788,7 @@ public:
                 {
                     int index = effect.from->getGeneral()->isMale() ? 2 : 3;
                     room->playSkillEffect("jiuyuan", index);
+                    sunquan->setFlags("jiuyuan");
 
                     LogMessage log;
                     log.type = "#JiuyuanExtraRecover";
@@ -801,8 +807,9 @@ public:
             }
 
         case AskForPeachesDone:{
-                if(sunquan->getHp() > 0)
+                if(sunquan->getHp() > 0 && sunquan->hasFlag("jiuyuan"))
                     room->playSkillEffect("jiuyuan", 4);
+                sunquan->setFlags("-jiuyuan");
 
                 break;
             }

@@ -382,7 +382,7 @@ QLayout *ServerDialog::createRight(){
         free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
 
         maxchoice_spinbox = new QSpinBox;
-        maxchoice_spinbox->setRange(5, 10);
+        maxchoice_spinbox->setRange(3, 10);
         maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
         forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
