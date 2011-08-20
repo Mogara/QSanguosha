@@ -1712,32 +1712,6 @@ public:
     }
 };
 
-class Zhengfeng: public TriggerSkill{
-public:
-    Zhengfeng():TriggerSkill("zhengfeng"){
-        events << GameStart << CardLost << HpChanged;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        if(event == GameStart)
-            room->setPlayerProperty(player, "atk", player->getHp());
-        else if(event == CardLost){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place == Player::Equip){
-                const Card *card = Sanguosha->getCard(move->card_id);
-                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-                if(equip && equip->location() == EquipCard::WeaponLocation)
-                    room->setPlayerProperty(player, "atk", player->getHp());
-            }
-        }else if(event == HpChanged && player->getWeapon() == NULL){
-            room->setPlayerProperty(player, "atk", player->getHp());
-        }
-
-        return false;
-    }
-};
-
 class Zhenwei: public TriggerSkill{
 public:
     Zhenwei():TriggerSkill("zhenwei"){
@@ -1868,7 +1842,7 @@ YitianPackage::YitianPackage()
     zhanggongqi->addSkill(new Xiliang);
 
     General *yitianjian = new General(this, "yitianjian", "wei");
-    yitianjian->addSkill(new Zhengfeng);
+    yitianjian->addSkill(new Skill("zhengfeng", Skill::Compulsory));
     yitianjian->addSkill(new Zhenwei);
     yitianjian->addSkill(new Yitian);
 

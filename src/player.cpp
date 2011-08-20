@@ -8,7 +8,7 @@
 Player::Player(QObject *parent)
     :QObject(parent), owner(false), general(NULL), general2(NULL),
     hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
-    attack_range(1), phase(NotActive),
+    phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true), chained(false)
 {
@@ -117,16 +117,20 @@ void Player::clearFlags(){
     flags.clear();
 }
 
-void Player::setAttackRange(int attack_range){
-    this->attack_range = attack_range;
-}
-
 int Player::getAttackRange() const{
-    return attack_range;
+    if(hasFlag("tianyi_success"))
+        return 1000;
+
+    if(weapon)
+        return weapon->getRange();
+    else if(hasSkill("zhengfeng"))
+        return hp;
+    else
+        return 1;
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
-    return distanceTo(other) <= attack_range;
+    return distanceTo(other) <= getAttackRange();
 }
 
 void Player::setFixedDistance(const Player *player, int distance){
@@ -710,7 +714,6 @@ void Player::copyFrom(Player* p)
     b->role             = a->role;
     b->seat             = a->seat;
     b->alive            = a->alive;
-    b->attack_range     = a->attack_range;
 
     b->phase            = a->phase;
     b->weapon           = a->weapon;

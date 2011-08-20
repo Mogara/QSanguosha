@@ -661,9 +661,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if(isChained())
         player->sendProperty("chained", this);
 
-    if(getAttackRange() != 1)
-        player->sendProperty("atk", this);
-
     if(!isKongcheng()){
         if(player != this){
             player->invoke("drawNCards",
