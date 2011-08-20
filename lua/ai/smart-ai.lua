@@ -2093,19 +2093,29 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 		return {}
 	end
 	
-	local flags = "h"
-	if include_equip then
-		flags = flags .. "e"
-	end
-
-	local cards = self.player:getCards(flags)
+	local cards = self.player:getCards("h")
+	if not cards then return {} end
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
+	
 	local to_discard = {}
 	for i=1, discard_num do
 		table.insert(to_discard, cards[i]:getEffectiveId())
 	end
-
+	
+	if include_equip then
+		local equips = self.player:getCards("e")
+		if equips then
+			equips = sgs.QList2Table(equips)
+			for i=#equips, 1, -1 do
+				if equips[i]:inherits("OffensiveHorse") then
+					table.insert(to_discard, equips[i]:getEffectiveId(), 1)
+				elseif equips[i]:inherits("Weapon") then
+					table.insert(to_discard, equips[i]:getEffectiveId(), 1)
+				end
+			end
+		end
+	end
 	return to_discard	
 end
 
