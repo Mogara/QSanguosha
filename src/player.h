@@ -37,7 +37,7 @@ class Player : public QObject
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
-    Q_PROPERTY(int atk READ getAttackRange WRITE setAttackRange)
+    Q_PROPERTY(int atk READ getAttackRange)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
@@ -100,7 +100,6 @@ public:
     Phase getPhase() const;
     void setPhase(Phase phase);
 
-    void setAttackRange(int attack_range);
     int getAttackRange() const;
     bool inMyAttackRange(const Player *other) const;
 
@@ -214,7 +213,6 @@ private:
     QString state;
     int seat;
     bool alive;
-    int attack_range;
 
     Phase phase;
     const Weapon *weapon;
