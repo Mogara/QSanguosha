@@ -585,8 +585,6 @@ FirePackage::FirePackage()
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
 
-    related_skills.insertMulti("tianyi", "#tianyiatk");
-
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
     yuanshao->addSkill(new Xueyi);
