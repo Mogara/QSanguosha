@@ -6,6 +6,103 @@
 #include "engine.h"
 #include "standard.h"
 
+class JileiClear: public PhaseChangeSkill{
+public:
+    JileiClear():PhaseChangeSkill("#jilei-clear"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::NotActive){
+            Room *room = target->getRoom();
+            QList<ServerPlayer *> players = room->getAllPlayers();
+            foreach(ServerPlayer *player, players){
+                if(player->hasFlag("jilei")){
+                    player->jilei(".");
+                    player->invoke("jilei");
+
+                    LogMessage log;
+                    log.type = "#JileiClear";
+                    log.from = player;
+                    room->sendLog(log);
+                }
+            }
+        }
+
+        return false;
+    }
+};
+
+
+class Jilei: public TriggerSkill{
+public:
+    Jilei():TriggerSkill("jilei"){
+        events << Predamaged;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *yangxiu, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if(damage.from == NULL)
+           return false;
+
+        Room *room = yangxiu->getRoom();
+        if(room->askForSkillInvoke(yangxiu, objectName(), data)){
+            QString choice = room->askForChoice(yangxiu, objectName(), "basic+equip+trick");
+            room->playSkillEffect(objectName());
+
+            damage.from->jilei(choice);
+            damage.from->invoke("jilei", choice);
+            damage.from->setFlags("jilei");
+
+            LogMessage log;
+            log.type = "#Jilei";
+            log.from = yangxiu;
+            log.to << damage.from;
+            log.arg = choice;
+            room->sendLog(log);
+        }
+
+        return false;
+    }
+};
+
+class Danlao: public TriggerSkill{
+public:
+    Danlao():TriggerSkill("danlao"){
+        events << CardEffected;
+    }
+
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+
+        if(effect.multiple && effect.card->inherits("TrickCard")){
+            Room *room = player->getRoom();
+            if(room->askForSkillInvoke(player, objectName(), data)){
+                room->playSkillEffect(objectName());
+
+                LogMessage log;
+
+                log.type = "#DanlaoAvoid";
+                log.from = player;
+                log.arg = effect.card->objectName();
+
+                room->sendLog(log);
+
+                player->drawCards(1);
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+
+
 class Yongsi: public TriggerSkill{
 public:
     Yongsi():TriggerSkill("yongsi"){
@@ -127,54 +224,6 @@ private:
     HuanzhuangCard *huanzhuang_card;
 };
 
-TaichenCard::TaichenCard(){
-}
-
-bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(!targets.isEmpty() || to_select->isAllNude())
-        return false;
-
-    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
-        return Self->distanceTo(to_select) == 1;
-    else
-        return Self->inMyAttackRange(to_select);
-}
-
-void TaichenCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-
-    if(subcards.isEmpty())
-        room->loseHp(effect.from);
-    else
-        room->throwCard(this);
-
-    int i;
-    for(i=0; i<2; i++){
-        if(!effect.to->isAllNude())
-            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
-    }
-}
-
-class Taichen: public ViewAsSkill{
-public:
-    Taichen():ViewAsSkill("taichen"){
-
-    }
-
-    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
-        return selected.isEmpty() && to_select->getFilteredCard()->inherits("Weapon");
-    }
-
-    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.length() <= 1){
-            TaichenCard *taichen_card = new TaichenCard;
-            taichen_card->addSubcards(cards);
-            return taichen_card;
-        }else
-            return NULL;
-    }
-};
-
 class Xiuluo: public PhaseChangeSkill{
 public:
     Xiuluo():PhaseChangeSkill("xiuluo"){
@@ -260,6 +309,13 @@ public:
 SPPackage::SPPackage()
     :Package("sp")
 {
+    General *yangxiu = new General(this, "yangxiu", "wei", 3);
+    yangxiu->addSkill(new Jilei);
+    yangxiu->addSkill(new JileiClear);
+    yangxiu->addSkill(new Danlao);
+
+    related_skills.insertMulti("jilei", "#jilei-clear");
+
     General *gongsunzan = new General(this, "gongsunzan", "qun");
     gongsunzan->addSkill(new Yicong);
 
@@ -276,9 +332,6 @@ SPPackage::SPPackage()
     sp_sunshangxiang->addSkill("jieyin");
     sp_sunshangxiang->addSkill("xiaoji");
 
-    General *sp_pangde = new General(this, "sp_pangde", "wei");
-    sp_pangde->addSkill(new Taichen);
-
     General *shenlvbu1 = new General(this, "shenlvbu1", "god", 8, true, true);
     shenlvbu1->addSkill("mashu");
     shenlvbu1->addSkill("wushuang");
@@ -293,8 +346,6 @@ SPPackage::SPPackage()
     General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
     sp_guanyu->addSkill("wusheng");
     sp_guanyu->addSkill(new Danji);
-
-    addMetaObject<TaichenCard>();
 }
 
 ADD_PACKAGE(SP);
