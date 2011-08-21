@@ -1337,14 +1337,15 @@ void Client::detachSkill(const QString &detach_str){
     if(texts.length() == 1){
         player = Self;
         skill_name = texts.first();
-
-        emit skill_detached(skill_name);
     }else if(texts.length() == 2){
         player = getPlayer(texts.first());
         skill_name = texts.last();
     }
 
     player->loseSkill(skill_name);
+
+    if(player == Self)
+        emit skill_detached(skill_name);
 }
 
 void Client::askForAssign(const QString &){

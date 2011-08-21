@@ -223,10 +223,8 @@ public:
 
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
             foreach(const Skill *skill, skills){
-                if(skill->inherits("WeaponSkill") || skill->inherits("ArmorSkill"))
-                    continue;
-
-                room->detachSkillFromPlayer(damage->from, skill->objectName());
+                if(skill->parent())
+                    room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
 
             QString kingdom = damage->from->getKingdom();
