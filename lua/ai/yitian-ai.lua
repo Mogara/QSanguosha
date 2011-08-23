@@ -95,3 +95,11 @@ function jiangboyue_ai:activate(use)
 	
 	super.activate(self, use)
 end
+
+-- zhenwei
+sgs.ai_skill_invoke.zhenwei = true
+
+sgs.ai_skill_invoke.yitian = function(self, data)
+	local damage = data:toDamage()
+	return self:isFriend(damage.to)
+end
