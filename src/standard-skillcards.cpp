@@ -13,7 +13,8 @@ ZhihengCard::ZhihengCard(){
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     room->throwCard(this);
-    room->drawCards(source, subcards.length());
+    if(source->isAlive())
+        room->drawCards(source, subcards.length());
 }
 
 

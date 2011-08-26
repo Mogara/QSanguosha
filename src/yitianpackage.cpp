@@ -1752,6 +1752,54 @@ public:
     }
 };
 
+TaichenCard::TaichenCard(){
+}
+
+bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty() || to_select->isAllNude())
+        return false;
+
+    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
+        return Self->distanceTo(to_select) == 1;
+    else
+        return Self->inMyAttackRange(to_select);
+}
+
+void TaichenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    if(subcards.isEmpty())
+        room->loseHp(effect.from);
+    else
+        room->throwCard(this);
+
+    int i;
+    for(i=0; i<2; i++){
+        if(!effect.to->isAllNude())
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
+    }
+}
+
+class Taichen: public ViewAsSkill{
+public:
+    Taichen():ViewAsSkill("taichen"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getFilteredCard()->inherits("Weapon");
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() <= 1){
+            TaichenCard *taichen_card = new TaichenCard;
+            taichen_card->addSubcards(cards);
+            return taichen_card;
+        }else
+            return NULL;
+    }
+};
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
@@ -1846,6 +1894,9 @@ YitianPackage::YitianPackage()
     yitianjian->addSkill(new Zhenwei);
     yitianjian->addSkill(new Yitian);
 
+    General *sp_pangde = new General(this, "sp_pangde", "wei");
+    sp_pangde->addSkill(new Taichen);
+
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 
     addMetaObject<ChengxiangCard>();
@@ -1858,6 +1909,7 @@ YitianPackage::YitianPackage()
     addMetaObject<XunzhiCard>();
     addMetaObject<YisheAskCard>();
     addMetaObject<YisheCard>();
+    addMetaObject<TaichenCard>();
 }
 
 ADD_PACKAGE(Yitian);

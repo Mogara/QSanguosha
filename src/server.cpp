@@ -597,8 +597,8 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
         bool checked = false;
         if(ex_generals.isEmpty()){
-            checked = pack->objectName() == "standard" || pack->objectName() == "wind"
-                      || general->objectName() == "xiaoqiao";
+            checked = (pack->objectName() == "standard" || pack->objectName() == "wind")
+                      && general->objectName() != "yuji";
         }else
             checked = ex_generals.contains(general->objectName());
 
