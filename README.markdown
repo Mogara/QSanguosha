@@ -14,16 +14,24 @@ but many of them lack some important features.
 Although Qt is an application framework instead of a game engine, 
 its graphics view framework is suitable for my game developing.
 
+Our site: qsanguosha.com
+
 Features
 ----------
 
 1. Framework
     * Open source with Qt graphics view framework
     * Use irrKlang as sound engine
+    * Use plib as joystick backend 
+    * Use Lua as AI script
 
 2. Operation experience
-    * Full package (standard + wind + fire + thicket + maneuvering + others)
+    * Full package (include all yoka extension package)
     * Drag card to target to use card
     * Keyboard shortcut
     * Cards sorting (by card type and card suit)
+    * Multilayer display when cards are more than an upperlimit
+
+3. Extensible
+    * Some MODs are available based on this game
 
