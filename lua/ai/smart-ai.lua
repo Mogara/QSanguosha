@@ -2950,6 +2950,22 @@ function SmartAI:getSkillViewCard(card,class_name,only_equip,player)
 	end
 end
 
+function SmartAI:getJiemingChaofeng(player)
+	local max_x , chaofeng = 0 , 0
+    for _, friend in ipairs(self:getFriends(player)) do
+		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()		
+		if x > max_x then
+			max_x = x
+		end
+    end
+	if max_x < 2 then
+		chaofeng = 5 - max_x * 2
+	else
+		chaofeng = (-max_x) * 2
+	end    
+    return chaofeng
+end
+
 -- load other ai scripts
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/wind-ai.lua"
