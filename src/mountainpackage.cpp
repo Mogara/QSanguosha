@@ -243,7 +243,7 @@ public:
 class Tuntian: public DistanceSkill{
 public:
     Tuntian():DistanceSkill("tuntian"){
-
+        frequency = NotFrequent;
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
