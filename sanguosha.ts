@@ -1449,251 +1449,256 @@
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="58"/>
+        <location filename="src/mainwindow.ui" line="59"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="69"/>
+        <location filename="src/mainwindow.ui" line="70"/>
         <source>View</source>
         <translation>视图</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="104"/>
+        <location filename="src/mainwindow.ui" line="105"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="116"/>
+        <location filename="src/mainwindow.ui" line="117"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="124"/>
+        <location filename="src/mainwindow.ui" line="125"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="132"/>
+        <location filename="src/mainwindow.ui" line="133"/>
         <source>Ctrl+G</source>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="140"/>
+        <location filename="src/mainwindow.ui" line="141"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="153"/>
+        <location filename="src/mainwindow.ui" line="154"/>
         <source>Ctrl+R</source>
         <oldsource>Ctrl+C</oldsource>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="121"/>
+        <location filename="src/mainwindow.ui" line="122"/>
         <source>Start server</source>
         <translation>启动服务器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="80"/>
+        <location filename="src/mainwindow.ui" line="81"/>
         <source>Cheat</source>
         <translation>作弊</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="89"/>
+        <location filename="src/mainwindow.ui" line="90"/>
         <source>DIY</source>
         <translation>DIY</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="129"/>
+        <location filename="src/mainwindow.ui" line="130"/>
         <source>Start game</source>
         <translation>启动游戏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="137"/>
+        <location filename="src/mainwindow.ui" line="138"/>
         <source>General overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="150"/>
+        <location filename="src/mainwindow.ui" line="151"/>
         <source>Card overview</source>
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="161"/>
+        <location filename="src/mainwindow.ui" line="162"/>
         <source>Enable hotkey</source>
         <translation>启用热键</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="166"/>
+        <location filename="src/mainwindow.ui" line="167"/>
         <source>About Qt</source>
         <translation>关于 Qt</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="174"/>
+        <location filename="src/mainwindow.ui" line="175"/>
         <source>View Discarded</source>
         <translation>查看弃牌堆</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="177"/>
+        <location filename="src/mainwindow.ui" line="178"/>
         <source>Ctrl+D</source>
         <translation>Ctrl+D</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="185"/>
+        <location filename="src/mainwindow.ui" line="186"/>
         <source>View distance</source>
         <translation>查看距离</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="188"/>
+        <location filename="src/mainwindow.ui" line="189"/>
         <source>Ctrl+I</source>
         <oldsource>Ctrl+V</oldsource>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="196"/>
+        <location filename="src/mainwindow.ui" line="197"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="204"/>
+        <location filename="src/mainwindow.ui" line="205"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="209"/>
+        <location filename="src/mainwindow.ui" line="210"/>
         <source>Replay</source>
         <translation>战局重放</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="217"/>
+        <location filename="src/mainwindow.ui" line="218"/>
         <source>Save battle record</source>
         <translation>保存战斗记录</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="222"/>
+        <location filename="src/mainwindow.ui" line="223"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="225"/>
+        <location filename="src/mainwindow.ui" line="226"/>
         <source>Alt+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="230"/>
+        <location filename="src/mainwindow.ui" line="231"/>
         <source>Show/Hide menu</source>
         <translation>显示/隐藏菜单</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="259"/>
+        <location filename="src/mainwindow.ui" line="260"/>
         <source>Scenario overview</source>
         <translation>剧情一览</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="272"/>
+        <location filename="src/mainwindow.ui" line="273"/>
         <source>Script editor</source>
         <translation>脚本编辑器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="277"/>
+        <location filename="src/mainwindow.ui" line="278"/>
         <source>Broadcast ...</source>
         <translation>广播 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="282"/>
+        <location filename="src/mainwindow.ui" line="283"/>
         <source>Acknowledgement</source>
         <translation>鸣谢</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="290"/>
+        <location filename="src/mainwindow.ui" line="291"/>
         <source>Damage maker</source>
         <translation>伤害制造器</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="298"/>
+        <location filename="src/mainwindow.ui" line="299"/>
         <source>Expand dashboard</source>
         <translation>延长控制板</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="303"/>
+        <location filename="src/mainwindow.ui" line="304"/>
         <source>Get card ...</source>
         <translation>获取卡牌 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="308"/>
+        <location filename="src/mainwindow.ui" line="309"/>
         <source>Death note ...</source>
         <translation>死亡笔记 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="313"/>
+        <location filename="src/mainwindow.ui" line="314"/>
         <source>Revive wand ...</source>
         <translation>复活魔杖 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="318"/>
+        <location filename="src/mainwindow.ui" line="319"/>
         <source>Card editor ...</source>
         <translation>卡牌编辑器 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="321"/>
+        <location filename="src/mainwindow.ui" line="322"/>
         <source>Ctrl+T</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="326"/>
+        <location filename="src/mainwindow.ui" line="327"/>
         <source>PC Console Start</source>
         <translation>单机启动</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="331"/>
+        <location filename="src/mainwindow.ui" line="332"/>
         <source>Package manager ...</source>
         <oldsource>Packaging ...</oldsource>
         <translation>DIY 包管理器 ...</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="334"/>
+        <location filename="src/mainwindow.ui" line="335"/>
         <source>Ctrl+P</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="339"/>
+        <location filename="src/mainwindow.ui" line="340"/>
         <source>AI Melee</source>
         <translation>AI 混战</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="342"/>
+        <location filename="src/mainwindow.ui" line="343"/>
         <source>Ctrl+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="233"/>
+        <location filename="src/mainwindow.ui" line="348"/>
+        <source>Replay file convert ...</source>
+        <translation>重放文件格式转换 ...</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.ui" line="234"/>
         <source>Alt+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="241"/>
+        <location filename="src/mainwindow.ui" line="242"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="246"/>
+        <location filename="src/mainwindow.ui" line="247"/>
         <source>Minimize to system tray</source>
         <translation>最小化到系统托盘</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="249"/>
+        <location filename="src/mainwindow.ui" line="250"/>
         <source>Alt+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="254"/>
+        <location filename="src/mainwindow.ui" line="255"/>
         <location filename="src/mainwindow.cpp" line="452"/>
         <source>Role assign table</source>
         <translation>身份分配表</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="145"/>
+        <location filename="src/mainwindow.ui" line="146"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
@@ -1715,6 +1720,12 @@
         <location filename="src/mainwindow.cpp" line="524"/>
         <source>Can not start server!</source>
         <translation>不能启动服务器!</translation>
+    </message>
+    <message>
+        <location filename="src/mainwindow.cpp" line="187"/>
+        <location filename="src/mainwindow.cpp" line="758"/>
+        <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
+        <translation>纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="205"/>
@@ -1775,6 +1786,11 @@
         <translation>此功能尚未实现!</translation>
     </message>
     <message>
+        <location filename="src/mainwindow.cpp" line="756"/>
+        <source>Please select a replay file</source>
+        <translation>请选择一个重放文件</translation>
+    </message>
+    <message>
         <location filename="src/mainwindow.cpp" line="371"/>
         <source>irrKlang is a cross platform sound library for C++, C# and all .NET languages. &lt;br /&gt;</source>
         <translation>irrKlang 是一个跨平台的音频库，适用的语言有 C++, C# 和所有的 .Net 平台语言 &lt;br /&gt;</translation>
@@ -1791,7 +1807,7 @@
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/mainwindow.ui" line="264"/>
+        <location filename="src/mainwindow.ui" line="265"/>
         <location filename="src/mainwindow.cpp" line="381"/>
         <source>About irrKlang</source>
         <translation>关于 irrKlang</translation>
@@ -1841,11 +1857,6 @@
         <location filename="src/mainwindow.cpp" line="185"/>
         <source>Select a reply file</source>
         <translation>请选择重放文件</translation>
-    </message>
-    <message>
-        <location filename="src/mainwindow.cpp" line="187"/>
-        <source>Replay file (*.txt)</source>
-        <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
         <location filename="src/mainwindow.cpp" line="289"/>
@@ -2362,6 +2373,11 @@
         <translation>请选择一名玩家</translation>
     </message>
     <message>
+        <location filename="src/roomscene.cpp" line="2294"/>
+        <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
+        <translation>纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
+    </message>
+    <message>
         <location filename="src/roomscene.cpp" line="2697"/>
         <source>Add a robot</source>
         <translation>添加一个电脑</translation>
@@ -2425,11 +2441,6 @@
         <location filename="src/roomscene.cpp" line="2292"/>
         <source>Save replay record</source>
         <translation>保存重放记录</translation>
-    </message>
-    <message>
-        <location filename="src/roomscene.cpp" line="2294"/>
-        <source>Replay file (*.txt)</source>
-        <translation>重放文件 (*.txt)</translation>
     </message>
     <message>
         <location filename="src/roomscene.cpp" line="2384"/>

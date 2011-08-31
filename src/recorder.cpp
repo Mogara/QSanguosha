@@ -36,17 +36,28 @@ bool Recorder::save(const QString &filename) const{
 Replayer::Replayer(QObject *parent, const QString &filename)
     :QThread(parent), filename(filename), speed(1.0), playing(true)
 {
-    QFile file(filename);
+    QIODevice *device = NULL;
+    if(filename.endsWith(".png")){
+        QByteArray *data = new QByteArray(PNG2TXT(filename));
+        QBuffer *buffer = new QBuffer(data);
+        device = buffer;
+    }else if(filename.endsWith(".txt")){
+        QFile *file = new QFile(filename);
+        device = file;
+    }
 
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(device == NULL)
+        return;
+
+    if(!device->open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     typedef char buffer_t[1024];
 
-    while(!file.atEnd()){
+    while(!device->atEnd()){
         buffer_t line;
         memset(line, 0, sizeof(buffer_t));
-        file.readLine(line, sizeof(buffer_t));
+        device->readLine(line, sizeof(buffer_t));
 
         char *space = strchr(line, ' ');
         if(space == NULL)
@@ -63,7 +74,18 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         pairs << pair;
     }
 
-    file.close();
+    delete device;
+}
+
+QByteArray Replayer::PNG2TXT(const QString filename){
+    QImage image(filename);
+    image = image.convertToFormat(QImage::Format_ARGB32);
+    const uchar *imageData = image.bits();
+    qint32 actual_size = *(const qint32 *)imageData;
+    QByteArray data((const char *)(imageData+4), actual_size);
+    data = qUncompress(data);
+
+    return data;
 }
 
 int Replayer::getDuration() const{

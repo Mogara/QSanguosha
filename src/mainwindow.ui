@@ -43,6 +43,7 @@
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
+    <addaction name="actionReplay_file_convert"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionExpand_dashboard"/>
@@ -340,6 +341,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionReplay_file_convert">
+   <property name="text">
+    <string>Replay file convert ...</string>
    </property>
   </action>
  </widget>

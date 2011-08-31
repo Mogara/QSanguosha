@@ -29,6 +29,8 @@ class Replayer: public QThread
 
 public:
     explicit Replayer(QObject *parent, const QString &filename);
+    static QByteArray PNG2TXT(const QString filename);
+
     int getDuration() const;
     qreal getSpeed();
 
