@@ -631,11 +631,6 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
         room->broadcastInvoke("addPlayer", introduce_str, this);
 }
 
-void ServerPlayer::introduceSelf(){
-   QString screen_name = Config.ContestMode ? tr("Contestant") : screenName();
-   this->invoke("introduceSelf", QString(screen_name.toUtf8().toBase64()));
-}
-
 void ServerPlayer::marshal(ServerPlayer *player) const{
     player->sendProperty("maxhp", this);
     player->sendProperty("hp", this);
