@@ -608,6 +608,32 @@ function SmartAI:filterEvent(event, player, data)
 	end
 end
 
+function SmartAI:getFriendsNoself(player)
+	if self:isFriend(self.player, player) then
+		return self.friends_noself
+	elseif self:isEnemy(self.player, player) then
+		friends = sgs.QList2Table(self.lua_ai:getEnemies())
+		for i = #friends, 1, -1 do 
+			if friends[i]:objectName() == player:objectName() then
+			  table.remove(friends, i)
+			end
+		end
+		return friends
+	else 
+		return {}
+	end
+end
+
+function SmartAI:getFriends(player)
+	if self:isFriend(self.player, player) then
+		return self.friends
+	elseif self:isEnemy(self.player, player) then
+		return self.enemies
+	else 
+		return {player}
+	end
+end
+
 function SmartAI:isFriend(other, another)
 	if another then 
 		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
@@ -616,12 +642,6 @@ function SmartAI:isFriend(other, another)
     if (self.player:objectName())==(other:objectName()) then return true end 
 	if self:objectiveLevel(other)<0 then return true end
     return false
-end
-
-function SmartAI:isFair(other)
-    if (self.player:objectName())==(other:objectName()) then return false end 
-	if self:objectiveLevel(other)>=-1 and self:objectiveLevel(other)<4 then return true end
-	return false
 end
 
 function SmartAI:isEnemy(other)
