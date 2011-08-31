@@ -769,21 +769,7 @@ void MainWindow::on_actionReplay_file_convert_triggered()
             tosave.append(".png");
 
             // txt to png
-            QByteArray data = file.readAll();
-            data = qCompress(data, 9);
-            qint32 actual_size = data.size();
-            data.prepend((const char *)&actual_size, sizeof(qint32));
-
-            // actual data = width * height - padding
-            int width = ceil(sqrt(data.size()));
-            int height = width;
-            int padding = width * height - data.size();
-            QByteArray paddingData;
-            paddingData.fill('\0', padding);
-            data.append(paddingData);
-
-            QImage image((const uchar *)data.constData(), width, height, QImage::Format_ARGB32);
-            image.save(tosave);
+            Recorder::TXT2PNG(file.readAll()).save(tosave);
 
         }else if(filename.endsWith(".png")){
             tosave.append(".txt");

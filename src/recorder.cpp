@@ -1,7 +1,8 @@
 #include "recorder.h"
 #include "client.h"
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cmath>
 
 #include <QFile>
 #include <QBuffer>
@@ -26,11 +27,33 @@ void Recorder::recordLine(const QString &line){
 }
 
 bool Recorder::save(const QString &filename) const{
-    QFile file(filename);
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        return file.write(data) != -1;
+    if(filename.endsWith(".txt")){
+        QFile file(filename);
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+            return file.write(data) != -1;
+        else
+            return false;
+    }else if(filename.endsWith(".png")){
+        return TXT2PNG(data).save(filename);
     }else
         return false;
+}
+
+QImage Recorder::TXT2PNG(QByteArray txtData){
+    QByteArray data = qCompress(txtData, 9);
+    qint32 actual_size = data.size();
+    data.prepend((const char *)&actual_size, sizeof(qint32));
+
+    // actual data = width * height - padding
+    int width = ceil(sqrt(data.size()));
+    int height = width;
+    int padding = width * height - data.size();
+    QByteArray paddingData;
+    paddingData.fill('\0', padding);
+    data.append(paddingData);
+
+    QImage image((const uchar *)data.constData(), width, height, QImage::Format_ARGB32);
+    return image;
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
