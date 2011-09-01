@@ -78,7 +78,8 @@ SOURCES += src/main.cpp \
     src/boss-mode-scenario.cpp \
     src/legend-mode-scenario.cpp \
     src/mountainpackage.cpp \
-    src/scenerule.cpp
+    src/scenerule.cpp \
+    src/wisdom.cpp
 HEADERS += src/mainwindow.h \
     src/button.h \
     src/settings.h \
@@ -152,7 +153,8 @@ HEADERS += src/mainwindow.h \
     src/boss-mode-scenario.h \
     src/legend-mode-scenario.h \
     src/mountainpackage.h \
-    src/scenerule.h
+    src/scenerule.h \
+    src/wisdom.h
 
 FORMS += src/mainwindow.ui \
     src/connectiondialog.ui \
