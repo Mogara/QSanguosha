@@ -55,6 +55,10 @@ PindianStruct::PindianStruct()
 
 }
 
+bool PindianStruct::isSuccess() const{
+    return from_card->getNumber() > to_card->getNumber();
+}
+
 JudgeStruct::JudgeStruct()
     :who(NULL), card(NULL), good(true)
 {
