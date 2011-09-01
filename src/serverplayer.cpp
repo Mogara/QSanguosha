@@ -631,11 +631,6 @@ void ServerPlayer::introduceTo(ServerPlayer *player){
         room->broadcastInvoke("addPlayer", introduce_str, this);
 }
 
-void ServerPlayer::introduceSelf(){
-   QString screen_name = Config.ContestMode ? tr("Contestant") : screenName();
-   this->invoke("introduceSelf", QString(screen_name.toUtf8().toBase64()));
-}
-
 void ServerPlayer::marshal(ServerPlayer *player) const{
     player->sendProperty("maxhp", this);
     player->sendProperty("hp", this);
@@ -660,9 +655,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if(isChained())
         player->sendProperty("chained", this);
-
-    if(getAttackRange() != 1)
-        player->sendProperty("atk", this);
 
     if(!isKongcheng()){
         if(player != this){

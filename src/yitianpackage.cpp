@@ -1712,32 +1712,6 @@ public:
     }
 };
 
-class Zhengfeng: public TriggerSkill{
-public:
-    Zhengfeng():TriggerSkill("zhengfeng"){
-        events << GameStart << CardLost << HpChanged;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        if(event == GameStart)
-            room->setPlayerProperty(player, "atk", player->getHp());
-        else if(event == CardLost){
-            CardMoveStar move = data.value<CardMoveStar>();
-            if(move->from_place == Player::Equip){
-                const Card *card = Sanguosha->getCard(move->card_id);
-                const EquipCard *equip = qobject_cast<const EquipCard *>(card);
-                if(equip && equip->location() == EquipCard::WeaponLocation)
-                    room->setPlayerProperty(player, "atk", player->getHp());
-            }
-        }else if(event == HpChanged && player->getWeapon() == NULL){
-            room->setPlayerProperty(player, "atk", player->getHp());
-        }
-
-        return false;
-    }
-};
-
 class Zhenwei: public TriggerSkill{
 public:
     Zhenwei():TriggerSkill("zhenwei"){
@@ -1775,6 +1749,54 @@ public:
         }
 
         return false;
+    }
+};
+
+TaichenCard::TaichenCard(){
+}
+
+bool TaichenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if(!targets.isEmpty() || to_select->isAllNude())
+        return false;
+
+    if(!subcards.isEmpty() && Sanguosha->getCard(subcards.first()) == Self->getWeapon() && !Self->hasSkill("zhengfeng"))
+        return Self->distanceTo(to_select) == 1;
+    else
+        return Self->inMyAttackRange(to_select);
+}
+
+void TaichenCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+
+    if(subcards.isEmpty())
+        room->loseHp(effect.from);
+    else
+        room->throwCard(this);
+
+    int i;
+    for(i=0; i<2; i++){
+        if(!effect.to->isAllNude())
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"));
+    }
+}
+
+class Taichen: public ViewAsSkill{
+public:
+    Taichen():ViewAsSkill("taichen"){
+
+    }
+
+    virtual bool viewFilter(const QList<CardItem *> &selected, const CardItem *to_select) const{
+        return selected.isEmpty() && to_select->getFilteredCard()->inherits("Weapon");
+    }
+
+    virtual const Card *viewAs(const QList<CardItem *> &cards) const{
+        if(cards.length() <= 1){
+            TaichenCard *taichen_card = new TaichenCard;
+            taichen_card->addSubcards(cards);
+            return taichen_card;
+        }else
+            return NULL;
     }
 };
 
@@ -1868,9 +1890,12 @@ YitianPackage::YitianPackage()
     zhanggongqi->addSkill(new Xiliang);
 
     General *yitianjian = new General(this, "yitianjian", "wei");
-    yitianjian->addSkill(new Zhengfeng);
+    yitianjian->addSkill(new Skill("zhengfeng", Skill::Compulsory));
     yitianjian->addSkill(new Zhenwei);
     yitianjian->addSkill(new Yitian);
+
+    General *sp_pangde = new General(this, "sp_pangde", "wei");
+    sp_pangde->addSkill(new Taichen);
 
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 
@@ -1884,6 +1909,7 @@ YitianPackage::YitianPackage()
     addMetaObject<XunzhiCard>();
     addMetaObject<YisheAskCard>();
     addMetaObject<YisheCard>();
+    addMetaObject<TaichenCard>();
 }
 
 ADD_PACKAGE(Yitian);

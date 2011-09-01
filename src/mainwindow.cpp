@@ -184,7 +184,7 @@ void MainWindow::on_actionReplay_triggered()
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a reply file"),
                                                     location,
-                                                    tr("Replay file (*.txt)"));
+                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if(filename.isEmpty())
         return;
@@ -746,4 +746,40 @@ void MainWindow::on_actionAI_Melee_triggered()
 {
     MeleeDialog *dialog = new MeleeDialog(this);
     dialog->exec();
+}
+
+#include "recorder.h"
+
+void MainWindow::on_actionReplay_file_convert_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(
+            this, tr("Please select a replay file"),
+            Config.value("LastReplayDir").toString(),
+            tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+
+    if(filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if(file.open(QIODevice::ReadOnly)){
+        QFileInfo info(filename);
+        QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
+
+        if(filename.endsWith(".txt")){
+            tosave.append(".png");
+
+            // txt to png
+            Recorder::TXT2PNG(file.readAll()).save(tosave);
+
+        }else if(filename.endsWith(".png")){
+            tosave.append(".txt");
+
+            // png to txt
+            QByteArray data = Replayer::PNG2TXT(filename);
+
+            QFile tosave_file(tosave);
+            if(tosave_file.open(QIODevice::WriteOnly))
+                tosave_file.write(data);
+        }
+    }
 }

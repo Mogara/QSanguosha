@@ -106,7 +106,6 @@ public:
     Phase getPhase() const;
     void setPhase(Phase phase);
 
-    void setAttackRange(int attack_range);
     int getAttackRange() const;
     bool inMyAttackRange(const Player *other) const;
 

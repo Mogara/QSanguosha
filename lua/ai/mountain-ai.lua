@@ -257,9 +257,10 @@ sgs.ai_skill_use_func["TiaoxinCard"] = function(card,use,self)
 			if card:inherits("Slash") then
 				if card:isBlack() then sgs.slash_property["is_black"] = true end
 				if card:isRed() then sgs.slash_property["is_red"] = true end
-				if card:inherits("FireSlash") then sgs.slash_property["is_fire"] = true end
-				if card:inherits("ThunderSlash") then sgs.slash_property["is_thunder"] = true end
-				if card:inherits("NatureSlash") then sgs.slash_property["is_normal"] = true end
+				if card:inherits("FireSlash") then sgs.slash_property["is_fire"] = true 
+				elseif card:inherits("ThunderSlash") then sgs.slash_property["is_thunder"] = true 
+				else sgs.slash_property["is_normal"] = true 
+				end
 			end
 		end
 		

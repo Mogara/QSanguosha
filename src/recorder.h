@@ -6,12 +6,14 @@
 #include <QThread>
 #include <QMutex>
 #include <QSemaphore>
+#include <QImage>
 
 class Recorder : public QObject
 {
     Q_OBJECT
 public:
     explicit Recorder(QObject *parent);
+    static QImage TXT2PNG(QByteArray data);
     bool save(const QString &filename) const;
     void recordLine(const QString &line);
 
@@ -29,6 +31,8 @@ class Replayer: public QThread
 
 public:
     explicit Replayer(QObject *parent, const QString &filename);
+    static QByteArray PNG2TXT(const QString filename);
+
     int getDuration() const;
     qreal getSpeed();
 

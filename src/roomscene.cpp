@@ -2291,7 +2291,7 @@ void RoomScene::saveReplayRecord(){
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
-                                                    tr("Replay file (*.txt)"));
+                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if(!filename.isEmpty()){
         ClientInstance->save(filename);

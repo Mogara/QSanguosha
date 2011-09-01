@@ -30,8 +30,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["setup"] = &Client::setup;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
-    callbacks["introduceSelf"] = &Client::introduceSelf;
-    callbacks["removeSpeak"] = &Client::removeSpeak;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
     callbacks["warn"] = &Client::warn;
@@ -294,24 +292,6 @@ void Client::removePlayer(const QString &player_name){
 
         emit player_removed(player_name);
     }
-}
-
-void Client::introduceSelf(const QString &hash_name){
-    QString base64 = hash_name;
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
-
-    QString player_in = tr("<font color=#EEB422>Player <b>%1</b> add in the game</font>").arg(screen_name);
-    speakToServer(player_in);
-}
-
-void Client::removeSpeak(const QString &hash_name){
-    QString base64 = hash_name;
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
-
-    QString player_out = tr("<font color=#000000>Player <b>%1</b> leave the game</font>").arg(screen_name);
-    speakToServer(player_out);
 }
 
 void Client::drawCards(const QString &cards_str){
@@ -1330,9 +1310,22 @@ void Client::attachSkill(const QString &skill_name){
     emit skill_attached(skill_name, true);
 }
 
-void Client::detachSkill(const QString &skill_name){
-    Self->loseSkill(skill_name);
-    emit skill_detached(skill_name);
+void Client::detachSkill(const QString &detach_str){
+    QStringList texts = detach_str.split(":");
+    ClientPlayer *player = NULL;
+    QString skill_name;
+    if(texts.length() == 1){
+        player = Self;
+        skill_name = texts.first();
+    }else if(texts.length() == 2){
+        player = getPlayer(texts.first());
+        skill_name = texts.last();
+    }
+
+    player->loseSkill(skill_name);
+
+    if(player == Self)
+        emit skill_detached(skill_name);
 }
 
 void Client::askForAssign(const QString &){

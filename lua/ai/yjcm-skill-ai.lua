@@ -87,7 +87,7 @@ function masu_ai:activate(use)
 --table.insert(sgs.ai_skills,xinzhan_skill)
 --xinzhan_skill.getTurnUseCard=function(self,inclusive)
 	self:log("get")
-	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getHp() then
+	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getMaxHP() then
 		if use.to then 
 			use.card = sgs.Card_Parse("@XinzhanCard=.") 
 		return 

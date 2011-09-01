@@ -372,7 +372,8 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         return;
 
     player->loseSkill(skill_name);
-    player->invoke("detachSkill", skill_name);
+    broadcastInvoke("detachSkill",
+                    QString("%1:%2").arg(player->objectName()).arg(skill_name));
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill && skill->isVisible()){
@@ -1180,8 +1181,11 @@ void Room::reportDisconnection(){
             player->setParent(NULL);
             players.removeOne(player);
 
-            QString screen_name = Config.ContestMode ? tr("Contestant") : player->screenName();
-            broadcastInvoke("removeSpeak", QString(screen_name.toUtf8().toBase64()));
+            if(player->getState() != "robot"){
+                QString screen_name = Config.ContestMode ? tr("Contestant") : player->screenName();
+                QString leaveStr = tr("<font color=#000000>Player <b>%1</b> left the game</font>").arg(screen_name);
+                speakCommand(player, leaveStr.toUtf8().toBase64());
+            }
 
             broadcastInvoke("removePlayer", player->objectName());
             signup_count --;
@@ -1349,9 +1353,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     // introduce the new joined player to existing players except himself
     player->introduceTo(NULL);
-    player->introduceSelf();
 
     if(!is_robot){
+        QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>")
+                              .arg(Config.ContestMode ? tr("Contestant") : screen_name);
+        speakCommand(player, greetingStr.toUtf8().toBase64());
+
         // introduce all existing player to the new joined
         foreach(ServerPlayer *p, players){
             if(p != player)

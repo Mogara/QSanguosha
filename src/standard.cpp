@@ -268,7 +268,6 @@ QString Weapon::label() const{
 void Weapon::onInstall(ServerPlayer *player) const{
     EquipCard::onInstall(player);
     Room *room = player->getRoom();
-    room->setPlayerProperty(player, "atk", range);
 
     if(attach_skill)
         room->attachSkillToPlayer(player, objectName());
@@ -277,7 +276,6 @@ void Weapon::onInstall(ServerPlayer *player) const{
 void Weapon::onUninstall(ServerPlayer *player) const{
     EquipCard::onUninstall(player);
     Room *room = player->getRoom();
-    room->setPlayerProperty(player, "atk", 1);
 
     if(attach_skill)
         room->detachSkillFromPlayer(player, objectName());
