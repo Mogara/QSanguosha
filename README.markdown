@@ -1,37 +1,39 @@
-Open Source Sanguosha
+太阳神三国杀MOD：日神再临·智包
 ==========
 
-Introduction
+介绍
 ----------
 
-Sanguosha is both a popular board game and online game,
-this project try to clone the Sanguosha online version.
-The whole project is written in C++, 
-using Qt's graphics view framework as the game engine.
-I've tried many other open source game engines, 
-such as SDL, HGE, Clanlib and others, 
-but many of them lack some important features. 
-Although Qt is an application framework instead of a game engine, 
-its graphics view framework is suitable for my game developing.
+日神再临扩充第一弹·智包，太阳神三国杀创意小组出品，基于太阳神平台的MOD
 
-Our site: qsanguosha.com
+网站: http://www.qsanguosha.com/?fromuid=631
 
-Features
+名单
 ----------
 
-1. Framework
-    * Open source with Qt graphics view framework
-    * Use irrKlang as sound engine
-    * Use plib as joystick backend 
-    * Use Lua as AI script
+1. 技能设计
+    * KenKic
+    * Lisar
+    * 宇文天启
+    * 地狱天堂
+    * Jr.Wakaran
+    * 洛神
+    * 无形无踪
+    * 天命若是
+    * 天霜雪舞
+    * 幻像迷宫
+    * 萨菲罗斯
+    * 铁扇散人
+    * 很大一只企鹅
 
-2. Operation experience
-    * Full package (include all yoka extension package)
-    * Drag card to target to use card
-    * Keyboard shortcut
-    * Cards sorting (by card type and card suit)
-    * Multilayer display when cards are more than an upperlimit
+2. 图片设计
+    * KenKic
+    * 宇文天启
+    * 地狱天堂
 
-3. Extensible
-    * Some MODs are available based on this game
+3. 程序设计
+    * 宇文天启
+
+4. 特别鸣谢
+    * 太阳神上
 
