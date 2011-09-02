@@ -164,8 +164,10 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = jiangwei->getRoom();
-            if(room->askForSkillInvoke(jiangwei, objectName()))
-                room->askForUseCard(jiangwei, "slash", "@yicai");
+            if(!room->askForSkillInvoke(jiangwei, objectName()))
+                return false;
+            room->throwCard(card);
+            room->askForUseCard(jiangwei, "slash", "@yicai");
         }
         return false;
     }
@@ -196,27 +198,14 @@ public:
                 target = room->askForPlayerChosen(jiangwei, players, objectName());
             if(!target) target = jiangwei;
 
-            LogMessage log;
-            log.type = "#beifa_effect";
-            log.from = jiangwei;
-            room->sendLog(log);
-
-            CardEffectStruct effect;
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName(objectName());
-            effect.card = slash;
-            effect.from = jiangwei;
-            effect.to = target;
+            CardUseStruct use;
+            use.card = slash;
+            use.from = jiangwei;
+            use.to << target;
 
-            room->cardEffect(effect);
-
-            if(jiangwei->hasFlag("drank")){
-                LogMessage log;
-                log.type = "#UnsetDrank";
-                log.from = jiangwei;
-                room->sendLog(log);
-                room->setPlayerFlag(jiangwei, "-drank");
-            }
+            room->useCard(use);
         }
         return false;
     }
@@ -813,6 +802,7 @@ class Shien:public TriggerSkill{
 public:
     Shien():TriggerSkill("shien"){
         events << CardUsed << CardResponsed;
+        frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

@@ -239,17 +239,17 @@ void RoomThread::run(){
     if(room->mode == "06_3v3"){
         run3v3();
     }else if(room->getMode() == "04_1v3"){
-<<<<<<< HEAD
+/*HEAD
         ServerPlayer *shenlubu = room->getLord();
         if(shenlubu->getGeneralName() == "shenlvbu1"){
             QList<ServerPlayer *> league = room->players;
             league.removeOne(shenlubu);
-=======
+=======*/
         ServerPlayer *shenlvbu = room->getLord();
         if(shenlvbu->getGeneralName() == "shenlvbu1"){
             QList<ServerPlayer *> league = room->players;
             league.removeOne(shenlvbu);
->>>>>>> b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
+// b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
 
             forever{
                 foreach(ServerPlayer *player, league){
@@ -264,7 +264,7 @@ void RoomThread::run(){
                     if(!player->hasFlag("actioned"))
                         room->setPlayerFlag(player, "actioned");
 
-<<<<<<< HEAD
+/* HEAD
                     if(shenlubu->getGeneralName() == "shenlvbu2")
                         goto second_phase;
 
@@ -273,7 +273,7 @@ void RoomThread::run(){
                         trigger(TurnStart, room->getCurrent());
 
                         if(shenlubu->getGeneralName() == "shenlvbu2")
-=======
+*/
                     if(shenlvbu->getGeneralName() == "shenlvbu2")
                         goto second_phase;
 
@@ -282,7 +282,7 @@ void RoomThread::run(){
                         trigger(TurnStart, room->getCurrent());
 
                         if(shenlvbu->getGeneralName() == "shenlvbu2")
->>>>>>> b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
+// b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
                             goto second_phase;
                     }
                 }
@@ -292,11 +292,11 @@ void RoomThread::run(){
             second_phase:
 
             foreach(ServerPlayer *player, room->players){
-<<<<<<< HEAD
+/* HEAD
                 if(player != shenlubu){
-=======
+//=======*/
                 if(player != shenlvbu){
->>>>>>> b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
+// b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
                     if(player->hasFlag("actioned"))
                         room->setPlayerFlag(player, "-actioned");
 
@@ -307,11 +307,11 @@ void RoomThread::run(){
                 }
             }
 
-<<<<<<< HEAD
+/*<<<<<<< HEAD
             room->setCurrent(shenlubu);
-=======
+//=======*/
             room->setCurrent(shenlvbu);
->>>>>>> b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
+//>>>>>>> b0b15a7c7cd38ce82d15ad98f0588073b5bd1826
 
             forever{
                 trigger(TurnStart, room->getCurrent());
