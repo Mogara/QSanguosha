@@ -550,6 +550,7 @@ public:
 
 TiaoxinCard::TiaoxinCard(){
     once = true;
+    mute = true;
 }
 
 bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -558,6 +559,11 @@ bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
+
+    if(effect.from->hasArmorEffect("eight_diagram") || effect.from->hasSkill("bazhen"))
+        room->playSkillEffect("tiaoxin", 3);
+    else
+        room->playSkillEffect("tiaoxin", qrand() % 2 + 1);
 
     const Card *slash = room->askForCard(effect.to, "slash", "@tiaoxin-slash:" + effect.from->objectName());
 
@@ -607,6 +613,9 @@ public:
         log.type = "#ZhijiWake";
         log.from = jiangwei;
         room->sendLog(log);
+
+        room->playSkillEffect("zhiji");
+        room->getThread()->delay(5000);
 
         if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
             RecoverStruct recover;
