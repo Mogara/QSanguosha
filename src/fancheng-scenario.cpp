@@ -182,7 +182,6 @@ void TaichenFightCard::use(Room *room, ServerPlayer *source, const QList<ServerP
         room->acquireSkill(source, "wushuang", false);
         room->cardEffect(effect);
         source->loseSkill("wushuang");
-        room->getThread()->removeTriggerSkill("wushuang");
     }
 }
 

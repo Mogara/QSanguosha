@@ -644,11 +644,9 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
-    void removePlayerSkills(ServerPlayer *player);
-
     void addTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const QString &skill_name);
+	bool inSkillSet(const TriggerSkill *skill) const;
+
     void delay(unsigned long msecs = 1000);
     void end();
 };

@@ -234,6 +234,8 @@ public:
             if(damage->from->getGeneral2())
                 room->setPlayerProperty(damage->from, "general2", to_transfigure);
             room->setPlayerProperty(damage->from, "kingdom", kingdom);
+
+            room->resetAI(damage->from);
         }
 
         return false;
@@ -451,12 +453,12 @@ public:
 
         const Skill *yinghun_skill = Sanguosha->getSkill("yinghun");
         const PhaseChangeSkill *yinghun = qobject_cast<const PhaseChangeSkill *>(yinghun_skill);
-        int refcount = room->getThread()->getRefCount(yinghun);
+        bool inSkillSet = room->getThread()->inSkillSet(yinghun);
 
         room->acquireSkill(sunce, "yinghun");
         room->acquireSkill(sunce, "yingzi");
 
-        if(refcount == 0){
+        if(!inSkillSet){
             yinghun->onPhaseChange(sunce);
         }
 
@@ -614,12 +616,14 @@ public:
             room->drawCards(jiangwei, 2);
 
         room->setPlayerMark(jiangwei, "zhiji", 1);
+
+        const TriggerSkill *guanxing = Sanguosha->getTriggerSkill("guanxing");
+        bool inSkillSet = room->getThread()->inSkillSet(guanxing);
         room->acquireSkill(jiangwei, "guanxing");
 
         room->loseMaxHp(jiangwei);
 
-        const TriggerSkill *guanxing = Sanguosha->getTriggerSkill("guanxing");
-        if(room->getThread()->getRefCount(guanxing) == 1){
+        if(!inSkillSet){
             QVariant void_data;
             guanxing->trigger(PhaseChange, jiangwei, void_data);
         }
@@ -934,7 +938,7 @@ public:
         return (all - banned - huashen_set - room_set).toList();
     }
 
-    static QString SelectSkill(ServerPlayer *zuoci){
+    static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
         Room *room = zuoci->getRoom();
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
@@ -976,7 +980,9 @@ public:
             skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
 
         zuoci->tag["HuashenSkill"] = skill_name;
-        room->acquireSkill(zuoci, skill_name);
+
+        if(acquire_instant)
+            room->acquireSkill(zuoci, skill_name);
 
         return skill_name;
     }
@@ -1027,10 +1033,13 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *zuoci) const{
-        QString skill_name = Huashen::SelectSkill(zuoci);
+        QString skill_name = Huashen::SelectSkill(zuoci, false);
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-        if(skill && zuoci->getRoom()->getThread()->getRefCount(skill) == 1
-           && skill->getTriggerEvents().contains(PhaseChange)
+        bool inSkillSet = zuoci->getRoom()->getThread()->inSkillSet(skill);
+        zuoci->getRoom()->acquireSkill(zuoci, skill_name);
+
+        if(skill && !inSkillSet &&
+           skill->getTriggerEvents().contains(PhaseChange)
             && skill->triggerable(zuoci)){
 
             QVariant void_data;

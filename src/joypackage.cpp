@@ -282,7 +282,7 @@ void Monkey::onInstall(ServerPlayer *player) const{
 }
 
 void Monkey::onUninstall(ServerPlayer *player) const{
-    player->getRoom()->getThread()->removeTriggerSkill(grab_peach);
+
 }
 
 QString Monkey::getEffectPath(bool ) const{
