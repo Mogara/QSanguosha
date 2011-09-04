@@ -127,29 +127,6 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	return "."
 end
 
-function fillCardSet(cardSet,suit,suit_val,number,number_val)
-    if suit then
-        cardSet[suit]={}
-        for i=1,13 do
-            cardSet[suit][i]=suit_val
-        end
-    end
-    if number then
-        cardSet.club[number]=number_val
-        cardSet.spade[number]=number_val
-        cardSet.heart[number]=number_val
-        cardSet.diamond[number]=number_val
-    end
-end
-
-function goodMatch(cardSet,card)
-    local result=card:getSuitString()
-    local number=card:getNumber()
-    if cardSet[result][number] then return true
-    else return false
-    end
-end
-
 sgs.ai_skill_invoke["@guidao"]=function(self,prompt)
     local judge = self.player:getTag("Judge"):toJudge()
 	
@@ -217,4 +194,17 @@ sgs.ai_skill_use_func["HuangtianCard"]=function(card,use,self)
      use.to:append(self.room:getLord()) 
     self.huangtianv_used=true 
     end	
+end
+
+sgs.ai_skill_askforag.buqu = function(self, card_ids)
+	-- find duplicated one or the first
+	for i, card_id in sgs.qlist(card_ids) do
+		for j, card_id2 in sgs.list(card_ids) do
+			if i ~= j and card_id == card_id2 then
+				return card_id
+			end
+		end
+	end
+
+	return card_ids:first()
 end
