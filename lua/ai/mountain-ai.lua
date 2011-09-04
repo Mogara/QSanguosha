@@ -192,7 +192,7 @@ jixi_skill.getTurnUseCard = function(self)
 	
 	if self.player:getPile("field"):isEmpty() 
 		or #targets == 0
-		or self.player:getHandcardNum()>self.player:getHp() then 
+		or self.player:getHandcardNum()>=self.player:getHp() then 
 		return 
 	end
 	return sgs.Card_Parse("@JixiCard=.")
@@ -212,7 +212,7 @@ sgs.ai_skill_playerchosen.jixi = function(self, targets)
 	
 	if #choices == 0 then return targets:at(0) end
 	
-	self:sort(choices, "defense")
+	self:sort(choices, "hp")
 	return choices[1]
 end
 
