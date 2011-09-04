@@ -81,7 +81,7 @@ return {
 	["cv:zhanghe"] = "",
 	["cv:dengai"] = "",
 	["cv:liushan"] = "迷宫",
-	["cv:jiangwei"] = "",
+	["cv:jiangwei"] = "Jr. Wakaran",
 	["cv:sunce"] = "",
 	["cv:erzhang"] = "",
 	["cv:caiwenji"] = "",
