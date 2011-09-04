@@ -371,7 +371,7 @@ public:
 
             pangtong->loseMark("@nirvana");
 
-            room->setPlayerProperty(pangtong, "hp", 3);
+            room->setPlayerProperty(pangtong, "hp", qMin(3, pangtong->getMaxHP()));
             pangtong->throwAllCards();
             pangtong->drawCards(3);
 
