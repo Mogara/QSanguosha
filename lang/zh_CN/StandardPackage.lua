@@ -1,6 +1,7 @@
 -- translation for StandardPackage
 
 local t = {
+	["standard_cards"] = "标准卡牌包",
 	["attack_card"] = "进攻牌", 
 	["defense_card"] = "防御牌", 
 	["recover_card"] = "恢复牌", 

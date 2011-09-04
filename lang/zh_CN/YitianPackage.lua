@@ -5,6 +5,7 @@ return {
 	["#ChangeKingdom"] = "%from 把 %to 的国籍由原来的 %arg 改成了 %arg2", 
 	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算", 
 	["yitian"] = "倚天", 
+	["yitian_cards"] = "倚天卡牌包",
 	["yitian_sword"] = "倚天剑",
 	["yitian-lost"] = "倚天剑",
 	["yitian-slash"] = "请使用一张【杀】",

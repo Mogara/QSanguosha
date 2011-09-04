@@ -127,4 +127,11 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class YitianCardPackage: public Package{
+    Q_OBJECT
+
+public:
+    YitianCardPackage();
+};
+
 #endif // YITIANPACKAGE_H

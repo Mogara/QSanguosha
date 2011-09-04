@@ -1776,12 +1776,17 @@ public:
     }
 };
 
+YitianCardPackage::YitianCardPackage()
+    :Package("yitian_cards")
+{
+    (new YitianSword)->setParent(this);
+}
+
+ADD_PACKAGE(YitianCard)
+
 YitianPackage::YitianPackage()
     :Package("yitian")
 {
-
-    (new YitianSword)->setParent(this);
-
     // generals
     General *shencc = new General(this, "shencc", "god", 3);
     shencc->addSkill(new Guixin2);

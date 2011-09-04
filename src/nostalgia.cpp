@@ -45,6 +45,8 @@ public:
 NostalgiaPackage::NostalgiaPackage()
     :Package("nostalgia")
 {
+    type = CardPack;
+
     Card *moon_spear = new MoonSpear;
     moon_spear->setParent(this);
 }

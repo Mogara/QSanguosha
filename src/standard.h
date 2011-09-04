@@ -11,7 +11,6 @@ class StandardPackage:public Package{
 
 public:
     StandardPackage();
-    void addCards();
     void addGenerals();
 };
 
