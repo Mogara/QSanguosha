@@ -400,6 +400,9 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(effect.drank)
                 damage.damage ++;
 
+            if(effect.to->hasSkill("jueqing") || effect.to->getGeneralName() == "zhangchunhua")
+                damage.damage ++;
+
             damage.from = effect.from;
             damage.to = effect.to;
             damage.nature = effect.nature;
