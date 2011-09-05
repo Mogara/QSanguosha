@@ -58,7 +58,12 @@ void Settings::init(){
     AIDelay = value("AIDelay", 1000).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
 
+#ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
+#else
+    UserName = value("USERNAME", qgetenv("USER")).toString();
+#endif
+
     if(UserName == "Admin" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
