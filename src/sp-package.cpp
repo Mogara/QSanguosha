@@ -256,19 +256,14 @@ public:
     }
 };
 
-class Shenwei: public TriggerSkill{
+class Shenwei: public DrawCardsSkill{
 public:
-    Shenwei():TriggerSkill("shenwei"){
-        events << DrawNCards << GameStart;
+    Shenwei():DrawCardsSkill("shenwei"){
+        frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == DrawNCards)
-            data = data.toInt() + 2;
-        else if(event == GameStart)
-            player->setXueyi(2);
-
-        return false;
+    virtual int getDrawNum(ServerPlayer *player, int n) const{
+        return n + 2;
     }
 };
 

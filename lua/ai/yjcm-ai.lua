@@ -42,8 +42,6 @@ jiejiu_skill.getTurnUseCard=function(self)
 		local card_id = anal_card:getEffectiveId()
 		local card_str = ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id)
 		local slash = sgs.Card_Parse(card_str)
-		
-	--	assert(slash)
         
         return slash
 	end

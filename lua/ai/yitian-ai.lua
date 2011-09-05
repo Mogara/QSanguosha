@@ -187,7 +187,6 @@ end
 
 sgs.ai_skill_playerchosen.guixin2 = function(self, players)
 	local player = findPlayerForModifyKingdom(self, players)
-	self.player_to_modify = player or players:first()
-	return self.player_to_modify
+	return player or players:first()
 end
 

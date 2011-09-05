@@ -640,8 +640,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if(isAlive()){
         player->sendProperty("seat", this);
-        if(getXueyi() > 0)
-            player->sendProperty("xueyi", this);
         if(getPhase() != Player::NotActive)
             player->sendProperty("phase", this);
     }else{

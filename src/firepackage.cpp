@@ -531,33 +531,6 @@ public:
     }
 };
 
-class Xueyi: public PhaseChangeSkill{
-public:
-    Xueyi():PhaseChangeSkill("xueyi$"){
-        frequency = Compulsory;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getPhase() == Player::Discard && target->hasLordSkill("xueyi");
-    }
-
-    virtual int getPriority() const{
-        return 3;
-        // promote the priority in order to avoid the conflict with Yongsi
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *yuanshao) const{
-        if(yuanshao->getPhase() == Player::Discard){
-            Room *room = yuanshao->getRoom();
-            int n = room->getLieges("qun", yuanshao).length();
-            int xueyi = n * 2;
-            yuanshao->setXueyi(xueyi, false);
-        }
-
-        return false;
-    }
-};
-
 FirePackage::FirePackage()
     :Package("fire")
 {
@@ -587,7 +560,7 @@ FirePackage::FirePackage()
 
     yuanshao = new General(this, "yuanshao$", "qun");
     yuanshao->addSkill(new Luanji);
-    yuanshao->addSkill(new Xueyi);
+    yuanshao->addSkill(new Skill("xueyi$", Skill::Compulsory));
 
     shuangxiong = new General(this, "shuangxiong", "qun");
     shuangxiong->addSkill(new Shuangxiong);

@@ -76,9 +76,7 @@ public:
     int getLostHp() const;
     bool isWounded() const;
 
-    int getMaxCards() const;    
-    int getXueyi() const;
-    void setXueyi(int xueyi, bool superimpose = true);
+    int getMaxCards() const;
 
     QString getKingdom() const;
     void setKingdom(const char *kingdom);
