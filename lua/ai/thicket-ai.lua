@@ -158,7 +158,12 @@ sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 end
 
 sgs.ai_skill_invoke.lieren = function(self, data)
-    if self.player:getHandcardNum()>=self.player:getHp() then return true
-    else return false
-    end
+	local damage = data:toDamage()
+	if self:isEnemy(damage.to) then
+		if self.player:getHandcardNum()>=self.player:getHp() then return true
+		else return false
+		end
+	end
+	
+	return false
 end
