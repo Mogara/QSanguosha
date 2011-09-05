@@ -11,6 +11,7 @@ public:
 	T first() const;
 	T last() const;
 	void removeAt(int i);
+	bool removeOne ( const T & value );
 };
 
 %extend QList{

@@ -118,6 +118,7 @@ return {
 	["$longhun2"] = "腾龙行云,首尾不见", -- club
 	["$longhun3"] = "潜龙于渊,涉灵愈伤", -- heart
 	["$longhun4"] = "千里一怒,红莲灿世", -- diamond
+	["~shenzhaoyun"] = "血染鳞甲,龙堕九天",
 
 	["shensimayi"] = "神司马懿",
 	["renjie"] = "忍戒",
