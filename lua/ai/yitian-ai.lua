@@ -128,7 +128,7 @@ end
 
 sgs.ai_skill_choice.guixin2 = function(self, choices)
 	if choices ~= "modify+obtain" then
-		return choices:split("+")[0]
+		return choices:split("+")[1]
 	end
 
 	-- two choices: modify and obtain
