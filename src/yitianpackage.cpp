@@ -198,7 +198,7 @@ public:
         if(choice == "modify"){
             PlayerStar to_modify = room->askForPlayerChosen(shencc, room->getOtherPlayers(shencc), objectName());
             room->setTag("Guixin2Modify", QVariant::fromValue(to_modify));
-            QString kingdom = room->askForChoice(shencc, "guixin2_modify", "wei+shu+wu+qun");
+            QString kingdom = room->askForChoice(shencc, "guixin2", "wei+shu+wu+qun");
             room->removeTag("Guixin2Modify");
             QString old_kingdom = to_modify->getKingdom();
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
