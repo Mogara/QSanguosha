@@ -92,7 +92,7 @@ end
 -- beige
 sgs.ai_skill_invoke.beige = function(self, data)
 	local damage = data:toDamage()
-	return self:isFriend(damage.to)
+	return self:isFriend(damage.to) and not self:isFriend(damage.from)
 end
 
 -- guzheng
