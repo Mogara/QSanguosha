@@ -290,10 +290,25 @@ public:
     }
 };
 
-class Jueji: public TriggerSkill{
+class Jueji: public PhaseChangeSkill{
 public:
-    Jueji():TriggerSkill("jueji"){
+    Jueji():PhaseChangeSkill("jueji"){
         view_as_skill = new JuejiViewAsSkill;
+    }
+
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        return room->askForUseCard(target, "@@jueji", "@jueji");
+    }
+};
+
+class JuejiGet: public TriggerSkill{
+public:
+    JuejiGet():TriggerSkill("#jueji-get"){
         events << Pindian;
     }
 
@@ -1801,6 +1816,9 @@ YitianPackage::YitianPackage()
 
     General *zhangjunyi = new General(this, "zhangjunyi", "qun");
     zhangjunyi->addSkill(new Jueji);
+    zhangjunyi->addSkill(new JuejiGet);
+
+    related_skills.insertMulti("jueji", "#jueji-get");
 
     General *lukang = new General(this, "lukang", "wu", 3);
     lukang->addSkill("qianxun");
