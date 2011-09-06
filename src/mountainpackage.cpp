@@ -922,6 +922,13 @@ public:
         zuoci->tag["Huashens"] = huashens;
 
         zuoci->invoke("animate", "huashen:" + acquired.join(":"));
+
+        LogMessage log;
+        log.type = "#GetHuashen";
+        log.from = zuoci;
+        log.arg = QString::number(n);
+        log.arg2 = QString::number(huashens.length());
+        zuoci->getRoom()->sendLog(log);
     }
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci){

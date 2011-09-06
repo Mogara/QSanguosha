@@ -105,4 +105,5 @@ return {
 	["$xinsheng1"] = "吐故纳新,师法天地",
 	["$xinsheng2"] = "灵根不灭,连绵不绝",
 	["~zuoci"] = "释知遗形,神灭形消",
+	["#GetHuashen"] = "%from 获得了 %arg 个化身武将，现在共有 %arg2 个化身",
 }
