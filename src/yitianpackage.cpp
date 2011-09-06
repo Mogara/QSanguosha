@@ -57,7 +57,7 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         Room *room = player->getRoom();
-        if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName())){
+        if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName(), data)){
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             foreach(ServerPlayer *tmp, players){
                 if(!player->inMyAttackRange(tmp))
