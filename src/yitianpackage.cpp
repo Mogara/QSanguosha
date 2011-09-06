@@ -48,6 +48,39 @@ void YitianSword::onMove(const CardMoveStruct &move) const{
     }
 }
 
+class YxSwordSkill: public WeaponSkill{
+public:
+    YxSwordSkill():WeaponSkill("yx_sword"){
+        events << Predamage;
+    }
+
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        Room *room = player->getRoom();
+        if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName())){
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            foreach(ServerPlayer *tmp, players){
+                if(!player->inMyAttackRange(tmp))
+                    players.removeOne(tmp);
+            }
+            if(players.isEmpty())
+                return false;
+            ServerPlayer *target = room->askForPlayerChosen(player, players, objectName());
+            damage.from = target;
+            data = QVariant::fromValue(damage);
+            room->moveCardTo(player->getWeapon(), damage.from, Player::Hand);
+        }
+        return false;
+    }
+};
+
+YxSword::YxSword(Suit suit, int number)
+    :Weapon(suit, number, 3)
+{
+    setObjectName("yx_sword");
+    skill = new YxSwordSkill;
+}
+
 ChengxiangCard::ChengxiangCard()
 {
 
@@ -1797,6 +1830,7 @@ YitianCardPackage::YitianCardPackage()
     :Package("yitian_cards")
 {
     (new YitianSword)->setParent(this);
+    (new YxSword)->setParent(this);
 }
 
 ADD_PACKAGE(YitianCard)
