@@ -101,15 +101,11 @@ public:
         }
         else {
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason == "tanlan"){
-                ServerPlayer *winner = pindian->from_card->getNumber() > pindian->to_card->getNumber() ? pindian->from : pindian->to;
-                if(winner == xuyou){
-                    winner->obtainCard(pindian->to_card);
-                    winner->obtainCard(pindian->from_card);
-                }
+            if(pindian->reason == "tanlan" && pindian->isSuccess()){
+                xuyou->obtainCard(pindian->to_card);
+                xuyou->obtainCard(pindian->from_card);
             }
         }
-
         return false;
     }
 };
@@ -359,14 +355,15 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *
             log.card_str = analeptic->getEffectIdString();
             room->sendLog(log);
 
-            CardEffectStruct effect;
             Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
-            ana->setSkillName(objectName());
-            effect.card = ana;
-            effect.from = sunce;
-            effect.to = sunce;
+            ana->setSkillName("weidai");
+            CardUseStruct use;
+            use.card = ana;
+            use.from = sunce;
+            use.to << sunce;
 
-            room->cardEffect(effect);
+            room->useCard(use);
+
             return;
         }
     }
@@ -386,7 +383,8 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("weidai") && !Self->hasFlag("drank");
+        return Self->hasLordSkill("weidai") /*&& !Self->hasFlag("drank")*/
+                && !Self->hasUsed("Analeptic");
     }
 
     virtual const Card *viewAs() const{
