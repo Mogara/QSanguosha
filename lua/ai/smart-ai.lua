@@ -2231,6 +2231,7 @@ end
 
 function SmartAI:askForCardChosen(who, flags, reason)
 	self.room:output(reason)
+		
     if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
@@ -2339,7 +2340,6 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			return -1
 		end
 	end
-    self:log("??????")
 	local new_flag=""
     if flags:match("h") then new_flag="h" end
     if flags:match("e") then new_flag=new_flag.."e" end
@@ -2995,6 +2995,11 @@ end
 function SmartAI:getOverflow(player)
 	player = player or self.player
 	return math.max(player:getHandcardNum() - player:getHp(), 0)
+end
+
+function SmartAI:isWeak(player)
+	player = player or self.player
+	return player:getHp() <= 2 and player:getHandcardNum() <= 1 and not player:hasSkill("buqu")
 end
 
 -- load other ai scripts
