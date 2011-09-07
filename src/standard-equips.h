@@ -80,4 +80,11 @@ public:
     Q_INVOKABLE RenwangShield(Card::Suit suit, int number);
 };
 
+class StandardCardPackage: public Package{
+    Q_OBJECT
+
+public:
+    StandardCardPackage();
+};
+
 #endif // STANDARDEQUIPS_H

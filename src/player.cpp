@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     :QObject(parent), owner(false), general(NULL), general2(NULL),
-    hp(-1), max_hp(-1), xueyi(0), state("online"), seat(0), alive(true),
+    hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
     face_up(true), chained(false)
@@ -421,11 +421,21 @@ int Player::getMaxCards() const{
 
     int juejing = hasSkill("juejing") ? 2 : 0;
 
-    return qMax(hp,0) + xueyi + extra +juejing;
-}
+    int xueyi = 0;
+    if(hasLordSkill("xueyi")){
+        QList<const Player *> players = parent()->findChildren<const Player *>();
+        players.removeOne(this);
+        foreach(const Player *player, players){
+            if(player->getKingdom() == "qun")
+                xueyi += 2;
+        }
+    }
 
-int Player::getXueyi() const{
-    return xueyi;
+    int shenwei = 0;
+    if(hasSkill("shenwei"))
+        shenwei = 2;
+
+    return qMax(hp,0) + extra + juejing + xueyi + shenwei;
 }
 
 QString Player::getKingdom() const{
@@ -448,14 +458,6 @@ QString Player::getKingdomIcon() const{
 
 QString Player::getKingdomFrame() const{
     return QString("image/kingdom/frame/%1.png").arg(kingdom);
-}
-
-void Player::setXueyi(int xueyi, bool superimpose){
-    if(superimpose)
-        this->xueyi += xueyi;
-    else{
-        this->xueyi = xueyi;
-    }
 }
 
 bool Player::isKongcheng() const{
@@ -709,7 +711,6 @@ void Player::copyFrom(Player* p)
 
     b->hp               = a->hp;
     b->max_hp           = a->max_hp;
-    b->xueyi            = a->xueyi;
     b->kingdom          = a->kingdom;
     b->role             = a->role;
     b->seat             = a->seat;

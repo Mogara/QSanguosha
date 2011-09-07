@@ -227,7 +227,7 @@ public:
         if(damage.card && damage.card->inherits("Slash") && damage.to->isAlive()
             && !zhurong->isKongcheng() && !damage.to->isKongcheng() && damage.to != zhurong){
             Room *room = zhurong->getRoom();
-            if(room->askForSkillInvoke(zhurong, objectName())){
+            if(room->askForSkillInvoke(zhurong, objectName(), data)){
                 room->playSkillEffect(objectName(), 1);
 
                 bool success = zhurong->pindian(damage.to, "lieren", NULL);

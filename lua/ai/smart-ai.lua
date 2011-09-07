@@ -2261,7 +2261,9 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			if indulgence or supply_shortage then
 				return indulgence or supply_shortage
 			end
-		elseif flags:match("e") then
+		end
+		
+		if flags:match("e") then
 			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
 			if who:hasSkill("xiaoji") then
 				local equips = who:getEquips()
@@ -2539,10 +2541,12 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	return cards[#cards]:getEffectiveId()
 end
 
-function SmartAI:askForNullification(trick_name, from, to, positive)   							
+function SmartAI:askForNullification(trick_name, from, to, positive)  							
 	local cards = self.player:getCards("h")
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards)
 	local null_card, hasNull
-	for _, card in sgs.qlist(cards) do
+	for _, card in ipairs(cards) do
 		if card:inherits("Nullification") then 
 			null_card = card
 			hasNull = true
@@ -2557,63 +2561,65 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 			break
 		end
 	end
-    if not hasNull then return nil end
-    
-	if positive then	
+	
+	if not hasNull then return nil end
+  
+	if positive then
 		if from and self:isEnemy(from) then
-			if trick_name:inherits("ExNihilo") then return null_card end
-			
-			if to and self:isFriend(to) then
-				if  trick_name:inherits("Collateral") or trick_name:inherits("Snatch") or trick_name:inherits("IronChain")
-					or trick_name:inherits("Dismantlement") or trick_name:inherits("FireAttack") then 
+			if trick_name:inherits("ExNihilo") and self:getOverflow(from) == 0 then return null_card end
+			if trick_name:inherits("IronChain") and not self:isEquip("Vine", to) then return nil end
+			if self:isFriend(to) then
+				if trick_name:inherits("Dismantlement") then
+					if to:getArmor() then return null_card end
+				else
+					if trick_name:inherits("Snatch") then return null_card end
+					if self:isWeak(to) then
+						if trick_name:inherits("Duel") then
+							return null_card
+						elseif trick_name:inherits("FireAttack") then
+							if from:getHandcardNum() > 2 then return null_card end
+						end
+					end
+				end
+			elseif self:isEnemy(to) then
+				if (trick_name:inherits("Snatch") or trick_name:inherits("Dismantlement")) and to:getCards("j"):length() > 0 then
 					return null_card
 				end
 			end
-		end	
-
-		if self:isEnemy(to) then
-			if trick_name:inherits("GodSalvation") then
-				return null_card
-			end
-		end	
+		end
 		
 		if self:isFriend(to) then
 			if trick_name:inherits("Indulgence") or trick_name:inherits("SupplyShortage") then
 				return null_card
-			end
-			if trick_name:inherits("Duel") and not(trick_name:getSuit() == sgs.Card_NoSuit) then
-				return null_card
-			end
-			if trick_name:inherits("ArcheryAttack") then
-				if self.player:objectName() == to:objectName() then 
-					if self:getJinkNumber(self.player) == 0 then return null_card end
-				else
-					if self:getJinkNumber(self.player) > 0 then return null_card end
+			end	
+			if self:isWeak(to) then 
+				if trick_name:inherits("ArcheryAttack") then
+					if self:getJinkNumber(to) == 0 then return null_card end
+				elseif trick_name:inherits("SavageAssault") then
+					if self:getSlashNumber(to) == 0 then return null_card end
 				end
 			end
-			if trick_name:inherits("SavageAssault") then
-				if self.player:objectName() == to:objectName() then 
-					if self:getSlashNumber(self.player) == 0 then return null_card end
-				else
-					if self:getSlashNumber(self.player) > 0 then return null_card end
+		end
+		if from then
+			if self:isEnemy(to) then
+				if trick_name:inherits("GodSalvation") and self:isWeak(to) then
+					return null_card
 				end
-			end
-		end		
+			end	
+		end
 	else
 		if from then
 			if from:objectName() == to:objectName() then
 				if self:isFriend(from) then return null_card
 				else return nil end
 			end
-			if self:isFriend(from) and self:isEnemy(to) then return null_card end
-			if self:isEnemy(from) and self:isFriend(to) then return nil end
+			if not (trick_name:inherits("AmazingGrace") or trick_name:inherits("GodSalvation") or trick_name:inherits("AOE")) then
+				if self:isFriend(from) then return null_card end
+			end
 		else
 			if self:isEnemy(to) then return null_card else return end
 		end
---	    local reverse_null=self:askForNullification(trick_name, from, to, true)
---		if null_card and not reverse_null then return null_card end
 	end
-	
 end
 
 function SmartAI:askForSinglePeach(player, dying)										
@@ -2984,6 +2990,11 @@ function SmartAI:getJiemingChaofeng(player)
 		chaofeng = (-max_x) * 2
 	end    
     return chaofeng
+end
+
+function SmartAI:getOverflow(player)
+	player = player or self.player
+	return math.max(player:getHandcardNum() - player:getHp(), 0)
 end
 
 -- load other ai scripts

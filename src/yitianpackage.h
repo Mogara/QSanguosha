@@ -42,6 +42,13 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 };
 
+class YxSword: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YxSword(Card::Suit suit = Club, int number = 9);
+};
+
 class LianliCard: public SkillCard{
     Q_OBJECT
 
@@ -125,6 +132,13 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class YitianCardPackage: public Package{
+    Q_OBJECT
+
+public:
+    YitianCardPackage();
 };
 
 #endif // YITIANPACKAGE_H

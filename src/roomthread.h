@@ -31,12 +31,9 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
-    void removePlayerSkills(ServerPlayer *player);
-    int getRefCount(const TriggerSkill *skill) const;
+    bool inSkillSet(const TriggerSkill *skill) const;
 
     void addTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const QString &skill_name);
     void delay(unsigned long msecs = 1000);
     void end();
     void run3v3();
@@ -51,7 +48,7 @@ private:
     QString order;
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];
-    QMap<const TriggerSkill *, int> refcount;
+    QSet<const TriggerSkill *> skillSet;
 };
 
 #endif // ROOMTHREAD_H

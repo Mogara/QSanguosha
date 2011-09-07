@@ -90,6 +90,7 @@ struct RecoverStruct{
 
 struct PindianStruct{
     PindianStruct();
+    bool isSuccess() const;
 
     ServerPlayer *from;
     ServerPlayer *to;

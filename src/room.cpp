@@ -943,6 +943,15 @@ void Room::installEquip(ServerPlayer *player, const QString &equip_name){
     thread->delay(800);
 }
 
+void Room::resetAI(ServerPlayer *player){
+    AI *smart_ai = player->getSmartAI();
+    if(smart_ai){
+        ais.removeOne(smart_ai);
+        smart_ai->deleteLater();
+        player->setAI(cloneAI(player));
+    }
+}
+
 void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start){
     LogMessage log;
     log.type = "#Transfigure";
@@ -953,7 +962,6 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(new_general);
     player->invoke("transfigure", transfigure_str);
 
-    thread->removePlayerSkills(player);
     setPlayerProperty(player, "general", new_general);
     broadcastProperty(player,"general");
     thread->addPlayerSkills(player, invoke_start);
@@ -965,12 +973,7 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
         player->setHp(player->getMaxHP());
     broadcastProperty(player, "hp");
 
-    AI *smart_ai = player->getSmartAI();
-    if(smart_ai){
-        ais.removeOne(smart_ai);
-        smart_ai->deleteLater();
-        player->setAI(cloneAI(player));
-    }
+    resetAI(player);
 }
 
 lua_State *Room::getLuaState() const{

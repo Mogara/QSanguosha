@@ -103,3 +103,90 @@ sgs.ai_skill_invoke.yitian = function(self, data)
 	local damage = data:toDamage()
 	return self:isFriend(damage.to)
 end
+
+-- weiwudi (guixin2)
+sgs.ai_skill_invoke.guixin2 = true
+
+local function findPlayerForModifyKingdom(self, players)
+	local lord = self.room:getLord()
+	local isGood = self:isFriend(lord)
+
+	for _, player in sgs.qlist(players) do
+		if player:getRole() == "loyalist" then
+			local sameKingdom = player:getKingdom() == lord:getKingdom()
+			if isGood ~= sameKingdom then
+				return player
+			end
+		elseif lord:hasLordSkill("xueyi") then
+			local isQun = player:getKingdom() == "qun"
+			if isGood ~= isQun then
+				return player
+			end
+		end
+	end
+end
+
+local function chooseKingdomForPlayer(self, to_modify)
+	local lord = self.room:getLord()
+	local isGood = self:isFriend(lord)
+	if to_modify:getRole() == "loyalist" or to_modify:getRole() == "renegade" then
+		if isGood then
+			return lord:getKingdom()
+		else
+			local kingdoms = {"wei", "shu", "wu", "qun"}
+			for _, kingdom in ipairs(kingdoms) do
+				if lord:getKingdom() ~= kingdom then
+					return kingdom
+				end
+			end
+		end
+	elseif lord:hasLordSkill("xueyi") then
+		return isGood and "qun" or "wei"
+	end
+
+	return "wei"
+end
+
+sgs.ai_skill_choice.guixin2 = function(self, choices)
+	if choices == "wei+shu+wu+qun" then
+		local to_modify = self.room:getTag("Guixin2Modify"):toPlayer()
+		return chooseKingdomForPlayer(self, to_modify)
+	end
+
+	if choices ~= "modify+obtain" then
+		return choices:split("+")[1]
+	end
+
+	-- two choices: modify and obtain
+	if self.player:getRole() == "renegade" or self.player:getRole() == "lord" then
+		return "obtain"
+	end
+	
+	local lord = self.room:getLord()
+	local skills = lord:getVisibleSkillList()
+	local hasLordSkill = false
+	for _, skill in sgs.qlist(skills) do
+		if skill:isLordSkill() then
+			hasLordSkill = true
+			break
+		end
+	end
+
+	if not hasLordSkill then
+		return "obtain"
+	end
+
+	local players = self.room:getOtherPlayers(self.player)
+	players:removeOne(lord)
+	if findPlayerForModifyKingdom(self, players) then
+		return "modify"
+	else
+		return "obtain"
+	end
+end
+
+sgs.ai_skill_playerchosen.guixin2 = function(self, players)
+	local player = findPlayerForModifyKingdom(self, players)
+	return player or players:first()
+end
+

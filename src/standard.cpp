@@ -99,10 +99,7 @@ void EquipCard::onInstall(ServerPlayer *player) const{
 }
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
-    Room *room = player->getRoom();
 
-    if(skill)
-        room->getThread()->removeTriggerSkill(skill);
 }
 
 QString GlobalEffect::getSubtype() const{
@@ -408,7 +405,6 @@ public:
 StandardPackage::StandardPackage()
     :Package("standard")
 {
-    addCards();
     addGenerals();
 
     patterns["."] = new HandcardPattern;

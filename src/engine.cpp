@@ -35,14 +35,17 @@ extern "C" {
     Package *NewFire();
     Package *NewThicket();
     Package *NewMountain();
-    Package *NewManeuvering();
     Package *NewGod();
     Package *NewYitian();
-    Package *NewNostalgia();
-    Package *NewJoy();
     Package *NewSP();
     Package *NewYJCM();
     Package *NewWisdom();
+
+    Package *NewStandardCard();
+    Package *NewManeuvering();
+    Package *NewNostalgia();
+    Package *NewYitianCard();
+    Package *NewJoy();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
@@ -66,11 +69,8 @@ Engine::Engine()
     addPackage(NewFire());
     addPackage(NewThicket());
     addPackage(NewMountain());
-    addPackage(NewManeuvering());
     addPackage(NewGod());
     addPackage(NewYitian());
-    addPackage(NewNostalgia());
-    addPackage(NewJoy());
     addPackage(NewSP());
     addPackage(NewYJCM());
     addPackage(NewWisdom());
@@ -81,6 +81,12 @@ Engine::Engine()
         (new General(test_package, "sujiangf", "god", 5, false, true));
         addPackage(test_package);
     }
+
+    addPackage(NewStandardCard());
+    addPackage(NewManeuvering());
+    addPackage(NewYitianCard());
+    addPackage(NewNostalgia());
+    addPackage(NewJoy());
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());

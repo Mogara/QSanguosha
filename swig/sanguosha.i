@@ -76,9 +76,7 @@ public:
     int getLostHp() const;
     bool isWounded() const;
 
-    int getMaxCards() const;    
-    int getXueyi() const;
-    void setXueyi(int xueyi, bool superimpose = true);
+    int getMaxCards() const;
 
     QString getKingdom() const;
     void setKingdom(const char *kingdom);
@@ -644,11 +642,9 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
-    void removePlayerSkills(ServerPlayer *player);
-
     void addTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const TriggerSkill *skill);
-    void removeTriggerSkill(const QString &skill_name);
+	bool inSkillSet(const TriggerSkill *skill) const;
+
     void delay(unsigned long msecs = 1000);
     void end();
 };

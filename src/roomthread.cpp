@@ -55,6 +55,10 @@ PindianStruct::PindianStruct()
 
 }
 
+bool PindianStruct::isSuccess() const{
+    return from_card->getNumber() > to_card->getNumber();
+}
+
 JudgeStruct::JudgeStruct()
     :who(NULL), card(NULL), good(true)
 {
@@ -127,19 +131,8 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     }
 }
 
-void RoomThread::removePlayerSkills(ServerPlayer *player){
-    foreach(const TriggerSkill *skill, player->getTriggerSkills()){
-        if(skill->isLordSkill()){
-            if(!player->isLord() || room->mode == "06_3v3")
-                continue;
-        }
-
-        removeTriggerSkill(skill);
-    }
-}
-
-int RoomThread::getRefCount(const TriggerSkill *skill) const{
-    return refcount.value(skill, 0);
+bool RoomThread::inSkillSet(const TriggerSkill *skill) const{
+    return skillSet.contains(skill);
 }
 
 void RoomThread::constructTriggerTable(const GameRule *rule){
@@ -361,39 +354,16 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
-    int count = refcount.value(skill, 0);
-    if(count != 0){
-        refcount[skill] ++;
+    if(inSkillSet(skill))
         return;
-    }else
-        refcount[skill] = 1;
+    skillSet << skill;
 
     QList<TriggerEvent> events = skill->getTriggerEvents();
     foreach(TriggerEvent event, events){
-        skill_table[event] << skill;
-        qStableSort(skill_table[event].begin(),
-                    skill_table[event].end(),
-                    CompareByPriority);
-    }
-}
+        QList<const TriggerSkill *> &table = skill_table[event];
 
-void RoomThread::removeTriggerSkill(const QString &skill_name){
-    const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-    if(skill)
-        removeTriggerSkill(skill);
-}
-
-void RoomThread::removeTriggerSkill(const TriggerSkill *skill){
-    int count = refcount.value(skill, 0);
-    if(count > 1){
-        refcount[skill] --;
-        return;
-    }else
-        refcount.remove(skill);
-
-    QList<TriggerEvent> events = skill->getTriggerEvents();
-    foreach(TriggerEvent event, events){
-        skill_table[event].removeOne(skill);
+        table << skill;
+        qStableSort(table.begin(), table.end(), CompareByPriority);
     }
 }
 

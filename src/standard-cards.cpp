@@ -964,7 +964,11 @@ public:
     }
 };
 
-void StandardPackage::addCards(){
+StandardCardPackage::StandardCardPackage()
+    :Package("standard_cards")
+{
+    type = Package::CardPack;
+
     QList<Card*> cards;
 
     cards << new Slash(Card::Spade, 7)
@@ -1108,3 +1112,6 @@ void StandardPackage::addCards(){
 
     skills << new SpearSkill << new AxeViewAsSkill;
 }
+
+
+ADD_PACKAGE(StandardCard)
