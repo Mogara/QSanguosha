@@ -17,11 +17,12 @@ bool JuaoCard::targetFilter(const QList<const Player *> &targets, const Player *
     return true;
 }
 
-void JuaoCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void JuaoCard::onEffect(const CardEffectStruct &effect) const{
     foreach(int cardid, this->getSubcards()){
-        targets.first()->addToPile("juaocd", cardid, false);
+        //source->getRoom()->moveCardTo(Sanguosha->getCard(cardid), targets.first(), Player::Special);
+        effect.to->addToPile("juaocd", cardid, false);
     }
-    targets.first()->addMark("juao");
+    effect.to->addMark("juao");
 }
 
 class JuaoViewAsSkill: public ViewAsSkill{
@@ -63,7 +64,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         if(player->getPhase() == Player::Start){
             Room *room = player->getRoom();
-            player->loseAllMarks("juao");
+            player->setMark("juao", 0);
             foreach(int cdid, player->getPile("juaocd"))
                 player->obtainCard(Sanguosha->getCard(cdid));
 
@@ -383,7 +384,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("weidai") /*&& !Self->hasFlag("drank")*/
+        return Self->hasLordSkill("weidai")
                 && !Self->hasUsed("Analeptic");
     }
 
@@ -519,12 +520,6 @@ public:
         else log.to << pindian->to;
         log.card_str = car->getEffectIdString();
         room->sendLog(log);
-        /*QList<ServerPlayer *> pindians;
-            pindians << pindian->from << pindian->to;
-            ServerPlayer *target = room->askForPlayerChosen(zhangzhao, pindians, objectName());
-
-            if(!target) return false;
-        */
         if(choice == pfrom){
             int num = pindian->from_card->getNumber() + car->getNumber()/2;
             const Card *tmp = pindian->from_card;
@@ -541,13 +536,6 @@ public:
             use_card->addSubcard(tmp);
             pindian->to_card = use_card;
         }
-            /*LogMessage log;
-            log.type = "$Fuzuo";
-            log.from = zhangzhao;
-            log.to << target;
-            log.card_str = pindian->from_card->getEffectIdString();
-            room->sendLog(log);
-            */
         data = QVariant::fromValue(pindian);
         return false;
     }
@@ -737,8 +725,6 @@ bool ShouyeCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void ShouyeCard::onEffect(const CardEffectStruct &effect) const{
-    //room->throwCard(this);
-
     effect.to->drawCards(1);
     if(effect.from->getMark("jiehuo") == 0)
         effect.from->addMark("shouye");
@@ -779,7 +765,6 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
-        //CardUseStruct use = data.value<CardUseStruct>();
         Room *room = player->getRoom();
 
         LogMessage log;
@@ -826,331 +811,51 @@ public:
     }
 };
 
-/*
-class Jiehuo: public TriggerSkill{
-public:
-    Jiehuo():TriggerSkill("jiehuo"){
-        events << CardUsed << CardEffected;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        Room *room = player->getRoom();
-        ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
-        if(event == CardEffected){
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-
-            if(!(effect.multiple &&
-                (effect.card->inherits("GlobalEffect") ||
-                 effect.card->inherits("AOE"))))
-                return false;
-            foreach(ServerPlayer *p,room->getAlivePlayers())
-                if(p->getMark("jiehuo") > 0)
-                    return false;
-            if(shuijing->getMark("jiehuoover")<1){
-                ServerPlayer *target = room->askForPlayerChosen(shuijing, room->getAlivePlayers(), objectName());
-                if(target){
-                    target->addMark("jiehuo");
-                    shuijing->addMark("jiehuoover");
-                }
-            }
-            else if(shuijing->getMark("jiehuoover")>0 && player->getMark("jiehuo")>0){
-                player->loseAllMarks("juehuo");
-                shuijing->loseAllMarks("jiehuoover");
-                return true;
-            }
-        }
-        else if(event == CardUsed){
-            CardUseStruct effect = data.value<CardUseStruct>();
-
-            if(effect.card->inherits("TrickCard") &&
-               !effect.card->inherits("Collateral") &&
-               effect.to.contains(shuijing) && effect.to.length() > 1){
-                Room *room = player->getRoom();
-                if(room->askForSkillInvoke(shuijing, objectName(), data)){
-                    ServerPlayer *target = room->askForPlayerChosen(shuijing, effect.to, objectName());
-                    if(target)
-                        effect.to.removeOne(target);
-                    data = QVariant::fromValue(effect);
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-};
-*/
-TongmouCard::TongmouCard(){
-    target_fixed = true;
-}
-
-void TongmouCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *tmp = NULL;
-    foreach(tmp, room->getOtherPlayers(source)){
-        if(tmp->getMark("xoxo") > 0)
-            break;
-    }
-    ServerPlayer *zhonghui, *gay;
-    if(source->hasSkill("tongmou")){
-        zhonghui = source;
-        gay = tmp;
-    }
-    else{
-        zhonghui = tmp;
-        gay = source;
-    }
-    if(!gay || !zhonghui) return;
-
-    foreach(int card_id, zhonghui->handCards()){
-        zhonghui->addToPile("mycard", card_id, false);
-    }
-    foreach(int card_id, gay->handCards()){
-        room->moveCardTo(Sanguosha->getCard(card_id), zhonghui, Player::Hand, false);
-    }
-    foreach(int card_id, zhonghui->getPile("mycard")){
-        room->moveCardTo(Sanguosha->getCard(card_id), gay, Player::Hand, false);
-    }
-
-    source->tag["flag"] = !source->tag.value("flag", true).toBool();
-}
-
-class TongmouViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    TongmouViewAsSkill():ZeroCardViewAsSkill("tongmouv"){
-    }
-    /*
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("xoxo") > 0;
-    }*/
-    virtual const Card *viewAs() const{
-        return new TongmouCard;
-    }
-};
-
-class TongmouAsSkill: public ZeroCardViewAsSkill{
-public:
-    TongmouAsSkill():ZeroCardViewAsSkill("tongmou"){
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasSkill(objectName());/*player->getMark("xoxo") > 0;*/
-    }
-
-    virtual const Card *viewAs() const{
-        return new TongmouCard;
-    }
-};
-
-class Tongmou: public PhaseChangeSkill{
-public:
-    Tongmou():PhaseChangeSkill("tongmou"){
-        //frequency = Frequent;
-        view_as_skill = new TongmouAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return true;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        ServerPlayer *zhonghui = room->findPlayerBySkillName(objectName());
-        if(player != zhonghui && player->getMark("xoxo") < 1)
-            return false;
-
-        if(player->getMark("xoxo") > 0 && player->getPhase() == Player::Discard){
-            ServerPlayer *gay = NULL;
-            foreach(gay, room->getOtherPlayers(player)){
-                if(gay->getMark("xoxo") > 0)
-                    break;
-            }
-            if(gay && !player->tag.value("flag", true).toBool()){
-                foreach(int card_id, player->handCards()){
-                    player->addToPile("mycard", card_id, false);
-                }
-                foreach(int card_id, gay->handCards()){
-                    room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Hand, false);
-                }
-                foreach(int card_id, player->getPile("mycard")){
-                    room->moveCardTo(Sanguosha->getCard(card_id), gay, Player::Hand, false);
-                }
-            }
-        }
-        if(player == zhonghui && player->getPhase() == Player::Play){
-            if(!player->askForSkillInvoke(objectName())){
-                zhonghui->loseMark("xoxo",1);
-                return false;
-            }
-            QList<ServerPlayer *> players = room->getOtherPlayers(zhonghui);
-            foreach(ServerPlayer *p, players){
-                if(p->hasSkill("lianying") || p->hasSkill("tuntian")
-                || p->hasSkill("shangshi") || p->hasSkill("beifa"))
-                    players.removeOne(p);
-            }
-            ServerPlayer *gay = room->askForPlayerChosen(zhonghui, players, "tongmou_tie");
-            if(!gay) return false;
-            player->tag["flag"] = true;
-            gay->addMark("xoxo");
-            zhonghui->addMark("xoxo");
-            /*
-            LogMessage log;
-            log.type = "#Juao_get";
-            log.from = player;
-            log.to << room->findPlayerBySkillName(objectName());
-            room->sendLog(log);
-            */
-            room->attachSkillToPlayer(gay, "tongmouv");
-        }
-        else if(player != zhonghui && player->getMark("xoxo") > 0 && player->getPhase() == Player::Play){
-            player->tag["flag"] = true;
-        }
-        else if(player != zhonghui && player->getMark("xoxo") > 0 && player->getPhase() == Player::Finish){
-            player->loseMark("xoxo", player->getMark("xoxo"));
-            zhonghui->loseMark("xoxo", zhonghui->getMark("xoxo"));
-            room->detachSkillFromPlayer(player, "tongmouv");
-        }
-        return false;
-    }
-};
-
-class TongmouClear: public TriggerSkill{
-public:
-    TongmouClear():TriggerSkill("#tmc"){
-        events << Death;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill("tongmou");
-    }
-
-    virtual bool trigger(TriggerEvent, ServerPlayer *zhonghui, QVariant &) const{
-        Room *room = zhonghui->getRoom();
-        foreach(ServerPlayer *player, room->getAllPlayers()){
-            player->loseMark("xoxo", player->getMark("xoxo"));
-            room->detachSkillFromPlayer(player, "tongmouv");
-        }
-        return false;
-    }
-};
-
-class Xianhai: public OneCardViewAsSkill{
-public:
-    Xianhai():OneCardViewAsSkill("xianhai"){
-
-    }
-
-    virtual bool viewFilter(const CardItem *to_select) const{
-        return to_select->getCard()->inherits("Disaster");
-    }
-
-    virtual const Card *viewAs(CardItem *card_item) const{
-        XianhaiCard *card = new XianhaiCard;
-        card->addSubcard(card_item->getCard()->getId());
-
-        return card;
-    }
-};
-
-XianhaiCard::XianhaiCard(){
-}
-
-bool XianhaiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(to_select->getJudgingArea().contains(Sanguosha->getCard(this->getSubcards().first())))
-        return false;
-    return targets.isEmpty();
-}
-
-void XianhaiCard::onEffect(const CardEffectStruct &effect) const{
-    effect.from->getRoom()->moveCardTo(Sanguosha->getCard(this->getSubcards().first()), effect.to, Player::Judging);
-}
-
 WisdomPackage::WisdomPackage()
     :Package("wisdom")
 {
-    //智包内厕
+
     General *wisxuyou,
             *wisjiangwei, *wisjiangwan,
             *wissunce, *wiszhangzhao,
             *wishuaxiong, *wistianfeng, *wisshuijing;
-/*魏 许攸 3血 恃才傲物
-倨傲:出牌阶段,你可以选择两张手牌移出游戏,指定一名角色,被指定的角色到下个回合开始阶段时,跳过摸牌阶段,得到你所移出游戏的两张牌。每回合限一次。
-贪婪:你每受到一次伤害,可与伤害来源进行拼点:若你赢,你获得两张拼点牌。
-恃才:锁定技,当你拼点成功时,立即摸一张牌。*/
-        wisxuyou = new General(this, "wisxuyou", "wei",3,true); //finished
+
+        wisxuyou = new General(this, "wisxuyou", "wei",3,true);
         wisxuyou->addSkill(new Juao);
         wisxuyou->addSkill(new Tanlan);
         wisxuyou->addSkill(new Shicai);
-/*蜀 姜维 4血 天水麒麟
-异才:每当你使用一张非延时类锦囊时(在它结算之前),可立即对攻击范围内的角色使用一张【杀】。
-北伐:锁定技,当你失去最后一张手牌时,视为对攻击范围内的一名角色使用了一张【杀】。*/
-        wisjiangwei = new General(this, "wisjiangwei", "shu",4,true); //finished
+
+        wisjiangwei = new General(this, "wisjiangwei", "shu",4,true);
         wisjiangwei->addSkill(new Yicai);
         wisjiangwei->addSkill(new Beifa);
-/*蜀 蒋琬 3血 武侯后继
-后援:出牌阶段,你可以弃掉两张手牌,指定一名其他角色摸两张牌。
-筹粮:回合结束阶段,当你手牌少于三张时,你可以从牌堆顶亮出四张牌,拿走其中的基本牌,然后弃掉其余的牌。
-*/
-        wisjiangwan = new General(this, "wisjiangwan", "shu",3,true); //finished
+
+        wisjiangwan = new General(this, "wisjiangwan", "shu",3,true);
         wisjiangwan->addSkill(new Houyuan);
         wisjiangwan->addSkill(new Chouliang);
-/*吴 孙策 4血 江东小霸王
-霸王:当你使用的【杀】被闪避时,你可以和对方拼点:若你赢,可以选择最多两个目标，视为对其分别使用了一张【杀】。
-危殆:主公技,当你需要使用一张【酒】时，吴势力角色可以打出一张黑桃2~9的手牌，视为替你出了一张【酒】。(见详解)
-*/
+
         wissunce = new General(this, "wissunce$", "wu",4,true);
         wissunce->addSkill(new Bawang);
         wissunce->addSkill(new Weidai);
-/*吴 张昭 3血 东吴重臣
-笼络:弃牌阶段,你可以选择一名其他角色摸取与你弃牌数量相同的牌。
-辅佐:当有角色拼点时,你可以弃掉自己的一张点数小于8的手牌，让其中一名角色的拼点牌加上这张牌点数的二分之一（向下取整）。
-尽瘁:当你死亡时,可令一名角色立即摸取或者弃掉三张牌。
-*/
+
         wiszhangzhao = new General(this, "wiszhangzhao", "wu",3,true);
         wiszhangzhao->addSkill(new Longluo);
         wiszhangzhao->addSkill(new Fuzuo);
         wiszhangzhao->addSkill(new Jincui);
 
-/*群 华雄 4血 心高命薄
-霸刀:当你成为黑色的【杀】目标时,你可以立即对你攻击范围内的一名角色使用一张【杀】。
-温酒:锁定技,你使用黑色的【杀】造成的伤害+1,你无法闪避红色的【杀】。
-*/
         wishuaxiong = new General(this, "wishuaxiong", "qun",4,true);
         wishuaxiong->addSkill(new Badao);
         wishuaxiong->addSkill(new Wenjiu);
-/*群 田丰 3血 甘冒虎口
-识破:任意角色判定阶段判定前,你可以弃掉两张牌,获得该角色判定区里的所有牌。
-固守:当你使用或打出一张【闪】时,可立即摸一张牌。
-狱刎:锁定技,当你死亡时,凶手视为自己。
-*/
+
         wistianfeng = new General(this, "wistianfeng", "qun",3,true);
         wistianfeng->addSkill(new Shipo);
         wistianfeng->addSkill(new Gushou);
         wistianfeng->addSkill(new Yuwen);
-/*
-群 司马徽 3血 水镜先生
-授业:出牌阶段,你可以弃掉一张红色手牌,指定最多两名其他角色各摸一张牌。
-解惑:当一个锦囊指定了不止一个目标,且你也是其中之一时,你可以指定一名角色跳过该锦囊的结算。
-*/
+
         wisshuijing = new General(this, "wisshuijing", "qun",4,true);
         wisshuijing->addSkill(new Shouye);
         wisshuijing->addSkill(new Jiehuo);
-/*
-同谋：出牌阶段出牌前，指定一名角色，和其共享手牌直到该角色下回合结束阶段（见详解）
-陷害：你的黑桃牌可以视为屎交给一名其他角色，此牌一直视为屎，直到其进入弃牌堆，每回合限两次
 
-★共享手牌并不是将两人的手牌放到一起，而是A需要使用或者响应某张牌的时候，可以看B的手牌，然后从中挑取可以使用或打出的牌（必须立即使用或打出），B也可以看A的牌并使用。但他们的手牌区始终是独立的，所以当共享状态解除后，不会出现手牌归属的纠纷
-*/
-        General *zhonghui = new General(this, "zhonghui", "wei");
-        zhonghui->addSkill(new Tongmou);
-        zhonghui->addSkill(new Xianhai);
-        zhonghui->addSkill(new TongmouClear);
-
-        related_skills.insertMulti("tongmou", "#tmc");
-
-        skills << new Shien << new TongmouViewAsSkill;;
+        skills << new Shien;
         patterns[".K8"] = new EightPattern;
         patterns[".S29"] = new SpatwoninePattern;
 
@@ -1159,8 +864,6 @@ WisdomPackage::WisdomPackage()
         addMetaObject<WeidaiCard>();
         addMetaObject<HouyuanCard>();
         addMetaObject<ShouyeCard>();
-        addMetaObject<TongmouCard>();
-        addMetaObject<XianhaiCard>();
 }
 
 ADD_PACKAGE(Wisdom)

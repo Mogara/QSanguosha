@@ -15,7 +15,7 @@ local t = {
 
 	["juao"] = "倨傲",
 	[":juao"] = "出牌阶段,你可以选择两张手牌背面向上移出游戏,指定一名角色,被指定的角色到下个回合开始阶段时,跳过摸牌阶段,得到你所移出游戏的两张牌。每回合限一次",
-	["juaocd"] = "趾高气昂",
+	["juaocd"] = "倨傲牌",
 	["#Juao_get"] = "%from 得到了 %to 发动【倨傲】移出游戏的两张牌",
 	["tanlan"] = "贪婪",
 	[":tanlan"] = "你每受到一次伤害,可与伤害来源进行拼点:若你赢,你获得两张拼点牌",
@@ -77,27 +77,20 @@ local t = {
 	["shien"] = "师恩",
 	[":shien"] = "其他角色使用非延时锦囊时,（在结算前）可以让你摸一张牌",
 
-	["$blank"] = "",
-
-	["zhonghui"] = "钟会",
-	["tongmou"] = "同谋",
-	[":tongmou"] = "出牌阶段出牌前,指定一名角色为谋友并获得以下技能直到该角色下个回合结束:互为谋友的两名角色在其出牌阶段可以共享对方的手牌(见详解)",
-	["tongmou_tie"] = "指定一名角色成为你的谋友",
-	["xoxo"] = "基情四射",
-	["mycard"] = "我的手牌",
-	["tongmouv"] = "同謀",
-	["xianhai"] = "陷害",
-	[":xianhai"] = "你可以将你的天灾手牌放在任意角色的判定区内",
-
-	["designer:zhonghui"] = "宇文天启",
-	["cv:zhonghui"] = "",
+	["cv:wisxuyou"] = "", 
+	["cv:wisjiangwei"] = "", 
+	["cv:wisjiangwan"] = "",
+	["cv:wissunce"] = "",
+	["cv:wiszhangzhao"] = "",
+	["cv:wishuaxiong"] = "",
+	["cv:wistianfeng"] = "",
+	["cv:wisshuijing"] = "",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}
 
 for _, general in ipairs(generals) do
 	t["designer:" .. general] = t["designer:wisdoms"]
-	t["cv:" .. general] = t["$blank"]
 end
 
 return t
