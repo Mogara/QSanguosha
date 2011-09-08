@@ -70,9 +70,9 @@ Engine::Engine()
     addPackage(NewThicket());
     addPackage(NewMountain());
     addPackage(NewGod());
-    addPackage(NewYitian());
     addPackage(NewSP());
     addPackage(NewYJCM());
+    addPackage(NewYitian());
     addPackage(NewWisdom());
 
     {
