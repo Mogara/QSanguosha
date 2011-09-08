@@ -10,3 +10,4 @@ swig/sanguosha_wrap.cxx
 records/*
 users.db
 doc/*.html
+swig/*.bat

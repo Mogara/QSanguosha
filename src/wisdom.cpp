@@ -95,7 +95,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *from = damage.from;
             Room *room = xuyou->getRoom();
-            if(from && !from->isKongcheng() && !xuyou->isKongcheng() && room->askForSkillInvoke(xuyou, objectName())){
+            if(from && !from->isKongcheng() && !xuyou->isKongcheng() && room->askForSkillInvoke(xuyou, objectName(), data)){
                 xuyou->pindian(from, "tanlan");
             }
             return false;
@@ -161,7 +161,7 @@ public:
 
         if(card->inherits("TrickCard") && !card->inherits("DelayedTrick")){
             Room *room = jiangwei->getRoom();
-            if(!room->askForSkillInvoke(jiangwei, objectName()))
+            if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->throwCard(card);
             room->askForUseCard(jiangwei, "slash", "@yicai");
@@ -327,7 +327,7 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if(!effect.to->isNude() && !sunce->isKongcheng() && !effect.to->isKongcheng()){
             Room *room = sunce->getRoom();
-            if(room->askForSkillInvoke(sunce, objectName())){
+            if(room->askForSkillInvoke(sunce, objectName(), data)){
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
                     room->askForUseCard(sunce, "@@bawang", "@bawangask");
@@ -416,7 +416,7 @@ public:
         if(lieges.isEmpty())
             return false;
 
-        if(!room->askForSkillInvoke(sunce, objectName()))
+        if(!room->askForSkillInvoke(sunce, objectName(), data))
             return false;
 
         foreach(ServerPlayer *liege, lieges){
@@ -462,7 +462,7 @@ public:
         }
         else if(player->getPhase() == Player::Finish){
             int drawnum = player->tag.value("cardnum", 0).toInt() - player->getHandcardNum();
-            if(drawnum > 0 && player->askForSkillInvoke(objectName())){
+            if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
                 ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
                 if(target)
                     target->drawCards(drawnum);
@@ -560,7 +560,7 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(room->askForSkillInvoke(player, objectName())){
+        if(room->askForSkillInvoke(player, objectName(), data)){
             ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), objectName());
             if (room->askForChoice(player, objectName(), "draw+throw") == "draw")
                 target->drawCards(3);
@@ -581,7 +581,7 @@ public:
         Room *room = hua->getRoom();
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->inherits("Slash") && effect.card->isBlack()){
-            if(room->askForSkillInvoke(hua, objectName())){
+            if(room->askForSkillInvoke(hua, objectName(), data)){
                 room->askForUseCard(hua, "slash", "badaoslash");
             }
         }
@@ -654,7 +654,7 @@ public:
             return false;
         Room *room = player->getRoom();
         ServerPlayer *tianfeng = room->findPlayerBySkillName(objectName());
-        if(tianfeng->getCardCount(true)>=2 && room->askForSkillInvoke(tianfeng, objectName())
+        if(tianfeng->getCardCount(true)>=2 && room->askForSkillInvoke(tianfeng, objectName(), data)
                 && room->askForDiscard(tianfeng, objectName(),2,false,true)){
             foreach(const Card *jcd, player->getJudgingArea())
                 tianfeng->obtainCard(jcd);
@@ -680,7 +680,7 @@ public:
 
         if(card->inherits("Jink")){
             Room *room = tianfeng->getRoom();
-            if(room->askForSkillInvoke(tianfeng, objectName())){
+            if(room->askForSkillInvoke(tianfeng, objectName(), data)){
                 room->playSkillEffect(objectName());
                 tianfeng->drawCards(1);
             }
@@ -785,7 +785,7 @@ class Shien:public TriggerSkill{
 public:
     Shien():TriggerSkill("shien"){
         events << CardUsed << CardResponsed;
-        frequency = Frequent;
+        //frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -803,7 +803,7 @@ public:
         if(card->isNDTrick()){
             Room *room = player->getRoom();
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
-            if(player != shuijing && room->askForSkillInvoke(player, objectName()))
+            if(player != shuijing && room->askForSkillInvoke(player, objectName(), data))
                 shuijing->drawCards(1);
         }
 

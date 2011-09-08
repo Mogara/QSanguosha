@@ -1,4 +1,5 @@
 huangyueying yuanshao
+shuangxiong sunce
 huanggai yuanshao
 luxun wolong
 huanggai shuangxiong
@@ -6,6 +7,7 @@ dongzhuo shencaocao
 huatuo xunyu
 simayi zhenji
 guojia huatuo
+caiwenji zhanghe
 ganning huangyueying
 huangyueying shuangxiong
 liubei luxun
