@@ -39,6 +39,7 @@ extern "C" {
     Package *NewYitian();
     Package *NewSP();
     Package *NewYJCM();
+    Package *NewWisdom();
 
     Package *NewStandardCard();
     Package *NewManeuvering();
@@ -72,6 +73,7 @@ Engine::Engine()
     addPackage(NewYitian());
     addPackage(NewSP());
     addPackage(NewYJCM());
+    addPackage(NewWisdom());
 
     {
         Package *test_package = new Package("test");
