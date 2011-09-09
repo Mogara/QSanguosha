@@ -22,25 +22,27 @@ Settings::Settings()
 }
 
 void Settings::init(){
-    QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
-    int font_id = QFontDatabase::addApplicationFont(font_path);
-    if(font_id!=-1){
-        QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
-        BigFont.setFamily(font_family);
-        SmallFont.setFamily(font_family);
-        TinyFont.setFamily(font_family);
-    }else
-        QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
+    if(!qApp->arguments().contains("-server")){
+        QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
+        int font_id = QFontDatabase::addApplicationFont(font_path);
+        if(font_id!=-1){
+            QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
+            BigFont.setFamily(font_family);
+            SmallFont.setFamily(font_family);
+            TinyFont.setFamily(font_family);
+        }else
+            QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
-    BigFont.setPixelSize(56);
-    SmallFont.setPixelSize(27);
-    TinyFont.setPixelSize(18);
+        BigFont.setPixelSize(56);
+        SmallFont.setPixelSize(27);
+        TinyFont.setPixelSize(18);
 
-    SmallFont.setWeight(QFont::Bold);
+        SmallFont.setWeight(QFont::Bold);
 
-    AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
-    UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
-    TextEditColor = QColor(value("TextEditColor", "white").toString());
+        AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
+        UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
+        TextEditColor = QColor(value("TextEditColor", "white").toString());
+    }
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
