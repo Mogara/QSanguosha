@@ -59,12 +59,17 @@ public:
         Room *room = player->getRoom();
         if(damage.card && damage.card->inherits("Slash") && room->askForSkillInvoke(player, objectName(), data)){
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
-            foreach(ServerPlayer *tmp, players){
-                if(!player->inMyAttackRange(tmp))
-                    players.removeOne(tmp);
+            QMutableListIterator<ServerPlayer *> itor(players);
+
+            while(itor.hasNext()){
+                itor.next();
+                if(!player->inMyAttackRange(itor.value()))
+                    itor.remove();
             }
+
             if(players.isEmpty())
                 return false;
+
             ServerPlayer *target = room->askForPlayerChosen(player, players, objectName());
             damage.from = target;
             data = QVariant::fromValue(damage);
