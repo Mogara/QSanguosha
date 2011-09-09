@@ -265,7 +265,10 @@ void Engine::addBanPackage(const QString &package_name){
 }
 
 QStringList Engine::getBanPackages() const{
-    return ban_package.toList();
+    if(qApp->arguments().contains("-server"))
+        return Config.BanPackages;
+    else
+        return ban_package.toList();
 }
 
 QString Engine::translate(const QString &to_translate) const{

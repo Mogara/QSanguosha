@@ -117,7 +117,7 @@ local function findPlayerForModifyKingdom(self, players)
 			if isGood ~= sameKingdom then
 				return player
 			end
-		elseif lord:hasLordSkill("xueyi") then
+		elseif lord:hasLordSkill("xueyi") and not player:isLord() then
 			local isQun = player:getKingdom() == "qun"
 			if isGood ~= isQun then
 				return player
@@ -133,6 +133,7 @@ local function chooseKingdomForPlayer(self, to_modify)
 		if isGood then
 			return lord:getKingdom()
 		else
+			-- find a kingdom that is different from the lord
 			local kingdoms = {"wei", "shu", "wu", "qun"}
 			for _, kingdom in ipairs(kingdoms) do
 				if lord:getKingdom() ~= kingdom then
@@ -140,7 +141,7 @@ local function chooseKingdomForPlayer(self, to_modify)
 				end
 			end
 		end
-	elseif lord:hasLordSkill("xueyi") then
+	elseif lord:hasLordSkill("xueyi") and not to_modify:isLord() then
 		return isGood and "qun" or "wei"
 	end
 
