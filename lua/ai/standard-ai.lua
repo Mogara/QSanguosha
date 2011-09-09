@@ -559,14 +559,12 @@ function liubei_ai:activate(use)
 	end
 	
 	if (not use:isValid()) and (self.player:getHandcardNum()>=self.player:getHp()) then 
-		for _, friend in ipairs(self.friends_noself) do
-			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
-				local card_id = self:getCardRandomly(self.player, "h")
-				use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
-				use.to:append(friend)
-				return
-			end
-        end
+		self:sort(self.friends_noself, "handcard")
+		local friend = self.friends_noself[1]
+		local card_id = self:getCardRandomly(self.player, "h")
+		use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+		use.to:append(friend)
+		return
     end
 	
 	super.activate(self, use)
