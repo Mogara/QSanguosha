@@ -1,4 +1,11 @@
 --qiaobian
+sgs.ai_skill_info = {}
+
+sgs.ai_skill_info.qiaobian = 
+{
+	is_enemy = false,
+}
+
 sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
     self:updatePlayers()
 	local cards = self.player:getHandcards()
@@ -33,6 +40,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	
 	if prompt == "@qiaobian-play" then
 		if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
+		sgs.ai_skill_info.qiaobian["is_enemy"] = false
 		
 		self:sort(self.enemies, "hp")
 		local has_armor = true
@@ -41,6 +49,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 			if (friend:containsTrick("lightning") and self:hasWizard(self.friends) and self:hasWizard(self.enemied)) or
 				(friend:containsTrick("indulgence") and friend:getHandcardNum()-1 > friend:getHp()) or 
 				friend:containsTrick("supplyshortage") then
+				sgs.ai_skill_info.qiaobian["is_enemy"] = true
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 		end	
@@ -83,10 +92,13 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 end
 
 sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
-	targets = QList2Table(targets)
-	self:sort(targets, "hp")
-	
-	return targets[1]
+	for _, target in sgs.qlist(targets) do
+		if sgs.ai_skill_info.qiaobian["is_enemy"] then 
+			if self:isFriend(target) then return target end
+		else
+			if self:isEnemy(target) then return target end
+		end
+	end
 end
 
 -- beige
