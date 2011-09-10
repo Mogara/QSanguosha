@@ -3012,6 +3012,10 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 }
 
 void RoomScene::removeLightBox(){
+    foreach(CardItem *item, discarded_queue){
+        item->show();
+    }
+
     QPropertyAnimation *animation = qobject_cast<QPropertyAnimation *>(sender());
     QGraphicsTextItem *line = qobject_cast<QGraphicsTextItem *>(animation->targetObject());
 
@@ -3066,6 +3070,11 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
 }
 
 void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args){
+    // hide discarded card
+    foreach(CardItem *item, discarded_queue){
+        item->hide();
+    }
+
     QString word = args.first();
     word = Sanguosha->translate(word);
 
