@@ -589,7 +589,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -601,7 +601,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         AI *ai = player->getAI();
         if(ai){
             thread->delay(Config.AIDelay);
-            card = ai->askForCard(pattern, prompt);
+            card = ai->askForCard(pattern, prompt, data);
         }else{
             player->invoke("askForCard", QString("%1:%2").arg(pattern).arg(prompt));
             getResult("responseCardCommand", player);
@@ -628,8 +628,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
-        const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
-        if(card_pattern == NULL || card_pattern->willThrow())
+        if(card->getTypeId() != Card::Skill){
+            const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
+            if(card_pattern == NULL || card_pattern->willThrow())
+                throwCard(card);
+        }else if(card->willThrow())
             throwCard(card);
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");

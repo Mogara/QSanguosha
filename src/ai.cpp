@@ -269,7 +269,7 @@ int TrustAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QSt
     return cards.at(r)->getId();
 }
 
-const Card *TrustAI::askForCard(const QString &pattern, const QString &){
+const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data){
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards){
@@ -469,27 +469,6 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices){
     }
 
     return result;
-}
-
-const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt){
-    lua_State *L = room->getLuaState();
-
-    pushCallback(L, __func__);
-    lua_pushstring(L, pattern.toAscii());
-    lua_pushstring(L, prompt.toAscii());
-
-    int error = lua_pcall(L, 3, 1, 0);
-    const char *result = lua_tostring(L, -1);
-    lua_pop(L, 1);
-    if(error){
-        room->output(result);
-        return TrustAI::askForCard(pattern, prompt);
-    }
-
-    if(result == NULL)
-        return TrustAI::askForCard(pattern, prompt);
-
-    return Card::Parse(result);
 }
 
 int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &reason){
