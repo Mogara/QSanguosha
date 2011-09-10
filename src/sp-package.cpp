@@ -164,27 +164,21 @@ public:
     }
 };
 
-class Weidi: public GameStartSkill{
+class Weidi:public ZeroCardViewAsSkill{
 public:
-    Weidi():GameStartSkill("weidi"){
+    Weidi():ZeroCardViewAsSkill("weidi"){
         frequency = Compulsory;
     }
 
-    virtual void onGameStart(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        ServerPlayer *lord = room->getLord();
-        if(lord != player){
-            const General *general = lord->getGeneral();
-            QList<const Skill *> skills = general->findChildren<const Skill *>();
-            foreach(const Skill *skill, skills){
-                if(skill->isLordSkill()){
-                    room->acquireSkill(player, skill->objectName());
-                    return;
-                }
-            }
-        }
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->hasLordSkill("jijiang") && Slash::IsAvailable(player);
+    }
+
+    virtual const Card *viewAs() const{
+        return Sanguosha->cloneSkillCard("JijiangCard");
     }
 };
+
 
 class Yicong: public DistanceSkill{
 public:

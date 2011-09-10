@@ -600,13 +600,8 @@ int ServerPlayer::getGeneralMaxHP() const{
     return max_hp;
 }
 
-bool ServerPlayer::hasLordSkill(const QString &skill_name) const{
-    if(room->getMode() == "06_3v3" || room->getMode() == "02_1v1")
-        return false;
-    else if(acquired_skills.contains(skill_name))
-        return true;
-    else
-        return isLord() && hasSkill(skill_name);
+QString ServerPlayer::getGameMode() const{
+    return room->getMode();
 }
 
 QString ServerPlayer::getIp() const{

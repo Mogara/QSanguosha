@@ -82,7 +82,7 @@ public:
     QStringList getSelected() const;
 
     int getGeneralMaxHP() const;
-    virtual bool hasLordSkill(const QString &skill_name) const;
+    virtual QString getGameMode() const;
 
     QString getIp() const;
     void introduceTo(ServerPlayer *player);

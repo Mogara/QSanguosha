@@ -130,17 +130,12 @@ QString ClientPlayer::getDeathPixmapPath() const{
     return QString("image/system/death/%1.png").arg(basename);
 }
 
-bool ClientPlayer::hasLordSkill(const QString &skill_name) const{
-    if(ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1")
-        return false;
-    else if(acquired_skills.contains(skill_name))
-        return true;
-    else
-        return getRole() == "lord" && hasSkill(skill_name);
-}
-
 void ClientPlayer::setHandcardNum(int n){
     handcard_num = n;
+}
+
+QString ClientPlayer::getGameMode() const{
+    return ServerInfo.GameMode;
 }
 
 void ClientPlayer::setFlags(const QString &flag){

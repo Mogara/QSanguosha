@@ -256,13 +256,39 @@ bool Player::isLord() const{
 }
 
 bool Player::hasSkill(const QString &skill_name) const{
+    return hasInnateSkill(skill_name)
+            || acquired_skills.contains(skill_name);
+}
+
+bool Player::hasInnateSkill(const QString &skill_name) const{
     if(general && general->hasSkill(skill_name))
         return true;
 
     if(general2 && general2->hasSkill(skill_name))
         return true;
 
-    return acquired_skills.contains(skill_name);
+    return false;
+}
+
+bool Player::hasLordSkill(const QString &skill_name) const{
+    QString mode = getGameMode();
+    if(mode == "06_3v3" || mode == "02_1v1")
+        return false;
+
+    if(acquired_skills.contains(skill_name))
+        return true;
+
+    if(isLord())
+        return hasInnateSkill(skill_name);
+
+    if(hasSkill("weidi")){
+        foreach(const Player *player, parent()->findChildren<const Player *>()){
+            if(player->isLord())
+                return player->hasLordSkill(skill_name);
+        }
+    }
+
+    return false;
 }
 
 void Player::acquireSkill(const QString &skill_name){
