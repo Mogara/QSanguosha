@@ -654,8 +654,10 @@ public:
             return false;
         Room *room = player->getRoom();
         ServerPlayer *tianfeng = room->findPlayerBySkillName(objectName());
-        if(tianfeng->getCardCount(true)>=2 && room->askForSkillInvoke(tianfeng, objectName(), data)
-                && room->askForDiscard(tianfeng, objectName(),2,false,true)){
+        if(tianfeng && tianfeng->getCardCount(true)>=2
+           && room->askForSkillInvoke(tianfeng, objectName(), data)
+            && room->askForDiscard(tianfeng, objectName(),2,false,true)){
+
             foreach(const Card *jcd, player->getJudgingArea())
                 tianfeng->obtainCard(jcd);
         }

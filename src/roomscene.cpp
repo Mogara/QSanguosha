@@ -3096,7 +3096,9 @@ void RoomScene::doLightboxAnimation(const QString &name, const QStringList &args
     appear->setStartValue(0.0);
     appear->setKeyValueAt(0.8, 1.0);
     appear->setEndValue(1.0);
-    appear->setDuration(2000);
+
+    int duration = args.value(1, "2000").toInt();
+    appear->setDuration(duration);
 
     appear->start();
 

@@ -618,7 +618,7 @@ public:
         room->sendLog(log);
 
         room->playSkillEffect("zhiji");
-        room->broadcastInvoke("animate", "lightbox:$zhiji");
+        room->broadcastInvoke("animate", "lightbox:$zhiji:5000");
         room->getThread()->delay(5000);
 
         if(room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover"){
