@@ -23,7 +23,7 @@ void ClientLogBox::appendLog(
     QString from;
     if(!from_general.isEmpty()){
         from = ClientInstance->getPlayerName(from_general);
-        from = bold(from, Qt::red);
+        from = bold(from, Qt::green);
     }
 
     QString to;
@@ -34,7 +34,7 @@ void ClientLogBox::appendLog(
         to = to_list.join(",");
         arg = Sanguosha->translate(arg);
 
-        to = bold(to, Qt::green);
+        to = bold(to, Qt::red);
     }
 
     QString log;
@@ -99,12 +99,12 @@ void ClientLogBox::appendLog(
     log.replace("%to", to);
 
     if(!arg2.isEmpty()){
-        arg2 = bold(Sanguosha->translate(arg2), Qt::blue);
+        arg2 = bold(Sanguosha->translate(arg2), Qt::yellow);
         log.replace("%arg2", arg2);
     }
 
     if(!arg.isEmpty()){
-        arg = bold(Sanguosha->translate(arg), Qt::blue);
+        arg = bold(Sanguosha->translate(arg), Qt::yellow);
         log.replace("%arg", arg);
     }
 
