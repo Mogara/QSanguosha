@@ -1,7 +1,6 @@
 #include "client.h"
 #include "settings.h"
 #include "engine.h"
-#include "nullificationdialog.h"
 #include "playercarddialog.h"
 #include "standard.h"
 #include "choosegeneraldialog.h"
