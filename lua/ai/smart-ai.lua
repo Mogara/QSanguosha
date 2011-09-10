@@ -2229,9 +2229,19 @@ function SmartAI:getCardRandomly(who, flags)
 	return card:getEffectiveId()
 end
 
+sgs.ai_skill_cardchosen = {}
 function SmartAI:askForCardChosen(who, flags, reason)
 	self.room:output(reason)
-		
+
+	local cardchosen = sgs.ai_skill_cardchosen[string.gsub(reason,"%-","_")]
+	local card
+	if type(cardchosen) == "function" then
+		card = cardchosen(self, who)
+	end
+	if card then
+		return card:getId()
+	end
+	
     if self:isFriend(who) then
 		if flags:match("j") then
 			local tricks = who:getCards("j")
@@ -3000,6 +3010,90 @@ end
 function SmartAI:isWeak(player)
 	player = player or self.player
 	return player:getHp() <= 2 and player:getHandcardNum() <= 1 and not player:hasSkill("buqu")
+end
+
+function SmartAI:getAoeValueTo(card, to , from)
+	if not from then from = self.player end 
+	local value = 0
+	local sj_num
+
+	if to:hasSkill("buqu") then
+		value = value + 10
+	end
+	
+	if to:hasSkill("longdan") then
+		value = value + 5
+	end	
+	
+	if to:hasSkill("danlao") then
+		value = value + 15
+	end
+	
+	if card:inherits("SavageAssault") then
+		sj_num = self:getSlashNumber(to)
+		if to:hasSkill("juxiang") then
+			value = value + 20
+		end
+	end
+	if card:inherits("ArcheryAttack") then
+		sj_num = self:getJinkNumber(to)
+	end
+	
+	if self:aoeIsEffective(card, to) then
+		if to:getHp() > 1 or (self:getPeachNum(to) + self:getAnalepticNum(to) > 0) then
+			if to:hasSkill("yiji") or to:hasSkill("jianxiong") then
+				value = value + 20
+			end
+			if to:hasSkill("jieming") then
+				value = value - self:getJiemingChaofeng(to) * 3
+			end
+			if to:hasSkill("ganglie") or to:hasSkill("fankui") or to:hasSkill("enyuan") then
+				if not self:isFriend(from, to) then
+					value = value + 10
+				else 
+					value = value - 10
+				end
+			end
+		end
+		
+		if card:inherits("ArcheryAttack") then
+			sj_num = self:getJinkNumber(to)
+			if (to:hasSkill("leiji") and self:getJinkNumber(to) > 0) or self:isEquip("EightDiagram", to) then
+				value = value + 30
+				if self:hasSuit("spade", true, to) then
+					value = value + 20
+				end
+			end
+			if to:hasSkill("qingguo") or self:isEquip("EightDiagram", to) then
+				value = value + 10
+			end	
+		end	
+		
+		if to:getHp() ~= 0 then
+			value = value - 24 / to:getHp() - 10
+		end
+		
+		if self:isFriend(from, to) then
+	    if (to:isLord() or from:isLord()) and (not to:hasSkill("buqu")) then
+				if to:getHp() <= 1 and self:getPeachNum(from) == 0 and sj_num == 0 then
+					if to:getRole() == "renegade" then
+						value = value - 50
+					else
+						value = value - 150
+					end
+				end
+			end
+			value = value + self:getPeachNum(from) * 2
+		elseif to:getRole() == "rebel" or (to:isLord() and from:getRole() == "rebel") then
+			if to:getHp() <= 1 and self:getPeachNum(to) == 0 and sj_num == 0 then
+				value = value - 50
+			end
+		end
+	else
+		value = value + 10
+	end
+	
+	return value 
 end
 
 -- load other ai scripts

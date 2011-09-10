@@ -1,4 +1,77 @@
 --qiaobian
+local function card_for_qiaobian(self, who, return_prompt)
+	local card, target
+	if self:isFriend(who) then
+		local judges = who:getCards("j")
+		if judges then
+			for _, judge in sgs.qlist(judges) do
+				if (judge:objectName() == "lightning" and not self:hasWizard(self.friends) and self:hasWizard(self.enemies)) or
+					(judge:objectName() == "indulgence" and friend:getHandcardNum()-1 > friend:getHp()) or
+					judge:objectName() == "supply_shortage" then
+					card = judge
+					break
+				end
+			end
+			
+			if card and return_prompt:match("target") then
+				for _, enemy in ipairs(self.enemies) do
+					if not enemy:getCards("j") or not enemy:containsTrick(card:objectName()) then target = enemy break end
+				end
+			end
+		end
+		
+		local equips = who:getCards("e")
+		if equips then
+			for _, equip in sgs.qlist(equips) do
+				if equip:inherits("OffensiveHorse") then card = equip break
+				elseif equip:inherits("DefensiveHorse") then card = equip break
+				elseif equip:inherits("Weapon") then card = equip break
+				elseif equip:inherits("Armor") then card = equip break
+				end
+			end
+			
+			if card and return_prompt:match("target") then
+				for _, friend in ipairs(self.friends) do
+					if friend == who then 
+					elseif not friend:getCards("e") or not self:hasSameEquip(card, friend) then 
+						target = friend 
+						break 
+					end
+				end
+			end
+		end
+	else
+		local equips = who:getCards("e")
+		if not equips then return end
+		for _, equip in sgs.qlist(equips) do
+			if equip:inherits("Armor") then card = equip break
+			elseif equip:inherits("DefensiveHorse") then card = equip break
+			elseif equip:inherits("Weapon") then card = equip break
+			elseif equip:inherits("OffensiveHorse") then card = equip break
+			end
+		end
+		
+		if card and return_prompt:match("target") then
+			for _, friend in ipairs(self.friends) do
+				if not friend:getCards("e") or not self:hasSameEquip(card, friend) then 
+					target = friend 
+					break 
+				end
+			end
+		end
+	end
+	
+	if return_prompt == "card" then return card
+	elseif return_prompt == "target" then return target
+	else
+		return (card and target)
+	end
+end
+
+sgs.ai_skill_cardchosen.qiaobian = function(self, who)
+	return card_for_qiaobian(self, who, "card")
+end
+
 sgs.ai_skill_info = {}
 
 sgs.ai_skill_info.qiaobian = 
@@ -46,16 +119,14 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 		local has_armor = true
 		local judge
 		for _, friend in ipairs(self.friends_noself) do
-			if (friend:containsTrick("lightning") and self:hasWizard(self.friends) and self:hasWizard(self.enemied)) or
-				(friend:containsTrick("indulgence") and friend:getHandcardNum()-1 > friend:getHp()) or 
-				friend:containsTrick("supplyshortage") then
+			if friend:getCards("j") and card_for_qiaobian(self, friend, "card+target") then
 				sgs.ai_skill_info.qiaobian["is_enemy"] = true
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 		end	
 		
 		for _, friend in ipairs(self.friends_noself) do
-			if self:hasSkills(sgs.lose_equip_skill, friend) then
+			if friend:getCards("e") and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, "card+target") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 			if not friend:getArmor() then has_armor = false end
@@ -71,7 +142,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 		
 		local targets = {}
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:getArmor() and not has_armor then
+			if enemy:getArmor() and not has_armor and card_for_qiaobian(self, enemy) then
 				table.insert(targets, enemy)
 			end
 		end
@@ -94,9 +165,9 @@ end
 sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
 	for _, target in sgs.qlist(targets) do
 		if sgs.ai_skill_info.qiaobian["is_enemy"] then 
-			if self:isFriend(target) then return target end
-		else
 			if self:isEnemy(target) then return target end
+		else
+			if self:isFriend(target) then return target end
 		end
 	end
 end
