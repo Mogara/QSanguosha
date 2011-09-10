@@ -194,7 +194,7 @@ QString Card::getLogName() const{
     QString number_string;
 
     if(suit != Card::NoSuit)
-        suit_char = QString("<img src='image/system/suit/%1.png' width='15' height='15' />").arg(getSuitString());
+        suit_char = QString("<img src='image/system/log/%1.png' />").arg(getSuitString());
     else
         suit_char = tr("NoSuit");
 
