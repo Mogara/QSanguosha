@@ -23,7 +23,7 @@ void ClientLogBox::appendLog(
     QString from;
     if(!from_general.isEmpty()){
         from = ClientInstance->getPlayerName(from_general);
-        from = bold(from);
+        from = bold(from, Qt::red);
     }
 
     QString to;
@@ -34,7 +34,7 @@ void ClientLogBox::appendLog(
         to = to_list.join(",");
         arg = Sanguosha->translate(arg);
 
-        to = bold(to);
+        to = bold(to, Qt::green);
     }
 
     QString log;
@@ -99,12 +99,12 @@ void ClientLogBox::appendLog(
     log.replace("%to", to);
 
     if(!arg2.isEmpty()){
-        arg2 = bold(Sanguosha->translate(arg2));
+        arg2 = bold(Sanguosha->translate(arg2), Qt::blue);
         log.replace("%arg2", arg2);
     }
 
     if(!arg.isEmpty()){
-        arg = bold(Sanguosha->translate(arg));
+        arg = bold(Sanguosha->translate(arg), Qt::blue);
         log.replace("%arg", arg);
     }
 
@@ -113,9 +113,9 @@ void ClientLogBox::appendLog(
     append(log);
 }
 
-QString ClientLogBox::bold(const QString &str) const{
+QString ClientLogBox::bold(const QString &str, QColor color) const{
     return QString("<font color='%1'><b>%2</b></font>")
-            .arg(Config.TextEditColor.name()).arg(str);
+            .arg(color.name()).arg(str);
 }
 
 void ClientLogBox::appendLog(const QString &log_str){

@@ -853,6 +853,9 @@ void Client::surrender(){
 }
 
 void Client::speakToServer(const QString &text){
+    if(text.isEmpty())
+        return;
+
     QByteArray data = text.toUtf8().toBase64();
     request(QString("speak %1").arg(QString(data)));
 }

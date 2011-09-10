@@ -20,7 +20,7 @@ public:
             );
 
 private:
-    QString bold(const QString &str) const;
+    QString bold(const QString &str, QColor color) const;
 
 public slots:
     void appendLog(const QString &log_str);
