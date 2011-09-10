@@ -271,12 +271,12 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 }
 
 bool Player::hasLordSkill(const QString &skill_name) const{
-    QString mode = getGameMode();
-    if(mode == "06_3v3" || mode == "02_1v1")
-        return false;
-
     if(acquired_skills.contains(skill_name))
         return true;
+
+    QString mode = getGameMode();
+    if(mode == "06_3v3" || mode == "02_1v1" || mode == "02p")
+        return false;
 
     if(isLord())
         return hasInnateSkill(skill_name);

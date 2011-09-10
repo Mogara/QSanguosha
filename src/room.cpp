@@ -589,7 +589,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     return card_id;
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, bool throw_it){
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt){
     const Card *card = NULL;
 
     QVariant asked = pattern;
@@ -628,7 +628,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     card = card->validateInResposing(player, &continuable);
 
     if(card){
-        if(throw_it)
+        const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
+        if(card_pattern == NULL || card_pattern->willThrow())
             throwCard(card);
 
         QVariant decisionData = QVariant::fromValue("cardResponsed:"+pattern+":"+prompt+":_"+card->toString()+"_");
@@ -653,7 +654,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
 
     }else if(continuable)
-        return askForCard(player, pattern, prompt, throw_it);
+        return askForCard(player, pattern, prompt);
 
     return card;
 }

@@ -217,6 +217,7 @@ void QingnangCard::onEffect(const CardEffectStruct &effect) const{
 
 GuicaiCard::GuicaiCard(){
     target_fixed = true;
+    will_throw = false;
 }
 
 void GuicaiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
