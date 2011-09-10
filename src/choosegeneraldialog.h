@@ -52,7 +52,7 @@ public:
 private:
     QButtonGroup *group;
     bool pair_choose;
-    QGroupBox *createGroupBox(const QList<const General *> &generals);
+    QWidget *createTab(const QList<const General *> &generals);
 
 private slots:
     void chooseGeneral();
