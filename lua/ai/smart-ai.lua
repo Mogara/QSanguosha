@@ -2392,7 +2392,7 @@ function SmartAI:askForCard(pattern, prompt)
 			objectName = "archery_attack" 
 		end
 		aoe = sgs.Sanguosha:cloneCard(objectName, sgs.Card_NoSuit , 0)	
-		if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+		if (self.player:hasSkill("jianxiong") and self:getAoeValueTo(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 		if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 		if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
  	end
