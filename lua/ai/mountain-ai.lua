@@ -2,6 +2,7 @@
 local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
 	if self:isFriend(who) then
+		local friend = who
 		local judges = who:getCards("j")
 		if judges then
 			for _, judge in sgs.qlist(judges) do

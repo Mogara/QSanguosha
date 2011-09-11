@@ -341,7 +341,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Play){
             Room *room = target->getRoom();
-            return room->askForUseCard(target, "@@jueji", "@jueji");
+            return room->askForUseCard(target, "@@jueji", "@jueji-pindian");
         }else
             return false;
     }
