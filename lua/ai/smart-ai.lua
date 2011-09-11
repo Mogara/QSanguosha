@@ -2392,7 +2392,7 @@ function SmartAI:askForCard(pattern, prompt)
 			objectName = "archery_attack" 
 		end
 		aoe = sgs.Sanguosha:cloneCard(objectName, sgs.Card_NoSuit , 0)	
-		if (self.player:hasSkill("jianxiong") and self:getAoeValueTo(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+		if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 		if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 		if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
  	end
@@ -3010,6 +3010,25 @@ end
 function SmartAI:isWeak(player)
 	player = player or self.player
 	return player:getHp() <= 2 and player:getHandcardNum() <= 1 and not player:hasSkill("buqu")
+end
+
+function SmartAI:getAoeValue(card, player)
+	player = player or self.player 
+	friends_noself = self:getFriendsNoself(player)
+	enemies = self:getEnemies(player)
+	local good, bad = 0, 0
+	for _, friend in ipairs(friends_noself) do
+		good = good + self:getAoeValueTo(card, friend, player)
+	end
+
+	for _, enemy in ipairs(enemies) do
+		bad = bad + self:getAoeValueTo(card, enemy, player)
+	end
+	
+	if player:hasSkill("jizhi") then
+		good = good + 40	
+	end
+	return good - bad
 end
 
 function SmartAI:getAoeValueTo(card, to , from)
