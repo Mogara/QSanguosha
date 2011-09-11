@@ -793,8 +793,8 @@ void Client::askForCardChosen(const QString &ask_str){
 }
 
 void Client::playCardEffect(const QString &play_str){
-    static QRegExp rx1("(@?\\w+):([MF])");
-    static QRegExp rx2("(\\w+)@(\\w+):([MF])"); // old version
+    QRegExp rx1("(@?\\w+):([MF])");
+    QRegExp rx2("(\\w+)@(\\w+):([MF])"); // old version
 
     if(rx1.exactMatch(play_str)){
         QStringList texts = rx1.capturedTexts();

@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    static QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCAM12]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCAM12]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();

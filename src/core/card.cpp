@@ -257,7 +257,7 @@ bool Card::isVirtualCard() const{
 const Card *Card::Parse(const QString &str){
     if(str.startsWith(QChar('@'))){
         // skill card
-        static QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
+        QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
         if(!pattern.exactMatch(str))
             return NULL;
 
@@ -300,7 +300,7 @@ const Card *Card::Parse(const QString &str){
         LuaSkillCard *new_card =  LuaSkillCard::Parse(str);
         return new_card;
     }if(str.contains(QChar('='))){
-        static QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
+        QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         if(!pattern.exactMatch(str))
             return NULL;
 
