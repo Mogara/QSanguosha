@@ -352,11 +352,11 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersion() const{
-    return "20110806";
+    return "20110912";
 }
 
 QString Engine::getVersionName() const{
-    return tr("MagpieBridge");
+    return tr("MiddleAutumn");
 }
 
 QStringList Engine::getExtensions() const{
