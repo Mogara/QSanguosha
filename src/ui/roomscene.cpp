@@ -3120,6 +3120,29 @@ void RoomScene::doHuashen(const QString &name, const QStringList &args){
     Self->tag["Huashens"] = huashen_list;
 }
 
+#include "indicatoritem.h"
+
+void RoomScene::doIndicate(const QString &name, const QStringList &args){
+    QGraphicsObject *obj1 = getAnimationObject(args.first());
+    QGraphicsObject *obj2 = getAnimationObject(args.last());
+
+    QPointF start = obj1->sceneBoundingRect().center();
+    QPointF finish = obj2->sceneBoundingRect().center();
+
+    IndicatorItem *indicator = new IndicatorItem(start);
+
+    qreal x = qMin(start.x(), finish.x());
+    qreal y = qMin(start.y(), finish.y());
+    indicator->setPos(x, y);
+
+    addItem(indicator);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(indicator, "finish");
+    animation->setEndValue(finish);
+
+    animation->start();
+}
+
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
@@ -3132,8 +3155,8 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["typhoon"] = &RoomScene::doAppearingAnimation;
 
         map["lightbox"] = &RoomScene::doLightboxAnimation;
-
         map["huashen"] = &RoomScene::doHuashen;
+        map["indicate"] = &RoomScene::doIndicate;
     }
 
     AnimationFunc func = map.value(name, NULL);

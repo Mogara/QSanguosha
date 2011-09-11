@@ -1621,6 +1621,9 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
         new_use.card = card;
         useCard(new_use);
     }
+
+    if(card->isVirtualCard())
+        delete card;
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose){
