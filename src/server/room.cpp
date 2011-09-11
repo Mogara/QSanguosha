@@ -1155,13 +1155,12 @@ void Room::reportDisconnection(){
     }else{
         if(!game_started){
             // third case
-            if(player->getGeneral() == NULL){
-                if(player->property("default_general").isValid())
+            if(!QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode)){
+                if(player->getGeneral() == NULL)
                     chooseCommand(player, QString());
+                else
+                    choose2Command(player, QString());
             }
-
-            if(player->property("default_general2").isValid())
-                choose2Command(player, QString());
         }
 
         // fourth case
@@ -1405,14 +1404,13 @@ void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    /*
+
     if(Config.value("FreeAssign", false).toBool() && scenario == NULL
-       && !QRegExp("\\d\\d_\\dv\\d").exactMatch(mode) && owner->getState() == "online")
+       && !QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode) && owner->getState() == "online")
     {
         owner->invoke("askForAssign");
         return;
     }
-    */
 
     prepareForStart();
 
@@ -1420,12 +1418,17 @@ void Room::run(){
     if(_virtual || !property("to_test").toString().isEmpty())
         using_countdown = false;
 
+#ifndef QT_NO_DEBUG
+    using_countdown = false;
+#endif
+
     if(using_countdown){
         for(int i=Config.CountDownSeconds; i>=0; i--){
             broadcastInvoke("startInXs", QString::number(i));
             sleep(1);
         }
-    }
+    }else
+        broadcastInvoke("startInXs", "0");
 
     if(scenario && !scenario->generalSelection())
         startGame();

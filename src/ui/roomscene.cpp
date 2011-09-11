@@ -3486,8 +3486,79 @@ void RoomScene::finishArrange(){
     ClientInstance->request("arrange " + names.join("+"));
 }
 
-void RoomScene::startAssign(){
+RoleAssignDialog::RoleAssignDialog(QWidget *parent)
+    :QDialog(parent)
+{
+    setWindowTitle(tr("Assign roles and seats"));
 
+    list = new QListWidget;
+    list->setViewMode(QListView::IconMode);
+    list->setFlow(QListView::TopToBottom);
+    list->setIconSize(General::TinyIconSize);
+
+    foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
+        new QListWidgetItem(player->screenName(), list);
+    }
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QPushButton *setGeneralButton = new QPushButton(tr("Set general"));
+
+    role_combobox = new QComboBox;
+    role_combobox->addItem(tr("Lord"));
+    role_combobox->addItem(tr("Loyalist"));
+    role_combobox->addItem(tr("Renegade"));
+    role_combobox->addItem(tr("Rebel"));
+
+    QPushButton *moveUpButton = new QPushButton(tr("Move up"));
+    QPushButton *moveDownButton = new QPushButton(tr("Move down"));
+    QPushButton *okButton = new QPushButton(tr("OK"));
+
+    vlayout->addWidget(setGeneralButton);
+    vlayout->addWidget(role_combobox);
+    vlayout->addWidget(moveUpButton);
+    vlayout->addWidget(moveDownButton);
+    vlayout->addStretch();
+    vlayout->addWidget(okButton);
+
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(list);
+    layout->addLayout(vlayout);
+    setLayout(layout);
+
+    connect(setGeneralButton, SIGNAL(clicked()), this, SLOT(setGeneral()));
+    connect(role_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole()));
+    connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateRole()));
+    connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
+    connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
+}
+
+void RoleAssignDialog::accept(){
+
+}
+
+void RoleAssignDialog::setGeneral(){
+
+}
+
+void RoleAssignDialog::updateRole(){
+    if(sender() == role_combobox){
+
+    }else if(sender() == list){
+
+    }
+}
+
+void RoleAssignDialog::moveUp(){
+
+}
+
+void RoleAssignDialog::moveDown(){
+
+}
+
+void RoomScene::startAssign(){
+    RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
+    dialog->exec();
 }
 
 void RoomScene::finishAssign(){
