@@ -184,17 +184,19 @@ public:
                 return false;
 
             Room *room = jiangwei->getRoom();
-            QList<ServerPlayer *> players = room->getOtherPlayers(jiangwei);
-            foreach(ServerPlayer *player, players){
-                if(!jiangwei->inMyAttackRange(player))
-                    players.removeOne(player);
+            QList<ServerPlayer *> players;
+            foreach(ServerPlayer *player, room->getOtherPlayers(jiangwei)){
                 if(player->hasSkill("kongcheng") && player->isKongcheng())
-                    players.removeOne(player);
+                    continue;
+                if(jiangwei->inMyAttackRange(player))
+                    players << player;
             }
+
             ServerPlayer *target = jiangwei;
-            if(players.length() > 0)
+            if(!players.isEmpty())
                 target = room->askForPlayerChosen(jiangwei, players, objectName());
-            if(!target) target = jiangwei;
+            //if(!target)
+            //    target = jiangwei;
 
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName(objectName());

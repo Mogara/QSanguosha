@@ -559,6 +559,8 @@ function liubei_ai:activate(use)
 	end
 	
 	if (not use:isValid()) and (self.player:getHandcardNum()>=self.player:getHp()) then 
+		if #self.friends_noself == 0 then return end
+		
 		self:sort(self.friends_noself, "handcard")
 		local friend = self.friends_noself[1]
 		local card_id = self:getCardRandomly(self.player, "h")
