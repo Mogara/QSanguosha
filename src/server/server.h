@@ -65,8 +65,10 @@ public:
     bool config();
 
 private:
-    QLayout *createLeft();
-    QLayout *createRight();
+    QWidget *createBasicTab();
+    QWidget *createPackageTab();
+    QWidget *createAdvancedTab();
+    QWidget *createAITab();
     QLayout *createButtonLayout();
 
     QGroupBox *createGameModeBox();

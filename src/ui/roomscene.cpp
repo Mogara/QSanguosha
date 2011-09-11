@@ -3495,6 +3495,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     list->setViewMode(QListView::IconMode);
     list->setFlow(QListView::TopToBottom);
     list->setIconSize(General::TinyIconSize);
+    list->setMovement(QListView::Static);
 
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         new QListWidgetItem(player->screenName(), list);

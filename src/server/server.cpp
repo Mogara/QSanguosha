@@ -36,26 +36,21 @@ ServerDialog::ServerDialog(QWidget *parent)
 {
     setWindowTitle(tr("Start server"));
 
-    QLayout *left = createLeft();
-    QLayout *right = createRight();
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addLayout(left);
-    hlayout->addLayout(right);
+    QTabWidget *tab_widget = new QTabWidget;
+    tab_widget->addTab(createBasicTab(), tr("Basic"));
+    tab_widget->addTab(createPackageTab(), tr("Game Pacakge Selection"));
+    tab_widget->addTab(createAdvancedTab(), tr("Advanced"));
+    tab_widget->addTab(createAITab(), tr("Artificial intelligence"));
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addLayout(hlayout);
+    layout->addWidget(tab_widget);
     layout->addLayout(createButtonLayout());
-
     setLayout(layout);
+
+    setMinimumWidth(300);
 }
 
-void ServerDialog::ensureEnableAI(){
-    ai_enable_checkbox->setChecked(true);
-}
-
-
-QLayout *ServerDialog::createLeft(){
+QWidget *ServerDialog::createBasicTab(){
     server_name_edit = new QLineEdit;
     server_name_edit->setText(Config.ServerName);
 
@@ -75,7 +70,179 @@ QLayout *ServerDialog::createLeft(){
     form_layout->addRow(tr("Operation timeout"), HLay(timeout_spinbox, nolimit_checkbox));
     form_layout->addRow(createGameModeBox());
 
-    return form_layout;
+    QWidget *widget = new QWidget;
+    widget->setLayout(form_layout);
+    return widget;
+}
+
+QWidget *ServerDialog::createPackageTab(){
+    QGroupBox *box1 = new QGroupBox(tr("General package"));
+    QGroupBox *box2 = new QGroupBox(tr("Card package"));
+
+    box1->setLayout(new QVBoxLayout);
+    box2->setLayout(new QVBoxLayout);
+
+    extension_group = new QButtonGroup;
+    extension_group->setExclusive(false);
+
+    QStringList extensions = Sanguosha->getExtensions();
+    QSet<QString> ban_packages = Config.BanPackages.toSet();
+
+    foreach(QString extension, extensions){
+        const Package *package = Sanguosha->findChild<const Package *>(extension);
+        if(package == NULL)
+            continue;
+
+        QCheckBox *checkbox = new QCheckBox;
+        checkbox->setObjectName(extension);
+        checkbox->setText(Sanguosha->translate(extension));
+        checkbox->setChecked(! ban_packages.contains(extension));
+
+        extension_group->addButton(checkbox);
+
+        switch(package->getType()){
+        case Package::GeneralPack: {
+                box1->layout()->addWidget(checkbox);
+                break;
+            }
+
+        case Package::CardPack: {
+                box2->layout()->addWidget(checkbox);
+                break;
+            }
+
+        default:
+            break;
+        }
+    }
+
+    QWidget *widget = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    layout->addStretch();
+    widget->setLayout(layout);
+    return widget;
+}
+
+QWidget *ServerDialog::createAdvancedTab(){
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
+    contest_mode_checkbox->setChecked(Config.ContestMode);
+    contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
+
+    free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
+    free_choose_checkbox->setChecked(Config.FreeChoose);
+
+    free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
+    free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
+
+    maxchoice_spinbox = new QSpinBox;
+    maxchoice_spinbox->setRange(3, 10);
+    maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
+
+    forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
+    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
+
+    disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
+    disable_chat_checkbox->setChecked(Config.DisableChat);
+
+    second_general_checkbox = new QCheckBox(tr("Enable second general"));
+
+    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
+    //changjing
+
+    max_hp_scheme_combobox = new QComboBox;
+    max_hp_scheme_combobox->addItem(tr("Sum - 3"));
+    max_hp_scheme_combobox->addItem(tr("Minimum"));
+    max_hp_scheme_combobox->addItem(tr("Average"));
+    max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
+    max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
+    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));
+
+    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+
+    scene_checkbox->setChecked(Config.EnableScene);	//changjing
+
+    QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
+    BanPairDialog *banpair_dialog = new BanPairDialog(this);
+    connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
+
+    connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
+
+    announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
+    announce_ip_checkbox->setChecked(Config.AnnounceIP);
+    announce_ip_checkbox->setEnabled(false); // not support now
+
+    address_edit = new QLineEdit;
+    address_edit->setText(Config.Address);
+
+    #if QT_VERSION >= 0x040700
+    address_edit->setPlaceholderText(tr("Public IP or domain"));
+    #endif
+
+    QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
+    connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+
+    //address_edit->setEnabled(announce_ip_checkbox->isChecked());
+    // connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
+
+    port_edit = new QLineEdit;
+    port_edit->setText(QString::number(Config.ServerPort));
+    port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
+
+    layout->addWidget(contest_mode_checkbox);
+    layout->addWidget(forbid_same_ip_checkbox);
+    layout->addWidget(disable_chat_checkbox);
+    layout->addWidget(free_choose_checkbox);
+    layout->addWidget(free_assign_checkbox);
+    layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
+    layout->addLayout(HLay(second_general_checkbox, banpair_button));
+    layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
+    layout->addWidget(scene_checkbox);		//changjing
+    layout->addWidget(announce_ip_checkbox);
+    layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
+    layout->addWidget(detect_button);
+    layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
+    layout->addStretch();
+
+    QWidget *widget = new QWidget;
+    widget->setLayout(layout);
+    return widget;
+}
+
+QWidget *ServerDialog::createAITab(){
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
+    ai_enable_checkbox->setChecked(Config.EnableAI);
+
+    role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
+    role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
+
+    ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
+    ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
+
+    ai_delay_spinbox = new QSpinBox;
+    ai_delay_spinbox->setMinimum(0);
+    ai_delay_spinbox->setMaximum(5000);
+    ai_delay_spinbox->setValue(Config.AIDelay);
+    ai_delay_spinbox->setSuffix(tr(" millisecond"));
+
+    layout->addWidget(ai_enable_checkbox);
+    layout->addWidget(role_predictable_checkbox);
+    layout->addWidget(ai_chat_checkbox);
+    layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
+    layout->addStretch();
+
+    QWidget *widget = new QWidget;
+    widget->setLayout(layout);
+    return widget;
+}
+
+void ServerDialog::ensureEnableAI(){
+    ai_enable_checkbox->setChecked(true);
 }
 
 KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
@@ -199,7 +366,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QObjectList item_list;
 
     {
         // normal modes
@@ -216,16 +383,16 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 // add 1v1 banlist edit button
                 QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
                 connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
-                layout->addLayout(HLay(button, edit_button));
+                item_list << HLay(button, edit_button);
 
             }else if(itor.key() == "06_3v3"){
                 // add 3v3 options
                 QGroupBox *box = create3v3Box();
-                layout->addWidget(button);
-                layout->addWidget(box);
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+
+                item_list << button << box;
             }else{
-                layout->addWidget(button);
+                item_list << button;
             }
 
             if(itor.key() == Config.GameMode)
@@ -257,7 +424,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
             }
         }
 
-        layout->addLayout(HLay(scenario_button, scenario_combobox));
+        item_list << HLay(scenario_button, scenario_combobox);
     }
 
 #if 0
@@ -308,6 +475,29 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
 #endif
 
+    QVBoxLayout *left = new QVBoxLayout;
+    QVBoxLayout *right = new QVBoxLayout;
+
+    for(int i=0; i<item_list.length(); i++){
+        QObject *item = item_list.at(i);
+
+        QVBoxLayout *side = i < item_list.length()/2 ? left : right;
+
+        if(item->isWidgetType()){
+            QWidget *widget = qobject_cast<QWidget *>(item);
+            side->addWidget(widget);
+        }else{
+            QLayout *item_layout = qobject_cast<QLayout *>(item);
+            side->addLayout(item_layout);
+        }
+    }
+
+    right->addStretch();
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addLayout(left);
+    layout->addLayout(right);
+
     mode_box->setLayout(layout);
 
     return mode_box;
@@ -334,157 +524,6 @@ void ServerDialog::updateChallengeLabel(int index){
         avatar->setPixmap(avatar_pixmap);
         avatar->setToolTip(general->getSkillDescription());
     }
-}
-
-QLayout *ServerDialog::createRight(){
-    QGroupBox *extension_box = new QGroupBox;
-    {
-        extension_box->setTitle(tr("Game package selection"));
-        QGridLayout *extension_layout = new QGridLayout;
-        extension_box->setLayout(extension_layout);
-        extension_group = new QButtonGroup;
-        extension_group->setExclusive(false);
-
-        QStringList extensions = Sanguosha->getExtensions();
-        QSet<QString> ban_packages = Config.BanPackages.toSet();
-
-        int i;
-        for(i=0; i<extensions.length(); i++){
-            QString extension = extensions.at(i);
-            QCheckBox *checkbox = new QCheckBox;
-            checkbox->setObjectName(extension);
-            checkbox->setText(Sanguosha->translate(extension));
-            checkbox->setChecked(! ban_packages.contains(extension));
-
-            extension_group->addButton(checkbox);
-
-            int row = i / 2;
-            int column = i % 2;
-            extension_layout->addWidget(checkbox, row, column);
-        }
-    }
-
-    QGroupBox *advanced_box = new QGroupBox;
-
-    {
-        advanced_box->setTitle(tr("Advanced"));
-        QVBoxLayout *layout = new QVBoxLayout;
-        advanced_box->setLayout(layout);
-
-        contest_mode_checkbox = new QCheckBox(tr("Contest mode"));
-        contest_mode_checkbox->setChecked(Config.ContestMode);
-        contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
-
-        free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
-        free_choose_checkbox->setChecked(Config.FreeChoose);
-
-        free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
-        free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
-
-        maxchoice_spinbox = new QSpinBox;
-        maxchoice_spinbox->setRange(3, 10);
-        maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
-
-        forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
-        forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
-
-        disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
-        disable_chat_checkbox->setChecked(Config.DisableChat);
-
-        second_general_checkbox = new QCheckBox(tr("Enable second general"));
-
-        scene_checkbox  = new QCheckBox(tr("Enable Scene"));
-        //changjing
-
-        max_hp_scheme_combobox = new QComboBox;
-        max_hp_scheme_combobox->addItem(tr("Sum - 3"));
-        max_hp_scheme_combobox->addItem(tr("Minimum"));
-        max_hp_scheme_combobox->addItem(tr("Average"));
-        max_hp_scheme_combobox->setCurrentIndex(Config.MaxHpScheme);
-        max_hp_scheme_combobox->setEnabled(Config.Enable2ndGeneral);
-        connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_combobox, SLOT(setEnabled(bool)));
-
-        second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-
-        scene_checkbox->setChecked(Config.EnableScene);	//changjing
-
-        QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
-        BanPairDialog *banpair_dialog = new BanPairDialog(this);
-        connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
-
-        connect(second_general_checkbox, SIGNAL(toggled(bool)), banpair_button, SLOT(setEnabled(bool)));
-
-        announce_ip_checkbox = new QCheckBox(tr("Annouce my IP in WAN"));
-        announce_ip_checkbox->setChecked(Config.AnnounceIP);
-        announce_ip_checkbox->setEnabled(false); // not support now
-
-        address_edit = new QLineEdit;
-        address_edit->setText(Config.Address);
-
-        #if QT_VERSION >= 0x040700
-        address_edit->setPlaceholderText(tr("Public IP or domain"));
-        #endif  
-
-        QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
-        connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
-
-        //address_edit->setEnabled(announce_ip_checkbox->isChecked());
-        // connect(announce_ip_checkbox, SIGNAL(toggled(bool)), address_edit, SLOT(setEnabled(bool)));
-
-        port_edit = new QLineEdit;
-        port_edit->setText(QString::number(Config.ServerPort));
-        port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
-
-        layout->addWidget(contest_mode_checkbox);
-        layout->addWidget(forbid_same_ip_checkbox);
-        layout->addWidget(disable_chat_checkbox);
-        layout->addWidget(free_choose_checkbox);
-        layout->addWidget(free_assign_checkbox);
-        layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
-        layout->addLayout(HLay(second_general_checkbox, banpair_button));
-        layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
-        layout->addWidget(scene_checkbox);		//changjing
-        layout->addWidget(announce_ip_checkbox);
-        layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
-        layout->addWidget(detect_button);
-        layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
-    }
-
-    QGroupBox *ai_box = new QGroupBox;
-
-    {
-        ai_box->setTitle(tr("Artificial intelligence"));
-        QVBoxLayout *layout = new QVBoxLayout;
-        ai_box->setLayout(layout);
-
-        ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
-        ai_enable_checkbox->setChecked(Config.EnableAI);
-
-        role_predictable_checkbox = new QCheckBox(tr("Role predictable"));
-        role_predictable_checkbox->setChecked(Config.value("RolePredictable", true).toBool());
-
-        ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
-        ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
-
-        ai_delay_spinbox = new QSpinBox;
-        ai_delay_spinbox->setMinimum(0);
-        ai_delay_spinbox->setMaximum(5000);
-        ai_delay_spinbox->setValue(Config.AIDelay);
-        ai_delay_spinbox->setSuffix(tr(" millisecond"));
-
-        layout->addWidget(ai_enable_checkbox);
-        layout->addWidget(role_predictable_checkbox);
-        layout->addWidget(ai_chat_checkbox);
-        layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
-    }
-
-    QVBoxLayout *vlayout = new QVBoxLayout;
-    vlayout->addWidget(extension_box);
-    vlayout->addWidget(advanced_box);
-    vlayout->addWidget(ai_box);
-    vlayout->addStretch();
-
-    return vlayout;
 }
 
 QLayout *ServerDialog::createButtonLayout(){

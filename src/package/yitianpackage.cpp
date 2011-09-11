@@ -1839,6 +1839,8 @@ YitianCardPackage::YitianCardPackage()
 {
     (new YitianSword)->setParent(this);
     (new YxSword)->setParent(this);
+
+    type = CardPack;
 }
 
 ADD_PACKAGE(YitianCard)
