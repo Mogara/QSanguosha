@@ -80,6 +80,8 @@ public:
     // 3v3 methods
     void addToSelected(const QString &general);
     QStringList getSelected() const;
+    QString findReasonable(const QStringList &generals);
+    void clearSelected();
 
     int getGeneralMaxHP() const;
     virtual QString getGameMode() const;

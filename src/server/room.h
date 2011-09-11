@@ -14,7 +14,7 @@ struct LogMessage;
 #include "serverplayer.h"
 #include "roomthread.h"
 
-class Room : public QObject{
+class Room : public QThread{
     Q_OBJECT
 
 public:
@@ -145,7 +145,8 @@ public:
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards);
     const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const QString &reason);
-    QString askForGeneral(ServerPlayer *player, const QStringList &generals);
+    QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
+    void askForGeneralAsync(ServerPlayer *player);
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
 
     void speakCommand(ServerPlayer *player, const QString &arg);
@@ -162,7 +163,7 @@ public:
     void startTest(const QString &to_test);
 
 protected:
-    virtual void timerEvent(QTimerEvent *);
+    virtual void run();
 
 private:
     QString mode;
@@ -174,8 +175,6 @@ private:
     QList<int> pile1, pile2;
     QList<int> table_cards;
     QList<int> *draw_pile, *discard_pile;
-    int left_seconds;
-    int chosen_generals;
     bool game_started;
     bool game_finished;
     int signup_count;
@@ -203,6 +202,8 @@ private:
 
     static QString generatePlayerName();
     void prepareForStart();
+    void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
+    void chooseGenerals();
     AI *cloneAI(ServerPlayer *player);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void initCallbacks();

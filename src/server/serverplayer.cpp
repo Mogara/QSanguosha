@@ -208,6 +208,28 @@ QStringList ServerPlayer::getSelected() const{
     return selected;
 }
 
+#include "banpairdialog.h"
+
+QString ServerPlayer::findReasonable(const QStringList &generals){
+    if(Config.Enable2ndGeneral){
+        foreach(QString name, generals){
+            if(getGeneral()){
+                if(!BanPair::isBanned(getGeneralName(), name))
+                    return name;
+            }else{
+                if(!BanPair::isBanned(name))
+                    return name;
+            }
+        }
+    }
+
+    return generals.first();
+}
+
+void ServerPlayer::clearSelected(){
+    selected.clear();
+}
+
 void ServerPlayer::castMessage(const QString &message){
     if(socket){
         socket->send(message);

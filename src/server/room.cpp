@@ -22,9 +22,9 @@
 #include <QDateTime>
 
 Room::Room(QObject *parent, const QString &mode)
-    :QObject(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
-    draw_pile(&pile1), discard_pile(&pile2), left_seconds(Config.CountDownSeconds),
-    chosen_generals(0), game_started(false), game_finished(false), signup_count(0),
+    :QThread(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
+    draw_pile(&pile1), discard_pile(&pile2),
+    game_started(false), game_finished(false), signup_count(0),
     L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
@@ -1059,51 +1059,6 @@ const Card *Room::peek(){
     return Sanguosha->getCard(card_id);
 }
 
-void Room::timerEvent(QTimerEvent *event){
-    if(event && left_seconds > 0){
-        left_seconds --;
-        broadcastInvoke("startInXs", QString::number(left_seconds));
-    }else{
-        if(event)
-            killTimer(event->timerId());
-
-        if(scenario && !scenario->generalSelection())
-            startGame();
-        else if(mode == "06_3v3"){
-            thread_3v3 = new RoomThread3v3(this);
-            thread_3v3->start();
-
-            connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
-        }else if(mode == "02_1v1"){
-            thread_1v1 = new RoomThread1v1(this);
-            thread_1v1->start();
-
-            connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
-        }else if(mode == "04_1v3"){
-            HulaoPassThread *hulao_thread = new HulaoPassThread(this);
-            hulao_thread->start();
-
-            connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
-        }else{
-            QStringList lord_list;
-            if(mode == "08same")
-                lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
-            else
-                lord_list = Sanguosha->getRandomLords();
-
-            QString default_lord = lord_list[qrand() % lord_list.length()];
-
-            ServerPlayer *the_lord = getLord();
-            if(the_lord->getState() != "online") {
-                chooseCommand(the_lord, default_lord);
-            }else{
-                the_lord->setProperty("default_general", default_lord);
-                the_lord->invoke("doChooseGeneral", lord_list.join("+"));
-            }
-        }
-    }
-}
-
 void Room::prepareForStart(){
     if(scenario){
         QStringList generals, roles;
@@ -1375,8 +1330,80 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     signup_count ++;
 
-    if(!isFull())
+    if(isFull())
+        start();
+}
+
+void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
+    QSet<QString> existed;
+    foreach(ServerPlayer *player, players){
+        if(player->getGeneral())
+            existed << player->getGeneralName();
+
+        if(player->getGeneral2())
+            existed << player->getGeneral2Name();
+    }
+
+    const int max_choice = Config.value("MaxChoice", 5).toInt();
+    const int total = Sanguosha->getGeneralCount();
+    const int max_available = (total-existed.size()) / to_assign.length();
+    const int choice_count = qMin(max_choice, max_available);
+
+    QStringList choices = Sanguosha->getRandomGenerals(total-existed.size(), existed);
+    foreach(ServerPlayer *player, to_assign){
+        player->clearSelected();
+
+        for(int i=0; i<choice_count; i++){
+            QString choice = player->findReasonable(choices);
+            player->addToSelected(choice);
+            choices.removeOne(choice);
+        }
+    }
+}
+
+void Room::chooseGenerals(){
+    // for lord
+    QStringList lord_list;
+    if(mode == "08same")
+        lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+    else
+        lord_list = Sanguosha->getRandomLords();
+    ServerPlayer *the_lord = getLord();
+    QString general = askForGeneral(the_lord, lord_list);
+    the_lord->setGeneralName(general);
+    broadcastProperty(the_lord, "general", general);
+
+    if(mode == "08same"){
+        foreach(ServerPlayer *p, players){
+            if(!p->isLord())
+                p->setGeneralName(general);
+        }
+
+        Config.Enable2ndGeneral = false;
         return;
+    }
+
+    QList<ServerPlayer *> to_assign = players;
+    to_assign.removeOne(the_lord);
+    assignGeneralsForPlayers(to_assign);
+    foreach(ServerPlayer *player, to_assign){
+        askForGeneralAsync(player);
+    }
+    sem->acquire(to_assign.length());
+
+    if(Config.Enable2ndGeneral){
+        QList<ServerPlayer *> to_assign = players;
+        assignGeneralsForPlayers(to_assign);
+        foreach(ServerPlayer *player, to_assign){
+            askForGeneralAsync(player);
+        }
+        sem->acquire(to_assign.length());
+    }
+}
+
+void Room::run(){
+    // initialize random seed for later use
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
     /*
     if(Config.value("FreeAssign", false).toBool() && scenario == NULL
@@ -1389,15 +1416,38 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     prepareForStart();
 
+    bool using_countdown = true;
     if(_virtual || !property("to_test").toString().isEmpty())
-        timerEvent(NULL);
+        using_countdown = false;
 
-#ifndef QT_NO_DEBUG
-    left_seconds = 1;
-#endif
+    if(using_countdown){
+        for(int i=Config.CountDownSeconds; i>=0; i--){
+            broadcastInvoke("startInXs", QString::number(i));
+            sleep(1);
+        }
+    }
 
-    broadcastInvoke("startInXs", QString::number(left_seconds));
-    startTimer(1000);
+    if(scenario && !scenario->generalSelection())
+        startGame();
+    else if(mode == "06_3v3"){
+        thread_3v3 = new RoomThread3v3(this);
+        thread_3v3->start();
+
+        connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
+    }else if(mode == "02_1v1"){
+        thread_1v1 = new RoomThread1v1(this);
+        thread_1v1->start();
+
+        connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
+    }else if(mode == "04_1v3"){
+        HulaoPassThread *hulao_thread = new HulaoPassThread(this);
+        hulao_thread->start();
+
+        connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
+    }else{
+        chooseGenerals();
+        startGame();
+    }
 }
 
 void Room::assignRoles(){
@@ -1506,136 +1556,31 @@ int Room::getCardFromPile(const QString &card_pattern){
 }
 
 void Room::choose2Command(ServerPlayer *player, const QString &general_name){
-    if(!Config.Enable2ndGeneral || player->getGeneral2())
-        return;
+    const General *general = Sanguosha->getGeneral(general_name);
+    if(general == NULL){
+        GeneralSelector *selector = GeneralSelector::GetInstance();
+        QString choice = selector->selectSecond(player, player->getSelected());
+        general = Sanguosha->getGeneral(choice);
+    }
 
-    QString name = general_name;
-    if(name.isEmpty())
-        name = player->property("default_general2").toString();
-
-    player->setGeneral2Name(name);
+    player->setGeneral2Name(general->objectName());
     player->sendProperty("general2");
 
-    chosen_generals ++;
-    if(chosen_generals == player_count * 2){
-        startGame();
-    }
+    sem->release();
 }
 
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
-    if(player->getGeneral()){
-        // the player has chosen player, should ignore it
-        return;
-    }
-
-    QString name = general_name;
-    if(name.isEmpty())
-        name = player->property("default_general").toString();
-
-    player->setGeneralName(name);
-
-    const int max_choice = Config.value("MaxChoice", 5).toInt();
-    const int total = Sanguosha->getGeneralCount();
-
-    if(player->getRoleEnum() == Player::Lord){
-        broadcastProperty(player, "general");
-
-        if(Config.GameMode == "08same"){
-            foreach(ServerPlayer *p, players){
-                if(!p->isLord())
-                    p->setGeneralName(name);
-            }
-
-            Config.Enable2ndGeneral = false;
-            startGame();
-
-            return;
-        }
-
-        const int max_available = (total-1) / (player_count-1);
-        const int choice_count = qMin(max_choice, max_available);
-        QSet<QString> the_lord;
-        the_lord << player->getGeneralName();
-        QStringList general_list = Sanguosha->getRandomGenerals((player_count-1) * choice_count, the_lord);
-
-        int i,j;
-        for(i=1; i<player_count; i++){
-            QStringList choices;
-            for(j=0; j<choice_count; j++)
-                choices << general_list[(i-1)*choice_count + j];
-
-            ServerPlayer *p = players.at(i);
-
-            GeneralSelector *selector = GeneralSelector::GetInstance();
-            QString default_general = selector->selectFirst(p, choices);
-            if(p->getState() != "online"){
-                chooseCommand(p, default_general);
-            }else{
-                p->setProperty("default_general", default_general);
-                p->invoke("doChooseGeneral", choices.join("+"));
-            }
-        }
-    }else
-        player->sendProperty("general");
-
-    chosen_generals ++;
-    if(chosen_generals != player_count)
-        return;
-
-    if(!Config.Enable2ndGeneral){
-        startGame();
-        return;
-    }
-
-    const int max_available = (total - player_count) / player_count;
-    const int choice_count = qMin(max_choice, max_available);
-
-    QSet<QString> exists;
-    foreach(ServerPlayer *player, players){
-        exists << player->getGeneralName();
-    }
-
-    QStringList general_list = Sanguosha->getRandomGenerals(total - exists.size(), exists);
-    int i, j;
-    for(i=0; i<player_count; i++){
-        QStringList choices;
-        ServerPlayer *p = players.at(i);
-        for(j=0; j< choice_count; j++){
-            QString choice;
-            foreach(QString general, general_list){
-                if(!BanPair::isBanned(p->getGeneralName(), general)){
-                    choice = general;
-                    break;
-                }
-            }
-
-            if(choice.isNull())
-                choice = general_list.first();
-
-            general_list.removeOne(choice);
-            choices << choice;
-        }
-
+    const General *general = Sanguosha->getGeneral(general_name);
+    if(general == NULL){
         GeneralSelector *selector = GeneralSelector::GetInstance();
-        QString default_general2 = selector->selectSecond(p, choices);
-        if(p->getState() != "online"){
-            choose2Command(p, default_general2);
-        }else{
-            p->setProperty("default_general2", default_general2);
-            p->invoke("doChooseGeneral2", choices.join("+"));
-        }
-
-        if(Config.GameMode == "08same" && p->isLord()){
-            QString lord_general = p->getGeneralName();
-            foreach(ServerPlayer *p, players){
-                if(!p->isLord()){
-                    choose2Command(p, lord_general);
-                }
-            }
-
-            return;
-        }
+        QString choice = selector->selectFirst(player, player->getSelected());
+        general = Sanguosha->getGeneral(choice);
     }
+
+    player->setGeneral(general);
+    player->sendProperty("general");
+
+    sem->release();
 }
 
 void Room::speakCommand(ServerPlayer *player, const QString &arg){
@@ -2683,18 +2628,37 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         return findChild<ServerPlayer *>(player_name);
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals){
+void Room::askForGeneralAsync(ServerPlayer *player){
+    if(player->getState() != "online"){
+        if(player->getGeneral())
+            choose2Command(player, QString());
+        else
+            chooseCommand(player, QString());
+
+        return;
+    }
+
+    QStringList selected = player->getSelected();
+    const char *command = player->getGeneral() ? "doChooseGeneral2" : "doChooseGeneral";
+
+    player->invoke(command, selected.join("+"));
+}
+
+QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice){
+    if(default_choice.isEmpty())
+        default_choice = generals.at(qrand() % generals.length());
+
     if(player->getState() == "online"){
         player->invoke("askForGeneral", generals.join("+"));
         getResult("chooseGeneralCommand", player);
 
         if(result.isEmpty() || result == ".")
-            return generals.first();
+            return default_choice;
         else
             return result;
     }
 
-    return generals.first();
+    return default_choice;
 }
 
 void Room::kickCommand(ServerPlayer *player, const QString &arg){
