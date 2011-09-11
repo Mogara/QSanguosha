@@ -44,6 +44,7 @@ public:
     QString getVersionName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
+    QColor getKingdomColor(const QString &kingdom) const;
     QString getSetupString() const;
 
     QMap<QString, QString> getAvailableModes() const;

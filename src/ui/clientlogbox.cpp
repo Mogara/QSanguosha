@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "clientplayer.h"
 #include "client.h"
+#include "roomscene.h"
 
 #include <QPalette>
 
@@ -55,6 +56,11 @@ void ClientLogBox::appendLog(
     }
 
     if(!card_str.isEmpty()){
+        // do Indicator animation
+        foreach(QString to, tos){
+            RoomSceneInstance->showIndicator(from_general, to);
+        }
+
         const Card *card = Card::Parse(card_str);
         QString card_name = card->getLogName();
 
@@ -91,6 +97,8 @@ void ClientLogBox::appendLog(
 
         if(!to.isEmpty())
             log.append(tr(", target is %to"));
+
+
 
     }else
         log = Sanguosha->translate(type);

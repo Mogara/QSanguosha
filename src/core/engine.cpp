@@ -382,6 +382,19 @@ QStringList Engine::getKingdoms() const{
     return kingdoms;
 }
 
+QColor Engine::getKingdomColor(const QString &kingdom) const{
+    static QMap<QString, QColor> color_map;
+    if(color_map.isEmpty()){
+        color_map["wei"] = QColor(0x54, 0x79, 0x98);
+        color_map["shu"] = QColor(0xD0, 0x79, 0x6C);
+        color_map["wu"] = QColor(0x4D, 0xB8, 0x73);
+        color_map["qun"] = QColor(0x8A, 0x80, 0x7A);
+        color_map["god"] = QColor(0x96, 0x94, 0x3D);
+    }
+
+    return color_map.value(kingdom);
+}
+
 QString Engine::getSetupString() const{
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     QString flags;

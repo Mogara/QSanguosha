@@ -9,6 +9,7 @@
 #include "button.h"
 #include "cardcontainer.h"
 #include "recorder.h"
+#include "indicatoritem.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -60,10 +61,14 @@
 static QPointF DiscardedPos(-6, -2);
 static QPointF DrawPilePos(-102, -2);
 
+RoomScene *RoomSceneInstance;
+
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
     main_window(main_window), skill_dock(NULL)
 {
+    RoomSceneInstance = this;
+
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
     bool circular = Config.value("CircularView", false).toBool();
@@ -3120,16 +3125,28 @@ void RoomScene::doHuashen(const QString &name, const QStringList &args){
     Self->tag["Huashens"] = huashen_list;
 }
 
-#include "indicatoritem.h"
+void RoomScene::showIndicator(const QString &from, const QString &to){
+    if(Config.value("NoIndicator", false).toBool())
+        return;
 
-void RoomScene::doIndicate(const QString &name, const QStringList &args){
-    QGraphicsObject *obj1 = getAnimationObject(args.first());
-    QGraphicsObject *obj2 = getAnimationObject(args.last());
+    QGraphicsObject *obj1 = getAnimationObject(from);
+    QGraphicsObject *obj2 = getAnimationObject(to);
+
+    if(obj1 == NULL || obj2 == NULL || obj1 == obj2)
+        return;
+
+    if(obj1 == avatar)
+        obj1 = dashboard;
+
+    if(obj2 == avatar)
+        obj2 = dashboard;
 
     QPointF start = obj1->sceneBoundingRect().center();
     QPointF finish = obj2->sceneBoundingRect().center();
 
-    IndicatorItem *indicator = new IndicatorItem(start);
+    IndicatorItem *indicator = new IndicatorItem(start,
+                                                 finish,
+                                                 ClientInstance->getPlayer(from));
 
     qreal x = qMin(start.x(), finish.x());
     qreal y = qMin(start.y(), finish.y());
@@ -3137,10 +3154,11 @@ void RoomScene::doIndicate(const QString &name, const QStringList &args){
 
     addItem(indicator);
 
-    QPropertyAnimation *animation = new QPropertyAnimation(indicator, "finish");
-    animation->setEndValue(finish);
+    indicator->doAnimation();
+}
 
-    animation->start();
+void RoomScene::doIndicate(const QString &name, const QStringList &args){
+    showIndicator(args.first(), args.last());
 }
 
 void RoomScene::doAnimation(const QString &name, const QStringList &args){

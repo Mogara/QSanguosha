@@ -144,6 +144,7 @@ public:
     RoomScene(QMainWindow *main_window);
     void changeTextEditBackground();
     void adjustItems();
+    void showIndicator(const QString &from, const QString &to);
 
     static void FillPlayerNames(QComboBox *combobox, bool add_none);
 
@@ -349,5 +350,7 @@ private slots:
 signals:
     void restart();
 };
+
+extern RoomScene *RoomSceneInstance;
 
 #endif // ROOMSCENE_H
