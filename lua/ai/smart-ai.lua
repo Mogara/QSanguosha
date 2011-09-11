@@ -634,6 +634,16 @@ function SmartAI:getFriends(player)
 	end
 end
 
+function SmartAI:getEnemies(player)
+	if self:isFriend(self.player, player) then
+		return self.enemies
+	elseif self:isEnemy(self.player, player) then
+		return self.friends
+	else 
+		return {}
+	end
+end
+
 function SmartAI:isFriend(other, another)
 	if another then 
 		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
