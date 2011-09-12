@@ -281,6 +281,19 @@
        <string>Circular view</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="noIndicatorCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>100</y>
+        <width>95</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>No indicator</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="fontSetupGroupBox">
      <property name="geometry">

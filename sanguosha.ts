@@ -780,123 +780,128 @@
         <translation>环状视图</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="295"/>
+        <location filename="src/dialog/configdialog.ui" line="294"/>
+        <source>No indicator</source>
+        <translation>不显示指示线</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/configdialog.ui" line="308"/>
         <source>Font setup</source>
         <translation>字体设置</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="307"/>
+        <location filename="src/dialog/configdialog.ui" line="320"/>
         <source>Set application font</source>
         <translation>设置应用程序字体</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="320"/>
+        <location filename="src/dialog/configdialog.ui" line="333"/>
         <source>Application font</source>
         <translation>应用程序字体</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="368"/>
+        <location filename="src/dialog/configdialog.ui" line="381"/>
         <source>Font ...</source>
         <translation>字体 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="381"/>
+        <location filename="src/dialog/configdialog.ui" line="394"/>
         <source>Text edit font</source>
         <translation>文本框字体</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="397"/>
+        <location filename="src/dialog/configdialog.ui" line="410"/>
         <source>Color ...</source>
         <translation>颜色 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="404"/>
+        <location filename="src/dialog/configdialog.ui" line="417"/>
         <source>Game</source>
         <translation>游戏</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="422"/>
+        <location filename="src/dialog/configdialog.ui" line="435"/>
         <source>Nullification count down</source>
         <translation>无懈可击时间</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="432"/>
+        <location filename="src/dialog/configdialog.ui" line="445"/>
         <source> seconds</source>
         <translation> 秒</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="457"/>
+        <location filename="src/dialog/configdialog.ui" line="470"/>
         <source>Never nullify my single target trick</source>
         <translation>从不无懈自己的单体锦囊</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="466"/>
+        <location filename="src/dialog/configdialog.ui" line="479"/>
         <source>Contest mode</source>
         <translation>竞赛模式</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="481"/>
+        <location filename="src/dialog/configdialog.ui" line="494"/>
         <source>SMTP Server</source>
         <translation>SMTP 服务器</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="488"/>
+        <location filename="src/dialog/configdialog.ui" line="501"/>
         <source>SMTP server&apos;s address</source>
         <translation>SMTP 服务器的地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="495"/>
+        <location filename="src/dialog/configdialog.ui" line="508"/>
         <source>Sender</source>
         <translation>发送者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="502"/>
+        <location filename="src/dialog/configdialog.ui" line="515"/>
         <source>The sender&apos;s email address</source>
         <oldsource>The user name of SMTP server</oldsource>
         <translation>发送者的邮件地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="509"/>
+        <location filename="src/dialog/configdialog.ui" line="522"/>
         <source>Password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="516"/>
+        <location filename="src/dialog/configdialog.ui" line="529"/>
         <source>The password</source>
         <translation>密码</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="523"/>
+        <location filename="src/dialog/configdialog.ui" line="536"/>
         <source>Receiver</source>
         <translation>接收者</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="530"/>
+        <location filename="src/dialog/configdialog.ui" line="543"/>
         <source>The receiver&apos;s email address</source>
         <translation>接收者的电子邮件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.ui" line="546"/>
+        <location filename="src/dialog/configdialog.ui" line="559"/>
         <source>Only save the record of lord</source>
         <translation>仅保存主公的重放记录</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="80"/>
+        <location filename="src/dialog/configdialog.cpp" line="81"/>
         <source>Select a background image</source>
         <translation>请选择一个背景图片</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="82"/>
+        <location filename="src/dialog/configdialog.cpp" line="83"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图像 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="156"/>
+        <location filename="src/dialog/configdialog.cpp" line="159"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/configdialog.cpp" line="158"/>
+        <location filename="src/dialog/configdialog.cpp" line="161"/>
         <source>Audio files (*.wav *.mp3)</source>
         <translation>音频文件 (*.wav *.mp3)</translation>
     </message>
