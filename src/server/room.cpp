@@ -1444,9 +1444,10 @@ void Room::run(){
         connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
     }else if(mode == "04_1v3"){
         HulaoPassThread *hulao_thread = new HulaoPassThread(this);
-        hulao_thread->start();
-
-        connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
+        hulao_thread->run();
+        startGame();
+        //hulao_thread->start();
+        //connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
     }else{
         chooseGenerals();
         startGame();

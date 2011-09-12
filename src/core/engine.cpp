@@ -592,24 +592,13 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
-    if(Config.GameMode == "04_1v3"){
-        const Package *stdpack = findChild<const Package *>("standard");
-        QList<const Card *> stdcards = stdpack->findChildren<const Card *>();
-        QList<int> card_ids;
+    bool exclude_disaters = false;
 
-        foreach(const Card *card, stdcards){
-            if(card->inherits("Disaster"))
-                continue;
+    if(Config.GameMode == "06_3v3")
+        exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool();
 
-            card_ids << card->getId();
-        }
-
-        qShuffle(card_ids);
-        return card_ids;
-    }
-
-    bool exclude_disaters = Config.GameMode == "06_3v3"
-                            && Config.value("3v3/ExcludeDisasters", true).toBool();
+    if(Config.GameMode == "04_1v3")
+        exclude_disaters = true;
 
     QList<int> list;
     foreach(Card *card, cards){
