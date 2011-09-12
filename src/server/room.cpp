@@ -50,6 +50,7 @@ void Room::initCallbacks(){
     callbacks["replyYijiCommand"] = &Room::commonCommand;
     callbacks["replyGuanxingCommand"] = &Room::commonCommand;
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
+    callbacks["assignRolesCommand"] = &Room::commonCommand;
 
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
@@ -1108,7 +1109,28 @@ void Room::prepareForStart(){
                 player->setRole("rebel");
             broadcastProperty(player, "role");
         }
+    }else if(Config.value("FreeAssign", false).toBool() && owner->getState() == "online"){
+        owner->invoke("askForAssign");
+        getResult("assignRoles", owner);
+
+        if(result.isEmpty() || result == ".")
+            assignRoles();
+        else{
+            QStringList assignments = result.split("+");
+            for(int i=0; i<assignments.length(); i++){
+                QString assignment = assignments.at(i);
+                QStringList texts = assignment.split(":");
+                QString name = texts.value(0);
+                QString role = texts.value(1);
+
+                ServerPlayer *player = findChild<ServerPlayer *>(name);
+                setPlayerProperty(player, "role", role);
+
+                players.swap(i, players.indexOf(player));
+            }
+        }
     }else{
+
         assignRoles();
     }
 
@@ -1403,14 +1425,6 @@ void Room::chooseGenerals(){
 void Room::run(){
     // initialize random seed for later use
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-
-
-    if(Config.value("FreeAssign", false).toBool() && scenario == NULL
-       && !QRegExp("^\\d\\d_\\dv\\d$").exactMatch(mode) && owner->getState() == "online")
-    {
-        owner->invoke("askForAssign");
-        return;
-    }
 
     prepareForStart();
 

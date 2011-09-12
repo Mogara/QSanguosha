@@ -2182,52 +2182,58 @@
 <context>
     <name>RoleAssignDialog</name>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="15"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="16"/>
         <source>Assign roles and seats</source>
         <translation>自由分配身份和座位</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="40"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="41"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="41"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="42"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="42"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="43"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="43"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="44"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="45"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="46"/>
         <source>Move up</source>
         <translation>移上</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="46"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="47"/>
         <source>Move down</source>
         <translation>移下</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="47"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="48"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="84"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="79"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="94"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="85"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="79"/>
+        <source>The first assigned role must be lord!</source>
+        <translation>1号位必须是主公!</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/roleassigndialog.cpp" line="95"/>
         <source>The roles that you assigned is not comform the current game mode</source>
         <translation>您所分配的身份不符合当前游戏的身份设置</translation>
     </message>
@@ -2235,54 +2241,54 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="src/server/room.cpp" line="1125"/>
+        <location filename="src/server/room.cpp" line="1147"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1247"/>
+        <location filename="src/server/room.cpp" line="1269"/>
         <source>Reply player should be %1 instead of %2</source>
         <translation>回复玩家应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1280"/>
+        <location filename="src/server/room.cpp" line="1302"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1239"/>
+        <location filename="src/server/room.cpp" line="1261"/>
         <source>Reply function should be %1 instead of %2</source>
         <translation>回复函数应该是 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1147"/>
-        <location filename="src/server/room.cpp" line="1320"/>
+        <location filename="src/server/room.cpp" line="1169"/>
+        <location filename="src/server/room.cpp" line="1342"/>
         <source>Contestant</source>
         <translation>选手</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1148"/>
+        <location filename="src/server/room.cpp" line="1170"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <oldsource>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; leave the game&lt;/font&gt;</oldsource>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1259"/>
+        <location filename="src/server/room.cpp" line="1281"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1284"/>
+        <location filename="src/server/room.cpp" line="1306"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="1319"/>
+        <location filename="src/server/room.cpp" line="1341"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="2277"/>
+        <location filename="src/server/room.cpp" line="2291"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:

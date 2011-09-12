@@ -313,7 +313,6 @@ private slots:
     void doGongxin(const QList<int> &card_ids, bool enable_heart);
 
     void startAssign();
-    void finishAssign();
 
     // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);

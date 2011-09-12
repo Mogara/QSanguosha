@@ -8,6 +8,7 @@
 #include "player.h"
 #include "client.h"
 #include "engine.h"
+#include "roomscene.h"
 
 RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     :QDialog(parent)
@@ -73,17 +74,31 @@ void RoleAssignDialog::accept(){
     for(int i=0; i<list->count(); i++){
         QString name = list->item(i)->data(Qt::UserRole).toString();
         QString role = role_mapping.value(name);
+
+        if(i == 0 && role != "lord"){
+            QMessageBox::warning(this, tr("Warning"), tr("The first assigned role must be lord!"));
+            return;
+        }
+
         real_list << role;
         assignments << QString("%1:%2").arg(name).arg(role);
     }
 
+    role_list.sort();
+    real_list.sort();
+
     if(role_list == real_list){
-        QDialog::accept();
         ClientInstance->request("assignRoles " + assignments.join("+"));
+        QDialog::accept();
     }else{
         QMessageBox::warning(this, tr("Warning"),
                              tr("The roles that you assigned is not comform the current game mode"));
     }
+}
+
+void RoleAssignDialog::reject(){
+    ClientInstance->request("assignRoles .");
+    QDialog::reject();
 }
 
 void RoleAssignDialog::updateRole(int index){
@@ -92,6 +107,7 @@ void RoleAssignDialog::updateRole(int index){
     ClientPlayer *player = ClientInstance->getPlayer(name);
     QString text = QString("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
+    role_mapping[name] = role;
 }
 
 void RoleAssignDialog::updateRole(QListWidgetItem *current){
@@ -121,4 +137,9 @@ void RoleAssignDialog::moveDown(){
     QListWidgetItem *item = list->takeItem(index);
     list->insertItem(index + 1, item);
     list->setCurrentItem(item);
+}
+
+void RoomScene::startAssign(){
+    RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
+    dialog->exec();
 }

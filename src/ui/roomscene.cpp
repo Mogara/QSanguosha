@@ -3528,13 +3528,4 @@ void RoomScene::finishArrange(){
     ClientInstance->request("arrange " + names.join("+"));
 }
 
-#include "roleassigndialog.h"
 
-void RoomScene::startAssign(){
-    RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
-    dialog->exec();
-}
-
-void RoomScene::finishAssign(){
-
-}

@@ -14,6 +14,7 @@ public:
 
 protected:
     virtual void accept();
+    virtual void reject();
 
 private:
     QListWidget *list;
