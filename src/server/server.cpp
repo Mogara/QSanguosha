@@ -76,17 +76,19 @@ QWidget *ServerDialog::createBasicTab(){
 }
 
 QWidget *ServerDialog::createPackageTab(){
-    QGroupBox *box1 = new QGroupBox(tr("General package"));
-    QGroupBox *box2 = new QGroupBox(tr("Card package"));
-
-    box1->setLayout(new QVBoxLayout);
-    box2->setLayout(new QVBoxLayout);
-
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
     QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();
+
+    QGroupBox *box1 = new QGroupBox(tr("General package"));
+    QGroupBox *box2 = new QGroupBox(tr("Card package"));
+
+    QVBoxLayout *layout1 = new QVBoxLayout;
+    QVBoxLayout *layout2 = new QVBoxLayout;
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
 
     foreach(QString extension, extensions){
         const Package *package = Sanguosha->findChild<const Package *>(extension);
@@ -102,12 +104,12 @@ QWidget *ServerDialog::createPackageTab(){
 
         switch(package->getType()){
         case Package::GeneralPack: {
-                box1->layout()->addWidget(checkbox);
+                layout1->addWidget(checkbox);
                 break;
             }
 
         case Package::CardPack: {
-                box2->layout()->addWidget(checkbox);
+                layout2->addWidget(checkbox);
                 break;
             }
 
@@ -116,11 +118,14 @@ QWidget *ServerDialog::createPackageTab(){
         }
     }
 
+    layout1->addStretch();
+    layout2->addStretch();
+
     QWidget *widget = new QWidget;
-    QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(box1);
     layout->addWidget(box2);
-    layout->addStretch();
+
     widget->setLayout(layout);
     return widget;
 }

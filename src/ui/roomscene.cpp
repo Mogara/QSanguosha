@@ -3572,6 +3572,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateRole()));
     connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
     connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
 void RoleAssignDialog::accept(){
