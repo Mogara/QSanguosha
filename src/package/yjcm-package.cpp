@@ -432,7 +432,7 @@ public:
             Room *room = lingtong->getRoom();
 
             QString choice = room->askForChoice(lingtong, objectName(), "slash+damage+nothing");
-            room->playSkillEffect(objectName());
+
 
             if(choice == "slash"){
                 QList<ServerPlayer *> targets;
@@ -452,6 +452,8 @@ public:
                 card_use.to << target;
                 room->useCard(card_use, false);
             }else if(choice == "damage"){
+                room->playSkillEffect(objectName());
+
                 QList<ServerPlayer *> players = room->getOtherPlayers(lingtong), targets;
                 foreach(ServerPlayer *p, players){
                     if(lingtong->distanceTo(p) <= 1)
