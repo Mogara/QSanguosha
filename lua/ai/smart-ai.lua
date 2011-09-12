@@ -1687,6 +1687,27 @@ function SmartAI:getPeachNum()
 	return index
 end
 
+function SmartAI:getAllPeachNum()
+	local n = 0
+	for _, friend in ipairs(self.friends) do
+		n = n + self:getPeachNum(friend)
+	end
+	return n
+end
+
+function SmartAI:getAnalepticNum(player)
+	player = player or self.player
+	local n = 0
+	local cards = player:getCards("h")
+	for _, card in sgs.qlist(cards) do
+		if self:canViewAs(card, "Analeptic", player) then		
+			n = n + 1
+		end
+	end
+	return n
+end
+
+
 function SmartAI:useTrickCard(card, use)
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
