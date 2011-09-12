@@ -2647,11 +2647,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart){
 void RoomScene::createStateItem(){
     bool circular = Config.value("CircularView", false).toBool();
 
-    QPixmap state;
-    if(circular)
-        state=QPixmap("image/system/state2.png");
-    else
-        state=QPixmap("image/system/state.png");
+    QPixmap state("image/system/state.png");
 
     QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(-110, -90);
@@ -2690,7 +2686,7 @@ void RoomScene::createStateItem(){
     text_item->setDefaultTextColor(Qt::white);
 
     if(circular)
-        state_item->setPos(367, -338);
+        state_item->setPos(367, -320);
 
     if(ServerInfo.EnableAI){
         QRectF state_rect = state_item->boundingRect();
