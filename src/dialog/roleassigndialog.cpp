@@ -110,9 +110,15 @@ void RoleAssignDialog::updateRole(QListWidgetItem *current){
 }
 
 void RoleAssignDialog::moveUp(){
-
+    int index = list->currentRow();
+    QListWidgetItem *item = list->takeItem(index);
+    list->insertItem(index - 1, item);
+    list->setCurrentItem(item);
 }
 
 void RoleAssignDialog::moveDown(){
-
+    int index = list->currentRow();
+    QListWidgetItem *item = list->takeItem(index);
+    list->insertItem(index + 1, item);
+    list->setCurrentItem(item);
 }

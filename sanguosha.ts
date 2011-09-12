@@ -2182,49 +2182,54 @@
 <context>
     <name>RoleAssignDialog</name>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3533"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="15"/>
         <source>Assign roles and seats</source>
         <translation>自由分配身份和座位</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3546"/>
-        <source>Set general</source>
-        <translation>设置武将</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="3549"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="40"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3550"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="41"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3551"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="42"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3552"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="43"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3554"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="45"/>
         <source>Move up</source>
         <translation>移上</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3555"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="46"/>
         <source>Move down</source>
         <translation>移下</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3556"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="47"/>
         <source>OK</source>
         <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/roleassigndialog.cpp" line="84"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/roleassigndialog.cpp" line="85"/>
+        <source>The roles that you assigned is not comform the current game mode</source>
+        <translation>您所分配的身份不符合当前游戏的身份设置</translation>
     </message>
 </context>
 <context>
@@ -2277,7 +2282,7 @@
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="2291"/>
+        <location filename="src/server/room.cpp" line="2277"/>
         <source>Card can not parse:
  %1</source>
         <oldsource>Card can not parse:
@@ -2311,10 +2316,10 @@
         <location filename="src/ui/roomscene.cpp" line="2423"/>
         <location filename="src/ui/roomscene.cpp" line="2433"/>
         <location filename="src/ui/roomscene.cpp" line="2448"/>
-        <location filename="src/ui/roomscene.cpp" line="3210"/>
-        <location filename="src/ui/roomscene.cpp" line="3215"/>
-        <location filename="src/ui/roomscene.cpp" line="3240"/>
-        <location filename="src/ui/roomscene.cpp" line="3246"/>
+        <location filename="src/ui/roomscene.cpp" line="3211"/>
+        <location filename="src/ui/roomscene.cpp" line="3216"/>
+        <location filename="src/ui/roomscene.cpp" line="3241"/>
+        <location filename="src/ui/roomscene.cpp" line="3247"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2552,52 +2557,52 @@
         <translation>自由扔掉任意手牌和装备</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3197"/>
+        <location filename="src/ui/roomscene.cpp" line="3198"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3210"/>
+        <location filename="src/ui/roomscene.cpp" line="3211"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3215"/>
+        <location filename="src/ui/roomscene.cpp" line="3216"/>
         <source>This function is disabled in contest mode</source>
         <translation>此功能在竞赛模式下是禁用的</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3230"/>
+        <location filename="src/ui/roomscene.cpp" line="3231"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3231"/>
+        <location filename="src/ui/roomscene.cpp" line="3232"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3240"/>
+        <location filename="src/ui/roomscene.cpp" line="3241"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3246"/>
+        <location filename="src/ui/roomscene.cpp" line="3247"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3251"/>
+        <location filename="src/ui/roomscene.cpp" line="3252"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3251"/>
+        <location filename="src/ui/roomscene.cpp" line="3252"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3456"/>
+        <location filename="src/ui/roomscene.cpp" line="3457"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>
