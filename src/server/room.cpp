@@ -1111,7 +1111,7 @@ void Room::prepareForStart(){
         }
     }else if(Config.value("FreeAssign", false).toBool() && owner->getState() == "online"){
         owner->invoke("askForAssign");
-        getResult("assignRoles", owner);
+        getResult("assignRolesCommand", owner);
 
         if(result.isEmpty() || result == ".")
             assignRoles();
