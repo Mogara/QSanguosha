@@ -42,10 +42,13 @@ extern "C" {
     Package *NewWisdom();
 
     Package *NewStandardCard();
+    Package *NewStandardExCard();
     Package *NewManeuvering();
     Package *NewNostalgia();
     Package *NewYitianCard();
     Package *NewJoy();
+    Package *NewDisaster();
+    Package *NewJoyEquip();
 
     Scenario *NewGuanduScenario();
     Scenario *NewFanchengScenario();
@@ -83,10 +86,13 @@ Engine::Engine()
     }
 
     addPackage(NewStandardCard());
+    addPackage(NewStandardExCard());
     addPackage(NewManeuvering());
     addPackage(NewYitianCard());
     addPackage(NewNostalgia());
     addPackage(NewJoy());
+    addPackage(NewDisaster());
+    addPackage(NewJoyEquip());
 
     addScenario(NewGuanduScenario());
     addScenario(NewFanchengScenario());

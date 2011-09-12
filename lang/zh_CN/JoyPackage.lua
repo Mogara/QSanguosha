@@ -1,7 +1,9 @@
 -- translation for JoyPackage
 
 return {
-	["joy"] = "欢乐", 
+	["joy"] = "欢乐包", 
+	["disaster"] = "天灾包",
+	["joy_equip"] = "欢乐装备包",
 	["shit"] = "屎", 
 	[":shit"] = "当此牌在<font color='red'><b>你的回合</b></font>内从你的<font color='red'>手牌</font>进入<font color='red'>弃牌堆</font>时，\
 	你将受到自己对自己的1点伤害（黑桃为流失1点体力），其中方块为无属性伤害、梅花为雷电伤害、红桃为火焰伤害\

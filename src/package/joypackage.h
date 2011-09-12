@@ -11,6 +11,20 @@ public:
     JoyPackage();
 };
 
+class DisasterPackage: public Package{
+    Q_OBJECT
+
+public:
+    DisasterPackage();
+};
+
+class JoyEquipPackage: public Package{
+    Q_OBJECT
+
+public:
+    JoyEquipPackage();
+};
+
 class Shit:public BasicCard{
     Q_OBJECT
 
@@ -21,6 +35,8 @@ public:
 
     static bool HasShit(const Card *card);
 };
+
+
 
 // five disasters:
 
@@ -86,6 +102,13 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const;
+};
+
+class YxSword: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YxSword(Card::Suit suit = Club, int number = 9);
 };
 
 #endif // JOYPACKAGE_H

@@ -2,6 +2,7 @@
 
 local t = {
 	["standard_cards"] = "标准卡牌包",
+	["standard_ex_cards"] = "标准EX卡牌包",
 	["attack_card"] = "进攻牌", 
 	["defense_card"] = "防御牌", 
 	["recover_card"] = "恢复牌", 

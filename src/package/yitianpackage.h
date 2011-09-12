@@ -42,13 +42,6 @@ public:
     virtual void onMove(const CardMoveStruct &move) const;
 };
 
-class YxSword: public Weapon{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE YxSword(Card::Suit suit = Club, int number = 9);
-};
-
 class LianliCard: public SkillCard{
     Q_OBJECT
 
