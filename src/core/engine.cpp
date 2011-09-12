@@ -517,6 +517,25 @@ void Engine::getRoles(const QString &mode, char *roles) const{
     }
 }
 
+QStringList Engine::getRoleList(const QString &mode) const{
+    char roles[100];
+    getRoles(mode, roles);
+
+    QStringList role_list;
+    for(int i=0; roles[i] != '\0'; i++){
+        QString role;
+        switch(roles[i]){
+        case 'Z': role = "lord"; break;
+        case 'C': role = "loyalist"; break;
+        case 'N': role = "renegade"; break;
+        case 'F': role = "rebel"; break;
+        }
+        role_list << role;
+    }
+
+    return role_list;
+}
+
 int Engine::getCardCount() const{
     return cards.length();
 }

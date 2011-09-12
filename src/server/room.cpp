@@ -886,7 +886,7 @@ void Room::swapPile(){
     if(times == 6)
         gameOver(".");
     if(mode == "04_1v3"){
-        int limit = Config.BanPackages.contains("maneuvering") ? 3 : 2;
+        int limit = Config.BanPackages.contains("maneuvering") ? 2 : 3;
         if(times == limit)
             gameOver(".");
     }
@@ -1457,27 +1457,12 @@ void Room::run(){
 void Room::assignRoles(){
     int n = players.count(), i;
 
-    char roles[100];
-    Sanguosha->getRoles(mode, roles);
-
-    for(i=0; i<n; i++){
-        int r = qrand() % (n - i) + i;
-
-        qSwap(roles[i], roles[r]);
-    }
+    QStringList roles = Sanguosha->getRoleList(mode);
+    qShuffle(roles);
 
     for(i=0; i<n; i++){
         ServerPlayer *player = players[i];
-
-        QString role;
-        switch(roles[i]){
-        case 'Z': role = "lord"; break;
-        case 'C': role = "loyalist"; break;
-        case 'F': role = "rebel"; break;
-        case 'N': role = "renegade"; break;
-        }
-
-        Q_ASSERT(!role.isEmpty());
+        QString role = roles.at(i);
 
         player->setRole(role);
         if(role == "lord")

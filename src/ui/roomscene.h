@@ -63,26 +63,6 @@ private slots:
     void disableSource();
 };
 
-class RoleAssignDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    RoleAssignDialog(QWidget *parent);
-
-protected:
-    virtual void accept();
-
-private:
-    QListWidget *list;
-    QComboBox *role_combobox;
-
-private slots:
-    void setGeneral();
-    void updateRole();
-    void moveUp();
-    void moveDown();
-};
-
 class KOFOrderBox: public QGraphicsPixmapItem{
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
