@@ -42,17 +42,4 @@ private:
     mutable jmp_buf env;
 };
 
-class HulaoPassThread: public QThread{
-    Q_OBJECT
-
-public:
-    HulaoPassThread(Room *room);
-
-    virtual void run();
-
-private:
-    Room *room;
-};
-
-
 #endif // GAMERULE_H

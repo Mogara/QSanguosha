@@ -1130,7 +1130,6 @@ void Room::prepareForStart(){
             }
         }
     }else{
-
         assignRoles();
     }
 
@@ -1457,11 +1456,36 @@ void Room::run(){
 
         connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
     }else if(mode == "04_1v3"){
-        HulaoPassThread *hulao_thread = new HulaoPassThread(this);
-        hulao_thread->run();
+        ServerPlayer *lord = players.first();
+        setPlayerProperty(lord, "general", "shenlvbu1");
+
+        const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
+        const Package *windpack = Sanguosha->findChild<const Package *>("wind");
+
+        QList<const General *> generals = stdpack->findChildren<const General *>();
+        generals << windpack->findChildren<const General *>();
+
+        QStringList names;
+        foreach(const General *general, generals){
+            names << general->objectName();
+        }
+
+        names.removeOne("wuxingzhuge");
+        names.removeOne("zhibasunquan");
+
+        foreach(ServerPlayer *player, players){
+            if(player == lord)
+                continue;
+
+            qShuffle(names);
+            QStringList choices = names.mid(0, 3);
+            QString name = askForGeneral(player, choices);
+
+            setPlayerProperty(player, "general", name);
+            names.removeOne(name);
+        }
+
         startGame();
-        //hulao_thread->start();
-        //connect(hulao_thread, SIGNAL(finished()), this, SLOT(startGame()));
     }else{
         chooseGenerals();
         startGame();
