@@ -88,7 +88,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	local card = cards[1]
 	
 	if prompt == "@qiaobian-judge" then
-		if (self.player:containsTrick("supplyshortage") and self.player:getHp() > self.player:getHandcardNum()) or
+		if (self.player:containsTrick("supply_shortage") and self.player:getHp() > self.player:getHandcardNum()) or
 			(self.player:containsTrick("indulgence") and self.player:getHandcardNum() > self.player:getHp()-1) or
 			(self.player:containsTrick("lightning") and not self:hasWizard(self.friends) and self:hasWizard(self.enemies)) or
 			(self.player:containsTrick("lightning") and #self.friends > #self.enemies) then
