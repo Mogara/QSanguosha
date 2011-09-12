@@ -452,7 +452,7 @@ int Player::getMaxCards() const{
         QList<const Player *> players = parent()->findChildren<const Player *>();
         players.removeOne(this);
         foreach(const Player *player, players){
-            if(player->getKingdom() == "qun")
+            if(player->isAlive() && player->getKingdom() == "qun")
                 xueyi += 2;
         }
     }
