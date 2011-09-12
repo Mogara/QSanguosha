@@ -3038,6 +3038,26 @@ function SmartAI:getOverflow(player)
 	return math.max(player:getHandcardNum() - player:getHp(), 0)
 end
 
+function SmartAI:hasSuit(suit_strings, include_equip, player)
+	return self:getSuitNum(suit_strings, include_equip, player) > 0
+end
+
+function SmartAI:getSuitNum(suit_strings, include_equip, player)
+	player = player or self.player
+	local n = 0
+	local flag = "h"
+	if include_equip then flag = "he" end
+	local allcards = player:getCards(flag)	
+	for _, card in sgs.qlist(allcards) do
+		for _, suit_string in ipairs(suit_strings:split("|")) do
+			if card:getSuitString() == suit_string then
+				n = n + 1
+			end
+		end	
+	end
+	return n
+end
+
 function SmartAI:isWeak(player)
 	player = player or self.player
 	return player:getHp() <= 2 and player:getHandcardNum() <= 1 and not player:hasSkill("buqu")
