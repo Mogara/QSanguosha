@@ -76,7 +76,7 @@ Engine::Engine()
     addPackage(NewSP());
     addPackage(NewYJCM());
     addPackage(NewYitian());
-    addPackage(NewWisdom());
+    // addPackage(NewWisdom());
 
     {
         Package *test_package = new Package("test");
