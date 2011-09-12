@@ -57,13 +57,13 @@ sgs.ai_skill_use_func["TaichenCard"]=function(card,use,self)
 	local hcards = self.player:getHandcards()
 	for _, hcard in sgs.qlist(hcards) do
 		if hcard:inherits("Weapon") then 
-			if weapon then card_str = "@TaichenCard=" .. hcard:objectName():getId() end
+			if weapon then card_str = "@TaichenCard=" .. hcard:getId() end
 		end
 	end
 	
 	if not card_str then
 		if weapon and self.player:getOffensiveHorse() then
-			card_str = "@TaichenCard=" .. weapon:objectName():getId() 
+			card_str = "@TaichenCard=" .. weapon:getId() 
 		else
 			if self:isFriend(target) and self.player:getHp() > 2 then card_str = "@TaichenCard=." end
 			if self:isEnemy(target) and self.player:getHp() > 3 then card_str = "@TaichenCard=." end
