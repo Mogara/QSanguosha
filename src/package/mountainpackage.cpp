@@ -43,7 +43,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
             room->moveCardTo(Sanguosha->getCard(card_id), zhanghe, Player::Hand, false);
         }
     }else if(zhanghe->getPhase() == Player::Play){
-        ServerPlayer *from = targets.first();
+        PlayerStar from = targets.first();
         if(!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
 
@@ -74,9 +74,11 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, const QList<ServerPlay
         if(trick && trick->isVirtualCard())
             delete trick;
 
+        room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian");
         if(to)
             room->moveCardTo(card, to, place);
+        room->removeTag("QiaobianTarget");
     }
 }
 
