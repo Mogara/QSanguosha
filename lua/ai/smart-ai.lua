@@ -2376,6 +2376,14 @@ function SmartAI:askForCardChosen(who, flags, reason)
 				end
 			end
 		end
+		if flags:match("h") then
+			if not who:isKongcheng() then
+				local cards = who:getHandcards()
+				cards = sgs.QList2Table(cards)
+				self:sortByUseValue(cards)
+				return cards[1]:getId()
+			end
+		end
         
         if not who:isKongcheng() then
 			return -1

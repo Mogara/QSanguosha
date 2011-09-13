@@ -1,23 +1,20 @@
 --qiaobian
 local function card_for_qiaobian(self, who, return_prompt)
+	sgs.ai_skill_info.qiaobian["who"] = who
+	
 	local card, target
 	if self:isFriend(who) then
-		local friend = who
 		local judges = who:getCards("j")
 		if judges then
 			for _, judge in sgs.qlist(judges) do
-				if (judge:objectName() == "lightning" and not self:hasWizard(self.friends) and self:hasWizard(self.enemies)) or
-					(judge:objectName() == "indulgence" and friend:getHandcardNum()-1 > friend:getHp()) or
-					judge:objectName() == "supply_shortage" then
-					card = judge
-					break
+				card = judge
+				
+				if card and return_prompt:match("target") then
+					for _, enemy in ipairs(self.enemies) do
+						if not enemy:getCards("j") or not enemy:containsTrick(card:objectName()) then target = enemy break end
+					end
 				end
-			end
-			
-			if card and return_prompt:match("target") then
-				for _, enemy in ipairs(self.enemies) do
-					if not enemy:getCards("j") or not enemy:containsTrick(card:objectName()) then target = enemy break end
-				end
+				if target then break end
 			end
 		end
 		
@@ -69,15 +66,24 @@ local function card_for_qiaobian(self, who, return_prompt)
 	end
 end
 
-sgs.ai_skill_cardchosen.qiaobian = function(self, who)
-	return card_for_qiaobian(self, who, "card")
+sgs.ai_skill_cardchosen.qiaobian = function(self, who, flags)
+	if flags == "ej" then
+		return card_for_qiaobian(self, who, "card")
+	end
+end
+
+sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
+	local who = sgs.ai_skill_info.qiaobian["who"]
+	if who then
+		return card_for_qiaobian(self, who, "target")
+	end
 end
 
 sgs.ai_skill_info = {}
 
 sgs.ai_skill_info.qiaobian = 
 {
-	is_enemy = false,
+	who = nil,
 }
 
 sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
@@ -114,14 +120,12 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	
 	if prompt == "@qiaobian-play" then
 		if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
-		sgs.ai_skill_info.qiaobian["is_enemy"] = false
 		
 		self:sort(self.enemies, "hp")
 		local has_armor = true
 		local judge
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getCards("j") and card_for_qiaobian(self, friend, "card+target") then
-				sgs.ai_skill_info.qiaobian["is_enemy"] = true
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 		end	
@@ -161,16 +165,6 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	end
 	
 	return "."
-end
-
-sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
-	for _, target in sgs.qlist(targets) do
-		if sgs.ai_skill_info.qiaobian["is_enemy"] then 
-			if self:isEnemy(target) then return target end
-		else
-			if self:isFriend(target) then return target end
-		end
-	end
 end
 
 -- beige
