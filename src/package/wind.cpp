@@ -625,6 +625,7 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     Room *room = yuji->getRoom();
     room->setTag("Guhuoing", true);
 
+    yuji->addToPile("guhuo_pile", this->getEffectiveId(), false);
     room->moveCardTo(this, yuji, Player::Special, false);
 
     QList<ServerPlayer *> players = room->getOtherPlayers(yuji);
