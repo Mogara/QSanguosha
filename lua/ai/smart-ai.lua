@@ -1580,11 +1580,11 @@ function SmartAI:useCardIronChain(card, use)
 		end
 	end
 
-        use.card = card
+    use.card = card
 	
-	if targets[2] then
-                if use.to then use.to:append(targets[1]) end
-                if use.to then use.to:append(targets[2]) end
+	if targets[2] and not self.player:hasSkill("wuyan") then
+        if use.to then use.to:append(targets[1]) end
+        if use.to then use.to:append(targets[2]) end
 	end
 end
 
@@ -2975,6 +2975,17 @@ function SmartAI:getCardId(class_name, player)
 		skill_card = self:getSkillViewCard(card, class_name, true, player)
 		if skill_card then return skill_card end
 	end
+end
+
+function SmartAI:canViewAs(card,class_name,player)
+	player = player or self.player
+	local r1 = card:inherits(class_name) or self:getSkillViewCard(card,class_name,false,player)
+	local r2 = self:isCompulsoryView(card,"Slash",player)
+	if class_name == "Slash" then
+		return r1 or r2
+	else
+		return r1 and not r2
+	end 
 end
 
 function SmartAI:isCompulsoryView(card,class_name,player)
