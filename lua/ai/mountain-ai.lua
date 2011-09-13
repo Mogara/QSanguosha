@@ -1,7 +1,5 @@
 --qiaobian
 local function card_for_qiaobian(self, who, return_prompt)
-	sgs.ai_skill_info.qiaobian["who"] = who
-	
 	local card, target
 	if self:isFriend(who) then
 		local judges = who:getCards("j")
