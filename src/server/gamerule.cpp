@@ -625,11 +625,10 @@ bool BossMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event)
     {
-    case Death:{
+
+    case GameOverJudge:{
             const static QString evil = "lord+renegade";
             const static QString justice = "rebel+loyalist";
-
-            player->bury();
 
             QStringList alive_roles = room->aliveRoles(player);
             if(!alive_roles.contains("rebel") && !alive_roles.contains("loyalist")){
@@ -642,39 +641,19 @@ bool BossMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(damage)
                 killer = damage->from;
 
-            switch(player->getRoleEnum()){
-            case Player::Lord:{
-                    QString winner;
-                    if(!alive_roles.contains("renegade"))
+            if(player->isLord()){
+                QString winner;
+                if(!alive_roles.contains("renegade"))
+                    winner = justice;
+                else{
+                    if(killer == NULL || evil.contains(killer->getRole()))
                         winner = justice;
-                    else{
-                        if(killer == NULL || evil.contains(killer->getRole()))
-                            winner = justice;
-                        else
-                            winner = evil;
-                    }
-
-                    room->gameOver(winner);
-                    return true;
+                    else
+                        winner = evil;
                 }
 
-            case Player::Loyalist:{
-                    if(killer && killer->isLord()){
-                        killer->throwAllEquips();
-                        killer->throwAllHandCards();
-                    }
-
-                    break;
-                }
-
-            case Player::Rebel:{
-                    if(killer)
-                        killer->drawCards(3);
-                    break;
-                }
-
-            default:
-                break;
+                room->gameOver(winner);
+                return true;
             }
 
             break;
