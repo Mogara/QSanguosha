@@ -786,6 +786,8 @@ Server::Server(QObject *parent)
     server = new NativeServerSocket;
     server->setParent(this);
 
+    createNewRoom();
+
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -805,8 +807,6 @@ bool Server::listen(){
 
 void Server::daemonize(){
     server->daemonize();
-
-    createNewRoom();
 }
 
 Room *Server::createNewRoom(){
@@ -895,7 +895,7 @@ void Server::processRequest(char *request){
         }
     }
 
-    if(current->isFull())
+    if(current == NULL || current->isFull())
         createNewRoom();
 
     ServerPlayer *player = current->addSocket(socket);
