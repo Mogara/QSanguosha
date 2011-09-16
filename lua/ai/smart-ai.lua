@@ -1332,96 +1332,51 @@ function SmartAI:useCardByClassName(card, use)
 end
 
 function SmartAI:getSlashNumber(player)
+	player = player or self.player
 	local n = 0
-	if player:hasSkill("wusheng") then
-		local cards = player:getCards("he")
-		for _, card in sgs.qlist(cards) do
-			if card:isRed() or card:inherits("Slash") and not card:inherits("Peach") then			--no peach
-				n = n + 1
-			end
-		end
-	elseif player:hasSkill("wushen") then
-		local cards = player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:getSuit() == sgs.Card_Heart or card:inherits("Slash") then
-				n = n + 1
-			end
-		end
-	elseif player:hasSkill("jiejiu") then
-		local cards = player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:inherits("Analeptic") or card:inherits("Slash") then
-				n = n + 1
-			end
-		end	
-	elseif player:hasSkill("longdan") then
-		local cards = player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:inherits("Jink") or card:inherits("Slash") then
-				n = n + 1
-			end
-		end
-	else
-		local cards = player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:inherits("Slash") then
-				n = n + 1
-			end
-		end
-
-		local left = cards:length() - n
-		if player:hasWeapon("spear") then
-			n = n + math.floor(left/2)
+	local cards = player:getCards("h")
+	for _, card in sgs.qlist(cards) do
+		if self:canViewAs(card, "Slash", player) then		
+			n = n + 1
 		end
 	end
+	if player:hasWeapon("spear") then
+		n = n + math.floor((cards:length() - n)/2)
+	end	
+	cards = player:getCards("e")
+	for _, card in sgs.qlist(cards) do
+		if self:getSkillViewCard(card, "Slash", true, player) then		
+			n = n + 1
+		end
+	end
+	
+	if player:hasSkill("wushuang") then
+		n = n * 2
+	end
+	
+	if only_self then return n end
 
-	if player:isLord() and player:hasSkill("jijiang") then
+	if (player:isLord() or (player:hasSkill("weidi") and self.room:getLord():hasSkill("jijiang"))) and player:hasSkill("jijiang") then
 		local lieges = self.room:getLieges("shu", player)
 		for _, liege in sgs.qlist(lieges) do
-			if liege == "loyalist" then
+			if self:isFriend(liege, player) then
 				n = n + self:getSlashNumber(liege)
 			end
 		end
 	end
-
-	if player:hasSkill("wushuang") then
-		n = n * 2
-	end
-
+	
 	return n
 end
 
-function getJinkNumber(player,self)
-    local n = 0
-
-	local cards = player:getHandcards()
+function SmartAI:getJinkNumber(player, only_self)
+	player = player or self.player
+	local n = 0
+	local cards = player:getCards("h")
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Jink") then
+		if self:canViewAs(card, "Jink", player) then		
 			n = n + 1
 		end
-	end
-
-    if player:hasSkill("wushen") then
-        for _, card in sgs.qlist(cards) do
-			if card:inherits("Jink") and (card:getSuitString()=="heart") then
-				n = n - 1
-			end
-		end
-    end
-
-	if player:hasSkill("longdan") then
-		for _, card in sgs.qlist(cards) do
-			if card:inherits("Slash") then
-				n = n + 1
-			end
-		end
-	elseif player:hasSkill("qingguo") then
-		for _, card in sgs.qlist(cards) do
-			if card:isBlack() then
-				n = n + 1
-			end
-		end
-	end
+	end	
 
 	local armor = player:getArmor()
 	if armor and armor:objectName() == "eight_diagram" then
@@ -1431,22 +1386,17 @@ function getJinkNumber(player,self)
 		end
 	end
 
-    if not self then return n end
-
-	if player:isLord() and player:hasSkill("hujia") then
-		local lieges = self.room:getLieges("wei",player)
+  if only_self then return n end
+  
+	if (player:isLord() or (player:hasSkill("weidi") and self.room:getLord():hasSkill("hujia"))) and player:hasSkill("hujia") then
+		local lieges = self.room:getLieges("wei", player)
 		for _, liege in sgs.qlist(lieges) do
-			if liege:getRole() == "loyalist" then
+			if self:isFriend(liege, player) then
 				n = n + self:getJinkNumber(liege)
 			end
 		end
 	end
-
 	return n
-end
-
-function SmartAI:getJinkNumber(player)
-	return getJinkNumber(player,self)
 end
 
 function SmartAI:useCardDuel(duel, use)
