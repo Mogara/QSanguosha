@@ -819,7 +819,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *liushan) const{
         switch(liushan->getPhase()){
         case Player::Play: {
-                bool invoked = liushan->askForSkillInvoke(objectName());
+                bool invoked = (!liushan->isKongcheng() && liushan->askForSkillInvoke(objectName()));
                 if(invoked)
                     liushan->setFlags("fangquan");
                 return invoked;
