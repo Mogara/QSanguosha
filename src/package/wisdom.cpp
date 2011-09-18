@@ -353,32 +353,35 @@ WeidaiCard::WeidaiCard(){
     target_fixed = true;
 }
 
-void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *> &targets) const{
+void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *> &) const{
     if(sunce->hasFlag("drank"))
         return;
-    QList<ServerPlayer *> lieges = room->getLieges("wu", sunce);
-    lieges << sunce;
+    foreach(ServerPlayer *liege, room->getAlivePlayers()){
+        if(liege->getKingdom() == "wu" && !sunce->hasUsed("Analeptic"))
+            room->cardEffect(this, liege, sunce);
+    }
+}
+
+void WeidaiCard::onEffect(const CardEffectStruct &effect) const{
     const Card *analeptic = NULL;
-    foreach(ServerPlayer *liege, lieges){
-        analeptic = room->askForCard(liege, ".S29", "@weidai-analeptic");
-        if(analeptic){
-            LogMessage log;
-            log.type = "$Weidai";
-            log.from = liege;
-            log.card_str = analeptic->getEffectIdString();
-            room->sendLog(log);
+    Room *room = effect.from->getRoom();
+    analeptic = room->askForCard(effect.from, ".S29", "@weidai-analeptic");
+    if(analeptic){
+        LogMessage log;
+        log.type = "$Weidai";
+        log.from = effect.from;
+        log.card_str = analeptic->getEffectIdString();
+        room->sendLog(log);
 
-            Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
-            ana->setSkillName("weidai");
-            CardUseStruct use;
-            use.card = ana;
-            use.from = sunce;
-            use.to << sunce;
+        Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
+        ana->setSkillName("weidai");
+        CardUseStruct use;
+        use.card = ana;
+        use.from = effect.to;
+        use.to << effect.to;
 
-            room->useCard(use);
-
-            return;
-        }
+        room->useCard(use);
+        return;
     }
 }
 
@@ -397,7 +400,12 @@ public:
 
     virtual bool isEnabledAtPlay() const{
         return Self->hasLordSkill("weidai")
-                && !Self->hasUsed("Analeptic");
+                && !Self->hasUsed("Analeptic")
+                && !Self->hasUsed("WeidaiCard");
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "@@weidai";
     }
 
     virtual const Card *viewAs() const{
@@ -410,7 +418,6 @@ public:
     Weidai():TriggerSkill("weidai$"){
         events <<  AskForPeaches;
         default_choice = "ignore";
-
         view_as_skill = new WeidaiViewAsSkill;
     }
 
@@ -423,34 +430,7 @@ public:
         if(dying.who != sunce)
             return false;
 
-        Room *room = sunce->getRoom();
-        QList<ServerPlayer *> lieges = room->getLieges("wu", sunce);
-        if(lieges.isEmpty())
-            return false;
-
-        if(!room->askForSkillInvoke(sunce, objectName(), data))
-            return false;
-
-        foreach(ServerPlayer *liege, lieges){
-            const Card *analeptic = room->askForCard(liege, ".S29", "@weidai-analeptic");
-            if(analeptic){
-                LogMessage log;
-                log.type = "$Weidai";
-                log.from = liege;
-                log.card_str = analeptic->getEffectIdString();
-                room->sendLog(log);
-
-                CardEffectStruct effect;
-                Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
-                ana->setSkillName(objectName());
-                effect.card = ana;
-                effect.to = sunce;
-                effect.from = sunce;
-
-                room->cardEffect(effect);
-                break;
-            }
-        }
+        sunce->getRoom()->askForUseCard(sunce, "@@weidai", "@weidai");
 
         return false;
     }

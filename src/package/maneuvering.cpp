@@ -46,7 +46,7 @@ QString Analeptic::getEffectPath(bool ) const{
 }
 
 bool Analeptic::IsAvailable(const Player *player){
-    return ! player->hasUsed("Analeptic");
+    return !player->hasUsed("Analeptic") && !player->hasUsed("WeidaiCard");
 }
 
 bool Analeptic::isAvailable(const Player *player) const{
