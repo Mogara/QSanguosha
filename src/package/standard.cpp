@@ -70,25 +70,27 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
         Card::onUse(room, card_use);
 }
 
-void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void EquipCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     const EquipCard *equipped = NULL;
+    ServerPlayer *target = targets.value(0, source);
+    
     switch(location()){
-    case WeaponLocation: equipped = source->getWeapon(); break;
-    case ArmorLocation: equipped = source->getArmor(); break;
-    case DefensiveHorseLocation: equipped = source->getDefensiveHorse(); break;
-    case OffensiveHorseLocation: equipped = source->getOffensiveHorse(); break;
+    case WeaponLocation: equipped = target->getWeapon(); break;
+    case ArmorLocation: equipped = target->getArmor(); break;
+    case DefensiveHorseLocation: equipped = target->getDefensiveHorse(); break;
+    case OffensiveHorseLocation: equipped = target->getOffensiveHorse(); break;
     }
 
     if(equipped)
         room->throwCard(equipped);
 
     LogMessage log;
-    log.from = source;
+    log.from = target;
     log.type = "$Install";
     log.card_str = QString::number(getEffectiveId());
     room->sendLog(log);
 
-    room->moveCardTo(this, source, Player::Equip, true);
+    room->moveCardTo(this, target, Player::Equip, true);
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{
@@ -171,12 +173,8 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    if(target_fixed)
-        room->moveCardTo(this, source, Player::Judging, true);
-    else{
-        ServerPlayer *target = targets.first();
-        room->moveCardTo(this, target, Player::Judging, true);
-    }
+    ServerPlayer *target = targets.value(0, source);
+    room->moveCardTo(this, target, Player::Judging, true);
 }
 
 QString DelayedTrick::getSubtype() const{

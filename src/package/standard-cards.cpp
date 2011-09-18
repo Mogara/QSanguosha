@@ -854,10 +854,6 @@ bool Disaster::isAvailable(const Player *player) const{
     return ! player->isProhibited(player, this);
 }
 
-void Disaster::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
-    room->moveCardTo(this, source, Player::Judging);
-}
-
 Lightning::Lightning(Suit suit, int number):Disaster(suit, number){
     setObjectName("lightning");
 

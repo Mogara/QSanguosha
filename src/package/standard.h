@@ -211,7 +211,6 @@ public:
     Disaster(Card::Suit suit, int number);
 
     virtual bool isAvailable(const Player *player) const;
-    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
 class Lightning: public Disaster{
