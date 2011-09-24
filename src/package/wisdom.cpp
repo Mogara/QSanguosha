@@ -79,6 +79,7 @@ public:
             LogMessage log;
             log.type = "#Juao_get";
             log.from = player;
+            log.arg = objectName();
             log.to << xuyou;
             room->sendLog(log);
 
@@ -144,8 +145,9 @@ public:
         ServerPlayer *winner = pindian->from_card->getNumber() > pindian->to_card->getNumber() ? pindian->from : pindian->to;
         if(winner == xuyou){
             LogMessage log;
-            log.type = "#Shicai_draw";
+            log.type = "#TriggerSkill";
             log.from = xuyou;
+            log.arg = objectName();
             room->sendLog(log);
 
             xuyou->drawCards(1);
@@ -694,7 +696,7 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *tianfeng, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        damage.from = tianfeng;
+        damage.from = damage.to = tianfeng;
 
         LogMessage log;
         log.type = "#Yuweneffect";
