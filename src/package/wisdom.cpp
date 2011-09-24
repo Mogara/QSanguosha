@@ -244,7 +244,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
-        if(cards.isEmpty())
+        if(cards.length() != 2)
             return NULL;
         HouyuanCard *card = new HouyuanCard;
         card->addSubcards(cards);
