@@ -128,7 +128,8 @@ void Peach::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &t
     if(targets.isEmpty())
         room->cardEffect(this, source, source);
     else
-        room->cardEffect(this, source, targets.first());
+        foreach(ServerPlayer *tmp, targets)
+            room->cardEffect(this, source, tmp);
 }
 
 void Peach::onEffect(const CardEffectStruct &effect) const{
@@ -485,10 +486,10 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
     setObjectName("amazing_grace");
 }
 
-void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
+void AmazingGrace::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
     room->throwCard(this);
 
-    QList<ServerPlayer *> players = room->getAllPlayers();
+    QList<ServerPlayer *> players = targets.isEmpty() ? room->getAllPlayers() : targets;
     QList<int> card_ids = room->getNCards(players.length());
     room->fillAG(card_ids);
 

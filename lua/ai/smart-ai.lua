@@ -3150,6 +3150,7 @@ dofile "lua/ai/yitian-ai.lua"
 dofile "lua/ai/nostalgia-ai.lua"
 dofile "lua/ai/yjcm-ai.lua"
 dofile "lua/ai/sp-ai.lua"
+dofile "lua/ai/wisdom-ai.lua"
 dofile "lua/ai/joy-ai.lua"
 
 dofile "lua/ai/general_config.lua"
