@@ -1368,7 +1368,7 @@ function SmartAI:getSlashNumber(player)
 	return n
 end
 
-function getJinkNumber(player, only_self)
+function getJinkNumber(self, player, only_self)
 	player = player or self.player
 	local n = 0
 	local cards = player:getCards("h")
@@ -1400,7 +1400,7 @@ function getJinkNumber(player, only_self)
 end
 
 function SmartAI:getJinkNumber(player, only_self)
-	return getJinkNumber(player, only_self)
+	return getJinkNumber(self, player, only_self)
 end
 
 function SmartAI:useCardDuel(duel, use)
