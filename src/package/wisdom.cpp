@@ -239,8 +239,8 @@ public:
         return !to_select->isEquipped() && selected.length() < 2;
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return ! Self->hasUsed("HouyuanCard");
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("HouyuanCard");
     }
 
     virtual const Card *viewAs(const QList<CardItem *> &cards) const{
