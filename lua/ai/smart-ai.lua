@@ -1641,9 +1641,10 @@ function SmartAI:getPeachNum()
 	return index
 end
 
-function SmartAI:getAllPeachNum()
+function SmartAI:getAllPeachNum(player)
+	player = player or self.player
 	local n = 0
-	for _, friend in ipairs(self.friends) do
+	for _, friend in ipairs(self:getFriends(player)) do
 		n = n + self:getPeachNum(friend)
 	end
 	return n
@@ -2349,7 +2350,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
     return self:getCardRandomly(who, new_flag)							
 end
 
-function SmartAI:askForCard(pattern, prompt)
+function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	
 	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
@@ -2447,6 +2448,28 @@ function SmartAI:askForCard(pattern, prompt)
 			end
 		end
 		return self:getCardId("Jink") or "."
+	elseif pattern == ".basic" then
+		local effect = data:toCardEffect()
+		if self:isFriend(effect.to) then return "." end
+		local has_peach, has_anal, has_slash, slash_jink
+		for _, card in sgs.qlist(self.player:getHandcards()) do
+			if card:inherits("Peach") then has_peach = card
+			elseif card:inherits("Analeptic") then has_anal = card
+			elseif card:inherits("Slash") then has_slash = card
+			elseif card:inherits("Jink") then has_jink = card
+			end
+		end
+		
+		if has_slash then return "$" .. has_slash:getEffectiveId()
+		elseif has_jink then return "$" .. has_jink:getEffectiveId()
+		elseif has_anal or has_peach then 
+			if self:getJinkNumber(effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
+				if has_anal then return "$" .. has_anal:getEffectiveId()
+				else return "$" .. has_peach:getEffectiveId()
+				end
+			end
+		else return "." 
+		end
 	end
 
 	if parsedPrompt[1] == "double-sword-card" then 

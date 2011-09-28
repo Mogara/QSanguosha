@@ -167,7 +167,23 @@ end
 -- guzheng
 sgs.ai_skill_invoke.guzheng = function(self, data)
 	local player = self.room:getCurrent()	
-	return self:isFriend(player) or data:toInt() >= 3		
+	return (self:isFriend(player) and not self:hasSkills(sgs.need_kongcheng, player)) or data:toInt() >= 3		
+end
+
+sgs.ai_skill_askforag.guzheng = function(self, card_ids)
+	local who = self.room:getCurrent()
+	local cards = {}
+	for _, card_id in sgs.qlist(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(card_id))
+	end
+	
+	if self:isFriend(who) then
+		self:sortByUseValue(cards)
+	else
+		self:sortByUseValue(cards, true)
+	end
+	
+	return cards[1]:getEffectiveId()
 end
 
 --zhijian
@@ -274,8 +290,12 @@ end
 sgs.ai_skill_playerchosen.jixi = function(self, targets)
 	local choices = {}
 	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) and target:getCards("he") then table.insert(choices, target)
-		elseif self:isFriend(target) and target:getCards("j") then table.insert(choices, target)
+		if self:isEnemy(target) and target:getCards("he") 
+			and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), target) then 
+			table.insert(choices, target)
+		elseif self:isFriend(target) and target:getCards("j") 
+			and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), target) then 
+			table.insert(choices, target)
 		end
 	end
 	
@@ -287,7 +307,7 @@ end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
 	local cards = {}
-	for _, card_id in ipairs(card_ids) do
+	for _, card_id in sgs.qlist(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	

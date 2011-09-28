@@ -10,7 +10,7 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
     self:updatePlayers()
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
-		if self:objectiveLevel(enemy)>3 and not enemy:hasSkill("hongyan") then
+		if self:objectiveLevel(enemy)>3 and not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") and not enemy:hasSkill("hongyan") then
 			return "@LeijiCard=.->"..enemy:objectName() 
 		end
 		

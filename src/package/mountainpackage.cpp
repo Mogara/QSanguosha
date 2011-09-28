@@ -799,7 +799,7 @@ public:
             log.to << effect.to;
             room->sendLog(log);
 
-            return !room->askForCard(effect.from, ".basic", "@xiangle-discard");
+            return !room->askForCard(effect.from, ".basic", "@xiangle-discard", data);
         }
 
         return false;
