@@ -202,7 +202,7 @@ end
 
 sgs.ai_skill_askforag.buqu = function(self, card_ids)
 -- find duplicated one or the first
-	for i, card_id in sgs.qlist(card_ids) do
+	for i, card_id in ipairs(card_ids) do
 		for j, card_id2 in sgs.list(card_ids) do
 			if i ~= j and card_id == card_id2 then
 				return card_id
@@ -210,5 +210,5 @@ sgs.ai_skill_askforag.buqu = function(self, card_ids)
 		end
 	end
 
-	return card_ids:first()
+	return card_ids[1]
 end

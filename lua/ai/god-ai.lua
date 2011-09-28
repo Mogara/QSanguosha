@@ -95,4 +95,80 @@ function shenguanyu_ai:askForCard(pattern,prompt)
 	end    
 end
 
+--qixing
+sgs.ai_skill_askforag.qixing = function(self, card_ids)
+	local cards = {}
+	for _, card_id in ipairs(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(card_id))
+	end
+	for _, card in ipairs(cards) do
+		if card:inherits("Slash") then if self:getSlashNumber(self.player) == 0 then return card:getEffectiveId() end
+		elseif card:inherits("Jink") then if self:getJinkNumber(self.player) == 0 then return card:getEffectiveId() end
+		elseif card:inherits("Peach") then if self.player:isWounded() and self:getPeachNum() < self.player:getLostHp() then return card:getEffectiveId() end
+		elseif card:inherits("Analeptic") then if self:getAnalepticNum(self.player) == 0 then return card:getEffectiveId() end
+		elseif card:getTypeId() == sgs.Card_Trick then return card:getEffectiveId()
+		else return -1 end
+	end
+	return -1 
+end
+
+--kuangfeng
+sgs.ai_skill_invoke.kuangfeng = function(self, data)
+	local friendly_fire
+	for _, friend in ipairs(self.friends) do
+		local cards = friend:getHandcards()
+		for _, card in sgs.qlist(cards) do
+			if (card:inherits("FireAttack") and friend:getHandcardNum() >= 4) or card:inherits("FireSlash") then
+				friendly_fire = true
+				break
+			end
+		end
+		if friendly_fire then break end
+	end
+	
+	local is_chained = 0
+	local target = {}
+	for _, enemy in ipairs(self.enemies) do	
+		if enemy:isChained() then 
+			is_chained = is_chained + 1 
+			table.insert(target, enemy)
+		end
+		if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
+			table.insert(target, 1, enemy)
+			break
+		end
+	end
+	if is_chained > 1 or (target[1]:getArmor() and target[1]:getArmor():objectName() == "vine") then return true 
+	else return false
+	end
+end
+
+sgs.ai_skill_playerchosen.kuangfeng = function(self, targets)
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and (target:isChained() or (target:getArmor() and target:getArmor():objectName() == "vine")) then
+			return enemy
+		end
+	end
+	
+	return self.enemies[1]
+end
+
+--dawu
+sgs.ai_skill_invoke.dawu = function(self, data)
+	self:sort(self.friends, "hp")
+	for _, friend in ipairs(self.friends) do
+		if friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then return true end
+	end
+	
+	return false
+end
+
+sgs.ai_skill_playerchosen.dawu = function(self, targets)
+	for _, friend in sgs.qlist(targets) do
+		if self:isFriend(friend) and friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then return friend end
+	end
+	
+	return self.friends[1]
+end
+	
 sgs.ai_skill_invoke.lianpo = true
