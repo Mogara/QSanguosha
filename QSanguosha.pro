@@ -5,6 +5,11 @@ TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
 CONFIG += warn_on audio joystick qaxcontainer
+
+macx {
+    CONFIG -= joystick # in Mac, we do not support joystick currently
+}
+
 SOURCES += src/main.cpp \
 	src/client/aux-skills.cpp \
 	src/client/client.cpp \
@@ -183,15 +188,19 @@ win32{
     LIBS += -L. -llua -lm
 }
 
-unix {
+unix:!macx {
     LIBS += -lm -llua
+}
+
+macx {
+    LIBS += -L. -lm -llua5.1
 }
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/irrKlang
     win32: LIBS += irrKlang.lib
-    unix: LIBS += -lphonon
+    unix: QT += phonon
 }
 
 CONFIG(joystick){
