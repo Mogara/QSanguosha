@@ -173,7 +173,7 @@ end
 sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	local who = self.room:getCurrent()
 	local cards = {}
-	for _, card_id in sgs.qlist(card_ids) do
+	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	
@@ -307,7 +307,7 @@ end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
 	local cards = {}
-	for _, card_id in sgs.qlist(card_ids) do
+	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	
