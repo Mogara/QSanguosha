@@ -654,7 +654,10 @@ function SmartAI:isFriend(other, another)
     return false
 end
 
-function SmartAI:isEnemy(other)
+function SmartAI:isEnemy(other, another)
+	if another then 
+		if self.lua_ai:isEnemy(other) and self.lua_ai:isEnemy(another) then return true end
+	end
     if useDefaultStrategy() then return self.lua_ai:isEnemy(other) end
     if (self.player:objectName())==(other:objectName()) then return false end 
 	if self:objectiveLevel(other)>0 then return true end
@@ -696,7 +699,7 @@ sgs.ai_skill_invoke = {
 	kylin_bow = function(self, data)	
 		local effect = data:toSlashEffect()
 		
-		if effect.to:hasSkill("xiaoji") or effect.to:hasSkill("xuanfeng") then
+		if self:hasSkills(sgs.lose_equip_skill, effect.to) then
 			return self:isFriend(effect.to)
 		end
 		
@@ -719,17 +722,7 @@ end
 function SmartAI:askForYiji(cards)
     self:sort(self.friends_noself,"handcard")
 		
-	if self.player:getHandcardNum()>3 then
-		if #self.friends_noself>0 then
-			return self.friends_noself[1],cards[1]
-		end
-	end
-	
---	if true then
---		return nil, -1
---	end
-	
-    if self.player:getHandcardNum()<2 then
+    if self.player:getHandcardNum()<=2 then
 		return nil, -1
 	end
 	
@@ -756,7 +749,7 @@ function SmartAI:askForYiji(cards)
 						return friend, card_id 
 					end 
 				end
-				if friend:hasSkill("xiaoji") or friend:hasSkill("xuanfeng") then 
+				if self:hasSkills(sgs.lose_equip_skill, friend) then 
 					if card:inherits("EquipCard") then return friend, card_id end 
 				end
 				if friend:hasSkill("guose") then 
@@ -830,6 +823,12 @@ function SmartAI:slashIsEffective(slash, to)
 		elseif armor:objectName() == "vine" then
 			return slash:inherits("NatureSlash") or self.player:hasWeapon("fan")
 		end
+	end
+	
+	if to:hasSkill("shenjun") and 
+		(to:getGeneral():isMale() ~= self.player:getGeneral():isMale()) and 
+		not slash:inherits("ThunderSlash") then 
+		return false 
 	end
 
 	return true
@@ -1201,7 +1200,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		--if equips or not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then			--not all conditions
 		
 		    if  not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) and					---update
-			   (not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
+			   (not self:hasSkills(sgs.lose_equip_skill, enemy) or enemy:getEquips():isEmpty()) then                   
 				if enemy:getHandcardNum() == 1 then
 					if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
 				end
@@ -1267,7 +1266,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do		    
 		if  not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and					---update
-			(not enemy:hasSkill("xiaoji") or enemy:getEquips():isEmpty()) then                   
+			(not self:hasSkills(sgs.lose_equip_skill, enemy) or enemy:getEquips():isEmpty()) then                   
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
 			end       
@@ -1290,19 +1289,22 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		diamond = true,
 	}
 
+	local targets_succ = {}
+	local targets_fail = {}
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:getEffectiveId() ~= fire_attack:getEffectiveId() and not card:inherits("Peach") then					--do not use peach answer the fireattack
-			lack[card:getSuitString()] = nil
+		if card:getEffectiveId() ~= fire_attack:getEffectiveId() then
+			lack[card:getSuitString()] = false
 		end
 	end	
 	
 	if self.player:hasSkill("hongyan") then
 		lack["spade"] = true
 	end
-	self:sort(self.enemies,"defense")
+	
+	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng()  and self:hasTrickEffective(fire_attack, enemy) then							----no xushu
+		if (self:objectiveLevel(enemy)>3) and not enemy:isKongcheng() and self:hasTrickEffective(fire_attack, enemy) then	
 			
 			local cards = enemy:getHandcards()
 			local success = true
@@ -1313,13 +1315,27 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 				end
 			end
 
-			if success or self.player:getHandcardNum()-1>=self.player:getHp() then
-				use.card = fire_attack
-				if use.to then use.to:append(enemy) end
-				return
+			if success then
+				if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
+					table.insert(targets_succ, 1, enemy) 
+					break
+				else
+					table.insert(targets_succ, enemy)
+				end
+			else
+				table.insert(targets_fail, enemy)
 			end
 		end
 	end
+	
+	if #targets_succ > 0 then
+		use.card = fire_attack
+		if use.to then use.to:append(targets_succ[1]) end
+	elseif #targets_fail > 0 and self:getOverflow(self.player) > 0 then
+		use.card = fire_attack
+		local r = math.random(1, #targets_fail)
+		if use.to then use.to:append(targets_fail[r]) end
+	end		
 end
 
 function SmartAI:useCardByClassName(card, use)
@@ -1472,7 +1488,7 @@ function SmartAI:useCardCollateral(card, use)
 	self:sort(self.enemies,"threat")
 	
 	for _, friend in ipairs(self.friends_noself) do												
-		if friend:getWeapon() and friend:hasSkill("xiaoji") then
+		if friend:getWeapon() and self:hasSkills(sgs.lose_equip_skill, friend) then
 			
 			for _, enemy in ipairs(self.enemies) do
 				if friend:canSlash(enemy) then
@@ -1490,7 +1506,7 @@ function SmartAI:useCardCollateral(card, use)
 	for _, enemy in ipairs(self.enemies) do
 		if not self.room:isProhibited(self.player, enemy, card) 
 			and self:hasTrickEffective(card, enemy)
-			and not enemy:hasSkill("xiaoji")					
+			and not self:hasSkill(sgs.lose_equip_skill, enemy)					
 			and not enemy:hasSkill("weimu")						
 			and enemy:getWeapon() then
 			
@@ -1929,7 +1945,7 @@ function SmartAI:getUseValue(card)
 	
 	if card:inherits("EquipCard") then 
 		if self:hasEquip(card) then return 9 end
-		if self.player:hasSkill("xiaoji") or self.player:hasSkill("xuanfeng") then return 9 end
+		if self:hasSkills(sgs.lose_equip_skill) then return 9 end
 		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
 		if card:inherits("Armor") and not self.player:getArmor() then v = 8.9
 		elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 6.2
@@ -1971,7 +1987,7 @@ function SmartAI:getUsePriority(card)
 	local class_name = card:className()
 	local v=0
 	if card:inherits("EquipCard") then
-		if self.player:hasSkill("xiaoji") then return 10 end
+		if self:hasSkill(sgs.lose_equip_skill) then return 10 end
         if card:inherits("Armor") and not self.player:getArmor() then v = 6
         elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 5.7
         elseif card:inherits("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
@@ -2262,7 +2278,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		
 		if flags:match("e") then
 			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
-			if who:hasSkill("xiaoji") then
+			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then
 					return equips:at(0):getId()

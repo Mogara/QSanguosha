@@ -12,18 +12,37 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
-	if self.player:hasSkill("yongsi") or self.player:hasSkill("jijiang") then
+	if not self.player:hasLordSkill("jijiang") then
 		if self:getSlashNumber(self.player) <= 0 then return "ignore" end
 	end
-    if self:isFriend(self.room:getLord()) then return "accept" end
+	
+	if self.player:isLord() then
+		local target
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if player:hasSkill("weidi") then 
+				target = player
+				break
+			end
+		end
+		if target and self:isEnemy(target) then return "ignore" end
+    elseif self:isFriend(self.room:getLord()) then return "accept" end
     return "ignore"
 end
 
 sgs.ai_skill_choice.hujia = function(self , choices)
-	if self.player:hasSkill("yongsi") or self.player:hasSkill("hujia") then
+	if not self.player:hasLordSkill("hujia") then
 		if self:getJinkNumber(self.player) <= 0 then return "ignore" end
-	end
-    if self:isFriend(self.room:getLord()) then return "accept" end
+	end	
+	if self.player:isLord() then
+		local target
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if player:hasSkill("weidi") then 
+				target = player
+				break
+			end
+		end
+		if target and self:isEnemy(target) then return "ignore" end
+    elseif self:isFriend(self.room:getLord()) then return "accept" end
     return "ignore"
 end
 
