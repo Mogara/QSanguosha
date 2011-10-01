@@ -379,6 +379,8 @@ public:
                 if(dying_data.damage == NULL || dying_data.damage->nature == DamageStruct::Normal)
                     room->setPlayerProperty(pangtong, "chained", false);
             }
+            if(!pangtong->faceUp())
+                pangtong->turnOver();
         }
 
         return false;

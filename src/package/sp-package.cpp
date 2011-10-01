@@ -32,7 +32,7 @@ public:
         }
         if(targets.isEmpty()) return false;
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        if(!room->askForCard(target, "jink", "@moon-spear-jink", data))
+        if(!room->askForCard(target, "jink", "@moon-spear-jink"))
             room->loseHp(target);
 
         return false;
