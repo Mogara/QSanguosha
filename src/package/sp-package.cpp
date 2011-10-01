@@ -32,9 +32,12 @@ public:
         }
         if(targets.isEmpty()) return false;
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName());
-        if(!room->askForCard(target, "jink", "@moon-spear-jink"))
-            room->loseHp(target);
-
+        if(!room->askForCard(target, "jink", "@moon-spear-jink")){
+            DamageStruct damage;
+            damage.from = player;
+            damage.to = target;
+            room->damage(damage);
+        }
         return false;
     }
 };
