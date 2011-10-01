@@ -92,13 +92,17 @@ void Card::setNumber(int number){
     this->number = number;
 }
 
-QString Card::getNumberString() const{
+QString Card::Number2String(int number){
     if(number == 10)
         return "10";
     else{
         static const char *number_string = "-A23456789-JQK";
         return QString(number_string[number]);
     }
+}
+
+QString Card::getNumberString() const{
+    return Number2String(number);
 }
 
 Card::Suit Card::getSuit() const{

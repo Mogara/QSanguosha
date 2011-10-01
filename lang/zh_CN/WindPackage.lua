@@ -53,6 +53,9 @@ return {
 	
 	["#KuangguRecover"] = "%from 的锁定技【狂骨】被触发，恢复了 %arg 点体力",
 	["@guidao-card"] = "请使用【鬼道】技能来修改 %src 的 %arg 判定",
+	["#BuquDuplicate"] = "%from 不屈失败，因为其不屈牌中有 %arg 组重复点数",
+	["#BuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
+	["$BuquDuplicateItem"] = "不屈重复牌: %card",	
 	
 	-- last words
 	["~caoren"] = "实在是守不住了……",

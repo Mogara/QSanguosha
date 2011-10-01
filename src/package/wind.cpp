@@ -477,18 +477,52 @@ public:
             if(zhoutai->getHp() > 0)
                 return false;
 
+            QList<int> duplicate_numbers;
+
             QSet<int> numbers;
             foreach(int card_id, buqu){
                 const Card *card = Sanguosha->getCard(card_id);
-                numbers << card->getNumber();
+                int number = card->getNumber();
+
+                if(numbers.contains(number)){
+                    duplicate_numbers << number;
+                }else
+                    numbers << number;
             }
 
-            bool duplicated = numbers.size() < buqu.size();
-            if(!duplicated){
+            if(duplicate_numbers.isEmpty()){
                 QString choice = room->askForChoice(zhoutai, objectName(), "alive+dead");
                 if(choice == "alive"){
                     room->playSkillEffect(objectName());
                     return true;
+                }
+            }else{
+                LogMessage log;
+                log.type = "#BuquDuplicate";
+                log.from = zhoutai;
+                log.arg = QString::number(duplicate_numbers.length());
+                room->sendLog(log);
+
+                for(int i=0; i<duplicate_numbers.length(); i++){
+                    int number = duplicate_numbers.at(i);
+
+                    LogMessage log;
+                    log.type = "#BuquDuplicateGroup";
+                    log.from = zhoutai;
+                    log.arg = QString::number(i+1);
+                    log.arg2 = Card::Number2String(number);
+                    room->sendLog(log);
+
+                    foreach(int card_id, buqu){
+                        const Card *card = Sanguosha->getCard(card_id);
+                        if(card->getNumber() == number){
+                            LogMessage log;
+                            log.type = "$BuquDuplicateItem";
+                            log.from = zhoutai;
+                            log.card_str = QString::number(card_id);
+                            room->sendLog(log);
+                        }
+                    }
                 }
             }
         }
