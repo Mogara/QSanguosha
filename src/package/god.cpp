@@ -1085,19 +1085,20 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
-                && target->getPhase() == Player::NotActive
-                && target->getMark("lianpo") > 0;
+        return target->getPhase() == Player::NotActive;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shensimayi) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        ServerPlayer *shensimayi = room->findPlayerBySkillName("lianpo");
+        if(shensimayi == NULL || shensimayi->getMark("lianpo") <= 0)
+            return false;
+
         int n = shensimayi->getMark("lianpo");
         shensimayi->setMark("lianpo", 0);
 
         if(!shensimayi->askForSkillInvoke("lianpo"))
             return false;
-
-        Room *room = shensimayi->getRoom();
 
         LogMessage log;
         log.type = "#LianpoCanInvoke";
