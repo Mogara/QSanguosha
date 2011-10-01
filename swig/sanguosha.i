@@ -181,6 +181,7 @@ public:
 	void jilei(const char *type);
     bool isJilei(const Card *card) const;
 	QList<const Skill *> getVisibleSkillList() const;
+	QList<const Player *> getSiblings() const;
 };
 
 %extend Player{

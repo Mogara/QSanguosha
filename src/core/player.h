@@ -193,6 +193,8 @@ public:
     bool isCaoCao() const;
     void copyFrom(Player* p);
 
+    QList<const Player *> getSiblings() const;
+
     QVariantMap tag;
 
 protected:
