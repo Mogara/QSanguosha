@@ -90,3 +90,9 @@ sgs.ai_skill_invoke.xiuluo = function(self, data)
 	
 	return false
 end
+
+-- chujia
+sgs.ai_skill_invoke.chujia = function(self, data)
+	local lord = self.room:getLord()
+	return lord:getKingdom() == "shu"
+end
