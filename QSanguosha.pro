@@ -34,6 +34,7 @@ SOURCES += src/main.cpp \
 	src/dialog/mainwindow.cpp \
 	src/dialog/packagingeditor.cpp \
 	src/dialog/playercarddialog.cpp \
+	src/dialog/roleassigndialog.cpp \
 	src/dialog/scenario-overview.cpp \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
@@ -75,6 +76,7 @@ SOURCES += src/main.cpp \
 	src/ui/carditem.cpp \
 	src/ui/clientlogbox.cpp \
 	src/ui/dashboard.cpp \
+	src/ui/indicatoritem.cpp \
 	src/ui/photo.cpp \
 	src/ui/pixmap.cpp \
 	src/ui/rolecombobox.cpp \
@@ -84,9 +86,7 @@ SOURCES += src/main.cpp \
 	src/util/detector.cpp \
 	src/util/nativesocket.cpp \
         src/util/recorder.cpp \
-        swig/sanguosha_wrap.cxx \
-    src/ui/indicatoritem.cpp \
-    src/dialog/roleassigndialog.cpp
+        swig/sanguosha_wrap.cxx
 	
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -111,6 +111,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/mainwindow.h \
 	src/dialog/packagingeditor.h \
 	src/dialog/playercarddialog.h \
+	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
 	src/package/firepackage.h \
 	src/package/god.h \
@@ -153,6 +154,7 @@ HEADERS += src/client/aux-skills.h \
 	src/ui/carditem.h \
 	src/ui/clientlogbox.h \
 	src/ui/dashboard.h \
+	src/ui/indicatoritem.h \
 	src/ui/photo.h \
 	src/ui/pixmap.h \
 	src/ui/rolecombobox.h \
@@ -162,9 +164,7 @@ HEADERS += src/client/aux-skills.h \
 	src/util/detector.h \
 	src/util/nativesocket.h \
 	src/util/recorder.h \
-	src/util/socket.h \ 
-    src/ui/indicatoritem.h \
-    src/dialog/roleassigndialog.h
+	src/util/socket.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \

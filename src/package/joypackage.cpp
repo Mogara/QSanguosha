@@ -152,7 +152,8 @@ void Earthquake::takeEffect(ServerPlayer *target) const{
     Room *room = target->getRoom();
     QList<ServerPlayer *> players = room->getAllPlayers();
     foreach(ServerPlayer *player, players){
-        if(target->distanceTo(player) <= 1){
+        if(target->distanceTo(player) <= 1 ||
+           (player->getDefensiveHorse() && target->distanceTo(player) <= 2)){
             if(player->getEquips().isEmpty()){
                 room->setEmotion(player, "good");
             }else{
@@ -184,7 +185,9 @@ void Volcano::takeEffect(ServerPlayer *target) const{
     QList<ServerPlayer *> players = room->getAllPlayers();
 
     foreach(ServerPlayer *player, players){
-        int point = 2 - target->distanceTo(player);
+        int point = player->getDefensiveHorse() && target != player ?
+                    3 - target->distanceTo(player) :
+                    2 - target->distanceTo(player);
         if(point >= 1){
             DamageStruct damage;
             damage.card = this;
