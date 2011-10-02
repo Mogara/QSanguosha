@@ -418,7 +418,7 @@ public:
 class Weidai: public TriggerSkill{
 public:
     Weidai():TriggerSkill("weidai$"){
-        events <<  AskForPeaches;
+        events << Dying;
         default_choice = "ignore";
         view_as_skill = new WeidaiViewAsSkill;
     }
