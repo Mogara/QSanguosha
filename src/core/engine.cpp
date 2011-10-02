@@ -295,8 +295,8 @@ const CardPattern *Engine::getPattern(const QString &name) const{
 
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
     QList<const Skill *> skills;
-    foreach(QString skill_name, related_skills.values(skill_name))
-        skills << getSkill(skill_name);
+    foreach(QString name, related_skills.values(skill_name))
+        skills << getSkill(name);
 
     return skills;
 }

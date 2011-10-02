@@ -126,10 +126,6 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start){
     }
 }
 
-bool RoomThread::inSkillSet(const TriggerSkill *skill) const{
-    return skillSet.contains(skill);
-}
-
 void RoomThread::constructTriggerTable(const GameRule *rule){
     foreach(ServerPlayer *player, room->players){
         addPlayerSkills(player, false);
@@ -323,8 +319,9 @@ bool RoomThread::trigger(TriggerEvent event, ServerPlayer *target){
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill){
-    if(inSkillSet(skill))
+    if(skillSet.contains(skill))
         return;
+
     skillSet << skill;
 
     QList<TriggerEvent> events = skill->getTriggerEvents();
@@ -333,6 +330,13 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
 
         table << skill;
         qStableSort(table.begin(), table.end(), CompareByPriority);
+    }
+
+    if(skill->isVisible()){
+        foreach(const Skill *skill, Sanguosha->getRelatedSkills(skill->objectName())){
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            addTriggerSkill(trigger_skill);
+        }
     }
 }
 

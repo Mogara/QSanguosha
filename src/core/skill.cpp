@@ -197,10 +197,12 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
 }
 
 int TriggerSkill::getPriority() const{
-    if(frequency == Compulsory)
-        return 2;
-    else
+    switch(frequency){
+    case Compulsory:
+    case Wake: return 2;
+    default:
         return 1;
+    }
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{

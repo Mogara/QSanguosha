@@ -31,7 +31,6 @@ public:
     bool trigger(TriggerEvent event, ServerPlayer *target);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
-    bool inSkillSet(const TriggerSkill *skill) const;
 
     void addTriggerSkill(const TriggerSkill *skill);
     void delay(unsigned long msecs = 1000);
