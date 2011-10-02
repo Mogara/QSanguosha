@@ -925,8 +925,18 @@ public:
         DamageStar damage = data.value<DamageStar>();
         ServerPlayer *killer = damage ? damage->from : NULL;
 
-        if(killer && killer->hasSkill("lianpo"))
+        if(killer && killer->hasSkill("lianpo")){
             killer->addMark("lianpo");
+
+            LogMessage log;
+            log.type = "#LianpoRecord";
+            log.from = killer;
+            log.to << player;
+
+            Room *room = player->getRoom();
+            log.arg = room->getCurrent()->getGeneralName();
+            room->sendLog(log);
+        }
 
         return false;
     }
