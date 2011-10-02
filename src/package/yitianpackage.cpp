@@ -334,46 +334,70 @@ public:
     LukangWeiyan():PhaseChangeSkill("lukang_weiyan"){
     }
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const{
-        if(player->getHandcardNum() > player->getMaxCards()){
-            return "choice2";
-        }else{
-            return "choice1";
-        }
+    virtual int getPriority() const{
+        return 4; // very high priority
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(target->getPhase() == Player::Start){
-            Room *room = target->getRoom();
-            QString choice = room->askForChoice(target, objectName(), "normal+choice1+choice2");
+        switch(target->getPhase()){
+        case Player::Draw: {
+                if(target->askForSkillInvoke("lukang_weiyan", "draw2play")){
+                    target->getRoom()->setPlayerProperty(target, "phase", "play");
+                }
 
-            if(choice == "normal")
-                return false;
-
-            LogMessage log;
-            log.from = target;
-
-            QList<Player::Phase> &phases = target->getPhases();
-            if(choice == "choice1"){
-                // discard phase is before draw phase
-                // that is: discard -> draw -> play
-                phases.removeOne(Player::Discard);
-                int index = phases.indexOf(Player::Draw);
-                phases.insert(index, Player::Discard);
-
-                log.type = "#WeiyanChoice1";
-            }else{
-                // drawing phase is after discard phase
-                // that is: play -> discard -> draw
-                phases.removeOne(Player::Draw);
-                int index = phases.indexOf(Player::Discard);
-                phases.insert(index+1, Player::Draw);
-
-                log.type = "#WeiyanChoice2";
+                break;
             }
 
-            room->sendLog(log);
+        case Player::Play:{
+                if(target->askForSkillInvoke("lukang_weiyan", "play2draw")){
+                    target->getRoom()->setPlayerProperty(target, "phase", "draw");
+                }
+
+                break;
+            }
+
+        default:
+            return false;
         }
+
+        return false;
+    }
+};
+
+class Kegou: public PhaseChangeSkill{
+public:
+    Kegou():PhaseChangeSkill("kegou"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("kegou") == 0
+                && target->getKingdom() == "wu"
+                && !target->isLord();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *lukang) const{
+        foreach(const Player *player, lukang->getSiblings()){
+            if(player->isAlive() && player->getKingdom() == "wu"
+               && !player->isLord() && player != lukang){
+                return false;
+            }
+        }
+
+        lukang->setMark("kegou", 1);
+
+
+        Room *room = lukang->getRoom();
+
+        LogMessage log;
+        log.type = "#KegouWake";
+        log.from = lukang;
+        room->sendLog(log);
+
+        room->loseMaxHp(lukang);
+        room->acquireSkill(lukang, "lianying");
 
         return false;
     }
@@ -1826,8 +1850,8 @@ YitianPackage::YitianPackage()
     related_skills.insertMulti("jueji", "#jueji-get");
 
     General *lukang = new General(this, "lukang", "wu", 3);
-    lukang->addSkill("qianxun");
     lukang->addSkill(new LukangWeiyan);
+    lukang->addSkill(new Kegou);
 
     General *jinxuandi = new General(this, "jinxuandi", "god");
     jinxuandi->addSkill(new Wuling);

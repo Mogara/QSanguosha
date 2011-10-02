@@ -60,6 +60,8 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
         }
 
     case Player::Play: {
+            player->clearHistory();
+
             while(player->isAlive()){
                 CardUseStruct card_use;
                 room->activate(player, card_use);
@@ -112,7 +114,6 @@ void GameRule::onPhaseChange(ServerPlayer *player) const{
             }
 
             player->clearFlags();
-            player->clearHistory();
 
             return;
         }

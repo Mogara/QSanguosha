@@ -629,7 +629,15 @@ void Client::askForUseCard(const QString &request_str){
     askForCardOrUseCard(request_str);
 }
 
-void Client::askForSkillInvoke(const QString &skill_name){
+void Client::askForSkillInvoke(const QString &invoke_str){
+    QString skill_name, data;
+    if(invoke_str.contains(QChar(':'))){
+        QStringList texts = invoke_str.split(":");
+        skill_name = texts.first();
+        data = texts.last();
+    }else
+        skill_name = invoke_str;
+
     bool auto_invoke = frequent_flags.contains(skill_name);
     if(auto_invoke){
         invokeSkill(QDialog::Accepted);
@@ -640,13 +648,19 @@ void Client::askForSkillInvoke(const QString &skill_name){
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(Sanguosha->translate(skill_name));
 
-    QString text = tr("Do you want to invoke skill [%1] ?").arg(dialog->windowTitle());
+    QString text;
+    if(data.isNull())
+        text = tr("Do you want to invoke skill [%1] ?").arg(dialog->windowTitle());
+    else
+        text = Sanguosha->translate(invoke_str);
 
     QLabel *label = new QLabel(text);
 
     QCommandLinkButton *ok_button = new QCommandLinkButton(tr("OK"));
-    QString description = Sanguosha->translate(QString("%1:yes").arg(skill_name));
-    ok_button->setToolTip(description);
+    QString key = QString("%1:yes").arg(skill_name);
+    QString description = Sanguosha->translate(key);
+    if(key != description)
+        ok_button->setToolTip(description);
 
     QCommandLinkButton *cancel_button = new QCommandLinkButton(tr("Cancel"));
 
@@ -1280,8 +1294,12 @@ void Client::clearTurnTag(){
             break;
     }
 
-    case Player::NotActive:{
+    case Player::Play:{
             Self->clearHistory();
+            break;
+        }
+
+    case Player::NotActive:{
             Self->clearFlags();
             break;
         }

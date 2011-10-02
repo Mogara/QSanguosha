@@ -408,7 +408,12 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
         thread->delay(Config.AIDelay);
         invoked = ai->askForSkillInvoke(skill_name, data);
     }else{
-        player->invoke("askForSkillInvoke", skill_name);
+        QString invoke_str;
+        if(data.type() == QVariant::String)
+            invoke_str = QString("%1:%2").arg(skill_name).arg(data.toString());
+        else
+            invoke_str = skill_name;
+        player->invoke("askForSkillInvoke", invoke_str);
         getResult("invokeSkillCommand", player);
 
         if(result.isEmpty())

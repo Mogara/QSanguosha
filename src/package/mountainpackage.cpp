@@ -871,9 +871,10 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
-                && target->getMark("ruoyu") == 0
-                && target->getPhase() == Player::Start;
+        return target->getPhase() == Player::Start
+                && target->hasLordSkill("ruoyu")
+                && target->isAlive()
+                && target->getMark("ruoyu") == 0;
     }
 
     virtual bool onPhaseChange(ServerPlayer *liushan) const{

@@ -49,12 +49,17 @@ return {
 	-- 陆抗
 	["lukang"] = "陆抗", 
 	["lukang_weiyan"] = "围堰",
-	[":lukang_weiyan"] = "回合开始阶段，你可执行下列两项中的一项：              1.本回合弃牌阶段在摸牌阶段之前执行；              2.本回合摸牌阶段在弃牌阶段之后执行。              （不发动则默认正常顺序执行）" ,
+	[":lukang_weiyan"] = "你可以将你的摸牌阶段当作出牌阶段，出牌阶段当作摸牌阶段执行。" ,
 	["lukang_weiyan:normal"] = "正常顺序",
 	["lukang_weiyan:choice1"] = "弃牌-摸牌-出牌",
 	["lukang_weiyan:choice2"] = "出牌-弃牌-摸牌",
 	["#WeiyanChoice1"] = "%from 选择的行动顺序是<b>弃牌-摸牌-出牌</b>",
 	["#WeiyanChoice2"] = "%from 选择的行动顺序是<b>出牌-弃牌-摸牌</b>",
+	["kegou"] = "克构",
+	[":kegou"] = "<b>觉醒技</b>，回合开始阶段，若你是除主公外唯一的吴势力角色，你须减少1点体力上限并获得技能“连营”。",
+	["#KegouWake"] = "%from 是场上唯一的吴势力角色，满足克构的觉醒条件",
+	["lukang_weiyan:draw2play"] = "您是否想 <b>围堰</b> 将 <b>摸牌阶段</b> 当成 <b>出牌阶段</b> 来执行？",
+	["lukang_weiyan:play2draw"] = "您是否想 <b>围堰</b> 将 <b>出牌阶段</b> 当成 <b>摸牌阶段</b> 来执行？",
 	
 	-- 夏侯涓
 	["xiahoujuan"] = "夏侯涓",
@@ -242,7 +247,7 @@ return {
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
 	["designer:zhangjunyi"] = "孔孟老庄胡",
-	["designer:lukang"] = "冢冢的青藤",
+	["designer:lukang"] = "太阳神上",
 	["designer:jinxuandi"] = "title2009,塞克洛",
 	["designer:xiahoujuan"] = "宇文天启，艾艾艾",
 	["designer:caizhaoji"] = "冢冢的青藤",

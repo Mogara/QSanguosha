@@ -191,3 +191,16 @@ sgs.ai_skill_playerchosen.guixin2 = function(self, players)
 	return player or players:first()
 end
 
+-- Lu Kang's Weiyan
+sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
+	local handcard = self.player:getHandcardNum()
+	local max_card = self.player:getMaxCards()
+
+	if self.player:getPhase() == sgs.Player_Draw then
+		-- weiyan1: Draw -> Play
+		return handcard >= max_card
+	elseif self.player:getPhase() == sgs.Player_Play then
+		-- weiyan2: Play -> Draw
+		return handcard < max_card
+	end
+end
