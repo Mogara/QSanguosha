@@ -116,17 +116,29 @@ sgs.ai_skill_invoke.baonue = function(self, data)
 	return self.player:getRole() == "loyalist"
 end
 
-function SmartAI:getBeggar()
+local function getLowerBoundOfHandcard(self)
 	local least = math.huge
 	local players = self.room:getOtherPlayers(self.player)
 	for _, player in sgs.qlist(players) do
 		least = math.min(player:getHandcardNum(), least)		
 	end
 
+	return least
+end
+
+local function getBeggar(self)
+	local least = getLowerBoundOfHandcard(self)
+
 	self:sort(self.friends_noself)
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getHandcardNum() == least then			
 			return friend
+		end
+	end
+
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if player:getHandcardNum() == least then
+			return player
 		end
 	end
 end
@@ -137,15 +149,12 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 		return true
 	end
 
-	if self:getBeggar() then
-		return true
-	else
-		return false
-	end
+	local beggar = getBeggar(self)
+	return self:isFriend(beggar)
 end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
-	local beggar = self:getBeggar()
+	local beggar = getBeggar(self)
 	
 	local cards = self.player:getHandcards()
 	local n = math.floor(self.player:getHandcardNum()/2)
