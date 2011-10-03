@@ -109,6 +109,26 @@ function xunyu_ai:activate(use)
 				end
 			end
 		end
+		if not self.player:isWounded() or (self.player:getHp() == 1 and self:getAnalepticNum() > 0) then
+			local use_quhu
+			for _, friend in ipairs(self.friends) do
+				if math.min(5, friend:getMaxHP()) - friend:getHandcardNum() >= 2 then
+					self:sort(self.enemies, "handcard")
+					if self.enemies[#self.enemies]:getHandcardNum() > 0 then use_quhu = true break end
+				end
+			end
+			if use_quhu then
+				for _, enemy in ipairs(self.enemies) do
+					local cards = self.player:getHandcards()
+					cards = sgs.QList2Table(cards)
+					self:sortByUseValue(cards, true)
+					local card_id = cards[1]:getEffectiveId()
+					local card_str = "@QuhuCard=" .. card_id
+					use.card = sgs.Card_Parse(card_str)
+					use.to:append(enemy)
+				end
+			end
+		end
 	end
 
 	super.activate(self, use)

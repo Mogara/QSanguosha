@@ -141,6 +141,15 @@ tianyi_skill.getTurnUseCard=function(self)
 		end
 	end
 	
+	self:sortByUseValue(cards, true)
+	for _, enemy in ipairs(self.enemies) do
+		if not enemy:isKongcheng() then
+		    local card_id = cards[1]:getEffectiveId()
+			local card_str = "@TianyiCard=" .. card_id
+			local card = sgs.Card_Parse(card_str)
+			return card
+		end
+	end
 end
 
 sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
@@ -148,7 +157,6 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard(self.player)
 	local max_point = max_card:getNumber()
-	--self:log("tianyi used"..max_point)
 	for _, enemy in ipairs(self.enemies) do
 	    local enemy_max_card = self:getMaxCard(enemy)
 		if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) 

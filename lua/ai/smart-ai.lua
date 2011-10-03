@@ -1426,19 +1426,33 @@ function SmartAI:useCardDuel(duel, use)
 	for _, enemy in ipairs(enemies) do
 		if self:objectiveLevel(enemy)>3 then
 			local n1 = self:getSlashNumber(self.player)
-			local n2 = self:getSlashNumber(enemy)
-
-			if n1 >= n2 and self:hasTrickEffective(duel, enemy) then													--no xushu
-				use.card = duel
+			local n2 = enemy:getHandcardNum()
+			local useduel
+			if self:hasTrickEffective(duel, enemy) then
+				if n1 >= n2 or self.player:getLoseHp() < 1 then		
+					useduel = true
+				else
+					local percard=0.35
+					if enemy:hasSkill("paoxiao") or enemy:hasWeapon("crossbow") then percard=0.2 end
+					local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
+					if math.random() > poss then useduel = true end
+				end
+				if useduel then						
+					use.card = duel
 					if use.to then 
 						use.to:append(enemy) 
 						self:speak("duel", self.player:getGeneral():isFemale())
 					end
-
-				return
+					return
+				end
 			end
 		end
 	end
+end
+
+local function factorial(n)
+	if n<=0.1 then return 1 end
+	return n*factorial(n-1)
 end
 
 local function handcard_subtract_hp(a, b)
