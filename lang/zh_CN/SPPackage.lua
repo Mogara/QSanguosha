@@ -43,6 +43,9 @@ return {
 	["~gongsunzan"] = "如今阵败吾已无颜苟活于世",
         
 	["sp_sunshangxiang"] = "SP孙尚香",
+	["chujia"] = "出嫁",
+	[":chujia"] = "<b>限定技<b>, 游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
+
 	["sp_pangde"] = "SP庞德",
 	["sp_diaochan"] = "SP貂蝉",
         
@@ -72,6 +75,10 @@ return {
 	["xuwei"] = "续尾",
 	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
 	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
+	
+	["sp_caiwenji"] = "SP蔡文姬",
+	["guixiang"] = "归乡",
+	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 	
 --sp_card	
 	["sp_cards"] = "SP卡牌包",

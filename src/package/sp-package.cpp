@@ -390,6 +390,10 @@ SPPackage::SPPackage()
     General *sp_guanyu = new General(this, "sp_guanyu", "wei", 4);
     sp_guanyu->addSkill("wusheng");
     sp_guanyu->addSkill(new Danji);
+
+    General *sp_caiwenji = new General(this, "sp_caiwenji", "wei", 3, false, true);
+    sp_caiwenji->addSkill("beige");
+    sp_caiwenji->addSkill("duanchang");
 }
 
 ADD_PACKAGE(SP);

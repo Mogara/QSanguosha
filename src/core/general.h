@@ -13,10 +13,12 @@ class QSize;
 class General : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Gender);
     Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
     Q_PROPERTY(int maxhp READ getMaxHp CONSTANT)
     Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
     Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
+    Q_PROPERTY(Gender gender READ getGender CONSTANT)
     Q_PROPERTY(bool lord READ isLord CONSTANT)
     Q_PROPERTY(bool hidden READ isHidden CONSTANT)
 
@@ -28,8 +30,13 @@ public:
     QString getKingdom() const;
     bool isMale() const;
     bool isFemale() const;
+    bool isNeuter() const;
     bool isLord() const;
     bool isHidden() const;
+
+    enum Gender {Male, Female, Neuter};
+    Gender getGender() const;
+    void setGender(Gender gender);
 
     void addSkill(Skill* skill);
     void addSkill(const QString &skill_name);
@@ -52,7 +59,7 @@ public slots:
 private:
     QString kingdom;
     int max_hp;
-    bool male;
+    Gender gender;
     bool lord;
     QSet<QString> skill_set;
     QSet<QString> extra_set;

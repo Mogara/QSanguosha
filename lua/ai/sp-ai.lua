@@ -93,6 +93,10 @@ end
 
 -- chujia
 sgs.ai_skill_invoke.chujia = function(self, data)
-	local lord = self.room:getLord()
-	return lord:getKingdom() == "shu"
+	return self.room:getLord():getKingdom() == "shu"
+end
+
+-- guixiang
+sgs.ai_skill_invoke.guixiang = function(self, data)
+	return self.room:getLord():getKingdom() == "wei"
 end

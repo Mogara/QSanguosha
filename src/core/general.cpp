@@ -7,7 +7,7 @@
 #include <QSize>
 
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), male(male), hidden(hidden)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female), hidden(hidden)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -30,11 +30,23 @@ QString General::getKingdom() const{
 }
 
 bool General::isMale() const{
-    return male;
+    return gender == Male;
 }
 
 bool General::isFemale() const{
-    return !male;
+    return gender == Female;
+}
+
+bool General::isNeuter() const{
+    return gender == Neuter;
+}
+
+void General::setGender(Gender gender){
+    this->gender = gender;
+}
+
+General::Gender General::getGender() const{
+    return gender;
 }
 
 bool General::isLord() const{

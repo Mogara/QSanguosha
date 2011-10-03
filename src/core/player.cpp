@@ -70,6 +70,13 @@ bool Player::isWounded() const{
         return hp < max_hp;
 }
 
+General::Gender Player::getGender() const{
+    if(general)
+        return general->getGender();
+    else
+        return General::Neuter;
+}
+
 int Player::getSeat() const{
     return seat;
 }
