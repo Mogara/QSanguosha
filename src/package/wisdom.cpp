@@ -695,15 +695,19 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *tianfeng, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        damage.from = damage.to = tianfeng;
+        if(tianfeng->getHp() <= 0){
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.from = damage.to = tianfeng;
+            data = QVariant::fromValue(damage);
 
-        LogMessage log;
-        log.type = "#Yuweneffect";
-        log.from = tianfeng;
-        tianfeng->getRoom()->sendLog(log);
+            LogMessage log;
+            log.type = "#Yuweneffect";
+            log.from = tianfeng;
+            tianfeng->getRoom()->sendLog(log);
 
-        data = QVariant::fromValue(damage);
+            tianfeng->getRoom()->killPlayer(tianfeng, &damage);
+            return true;
+        }
         return false;
     }
 };
