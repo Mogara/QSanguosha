@@ -204,7 +204,7 @@ end
 -- tieji
 sgs.ai_skill_invoke.tieji = function(self, data) 
 	local effect = data:toSlashEffect()
-	return not self:isFriend(effect.to) 
+	return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
 end
 
 local zhouyu_ai = SmartAI:newSubclass "zhouyu"

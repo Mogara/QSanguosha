@@ -419,8 +419,6 @@ sgs.ai_skill_use_func["MingceCard"]=function(card,use,self)
 		end
 	end
 
---	if not target then target = self.friends_noself[1] end
-
 	if target then
 		use.card=card
 		if use.to then
@@ -430,7 +428,7 @@ sgs.ai_skill_use_func["MingceCard"]=function(card,use,self)
 	end
 end
 
-sgs.ai_skill_choice.mingce = function(self , choices)
+sgs.ai_skill_choice.mingce = function(self, choices)
     if self.player:getHandcardNum()<=2 then return "draw" end
 	if self.player:getHp()<=1 then return "draw" end
 	for _,enemy in ipairs(self.enemies) do
@@ -439,64 +437,15 @@ sgs.ai_skill_choice.mingce = function(self , choices)
     return "draw"
 end
 
-sgs.ai_skill_playerchosen.mingce = function(self,targets)
+sgs.ai_skill_playerchosen.mingce = function(self, targets)
 	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))
 	local targetlist=sgs.QList2Table(targets)
 
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
-		--self:log("Find!")
+		if not self:isFriend(target) and self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
 		return target
 		end
 	end
-	--self:log("unfound")
-	return nil
+	return targets:first()
 end
-
--- function chengong_ai:activate(use)
-    -- if self.mingce_used then return nil end
-		
-	-- local card, target
-	-- local hcards = self.player:getCards("h")
-	-- hcards = sgs.QList2Table(hcards)
-		-- for _, hcard in ipairs(hcards) do
-		-- if hcard:inherits("Slash") or hcard:inherits("EquipCard") then
-			-- card = hcard
-			-- break
-		-- end
-	-- end
-	
-	-- if self:getEquipNumber(self.player) > 0 and not card then
-		-- if self.player:getArmor() and self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded() then
-			-- card = self.player:getArmor()
-		-- end
-		-- local ecards = self.player:getCards("e")
-		-- ecards = sgs.QList2Table(ecards)
-		-- for _, ecard in ipairs(ecards) do
-			-- if not (ecard:inherits("Armor") and card:inherits("DefensiveHorse")) then
-				-- card = ecard
-				-- break
-			-- end
-		-- end
-	-- end	
-	
-	-- if card then 
-		-- local friends = self.friends_noself
-		-- for _, friend in ipairs(self.friends_noself) do
-			-- if friend:getHp() <= 2 and friend:getHandcardNum() < 2 then
-				-- target = friend
-				-- break
-			-- end
-		-- end
-		-- if not target then target = friends[1] end
-	-- end
-	-- if card and target then
-		-- use.card = sgs.Card_Parse("@MingceCard=" .. card:getId()) 
-		-- use.to:append(target)
-		-- self.mingce_used=true
-		-- return
-	-- end
-	
-	-- return nil
--- end

@@ -126,6 +126,7 @@ function xunyu_ai:activate(use)
 					local card_str = "@QuhuCard=" .. card_id
 					use.card = sgs.Card_Parse(card_str)
 					use.to:append(enemy)
+					return
 				end
 			end
 		end
