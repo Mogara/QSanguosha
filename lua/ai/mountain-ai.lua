@@ -3,7 +3,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 	local card, target
 	if self:isFriend(who) then
 		local judges = who:getCards("j")
-		if judges then
+		if not judges:isEmpty() then
 			for _, judge in sgs.qlist(judges) do
 				card = judge
 				
@@ -17,7 +17,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		end
 		
 		local equips = who:getCards("e")
-		if equips then
+		if not equips:isEmpty() then
 			for _, equip in sgs.qlist(equips) do
 				if equip:inherits("OffensiveHorse") then card = equip break
 				elseif equip:inherits("DefensiveHorse") then card = equip break
@@ -38,7 +38,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		end
 	else
 		local equips = who:getCards("e")
-		if not equips then return end
+		if equips:isEmpty() then return end
 		for _, equip in sgs.qlist(equips) do
 			if equip:inherits("Armor") then card = equip break
 			elseif equip:inherits("DefensiveHorse") then card = equip break
@@ -116,13 +116,13 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 		local has_armor = true
 		local judge
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:getCards("j") and card_for_qiaobian(self, friend, "card+target") then
+			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, "card+target") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 		end	
 		
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:getCards("e") and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, "card+target") then
+			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, "card+target") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 			if not friend:getArmor() then has_armor = false end

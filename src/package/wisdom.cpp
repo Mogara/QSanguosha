@@ -77,7 +77,7 @@ public:
                 return false;
 
             LogMessage log;
-            log.type = "#Juao_get";
+            log.type = "#JuaoObtain";
             log.from = player;
             log.arg = objectName();
             log.to << xuyou;
@@ -343,7 +343,7 @@ public:
             if(room->askForSkillInvoke(sunce, objectName(), data)){
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
-                    room->askForUseCard(sunce, "@@bawang", "@bawangask");
+                    room->askForUseCard(sunce, "@@bawang", "@bawang");
                 }
             }
         }
@@ -576,7 +576,7 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->inherits("Slash") && effect.card->isBlack()){
             if(room->askForSkillInvoke(hua, objectName(), data)){
-                room->askForUseCard(hua, "slash", "badaoslash");
+                room->askForUseCard(hua, "slash", "@badao");
             }
         }
         return false;
@@ -695,15 +695,19 @@ public:
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *tianfeng, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        damage.from = damage.to = tianfeng;
+        if(tianfeng->getHp() <= 0){
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.from = damage.to = tianfeng;
+            data = QVariant::fromValue(damage);
 
-        LogMessage log;
-        log.type = "#Yuweneffect";
-        log.from = tianfeng;
-        tianfeng->getRoom()->sendLog(log);
+            LogMessage log;
+            log.type = "#YuwenEffect";
+            log.from = tianfeng;
+            tianfeng->getRoom()->sendLog(log);
 
-        data = QVariant::fromValue(damage);
+            tianfeng->getRoom()->killPlayer(tianfeng, &damage);
+            return true;
+        }
         return false;
     }
 };

@@ -537,12 +537,12 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == GameStart){
-            if(!player->hasSkill(objectName()))
+            if(!player->hasSkill(objectName()) || !player->isLord())
                 return false;
 
             Room *room = player->getRoom();
             foreach(ServerPlayer *p, room->getAlivePlayers()){
-                if(!p->hasSkill("zhiba_pindian"))
+                if(!p->hasSkill("zhiba_pindian") && !p->isLord())
                     room->attachSkillToPlayer(p, "zhiba_pindian");
             }
         }else if(event == Pindian){

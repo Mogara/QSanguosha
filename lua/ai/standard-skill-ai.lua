@@ -35,9 +35,8 @@ spear_skill.getTurnUseCard=function(self,inclusive)
 	local suit2 = cards[2]:getSuitString()
 	local card_id2 = cards[2]:getEffectiveId()
 	
-	local suit=sgs.Card_NoSuit
-	if cards[1]:isBlack() and cards[2]:isBlack() then suit=sgs.Card_Club
-	elseif cards[1]:isBlack()==cards[2]:isBlack() then suit=sgs.Card_Diamond end
+	local suit="no_suit"
+	if cards[1]:isBlack() == cards[2]:isBlack() then suit = suit1 end
 	
 	local card_str = ("slash:spear[%s:%s]=%d+%d"):format(suit, 0, card_id1, card_id2)
 	
