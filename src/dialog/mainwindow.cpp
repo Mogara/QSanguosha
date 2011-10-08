@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include "scenario-overview.h"
 #include "window.h"
+#include "halldialog.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -167,11 +168,41 @@ void MainWindow::on_actionStart_Server_triggered()
     }
 }
 
+void MainWindow::checkVersion(const QString &server_version){
+    Client *client = qobject_cast<Client *>(sender());
+    QString client_version = Sanguosha->getVersion();
+
+    if(server_version == client_version){
+        client->signup();
+        connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+
+        if(qApp->arguments().contains("-hall")){
+            HallDialog *dialog = new HallDialog(this);
+            dialog->show();
+            connect(client, SIGNAL(server_connected()), dialog, SLOT(accept()));
+        }
+
+        return;
+    }
+
+    client->disconnectFromHost();
+
+    static QString link = "http://github.com/Moligaloo/QSanguosha/downloads";
+    QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
+    if(server_version > client_version)
+        text.append(tr("Your client version is older than the server's, please update it <br/>"));
+    else
+        text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
+
+    text.append(tr("Download link : <a href='%1'>%1</a> <br/>").arg(link));
+    QMessageBox::warning(this, tr("Warning"), text);
+}
+
 void MainWindow::startConnection(){
     Client *client = new Client(this);
 
+    connect(client, SIGNAL(version_checked(QString)), SLOT(checkVersion(QString)));
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
-    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
 }
 
 void MainWindow::on_actionReplay_triggered()

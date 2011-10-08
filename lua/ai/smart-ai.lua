@@ -1429,7 +1429,7 @@ function SmartAI:useCardDuel(duel, use)
 			local n2 = enemy:getHandcardNum()
 			local useduel
 			if self:hasTrickEffective(duel, enemy) then
-				if n1 >= n2 or self.player:getLoseHp() < 1 then		
+				if n1 >= n2 or self.player:getLostHp() < 1 then		
 					useduel = true
 				else
 					local percard=0.35
