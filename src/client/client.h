@@ -35,6 +35,11 @@ public:
 
     explicit Client(QObject *parent, const QString &filename = QString());
 
+    void roomBegin(const QString &begin_str);
+    void room(const QString &room_str);
+    void roomEnd(const QString &);
+    void roomCreated(const QString &idstr);
+
     void disconnectFromHost();
     void request(const QString &message);
     void useCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
@@ -190,6 +195,7 @@ private:
 
     void updatePileNum();
     void setPromptList(const QStringList &text);
+    void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
 private slots:
     void processCommand(const QString &cmd);
@@ -203,6 +209,7 @@ private slots:
     void selectRole();
 
 signals:
+    void version_checked(const QString &server_version);
     void server_connected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
