@@ -20,10 +20,21 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	if data=="@@tianxiang-card" then
 		dmg = self.player:getTag("TianxiangDamage"):toDamage()
 	else
-		dmg=data
+		dmg = data
 	end
 	
-	self:sort(self.enemies,"hp")
+	local cards = self.player:getCards("h")
+    cards=sgs.QList2Table(cards)
+	self:sortByUseValue(cards,true)
+    for _,card in ipairs(cards) do
+		if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:inherits("Peach") then
+			card_id = card:getId()
+			break
+		end
+	end
+	if not card_id then return "." end
+	
+	self:sort(self.enemies, "hp")
 	
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getHp() <= dmg.damage) then 
@@ -37,54 +48,27 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 		or enemy:hasSkill("qingguo") 
 		or enemy:hasSkill("wuyan") 
 		or enemy:hasSkill("kongcheng") 
-		then target = enemy break end
-		
+		then return "@TianxiangCard="..card_id.."->"..enemy:objectName() end
 		end
 	end	
 	
-	if target then
-		local cards = self.player:getCards("h")
-        cards=sgs.QList2Table(cards)
-		self:sortByUseValue(cards,true)
-        for _,card in ipairs(cards) do
-			if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) then
-				card_id = card:getId()
-				return "@TianxiangCard="..card_id.."->"..target:objectName()
-			end	
-		end
-	end 
-	
 	for _, friend in ipairs(self.friends_noself) do
 		if (friend:getLostHp() + dmg.damage>1) then	
-				if friend:isChained() and #self:getChainedFriends()>1 and dmg.nature>0 then 
-				
-				elseif friend:getHp() >= 2 and dmg.damage<2 and 
-				(
-				friend:hasSkill("yiji") 
-				or friend:hasSkill("jieming") 
-				or (friend:getHandcardNum()<3 and friend:hasSkill("rende"))
-				or friend:hasSkill("buqu")
-				or friend:hasSkill("shuangxiong") 
-				or friend:hasSkill("zaiqi") 
-				or friend:hasSkill("yinghun") 
-				or friend:hasSkill("jianxiong")
-				or friend:hasSkill("fangzhu")
-				)
-				then target=friend break 
-				
-				elseif friend:hasSkill("buqu") then target=friend break end
-		end
-	end
-	
-	if target then
-		local cards = self.player:getCards("h")
-        cards=sgs.QList2Table(cards)
-		self:sortByUseValue(cards,true)
-        for _,card in ipairs(cards) do
-			if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:inherits("Peach") then
-				card_id = card:getId()
-				return "@TianxiangCard="..card_id.."->"..target:objectName()
-			end	
+			if friend:isChained() and #self:getChainedFriends()>1 and dmg.nature>0 then 
+			elseif friend:getHp() >= 2 and dmg.damage<2 and 
+			(
+			friend:hasSkill("yiji") 
+			or friend:hasSkill("jieming") 
+			or (friend:getHandcardNum()<3 and friend:hasSkill("rende"))
+			or friend:hasSkill("buqu")
+			or friend:hasSkill("shuangxiong") 
+			or friend:hasSkill("zaiqi") 
+			or friend:hasSkill("yinghun") 
+			or friend:hasSkill("jianxiong")
+			or friend:hasSkill("fangzhu")
+			)
+			then return "@TianxiangCard="..card_id.."->"..friend:objectName()
+			elseif friend:hasSkill("buqu") then return "@TianxiangCard="..card_id.."->"..friend:objectName() end
 		end
 	end
 	
@@ -100,21 +84,15 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 		or enemy:hasSkill("qingguo") 
 		or enemy:hasSkill("wuyan") 
 		or enemy:hasSkill("kongcheng") 
-		then target = enemy break end
-		
+		then return "@TianxiangCard="..card_id.."->"..enemy:objectName() end
 		end
 	end	
 	
-	if target then
-		local cards = self.player:getCards("h")
-        cards=sgs.QList2Table(cards)
-		self:sortByUseValue(cards,true)
-        for _,card in ipairs(cards) do
-			if (card:getSuit() == sgs.Card_Spade or card:getSuit() == sgs.Card_Heart) and not card:inherits("Peach") then
-				card_id = card:getId()
-				return "@TianxiangCard="..card_id.."->"..target:objectName()
-			end	
-		end
+	for i = #self.enemies, 1, -1 do
+		local enemy = self.enemies[i]
+		if not enemy:isWounded() and not self:hasSkills(sgs.masochism_skill, enemy) then
+			return "@TianxiangCard="..card_id.."->"..enemy:objectName()
+		end	
 	end
 	
 	return "."

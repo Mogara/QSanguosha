@@ -21,11 +21,18 @@
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
-    :QObject(parent), refusable(true), status(NotActive), alive_count(1), swap_pile(0)
+    :QObject(parent), refusable(true),
+    status(NotActive), alive_count(1), swap_pile(0)
 {
     ClientInstance = this;
 
     callbacks["checkVersion"] = &Client::checkVersion;
+
+    callbacks["roomBegin"] = &Client::roomBegin;
+    callbacks["room"] = &Client::room;
+    callbacks["roomEnd"] = &Client::roomEnd;
+    callbacks["roomCreated"] = &Client::roomCreated;
+
     callbacks["setup"] = &Client::setup;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
@@ -171,22 +178,7 @@ void Client::request(const QString &message){
 }
 
 void Client::checkVersion(const QString &server_version){
-    QString client_version = Sanguosha->getVersion();
-
-    if(server_version == client_version)
-        return;
-
-    static QString link = "http://github.com/Moligaloo/QSanguosha/downloads";
-    QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
-    if(server_version > client_version)
-        text.append(tr("Your client version is older than the server's, please update it <br/>"));
-    else
-        text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
-
-    text.append(tr("Download link : <a href='%1'>%1</a> <br/>").arg(link));
-    QMessageBox::warning(NULL, tr("Warning"), text);
-
-    disconnectFromHost();
+    emit version_checked(server_version);
 }
 
 void Client::setup(const QString &setup_str){
@@ -194,7 +186,6 @@ void Client::setup(const QString &setup_str){
         return;
 
     if(ServerInfo.parse(setup_str)){
-        signup();
         emit server_connected();
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
@@ -598,6 +589,12 @@ void Client::setPromptList(const QStringList &texts){
     }
 
     prompt_doc->setHtml(prompt);
+}
+
+void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const char *command){
+    QString text = tr("The argument (%1) of command %2 does not conform the format %3")
+                   .arg(str).arg(command).arg(rx.pattern());
+    QMessageBox::warning(NULL, tr("Command format warning"), text);
 }
 
 void Client::askForCardOrUseCard(const QString &request_str){

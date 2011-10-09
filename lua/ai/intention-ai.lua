@@ -217,7 +217,7 @@ end
 
 sgs.ai_carduse_intention["QuhuCard"]=function(card,from,to,source)
 		speakTrigger(card,from,to)
-        return sgs.ai_card_intention.general(to,70)
+        return sgs.ai_card_intention.general(to, 70)
 end
 
 sgs.ai_carduse_intention["JujianCard"]=function(card,from,to,source)
