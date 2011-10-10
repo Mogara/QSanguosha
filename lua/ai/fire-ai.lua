@@ -119,14 +119,16 @@ function xunyu_ai:activate(use)
 			end
 			if use_quhu then
 				for _, enemy in ipairs(self.enemies) do
-					local cards = self.player:getHandcards()
-					cards = sgs.QList2Table(cards)
-					self:sortByUseValue(cards, true)
-					local card_id = cards[1]:getEffectiveId()
-					local card_str = "@QuhuCard=" .. card_id
-					use.card = sgs.Card_Parse(card_str)
-					use.to:append(enemy)
-					return
+					if not enemy:isKongcheng() then 
+						local cards = self.player:getHandcards()
+						cards = sgs.QList2Table(cards)
+						self:sortByUseValue(cards, true)
+						local card_id = cards[1]:getEffectiveId()
+						local card_str = "@QuhuCard=" .. card_id
+						use.card = sgs.Card_Parse(card_str)
+						use.to:append(enemy)
+						return
+					end
 				end
 			end
 		end

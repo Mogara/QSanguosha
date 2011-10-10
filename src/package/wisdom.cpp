@@ -255,6 +255,7 @@ public:
 class Chouliang: public PhaseChangeSkill{
 public:
     Chouliang():PhaseChangeSkill("chouliang"){
+        frequency = Frequent;
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
@@ -811,7 +812,8 @@ public:
             Room *room = player->getRoom();
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
             if(!shuijing) return false;
-            if(player != shuijing && room->askForSkillInvoke(player, objectName(), data))
+            QVariant data2 = QVariant::fromValue(shuijing);
+            if(player != shuijing && room->askForSkillInvoke(player, objectName(), data2))
                 shuijing->drawCards(1);
         }
 

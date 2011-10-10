@@ -341,6 +341,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
                     if(chained_player->isChained()){
                         room->getThread()->delay();
                         room->setPlayerProperty(chained_player, "chained", false);
+                        if(damage.from && damage.from->hasSkill("kuanggu"))
+                            damage.from->tag["InvokeKuanggu"] = damage.from->distanceTo(chained_player) < 2;
 
                         LogMessage log;
                         log.type = "#IronChainDamage";
