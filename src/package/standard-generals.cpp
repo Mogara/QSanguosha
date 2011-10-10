@@ -53,12 +53,9 @@ public:
             return false;
 
         room->playSkillEffect(objectName());
+        QVariant tohelp = QVariant::fromValue((PlayerStar)caocao);
         foreach(ServerPlayer *liege, lieges){
-            QString result = room->askForChoice(liege, objectName(), "accept+ignore");
-            if(result == "ignore")
-                continue;
-
-            const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName());
+            const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(), tohelp);
             if(jink){
                 room->provide(jink);
                 return true;
@@ -502,8 +499,10 @@ public:
             return false;
 
         room->playSkillEffect(objectName());
+
+        QVariant tohelp = QVariant::fromValue((PlayerStar)liubei);
         foreach(ServerPlayer *liege, lieges){
-            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName());
+            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), tohelp);
             if(slash){
                 room->provide(slash);
                 return true;
