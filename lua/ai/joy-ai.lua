@@ -6,7 +6,6 @@ end
 
 -- when murder Caiwenji
 
-local yxswd_ai = SmartAI:newSubclass "yx_sword"
 sgs.ai_skill_invoke["yx_sword"] = function(self, data)
 	local damage= data:toDamage()
 	if damage.to:hasSkill("duanchang") and damage.to:getHp() - damage.damage < 1 then
@@ -14,14 +13,10 @@ sgs.ai_skill_invoke["yx_sword"] = function(self, data)
 	end
 end
 
-function yxswd_ai:askForPlayerChosen(players, reason)
-	if reason == "yx_sword" then
-		for _, player in sgs.qlist(players) do
-			if self:isEnemy(player) and not player:hasSkill("duanchang") then
-				return player
-			end
+sgs.ai_skill_playerchosen["yx_sword"] = function(self, targets)
+	for _, player in sgs.qlist(players) do
+		if self:isEnemy(player) and not player:hasSkill("duanchang") then
+			return player
 		end
 	end
-
-	return super.askForPlayerChosen(self, players, reason)
 end
