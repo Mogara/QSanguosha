@@ -272,7 +272,7 @@ public:
         QString prompt = prompt_list.join(":");
 
         player->tag["Judge"] = data;
-        const Card *card = room->askForCard(player, "@guicai", prompt);
+        const Card *card = room->askForCard(player, "@guicai", prompt, data);
 
         if(card){
             // the only difference for Guicai & Guidao
