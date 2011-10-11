@@ -691,24 +691,37 @@ public:
 class Yuwen: public TriggerSkill{
 public:
     Yuwen():TriggerSkill("yuwen"){
-        events << AskForPeachesDone;
+        events << GameOverJudge;
         frequency = Compulsory;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target->hasSkill(objectName());
+    }
+
     virtual bool trigger(TriggerEvent , ServerPlayer *tianfeng, QVariant &data) const{
-        if(tianfeng->getHp() <= 0){
-            DamageStruct damage = data.value<DamageStruct>();
-            damage.from = damage.to = tianfeng;
+        DamageStar damage = data.value<DamageStar>();
+
+        if(damage){
+            if(damage->from == tianfeng)
+                return false;
+        }else{
+            damage = new DamageStruct;
+            damage->to = tianfeng;
             data = QVariant::fromValue(damage);
-
-            LogMessage log;
-            log.type = "#YuwenEffect";
-            log.from = tianfeng;
-            tianfeng->getRoom()->sendLog(log);
-
-            tianfeng->getRoom()->killPlayer(tianfeng, &damage);
-            return true;
         }
+
+        damage->from = tianfeng;
+
+        LogMessage log;
+        log.type = "#YuwenEffect";
+        log.from = tianfeng;
+        tianfeng->getRoom()->sendLog(log);
+
         return false;
     }
 };
