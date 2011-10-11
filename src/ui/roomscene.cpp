@@ -1097,10 +1097,13 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         }else if(dest_place == Player::Hand)
             type = "$MoveCard";
 
-        QString from_general = src->getGeneralName();
-        QStringList tos;
-        tos << dest->getGeneralName();
-        log_box->appendLog(type, from_general, tos, card_str);
+        if(!type.isNull()){
+            QString from_general = src->objectName();
+            QStringList tos;
+            tos << dest->objectName();
+            log_box->appendLog(type, from_general, tos, card_str);
+        }
+
     }else if(src){
         // src throw card
         if(dest_place == Player::DrawPile){

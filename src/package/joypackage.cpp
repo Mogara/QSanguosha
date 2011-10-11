@@ -326,13 +326,8 @@ bool GaleShell::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.isEmpty() && Self->distanceTo(to_select) <= 1;
 }
 
-void GaleShell::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.value(0, source);
-
-    if(target->getArmor())
-        room->throwCard(target->getArmor());
-
-    room->moveCardTo(this, target, Player::Equip, true);
+void GaleShell::onUse(Room *room, const CardUseStruct &card_use) const{
+    Card::onUse(room, card_use);
 }
 
 DisasterPackage::DisasterPackage()
