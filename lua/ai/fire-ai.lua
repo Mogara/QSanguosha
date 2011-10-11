@@ -137,16 +137,12 @@ function xunyu_ai:activate(use)
 	super.activate(self, use)
 end
 
-function xunyu_ai:askForPlayerChosen(players, reason)
-	if reason == "quhu" then
-		for _, player in sgs.qlist(players) do
-			if self:isEnemy(player) then
-				return player
-			end
+sgs.ai_skill_playerchosen.quhu = function(self, targets)
+	for _, player in sgs.qlist(targets) do
+		if self:isEnemy(player) then
+			return player
 		end
 	end
-
-	return super.askForPlayerChosen(self, players, reason)
 end
 
 sgs.ai_skill_use["@@jieming"] = function(self, prompt)

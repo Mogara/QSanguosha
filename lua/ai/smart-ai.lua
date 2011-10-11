@@ -2305,15 +2305,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 	else 
         if (who:getHandcardNum()<2) and (not who:isKongcheng()) and
-			not (who:hasSkill("lianying") or who:hasSkill("kongcheng")) then return -1 
-		end
-		
-		if reason == "ice_sword" then
-			local hcards = who:getCards("h")
-			hcards = sgs.QList2Table(hcards)
-			for _, peach in ipairs(hcards) do
-				if peach:inherits("Peach") or peach:inherits("Analeptic") then return peach:getId() end
-			end
+			not self:hasSkills(sgs.need_kongcheng, who) then return -1 
 		end
 		
 		if flags:match("e") then		    
@@ -2409,6 +2401,48 @@ function SmartAI:askForCard(pattern, prompt, data)
 		for _, card in sgs.qlist(hand_card) do
 			if card:getSuitString() == parsedPrompt[2] then return "$"..card:getEffectiveId() end
 		end
+	elseif parsedPrompt[1] == "@enyuan" then
+		local cards = self.player:getHandcards()
+		for _, card in sgs.qlist(cards) do
+			if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihio")) then 
+				return card:getEffectiveId()
+			end
+		end	
+		return "."	
+	elseif parsedPrompt[1] == "@xiangle-discard" then
+		local effect = data:toCardEffect()
+		if self:isFriend(effect.to) then return "." end
+		local has_peach, has_anal, has_slash, slash_jink
+		for _, card in sgs.qlist(self.player:getHandcards()) do
+			if card:inherits("Peach") then has_peach = card
+			elseif card:inherits("Analeptic") then has_anal = card
+			elseif card:inherits("Slash") then has_slash = card
+			elseif card:inherits("Jink") then has_jink = card
+			end
+		end
+		
+		if has_slash then return "$" .. has_slash:getEffectiveId()
+		elseif has_jink then return "$" .. has_jink:getEffectiveId()
+		elseif has_anal or has_peach then 
+			if self:getJinkNumber(effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
+				if has_anal then return "$" .. has_anal:getEffectiveId()
+				else return "$" .. has_peach:getEffectiveId()
+				end
+			end
+		else return "." 
+		end	
+	elseif parsedPrompt[1] == "@hujia-jink" then
+		local who = data:toPlayer()
+		if self.player:hasSkill("hujia") and who:hasSkill("hujia") then return "."
+		elseif not self:isFriend(who) then return "."
+		end
+		return self:getCardId("Jink") or "."
+	elseif parsedPrompt[1] == "@jijiang-slash" then
+		local who = data:toPlayer()
+		if self.player:hasSkill("jijiang") and who:hasSkill("jijiang") then return "."
+		elseif not self:isFriend(who) then return "."
+		end
+		return self:getCardId("Slash") or "."
 	end
 	
 	-- aoe
@@ -2479,36 +2513,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 				return "$"..cards[1]:getEffectiveId().."+"..cards[2]:getEffectiveId()
 			end
 		end
-	elseif parsedPrompt[1] == "@enyuan" then
-		local cards = self.player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihio")) then 
-				return card:getEffectiveId()
-			end
-		end	
-		return "."	
-	elseif parsedPrompt[1] == "@xiangle-discard" then
-		local effect = data:toCardEffect()
-		if self:isFriend(effect.to) then return "." end
-		local has_peach, has_anal, has_slash, slash_jink
-		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("Peach") then has_peach = card
-			elseif card:inherits("Analeptic") then has_anal = card
-			elseif card:inherits("Slash") then has_slash = card
-			elseif card:inherits("Jink") then has_jink = card
-			end
-		end
-		
-		if has_slash then return "$" .. has_slash:getEffectiveId()
-		elseif has_jink then return "$" .. has_jink:getEffectiveId()
-		elseif has_anal or has_peach then 
-			if self:getJinkNumber(effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
-				if has_anal then return "$" .. has_anal:getEffectiveId()
-				else return "$" .. has_peach:getEffectiveId()
-				end
-			end
-		else return "." 
-		end	
 	end	
 	
 	if self.player:hasSkill("tianxiang") then							
