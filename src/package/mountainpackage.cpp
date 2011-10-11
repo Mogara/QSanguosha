@@ -258,6 +258,7 @@ public:
            && player->askForSkillInvoke(objectName()))
         {
             player->getRoom()->setPlayerProperty(player, "general", "sp_caiwenji");
+            player->getRoom()->setPlayerProperty(player, "kingdom", "wei");
         }
     }
 };
