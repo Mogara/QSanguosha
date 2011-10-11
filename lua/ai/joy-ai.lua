@@ -14,7 +14,7 @@ sgs.ai_skill_invoke["yx_sword"] = function(self, data)
 end
 
 sgs.ai_skill_playerchosen["yx_sword"] = function(self, targets)
-	for _, player in sgs.qlist(players) do
+	for _, player in sgs.qlist(targets) do
 		if self:isEnemy(player) and not player:hasSkill("duanchang") then
 			return player
 		end

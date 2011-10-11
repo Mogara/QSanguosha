@@ -176,24 +176,13 @@ function fazheng_ai:activate(use)
 	end
 end
 
-function fazheng_ai:askForPlayerChosen(players, reason)
-	if reason == "xuanhuo" then
-		for _, player in sgs.qlist(players) do
-			if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) then
-				return player
-			end
-		end
-	end
-	for _, player in sgs.qlist(players) do
-		if self:isFriend(player) then
+sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
+	for _, player in sgs.qlist(targets) do
+		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) then
 			return player
 		end
 	end
-	
-	return super.askForPlayerChosen(self, players, reason)
 end
-
-
 
 --ganlu
 local wuguotai_ai = SmartAI:newSubclass "wuguotai"

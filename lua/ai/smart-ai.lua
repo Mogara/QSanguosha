@@ -2305,15 +2305,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 	else 
         if (who:getHandcardNum()<2) and (not who:isKongcheng()) and
-			not (who:hasSkill("lianying") or who:hasSkill("kongcheng")) then return -1 
-		end
-		
-		if reason == "ice_sword" then
-			local hcards = who:getCards("h")
-			hcards = sgs.QList2Table(hcards)
-			for _, peach in ipairs(hcards) do
-				if peach:inherits("Peach") or peach:inherits("Analeptic") then return peach:getId() end
-			end
+			not self:hasSkills(sgs.need_kongcheng, who) then return -1 
 		end
 		
 		if flags:match("e") then		    

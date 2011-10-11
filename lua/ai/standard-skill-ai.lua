@@ -1,4 +1,3 @@
-
 sgs.ai_skill_invoke.ice_sword=function(self, data)
 	if self.player:hasFlag("drank") then return false end
 	local effect = data:toSlashEffect() 
@@ -14,6 +13,14 @@ sgs.ai_skill_invoke.ice_sword=function(self, data)
 		return true
 	end
 	return false
+end
+
+sgs.ai_skill_cardchosen.ice_sword = function(self, who)
+	local hcards = who:getCards("h")
+	hcards = sgs.QList2Table(hcards)
+	for _, peach in ipairs(hcards) do
+		if peach:inherits("Peach") or peach:inherits("Analeptic") then return peach:getId() end
+	end
 end
 
 local spear_skill={}
