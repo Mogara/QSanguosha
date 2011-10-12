@@ -76,6 +76,9 @@ local t = {
 	["#JiehuoWake"] = "%from 的觉醒技【%arg】触发，以后你每阶段只能发动一次【%arg2】",
 	["shien"] = "师恩",
 	[":shien"] = "其他角色使用非延时锦囊时,（在结算前）可以让你摸一张牌",
+	["forbid_shien"] = "水镜秘书",
+	["forbid_shien:yes"] = "永久关闭【师恩】发动提示（不可逆操作）",
+	["forbid_shien:no"] = "不关闭【师恩】发动提示",
 
 	["cv:wisxuyou"] = "", 
 	["cv:wisjiangwei"] = "", 

@@ -651,7 +651,7 @@ public:
         Room *room = player->getRoom();
         ServerPlayer *tianfeng = room->findPlayerBySkillName(objectName());
         if(tianfeng && tianfeng->getCardCount(true)>=2
-           && room->askForSkillInvoke(tianfeng, objectName(), data)
+           && room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
             && room->askForDiscard(tianfeng, objectName(),2,false,true)){
 
             foreach(const Card *jcd, player->getJudgingArea())
@@ -806,7 +806,6 @@ class Shien:public TriggerSkill{
 public:
     Shien():TriggerSkill("shien"){
         events << CardUsed << CardResponsed;
-        //frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -814,6 +813,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        if(player->getMark("forbid_shien") > 0)
+            return false;
         CardStar card = NULL;
         if(event == CardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -824,10 +825,16 @@ public:
         if(card->isNDTrick()){
             Room *room = player->getRoom();
             ServerPlayer *shuijing = room->findPlayerBySkillName(objectName());
-            if(!shuijing) return false;
-            QVariant data2 = QVariant::fromValue(shuijing);
-            if(player != shuijing && room->askForSkillInvoke(player, objectName(), data2))
-                shuijing->drawCards(1);
+            if(shuijing && player != shuijing ){
+                if(room->askForSkillInvoke(player, objectName(), QVariant::fromValue(shuijing)))
+                    shuijing->drawCards(1);
+                else{
+                    QString dontaskmeneither = room->askForChoice(player, "forbid_shien", "yes+no");
+                    if(dontaskmeneither == "yes"){
+                        player->setMark("forbid_shien", 1);
+                    }
+                }
+            }
         }
 
         return false;
