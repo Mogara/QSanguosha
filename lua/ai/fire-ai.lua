@@ -43,47 +43,6 @@ function pangtong_ai:activate_dummy(use)
 	super.activate(self, use)
 end
 
---luanji
-local yuanshao_ai = SmartAI:newSubclass "yuanshao"
-function yuanshao_ai:activate(use)
-
-	local first_found, second_found = false, false
-	local first_card, second_card
-	if self.player:getHandcardNum() >= 2 then
-		local cards = self.player:getHandcards()
-		local same_suit=false
-		cards = sgs.QList2Table(cards)
-		for _, fcard in ipairs(cards) do
-			if not (fcard:inherits("Peach") or fcard:inherits("ExNihilo")) then
-				first_card = fcard
-				first_found = true
-				for _, scard in ipairs(cards) do
-					if first_card ~= scard and scard:getSuitString() == first_card:getSuitString() and not (scard:inherits("Peach") or scard:inherits("ExNihilo")) then
-						second_card = scard
-						second_found = true
-						break
-					end
-				end
-				if second_card then break end
-			end
-		end
-	end
-	
-	if first_found and second_found then
-		
-		local luanji_card = {}
-		local first_suit, first_number, first_id = first_card:getSuitString(), first_card:getNumberString(), first_card:getId()
-		local second_suit, second_number, second_id = second_card:getSuitString(), second_card:getNumberString(), second_card:getId()
-		local card_str = ("archery_attack:luanji[%s:%s]=%d+%d"):format(first_suit, first_number, first_id, second_id)
-		local archeryattack = sgs.Card_Parse(card_str)
-		assert(archeryattack)
-		self:useTrickCard(archeryattack, use)
-		return
-	end
-	
-	super.activate(self, use)
-end
-
 local xunyu_ai = SmartAI:newSubclass "xunyu"
 
 function xunyu_ai:activate(use)
