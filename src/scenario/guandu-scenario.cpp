@@ -27,6 +27,11 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     room->damage(damage);
 
     room->setTag("ZhanShuangxiong", true);
+
+    LogMessage log;
+    log.type = "#Guandu_ZhanShuangxiong";
+    log.from = source;
+    source->getRoom()->sendLog(log);
 }
 
 class GreatYiji: public MasochismSkill{
@@ -59,6 +64,11 @@ public:
             DamageStruct damage;
             damage.to = target;
             target->getRoom()->damage(damage);
+
+            LogMessage log;
+            log.type = "#Guandu_Yijidingliaodong";
+            log.from = target;
+            target->getRoom()->sendLog(log);
         }
 
         return false;
@@ -124,15 +134,15 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneralName() == "zhangliao"
+        return target->getGeneralName() == "guandu-zhangliao"
                 && ! target->getRoom()->getTag("BurnWuchao").toBool();
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhangliao) const{
-        if(zhangliao->getPhase() == Player::Draw){
-            Room *room = zhangliao->getRoom();
+    virtual bool onPhaseChange(ServerPlayer *Guandu_zhangliao) const{
+        if(Guandu_zhangliao->getPhase() == Player::Draw){
+            Room *room = Guandu_zhangliao->getRoom();
             bool can_invoke = false;
-            QList<ServerPlayer *> other_players = room->getOtherPlayers(zhangliao);
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(Guandu_zhangliao);
             foreach(ServerPlayer *player, other_players){
                 if(!player->isKongcheng()){
                     can_invoke = true;
@@ -140,8 +150,8 @@ public:
                 }
             }
 
-            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@tuxi-card"))
-                zhangliao->drawCards(1, false);
+            if(!can_invoke || !room->askForUseCard(Guandu_zhangliao, "@@smalltuxi", "@tuxi-card"))
+                Guandu_zhangliao->drawCards(1, false);
 
             return true;
         }
@@ -179,9 +189,11 @@ public:
                     room->installEquip(guanyu, "chitu");
                     room->acquireSkill(guanyu, "zhanshuangxiong");
 
+                    //ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+                    //room->acquireSkill(zhangliao, "smalltuxi");
 
-                    ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    room->acquireSkill(zhangliao, "smalltuxi");
+                    ServerPlayer *zhenji = room->findPlayer("zhenji");
+                        room->setPlayerProperty(zhenji, "kingdom", "qun");
                 }
 
                 break;
@@ -193,8 +205,21 @@ public:
                     if(!burned){
                         QString name = player->getGeneralName();
                         if(name == "caocao" || name == "guojia" || name == "guanyu"){
+
+                            LogMessage log;
+                            log.type = "#Guandu_Caojunqueliang";
+                            log.from = player;
+                            player->getRoom()->sendLog(log);
+
                             player->drawCards(1, false);
                             return true;
+                        }
+                        else if(name == "guandu-zhangliao"){
+                            LogMessage log;
+                            log.type = "#Guandu_Caojunqueliang";
+                            log.from = player;
+                            player->getRoom()->sendLog(log);
+                            return false;
                         }
                     }
                 }
@@ -208,9 +233,15 @@ public:
                     return false;
 
                 DamageStruct damage = data.value<DamageStruct>();
+                ServerPlayer *Guandu_zhangliao = room->findPlayer("guandu-zhangliao");
                 if(player->getGeneralName() == "yuanshao" && damage.nature == DamageStruct::Fire
                    && damage.from->getRoleEnum() == Player::Rebel){
                     room->setTag("BurnWuchao", true);
+
+                    LogMessage log;
+                    log.type = "#Guandu_BurnWuchao";
+                    log.from = player;
+                    player->getRoom()->sendLog(log);
 
                     QStringList tos;
                     tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
@@ -227,6 +258,7 @@ public:
 
                         room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
                     }
+                    room->setPlayerProperty(Guandu_zhangliao, "general", "zhangliao");
                 }
 
                 break;
@@ -262,15 +294,17 @@ GuanduScenario::GuanduScenario()
 {
     lord = "yuanshao";
     loyalists << "shuangxiong" << "zhenji";
-    rebels << "caocao" << "zhangliao" << "guojia";
+    rebels << "caocao" << "guandu-zhangliao" << "guojia";
     renegades << "liubei" << "guanyu";
 
     rule = new GuanduRule(this);
 
-    skills << new SmallTuxi
-            << new ZhanShuangxiong
+    skills  << new ZhanShuangxiong
             << new GreatYiji
             << new DamageBeforePlay;
+
+    General *Guandu_zhangliao = new General(this, "guandu-zhangliao", "wei", 4, true, true);
+    Guandu_zhangliao->addSkill(new SmallTuxi);
 
     addMetaObject<ZhanShuangxiongCard>();
     addMetaObject<SmallTuxiCard>();
@@ -281,6 +315,10 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
         return AI::Friend;
     else
         return AI::GetRelation(a, b);
+}
+
+void GuanduScenario::getRoles(char *roles) const{
+    strcpy(roles, "ZCCFFFNN");
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{
