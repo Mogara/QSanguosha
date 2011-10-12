@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QMessageBox>
 
 static HallDialog *HallDialogInstance;
 
@@ -162,4 +163,16 @@ void Client::roomEnd(const QString &){
 
 void Client::roomCreated(const QString &idstr){
     HallDialogInstance->joinRoom(idstr.toInt());
+}
+
+void Client::roomError(const QString &errorStr){
+    static QMap<QString, QString> map;
+    if(map.isEmpty()){
+        map["NO_SUCH_ROOM"] = tr("No such room!");
+        map["ROOM_IS_FULL"] = tr("Room is full!");
+        map["INVALID_SETUP_STRING"] = tr("Invalid setup string!");
+     }
+
+    QString msg = map.value(errorStr, tr("Unknown room error: %1").arg(errorStr));
+    QMessageBox::warning(NULL, tr("Warning"), msg);
 }
