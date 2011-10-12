@@ -174,5 +174,5 @@ void Client::roomError(const QString &errorStr){
      }
 
     QString msg = map.value(errorStr, tr("Unknown room error: %1").arg(errorStr));
-    QMessageBox::warning(HallDialogInstance, tr("Warning"), msg);
+    QMessageBox::warning(NULL, tr("Warning"), msg);
 }
