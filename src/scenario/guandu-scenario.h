@@ -32,6 +32,7 @@ public:
     GuanduScenario();
 
     virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
+    virtual void getRoles(char *roles) const;
     virtual void onTagSet(Room *room, const QString &key) const;
 };
 
