@@ -1,13 +1,9 @@
 -- this scripts contains the AI classes for generals of fire package
 
--- wolong
-
 -- bazhen
 sgs.ai_skill_invoke.bazhen = true
 
-
 -- pangtong
-
 local pangtong_ai = SmartAI:newSubclass "pangtong"
 
 -- niepan
@@ -24,23 +20,6 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 	end
 
 	return n < peaches
-end
-
--- lianhuan
-function pangtong_ai:activate_dummy(use)
-	local cards = self.player:getHandcards()
-	for _, card in sgs.qlist(cards) do
-		if card:getSuit() == sgs.Card_Club then
-			local number = card:getNumber()
-			local card_id = card:getEffectiveId()
-			local card_str = ("iron_chain:lianhuan[club:%d]=%d"):format(number, card_id)
-			local interlink = sgs.Card_Parse(card_str)
-			self:useCardIronChain(interlink, use)
-			return
-		end
-	end
-
-	super.activate(self, use)
 end
 
 local xunyu_ai = SmartAI:newSubclass "xunyu"

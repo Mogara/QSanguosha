@@ -113,7 +113,7 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 end
 
 --kuangfeng
-sgs.ai_skill_invoke.kuangfeng = function(self, data)
+sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends) do
 		local cards = friend:getHandcards()
@@ -138,29 +138,29 @@ sgs.ai_skill_invoke.kuangfeng = function(self, data)
 			break
 		end
 	end
-	if friendly_fire and is_chained > 1 or (target[1]:getArmor() and target[1]:getArmor():objectName() == "vine") then return true 
-	else return false
+	local usecard=false
+	if friendly_fire and is_chained > 1 then usecard=true end
+	if target[1] then
+		if target[1]:getArmor() and target[1]:getArmor():objectName() == "vine" then usecard=true end
+	end
+	if usecard then
+		if not target[1] then table.insert(target,self.enemies[1]) end
+		if target[1] then return "@KuangfengCard=.->" .. target[1]:objectName() else return "." end
+	else
+		return "."
 	end
 end
-
-sgs.ai_skill_playerchosen.kuangfeng = function(self, targets)
-	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) and (target:isChained() or (target:getArmor() and target:getArmor():objectName() == "vine")) then
-			return enemy
+   
+--dawu
+sgs.ai_skill_use["@dawu"] = function(self, prompt)
+	self:sort(self.friends, "hp")
+	for _, friend in ipairs(self.friends) do
+		if friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then
+			return "@DawuCard=.->" .. friend:objectName()
 		end
 	end
 	
-	return self.enemies[1]
-end
-
---dawu
-sgs.ai_skill_invoke.dawu = function(self, data)
-	self:sort(self.friends, "hp")
-	for _, friend in ipairs(self.friends) do
-		if friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then return true end
-	end
-	
-	return false
+	return "."
 end
 
 sgs.ai_skill_playerchosen.dawu = function(self, targets)
@@ -348,3 +348,52 @@ sgs.ai_skill_use_func["GreatYeyanCard"]=function(card,use,self)
 end
 
 sgs.ai_skill_invoke.lianpo = true
+
+sgs.ai_skill_invoke.jilve=function(self,data)
+	local struct
+	local n=self.player:getMark("@bear")
+	local use=(n>2 or self:getOverflow()>0)
+	struct=data:toCard() 
+	if not struct then
+		struct=data:toCardUse()
+		if struct then
+			if not struct.card then struct=nil elseif struct.card:inherits("ExNihilo") then use=true end
+		end
+	end 
+	if struct then return use end 
+	struct=data:toDamage()
+	if struct then if not struct.to==self.player then struct=nil end end
+	if struct then return (use and self:askForUseCard("@@fangzhu","@fangzhu")~=".") end 
+	struct=data:toJudge()
+	if struct then if not struct.card then struct=nil end end
+	if not struct then assert(false) end
+	return (use and sgs.ai_skill_invoke["@guicai"](self,"dummyprompt",struct))
+end
+
+local jilve_skill={}
+jilve_skill.name="jilve"
+table.insert(sgs.ai_skills,jilve_skill)
+jilve_skill.getTurnUseCard=function(self)
+	local zhiheng_skill
+	for _, skill in ipairs(sgs.ai_skills) do
+		if skill.name=="zhiheng" then zhiheng_skill=skill break end
+	end
+	local card=zhiheng_skill.getTurnUseCard(self)
+	if card then return sgs.Card_Parse("@JilveCard=.") end
+end
+
+sgs.ai_skill_choice.jilve="zhiheng"
+
+sgs.ai_skill_use_func["JilveCard"]=function(card,use,self)
+	use.card = card
+end
+
+sgs.ai_skill_use["@zhiheng"]=function(self,prompt)
+	for _, skill in ipairs(sgs.ai_skills) do
+		if skill.name=="zhiheng" then zhiheng_skill=skill break end
+	end
+	local card=zhiheng_skill.getTurnUseCard(self)
+	if card then return card:toString() .. "->." end
+	assert(false)
+	return "."
+end
