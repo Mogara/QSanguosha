@@ -15,13 +15,13 @@ xianzhen_skill.getTurnUseCard=function(self)
     cards=sgs.QList2Table(cards)
     
     local max_card = self:getMaxCard()
-    if not max_card then return nil end
+    if not max_card then return end
 	local max_point = max_card:getNumber()
 	
 	local slashNum=self:getSlashNumber(self.player)
 	if max_card:inherits("Slash") then slashNum=slashNum-1 end
 	
-	if slashNum<2 then return nil end
+	if slashNum<2 then return end
 	
 	self:sort(self.enemies, "hp")
 	

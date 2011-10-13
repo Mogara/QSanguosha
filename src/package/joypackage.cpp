@@ -393,7 +393,7 @@ public:
             data = QVariant::fromValue(damage);
             room->moveCardTo(player->getWeapon(), damage.from, Player::Hand);
         }
-        return false;
+        return damage.to->isDead();
     }
 };
 
