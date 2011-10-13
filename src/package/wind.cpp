@@ -390,9 +390,9 @@ public:
                 room->playSkillEffect(objectName());
 
                 LogMessage log;
-                log.type = "#KuangguRecover";
+                log.type = "#TriggerSkill";
                 log.from = player;
-                log.arg = QString::number(damage.damage);
+                log.arg = objectName();
                 room->sendLog(log);
 
                 RecoverStruct recover;

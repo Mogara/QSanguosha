@@ -51,7 +51,6 @@ return {
 	[":huangtian"] = "主公技，群雄角色可在他们各自的回合里给你一张【闪】或【闪电】", 
 	["liegong:yes"] = "此【杀】不可闪避", 
 	
-	["#KuangguRecover"] = "%from 的锁定技【狂骨】被触发，恢复了 %arg 点体力",
 	["@guidao-card"] = "请使用【鬼道】技能来修改 %src 的 %arg 判定",
 	["#BuquDuplicate"] = "%from 不屈失败，因为其不屈牌中有 %arg 组重复点数",
 	["#BuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
