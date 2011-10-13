@@ -268,10 +268,20 @@ public:
                 room->getThread()->delay();
 
                 const Card *card = Sanguosha->getCard(card_id);
-                if(!card->inherits("BasicCard"))
+                if(!card->inherits("BasicCard")){
                     room->throwCard(card_id);
-                else
+                    room->setEmotion(player, "bad");
+                }
+                else{
+                    LogMessage log;
+                    log.type = "$TakeAG";
+                    log.from = player;
+                    log.card_str = QString::number(card_id);
+                    room->sendLog(log);
+
                     room->obtainCard(player, card_id);
+                    room->setEmotion(player, "good");
+                }
             }
         }
         return false;
