@@ -134,15 +134,15 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getGeneralName() == "guandu-zhangliao"
+        return target->getGeneralName() == "zhangliao"
                 && ! target->getRoom()->getTag("BurnWuchao").toBool();
     }
 
-    virtual bool onPhaseChange(ServerPlayer *Guandu_zhangliao) const{
-        if(Guandu_zhangliao->getPhase() == Player::Draw){
-            Room *room = Guandu_zhangliao->getRoom();
+    virtual bool onPhaseChange(ServerPlayer *zhangliao) const{
+        if(zhangliao->getPhase() == Player::Draw){
+            Room *room = zhangliao->getRoom();
             bool can_invoke = false;
-            QList<ServerPlayer *> other_players = room->getOtherPlayers(Guandu_zhangliao);
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(zhangliao);
             foreach(ServerPlayer *player, other_players){
                 if(!player->isKongcheng()){
                     can_invoke = true;
@@ -150,8 +150,8 @@ public:
                 }
             }
 
-            if(!can_invoke || !room->askForUseCard(Guandu_zhangliao, "@@smalltuxi", "@tuxi-card"))
-                Guandu_zhangliao->drawCards(1, false);
+            if(!can_invoke || !room->askForUseCard(zhangliao, "@@smalltuxi", "@tuxi-card"))
+                zhangliao->drawCards(1, false);
 
             return true;
         }
@@ -189,8 +189,8 @@ public:
                     room->installEquip(guanyu, "chitu");
                     room->acquireSkill(guanyu, "zhanshuangxiong");
 
-                    //ServerPlayer *zhangliao = room->findPlayer("zhangliao");
-                    //room->acquireSkill(zhangliao, "smalltuxi");
+                    ServerPlayer *zhangliao = room->findPlayer("zhangliao");
+                    room->acquireSkill(zhangliao, "smalltuxi");
 
                     ServerPlayer *zhenji = room->findPlayer("zhenji");
                         room->setPlayerProperty(zhenji, "kingdom", "qun");
@@ -214,12 +214,14 @@ public:
                             player->drawCards(1, false);
                             return true;
                         }
-                        else if(name == "guandu-zhangliao"){
+                        else if(name == "zhangliao"){
+                            if(!room->askForUseCard(player, "@@smalltuxi", "@tuxi-card"))
+                                player->drawCards(1,false);
                             LogMessage log;
                             log.type = "#Guandu_Caojunqueliang";
                             log.from = player;
                             player->getRoom()->sendLog(log);
-                            return false;
+                            return true;
                         }
                     }
                 }
@@ -233,7 +235,6 @@ public:
                     return false;
 
                 DamageStruct damage = data.value<DamageStruct>();
-                ServerPlayer *Guandu_zhangliao = room->findPlayer("guandu-zhangliao");
                 if(player->getGeneralName() == "yuanshao" && damage.nature == DamageStruct::Fire
                    && damage.from->getRoleEnum() == Player::Rebel){
                     room->setTag("BurnWuchao", true);
@@ -258,7 +259,6 @@ public:
 
                         room->moveCardTo(Sanguosha->getCard(card_id), to, Player::Judging, true);
                     }
-                    room->setPlayerProperty(Guandu_zhangliao, "general", "zhangliao");
                 }
 
                 break;
@@ -294,7 +294,7 @@ GuanduScenario::GuanduScenario()
 {
     lord = "yuanshao";
     loyalists << "shuangxiong" << "zhenji";
-    rebels << "caocao" << "guandu-zhangliao" << "guojia";
+    rebels << "caocao" << "zhangliao" << "guojia";
     renegades << "liubei" << "guanyu";
 
     rule = new GuanduRule(this);
@@ -302,9 +302,6 @@ GuanduScenario::GuanduScenario()
     skills  << new ZhanShuangxiong
             << new GreatYiji
             << new DamageBeforePlay;
-
-    General *Guandu_zhangliao = new General(this, "guandu-zhangliao", "wei", 4, true, true);
-    Guandu_zhangliao->addSkill(new SmallTuxi);
 
     addMetaObject<ZhanShuangxiongCard>();
     addMetaObject<SmallTuxiCard>();
