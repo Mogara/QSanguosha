@@ -129,7 +129,7 @@ function fazheng_ai:activate(use)
 	end
 	
 	local cards = self.player:getHandcards()
-	if not self:hasUsed("XuanhuoCard") then
+	if not self.player:hasUsed("XuanhuoCard") then
 		cards=sgs.QList2Table(cards)
 		self:sortByUseValue(cards,true)
 		

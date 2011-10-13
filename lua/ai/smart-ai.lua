@@ -856,8 +856,9 @@ function SmartAI:slashIsAvailable()
 end
 
 
-function SmartAI:getSlash()
-    local cards = self.player:getHandcards()
+function SmartAI:getSlash(player)
+	player = player or self.player
+    local cards = player:getHandcards()
     cards=sgs.QList2Table(cards)
     
     self:sortByUsePriority(cards)
