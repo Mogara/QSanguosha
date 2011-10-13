@@ -14,7 +14,7 @@ return {
 	["@lesbianlianli-slash"] = "请提供一张杀给你的连理对象",
 	["@lesbianlianli-jink"] = "请提供一张闪给你的连理对象",
 	
-	["@@lesbianlianli-card"] = "请选择一名要连理的对象",
+	["@@lesbianlianli-card"] = "请选择一名要百合连理的对象",
 	["#lesbianlianliConnection"] = "%from 与 %to 结为连理",
 	["@tied"] = "连理",
 }

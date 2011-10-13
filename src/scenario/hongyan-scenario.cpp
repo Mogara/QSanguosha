@@ -4,8 +4,6 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "carditem.h"
-#include "skill.h"
-#include "carditem.h"
 #include "standard.h"
 
 LesbianJieyinCard::LesbianJieyinCard()
@@ -89,9 +87,7 @@ public:
     }
 };
 
-
 //LESBIAN LIANLI RELATED
-
 LesbianLianliCard::LesbianLianliCard(){
 
 }
@@ -298,42 +294,6 @@ public:
     }
 };
 
-class Tongxin: public MasochismSkill{
-public:
-    Tongxin():MasochismSkill("tongxin"){
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->getMark("@tied") > 0;
-    }
-
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
-        Room *room = target->getRoom();
-        ServerPlayer *xiahoujuan = room->findPlayerBySkillName(objectName());
-
-        if(xiahoujuan && xiahoujuan->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
-            room->playSkillEffect(objectName());
-
-            ServerPlayer *zhangfei = NULL;
-            if(target == xiahoujuan){
-                QList<ServerPlayer *> players = room->getOtherPlayers(xiahoujuan);
-                foreach(ServerPlayer *player, players){
-                    if(player->getMark("@tied") > 0){
-                        zhangfei = player;
-                        break;
-                    }
-                }
-            }else
-                zhangfei = target;
-
-            xiahoujuan->drawCards(damage.damage);
-
-            if(zhangfei)
-                zhangfei->drawCards(damage.damage);
-        }
-    }
-};
-
 class LesbianLianliClear: public TriggerSkill{
 public:
     LesbianLianliClear():TriggerSkill("#lesbianlianli-clear"){
@@ -409,8 +369,6 @@ HongyanScenario::HongyanScenario()
 
     addMetaObject<LesbianJieyinCard>();
     addMetaObject<LesbianLijianCard>();
-    addMetaObject<LesbianLianliCard>();
-    addMetaObject<LesbianLianliSlashCard>();
 }
 
 bool HongyanScenario::exposeRoles() const{
@@ -422,7 +380,6 @@ void HongyanScenario::assign(QStringList &generals, QStringList &roles) const{
     qShuffle(generals);
     generals.removeLast();
     roles = standard_roles;
-    qShuffle(roles);
 }
 
 int HongyanScenario::getPlayerCount() const{
@@ -437,4 +394,4 @@ void HongyanScenario::onTagSet(Room *room, const QString &key) const{
     // dummy
 }
 
-ADD_SCENARIO(Hongyan);
+ADD_SCENARIO(Hongyan)

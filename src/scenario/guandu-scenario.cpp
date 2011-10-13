@@ -27,11 +27,6 @@ void ZhanShuangxiongCard::use(Room *room, ServerPlayer *source, const QList<Serv
     room->damage(damage);
 
     room->setTag("ZhanShuangxiong", true);
-
-    LogMessage log;
-    log.type = "#Guandu_ZhanShuangxiong";
-    log.from = source;
-    source->getRoom()->sendLog(log);
 }
 
 class GreatYiji: public MasochismSkill{
@@ -64,11 +59,6 @@ public:
             DamageStruct damage;
             damage.to = target;
             target->getRoom()->damage(damage);
-
-            LogMessage log;
-            log.type = "#Guandu_Yijidingliaodong";
-            log.from = target;
-            target->getRoom()->sendLog(log);
         }
 
         return false;
@@ -191,9 +181,6 @@ public:
 
                     ServerPlayer *zhangliao = room->findPlayer("zhangliao");
                     room->acquireSkill(zhangliao, "smalltuxi");
-
-                    ServerPlayer *zhenji = room->findPlayer("zhenji");
-                        room->setPlayerProperty(zhenji, "kingdom", "qun");
                 }
 
                 break;
@@ -205,12 +192,6 @@ public:
                     if(!burned){
                         QString name = player->getGeneralName();
                         if(name == "caocao" || name == "guojia" || name == "guanyu"){
-
-                            LogMessage log;
-                            log.type = "#Guandu_Caojunqueliang";
-                            log.from = player;
-                            player->getRoom()->sendLog(log);
-
                             player->drawCards(1, false);
                             return true;
                         }
@@ -238,11 +219,6 @@ public:
                 if(player->getGeneralName() == "yuanshao" && damage.nature == DamageStruct::Fire
                    && damage.from->getRoleEnum() == Player::Rebel){
                     room->setTag("BurnWuchao", true);
-
-                    LogMessage log;
-                    log.type = "#Guandu_BurnWuchao";
-                    log.from = player;
-                    player->getRoom()->sendLog(log);
 
                     QStringList tos;
                     tos << "yuanshao" << "shuangxiong" << "zhenji" << "liubei";
@@ -299,7 +275,8 @@ GuanduScenario::GuanduScenario()
 
     rule = new GuanduRule(this);
 
-    skills  << new ZhanShuangxiong
+    skills << new SmallTuxi
+            << new ZhanShuangxiong
             << new GreatYiji
             << new DamageBeforePlay;
 
@@ -312,10 +289,6 @@ AI::Relation GuanduScenario::relationTo(const ServerPlayer *a, const ServerPlaye
         return AI::Friend;
     else
         return AI::GetRelation(a, b);
-}
-
-void GuanduScenario::getRoles(char *roles) const{
-    strcpy(roles, "ZCCFFFNN");
 }
 
 void GuanduScenario::onTagSet(Room *room, const QString &key) const{

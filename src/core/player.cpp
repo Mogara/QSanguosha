@@ -764,5 +764,11 @@ void Player::copyFrom(Player* p)
 }
 
 QList<const Player *> Player::getSiblings() const{
-    return parent()->findChildren<const Player *>();
+    QList<const Player *> siblings;
+    if(parent()){
+        siblings = parent()->findChildren<const Player *>();
+        siblings.removeOne(this);
+    }
+
+    return siblings;
 }

@@ -21,26 +21,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
-class LesbianLianliCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE LesbianLianliCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-};
-
-class LesbianLianliSlashCard: public SkillCard{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE LesbianLianliSlashCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
 class HongyanScenario : public Scenario{
     Q_OBJECT
 
