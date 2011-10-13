@@ -101,7 +101,18 @@ DefensiveHorse = 5,
 OffensiveHorse = 5
 }
 
+sgs.shenzhaoyun_suit_value = 
+{
+heart = 6.7,
+spade = 5,
+club = 4.2,
+diamond = 3.9,
+}
 
+sgs.dongzhuo_suit_value = 
+{
+spade = 5,
+}
 
 sgs.xiaoqiao_suit_value = 
 {

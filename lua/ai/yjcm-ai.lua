@@ -129,43 +129,48 @@ function fazheng_ai:activate(use)
 	end
 	
 	local cards = self.player:getHandcards()
-	if not self.xuanhuo_used then
+	if not self:hasUsed("XuanhuoCard") then
 		cards=sgs.QList2Table(cards)
 		self:sortByUseValue(cards,true)
 		
+		local target 
 		for _, friend in ipairs(self.friends) do
-			if friend:hasSkill("xiaoji") or friend:hasSkill("xuanfeng") then 
+			if self:hasSkills(sgs.lose_equip_skill, friend) then 
 				for _, card in ipairs(cards) do
 					if card:getSuit() == sgs.Card_Heart and self.player:getHandcardNum() > 1 then
 						use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
-						use.to:append(friend)
-						self.xuanhuo_used = true
-						return
+						target = friend
+						break
 					end	
 				end		
 			end
+			if target then break end
 		end
-		if self.xuanhuo_used then return end
-		
-		for _, enemy in ipairs(self.enemies) do
-			if not enemy:isKongcheng() then
-				for _, card in ipairs(cards)do
-					if card:getSuit() == sgs.Card_Heart and not card:inherits("Peach")  and self.player:getHandcardNum() > 1 then
-						use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
-						use.to:append(enemy)
-						self.xuanhuo_used = true
-						return
-					end	
-				end		
+		if not target then 
+			for _, enemy in ipairs(self.enemies) do
+				if not enemy:isKongcheng() then
+					for _, card in ipairs(cards)do
+						if card:getSuit() == sgs.Card_Heart and not card:inherits("Peach")  and self.player:getHandcardNum() > 1 then
+							use.card = sgs.Card_Parse("@XuanhuoCard=" .. card:getEffectiveId())
+							target = enemy
+							break
+						end	
+					end		
+				end
+				if target then break end
 			end
 		end
 		
+		if target then 
+			self.room:setPlayerFlag(target, "xuanhuo_target")
+			use.to:append(target) 
+		end
 	end
 end
 
 sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
 	for _, player in sgs.qlist(targets) do
-		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) then
+		if (player:getHandcardNum() <= 2 or player:getHp() < 2) and self:isFriend(player) and not player:hasFlag("xuanhuo_target") then
 			return player
 		end
 	end

@@ -101,53 +101,50 @@ tianyi_skill.name="tianyi"
 table.insert(sgs.ai_skills,tianyi_skill)
 tianyi_skill.getTurnUseCard=function(self)
     
-    if self.tianyi_used then return nil end
+    if self:hasUsed("TianyiCard") then return nil end
     
     local cards = self.player:getCards("h")	
     cards=sgs.QList2Table(cards)
     
     local max_card = self:getMaxCard()
-    if not max_card then return nil end
+    if not max_card then return end
 	local max_point = max_card:getNumber()
 	
 	local slashNum=self:getSlashNumber(self.player)
 	if max_card:inherits("Slash") then slashNum=slashNum-1 end
 	
-	if slashNum<2 then return nil end
-	
-	self:sort(self.enemies, "handcard")
-	
-	for _, enemy in ipairs(self.enemies) do
-	
-	    local enemy_max_card = self:getMaxCard(enemy)
-		if enemy_max_card and max_point > enemy_max_card:getNumber() then
+	if slashNum >= 2 then
+		self:sort(self.enemies, "handcard")
+		for _, enemy in ipairs(self.enemies) do
+			local enemy_max_card = self:getMaxCard(enemy)
+			if enemy_max_card and max_point > enemy_max_card:getNumber() then
 		    
-		    local slash=self:getSlash()
-		    local dummy_use={}
-            dummy_use.isDummy=true
+				local slash=self:getSlash()
+				local dummy_use={}
+				dummy_use.isDummy=true
             
-            local no_distance=true
-		    self:useBasicCard(slash,dummy_use,no_distance)
+				local no_distance=true
+				self:useBasicCard(slash,dummy_use, no_distance)
 		    
-		    if not dummy_use.card then 
-		        return nil
-		    end
+				if not dummy_use.card then 
+					return
+				end
 		    
-		    local card_id = max_card:getEffectiveId()
-			local card_str = "@TianyiCard=" .. card_id
-			local card = sgs.Card_Parse(card_str)
-
-		    return card
+				local card_id = max_card:getEffectiveId()
+				local card_str = "@TianyiCard=" .. card_id
+				local card = sgs.Card_Parse(card_str)
+				return card
+			end
 		end
-	end
-	
-	self:sortByUseValue(cards, true)
-	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isKongcheng() then
-		    local card_id = cards[1]:getEffectiveId()
-			local card_str = "@TianyiCard=" .. card_id
-			local card = sgs.Card_Parse(card_str)
-			return card
+	else
+		self:sortByUseValue(cards, true)
+		for _, enemy in ipairs(self.enemies) do
+			if not enemy:isKongcheng() then
+				local card_id = cards[1]:getEffectiveId()
+				local card_str = "@TianyiCard=" .. card_id
+				local card = sgs.Card_Parse(card_str)
+				return card
+			end
 		end
 	end
 end

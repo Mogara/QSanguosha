@@ -219,7 +219,7 @@ function liubei_ai:activate(use)
 				end
 			elseif friend:hasSkill("guose") then
 				for _, hcard in sgs.qlist(cards) do
-					if hcard:getTypeId() == sgs.Card_Diamond then 
+					if hcard:getSuit() == sgs.Card_Diamond then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
 						if self.rende_used then self.rende_used = self.rende_used+1
@@ -230,7 +230,7 @@ function liubei_ai:activate(use)
 				end
 			elseif friend:hasSkill("leiji") then
 				for _, hcard in sgs.qlist(cards) do
-					if hcard:getTypeId() == sgs.Card_Spade then 
+					if hcard:getSuit() == sgs.Card_Spade then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
 						if self.rende_used then self.rende_used = self.rende_used+1

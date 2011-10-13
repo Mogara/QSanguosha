@@ -118,3 +118,65 @@ sgs.ai_skill_choice["guhuo"] = function(self, choices)
 		end
 	end
 end
+
+local guhuo_skill={}
+guhuo_skill.name="guhuo"
+table.insert(sgs.ai_skills,guhuo_skill)
+guhuo_skill.getTurnUseCard=function(self)
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards)
+		
+	for _,card in ipairs(cards) do
+		if card:isNDTrick() and card:getSuit() == sgs.Card_Heart then
+			local dummyuse={}
+			dummyuse.isDummy=true
+			if card:isNDTrick() then self:useTrickCard(card, dummyuse) else self:useBasicCard(card, dummyuse) end
+			if dummyuse.card then 
+				local parsed_card=sgs.Card_Parse("@GuhuoCard=" .. card:getId() .. ":" .. card:objectName())
+				return parsed_card
+			end
+		end
+	end
+	
+	local slash = {}
+	for _, card in ipairs(cards) do
+		if card:inherits("Slash") then
+			if card:getSuit() == sgs.Card_Heart then
+				table.insert(slash, 1, card)
+			else
+				table.insert(slash, card)
+			end
+		end
+	end
+	if #slash > 1 then return sgs.Card_Parse("@GuhuoCard=" .. slash[1]:getId() .. ":" .. slash[1]:objectName())
+	elseif #slash == 1 and slash[1]:getSuit() == sgs.Card_Heart then return sgs.Card_Parse("@GuhuoCard=" .. slash[1]:getId() .. ":" .. slash[1]:objectName())
+	end
+	
+	local guhuo="peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
+	local guhuos=guhuo:split("|")
+	for _,card in ipairs(cards) do
+		if (card:inherits("Slash") and self:getSlashNumber(self.player,true)>=2 and not self:isEquip("Crossbow"))
+		or (card:inherits("Jink") and self:getJinkNumber(self.player,true)>=3) then
+			for i=1, 10 do
+				local = guhuos[math.random(1,#guhuos)]
+				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
+				local dummyuse = {isDummy=true}
+				if newguhuo == "peach" then self:useBasicCard(guhuocard,dummyuse,false) else self:useTrickCard(guhuocard,dummyuse) end
+				if dummyuse.card then 
+					local parsed_card=sgs.Card_Parse("@GuhuoCard=" .. card:getId() .. ":" .. newguhuo)
+					return parsed_card
+				end
+			end
+		end
+	end
+end
+
+sgs.ai_skill_use_func["GuhuoCard"]=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[2]
+	local guhuocard=sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
+	if guhuocard:getTypeId() == sgs.Card_Basic then self:useBasicCard(guhuocard,use,false) else assert(guhuocard) self:useTrickCard(guhuocard,use) end 
+	if not use.card then return end
+	use.card=card
+end
