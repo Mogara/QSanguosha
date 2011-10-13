@@ -119,19 +119,6 @@ sgs.ai_skill_playerchosen.xuanfeng_slash = function(self,targets)
 	return self.enemys:at(math.random(0, targets:length() - 1))
 end
 
--- local lingtong_ai = SmartAI:newSubclass "lingtong"
--- lingtong_ai:setOnceSkill("xuanfeng")
--- function lingtong_ai:activate(use)
-	-- local cards = self.player:getHandcards()
-	-- for _, card in sgs.qlist(cards) do
-		-- if card:inherits("EquipCard") then
-			-- use.card = card
-			-- return
-		-- end
-	-- end
-	-- super.activate(self, use)
--- end
-
 --xuanhuo
 local fazheng_ai = SmartAI:newSubclass "fazheng"
 fazheng_ai:setOnceSkill("xuanhuo")

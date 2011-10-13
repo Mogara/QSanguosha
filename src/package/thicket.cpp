@@ -18,13 +18,13 @@ public:
         return !target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         if(player->isNude())
             return false;
 
         Room *room = player->getRoom();
         ServerPlayer *caopi = room->findPlayerBySkillName(objectName());
-        if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName())){
+        if(caopi && caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)){
             if(player->isCaoCao()){
                 room->playSkillEffect(objectName(), 3);
             }else if(player->getGeneral()->isMale())
