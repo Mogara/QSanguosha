@@ -41,7 +41,7 @@ local t = {
 --	["analeptic:ignore"] = "我是打酱油的~",
 	["$Weidai"] = "%from 弃掉了 %card",
 	["@weidai"] = "你正徘徊在生死边缘，是否发动【危殆】？",
-	["@weidai-analeptic"] = "请打出一张黑桃2~9的手牌，视为为主公提供一张【酒】",
+	["@weidai-analeptic"] = "%src 现在需要【酒】<br/>你只要打出一张 黑桃２~９的手牌<br/>就能为 %src 提供一张【酒】",
 	["longluo"] = "笼络",
 	[":longluo"] = "弃牌阶段,你可以选择一名其他角色摸取与你弃牌数量相同的牌",
 	["fuzuo"] = "辅佐",
@@ -88,6 +88,15 @@ local t = {
 	["cv:wishuaxiong"] = "",
 	["cv:wistianfeng"] = "",
 	["cv:wisshuijing"] = "",
+
+	["~wisxuyou"] = "智之许攸，不幸阵亡", 
+	["~wisjiangwei"] = "智之姜维，不幸阵亡", 
+	["~wisjiangwan"] = "智之蒋琬，不幸阵亡",
+	["~wissunce"] = "智之孙策，不幸阵亡",
+	["~wiszhangzhao"] = "智之张昭，不幸阵亡",
+	["~wishuaxiong"] = "智之华雄，不幸阵亡",
+	["~wistianfeng"] = "智之田丰，不幸阵亡",
+	["~wisshuijing"] = "智之水镜先生，不幸阵亡",
 }
 
 local generals = {"wisxuyou", "wisjiangwei", "wisjiangwan", "wissunce", "wiszhangzhao", "wishuaxiong", "wistianfeng", "wisshuijing"}
