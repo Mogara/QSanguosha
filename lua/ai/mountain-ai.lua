@@ -267,9 +267,9 @@ jixi_skill.getTurnUseCard = function(self)
 	local targets = {}
 	for _, p in sgs.qlist(players) do
 		if self.player:distanceTo(p) <= 1 then
-			if self:isEnemy(p) and p:getCards("he") and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), p) then 
+			if self:isEnemy(p) and not p:getCards("he"):isEmpty() and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), p) then 
 				table.insert(targets, p) 
-			elseif self:isFriend(p) and p:getCards("j") then
+			elseif self:isFriend(p) and not p:getCards("j"):isEmpty() then
 				table.insert(targets, p) 
 			end
 		end

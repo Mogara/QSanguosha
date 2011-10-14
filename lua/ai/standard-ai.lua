@@ -4,8 +4,7 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 sgs.ai_skill_invoke.jijiang = function(self, data)
-	if self:getSlashNumber(self.player)<=0 and not self.jijiang_used then 
-		self.jijiang_used = true 
+	if self:getSlashNumber(self.player)<=0 then 
 		return true
 	end
 	return false
@@ -50,11 +49,10 @@ end
 sgs.ai_skill_invoke.hujia = function(self, data)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Jink") and not self.hujia_used then
+		if card:inherits("Jink") then
 			return false
 		end
 	end
-	self.hujia_used = true
 	return true	
 end
 
@@ -165,11 +163,8 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 end
 
 local liubei_ai=SmartAI:newSubclass "liubei"
-liubei_ai:setOnceSkill("rende")
-
 function liubei_ai:activate(use)
-	
-    if not self.rende_used or self.rende_used <= 1 then
+    if self.player:usedTimes("RendeCard") < 2 then
 		local cards = self.player:getHandcards()
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getHp() == 1 then
@@ -177,9 +172,6 @@ function liubei_ai:activate(use)
 					if hcard:inherits("Analeptic") or hcard:inherits("Peach") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -189,9 +181,6 @@ function liubei_ai:activate(use)
 					if hcard:inherits("Slash") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -200,9 +189,6 @@ function liubei_ai:activate(use)
 					if hcard:isRed() and not (hcard:inherits("ExNihilo") or hcard:inherits("Peach")) then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -211,9 +197,6 @@ function liubei_ai:activate(use)
 					if hcard:getTypeId() == sgs.Card_Trick then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -222,9 +205,6 @@ function liubei_ai:activate(use)
 					if hcard:getSuit() == sgs.Card_Diamond then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -233,9 +213,6 @@ function liubei_ai:activate(use)
 					if hcard:getSuit() == sgs.Card_Spade then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -244,9 +221,6 @@ function liubei_ai:activate(use)
 					if hcard:inherits("EquipCard") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 						use.to:append(friend)
-						if self.rende_used then self.rende_used = self.rende_used+1
-						else self.rende_used=1
-						end
 						return
 					end
 				end
@@ -270,26 +244,23 @@ function liubei_ai:activate(use)
 end
 
 local sunquan_ai = SmartAI:newSubclass "sunquan"
-sunquan_ai:setOnceSkill("zhiheng")
-
 function sunquan_ai:activate(use)
 
 	local unpreferedCards={}
 	local cards=sgs.QList2Table(self.player:getHandcards())
 	
-	if not self.zhiheng_used then 
+	if not self.player:hasUsed("ZhihengCard") then 
 		if self.player:getHp() < 3 then
 			local zcards = self.player:getCards("he")
 			for _, zcard in sgs.qlist(zcards) do
 				if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") then
 					table.insert(unpreferedCards,zcard:getId())
-					self.zhiheng_used = true
 				end	
 			end
 		end
 	end	
 	
-	if not self.zhiheng_used then 
+	if #unpreferedCards == 0 then 
 		if self:getSlashNumber(self.player)>1 then 
 			self:sortByKeepValue(cards)
 			for _,card in ipairs(cards) do
@@ -308,39 +279,38 @@ function sunquan_ai:activate(use)
 				end
 			end
 		end
-                for _,card in ipairs(cards) do
-                    if card:inherits("EquipCard") then
-                        if card:inherits("Weapon") or--and self.player:getWeapon()) or
-                        (card:inherits("DefensiveHorse") and self.player:getDefensiveHorse()) or
-                        card:inherits("OffensiveHorse") or--and self.player:getOffensiveHorse()) or
-                        (card:inherits("Armor") and self.player:getArmor()) or
-                         card:inherits("AmazingGrace") or
-                         card:inherits("Lightning") then
-                            table.insert(unpreferedCards,card:getId())
-                        end
-                    end
+        for _,card in ipairs(cards) do
+            if card:inherits("EquipCard") then
+                if card:inherits("Weapon") or
+                (card:inherits("DefensiveHorse") and self.player:getDefensiveHorse()) or
+                card:inherits("OffensiveHorse") or
+                (card:inherits("Armor") and self.player:getArmor()) or
+                 card:inherits("AmazingGrace") or
+                 card:inherits("Lightning") then
+                    table.insert(unpreferedCards,card:getId())
                 end
+            end
+        end
 	
-				if self.player:getWeapon() then														
-					table.insert(unpreferedCards, self.player:getWeapon():getId())
-				end
+		if self.player:getWeapon() then														
+			table.insert(unpreferedCards, self.player:getWeapon():getId())
+		end
 				
-				if self.player:getArmor() and self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded() then
-					table.insert(unpreferedCards, self.player:getArmor():getId())
-				end	
+		if self.player:getArmor() and self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded() then
+			table.insert(unpreferedCards, self.player:getArmor():getId())
+		end	
 				
-				local equips=self.player:getEquips()
-				for _,equip in sgs.qlist(equips) do
-					if equip:inherits("OffensiveHorse") and self.player:getWeapon() then
-						table.insert(unpreferedCards, equip:getId())
-						break
-					end
-				end	
+		local equips=self.player:getEquips()
+		for _,equip in sgs.qlist(equips) do
+			if equip:inherits("OffensiveHorse") and self.player:getWeapon() then
+				table.insert(unpreferedCards, equip:getId())
+				break
+			end
+		end	
 	end	
 	
 	if #unpreferedCards>0 then 
 		use.card = sgs.Card_Parse("@ZhihengCard="..table.concat(unpreferedCards,"+")) 
-		self.zhiheng_used=true
 		return 
 	end
 	super.activate(self,use)

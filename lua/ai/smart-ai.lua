@@ -881,7 +881,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	end
 
     if not use.to then return nil end
-    if self.anal_used then return nil end
+    if self.player:hasUsed("Analeptic") then return nil end
     
     local cards = self.player:getHandcards()
     cards=sgs.QList2Table(cards)
@@ -904,7 +904,6 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 	
     for _, anal in ipairs(cards) do
         if (anal:className()=="Analeptic") and not (anal:getEffectiveId()==slash:getEffectiveId()) then
-            self.anal_used=true
             return anal
         end
     end
@@ -2773,18 +2772,6 @@ function SmartAI.newSubclass(theClass, name)
 	sgs.ai_classes[name] = new_class
 
 	return new_class
-end
-
-function SmartAI:setOnceSkill(name)
-	function self:filterEvent(event, player, data)
-		super.filterEvent(self, event, player, data)
-		if not player then return end
-		if event == sgs.PhaseChange and player:objectName() == self.player:objectName()
-			and player:getPhase() == sgs.Player_Play then
-			self[name .. "_used"] = false
-            self.toUse=nil
-		end
-	end
 end
 
 function SmartAI:hasSkill(skill)

@@ -71,30 +71,30 @@ local flood_skill={}
 flood_skill.name="flood"
 table.insert(sgs.ai_skills,flood_skill)
 flood_skill.getTurnUseCard=function(self)
-        local cards=self.player:getCards("h")
-        cards=sgs.QList2Table(cards)
+    if self.player:hasUsed("FloodCard") then return end
+	
+    local cards=self.player:getCards("h")
+    cards=sgs.QList2Table(cards)
+    self:sortByUseValue(cards,true)
         
-        self:sortByUseValue(cards,true)
+    local blacks={}
         
-        local blacks={}
-        
-        for _,card in ipairs(cards) do
-            if card:isBlack() then 
-                table.insert(blacks,card:getEffectiveId())
-                if #blacks==3 then break end
-            end
+    for _,card in ipairs(cards) do
+        if card:isBlack() then 
+            table.insert(blacks,card:getEffectiveId())
+            if #blacks==3 then break end
         end
+    end
+       
+    if #blacks<3 then return nil end
         
-        if #blacks<3 then return nil end
-        
-		local card_str = ("@FloodCard="..table.concat(blacks,"+"))
-		local flood_card = sgs.Card_Parse(card_str)
-		assert(flood_card)
-        return flood_card
+	local card_str = ("@FloodCard="..table.concat(blacks,"+"))
+	local flood_card = sgs.Card_Parse(card_str)
+	assert(flood_card)
+    return flood_card
 end
 
 sgs.ai_skill_use_func["FloodCard"]=function(card,use,self)
-    if self.skill_flood_used then return end
     
     local eqs=0
     
@@ -110,7 +110,6 @@ sgs.ai_skill_use_func["FloodCard"]=function(card,use,self)
     
     if eqs>3 then 
         use.card=card 
-        if not use.isDummy then self.skill_flood_used=true end
     end
 end
 

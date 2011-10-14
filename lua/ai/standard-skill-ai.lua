@@ -300,14 +300,12 @@ local jijiang_skill={}
 jijiang_skill.name="jijiang"
 table.insert(sgs.ai_skills,jijiang_skill)
 jijiang_skill.getTurnUseCard=function(self)
-        if not self:slashIsAvailable() then return nil end
-        if self.jijiang_used then return nil end
+        if self:hasUsed("JijiangCard") or not self:slashIsAvailable() then return end
 		local card_str = "@JijiangCard=."
 		local slash = sgs.Card_Parse(card_str)
 	    assert(slash)
         
         return slash
-		
 end
 
 sgs.ai_skill_use_func["JijiangCard"]=function(card,use,self)
@@ -324,7 +322,6 @@ sgs.ai_skill_use_func["JijiangCard"]=function(card,use,self)
                                 use.card=card
                                 if use.to then 
                                     use.to:append(enemy) 
-                                    self.jijiang_used=true
                                 end
                                 target_count=target_count+1
                                 if self.slash_targets<=target_count then return end
@@ -407,7 +404,7 @@ local lijian_skill={}
 lijian_skill.name="lijian"
 table.insert(sgs.ai_skills,lijian_skill)
 lijian_skill.getTurnUseCard=function(self)
-	if self.lijian_used then
+	if self:hasUsed("LijianCard") then
 		return 
 	end
 	if not self.player:isNude() then
@@ -476,8 +473,7 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 		return nil
 	end
 
-	if not self.lijian_used --and not self.player:isNude()
-	then
+	if not self.player:hasUsed("LijianCard") then
 		self:sort(self.enemies, "hp")
 		local males = {}
 		local first, second
@@ -490,7 +486,6 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 				if #males >= 2 then	break end
 			end
 		end
-		--if (#males==0) then self:log("No real men!") end
 		if (#males==1) and #self.friends_noself>0 then
 			self:log("Only 1")
 			first = males[1]
@@ -514,7 +509,6 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 					else
 						if ((self.role=="loyalist" or (self.role=="renegade") and not (first:hasSkill("ganglie") and first:hasSkill("enyuan"))))
 							and	( self:getSlashNumber(first)<=self:getSlashNumber(second)) then
-							--the first male maybe have a "Slash" Card
 							second = lord
 						end
 					end
@@ -523,11 +517,10 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 
 			if first and second 
 					then
-				if use.to --and not (self.player:getHandcardNum()<=1 and first:getHp()>1)
+				if use.to
 					then 
 		        use.to:append(first)
 		        use.to:append(second)
-		        self.lijian_used = true
 				end
 			end
             use.card=card

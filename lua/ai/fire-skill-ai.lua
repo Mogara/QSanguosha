@@ -160,7 +160,6 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 			and (enemy_max_card and max_point > enemy_max_card:getNumber()) then
 		    
 		    if use.to then 
-		        self.tianyi_used = true
 		        use.to:append(enemy)
 		        
             end
