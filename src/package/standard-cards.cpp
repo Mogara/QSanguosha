@@ -438,9 +438,18 @@ KylinBow::KylinBow(Suit suit, int number)
 }
 
 class EightDiagramSkill: public ArmorSkill{
-public:
+private:
     EightDiagramSkill():ArmorSkill("eight_diagram"){
         events << CardAsked;
+    }
+
+public:
+    static EightDiagramSkill *GetInstance(){
+        static EightDiagramSkill *instance = NULL;
+        if(instance == NULL)
+            instance = new EightDiagramSkill;
+
+        return instance;
     }
 
     virtual int getPriority() const{
@@ -475,10 +484,12 @@ public:
     }
 };
 
+
+
 EightDiagram::EightDiagram(Suit suit, int number)
     :Armor(suit, number){
     setObjectName("eight_diagram");
-    skill = new EightDiagramSkill;
+    skill = EightDiagramSkill::GetInstance();
 }
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
@@ -1043,6 +1054,8 @@ StandardCardPackage::StandardCardPackage()
 
           << new EightDiagram(Card::Spade)
           << new EightDiagram(Card::Club);
+
+    skills << EightDiagramSkill::GetInstance();
 
     {
         QList<Card *> horses;

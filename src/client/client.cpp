@@ -529,14 +529,6 @@ Client::Status Client::getStatus() const{
     return status;
 }
 
-void Client::updateFrequentFlags(int state){
-    QString flag = sender()->objectName();
-    if(state == Qt::Checked)
-        frequent_flags.insert(flag);
-    else
-        frequent_flags.remove(flag);
-}
-
 void Client::jilei(const QString &jilei_str){
     Self->jilei(jilei_str);
 }
@@ -574,6 +566,19 @@ QString Client::getPlayerName(const QString &str){
 
 QString Client::getPattern() const{
     return card_pattern;
+}
+
+QString Client::getSkillNameToInvoke() const{
+    return skill_to_invoke;
+}
+
+void Client::invokeSkill(bool invoke){
+    if(invoke)
+        request("invokeSkill yes");
+    else
+        request("invokeSkill no");
+
+    setStatus(NotActive);
 }
 
 void Client::setPromptList(const QStringList &texts){
@@ -636,50 +641,19 @@ void Client::askForSkillInvoke(const QString &invoke_str){
     }else
         skill_name = invoke_str;
 
-    bool auto_invoke = frequent_flags.contains(skill_name);
-    if(auto_invoke){
-        invokeSkill(QDialog::Accepted);
-        return;
-    }
-
-
-    QDialog *dialog = new QDialog;
-    dialog->setWindowTitle(Sanguosha->translate(skill_name));
-
     QString text;
     if(data.isNull())
-        text = tr("Do you want to invoke skill [%1] ?").arg(dialog->windowTitle());
+        text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
     else
         text = Sanguosha->translate(invoke_str);
 
-    QLabel *label = new QLabel(text);
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if(skill){
+        text.append(tr("<br/><br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
+    }
 
-    QCommandLinkButton *ok_button = new QCommandLinkButton(tr("OK"));
-    QString key = QString("%1:yes").arg(skill_name);
-    QString description = Sanguosha->translate(key);
-    if(key != description)
-        ok_button->setToolTip(description);
-
-    QCommandLinkButton *cancel_button = new QCommandLinkButton(tr("Cancel"));
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(ok_button);
-    hlayout->addWidget(cancel_button);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(label);
-    layout->addLayout(hlayout);
-    dialog->setLayout(layout);
-
-    ask_dialog = dialog;
-
-    connect(ok_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(cancel_button, SIGNAL(clicked()), dialog, SLOT(reject()));
-    connect(dialog, SIGNAL(finished(int)), this, SLOT(invokeSkill(int)));
-
-    Sanguosha->playAudio("pop-up");
-    setStatus(ExecDialog);
+    prompt_doc->setHtml(text);
+    setStatus(AskForSkillInvoke);
 }
 
 void Client::selectChoice(){
@@ -890,17 +864,6 @@ void Client::addHistory(const QString &add_str){
 
 int Client::alivePlayerCount() const{
     return alive_count;
-}
-
-void Client::invokeSkill(int result){
-    bool invoke = result == QDialog::Accepted;
-
-    if(invoke)
-        request("invokeSkill yes");
-    else
-        request("invokeSkill no");
-
-    setStatus(NotActive);
 }
 
 void Client::responseCard(const Card *card){

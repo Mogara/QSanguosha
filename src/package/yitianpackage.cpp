@@ -16,7 +16,7 @@ public:
         if(player->getPhase() != Player::NotActive)
            return false;
 
-        if(player->askForSkillInvoke("yitian"))
+        if(player->askForSkillInvoke("yitian_sword"))
             player->getRoom()->askForUseCard(player, "slash", "yitian-slash");
 
         return false;
