@@ -101,7 +101,7 @@ tianyi_skill.name="tianyi"
 table.insert(sgs.ai_skills,tianyi_skill)
 tianyi_skill.getTurnUseCard=function(self)
     
-    if self:hasUsed("TianyiCard") then return nil end
+    if self.player:hasUsed("TianyiCard") then return nil end
     
     local cards = self.player:getCards("h")	
     cards=sgs.QList2Table(cards)

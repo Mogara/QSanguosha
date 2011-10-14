@@ -300,7 +300,7 @@ local jijiang_skill={}
 jijiang_skill.name="jijiang"
 table.insert(sgs.ai_skills,jijiang_skill)
 jijiang_skill.getTurnUseCard=function(self)
-        if self:hasUsed("JijiangCard") or not self:slashIsAvailable() then return end
+        if self.player:hasUsed("JijiangCard") or not self:slashIsAvailable() then return end
 		local card_str = "@JijiangCard=."
 		local slash = sgs.Card_Parse(card_str)
 	    assert(slash)
@@ -404,7 +404,7 @@ local lijian_skill={}
 lijian_skill.name="lijian"
 table.insert(sgs.ai_skills,lijian_skill)
 lijian_skill.getTurnUseCard=function(self)
-	if self:hasUsed("LijianCard") then
+	if self.player:hasUsed("LijianCard") then
 		return 
 	end
 	if not self.player:isNude() then

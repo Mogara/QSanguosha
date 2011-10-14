@@ -260,7 +260,7 @@ function sunquan_ai:activate(use)
 		end
 	end	
 	
-	if #unpreferedCards == 0 then 
+	if #unpreferedCards == 0 and not self.player:hasUsed("ZhihengCard") then 
 		if self:getSlashNumber(self.player)>1 then 
 			self:sortByKeepValue(cards)
 			for _,card in ipairs(cards) do
@@ -313,6 +313,7 @@ function sunquan_ai:activate(use)
 		use.card = sgs.Card_Parse("@ZhihengCard="..table.concat(unpreferedCards,"+")) 
 		return 
 	end
+	
 	super.activate(self,use)
 end
 
