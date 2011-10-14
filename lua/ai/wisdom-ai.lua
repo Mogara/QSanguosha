@@ -102,15 +102,13 @@ end
 
 --houyuan(not finish)
 local wisjiangwan_ai = SmartAI:newSubclass "wisjiangwan"
-wisjiangwan_ai:setOnceSkill("houyuan")
-
 function wisjiangwan_ai:activate(use)
 	super.activate(self, use)
 	if use:isValid() then return end
 	local abandon_handcard = {}
 	local index = 0
 	
-	if self.player:getHandcardNum() > 1 and not self.houyuan_used then
+	if self.player:getHandcardNum() > 1 and not self.player:hasUsed("HouyuanCard") then
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
 		for _, friend in ipairs(self.friends_noself) do
@@ -123,7 +121,6 @@ function wisjiangwan_ai:activate(use)
 		if index == 2 then 
 			use.to:append(friend)
 			use.card = sgs.Card_Parse("@HouyuanCard=" .. table.concat(abandon_handcard, "+"))
-			self.houyuan_used = true
 			return
 		end
 	end
