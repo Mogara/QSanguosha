@@ -538,19 +538,19 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == GameStart){
-            if(!player->hasSkill(objectName()) || !player->isLord())
+            if(!player->hasLordSkill(objectName()))
                 return false;
 
             Room *room = player->getRoom();
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                if(!p->hasSkill("zhiba_pindian") && !p->isLord())
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if(!p->hasSkill("zhiba_pindian"))
                     room->attachSkillToPlayer(p, "zhiba_pindian");
             }
         }else if(event == Pindian){
             PindianStar pindian = data.value<PindianStar>();
             if(pindian->reason == "zhiba" &&
-               pindian->to->hasSkill(objectName()) &&
-               pindian->from_card->getNumber() <= pindian->to_card->getNumber())
+               pindian->to->hasLordSkill(objectName()) &&
+               !pindian->isSuccess())
             {
                 pindian->to->obtainCard(pindian->from_card);
                 pindian->to->obtainCard(pindian->to_card);

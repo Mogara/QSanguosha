@@ -367,34 +367,32 @@ WeidaiCard::WeidaiCard(){
 }
 
 void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *> &) const{
-    if(sunce->hasFlag("drank"))
+    if(sunce->hasFlag("drank") || !sunce->hasLordSkill("weidai"))
         return;
     foreach(ServerPlayer *liege, room->getAlivePlayers()){
-        if(liege->getKingdom() == "wu" && !sunce->hasUsed("Analeptic"))
-            room->cardEffect(this, liege, sunce);
-    }
-}
+        if(liege->getKingdom() != "wu")
+            return;
+        if(sunce->getHp() > 0 && sunce->hasUsed("Analeptic"))
+            return;
+        const Card *analeptic = room->askForCard(liege, ".S29", "@weidai-analeptic:" + sunce->objectName());
+        if(analeptic){
+            LogMessage log;
+            log.type = "$Weidai";
+            log.from = liege;
+            log.card_str = analeptic->getEffectIdString();
+            room->sendLog(log);
 
-void WeidaiCard::onEffect(const CardEffectStruct &effect) const{
-    const Card *analeptic = NULL;
-    Room *room = effect.from->getRoom();
-    analeptic = room->askForCard(effect.from, ".S29", "@weidai-analeptic");
-    if(analeptic){
-        LogMessage log;
-        log.type = "$Weidai";
-        log.from = effect.from;
-        log.card_str = analeptic->getEffectIdString();
-        room->sendLog(log);
+            Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
+            ana->setSkillName("weidai");
+            CardUseStruct use;
+            use.card = ana;
+            use.from = sunce;
+            use.to << use.from;
 
-        Analeptic *ana = new Analeptic(analeptic->getSuit(), analeptic->getNumber());
-        ana->setSkillName("weidai");
-        CardUseStruct use;
-        use.card = ana;
-        use.from = effect.to;
-        use.to << effect.to;
-
-        room->useCard(use);
-        return;
+            room->useCard(use);
+            if(sunce->getHp() > 0)
+                break;
+        }
     }
 }
 
@@ -408,13 +406,13 @@ public:
 
 class WeidaiViewAsSkill:public ZeroCardViewAsSkill{
 public:
-    WeidaiViewAsSkill():ZeroCardViewAsSkill("analeptic$"){
+    WeidaiViewAsSkill():ZeroCardViewAsSkill("weidai$"){
     }
 
-    virtual bool isEnabledAtPlay() const{
-        return Self->hasLordSkill("weidai")
-                && !Self->hasUsed("Analeptic")
-                && !Self->hasUsed("WeidaiCard");
+    virtual bool isEnabledAtPlay(const Player *player){
+        return player->hasLordSkill("weidai")
+                && !player->hasUsed("Analeptic")
+                && !player->hasUsed("WeidaiCard");
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{

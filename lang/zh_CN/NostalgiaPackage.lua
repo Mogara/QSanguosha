@@ -36,6 +36,7 @@ return {
 	["#JileiClear"] = "%from 的鸡肋效果消失",
 	["#Guhuo"] = "%from 发动了技能【蛊惑】，蛊惑的牌为 %arg, 指定的目标为 %to",
 	["#GuhuoNoTarget"] = "%from 发动了技能【蛊惑】，蛊惑的牌为 %arg",
+	["#GuhuoCannotQuestion"] = "%from 体力不支(当前体力值=%arg)，无法质疑",
 	["guhuo:question"] = "质疑",
 	["guhuo:noquestion"] = "不质疑",
 	["question"] = "质疑",

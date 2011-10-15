@@ -1217,10 +1217,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
         switch(trigger_skill->getFrequency()){
         case Skill::Frequent:{
                 QCheckBox *checkbox = new QCheckBox();
-
                 checkbox->setObjectName(skill->objectName());
-                checkbox->setChecked(false);
-                connect(checkbox, SIGNAL(stateChanged(int)), ClientInstance, SLOT(updateFrequentFlags(int)));
                 checkbox->setChecked(true);
 
                 button = checkbox;
@@ -1500,6 +1497,12 @@ void RoomScene::useSelectedCard(){
             QMessageBox::warning(main_window, tr("Warning"),
                                  tr("The OK button should be disabled when client is in executing dialog"));
             return;
+        }
+
+    case Client::AskForSkillInvoke:{
+            prompt_box->disappear();
+            ClientInstance->invokeSkill(true);
+            break;
         }
 
     case Client::AskForPlayerChoose:{
@@ -1853,6 +1856,26 @@ void RoomScene::updateStatus(Client::Status status){
             break;
         }
 
+    case Client::AskForSkillInvoke:{
+            QString skill_name = ClientInstance->getSkillNameToInvoke();
+            foreach(QAbstractButton *button, skill_buttons){
+                if(button->objectName() == skill_name){
+                    QCheckBox *check_box = qobject_cast<QCheckBox *>(button);
+                    if(check_box->isChecked()){
+                        ClientInstance->invokeSkill(true);
+                        return;
+                    }
+                }
+            }
+
+            prompt_box->appear();
+            ok_button->setEnabled(true);
+            cancel_button->setEnabled(true);
+            discard_button->setEnabled(false);
+
+            break;
+        }
+
     case Client::AskForPlayerChoose:{
             prompt_box->appear();
 
@@ -2080,6 +2103,12 @@ void RoomScene::doCancelButton(){
 
     case Client::ExecDialog:{
             ClientInstance->ask_dialog->reject();
+            break;
+        }
+
+    case Client::AskForSkillInvoke:{
+            ClientInstance->invokeSkill(false);
+            prompt_box->disappear();
             break;
         }
 

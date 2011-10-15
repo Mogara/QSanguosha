@@ -1212,7 +1212,7 @@ public:
         Card *new_card = NULL;
 
         Card::Suit suit = card->getSuit();
-        int number = card->getNumber();
+        int number = cards.length() > 1 ? 0 : card->getNumber();
         switch(card->getSuit()){
         case Card::Spade:{
                 new_card = new Nullification(suit, number);

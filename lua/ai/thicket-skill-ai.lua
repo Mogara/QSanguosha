@@ -63,7 +63,7 @@ dimeng_skill={}
 dimeng_skill.name="dimeng"
 table.insert(sgs.ai_skills,dimeng_skill)
 dimeng_skill.getTurnUseCard=function(self)
-    if self.dimeng_used then return nil end
+    if self.player:hasUsed("DimengCard") then return nil end
     card=sgs.Card_Parse("@DimengCard=.")
     return card
     	
@@ -75,7 +75,6 @@ sgs.ai_skill_use_func["DimengCard"]=function(card,use,self)
 	self:sort(self.enemies,"handcard")
 	self:sort(self.friends_noself,"handcard")
 	
-	--local lowest_enemy=self.enemies[1]
 	local lowest_friend=self.friends_noself[1]
 	
 	self:sort(self.enemies,"defense")
@@ -83,7 +82,6 @@ sgs.ai_skill_use_func["DimengCard"]=function(card,use,self)
 		for _,enemy in ipairs(self.enemies) do 
 			local hand1=enemy:getHandcardNum()
 			local hand2=lowest_friend:getHandcardNum()
-			--local hand3=lowest_enemy:getHandcardNum()
 	    
 			if (hand1 > hand2) then 
 				if (hand1-hand2)<=cardNum then 
@@ -91,7 +89,6 @@ sgs.ai_skill_use_func["DimengCard"]=function(card,use,self)
 					if use.to then 
 						use.to:append(enemy)
 						use.to:append(lowest_friend)
-						self.dimeng_used=true
 						return 
 					end
 				end

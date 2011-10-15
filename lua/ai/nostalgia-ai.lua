@@ -159,9 +159,9 @@ guhuo_skill.getTurnUseCard=function(self)
 		if (card:inherits("Slash") and self:getSlashNumber(self.player,true)>=2 and not self:isEquip("Crossbow"))
 		or (card:inherits("Jink") and self:getJinkNumber(self.player,true)>=3) then
 			for i=1, 10 do
-				local = guhuos[math.random(1,#guhuos)]
+				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())
-				local dummyuse = {isDummy=true}
+				local dummyuse = {isDummy = true}
 				if newguhuo == "peach" then self:useBasicCard(guhuocard,dummyuse,false) else self:useTrickCard(guhuocard,dummyuse) end
 				if dummyuse.card then 
 					local parsed_card=sgs.Card_Parse("@GuhuoCard=" .. card:getId() .. ":" .. newguhuo)

@@ -101,7 +101,7 @@ tianyi_skill.name="tianyi"
 table.insert(sgs.ai_skills,tianyi_skill)
 tianyi_skill.getTurnUseCard=function(self)
     
-    if self:hasUsed("TianyiCard") then return nil end
+    if self.player:hasUsed("TianyiCard") then return nil end
     
     local cards = self.player:getCards("h")	
     cards=sgs.QList2Table(cards)
@@ -160,7 +160,6 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 			and (enemy_max_card and max_point > enemy_max_card:getNumber()) then
 		    
 		    if use.to then 
-		        self.tianyi_used = true
 		        use.to:append(enemy)
 		        
             end
