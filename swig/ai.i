@@ -355,14 +355,12 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying){
 
         return TrustAI::askForSinglePeach(dying);
     }
-
-        void *card_ptr;
-        int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
-        lua_pop(L, 1);
-        if(SWIG_IsOK(result))
-                return static_cast<const Card *>(card_ptr);
-        else
-                return TrustAI::askForSinglePeach(dying);
+	const char *result = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	if(result == NULL)
+		return TrustAI::askForSinglePeach(dying);
+		
+	return Card::Parse(result);
 }
 
 %}
