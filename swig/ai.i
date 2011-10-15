@@ -70,6 +70,7 @@ public:
 	virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason) ;
 	virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason);
+    virtual const Card *askForSinglePeach(ServerPlayer *dying);
 	
     LuaFunction callback;
 };
@@ -338,6 +339,30 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason
 		return static_cast<const Card *>(card_ptr);
 	else
 		return TrustAI::askForCardShow(requestor, reason);
+}
+
+const Card *LuaAI::askForSinglePeach(ServerPlayer *dying){
+    lua_State *L = room->getLuaState();
+
+        pushCallback(L, __func__);
+    SWIG_NewPointerObj(L, dying, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if(error){
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+
+        return TrustAI::askForSinglePeach(dying);
+    }
+
+        void *card_ptr;
+        int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+        lua_pop(L, 1);
+        if(SWIG_IsOK(result))
+                return static_cast<const Card *>(card_ptr);
+        else
+                return TrustAI::askForSinglePeach(dying);
 }
 
 %}

@@ -105,6 +105,7 @@ public:
     virtual const Card *askForCard(const QString &pattern, const QString &prompt, const QVariant &data);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason);
+    virtual const Card *askForSinglePeach(ServerPlayer *dying);
 
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
     virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only);
