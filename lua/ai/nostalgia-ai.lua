@@ -131,7 +131,7 @@ guhuo_skill.getTurnUseCard=function(self)
 		if card:isNDTrick() and card:getSuit() == sgs.Card_Heart then
 			local dummyuse={}
 			dummyuse.isDummy=true
-			if card:isNDTrick() then self:useTrickCard(card, dummyuse) else self:useBasicCard(card, dummyuse) end
+			self:useTrickCard(card, dummyuse)
 			if dummyuse.card then 
 				local parsed_card=sgs.Card_Parse("@GuhuoCard=" .. card:getId() .. ":" .. card:objectName())
 				return parsed_card
@@ -139,19 +139,8 @@ guhuo_skill.getTurnUseCard=function(self)
 		end
 	end
 	
-	local slash = {}
-	for _, card in ipairs(cards) do
-		if card:inherits("Slash") then
-			if card:getSuit() == sgs.Card_Heart then
-				table.insert(slash, 1, card)
-			else
-				table.insert(slash, card)
-			end
-		end
-	end
-	if #slash > 1 then return sgs.Card_Parse("@GuhuoCard=" .. slash[1]:getId() .. ":" .. slash[1]:objectName())
-	elseif #slash == 1 and slash[1]:getSuit() == sgs.Card_Heart then return sgs.Card_Parse("@GuhuoCard=" .. slash[1]:getId() .. ":" .. slash[1]:objectName())
-	end
+	local card_str = self:getGuhuoCard("Peach", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true) or self:getGuhuoCard("Slash", self.player, true)
+	if card_str then return sgs.Card_Parse(card_str) end
 	
 	local guhuo="peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos=guhuo:split("|")

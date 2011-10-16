@@ -843,15 +843,16 @@ function SmartAI:slashHit(slash, to)
 	return self:getJinkNumber(to) == 0
 end
 
-function SmartAI:slashIsAvailable()
-	if self.player:hasWeapon("crossbow") or self.player:hasSkill("paoxiao") then
+function SmartAI:slashIsAvailable(player)
+	player = player or self.player
+	if player:hasWeapon("crossbow") or player:hasSkill("paoxiao") then
 		return true
 	end
 
-	if self.player:hasFlag("tianyi_success") then
-		return (self.player:usedTimes("Slash") + self.player:usedTimes("FireSlash") + self.player:usedTimes("ThunderSlash")) < 2
+	if player:hasFlag("tianyi_success") then
+		return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 2
     else
-        return (self.player:usedTimes("Slash") + self.player:usedTimes("FireSlash") + self.player:usedTimes("ThunderSlash")) < 1
+        return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 1
 	end
 end
 
@@ -902,7 +903,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 		end
 	end
 	
-	local card_str = self:getGuhuoAtResponse("Analeptic")
+	local card_str = self:getGuhuoCard("Analeptic")
 	if card_str then return sgs.Card_Parse(card_str) end
 	
     for _, anal in ipairs(cards) do
@@ -2623,7 +2624,7 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	local null_card
-	null_card = self:getGuhuoAtResponse("Nullification") 
+	null_card = self:getGuhuoCard("Nullification") 
 	if null_card then null_card = sgs.Card_Parse(null_card) 
 	else
 		for _, card in ipairs(cards) do
@@ -2699,11 +2700,11 @@ function SmartAI:askForNullification(trick_name, from, to, positive)
 	end
 end
 
-function SmartAI:askForSinglePeach(player, dying)										
+function SmartAI:askForSinglePeach(dying)										
 	local cards = self.player:getCards("he")
 	local card_str
 	if self:isFriend(dying) and dying:isLord() then
-		card_str = self:getGuhuoAtResponse("Peach") 
+		card_str = self:getGuhuoCard("Peach") 
 		if card_str then return sgs.Card_Parse(card_str) end
 		
 		for _, card in sgs.qlist(cards) do
@@ -2719,7 +2720,7 @@ function SmartAI:askForSinglePeach(player, dying)
 	end	
 	
 	if self:isFriend(dying) then
-		card_str = self:getGuhuoAtResponse("Peach") 
+		card_str = self:getGuhuoCard("Peach") 
 		if card_str then return sgs.Card_Parse(card_str) end
 		
 		for _, card in sgs.qlist(cards) do
@@ -2962,7 +2963,7 @@ function SmartAI:getCardId(class_name, player)
 	local cards = player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByUsePriority(cards)
-	local card_str = self:getGuhuoAtResponse(class_name, player)
+	local card_str = self:getGuhuoCard(class_name, player)
 	if card_str then return card_str end
 	
 	for _, card in ipairs(cards) do
@@ -3238,23 +3239,7 @@ local function getGuhuoViewCard(self, class_name, player)
 	local cards = player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	local card_use = {}
-	if class_name == "Slash" then
-		if self:getSlashNumber(player) > 1 then
-			card_use = getCardsFromHandcards("Slash", cards)
-		end
-	elseif class_name == "Jink" then
-		if self:getJinkNumber(player) > 1 then
-			card_use = getCardsFromHandcards("Jink", cards)
-		end
-	elseif class_name == "Analeptic" then
-		if self:getAnalepticNum(player) > 1 then
-			card_use = getCardsFromHandcards("Analeptic", cards)
-		end
-	elseif class_name == "Peach" then
-		if self:getPeachNum(player) > 1 then
-			card_use = getCardsFromHandcards("Peach", cards)
-		end
-	end
+	card_use = getCardsFromHandcards(class_name, cards)
 	
 	if #card_use > 1 or (#card_use > 0 and card_use[1]:getSuit() == sgs.Card_Heart) then
 		local index = 1
@@ -3265,9 +3250,16 @@ local function getGuhuoViewCard(self, class_name, player)
 	end
 end
 
-function SmartAI:getGuhuoAtResponse(class_name, player)
+function SmartAI:getGuhuoCard(class_name, player, at_play)
 	player = player or self.player
 	if not player or not player:hasSkill("guhuo") then return end
+	if at_play then
+		if class_name == "Peach" and not player:isWounded() then return
+		elseif class_name == "Analeptic" and player:hasUsed("Analeptic") then return
+		elseif class_name == "Slash" and not self:slashIsAvailable(player) then return 
+		elseif class_name == "Jink" or class_name == "Nullification" then return
+		end
+	end
 	return getGuhuoViewCard(self, class_name, player)
 end
 
