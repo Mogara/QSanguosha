@@ -145,8 +145,8 @@ guhuo_skill.getTurnUseCard=function(self)
 	local guhuo="peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
 	local guhuos=guhuo:split("|")
 	for _,card in ipairs(cards) do
-		if (card:inherits("Slash") and self:getSlashNumber(self.player,true)>=2 and not self:isEquip("Crossbow"))
-		or (card:inherits("Jink") and self:getJinkNumber(self.player,true)>=3) then
+		if (card:inherits("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
+		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3) then
 			for i=1, 10 do
 				local newguhuo = guhuos[math.random(1,#guhuos)]
 				local guhuocard = sgs.Sanguosha:cloneCard(newguhuo, card:getSuit(), card:getNumber())

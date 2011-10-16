@@ -37,7 +37,7 @@ end
 
 local function getOwnCards(self, up, buttom, next_judge)
 	self:sortByUseValue(buttom)
-	local has_slash = self:getSlashNumber(self.player)>0
+	local has_slash = self:getCardsNum("Slash")>0
 	local hasNext = false
 	for index, gcard in ipairs(buttom) do
 		if index == 3 then break end

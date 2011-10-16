@@ -18,7 +18,7 @@ xianzhen_skill.getTurnUseCard=function(self)
     if not max_card then return end
 	local max_point = max_card:getNumber()
 	
-	local slashNum=self:getSlashNumber(self.player)
+	local slashNum=self:getCardsNum("Slash")
 	if max_card:inherits("Slash") then slashNum=slashNum-1 end
 	
 	if slashNum<2 then return end
@@ -30,7 +30,7 @@ xianzhen_skill.getTurnUseCard=function(self)
 	    local enemy_max_card = self:getMaxCard(enemy)
 		if enemy_max_card and max_point > enemy_max_card:getNumber() then
 		    
-		    local slash=self:getSlash()
+		    local slash=self:getCard("Slash")
 		    local dummy_use={}
             dummy_use.isDummy=true
             
@@ -53,7 +53,7 @@ end
 
 sgs.ai_skill_use_func["XianzhenSlashCard"]=function(card,use,self)
 	local target = self.player:getTag("XianzhenTarget"):toPlayer() 
-    if self:getSlash() and not target:isDead() and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
+    if self:getCard("Slash") and not target:isDead() and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
         use.card=card
     end
 end

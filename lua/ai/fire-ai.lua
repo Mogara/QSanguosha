@@ -47,7 +47,7 @@ function xunyu_ai:activate(use)
 				end
 			end
 		end
-		if not self.player:isWounded() or (self.player:getHp() == 1 and self:getAnalepticNum() > 0) then
+		if not self.player:isWounded() or (self.player:getHp() == 1 and self:getCardsNum("Analeptic") > 0) then
 			local use_quhu
 			for _, friend in ipairs(self.friends) do
 				if math.min(5, friend:getMaxHP()) - friend:getHandcardNum() >= 2 then
@@ -182,7 +182,7 @@ sgs.ai_skill_invoke["shuangxiong"]=function(self,data)
     handnum=handnum/2
     self:sort(self.enemies, "hp")
     for _, enemy in ipairs(self.enemies) do
-        if (self:getSlashNumber(enemy)+enemy:getHp()<=handnum) and (self:getSlashNumber(self.player)>=self:getSlashNumber(enemy)) then return true end
+        if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) then return true end
     end
 	
     return self.player:getHandcardNum()>=self.player:getHp()

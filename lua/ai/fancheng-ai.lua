@@ -11,8 +11,8 @@ zhiyuan_skill.getTurnUseCard=function(self)
 	
 	for _,card in ipairs(cards)  do
 		if card:getTypeId()==sgs.Card_Basic then
-		    if card:inherits("Slash") and (self:getSlashNumber(self.player)<=1)then
-		    elseif card:inherits("Jink") and (self:getJinkNumber(self.player)<=1)then
+		    if card:inherits("Slash") and (self:getCardsNum("Slash")<=1)then
+		    elseif card:inherits("Jink") and (self:getCardsNum("Jink")<=1)then
 		    elseif card:inherits("Peach") and (self.player:getHp()<=2)then
 		    else
 			    basic_card = card
@@ -61,7 +61,7 @@ sgs.ai_skill_use_func["TaichenFightCard"]=function(card,use,self)
     if self.player:usedTimes("TaichenFightCard")>0 then return end
     local lord=self.room:getLord()
     if self.player:getHp()>=lord:getHp() then
-        if (self:getSlashNumber(self.player)+1)*2>self:getSlashNumber(lord) then
+        if (self:getCardsNum("Slash")+1)*2>self:getCardsNum("Slash", lord) then
             use.card=card
         end
     end

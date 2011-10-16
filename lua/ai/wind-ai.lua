@@ -109,7 +109,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
         if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then
         elseif self:slashProhibit(nil, enemy) then
         elseif eff then 
-			if enemy:getHp() == 1 and self:getJinkNumber(enemy) == 0 then best_target = enemy break end
+			if enemy:getHp() == 1 and self:getCardsNum("Jink", enemy) == 0 then best_target = enemy break end
 			if def < defense then
 				best_target = enemy
 				defense = def

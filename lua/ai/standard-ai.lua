@@ -4,7 +4,7 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 sgs.ai_skill_invoke.jijiang = function(self, data)
-	if self:getSlashNumber(self.player)<=0 then 
+	if self:getCardsNum("Slash")<=0 then 
 		return true
 	end
 	return false
@@ -12,7 +12,7 @@ end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
 	if not self.player:hasLordSkill("jijiang") then
-		if self:getSlashNumber(self.player) <= 0 then return "ignore" end
+		if self:getCardsNum("Slash") <= 0 then return "ignore" end
 	end
 	
 	if self.player:isLord() then
@@ -30,7 +30,7 @@ end
 
 sgs.ai_skill_choice.hujia = function(self , choices)
 	if not self.player:hasLordSkill("hujia") then
-		if self:getJinkNumber(self.player) <= 0 then return "ignore" end
+		if self:getCardsNum("Jink") <= 0 then return "ignore" end
 	end	
 	if self.player:isLord() then
 		local target
@@ -261,7 +261,7 @@ function sunquan_ai:activate(use)
 	end	
 	
 	if #unpreferedCards == 0 and not self.player:hasUsed("ZhihengCard") then 
-		if self:getSlashNumber(self.player)>1 then 
+		if self:getCardsNum("Slash")>1 then 
 			self:sortByKeepValue(cards)
 			for _,card in ipairs(cards) do
 				if card:inherits("Slash") then table.insert(unpreferedCards,card:getId()) end
@@ -269,7 +269,7 @@ function sunquan_ai:activate(use)
 			table.remove(unpreferedCards,1)
 		end
 		
-		local num=self:getJinkNumber(self.player)-1							
+		local num=self:getCardsNum("Jink")-1							
 		if self.player:getArmor() then num=num+1 end
 		if num>0 then
 			for _,card in ipairs(cards) do

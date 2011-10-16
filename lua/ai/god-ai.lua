@@ -102,10 +102,10 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 	for _, card in ipairs(cards) do
-		if card:inherits("Slash") then if self:getSlashNumber(self.player) == 0 then return card:getEffectiveId() end
-		elseif card:inherits("Jink") then if self:getJinkNumber(self.player) == 0 then return card:getEffectiveId() end
-		elseif card:inherits("Peach") then if self.player:isWounded() and self:getPeachNum() < self.player:getLostHp() then return card:getEffectiveId() end
-		elseif card:inherits("Analeptic") then if self:getAnalepticNum(self.player) == 0 then return card:getEffectiveId() end
+		if card:inherits("Slash") then if self:getCardsNum("Slash") == 0 then return card:getEffectiveId() end
+		elseif card:inherits("Jink") then if self:getCardsNum("Jink") == 0 then return card:getEffectiveId() end
+		elseif card:inherits("Peach") then if self.player:isWounded() and self:getCardsNum("Peach") < self.player:getLostHp() then return card:getEffectiveId() end
+		elseif card:inherits("Analeptic") then if self:getCardsNum("Analeptic") == 0 then return card:getEffectiveId() end
 		elseif card:getTypeId() == sgs.Card_Trick then return card:getEffectiveId()
 		else return -1 end
 	end
@@ -173,7 +173,7 @@ end
 
 --wumou
 sgs.ai_skill_choice.wumou = function(self, choices)
-	if self.player:getHp() + self:getPeachNum(self.player) > 3 then return "losehp"
+	if self.player:getHp() + self:getCardsNum("Peach") > 3 then return "losehp"
 	else return "discard"
 	end
 end
@@ -189,13 +189,13 @@ wuqian_skill.getTurnUseCard=function(self)
 	self:sort(self.enemies, "hp")
 	local has_enemy
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() <= 2 and self:getJinkNumber(enemy) < 2 and self.player:inMyAttackRange(enemy) then has_enemy = enemy break end
+		if enemy:getHp() <= 2 and self:getCardsNum("Jink", enemy) < 2 and self.player:inMyAttackRange(enemy) then has_enemy = enemy break end
 	end
 	
-	if has_enemy and self:getSlashNumber(self.player) > 0 then
+	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
 			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and 
-				(self:getAnalepticNum(self.player) > 0 or has_enemy:getHp() <= 1) then return sgs.Card_Parse(card_str)
+				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) then return sgs.Card_Parse(card_str)
 			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
 			end
 		end
@@ -205,7 +205,7 @@ end
 sgs.ai_skill_use_func["WuqianCard"]=function(card,use,self)
     self:sort(self.enemies,"hp")
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() <= 2 and self:getJinkNumber(enemy) < 2 and self.player:inMyAttackRange(enemy) then 
+		if enemy:getHp() <= 2 and self:getCardsNum("Jink", enemy) < 2 and self.player:inMyAttackRange(enemy) then 
 			if use.to then 
 				use.to:append(enemy)
 			end
@@ -275,7 +275,7 @@ yeyan_skill.getTurnUseCard=function(self)
 		end
 	end
 	
-	if self.player:getHp() + self:getPeachNum(self.player) + self:getAnalepticNum(self.player) <= 1 then
+	if self.player:getHp() + self:getCardsNum("Peach") + self:getCardsNum("Analeptic") <= 1 then
 		return sgs.Card_Parse("@SmallYeyanCard=.")
 	end
 end

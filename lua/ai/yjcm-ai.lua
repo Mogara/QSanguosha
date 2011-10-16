@@ -298,8 +298,8 @@ function xushu_ai:activate(use)
 		local cards = self.player:getHandcards()
 		cards=sgs.QList2Table(cards)
 		self:sortByUseValue(cards, true)
-		local slash_num = self:getSlashNumber(self.player)
-		local jink_num = self:getJinkNumber(self.player)
+		local slash_num = self:getCardsNum("Slash")
+		local jink_num = self:getCardsNum("Jink")
 		for _, friend in ipairs(self.friends_noself) do
 			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
 				for _, card in ipairs(cards) do

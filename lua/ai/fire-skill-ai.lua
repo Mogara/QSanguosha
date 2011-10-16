@@ -110,7 +110,7 @@ tianyi_skill.getTurnUseCard=function(self)
     if not max_card then return end
 	local max_point = max_card:getNumber()
 	
-	local slashNum=self:getSlashNumber(self.player)
+	local slashNum=self:getCardsNum("Slash")
 	if max_card:inherits("Slash") then slashNum=slashNum-1 end
 	
 	if slashNum >= 2 then
@@ -119,7 +119,7 @@ tianyi_skill.getTurnUseCard=function(self)
 			local enemy_max_card = self:getMaxCard(enemy)
 			if enemy_max_card and max_point > enemy_max_card:getNumber() then
 		    
-				local slash=self:getSlash()
+				local slash=self:getCard("Slash")
 				local dummy_use={}
 				dummy_use.isDummy=true
             

@@ -32,7 +32,7 @@ spear_skill.getTurnUseCard=function(self,inclusive)
     
     if #cards<(self.player:getHp()+1) then return nil end
     if #cards<2 then return nil end
-    if self:getSlash() then return nil end
+    if self:getCard("Slash") then return nil end
     
     self:sortByUseValue(cards,true)
     
@@ -457,8 +457,8 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 		local maxSlash = 0
 		local friend_maxSlash
 		for _, friend in ipairs(self.friends_noself) do
-			if (self:getSlashNumber(friend)> maxSlash) and friend:getGeneral():isMale() then
-				maxSlash=self:getSlashNumber(friend)
+			if (self:getCardsNum("Slash", friend)> maxSlash) and friend:getGeneral():isMale() then
+				maxSlash=self:getCardsNum("Slash", friend)
 				friend_maxSlash = friend
 			end
 		end
@@ -466,7 +466,7 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 			local safe = false
 			if (first:hasSkill("ganglie") or first:hasSkill("fankui") or first:hasSkill("enyuan")) then
 				if (first:getHp()<=1 and first:getHandcardNum()==0) then safe=true end
-			elseif (self:getSlashNumber(friend_maxSlash) >= first:getHandcardNum()) then safe=true end
+			elseif (self:getCardsNum("Slash", friend_maxSlash) >= first:getHandcardNum()) then safe=true end
 			if safe then return friend_maxSlash end
 		else self:log("unfound")
 		end
@@ -508,7 +508,7 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 						second = lord
 					else
 						if ((self.role=="loyalist" or (self.role=="renegade") and not (first:hasSkill("ganglie") and first:hasSkill("enyuan"))))
-							and	( self:getSlashNumber(first)<=self:getSlashNumber(second)) then
+							and	( self:getCardsNum("Slash", first)<=self:getCardsNum("Slash", second)) then
 							second = lord
 						end
 					end

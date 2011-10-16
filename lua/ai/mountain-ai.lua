@@ -368,7 +368,7 @@ sgs.ai_skill_use_func["TiaoxinCard"] = function(card,use,self)
 		end
 		
 		if enemy:inMyAttackRange(self.player) and 
-			(self:getSlashNumber(enemy) == 0 or slash_useless or self:getJinkNumber(self.player) > 0) then 
+			(self:getCardsNum("Slash", enemy) == 0 or slash_useless or self:getCardsNum("Jink") > 0) then 
 			table.insert(targets, enemy) 
 		end
 	end
