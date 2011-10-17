@@ -100,31 +100,3 @@ sgs.ai_skill_invoke["shipo"] = function(self, data)
 	end
 end
 
---houyuan(not finish)
-local houyuan_skill={}
-houyuan_skill.name="houyuan"
-table.insert(sgs.ai_skills,houyuan_skill)
-houyuan_skill.getTurnUseCard=function(self)
-	local abandon_handcard = {}
-	local index = 0
-	if not self.player:hasUsed("HouyuanCard") then return sgs.Card_Parse("@HouyuanCard=.") end
-end
-
-sgs.ai_skill_use_func["HouyuanCard"] = function(card, use, self)
-	if self.player:getHandcardNum() > 1 then
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _, friend in ipairs(self.friends_noself) do
-			for _, fcard in ipairs(cards) do 
-				table.insert(abandon_handcard, fcard:getId())
-				index = index + 1
-			end
-			if index == 2 then break end
-		end
-		if index == 2 then 
-			use.to:append(friend)
-			use.card = sgs.Card_Parse("@HouyuanCard=" .. table.concat(abandon_handcard, "+"))
-			return
-		end
-	end
-end
