@@ -101,14 +101,17 @@ sgs.ai_skill_invoke["shipo"] = function(self, data)
 end
 
 --houyuan(not finish)
-local wisjiangwan_ai = SmartAI:newSubclass "wisjiangwan"
-function wisjiangwan_ai:activate(use)
-	super.activate(self, use)
-	if use:isValid() then return end
+local houyuan_skill={}
+houyuan_skill.name="houyuan"
+table.insert(sgs.ai_skills,houyuan_skill)
+houyuan_skill.getTurnUseCard=function(self)
 	local abandon_handcard = {}
 	local index = 0
-	
-	if self.player:getHandcardNum() > 1 and not self.player:hasUsed("HouyuanCard") then
+	if not self.player:hasUsed("HouyuanCard") then return sgs.Card_Parse("@HouyuanCard=.") end
+end
+
+sgs.ai_skill_use_func["HouyuanCard"] = function(card, use, self)
+	if self.player:getHandcardNum() > 1 then
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
 		for _, friend in ipairs(self.friends_noself) do

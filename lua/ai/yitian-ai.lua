@@ -10,7 +10,6 @@ sgs.ai_skill_invoke.jueji=function(self,data)
 
 end
 
-
 sgs.ai_skill_use["@@jueji"]=function(self,prompt)
 	local target
 	local handcard
@@ -128,35 +127,6 @@ sgs.ai_skill_invoke["yitian_sword"] = function(self, targets)
 	dummy_use={isDummy=true}
 	self:useBasicCard(slash,dummy_use)
 	if dummy_use.card then return true else return false end
-end
-
---jiangboyue
-local jiangboyue_ai = SmartAI:newSubclass "jiangboyue"
-
-function jiangboyue_ai:activate(use)
-	self:log(type(use))
-	if not self.player:hasUsed("LexueCard") then
-		self:sort(self.friends_noself, "handcard")
-		if #self.friends_noself>0 then
-			local friend = self.friends_noself[1]
-			if use.to and not friend:isKongcheng() then 
-				use.to:append(friend) 
-				use.card = sgs.Card_Parse("@LexueCard=.")
-				return 
-			end
-		end
-	
-		self:sort(self.enemies,"handcard")
-		for _,enemy in ipairs(self.enemies) do
-			if use.to and not enemy:isKongcheng() then
-				use.to:append(enemy) 
-				use.card = sgs.Card_Parse("@LexueCard=.")
-				return 
-			end
-		end	
-	end
-	
-	super.activate(self, use)
 end
 
 -- zhenwei

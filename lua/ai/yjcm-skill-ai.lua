@@ -1,5 +1,4 @@
 --xianzhen
-
 local xianzhen_skill={}
 xianzhen_skill.name="xianzhen"
 table.insert(sgs.ai_skills,xianzhen_skill)
@@ -77,13 +76,15 @@ sgs.ai_skill_use_func["XianzhenCard"]=function(card,use,self)
 	end
 end
 
-local masu_ai = SmartAI:newSubclass "masu"
-function masu_ai:activate(use)
+local xinzhan_skill={}
+xinzhan_skill.name="xinzhan"
+table.insert(sgs.ai_skills,xinzhan_skill)
+xinzhan_skill.getTurnUseCard=function(self)
 	if not self.player:hasUsed("XinzhanCard") and self.player:getHandcardNum() > self.player:getMaxHP() then
-		if use.to then 
-			use.card = sgs.Card_Parse("@XinzhanCard=.") 
-		return 
-		end
+		return sgs.Card_Parse("@XinzhanCard=.") 
 	end
-	super.activate(self, use)
+end
+
+sgs.ai_skill_use_func["XinzhanCard"]=function(card,use,self)
+	use.card = card
 end
