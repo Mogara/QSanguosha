@@ -100,3 +100,11 @@ end
 sgs.ai_skill_invoke.guixiang = function(self, data)
 	return self.room:getLord():getKingdom() == "wei"
 end
+
+sgs.ai_skill_playerchosen.sp_moonspear=function(self,targets)
+	local targetlist=sgs.QList2Table(targets)
+	self:sort(targetlist,"defense")
+	for _,enemy in ipairs(targetlist) do
+		if self:isEnemy(enemy) then return enemy end
+	end
+end

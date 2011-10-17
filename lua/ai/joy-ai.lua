@@ -33,3 +33,15 @@ sgs.ai_skill_playerchosen["yx_sword"] = function(self, targets)
 	
 	return self.enemies[1]
 end
+
+function SmartAI:useGaleShell(card, use)
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:distanceTo(enemy) <=1 then
+			use.card = card
+			if use.to then
+				use.to:append(enemy)
+			end
+			return
+		end
+	end
+end
