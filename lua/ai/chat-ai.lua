@@ -61,7 +61,7 @@ sgs.ai_chat.hostile={
 "我看你霸气外露，不可不防啊"
 }
 
-sgs.ai_chat.resbond_hostile={
+sgs.ai_chat.respond_hostile={
 "擦，小心菊花不保",
 "内牛满面了", "哎哟我去" 
 }
@@ -69,7 +69,7 @@ sgs.ai_chat.resbond_hostile={
 sgs.ai_chat.friendly=
 { "。。。" }
 
-sgs.ai_chat.resbond_friendly= 
+sgs.ai_chat.respond_friendly= 
 { "谢了。。。" }
 
 sgs.ai_chat.duel_female= 

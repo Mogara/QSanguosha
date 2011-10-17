@@ -9,7 +9,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 				
 				if card and return_prompt:match("target") then
 					for _, enemy in ipairs(self.enemies) do
-						if not enemy:getCards("j") or not enemy:containsTrick(card:objectName()) then target = enemy break end
+						if enemy:getCards("j"):isEmpty() or not enemy:containsTrick(card:objectName()) then target = enemy break end
 					end
 				end
 				if target then break end
@@ -29,7 +29,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			if card and return_prompt:match("target") then
 				for _, friend in ipairs(self.friends) do
 					if friend == who then 
-					elseif not friend:getCards("e") or not self:hasSameEquip(card, friend) then 
+					elseif friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then 
 						target = friend 
 						break 
 					end
@@ -49,7 +49,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		
 		if card and return_prompt:match("target") then
 			for _, friend in ipairs(self.friends) do
-				if not friend:getCards("e") or not self:hasSameEquip(card, friend) then 
+				if friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then 
 					target = friend 
 					break 
 				end
@@ -290,10 +290,10 @@ end
 sgs.ai_skill_playerchosen.jixi = function(self, targets)
 	local choices = {}
 	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) and target:getCards("he") 
+		if self:isEnemy(target) and not target:getCards("he"):isEmpty() 
 			and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), target) then 
 			table.insert(choices, target)
-		elseif self:isFriend(target) and target:getCards("j") 
+		elseif self:isFriend(target) and not target:getCards("j"):isEmpty() 
 			and self:hasTrickEffective(sgs.Sanguosha:cloneCard("snatch", sgs.Card_NoSuit, 0), target) then 
 			table.insert(choices, target)
 		end
