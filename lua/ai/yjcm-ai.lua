@@ -405,14 +405,12 @@ sgs.ai_skill_choice.mingce = function(self, choices)
 end
 
 sgs.ai_skill_playerchosen.mingce = function(self, targets)
-	local slash = sgs.Card_Parse(("slash[%s:%s]"):format(sgs.Card_NoSuit, 0))
 	local targetlist=sgs.QList2Table(targets)
 
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if not self:isFriend(target) and self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
+		if self:isEnemy(target) then
 		return target
 		end
 	end
-	return targets:first()
 end

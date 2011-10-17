@@ -30,23 +30,16 @@ sgs.ai_skill_invoke.caizhaoji_hujia = true
 sgs.ai_skill_invoke.zhenggong  = true
 
 sgs.ai_skill_invoke.toudu = function(self, data)
-	for _, enemy in ipairs(self.enemies) do
-		if self.player:canSlash(enemy, false) then
-			return true
-		end
-	end
+	return #self.enemies>0
 end
 
 sgs.ai_skill_playerchosen.toudu = function(self, targets)
-	local enemies = {}
-	for _, target in sgs.qlist(targets) do
-		if self:isEnemy(target) and self.player:canSlash(target, false) then
-			table.insert(enemies, enemy)
+	local enemies=sgs.QList2Table(targets)
+	for _, target in ipairs(enemies) do
+		if self:isEnemy(target) then
+			return target
 		end
 	end
-	
-	self:sort(enemies)
-	return enemies[1]
 end
 
 -- yitian-sword
