@@ -87,7 +87,3 @@ function masu_ai:activate(use)
 	end
 	super.activate(self, use)
 end
-
---sgs.ai_skill_use_func["XinzhanCard"]=function(card,use,self)
---		use.card=card
---end

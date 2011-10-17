@@ -64,8 +64,6 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	for i=1, #self.enemies-1 do																			
 		if (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:getHandcardNum() == 1) or
 		   (self.enemies[i]:hasSkill("lianying") and self.enemies[i]:getHandcardNum() == 1) then 
-				local bullshit
-				
 		elseif not self.enemies[i]:isKongcheng() then
 			if not first_index then 
 				first_index = i 
