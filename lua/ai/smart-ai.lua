@@ -1754,8 +1754,9 @@ function SmartAI:useEquipCard(card, use)
 		use.card = card		
 		end
 	elseif card:inherits("Armor") then
+		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
 	    if self.player:hasSkill("bazhen") then return end
-	 	if not self.player:getArmor() then use.card=card
+	 	if not self.player:getArmor() or self.player:getArmor():objectName() == "gale-shell" then use.card=card
 	 	elseif (self.player:getArmor():objectName())=="silver_lion" then use.card=card
 	 	elseif self.player:isChained()  and (self.player:getArmor():inherits("vine")) and not (card:objectName()=="silver_lion") then use.card=card
 	 	elseif self.player:hasSkill("leiji") or self.player:hasSkill("tiandu") then use.card=card
@@ -2255,6 +2256,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		
 		if flags:match("e") then
 			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
+			if who:getArmor() and who:getArmor():objectName() == "gale-shell" then return who:getArmor():getId() end
 			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then
@@ -2279,16 +2281,17 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			if who:getArmor() then 
 			    local canFire=false
 			        
-			        if self.player:getWeapon() then 
-			            if self.player:getWeapon():inherits("Fan") then canFire=true end
-			        end
+				if self.player:getWeapon() then 
+					if self.player:getWeapon():inherits("Fan") then canFire=true end
+				end
 			    if self.toUse then
 			        for _,card in ipairs(self.toUse) do 
 			            if card:inherits("FireSlash") then canFire=true end
 			            if card:inherits("FireAttack") then canFire=true end
 			        end
 			    end
-			    if canFire and (who:getArmor():objectName()=="vine") then 
+			    if canFire and (who:getArmor():objectName()=="vine") then
+				elseif who:getArmor():objectName() == "gale-shell" then
 				elseif (who:getArmor():objectName()=="silver_lion") and who:isWounded() then 
                 else return who:getArmor():getId() 
                 end
