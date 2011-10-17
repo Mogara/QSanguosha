@@ -395,6 +395,5 @@ sgs.ai_skill_use["@zhiheng"]=function(self,prompt)
 	end
 	local card=zhiheng_skill.getTurnUseCard(self)
 	if card then return card:toString() .. "->." end
-	assert(false)
 	return "."
 end
