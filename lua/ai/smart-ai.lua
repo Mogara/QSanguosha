@@ -1044,6 +1044,7 @@ end
 
 
 function SmartAI:useBasicCard(card, use,no_distance)
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 then return end
 	if card:getSkillName()=="wushen" then no_distance=true end
 	if (self.player:getHandcardNum() == 1 
 	and self.player:getHandcards():first():inherits("Slash") 
@@ -1664,6 +1665,7 @@ function SmartAI:getAllPeachNum(player)
 end
 
 function SmartAI:useTrickCard(card, use)
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 then return end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		local good, bad = 0, 0
@@ -1760,7 +1762,7 @@ function SmartAI:evaluateEquip(card)
 end
 
 function SmartAI:useEquipCard(card, use)
-	
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 and self:hasSameEquip(card) then return end	
 	if card:inherits("Weapon") then
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
 		if use.isDummy and self.weaponUsed then return end

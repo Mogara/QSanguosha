@@ -1,5 +1,69 @@
--- fanji
-sgs.ai_skill_invoke.fanji = true
+sgs.ai_skill_invoke.jueji=function(self,data)
+	local target=data:toPlayer()
+	if target:getHandcardNum()<1 or (target:getHandcardNum()==1 and self:hasSkills(sgs.need_kongcheng,target)) then
+		return false
+	end
+	local handcard=target:getHandcardNum()
+	local max_point=self:getMaxCard():getNumber()
+	local poss=((max_point-1)/13)^handcard
+	if math.random()<=poss then return true end
+
+end
+
+
+sgs.ai_skill_use["@@jueji"]=function(self,prompt)
+	local target
+	local handcard
+	if not self.enemies then return end
+	for _, enemy in ipairs(self.enemies) do
+		if not target or (enemy:getHandcardNum()<handcard and enemy:getHandcardNum()>0 and not (enemy:getHandcardNum()==1 and self:hasSkills(sgs.need_kongcheng,enemy))) then
+			target=enemy
+			handcard=enemy:getHandcardNum()
+		end
+	end
+	if not target or handcard==0 or self.player:getHandcardNum()==0 then return "." end
+	local max_point=self:getMaxCard():getNumber()
+	local poss=((max_point-1)/13)^handcard
+	if math.random()>poss then return "." end
+	local cards=self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	local top_value=0
+	for _, hcard in ipairs(cards) do
+		if not hcard:inherits("Jink") then
+			if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
+		end
+	end
+	if top_value >= 4.7 then return "." else return "@JuejiCard=" .. self:getMaxCard():getEffectiveId() .. "->" .. target:objectName() end
+end
+
+sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
+	local prompts=prompt:split(":")
+	assert(prompts[1]=="@chengxiang-card")
+	local point=tonumber(prompts[4])
+	local targets=self.friends
+	if not targets then return end
+	self:sort(targets,"hp")
+	if not targets[1]:isWounded() then return end
+	local cards=self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+	self:sortByUseValue(cards,true)
+	for _,card in ipairs(cards) do
+		if card:getNumber()==point then return "@ChengxiangCard=" .. card:getId() .. "->" .. targets[1]:objectName() end
+	end
+	for _,card1 in ipairs(cards) do
+		for __,card2 in ipairs(cards) do
+			if card1:getId()==card2:getId() then
+			elseif card1:getNumber()+card2:getNumber()==point then
+				if targets[2] and targets[2]:isWounded() then
+					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
+				elseif targets[1]:getHp()==1 or self:getUseValue(card1)+self:getUseValue(card2)<=6 then
+					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()
+				end
+			end
+		end
+	end
+	return "."
+end
 
 -- lianli
 sgs.ai_skill_use["@lianli"] = function(self, prompt)
@@ -193,5 +257,54 @@ sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	elseif self.player:getPhase() == sgs.Player_Play then
 		-- weiyan2: Play -> Draw
 		return handcard < max_card
+	end
+end
+
+local yishe_skill={name="yishe"}
+table.insert(sgs.ai_skills,yishe_skill)
+yishe_skill.getTurnUseCard = function(self)
+	return sgs.Card_Parse("@YisheCard=.")
+end
+
+sgs.ai_skill_use_func["YisheCard"]=function(card,use,self)
+	if not self.player:getPile("rice"):isEmpty() and not self.player:hasUsed("YisheCard") then use.card=card return end
+	local usecards=self:askForDiscard("gamerule", math.min(self:getOverflow(),5))
+	local cards=self.player:getHandcards()
+	cards=sgs.QList2Table(cards)
+	for _,card in ipairs(cards) do
+		if #usecards>4 then break end
+		if card:inherits("Shit") then table.insert(usecards,card:getId()) end
+	end
+	if #usecards>0 then
+		use.card=sgs.Card_Parse("@YisheCard=".. table.concat(usecards,"+"))
+	end
+end
+
+sgs.ai_skill_choice.yisheask=function(self,choices)
+	assert(sgs.yisheasksource)
+	if self:isFriend(sgs.yisheasksource) then return "allow" else return "disallow" end
+end
+
+local yisheask_skill={name="yisheask"}
+table.insert(sgs.ai_skills,yisheask_skill)
+yisheask_skill.getTurnUseCard = function(self)
+	for _, player in ipairs(self.friends_noself) do
+		if player:hasSkill("yishe") and not player:getPile("rice"):isEmpty() then return sgs.Card_Parse("@YisheAskCard=.") end
+	end
+end
+
+sgs.ai_skill_use_func["YisheAskCard"]=function(card,use,self)
+	if self.player:usedTimes("YisheAskCard")>1 then return end
+	local zhanglu
+	local cards
+	for _, player in ipairs(self.friends_noself) do
+		if player:hasSkill("yishe") and not player:getPile("rice"):isEmpty() then zhanglu=player cards=player:getPile("rice") break end
+	end	
+	if not zhanglu then return end
+	cards = sgs.QList2Table(cards)
+	card_id = sgs.ai_skill_askforag.qixing(self, cards)
+	if card_id > -1 then
+		sgs.yisheasksource=self.player
+		use.card = card
 	end
 end
