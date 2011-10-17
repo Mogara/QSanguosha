@@ -769,8 +769,24 @@ function SmartAI:askForYiji(cards)
 					if card:isRed() then return friend, card_id end 
 				end
 				
-				if friend:getHandcardNum() < friend:getHp() then
+				if friend:getHandcardNum() < friend:getHp() and not sgs.Sanguosha:getCard(card_id):inherits("Shit") then
 					return friend, card_id 
+				end
+			end
+		end
+	end
+	if #self.enemies >0 then
+		for _, card_id in ipairs(cards) do
+			local card=sgs.Sanguosha:getCard(card_id)
+			if card:inherits("Shit") then
+				for _,enemy in ipairs(self.enemies) do
+					local v1 = 0
+					if sgs[enemy:getGeneralName().."_suit_value"] then
+						v1 = sgs[enemy:getGeneralName().."_suit_value"][card:getSuitString()] or 0
+					end
+					if v1<=0 then
+						return enemy, card_id
+					end
 				end
 			end
 		end
