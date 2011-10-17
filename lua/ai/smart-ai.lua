@@ -769,8 +769,24 @@ function SmartAI:askForYiji(cards)
 					if card:isRed() then return friend, card_id end 
 				end
 				
-				if friend:getHandcardNum() < friend:getHp() then
+				if friend:getHandcardNum() < friend:getHp() and not sgs.Sanguosha:getCard(card_id):inherits("Shit") then
 					return friend, card_id 
+				end
+			end
+		end
+	end
+	if #self.enemies >0 then
+		for _, card_id in ipairs(cards) do
+			local card=sgs.Sanguosha:getCard(card_id)
+			if card:inherits("Shit") then
+				for _,enemy in ipairs(self.enemies) do
+					local v1 = 0
+					if sgs[enemy:getGeneralName().."_suit_value"] then
+						v1 = sgs[enemy:getGeneralName().."_suit_value"][card:getSuitString()] or 0
+					end
+					if v1<=0 then
+						return enemy, card_id
+					end
 				end
 			end
 		end
@@ -787,6 +803,24 @@ function SmartAI:askForUseCard(pattern, prompt)
 	else
 		return "."
 	end
+end
+
+sgs.ai_skill_use["slash"] = function(self,prompt)
+	local skillname
+	if prompt=="yitian-slash" then skillname="yitian_sword" elseif prompt=="@moon-spear-slash" then skillname="moon_spear" end
+	local slash=self:getCard("Slash")
+	if not slash then return "." end
+	self:sort(self.enemies, "defense")
+	for _,enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy) and self:slashIsEffective(slash,enemy) then
+			if skillname then
+				return ("slash=%s[%s:%s]->%s"):format(skillname,slash:getSuitString(),slash:getNumberString(),enemy:objectName())
+			else
+				return ("%d->%s"):format(slash:getId(),enemy:objectName())
+			end
+		end
+	end
+	return "."
 end
 
 function SmartAI:slashIsEffective(slash, to)
@@ -1028,6 +1062,7 @@ end
 
 
 function SmartAI:useBasicCard(card, use,no_distance)
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 then return end
 	if card:getSkillName()=="wushen" then no_distance=true end
 	if (self.player:getHandcardNum() == 1 
 	and self.player:getHandcards():first():inherits("Slash") 
@@ -1648,6 +1683,7 @@ function SmartAI:getAllPeachNum(player)
 end
 
 function SmartAI:useTrickCard(card, use)
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 then return end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
 		local good, bad = 0, 0
@@ -1744,7 +1780,7 @@ function SmartAI:evaluateEquip(card)
 end
 
 function SmartAI:useEquipCard(card, use)
-	
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 and self:hasSameEquip(card) then return end	
 	if card:inherits("Weapon") then
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
 		if use.isDummy and self.weaponUsed then return end
@@ -1752,8 +1788,9 @@ function SmartAI:useEquipCard(card, use)
 		use.card = card		
 		end
 	elseif card:inherits("Armor") then
+		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
 	    if self.player:hasSkill("bazhen") then return end
-	 	if not self.player:getArmor() then use.card=card
+	 	if not self.player:getArmor() or self.player:getArmor():objectName() == "gale-shell" then use.card=card
 	 	elseif (self.player:getArmor():objectName())=="silver_lion" then use.card=card
 	 	elseif self.player:isChained()  and (self.player:getArmor():inherits("vine")) and not (card:objectName()=="silver_lion") then use.card=card
 	 	elseif self.player:hasSkill("leiji") or self.player:hasSkill("tiandu") then use.card=card
@@ -2253,6 +2290,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		
 		if flags:match("e") then
 			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
+			if who:getArmor() and who:getArmor():objectName() == "gale-shell" then return who:getArmor():getId() end
 			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then
@@ -2277,16 +2315,17 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			if who:getArmor() then 
 			    local canFire=false
 			        
-			        if self.player:getWeapon() then 
-			            if self.player:getWeapon():inherits("Fan") then canFire=true end
-			        end
+				if self.player:getWeapon() then 
+					if self.player:getWeapon():inherits("Fan") then canFire=true end
+				end
 			    if self.toUse then
 			        for _,card in ipairs(self.toUse) do 
 			            if card:inherits("FireSlash") then canFire=true end
 			            if card:inherits("FireAttack") then canFire=true end
 			        end
 			    end
-			    if canFire and (who:getArmor():objectName()=="vine") then 
+			    if canFire and (who:getArmor():objectName()=="vine") then
+				elseif who:getArmor():objectName() == "gale-shell" then
 				elseif (who:getArmor():objectName()=="silver_lion") and who:isWounded() then 
                 else return who:getArmor():getId() 
                 end
