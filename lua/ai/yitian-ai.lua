@@ -129,6 +129,14 @@ sgs.ai_skill_playerchosen["yitian_lost"] = function(self, targets)
 	return self.enemies[1]
 end
 
+sgs.ai_skill_invoke["yitian_sword"] = function(self, targets)
+	local slash=self:getCard("Slash")
+	if not slash then return false end
+	dummy_use={isDummy=true}
+	self:useBasicCard(slash,dummy_use)
+	if dummy_use.card then return true else return false end
+end
+
 --jiangboyue
 local jiangboyue_ai = SmartAI:newSubclass "jiangboyue"
 
