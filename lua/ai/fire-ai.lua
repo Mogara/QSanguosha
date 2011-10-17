@@ -43,7 +43,7 @@ sgs.ai_skill_use_func["QuhuCard"] = function(card, use, self)
 						local card_id = max_card:getEffectiveId()
 						local card_str = "@QuhuCard=" .. card_id
 						if use.to then
-							use.to:append(enemy)						
+							use.to:append(enemy)					
 						end
 						use.card = sgs.Card_Parse(card_str)
 						return
@@ -62,7 +62,7 @@ sgs.ai_skill_use_func["QuhuCard"] = function(card, use, self)
 		end
 		if use_quhu then
 			for _, enemy in ipairs(self.enemies) do
-				if not enemy:isKongcheng() then 
+				if not enemy:isKongcheng() and self.player:getHp() < enemy:getHp() then 
 					local cards = self.player:getHandcards()
 					cards = sgs.QList2Table(cards)
 					self:sortByUseValue(cards, true)
