@@ -233,11 +233,20 @@ function liubei_ai:activate(use)
 		self:sort(self.friends_noself, "handcard")
 		local friend = self.friends_noself[1]
 		local card_id = self:getCardRandomly(self.player, "h")
-		use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
-		use.to:append(friend)
+		if not sgs.Card_Parse(card_id):inherits("Shit") then
+			use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+			use.to:append(friend)
+		end
 		return
     end
+
+	self:sort(self.enemies, "hp")
 	
+	if self:getCardId("Shit") and #self.enemies>0 then
+		use.card=sgs.Card_Parse("@RendeCard=" .. self:getCardId("Shit"))
+		use.to:append(self.enemies[1])
+		return
+	end
 	super.activate(self, use)
 end
 
