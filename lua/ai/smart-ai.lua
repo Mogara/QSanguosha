@@ -817,6 +817,24 @@ function SmartAI:askForUseCard(pattern, prompt)
 	end
 end
 
+sgs.ai_skill_use["slash"] = function(self,prompt)
+	local skillname
+	if prompt=="yitian-slash" then skillname="yitian_sword" elseif prompt=="@moon-spear-slash" then skillname="moon_spear" end
+	local slash=self:getCard("Slash")
+	if not slash then return "." end
+	self:sort(self.enemies, "defense")
+	for _,enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy) and self:slashIsEffective(slash,enemy) then
+			if skillname then
+				return ("slash=%s[%s:%s]->%s"):format(skillname,slash:getSuitString(),slash:getNumberString(),enemy:objectName())
+			else
+				return ("%d->%s"):format(slash:getId(),enemy:objectName())
+			end
+		end
+	end
+	return "."
+end
+
 function SmartAI:slashIsEffective(slash, to)
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then
