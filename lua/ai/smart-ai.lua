@@ -7,9 +7,6 @@ require "middleclass"
 -- initialize the random seed for later use
 math.randomseed(os.time())
 
--- this table stores all specialized AI classes
-sgs.ai_classes = {}
-
 -- compare functions
 sgs.ai_compare_funcs = {
 	hp = function(a, b)
@@ -67,12 +64,7 @@ sgs.ai_compare_funcs = {
 -- @param player The ServerPlayer object that want to create the AI object
 -- @return The AI object
 function CloneAI(player)
-	local ai_class = sgs.ai_classes[player:getGeneralName()]
-	if ai_class then
-		return ai_class(player).lua_ai
-	else
-		return SmartAI(player).lua_ai
-	end
+	return SmartAI(player).lua_ai
 end
 
 --- FIXME: ?
@@ -263,7 +255,7 @@ function SmartAI:updateLoyalTarget(player)
 	
     if (self:objectiveLevel(player)>=4) then
         if not sgs.loyal_target then sgs.loyal_target=player 
-		elseif self:getEquipNumber(sgs.loyal_target)>self:getEquipNumber(player) then sgs.loyal_target=player 
+		elseif self:getCardsNum(".", sgs.loyal_target, "e")>self:getCardsNum(".", player, "e") then sgs.loyal_target=player 
         elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0)<(sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target=player 
         elseif (sgs.loyal_target:getHp()>1) and (getDefense(player)<=3) then sgs.loyal_target=player 
         elseif (sgs.loyal_target:getHandcardNum()>0) and (player:getHandcardNum()==0) then sgs.loyal_target=player 
@@ -342,10 +334,6 @@ function SmartAI:objectiveLevel(player)
         if not hasRebel then 
             local name=player:objectName()
 			if player:getRole() == "renegade" then return 5 else return -2 end
---            self:sort(players,"defense")
---            if (players[#players]:objectName()==name) then modifier=-10
---            elseif players[1]:objectName()==name and ((sgs.ai_anti_lord[name] or 0)-2)<=(sgs.ai_lord_tolerance[name] or 0) then modifier=10
---            else modifier=2
         end
 		
 		if not hasLoyal then 
@@ -854,10 +842,6 @@ function SmartAI:slashIsAvailable(player)
     else
         return (player:usedTimes("Slash") + player:usedTimes("FireSlash") + player:usedTimes("ThunderSlash")) < 1
 	end
-end
-
-function SmartAI:getEquipNumber(player)
-	return player:getEquips():length()
 end
 
 local function isCompulsoryView(card, class_name, player, card_place)
@@ -2352,7 +2336,6 @@ end
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	
-	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
 	local target, target2
 	if not prompt then return end
 	local parsedPrompt = prompt:split(":")
@@ -2481,10 +2464,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 	end
 
 	if pattern == "slash" then
-		if parsedPrompt[1] == "@jijiang-slash" then
-			if not target then target = self.room:getLord() end
-			if not self:isFriend(target) then return "." end
-		end	
 		if parsedPrompt[1] == "@wushuang-slash-1" and self:getCardsNum("Slash") < 2 and 
 			not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
 		if parsedPrompt[1] == "collateral-slash" then 
@@ -2513,10 +2492,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 			return self:getCardId("Slash") or "."
 		end
 	elseif pattern == "jink" then
-		if parsedPrompt[1] == "@hujia-jink" then
-			if not target then target = self.room:getLord() end
-			if not self:isFriend(target) then return "." end
-		end
 		if (parsedPrompt[1] == "@wushuang-jink-1" or parsedPrompt[1] == "@roulin1-jink-1" or parsedPrompt[1] == "@roulin2-jink-1") 
 			and self:getCardsNum("Jink") < 2 then return "." end
 		if target then
@@ -2702,7 +2677,7 @@ function SmartAI:askForSinglePeach(dying)
 		end
 	end
 	
-	return nil
+	return "."
 end
 
 function SmartAI:getChainedFriends()
@@ -2723,19 +2698,6 @@ function SmartAI:getChainedEnemies()
 		end
 	end
 	return chainedEnemies
-end
-
-function SmartAI.newSubclass(theClass, name)
-	local class_name = name:sub(1, 1):upper() .. name:sub(2) .. "AI"
-	local new_class = class(class_name, theClass)
-
-	function new_class:initialize(player)
-		super.initialize(self, player)
-	end
-
-	sgs.ai_classes[name] = new_class
-
-	return new_class
 end
 
 function SmartAI:hasSkill(skill)
@@ -2931,6 +2893,7 @@ function SmartAI:getCardId(class_name, player)
 		end
 	end
 	for _, card in ipairs(cards) do
+		local card_place = self.room:getCardPlace(card:getEffectiveId())
 		card_str = getSkillViewCard(card, class_name, player, card_place)
 		if card_str then return card_str end
 	end
@@ -3159,7 +3122,7 @@ function getCards(class_name, player, room, flag)
 	return cards
 end
 
-function SmartAI:getCards(class_name, player, room, flag)
+function SmartAI:getCards(class_name, player, flag)
 	player = player or self.player
 	return getCards(class_name, player, self.room, flag)
 end

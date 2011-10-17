@@ -32,13 +32,11 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
     end
 end
 
-local shenlubu_ai = SmartAI:newSubclass "shenlubu"
-
-function shenlubu_ai:useTrickCard(card, use)
-	if self.player:getMark("@wrath") > 0 then
-		return super.useTrickCard(self, card, use)
-	end
-end
+--function shenlubu_ai:useTrickCard(card, use)
+--	if self.player:getMark("@wrath") > 0 then
+		--return super.useTrickCard(self, card, use)
+	--end
+--end
 
 sgs.ai_skill_choice.wumou = "discard"
 
@@ -73,26 +71,6 @@ wushen_skill.getTurnUseCard=function(self)
         
         return slash
 	end
-end
-
-local shenguanyu_ai = SmartAI:newSubclass "shenguanyu"
-function shenguanyu_ai:askForCard(pattern,prompt)
-	local card = super.askForCard(self, pattern, prompt)
-	if card then return card end
-	if pattern == "slash" then
-		local cards = self.player:getCards("h")
-		cards=sgs.QList2Table(cards)
-		self:fillSkillCards(cards)
-        self:sortByUseValue(cards,true)
-		for _, card in ipairs(cards) do
-			if card:getSuit() == sgs.Card_Heart then
-				local suit = card:getSuitString()
-				local number = card:getNumberString()
-				local card_id = card:getEffectiveId()
-				return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-	end    
 end
 
 --qixing
