@@ -207,9 +207,3 @@ luanji_skill.getTurnUseCard=function(self)
 		return archeryattack
 	end
 end
-
-sgs.ai_skill_use_func["LuanjiCard"]=function(card,use,self)
-	local vaa = sgs.Sanguosha:cloneCard("archery_attack", sgs.Card_NoSuit, 0)
-	if self:getAoeValue(vaa) < 10 then return end
-    use.card=card
-end
