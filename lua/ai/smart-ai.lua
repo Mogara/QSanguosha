@@ -1873,21 +1873,23 @@ function SmartAI:activate(use)
 	self:sortByUsePriority(self.toUse)
 	self:sortByDynamicUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
-		local type = card:getTypeId()
+		if not self.player:isJilei(card) then
+			local type = card:getTypeId()
 
-		if type == sgs.Card_Basic then
-			self:useBasicCard(card, use, self.slash_distance_limit)
-		elseif type == sgs.Card_Trick then
-			self:useTrickCard(card, use)
-		elseif type == sgs.Card_Skill then
-			self:useSkillCard(card, use)
-		else
-			self:useEquipCard(card, use)
-		end
-		
-		if use:isValid() then
-			self.toUse=nil
-			return
+			if type == sgs.Card_Basic then
+				self:useBasicCard(card, use, self.slash_distance_limit)
+			elseif type == sgs.Card_Trick then
+				self:useTrickCard(card, use)
+			elseif type == sgs.Card_Skill then
+				self:useSkillCard(card, use)
+			else
+				self:useEquipCard(card, use)
+			end
+			
+			if use:isValid() then
+				self.toUse=nil
+				return
+			end
 		end
 	end
 	
@@ -2195,8 +2197,11 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	self:sortByKeepValue(cards)
 	
 	local to_discard = {}
-	for i=1, discard_num do
-		table.insert(to_discard, cards[i]:getEffectiveId())
+	for _, card in ipairs(cards) do
+		if #to_discard>=discard_num then break end
+		if not self.player:isJilei(card) then
+			table.insert(to_discard, card:getEffectiveId())
+		end
 	end
 	
 	if include_equip then
