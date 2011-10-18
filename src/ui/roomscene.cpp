@@ -1861,7 +1861,7 @@ void RoomScene::updateStatus(Client::Status status){
             foreach(QAbstractButton *button, skill_buttons){
                 if(button->objectName() == skill_name){
                     QCheckBox *check_box = qobject_cast<QCheckBox *>(button);
-                    if(check_box->isChecked()){
+                    if(check_box && check_box->isChecked()){
                         ClientInstance->invokeSkill(true);
                         return;
                     }
