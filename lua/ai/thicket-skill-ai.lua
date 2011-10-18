@@ -40,7 +40,7 @@ duanliang_skill.getTurnUseCard=function(self)
 	self:sortByUseValue(cards,true)
 	
 	for _,acard in ipairs(cards)  do
-		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) and (self:getUseValue(acard)<(sgs.ai_use_value["SupplyShortage"] or 0)) then
+		if (acard:isBlack()) and (acard:inherits("BasicCard") or acard:inherits("EquipCard")) then
 			card = acard
 			break
 		end

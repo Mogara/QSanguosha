@@ -1,3 +1,45 @@
+sgs.dynamic_value = {
+	damage_card = 
+	{
+		Duel = true,
+		AOE = true,
+		Slash = true,
+		FireAttack = true,
+		QiangxiCard = true,
+		FanjianCard = true,
+		LijianCard = true,
+	},
+	control_usecard = 
+	{
+		Indulgence = true,
+		SupplyShortage = true,
+	},
+	control_card = 
+	{
+		Snatch = true,
+		Dismantlement = true,
+		Collateral = true,
+		TianyiCard = true,
+		XianzhenCard = true,
+		DimengCard = true,
+		JixiCard = true,
+	},
+	lucky_chance = 
+	{
+		Lightning = true,
+	},
+	benefit = 
+	{
+		Peach = true,
+		Analeptic = true,
+		IronChain = true,
+		Exnihilo = true,
+		
+		JieyinCard = true,
+		QingnangCard = true,
+	},
+}
+
 sgs.zhangfei_keep_value = 
 {
 Shit = 6,

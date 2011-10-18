@@ -220,11 +220,17 @@ jieyin_skill.getTurnUseCard=function(self)
 		local cards = self.player:getHandcards()
 		cards=sgs.QList2Table(cards)
 		
+		local first, second
 		self:sortByUseValue(cards,true)
+		for _, card in ipairs(cards) do
+			if not card:getTypeId() == sgs.Card_Equip then
+				if not first then first  = cards[1]:getEffectiveId()
+				else second = cards[2]:getEffectiveId()
+				end
+			end
+			if second then break end
+		end
 		
-		local first  = cards[1]:getEffectiveId()
-		local second = cards[2]:getEffectiveId()
-
 		local card_str = ("@JieyinCard=%d+%d"):format(first, second)
 		return sgs.Card_Parse(card_str)
 end
