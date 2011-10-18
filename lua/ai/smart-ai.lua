@@ -862,7 +862,7 @@ function SmartAI:slashHit(slash, to)
 		return true 
 	end
 	
-	return self:getCardsNum("Jink") == 0
+	return self:getCardsNum("Jink", to) == 0
 end
 
 function SmartAI:slashIsAvailable(player)
@@ -1289,9 +1289,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 	for _, enemy in ipairs(enemies) do
 		local equips = enemy:getEquips()
 		
-		--if equips or not (enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying")) then			--not all conditions
-		
-		    if  not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) and					---update
+		    if  not enemy:isNude() and self:hasTrickEffective(dismantlement, enemy) and					
 			   (not self:hasSkills(sgs.lose_equip_skill, enemy) or enemy:getEquips():isEmpty()) then                   
 				if enemy:getHandcardNum() == 1 then
 					if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
@@ -1303,7 +1301,6 @@ function SmartAI:useCardDismantlement(dismantlement, use)
                 end
 				return 
 		    end
-	--	end
 	end
 end
 
@@ -2506,7 +2503,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 		if parsedPrompt[1] == "@wushuang-slash-1" and self:getCardsNum("Slash") < 2 and 
 			not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
 		if parsedPrompt[1] == "collateral-slash" then 
-			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets) > 0) and not self:hasSkills(sgs.lose_equip_skill) then 
+			if target and (not self:isFriend(target2) or target2:getHp() > 2 or self:getCardsNum("Jink", targets2) > 0) and not self:hasSkills(sgs.lose_equip_skill) then 
 				return self:getCardId("Slash")
 			end
 			self:speak("collateral", self.player:getGeneral():isFemale())
