@@ -19,7 +19,7 @@ sgs.ai_skill_cardchosen.ice_sword = function(self, who)
 	local hcards = who:getCards("h")
 	hcards = sgs.QList2Table(hcards)
 	for _, peach in ipairs(hcards) do
-		if peach:inherits("Peach") or peach:inherits("Analeptic") then return peach:getId() end
+		if peach:inherits("Peach") or peach:inherits("Analeptic") then return peach end
 	end
 end
 
