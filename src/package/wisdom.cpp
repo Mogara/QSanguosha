@@ -374,6 +374,9 @@ void WeidaiCard::use(Room *room, ServerPlayer *sunce, const QList<ServerPlayer *
             return;
         if(sunce->getHp() > 0 && sunce->hasUsed("Analeptic"))
             return;
+        QVariant to_help = QVariant::fromValue((PlayerStar)sunce);
+        if(!liege->askForSkillInvoke("weidai", to_help))
+            return;
         const Card *analeptic = room->askForCard(liege, ".S29", "@weidai-analeptic:" + sunce->objectName());
         if(analeptic){
             LogMessage log;
