@@ -1,4 +1,35 @@
 -- Wisdom's AI by Ubun.
+
+-- shouye
+local shouye_skill={}
+shouye_skill.name = "shouye"
+table.insert(sgs.ai_skills, shouye_skill)
+shouye_skill.getTurnUseCard=function(self)
+	if self.player:getHandcardNum() > 0 then
+		local n = self.player:getMark("shouyeonce")
+		if n > 0 and self.player:hasUsed("ShouyeCard") then return end
+		local cards = self.player:getHandcards()
+		cards = sgs.QList2Table(cards)
+		for _, hcard in ipairs(cards) do 
+			if hcard:isRed() then
+				return sgs.Card_Parse("@ShouyeCard=" .. hcard:getId())
+			end
+		end
+	end
+end
+
+sgs.ai_skill_use_func["ShouyeCard"] = function(card, use, self)
+	self:sort(self.friends_noself, "handcard")
+	if self.friends_noself[1] then
+		if use.to then use.to:append(self.friends_noself[1]) end
+	end
+	if self.friends_noself[2] then
+		if use.to then use.to:append(self.friends_noself[2]) end
+	end
+	use.card = card
+	return
+end
+
 -- shien
 sgs.ai_skill_invoke["shien"] = function(self, data)
 	return self:isFriend(data:toPlayer())
@@ -7,12 +38,38 @@ end
 -- tanlan
 sgs.ai_skill_invoke["tanlan"] = function(self, data)
 	local damage = data:toDamage()
-	return self:isEnemy(damage.from)
+    local max_card = self:getMaxCard()
+    if not max_card then return end
+	if max_card:getNumber() > 10 or 
+		(self.player:getHp() > 2 and self.player:getHandcardNum() > 2 and max_card:getNumber() > 4) or
+		(self.player:getHp() > 1 and self.player:getHandcardNum() > 1 and max_card:getNumber() > 7) or
+		(damage.from:getHandcardNum() <= 2 and max_card:getNumber() > 2) then	
+		return self:isEnemy(damage.from)
+	end
 end
 
 -- yicai
 sgs.ai_skill_invoke["yicai"] = function(self, data)
-	return true
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy, true) and self:getCardsNum("Slash") > 0 then return true end
+	end
+end
+
+-- yicai,badao,yitian-slash,moon-spear-slash
+sgs.ai_skill_use["slash"] = function(self, prompt)
+	if prompt ~= "@yicai" and prompt ~= "@badao" and
+		prompt ~= "yitian-slash" and prompt ~= "@moon-spear-slash" then return end
+	local others=self.room:getOtherPlayers(self.player)
+	others=sgs.QList2Table(others)
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy, true) then
+            card_id = self:getCardId("Slash")
+			if card_id then
+				return ("%d->%s"):format(card_id, enemy:objectName())
+			end
+		end
+	end
+	return "."
 end
 
 -- beifa
@@ -22,44 +79,46 @@ sgs.ai_skill_playerchosen["beifa"] = function(self, targets)
 			return player
 		end
 	end
+	return self.player
 end
 
 -- bawang
 sgs.ai_skill_invoke["bawang"] = function(self, data)
 	local effect = data:toSlashEffect()
-	return self:isEnemy(effect.to)
+	local max_card = self:getMaxCard()
+    if max_card and max_card:getNumber() > 9 then
+		return self:isEnemy(effect.to)
+	end
 end
 
 sgs.ai_skill_use["@@bawang"] = function(self, prompt)
 	local first_index, second_index
 	for i=1, #self.enemies-1 do																			
-		if (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:getHandcardNum() == 0)  then 
-				local bullshit
-				
-		elseif not first_index then 
+		if not (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:getHandcardNum() == 0) then				
+			if not first_index then 
 				first_index = i 
 			else 
 				second_index = i 
+			end
 		end
 		if second_index then break end
 	end
-	
-	if first_index and not second_index then
-		local others = self.room:getOtherPlayers(self.player)
-		for _, other in sgs.qlist(others) do
-			if (not self:isFriend(other) or (self:hasSkills(sgs.need_kongcheng, other) and other:getHandcardNum() == 0)) and 
-				self.enemies[first_index]:objectName() ~= other:objectName() then 
-				return ("@BawangCard=.->%s+%s"):format(self.enemies[first_index]:objectName(), other:objectName())
-			end
-		end
-	end
-	
-	if not second_index then return "." end
-	
-	self:log(self.enemies[first_index]:getGeneralName() .. "+" .. self.enemies[second_index]:getGeneralName())
+	if not first_index then return "." end
 	local first = self.enemies[first_index]:objectName()
-	local second = self.enemies[second_index]:objectName()
-	return ("@BawangCard=.->%s+%s"):format(first, second)
+	if not second_index then
+		return ("@BawangCard=.->%s"):format(first)
+	else
+		local second = self.enemies[second_index]:objectName()
+		return ("@BawangCard=.->%s+%s"):format(first, second)
+	end
+end
+
+-- weidai
+sgs.ai_skill_invoke["weidai"] = function(self, data)
+	return self:isFriend(data:toPlayer())
+end
+sgs.ai_skill_use["@@weidai"] = function(self, prompt)
+	return "@WeidaiCard=.->."
 end
 
 -- fuzuo
@@ -74,6 +133,7 @@ sgs.ai_skill_playerchosen["longluo"] = function(self, targets)
 			return player
 		end
 	end
+	return self.friends[1]
 end
 
 -- jincui
@@ -82,10 +142,11 @@ sgs.ai_skill_invoke["jincui"] = function(self, data)
 end
 sgs.ai_skill_playerchosen["jincui"] = function(self, targets)
 	for _, player in sgs.qlist(targets) do
-		if self:isFriend(player) and player:getHp() > player:getHandcardNum() then
+		if self:isFriend(player) and player:getHp() - player:getHandcardNum() > 1 then
 			return player
 		end
 	end
+	return self.friends[1]
 end
 sgs.ai_skill_choice["jincui"] = function(self, choices)
 	return "draw"
@@ -100,31 +161,159 @@ sgs.ai_skill_invoke["shipo"] = function(self, data)
 	end
 end
 
---houyuan(not finish)
+-- badao
+sgs.ai_skill_invoke["badao"] = function(self, data)
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canSlash(enemy, true) and self:getCardsNum("Slash") > 0 then return true end
+	end
+end
+
+-- houyuan
 local houyuan_skill={}
 houyuan_skill.name="houyuan"
 table.insert(sgs.ai_skills,houyuan_skill)
 houyuan_skill.getTurnUseCard=function(self)
-	local abandon_handcard = {}
-	local index = 0
-	if not self.player:hasUsed("HouyuanCard") then return sgs.Card_Parse("@HouyuanCard=.") end
-end
-
-sgs.ai_skill_use_func["HouyuanCard"] = function(card, use, self)
-	if self.player:getHandcardNum() > 1 then
+	if not self.player:hasUsed("HouyuanCard") and self.player:getHandcardNum() > 1 then
+		local givecard = {}
+		local index = 0
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
-		for _, friend in ipairs(self.friends_noself) do
-			for _, fcard in ipairs(cards) do 
-				table.insert(abandon_handcard, fcard:getId())
+		for _, fcard in ipairs(cards) do 
+			if not fcard:inherits("Shit") then
+				table.insert(givecard, fcard:getId())
 				index = index + 1
 			end
 			if index == 2 then break end
 		end
-		if index == 2 then 
-			use.to:append(friend)
-			use.card = sgs.Card_Parse("@HouyuanCard=" .. table.concat(abandon_handcard, "+"))
-			return
+		if index < 2 then return end
+		return sgs.Card_Parse("@HouyuanCard=" .. table.concat(givecard, "+"))
+	end
+end
+
+sgs.ai_skill_use_func["HouyuanCard"] = function(card, use, self)
+	local target
+	local max_x = 20
+	for _, friend in ipairs(self.friends_noself) do
+		local x = friend:getHandcardNum()		
+		if x < max_x then
+			max_x = x
+			target = friend
 		end
 	end
+	if use.to then use.to:append(target) end
+	use.card = card
+	return
+end
+
+-- juao
+local juao_skill={}
+juao_skill.name = "juao"
+table.insert(sgs.ai_skills, juao_skill)
+juao_skill.getTurnUseCard=function(self)
+	if not self.player:hasUsed("JuaoCard") and self.player:getHandcardNum() > 1 then
+		local card_id = self:getCardRandomly(self.player, "h")
+		return sgs.Card_Parse("@JuaoCard=" .. card_id)
+	end
+end
+
+sgs.ai_skill_use_func["JuaoCard"] = function(card, use, self)
+	local givecard = {}
+	local index = 0
+	local cards = self.player:getHandcards()
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:getHp() == 1 then
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:inherits("Analeptic") or hcard:inherits("Peach") then 
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+				end
+				if index == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				elseif index == 1 and givecard[1] ~= hcard:getId() and not hcard:inherits("Shit") then
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				end
+			end
+		end
+		if friend:hasSkill("jizhi") then
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:getTypeId() == sgs.Card_Trick then 
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+				end
+				if index == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				end
+			end
+		elseif friend:hasSkill("leiji") then
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:getSuit() == sgs.Card_Spade or hcard:inherits("Jink") then 
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+				end
+				if index == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				end
+			end
+		elseif friend:hasSkill("xiaoji") then
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:inherits("EquipCard") then 
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+				end
+				if index == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				end
+			end
+		end
+	end
+	givecard = {}
+	index = 0
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getHp() == 1 then
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:inherits("Shit") or hcard:inherits("Disaster") then 
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+				end
+				if index == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(enemy) end
+					return
+				elseif index == 1 and givecard[1] ~= hcard:getId() and
+					not hcard:inherits("Peach") and not hcard:inherits("TrickCard") then
+					table.insert(givecard, hcard:getId())
+					index = index + 1
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(enemy) end
+					return
+				end
+			end
+		end
+	end
+	if index <= 2 then
+		for _, hcard in sgs.qlist(cards) do
+			if hcard:inherits("Shit") or hcard:inherits("Disaster") then 
+				table.insert(givecard, hcard:getId())
+				index = index + 1
+			end
+			if index == 2 then
+				use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+				if use.to then use.to:append(self.enemies[1]) end
+				return
+			end
+		end
+	end
+	return
 end
