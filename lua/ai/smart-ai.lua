@@ -2018,6 +2018,8 @@ function SmartAI:getUsePriority(card)
 end
 
 function SmartAI:getDynamicUsePriority(card)
+	if not card then return 0 end
+	
 	local type = card:getTypeId()
 	local dummy_use = {}
 	dummy_use.isDummy = true
@@ -2058,6 +2060,8 @@ function SmartAI:getDynamicUsePriority(card)
 					else dynamic_value = dynamic_value + ((player:getHandcardNum()+player:getHp())/player:getHp())*dynamic_value
 					end
 				end
+			elseif use_card:inherits("Peach") then 
+				dynamic_value = 9.5
 			elseif use_card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null > bad_null then
 				dynamic_value = 6.55
 			elseif use_card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
@@ -2065,8 +2069,8 @@ function SmartAI:getDynamicUsePriority(card)
 				elseif self:isWeak() then dynamic_value = 7.9
 				else dynamic_value = 7.5
 				end
-			elseif use_card:inherits("JieyinCard") then
-				dynamic_value = 7.51
+			elseif use_card:inherits("JieyinCard") and self:getCardsNum("Peach") < self.player:getLostHp() then
+			    dynamic_value = 7.51
 			end
 			value = value + dynamic_value
 		elseif sgs.dynamic_value.damage_card[class_name] then
@@ -2175,7 +2179,7 @@ function SmartAI:sortByDynamicUsePriority(cards)
 		if value1 ~= value2 then
 			return value1 > value2
 		else
-			return a:getNumber() > b:getNumber()
+			return a && a:getTypeId() ~= sgs.Card_Skill
 		end
 	end
 
@@ -2478,6 +2482,7 @@ end
 
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
+	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
 	
 	local target, target2
 	if not prompt then return end
