@@ -5,6 +5,7 @@ local shouye_skill={}
 shouye_skill.name = "shouye"
 table.insert(sgs.ai_skills, shouye_skill)
 shouye_skill.getTurnUseCard=function(self)
+	if #self.friends_noself == 0 then return end
 	if self.player:getHandcardNum() > 0 then
 		local n = self.player:getMark("shouyeonce")
 		if n > 0 and self.player:hasUsed("ShouyeCard") then return end
