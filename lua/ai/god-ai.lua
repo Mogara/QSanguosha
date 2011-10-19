@@ -1,4 +1,4 @@
-    -- this script file contains the AI classes for gods
+	-- this script file contains the AI classes for gods
 
 -- guixin, always invoke
 sgs.ai_skill_invoke.guixin = true
@@ -13,23 +13,23 @@ gongxin_skill.getTurnUseCard=function(self)
 		local card_str = ("@GongxinCard=.")
 		local gongxin_card = sgs.Card_Parse(card_str)
 		assert(gongxin_card)
-        return gongxin_card
+		return gongxin_card
 end
 
 sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
-    if self.player:usedTimes("GongxinCard")>0 then return end
-    self:sort(self.enemies,"handcard")
-    
-    for _,enemy in ipairs(self.enemies) do  
-        local cards = enemy:getHandcards()
-			for _, acard in sgs.qlist(cards) do				
+	if self.player:usedTimes("GongxinCard")>0 then return end
+	self:sort(self.enemies,"handcard")
+
+	for _,enemy in ipairs(self.enemies) do
+		local cards = enemy:getHandcards()
+			for _, acard in sgs.qlist(cards) do
 				if acard:getSuit() == sgs.Card_Heart and not acard:inherits("Shit") then
 					use.card = card
 					if use.to then use.to:append(enemy) end
 					return
 				end
 			end
-    end
+	end
 end
 
 --function shenlubu_ai:useTrickCard(card, use)
@@ -46,13 +46,13 @@ wushen_skill={}
 wushen_skill.name="wushen"
 table.insert(sgs.ai_skills,wushen_skill)
 wushen_skill.getTurnUseCard=function(self)
-    local cards = self.player:getCards("he")	
-    cards=sgs.QList2Table(cards)
-	
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+
 	local red_card
-	
+
 	self:sortByUseValue(cards,true)
-	
+
 	for _,card in ipairs(cards)  do
 		if card:getSuitString()=="heart" then--and (self:getUseValue(card)<sgs.ai_use_value["Slash"]) then
 			red_card = card
@@ -60,16 +60,16 @@ wushen_skill.getTurnUseCard=function(self)
 		end
 	end
 
-	if red_card then		
+	if red_card then
 		local suit = red_card:getSuitString()
-    	local number = red_card:getNumberString()
+		local number = red_card:getNumberString()
 		local card_id = red_card:getEffectiveId()
 		local card_str = ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id)
 		local slash = sgs.Card_Parse(card_str)
-		
+
 		assert(slash)
-        
-        return slash
+
+		return slash
 	end
 end
 
@@ -87,7 +87,7 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 		elseif card:getTypeId() == sgs.Card_Trick then return card:getEffectiveId()
 		else return -1 end
 	end
-	return -1 
+	return -1
 end
 
 --kuangfeng
@@ -103,12 +103,12 @@ sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 		end
 		if friendly_fire then break end
 	end
-	
+
 	local is_chained = 0
 	local target = {}
-	for _, enemy in ipairs(self.enemies) do	
-		if enemy:isChained() then 
-			is_chained = is_chained + 1 
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:isChained() then
+			is_chained = is_chained + 1
 			table.insert(target, enemy)
 		end
 		if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
@@ -128,7 +128,7 @@ sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 		return "."
 	end
 end
-   
+
 --dawu
 sgs.ai_skill_use["@dawu"] = function(self, prompt)
 	self:sort(self.friends, "hp")
@@ -137,7 +137,7 @@ sgs.ai_skill_use["@dawu"] = function(self, prompt)
 			return "@DawuCard=.->" .. friend:objectName()
 		end
 	end
-	
+
 	return "."
 end
 
@@ -145,7 +145,7 @@ sgs.ai_skill_playerchosen.dawu = function(self, targets)
 	for _, friend in sgs.qlist(targets) do
 		if self:isFriend(friend) and friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then return friend end
 	end
-	
+
 	return self.friends[1]
 end
 
@@ -161,18 +161,18 @@ local wuqian_skill={}
 wuqian_skill.name = "wuqian"
 table.insert(sgs.ai_skills, wuqian_skill)
 wuqian_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("WuqianCard") or self.player:getMark("@wrath") < 2 then return end
-	
+	if self.player:hasUsed("WuqianCard") or self.player:getMark("@wrath") < 2 then return end
+
 	local card_str = ("@WuqianCard=.")
 	self:sort(self.enemies, "hp")
 	local has_enemy
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getHp() <= 2 and self:getCardsNum("Jink", enemy) < 2 and self.player:inMyAttackRange(enemy) then has_enemy = enemy break end
 	end
-	
+
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and 
+			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and
 				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) then return sgs.Card_Parse(card_str)
 			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
 			end
@@ -181,13 +181,13 @@ wuqian_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func["WuqianCard"]=function(card,use,self)
-    self:sort(self.enemies,"hp")
+	self:sort(self.enemies,"hp")
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() <= 2 and self:getCardsNum("Jink", enemy) < 2 and self.player:inMyAttackRange(enemy) then 
-			if use.to then 
+		if enemy:getHp() <= 2 and self:getCardsNum("Jink", enemy) < 2 and self.player:inMyAttackRange(enemy) then
+			if use.to then
 				use.to:append(enemy)
 			end
-			use.card = card 
+			use.card = card
 			return
 		end
 	end
@@ -198,7 +198,7 @@ local shenfen_skill={}
 shenfen_skill.name = "shenfen"
 table.insert(sgs.ai_skills, shenfen_skill)
 shenfen_skill.getTurnUseCard=function(self)
-    if self.player:hasUsed("ShenfenCard") or self.player:getMark("@wrath") < 6 then return end
+	if self.player:hasUsed("ShenfenCard") or self.player:getMark("@wrath") < 6 then return end
 	return sgs.Card_Parse("@ShenfenCard=.")
 end
 
@@ -224,7 +224,7 @@ local yeyan_skill={}
 yeyan_skill.name = "yeyan"
 table.insert(sgs.ai_skills, yeyan_skill)
 yeyan_skill.getTurnUseCard=function(self)
-    if self.player:getMark("@flame") == 0 then return end
+	if self.player:getMark("@flame") == 0 then return end
 	if self.player:getHandcardNum() >= 4 then
 		local spade, club, heart, diamond
 		for _, card in sgs.qlist(self.player:getHandcards()) do
@@ -244,15 +244,15 @@ yeyan_skill.getTurnUseCard=function(self)
 					target_num = target_num + 1
 				end
 			end
-			
-			if target_num == 1 then 
+
+			if target_num == 1 then
 				return sgs.Card_Parse("@GreatYeyanCard=.")
 			elseif target_num > 1 then
 				return sgs.Card_Parse("@MediumYeyanCard=.")
 			end
 		end
 	end
-	
+
 	if self.player:getHp() + self:getCardsNum("Peach") + self:getCardsNum("Analeptic") <= 1 then
 		return sgs.Card_Parse("@SmallYeyanCard=.")
 	end
@@ -283,7 +283,7 @@ sgs.ai_skill_use_func["MediumYeyanCard"]=function(card,use,self)
 		end
 	end
 	if #need_cards < 4 then return end
-	
+
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
@@ -314,7 +314,7 @@ sgs.ai_skill_use_func["GreatYeyanCard"]=function(card,use,self)
 		end
 	end
 	if #need_cards < 4 then return end
-	
+
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if not (enemy:getArmor() and enemy:getArmor():objectName() == "silver_lion") then
@@ -331,17 +331,17 @@ sgs.ai_skill_invoke.jilve=function(self,data)
 	local struct
 	local n=self.player:getMark("@bear")
 	local use=(n>2 or self:getOverflow()>0)
-	struct=data:toCard() 
+	struct=data:toCard()
 	if not struct then
 		struct=data:toCardUse()
 		if struct then
 			if not struct.card then struct=nil elseif struct.card:inherits("ExNihilo") then use=true end
 		end
-	end 
-	if struct then return use end 
+	end
+	if struct then return use end
 	struct=data:toDamage()
 	if struct then if not struct.to==self.player then struct=nil end end
-	if struct then return (use and self:askForUseCard("@@fangzhu","@fangzhu")~=".") end 
+	if struct then return (use and self:askForUseCard("@@fangzhu","@fangzhu")~=".") end
 	struct=data:toJudge()
 	if struct then if not struct.card then struct=nil end end
 	if not struct then assert(false) end
