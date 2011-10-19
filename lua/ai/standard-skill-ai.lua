@@ -231,6 +231,7 @@ jieyin_skill.getTurnUseCard=function(self)
 			if second then break end
 		end
 		
+		if not second then return end
 		local card_str = ("@JieyinCard=%d+%d"):format(first, second)
 		return sgs.Card_Parse(card_str)
 end
