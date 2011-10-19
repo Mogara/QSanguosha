@@ -2,12 +2,16 @@ sgs.dynamic_value = {
 	damage_card = 
 	{
 		Duel = true,
-		AOE = true,
+		ArcheryAttack = true,
 		Slash = true,
 		FireAttack = true,
+		SavageAssault = true,
+		
 		QiangxiCard = true,
 		FanjianCard = true,
 		LijianCard = true,
+		LuanwuCard = true,
+		ShenfenCard = true,
 	},
 	control_usecard = 
 	{
@@ -19,10 +23,14 @@ sgs.dynamic_value = {
 		Snatch = true,
 		Dismantlement = true,
 		Collateral = true,
+		
 		TianyiCard = true,
 		XianzhenCard = true,
 		DimengCard = true,
 		JixiCard = true,
+		GanluCard = true,
+		QuhuCard = true,
+		ShenfenCard = true,
 	},
 	lucky_chance = 
 	{
@@ -35,8 +43,11 @@ sgs.dynamic_value = {
 		IronChain = true,
 		Exnihilo = true,
 		
+		RendeCard = true,
 		JieyinCard = true,
 		QingnangCard = true,
+		JujianCard = true,
+		ZhihengCard = true,
 	},
 }
 
