@@ -2053,7 +2053,7 @@ function SmartAI:getDynamicUsePriority(card)
 				end
 			elseif card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null > bad_null then
 				dynamic_value = 6.55
-			elseif card:inherits("RendeCard") then
+			elseif card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
 				if not self.player:isWounded() then dynamic_value = 6.57 
 				elseif self:isWeak() then dynamic_value = 7.9
 				else dynamic_value = 7.5
@@ -2088,11 +2088,11 @@ function SmartAI:getDynamicUsePriority(card)
 					value = value + 5 + (self:getHandcardNum() - self:getCardsNum("Slash", probably_hit))
 				end
 			end
-		elseif sgs.dynamic_value.control_card then
+		elseif sgs.dynamic_value.control_card[class_name] then
 			value = value + (7 - bad_null/good_null)
-		elseif sgs.dynamic_value.control_usecard then
+		elseif sgs.dynamic_value.control_usecard[class_name] then
 			value = value + 6.6
-		else
+		elseif sgs.dynamic_value.lucky_chance[class_name] then
 			value = value + (#self.enemies - #self.friends)
 		end
 	end
