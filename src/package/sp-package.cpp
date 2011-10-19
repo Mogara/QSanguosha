@@ -322,7 +322,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *guanyu) const{
         Room *room = guanyu->getRoom();
         ServerPlayer *the_lord = room->getLord();
-        if(the_lord && the_lord->getGeneralName() == "caocao"){
+        if(the_lord && the_lord->isCaoCao()){
             LogMessage log;
             log.type = "#DanjiWake";
             log.from = guanyu;
