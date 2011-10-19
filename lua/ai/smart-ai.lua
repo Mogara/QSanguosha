@@ -841,7 +841,11 @@ function SmartAI:slashIsEffective(slash, to)
 		not slash:inherits("ThunderSlash") then 
 		return false 
 	end
-
+	
+	if to:getMark("@fog") and not slash:inherits("ThunderSlash") then
+		return false
+	end
+	
 	return true
 end
 
@@ -2946,6 +2950,7 @@ function SmartAI:hasTrickEffective(card, player)
 		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 		end
+		if player:getMark("@fog") and card:inherits("Duel") then return false end
 	else
 		if self.player:hasSkill("wuyan") then 
 			if card:inherits("TrickCard") and not 
