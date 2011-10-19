@@ -1023,7 +1023,7 @@ function SmartAI:slashProhibit(card,enemy)
         if self.player:hasSkill("tieji") or self.player:hasSkill("liegong") then return false end
         
         if enemy:getHandcardNum()>=2 then return true end
-        if enemy:getArmor() and (enemy:getArmor():objectName()=="eight_diagram") then 
+        if self:isEquip("EightDiagram", enemy) then 
             local equips=enemy:getEquips()
             for _,equip in sgs.qlist(equips) do
                 if equip:getSuitString()=="spade" then return true end
@@ -1183,7 +1183,7 @@ function SmartAI:aoeIsEffective(card, to)
 	
 	--Zhangjiao's leiji
 	if card:inherits("ArcheryAttack") then
-		if (to:hasSkill("leiji") and self:getCardsNum("Jink", to) > 0) or (to:getArmor() and to:getArmor():objectName() == "eight_diagram" and to:getHp() > 1) then
+		if (to:hasSkill("leiji") and self:getCardsNum("Jink", to) > 0) or (self:isEquip("EightDiagram", to) and to:getHp() > 1) then
 			return false
 		end
 	end
@@ -1251,7 +1251,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 				if use.to then use.to:append(friend) end
 				return
 			end		
-			if friend:getArmor() and friend:getArmor():objectName() == "silver_lion" and friend:isWounded() then
+			if self:isEquip("EightDiagram", friend) and friend:isWounded() then
 				hasLion = true
 				target = friend
 			end
@@ -1318,7 +1318,7 @@ function SmartAI:useCardSnatch(snatch, use)
 				if use.to then use.to:append(friend) end
 				return
 			end		
-			if friend:getArmor() and friend:getArmor():objectName() == "silver_lion" and friend:isWounded() then
+			if self:isEquip("SilverLion", friend) and friend:isWounded() then
 				hasLion = true
 				target = friend
 			end
@@ -1391,7 +1391,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 			end
 
 			if success then
-				if enemy:getArmor() and enemy:getArmor():objectName() == "vine" then
+				if self:isEquip("Vine", enemy) then
 					table.insert(targets_succ, 1, enemy) 
 					break
 				else
@@ -2342,7 +2342,7 @@ function SmartAI:getCardRandomly(who, flags)
 	local cards = who:getCards(flags)						
 	local r = math.random(0, cards:length()-1)
 	local card = cards:at(r)
-	if who:getArmor() and who:getArmor():objectName() == "silver_lion" then
+	if self:isEquip("SilverLion", who) then
 		if self:isEnemy(who) and who:isWounded() and card == who:getArmor() then
 			if r ~= (cards:length()-1) then
 				card = cards:at(r+1)
@@ -2400,8 +2400,8 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 		
 		if flags:match("e") then
-			if who:isWounded() and who:getArmor() and who:getArmor():objectName() == "silver_lion" then return who:getArmor():getId() end
-			if who:getArmor() and who:getArmor():objectName() == "gale-shell" then return who:getArmor():getId() end
+			if who:isWounded() and self:isEquip("SilverLion", who) then return who:getArmor():getId() end
+			if self:isEquip("GaleShell", who) then return who:getArmor():getId() end
 			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
 				if not equips:isEmpty() then

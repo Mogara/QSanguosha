@@ -560,7 +560,7 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
 		end
 				
-		if self.player:getArmor() and self.player:getArmor():objectName() == "silver_lion" and self.player:isWounded() then
+		if self:isEquip("SilverLion") and self.player:isWounded() then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
 		end	
 				
@@ -612,7 +612,7 @@ lijian_skill.getTurnUseCard=function(self)
 	if not self.player:isNude() then
 		local card
 		local card_id
-		if self.player:getArmor() and self.player:isWounded() and self.player:getArmor():objectName()=="silver_lion" then
+		if self:isEquip("SilverLion") and self.player:isWounded() then
 			card = sgs.Card_Parse("@LijianCard=" .. self.player:getArmor():getId())
 		elseif self.player:getHandcardNum() > self.player:getHp() then
 			local cards = self.player:getHandcards()

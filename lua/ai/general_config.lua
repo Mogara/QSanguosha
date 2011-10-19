@@ -35,6 +35,7 @@ sgs.ai_use_value =
 		LijianCard=8.5,
 		RendeCard=8.5,
 		MinceCard=5.9,
+		ZhihengCard = 9,
 
 		ShenfenCard = 8,
 		GreatYeyanCard = 8,
@@ -147,7 +148,7 @@ sgs.ai_use_priority = {
 		EightDiagram=0.8,
 		RenwangShield=0.7,
 		Vine=0.6,
-		GaleShell=9,
+		GaleShell=0.9,
 
 		DefensiveHorse = 0,
 
