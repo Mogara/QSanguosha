@@ -227,7 +227,7 @@ jieyin_skill.name="jieyin"
 table.insert(sgs.ai_skills,jieyin_skill)
 jieyin_skill.getTurnUseCard=function(self)
         if self.player:getHandcardNum()<2 then return nil end
-        if self.player:usedTimes("JieyinCard")>0 then return nil end
+        if self.player:hasUsed("JieyinCard") then return nil end
 		
 		local cards = self.player:getHandcards()
 		cards=sgs.QList2Table(cards)
@@ -235,7 +235,7 @@ jieyin_skill.getTurnUseCard=function(self)
 		local first, second
 		self:sortByUseValue(cards,true)
 		for _, card in ipairs(cards) do
-			if not card:getTypeId() == sgs.Card_Equip then
+			if card:getTypeId() ~= sgs.Card_Equip then
 				if not first then first  = cards[1]:getEffectiveId()
 				else second = cards[2]:getEffectiveId()
 				end
@@ -243,7 +243,9 @@ jieyin_skill.getTurnUseCard=function(self)
 			if second then break end
 		end
 		
+		if not second then return end
 		local card_str = ("@JieyinCard=%d+%d"):format(first, second)
+		assert(card_str)
 		return sgs.Card_Parse(card_str)
 end
 

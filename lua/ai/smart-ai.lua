@@ -1941,7 +1941,7 @@ function SmartAI:getUseValue(card)
 	
 	if card:inherits("EquipCard") then 
 		if self:hasEquip(card) then return 9 end
-		if self:hasSkills(sgs.lose_equip_skill) then return 9 end
+		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
 		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
 		if card:inherits("Armor") and not self.player:getArmor() then v = 8.9
 		elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 6.2
@@ -2041,23 +2041,32 @@ function SmartAI:getDynamicUsePriority(card)
 	
 	local value = self:getUsePriority(card)
 	if dummy_use.card then
-		local card_name = card:className()
+		local use_card = dummy_use.card
+		local card_name = use_card:className()
+		local dynamic_value
+		
+		if use_card:getTypeId() == sgs.Card_Equips then
+			if self:hasSkills(sgs.lose_equip_skill) then value = value + 8 end
+		end
+		
 		if sgs.dynamic_value.benefit[class_name] then 
-			local dynamic_value = 10
-			if card:inherits("AmazingGrace") then
+			dynamic_value = 10
+			if use_card:inherits("AmazingGrace") then
 				for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 					dynamic_value = dynamic_value - 1
 					if self:isEnemy(player) then dynamic_value = dynamic_value - ((player:getHandcardNum()+player:getHp())/player:getHp())*dynamic_value
 					else dynamic_value = dynamic_value + ((player:getHandcardNum()+player:getHp())/player:getHp())*dynamic_value
 					end
 				end
-			elseif card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null > bad_null then
+			elseif use_card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null > bad_null then
 				dynamic_value = 6.55
-			elseif card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
+			elseif use_card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
 				if not self.player:isWounded() then dynamic_value = 6.57 
 				elseif self:isWeak() then dynamic_value = 7.9
 				else dynamic_value = 7.5
 				end
+			elseif use_card:inherits("JieyinCard") then
+				dynamic_value = 7.51
 			end
 			value = value + dynamic_value
 		elseif sgs.dynamic_value.damage_card[class_name] then
@@ -2066,7 +2075,7 @@ function SmartAI:getDynamicUsePriority(card)
 			dummy_use.probably_hit = {}
 			
 			for _, enemy in sgs.qlist(others) do
-				if self:isEnemy(enemy) and (enemy:getHp() <= 1 or enemy:isKongcheng()) 
+				if self:isEnemy(enemy) and (enemy:getHp() <= 2 or enemy:isKongcheng()) 
 					and self:getCardsNum("Analeptic", enemy) == 0 and self:getCardsNum("Peach", enemy) == 0 then
 					table.insert(dummy_use.probably_hit, enemy)
 					break
@@ -2075,21 +2084,31 @@ function SmartAI:getDynamicUsePriority(card)
 				
 			if #dummy_use.probably_hit > 0 then
 				self:sort(dummy_use.probably_hit, "defense")
-				local probably_hit = dummy_use.probably_hit[1]
-				if card:inherits("Slash") and self:getCardsNum("Jink", probably_hit) == 0 then
-					if not self:hasSkills(masochism_skill, probably_hit) then
-						value = value + 8
-					else
-						value = value + 6.5
+				local probably_hit
+				for _, hit in ipairs(dummy_use.probably_hit) do
+					if not self:hasSkills(masochism_skill, hit) then
+						probably_hit = hit 
+						break
 					end
-				elseif card:inherits("FireAttack") then 
-					value = value + 2.7 + self:getHandcardNum()
-				elseif card:inherits("Duel") then
-					value = value + 5 + (self:getHandcardNum() - self:getCardsNum("Slash", probably_hit))
+				end
+				if not probably_hit then
+					probably_hit = dummy_use.probably_hit[1]
+					value = value + 1.5
+				else
+					value = value + 3
+				end
+				
+				if use_card:inherits("Slash") and self:getCardsNum("Jink", probably_hit) == 0 then
+					value = value + 5
+				elseif use_card:inherits("FireAttack") then 
+					value = value + 1.2 + self:getHandcardNum()
+				elseif use_card:inherits("Duel") then
+					value = value + 2 + (self:getHandcardNum() - self:getCardsNum("Slash", probably_hit))
 				end
 			end
 		elseif sgs.dynamic_value.control_card[class_name] then
-			value = value + (7 - bad_null/good_null)
+			if use_card:getTypeId() == sgs.Card_Trick then dynamic_value = 7 - bad_null/good_null else dynamic_value = 6.65 end
+			value = value + dynamic_value
 		elseif sgs.dynamic_value.control_usecard[class_name] then
 			value = value + 6.6
 		elseif sgs.dynamic_value.lucky_chance[class_name] then
@@ -2153,7 +2172,11 @@ function SmartAI:sortByDynamicUsePriority(cards)
         local value1 = self:getDynamicUsePriority(a)
         local value2 = self:getDynamicUsePriority(b)
 
-		return value1 >= value2
+		if value1 ~= value2 then
+			return value1 > value2
+		else
+			return a:getNumber() > b:getNumber()
+		end
 	end
 
 	table.sort(cards, compare_func)
@@ -3214,8 +3237,8 @@ function SmartAI:getCard(class_name, player)
     cards=sgs.QList2Table(cards)
     self:sortByUsePriority(cards)
     
-    for _, slash in ipairs(cards) do
-        if slash:inherits(class_name) then return slash end
+    for _, card in ipairs(cards) do
+        if card:inherits(class_name) then return card end
     end
     return nil
 end
