@@ -147,6 +147,7 @@ sgs.ai_use_priority = {
 		EightDiagram=0.8,
 		RenwangShield=0.7,
 		Vine=0.6,
+		GaleShell=9,
 
 		DefensiveHorse = 0,
 
