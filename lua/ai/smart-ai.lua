@@ -2069,7 +2069,7 @@ function SmartAI:getDynamicUsePriority(card)
 				elseif self:isWeak() then dynamic_value = 7.9
 				else dynamic_value = 7.5
 				end
-			elseif use_card:inherits("JieyinCard") and self:getCardsNum("Peach") < self.player:getLostHp() then
+			elseif use_card:inherits("JieyinCard") and self:getCardsNum("Peach") >= self.player:getLostHp() then
 			    dynamic_value = 7.51
 			end
 			value = value + dynamic_value
@@ -2101,11 +2101,12 @@ function SmartAI:getDynamicUsePriority(card)
 				else
 					value = value + 3
 				end
+				value = value - (probably_hit:getHp() - 1)/2.0
 				
 				if use_card:inherits("Slash") and self:getCardsNum("Jink", probably_hit) == 0 then
 					value = value + 5
 				elseif use_card:inherits("FireAttack") then 
-					value = value + 1.2 + self:getHandcardNum()
+					value = value + 0.5 + self:getHandcardNum()
 				elseif use_card:inherits("Duel") then
 					value = value + 2 + (self:getHandcardNum() - self:getCardsNum("Slash", probably_hit))
 				end
