@@ -842,10 +842,10 @@ function SmartAI:slashIsEffective(slash, to)
 		return false 
 	end
 	
-	if to:getMark("@fog") and not slash:inherits("ThunderSlash") then
-		return false
+    if to:getMark("@fog") and not slash:inherits("ThunderSlash") then
+	    return false
 	end
-	
+
 	return true
 end
 
@@ -2284,18 +2284,6 @@ function SmartAI:askForPlayerChosen(targets, reason)
 		local r = math.random(0, targets:length() - 1)
 		return targets:at(r)
 	end
-end
-
-sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
-	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	local targetlist=sgs.QList2Table(targets)
-	self:sort(targetlist, "defense")
-	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and not self:slashProhibit(slash ,target) then
-		return target
-		end
-	end
-	return targets:first()
 end
 
 -- used for SmartAI:askForChoice
