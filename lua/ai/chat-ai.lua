@@ -1,6 +1,6 @@
 function speak(to,type)
 	if not sgs.GetConfig("AIChat", true) then return end
-	
+
 	local i =math.random(1,#sgs.ai_chat[type])
 	to:speak(sgs.ai_chat[type][i])
 end
@@ -9,9 +9,9 @@ function speakTrigger(card,from,to,event)
 	if (event=="death") and from:hasSkill("ganglie") then
 		speak(from,"ganglie_death")
 	end
-	
+
 	if not card then return end
-	
+
 	if card:inherits("Indulgence") and (to:getHandcardNum()>to:getHp()) then
 		speak(to,"indulgence")
 	elseif card:inherits("LeijiCard") then
@@ -30,14 +30,14 @@ function speakTrigger(card,from,to,event)
 end
 
 
-function SmartAI:speak(type, isFemale) 
+function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", true) then return end
-	
-    local i =math.random(1,#sgs.ai_chat[type])
-	if isFemale then 
-		type = type .. "_female" 
-	end 
-    self.player:speak(sgs.ai_chat[type][i])
+
+	local i =math.random(1,#sgs.ai_chat[type])
+	if isFemale then
+		type = type .. "_female"
+	end
+	self.player:speak(sgs.ai_chat[type][i])
 end
 
 sgs.ai_chat={}
@@ -48,9 +48,9 @@ sgs.ai_chat.yiji=
 "要死了啊!"
 }
 
-sgs.ai_chat.hostile_female= 
-{ 
-"啧啧啧，来帮你解决点手牌吧", 
+sgs.ai_chat.hostile_female=
+{
+"啧啧啧，来帮你解决点手牌吧",
 "叫你欺负人!" ,
 "手牌什么的最讨厌了"
 }
@@ -63,18 +63,18 @@ sgs.ai_chat.hostile={
 
 sgs.ai_chat.respond_hostile={
 "擦，小心菊花不保",
-"内牛满面了", "哎哟我去" 
+"内牛满面了", "哎哟我去"
 }
 
 sgs.ai_chat.friendly=
 { "。。。" }
 
-sgs.ai_chat.respond_friendly= 
+sgs.ai_chat.respond_friendly=
 { "谢了。。。" }
 
-sgs.ai_chat.duel_female= 
-{ 
-"哼哼哼，怕了吧" 
+sgs.ai_chat.duel_female=
+{
+"哼哼哼，怕了吧"
 }
 
 sgs.ai_chat.duel=
@@ -84,23 +84,23 @@ sgs.ai_chat.duel=
 
 sgs.ai_chat.lucky=
 {
-"哎哟运气好", 
-"哈哈哈哈哈" 
+"哎哟运气好",
+"哈哈哈哈哈"
 }
 
-sgs.ai_chat.collateral_female= 
-{ 
-"别以为这样就算赢了！" 
+sgs.ai_chat.collateral_female=
+{
+"别以为这样就算赢了！"
 }
 
-sgs.ai_chat.collateral= 
-{ 
-"你妹啊，我的刀！" 
+sgs.ai_chat.collateral=
+{
+"你妹啊，我的刀！"
 }
 
-sgs.ai_chat.jijiang_female= 
-{ 
-"别指望下次我会帮你哦" 
+sgs.ai_chat.jijiang_female=
+{
+"别指望下次我会帮你哦"
 }
 
 sgs.ai_chat.jijiang=
@@ -174,7 +174,7 @@ sgs.ai_chat.yuanshao_fire=
 "谁去打119啊",
 "别别别烧了别烧了。。。",
 "又烧啊，饶了我吧。。。"
-}				  
+}
 
 --xuchu
 sgs.ai_chat.luoyi=

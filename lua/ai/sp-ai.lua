@@ -100,3 +100,15 @@ end
 sgs.ai_skill_invoke.guixiang = function(self, data)
 	return self.room:getLord():getKingdom() == "wei"
 end
+
+sgs.ai_skill_invoke.sp_moonspear = function(self, data)
+	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	for _, target in ipairs(self.enemies) do
+		if self.player:canSlash(target) and not self:slashProhibit(slash ,target) then
+		return true
+		end
+	end
+	return false
+end
+
+sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash

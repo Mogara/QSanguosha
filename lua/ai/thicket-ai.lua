@@ -12,7 +12,7 @@ sgs.ai_skill_choice.yinghun = function(self, choices)
 	end
 end
 
-sgs.ai_skill_use["@@yinghun"] = function(self, prompt)       
+sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 	local x = self.player:getLostHp()
 	if x == 1 and #self.friends == 1 then
 		return "."
@@ -25,7 +25,7 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 		self:sort(self.enemies, "chaofeng")
 		self.yinghun = self.enemies[1]
 	end
-	
+
 	if self.yinghun then
 		return "@YinghunCard=.->" .. self.yinghun:objectName()
 	else
@@ -39,7 +39,7 @@ sgs.ai_skill_invoke.xingshang = function(self, data)
 	local cards = damage.to:getHandcards()
 	local shit_num = 0
 	for _, card in sgs.qlist(cards) do
-		if card:inherits("Shit") then 
+		if card:inherits("Shit") then
 			shit_num = shit_num + 1
 			if card:getSuit() == sgs.Card_Spade then
 				shit_num = shit_num + 1
@@ -50,7 +50,7 @@ sgs.ai_skill_invoke.xingshang = function(self, data)
 	return true
 end
 
--- fangzhu, fangzhu 
+-- fangzhu, fangzhu
 sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 	self:sort(self.friends_noself)
 	local target
@@ -60,7 +60,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 			break
 		end
 
-		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then			
+		if friend:hasSkill("jushou") and friend:getPhase() == sgs.Player_Play then
 			target = friend
 			break
 		end
@@ -89,7 +89,7 @@ sgs.ai_skill_use["@@fangzhu"] = function(self, prompt)
 end
 
 sgs.ai_skill_invoke.songwei = function(self, data)
-    return self:isFriend(self.room:getLord())
+	return self:isFriend(self.room:getLord())
 end
 
 -- baonue
@@ -101,7 +101,7 @@ local function getLowerBoundOfHandcard(self)
 	local least = math.huge
 	local players = self.room:getOtherPlayers(self.player)
 	for _, player in sgs.qlist(players) do
-		least = math.min(player:getHandcardNum(), least)		
+		least = math.min(player:getHandcardNum(), least)
 	end
 
 	return least
@@ -112,7 +112,7 @@ local function getBeggar(self)
 
 	self:sort(self.friends_noself)
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getHandcardNum() == least then			
+		if friend:getHandcardNum() == least then
 			return friend
 		end
 	end
@@ -136,14 +136,14 @@ end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	local beggar = getBeggar(self)
-	
+
 	local cards = self.player:getHandcards()
 	local n = math.floor(self.player:getHandcardNum()/2)
 	local card_ids = {}
 	for i=1, n do
 		table.insert(card_ids, cards:at(i-1):getEffectiveId())
 	end
-	
+
 	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "->" .. beggar:objectName()
 end
 
@@ -154,6 +154,6 @@ sgs.ai_skill_invoke.lieren = function(self, data)
 		else return false
 		end
 	end
-	
+
 	return false
 end

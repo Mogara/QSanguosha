@@ -43,7 +43,7 @@ sgs.ai_skill_use_func["QuhuCard"] = function(card, use, self)
 						local card_id = max_card:getEffectiveId()
 						local card_str = "@QuhuCard=" .. card_id
 						if use.to then
-							use.to:append(enemy)					
+							use.to:append(enemy)
 						end
 						use.card = sgs.Card_Parse(card_str)
 						return
@@ -62,7 +62,7 @@ sgs.ai_skill_use_func["QuhuCard"] = function(card, use, self)
 		end
 		if use_quhu then
 			for _, enemy in ipairs(self.enemies) do
-				if not enemy:isKongcheng() and self.player:getHp() < enemy:getHp() then 
+				if not enemy:isKongcheng() and self.player:getHp() < enemy:getHp() then
 					local cards = self.player:getHandcards()
 					cards = sgs.QList2Table(cards)
 					self:sortByUseValue(cards, true)
@@ -93,7 +93,7 @@ sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 	local max_x = 0
 	local target
 	for _, friend in ipairs(self.friends) do
-		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()		
+		local x = math.min(friend:getMaxHP(), 5) - friend:getHandcardNum()
 
 		if x > max_x then
 			max_x = x
@@ -164,30 +164,30 @@ sgs.ai_skill_use_func["QiangxiCard"] = function(card, use, self)
 		end
 	end
 end
-	
+
 --shuangxiong
 
 sgs.ai_skill_invoke["shuangxiong"]=function(self,data)
-    if self.player:isSkipped(sgs.Player_Play) or self.player:getHp() < 2 then
+	if self.player:isSkipped(sgs.Player_Play) or self.player:getHp() < 2 then
 		return false
 	end
-    
-    local cards=self.player:getCards("h")
-    cards=sgs.QList2Table(cards)
-    
-    local handnum=0
-    
-    for _,card in ipairs(cards) do  
-        if self:getUseValue(card)<8 then
+
+	local cards=self.player:getCards("h")
+	cards=sgs.QList2Table(cards)
+
+	local handnum=0
+
+	for _,card in ipairs(cards) do
+		if self:getUseValue(card)<8 then
 			handnum=handnum+1
 		end
-    end
-    
-    handnum=handnum/2
-    self:sort(self.enemies, "hp")
-    for _, enemy in ipairs(self.enemies) do
-        if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) then return true end
-    end
-	
-    return self.player:getHandcardNum()>=self.player:getHp()
+	end
+
+	handnum=handnum/2
+	self:sort(self.enemies, "hp")
+	for _, enemy in ipairs(self.enemies) do
+		if (self:getCardsNum("Slash", enemy)+enemy:getHp()<=handnum) and (self:getCardsNum("Slash")>=self:getCardsNum("Slash", enemy)) then return true end
+	end
+
+	return self.player:getHandcardNum()>=self.player:getHp()
 end
