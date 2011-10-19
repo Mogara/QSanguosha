@@ -1437,7 +1437,7 @@ function SmartAI:useCardDuel(duel, use)
 			if self:hasTrickEffective(duel, enemy) then
 				if n1 >= n2 then		
 					useduel = true
-				else
+				elseif n1 > 0 then
 					local percard=0.35
 					if enemy:hasSkill("paoxiao") or enemy:hasWeapon("crossbow") then percard=0.2 end
 					local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
