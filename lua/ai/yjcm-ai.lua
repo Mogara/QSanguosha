@@ -389,14 +389,4 @@ sgs.ai_skill_choice.mingce = function(self, choices)
     return "draw"
 end
 
-sgs.ai_skill_playerchosen.mingce = function(self, targets)
-	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	local targetlist=sgs.QList2Table(targets)
-	self:sort(targetlist, "defense")
-	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and not self:slashProhibit(slash ,target) then
-		return target
-		end
-	end
-	return targets:first()
-end
+sgs.ai_skill_playerchosen.mingce = sgs.ai_skill_playerchosen.zero_card_as_slash

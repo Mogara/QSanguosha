@@ -56,14 +56,7 @@ sgs.ai_skill_invoke["yicai"] = function(self, data)
 end
 
 -- beifa
-sgs.ai_skill_playerchosen["beifa"] = function(self, targets)
-	for _, player in sgs.qlist(targets) do
-		if self:isEnemy(player) then
-			return player
-		end
-	end
-	return self.player
-end
+sgs.ai_skill_playerchosen.beifa = sgs.ai_skill_playerchosen.zero_card_as_slash
 
 -- bawang
 sgs.ai_skill_invoke["bawang"] = function(self, data)
