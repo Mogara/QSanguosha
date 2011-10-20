@@ -844,7 +844,7 @@ function SmartAI:slashIsEffective(slash, to)
 		return false 
 	end
 	
-    if to:getMark("@fog") and not slash:inherits("ThunderSlash") then
+    if to:getMark("@fog") > 0 and not slash:inherits("ThunderSlash") then
 	    return false
 	end
 
@@ -1063,8 +1063,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 		for _, friend in ipairs(self.friends_noself) do						
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,friend)
-			if (self.player:hasSkill("pojun") and friend:getHp() >3 and not self:getCardsNum("Jink", friend)) 
-			or (self.player:hasSkill("wushuang") and friend:hasSkill("leiji") and self:getCardsNum("Jink", friend) > 1 and self.player:getHandcardNum() > 2 and #self.enemies > 0)
+			if (self.player:hasSkill("pojun") and friend:getHp() >3 and self:getCardsNum("Jink", friend) == 0) 
 			or (friend:hasSkill("leiji") and self:getCardsNum("Jink", friend) > 0)
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp()>=1 and self:getCardsNum("Jink", friend)==0)
 			then
