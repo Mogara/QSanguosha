@@ -215,7 +215,7 @@ sgs.ai_chaofeng = {
 		xiahoudun = -3,
 		caopi = -3,
 		fazheng = -3,
-		wistianfeng -3,
+		wistianfeng = -3,
 
 		zhoutai = -4,
 		guojia = -4,
