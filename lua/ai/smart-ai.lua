@@ -485,9 +485,11 @@ function SmartAI:sortEnemies(players)
     table.sort(players,comp_func)
 end
 
-function SmartAI:hasWizard(players)
+function SmartAI:hasWizard(players,onlyharm)
+	local skill
+	if onlyharm then skill = sgs.wizard_harm_skill else skill = sgs.wizard_skill end
 	for _, player in ipairs(players) do
-		if self:hasSkills(sgs.wizard_skill, player) then
+		if self:hasSkills(skill, player) then
 			return true
 		end
 	end
@@ -2412,6 +2414,18 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			not self:hasSkills(sgs.need_kongcheng, who) then return -1 
 		end
 		
+		if flags:match("j") then
+			local tricks = who:getCards("j")
+			for _, trick in sgs.qlist(tricks) do
+				if trick:inherits("Lightning") then
+					lightning = trick:getId()
+				end
+			end
+			if self:hasWizard(self.enemies,true) and lightning then
+				return lightning
+			end
+		end
+		
 		if flags:match("e") then		    
 			if who:getDefensiveHorse() then
 				for _,friend in ipairs(self.friends) do
@@ -3007,6 +3021,7 @@ sgs.lose_equip_skill = "xiaoji|xuanfeng"
 sgs.need_kongcheng = "lianying|kongcheng"
 sgs.masochism_skill = "fankui|quhu|yiji|ganglie|enyuan|fangzhu"
 sgs.wizard_skill = "guicai|guidao|tiandu"
+sgs.wizard_harm_skill = "guicai|guidao"
 
 function SmartAI:hasSkills(skill_names, player)
 	player = player or self.player
