@@ -1445,7 +1445,7 @@ function SmartAI:useCardDuel(duel, use)
 					local poss = percard ^ n1 * (factorial(n1)/factorial(n2)/factorial(n1-n2))
 					if math.random() > poss then useduel = true end
 				end
-				if useduel then						
+				if useduel then		
 					use.card = duel
 					if use.to then 
 						use.to:append(enemy) 
@@ -1937,40 +1937,34 @@ function SmartAI:getUseValue(card)
 		userstring = (userstring:split(":"))[2]
 		local guhuocard = sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
 		local usevalue = self:getUseValue(guhuocard,player) + #self.enemies*0.3
-		if sgs.Card_Parse(card:getSubcards():first()):objectName() == userstring and card:getSuit() == sgs.Card_Heart then usevalue = usevalue + 3 end
+		if sgs.Sanguosha:getCard(card:getSubcards():first()):objectName() == userstring and card:getSuit() == sgs.Card_Heart then usevalue = usevalue + 3 end
 		return usevalue
 	end
 	
-	if card:inherits("EquipCard") then 
+	if card:getTypeId() == sgs.Card_Equip then 
 		if self:hasEquip(card) then return 9 end
-		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
-		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
-		if card:inherits("Armor") and not self.player:getArmor() then v = 8.9
-		elseif card:inherits("Weapon") and not self.player:getWeapon() then v = 6.2
-		elseif card:inherits("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
-		elseif card:inherits("OffensiveHorse") and not self.player:getOffensiveHorse() then v = 5.5
-		elseif self:hasSkill("bazhen") and card:inherits("Armor") then v=2
-		else v = 2 end
+		if not self:hasSameEquip(card) then v = 6.7 end
 		if self.weaponUsed and card:inherits("Weapon") then v=2 end
 		if self.player:hasSkill("qiangxi") and card:inherits("Weapon") then v = 2 end
-	else
-		if card:inherits("Slash") and (self.player:hasFlag("drank") or self.player:hasFlag("tianyi_success") or self.player:hasFlag("luoyi")) then v = 8.7 --self:log("must slash")
-		elseif self.player:getWeapon() and card:inherits("Collateral") then v=2
-		elseif self.player:getMark("shuangxiong") and card:inherits("Duel") then v=8
-		elseif self.player:hasSkill("jujian") then
-			if not self:hasTrickEffective(card) then v=0 
-			else
-				if card:inherits("TrickCard") then return 10 end
-			end
-		elseif self.player:hasSkill("jizhi") and card:inherits("TrickCard") then v=8.7
-		else v = sgs.ai_use_value[class_name] or 0 end
-		
+		if self.player:hasSkill("kurou") and card:inherits("Crossbow") then return 9 end
+		if self:hasSkill("bazhen") or self:hasSkill("yizhong") and card:inherits("Armor") then v=2 end
+		if self:hasSkills(sgs.lose_equip_skill) then return 10 end
+	elseif card:getTypeId() == sgs.Card_Basic then
+		if card:inherits("Slash") then
+			if (self.player:hasFlag("drank") or self.player:hasFlag("tianyi_success") or self.player:hasFlag("luoyi")) then v = 8.7 end
+			if self:isEquip("CrossBow") then v = v + 4 end
+			v=v+self:getCardsNum("Slash") 
+		elseif card:inherits("Jink") then
+			if self:getCardsNum("Jink")>1 then v=v-6 end
+		end
+	elseif card:getTypeId() == sgs.Card_Trick then
+		if self.player:getWeapon() and not self:hasSkills(sgs.lose_equip_skill) and card:inherits("Collateral") then v=2 end
+		if self.player:getMark("shuangxiong") and card:inherits("Duel") then v=8 end
+		if self.player:hasSkill("jizhi") then v = 8.7 end
+		if not self:hasTrickEffective(card) then v=0 end
 	end
-
-	if card:inherits("Slash") and (self:getCardsNum("Slash")>1) then v=v+1 end
-	if card:inherits("Jink") and (self:getCardsNum("Jink")>1) then v=v-6 end
 	
-	if self.player:hasSkill("lianying") or self.player:hasSkill("kongcheng") then
+	if self:hasSkills(sgs.need_kongcheng) then
 		if self.player:getHandcardNum()==1 then v = 10 end
 	end
 	if self:hasSkill({name="halberd"}) and card:inherits("Slash") and self.player:getHandcardNum()==1 then v=10 end
@@ -1978,6 +1972,7 @@ function SmartAI:getUseValue(card)
 		if v==0 then v=10 end
 	end
 	
+	if v == 0 then v = sgs.ai_use_value[class_name] or 0 end
 	return v
 end
 
@@ -2063,7 +2058,7 @@ function SmartAI:getDynamicUsePriority(card)
 					end
 				end
 			elseif use_card:inherits("Peach") then 
-				dynamic_value = 9.5
+				dynamic_value = 7.85
 			elseif use_card:inherits("QingnangCard") and self:getCardsNum("Snatch") > 0 and good_null >= bad_null then
 				dynamic_value = 6.55
 			elseif use_card:inherits("RendeCard") and self.player:usedTimes("RendeCard") < 2 then
@@ -2073,6 +2068,10 @@ function SmartAI:getDynamicUsePriority(card)
 				end
 			elseif use_card:inherits("JieyinCard") and self:getCardsNum("Peach") >= self.player:getLostHp() then
 			    dynamic_value = 7.51
+			elseif use_card:inherits("JujianCard") then
+				if not self.player:isWounded() then dynamic_value = 0
+				else dynamic_value = 7.5
+				end
 			end
 			value = value + dynamic_value
 		elseif sgs.dynamic_value.damage_card[class_name] then
@@ -2979,7 +2978,7 @@ function SmartAI:hasTrickEffective(card, player)
 		if (player:hasSkill("zhichi") and self.room:getTag("Zhichi"):toString() == player:objectName()) or player:hasSkill("wuyan") then
 			if card and not (card:inherits("Indulgence") or card:inherits("SupplyShortage")) then return false end
 		end
-		if player:getMark("@fog") and card:inherits("Duel") then return false end
+		if player:getMark("@fog") > 0 and card:inherits("Duel") then return false end
 	else
 		if self.player:hasSkill("wuyan") then 
 			if card:inherits("TrickCard") and not 
