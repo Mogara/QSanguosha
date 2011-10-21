@@ -1,4 +1,4 @@
-#include "wisdom.h"
+#include "wisdompackage.h"
 #include "skill.h"
 #include "client.h"
 #include "engine.h"
@@ -260,9 +260,10 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        if(player->getPhase() == Player::Finish && player->getHandcardNum()<3
+        int handcardnum = player->getHandcardNum();
+        if(player->getPhase() == Player::Finish && handcardnum < 3
            && room->askForSkillInvoke(player, objectName())){
-            for(int i=0; i<4; i++){
+            for(int i = 0; i < 4 - handcardnum; i++){
                 int card_id = room->drawCard();
                 room->moveCardTo(Sanguosha->getCard(card_id), NULL, Player::Special, true);
                 room->getThread()->delay();
