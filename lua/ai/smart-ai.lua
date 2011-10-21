@@ -2182,7 +2182,7 @@ function SmartAI:sortByDynamicUsePriority(cards)
 		if value1 ~= value2 then
 			return value1 > value2
 		else
-			return a and a:getTypeId() ~= sgs.Card_Skill
+			return a and a:getTypeId() ~= sgs.Card_Skill and not (b and b:getTypeId() ~= sgs.Card_Skill)
 		end
 	end
 
