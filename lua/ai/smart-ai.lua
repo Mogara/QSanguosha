@@ -1252,7 +1252,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 				if use.to then use.to:append(friend) end
 				return
 			end		
-			if self:isEquip("EightDiagram", friend) and friend:isWounded() then
+			if self:isEquip("SilverLion", friend) and friend:isWounded() then
 				hasLion = true
 				target = friend
 			end
