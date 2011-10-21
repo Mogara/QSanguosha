@@ -219,7 +219,8 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if not self:hasSkills(sgs.lose_equip_skill, enemy) then
 				if ((self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e"))<= lost_hp) and
-					(self:getCardsNum(".", enemy, "e")>=self:getCardsNum(".", friend, "e"))then
+					(self:getCardsNum(".", enemy, "e")>=self:getCardsNum(".", friend, "e")) and
+					(self:getCardsNum(".", enemy, "e")>0) then
 					use.card = sgs.Card_Parse("@GanluCard=.")
 					if use.to then use.to:append(friend) end
 					if use.to then use.to:append(enemy) end
