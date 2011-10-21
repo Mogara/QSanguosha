@@ -1430,7 +1430,7 @@ end
 
 function SmartAI:useCardDuel(duel, use)
 	if self.player:hasSkill("wuyan") then return end
-	self:sort(self.enemies,"defense")
+	self:sort(self.enemies,"handcard")
 	local enemies = self:exclude(self.enemies, duel)
 	for _, enemy in ipairs(enemies) do
 		if self:objectiveLevel(enemy)>3 then
@@ -2339,7 +2339,8 @@ end
 
 
 function SmartAI:getCardRandomly(who, flags)
-	local cards = who:getCards(flags)						
+	local cards = who:getCards(flags)
+	if cards:isEmpty() then return -1 end
 	local r = math.random(0, cards:length()-1)
 	local card = cards:at(r)
 	if self:isEquip("SilverLion", who) then

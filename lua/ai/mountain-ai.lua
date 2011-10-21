@@ -138,7 +138,7 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 
 		local targets = {}
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:getArmor() and not has_armor and card_for_qiaobian(self, enemy) then
+			if enemy:getArmor() and not has_armor and card_for_qiaobian(self, enemy, ".") then
 				table.insert(targets, enemy)
 			end
 		end
