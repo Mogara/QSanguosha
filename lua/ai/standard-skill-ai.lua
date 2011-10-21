@@ -347,18 +347,6 @@ sgs.ai_skill_use_func["JijiangCard"]=function(card,use,self)
 	
 end
 
-local rende_skill={}
-rende_skill.name="jijiang"
-table.insert(sgs.ai_skills,rende_skill)
-rende_skill.getTurnUseCard=function(self)
-        local cards = self.player:getHandcards()	
-		cards=sgs.QList2Table(cards)
-		
-		for _,acard in ipairs(cards)  do
-			
-		end
-end
-
 local guose_skill={}
 guose_skill.name="guose"
 table.insert(sgs.ai_skills,guose_skill)
@@ -488,7 +476,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		end
 	end
 	
-	if (self.player:getHandcardNum()>self.player:getHp()) or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2) then 
+	if (self.player:getHandcardNum()>self.player:getHp()) or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2 and not self.player:isKongcheng()) then 
 		if #self.friends_noself == 0 then return end
 		
 		self:sort(self.friends_noself, "handcard")
