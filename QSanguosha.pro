@@ -50,7 +50,7 @@ SOURCES += src/main.cpp \
 	src/package/standard.cpp \
 	src/package/thicket.cpp \
 	src/package/wind.cpp \
-	src/package/wisdom.cpp \
+	src/package/wisdompackage.cpp \
 	src/package/yitianpackage.cpp \
 	src/package/yjcm-package.cpp \
 	src/scenario/boss-mode-scenario.cpp \
@@ -109,6 +109,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/distanceviewdialog.h \
 	src/dialog/generaloverview.h \
 	src/dialog/generalselector.h \
+	src/dialog/halldialog.h \
 	src/dialog/mainwindow.h \
 	src/dialog/packagingeditor.h \
 	src/dialog/playercarddialog.h \
@@ -127,7 +128,7 @@ HEADERS += src/client/aux-skills.h \
 	src/package/standard.h \
 	src/package/thicket.h \
 	src/package/wind.h \
-	src/package/wisdom.h \
+	src/package/wisdompackage.h \
 	src/package/yitianpackage.h \
 	src/package/yjcm-package.h \
 	src/scenario/boss-mode-scenario.h \
@@ -165,8 +166,7 @@ HEADERS += src/client/aux-skills.h \
 	src/util/detector.h \
 	src/util/nativesocket.h \
 	src/util/recorder.h \
-	src/util/socket.h \
-        src/dialog/halldialog.h
+	src/util/socket.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
