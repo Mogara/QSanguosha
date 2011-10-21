@@ -352,7 +352,7 @@ local jilve_skill={}
 jilve_skill.name="jilve"
 table.insert(sgs.ai_skills,jilve_skill)
 jilve_skill.getTurnUseCard=function(self)
-	if self.player:getMark("@bear")<1 then return end
+	if self.player:getMark("@bear")<1 or self.player:hasUsed("ZhihengCard") then return end
 	local zhiheng_skill
 	for _, skill in ipairs(sgs.ai_skills) do
 		if skill.name=="zhiheng" then zhiheng_skill=skill break end
