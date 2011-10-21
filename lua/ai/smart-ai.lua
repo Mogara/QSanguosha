@@ -1012,39 +1012,38 @@ function SmartAI:slashProhibit(card,enemy)
             if self:hasArmor(enemy, "vine") then return true end
         end
         if enemy:isChained() and not card:inherits("NatureSlash") then return true end
-    end
-    
-    if enemy:hasSkill("liuli") then 
-        if enemy:getHandcardNum()<1 then return false end
-        for _, friend in ipairs(self.friends_noself) do
-            if enemy:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
-        end
-    end
-    
-    if enemy:hasSkill("leiji") then 
-        if self.player:hasSkill("tieji") or self.player:hasSkill("liegong") then return false end
-        
-        if enemy:getHandcardNum()>=2 then return true end
-        if self:isEquip("EightDiagram", enemy) then 
-            local equips=enemy:getEquips()
-            for _,equip in sgs.qlist(equips) do
-                if equip:getSuitString()=="spade" then return true end
-            end
-        end
-    end
-    
-    if enemy:hasSkill("tiandu") then 
-        if self:hasArmor(enemy, "eight_diagram") then return true end
-    end
-    
-    if enemy:hasSkill("ganglie") then
-        if self.player:getHandcardNum()+self.player:getHp()<5 then return true end
-    end
-	
-	if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~=self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
-	    return true
+    else    
+		if enemy:hasSkill("liuli") then 
+			if enemy:getHandcardNum()<1 then return false end
+			for _, friend in ipairs(self.friends_noself) do
+				if enemy:canSlash(friend,true) and self:slashIsEffective(card, friend) then return true end
+			end
+		end
+		
+		if enemy:hasSkill("leiji") then 
+			if self.player:hasSkill("tieji") or self.player:hasSkill("liegong") then return false end
+			
+			if enemy:getHandcardNum()>=2 then return true end
+			if self:isEquip("EightDiagram", enemy) then 
+				local equips=enemy:getEquips()
+				for _,equip in sgs.qlist(equips) do
+					if equip:getSuitString()=="spade" then return true end
+				end
+			end
+		end
+		
+		if enemy:hasSkill("tiandu") then 
+			if self:hasArmor(enemy, "eight_diagram") then return true end
+		end
+		
+		if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~=self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
+			return true
+		end
 	end
-	
+
+	if enemy:hasSkill("ganglie") then
+		if self.player:getHandcardNum()+self.player:getHp()<5 then return true end
+	end	
 	return not self:slashIsEffective(card, enemy)
 end
 
