@@ -36,6 +36,7 @@ end
 -- xingshang
 sgs.ai_skill_invoke.xingshang = function(self, data)
 	local damage = data:toDamageStar()
+	if not damage then return true end
 	local cards = damage.to:getHandcards()
 	local shit_num = 0
 	for _, card in sgs.qlist(cards) do
