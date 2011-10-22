@@ -413,7 +413,7 @@ bool Player::hasWeapon(const QString &weapon_name) const{
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
-    return armor && getMark("qinggang") == 0 && armor->objectName() == armor_name;
+    return armor && getMark("qinggang") == 0 && getMark("wuqian") == 0 && armor->objectName() == armor_name;
 }
 
 QList<const Card *> Player::getJudgingArea() const{

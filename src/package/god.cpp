@@ -524,7 +524,7 @@ void WuqianCard::onEffect(const CardEffectStruct &effect) const{
     room->acquireSkill(effect.from, "wushuang", false);
     effect.from->setFlags("wuqian_used");
 
-    effect.to->addMark("qinggang");
+    effect.to->addMark("wuqian");
 }
 
 class WuqianViewAsSkill: public ZeroCardViewAsSkill{
@@ -555,7 +555,7 @@ public:
                 shenlubu->setFlags("-wuqian_used");
                 QList<ServerPlayer *> players = room->getAllPlayers();
                 foreach(ServerPlayer *player, players){
-                    player->removeMark("qinggang");
+                    player->removeMark("wuqian");
                 }
 
                 const General *general2 = shenlubu->getGeneral2();
