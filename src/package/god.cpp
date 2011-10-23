@@ -560,8 +560,13 @@ public:
             return false;
 
         if(event == PhaseChange){
-            if(player->hasSkill(objectName()) && player->getPhase() == Player::NotActive)
+            if(player->hasSkill(objectName()) && player->getPhase() == Player::NotActive){
                 room->removeTag("WuqianTarget");
+
+                const General *general2 = player->getGeneral2();
+                if(general2 == NULL || !general2->hasSkill("wushuang"))
+                    player->loseSkill("wushuang");
+            }
         }
         else{
             CardUseStruct use = data.value<CardUseStruct>();
