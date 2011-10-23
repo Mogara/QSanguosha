@@ -291,7 +291,7 @@ public:
         if(event == CardLost){
             CardMoveStar move = data.value<CardMoveStar>();
 
-            if(move->from_place == Player::Hand || move->from_place == Player::Equip)
+            if((move->from_place == Player::Hand || move->from_place == Player::Equip) && move->to!=player)
                 player->tag["InvokeTuntian"] = true;
         }else if(event == CardLostDone){
             if(!player->tag.value("InvokeTuntian", false).toBool())
