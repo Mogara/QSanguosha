@@ -404,7 +404,7 @@ local rende_skill={}
 rende_skill.name="rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard=function(self)
-	if self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 then 
+	if self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit") then 
 		local card_id = self:getCardRandomly(self.player, "h")
 		return sgs.Card_Parse("@RendeCard=" .. card_id)
 	end
@@ -476,16 +476,28 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		end
 	end
 	
+	local shit
+	shit = self:getCard("Shit")
+	if shit then
+		use.card = sgs.Card_Parse("@RendeCard=" .. shit:getId())
+		self:sort(self.enemies,"hp")
+		if use.to then use.to:append(self.enemies[1]) end
+		return
+	end
+	
 	if (self.player:getHandcardNum()>self.player:getHp()) or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2 and not self.player:isKongcheng()) then 
 		if #self.friends_noself == 0 then return end
 		
 		self:sort(self.friends_noself, "handcard")
 		local friend = self.friends_noself[1]
 		local card_id = self:getCardRandomly(self.player, "h")
-		use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+		if not sgs.Sanguosha:getCard(card_id):inherits("Shit") then
+			use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+		end
 		if use.to then use.to:append(friend) end
 		return
     end
+	
 end
 
 local zhiheng_skill={}
