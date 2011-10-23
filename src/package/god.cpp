@@ -522,8 +522,9 @@ void WuqianCard::onEffect(const CardEffectStruct &effect) const{
 
     effect.from->loseMark("@wrath", 2);
     room->acquireSkill(effect.from, "wushuang", false);
-    PlayerStar target = effect.to;
-    effect.from->tag["WuqianTarget"] = QVariant::fromValue(target);
+    effect.from->setFlags("wuqian_used");
+
+    effect.to->addMark("wuqian");
 }
 
 class WuqianViewAsSkill: public ZeroCardViewAsSkill{
@@ -541,33 +542,25 @@ public:
     }
 };
 
-class Wuqian: public TriggerSkill{
+class Wuqian: public PhaseChangeSkill{
 public:
-    Wuqian():TriggerSkill("wuqian"){
+    Wuqian():PhaseChangeSkill("wuqian"){
         view_as_skill = new WuqianViewAsSkill;
-
-        events << PhaseChange << CardUsed << CardFinished;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *shenlvbu, QVariant &data) const{
-        ServerPlayer *target = shenlvbu->tag["WuqianTarget"].value<PlayerStar>();
+    virtual bool onPhaseChange(ServerPlayer *shenlubu) const{
+        if(shenlubu->getPhase() == Player::NotActive){
+            Room *room = shenlubu->getRoom();
+            if(shenlubu->hasFlag("wuqian_used")){
+                shenlubu->setFlags("-wuqian_used");
+                QList<ServerPlayer *> players = room->getAllPlayers();
+                foreach(ServerPlayer *player, players){
+                    player->removeMark("wuqian");
+                }
 
-        if(event == PhaseChange){
-            if(shenlvbu->getPhase() == Player::Finish && target){
-                shenlvbu->tag.remove("WuqianTarget");
-                target->removeMark("qinggang");
-                const General *general2 = shenlvbu->getGeneral2();
+                const General *general2 = shenlubu->getGeneral2();
                 if(general2 == NULL || !general2->hasSkill("wushuang"))
-                    shenlvbu->loseSkill("wushuang");
-            }
-        }else{
-            CardUseStruct use = data.value<CardUseStruct>();
-
-            if(target && use.to.contains(target)){
-                if(event == CardUsed)
-                    target->addMark("qinggang");
-                else
-                    target->removeMark("qinggang");
+                    shenlubu->loseSkill("wushuang");
             }
         }
 
