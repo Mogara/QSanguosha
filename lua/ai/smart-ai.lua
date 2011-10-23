@@ -2813,7 +2813,9 @@ function SmartAI:askForSinglePeach(dying)
 	end	
 	
 	if self:isFriend(dying) then
-		card_str = self:getGuhuoCard("Analeptic") or self:getGuhuoCard("Peach")
+		if self.player:objectName() == dying:objectName() then card_str = self:getGuhuoCard("Peach") 
+		else card_str = self:getGuhuoCard("Analeptic") or self:getGuhuoCard("Peach")
+		end
 		if card_str then return sgs.Card_Parse(card_str) end
 		
 		for _, card in sgs.qlist(cards) do
@@ -2824,17 +2826,15 @@ function SmartAI:askForSinglePeach(dying)
 					card_str = getSkillViewCard(card, "Analeptic", self.player, self.room:getCardPlace(card:getEffectiveId()))
 					if card_str then return sgs.Card_Parse(card_str) end
 				end
-			else
-				if card:inherits("Peach") then
-					if not (card:getSuit() == sgs.Card_Heart and self.player:hasSkill("wushen")) then
-						return card
-					end
-				elseif card:isRed() and self.player:hasSkill("jijiu") then
+			end
+			
+			if card:inherits("Peach") then
+				if not (card:getSuit() == sgs.Card_Heart and self.player:hasSkill("wushen")) then
 					return card
-				elseif self:canViewAs(card, "Peach") then
-					card_str = getSkillViewCard(card, "Peach", self.player, self.room:getCardPlace(card:getEffectiveId()))
-					if card_str then return sgs.Card_Parse(card_str) end
 				end
+			elseif self:canViewAs(card, "Peach") then
+				card_str = getSkillViewCard(card, "Peach", self.player, self.room:getCardPlace(card:getEffectiveId()))
+				if card_str then return sgs.Card_Parse(card_str) end
 			end
 		end
 	end
