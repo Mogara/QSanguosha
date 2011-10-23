@@ -524,7 +524,7 @@ void WuqianCard::onEffect(const CardEffectStruct &effect) const{
     room->acquireSkill(effect.from, "wushuang", false);
     effect.from->setFlags("wuqian_used");
 
-    effect.to->addMark("qinggang");
+    room->setTag("WuqianTarget", QVariant::fromValue(effect.to));
 }
 
 class WuqianViewAsSkill: public ZeroCardViewAsSkill{
@@ -542,25 +542,34 @@ public:
     }
 };
 
-class Wuqian: public PhaseChangeSkill{
+class Wuqian: public TriggerSkill{
 public:
-    Wuqian():PhaseChangeSkill("wuqian"){
+    Wuqian():TriggerSkill("wuqian"){
+        events << CardUsed << CardFinished << PhaseChange;
         view_as_skill = new WuqianViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shenlubu) const{
-        if(shenlubu->getPhase() == Player::NotActive){
-            Room *room = shenlubu->getRoom();
-            if(shenlubu->hasFlag("wuqian_used")){
-                shenlubu->setFlags("-wuqian_used");
-                QList<ServerPlayer *> players = room->getAllPlayers();
-                foreach(ServerPlayer *player, players){
-                    player->removeMark("qinggang");
-                }
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return true;
+    }
 
-                const General *general2 = shenlubu->getGeneral2();
-                if(general2 == NULL || !general2->hasSkill("wushuang"))
-                    shenlubu->loseSkill("wushuang");
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+        Room *room = player->getRoom();
+        ServerPlayer *target = room->getTag("WuqianTarget").value<PlayerStar>();
+        if(!target)
+            return false;
+
+        if(event == PhaseChange){
+            if(player->hasSkill(objectName()) && player->getPhase() == Player::NotActive)
+                room->removeTag("WuqianTarget");
+        }
+        else{
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(use.to.contains(target)){
+                if(event == CardUsed)
+                    target->addMark("qinggang");
+                else
+                    target->removeMark("qinggang");
             }
         }
 
