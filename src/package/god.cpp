@@ -545,7 +545,7 @@ public:
 class Wuqian: public TriggerSkill{
 public:
     Wuqian():TriggerSkill("wuqian"){
-        events << CardUsed << CardFinished << PhaseChange;
+        events << CardUsed << CardFinished << PhaseChange << Death;
         view_as_skill = new WuqianViewAsSkill;
     }
 
@@ -559,8 +559,8 @@ public:
         if(!target)
             return false;
 
-        if(event == PhaseChange){
-            if(player->hasSkill(objectName()) && player->getPhase() == Player::NotActive){
+        if(event == PhaseChange || event == Death){
+            if(player->hasSkill(objectName()) && (event == Death || player->getPhase() == Player::NotActive)){
                 room->removeTag("WuqianTarget");
 
                 const General *general2 = player->getGeneral2();
