@@ -522,9 +522,8 @@ void WuqianCard::onEffect(const CardEffectStruct &effect) const{
 
     effect.from->loseMark("@wrath", 2);
     room->acquireSkill(effect.from, "wushuang", false);
-    effect.from->setFlags("wuqian_used");
-
-    effect.to->addMark("wuqian");
+    PlayerStar target = effect.to;
+    effect.from->tag["WuqianTarget"] = QVariant::fromValue(target);
 }
 
 class WuqianViewAsSkill: public ZeroCardViewAsSkill{
@@ -542,25 +541,33 @@ public:
     }
 };
 
-class Wuqian: public PhaseChangeSkill{
+class Wuqian: public TriggerSkill{
 public:
-    Wuqian():PhaseChangeSkill("wuqian"){
+    Wuqian():TriggerSkill("wuqian"){
         view_as_skill = new WuqianViewAsSkill;
+
+        events << PhaseChange << CardUsed << CardFinished;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *shenlubu) const{
-        if(shenlubu->getPhase() == Player::NotActive){
-            Room *room = shenlubu->getRoom();
-            if(shenlubu->hasFlag("wuqian_used")){
-                shenlubu->setFlags("-wuqian_used");
-                QList<ServerPlayer *> players = room->getAllPlayers();
-                foreach(ServerPlayer *player, players){
-                    player->removeMark("wuqian");
-                }
+    virtual bool trigger(TriggerEvent event, ServerPlayer *shenlvbu, QVariant &data) const{
+        ServerPlayer *target = shenlvbu->tag["WuqianTarget"].value<PlayerStar>();
 
-                const General *general2 = shenlubu->getGeneral2();
+        if(event == PhaseChange){
+            if(shenlvbu->getPhase() == Player::Finish && target){
+                shenlvbu->tag.remove("WuqianTarget");
+                target->removeMark("qinggang");
+                const General *general2 = shenlvbu->getGeneral2();
                 if(general2 == NULL || !general2->hasSkill("wushuang"))
-                    shenlubu->loseSkill("wushuang");
+                    shenlvbu->loseSkill("wushuang");
+            }
+        }else{
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            if(target && use.to.contains(target)){
+                if(event == CardUsed)
+                    target->addMark("qinggang");
+                else
+                    target->removeMark("qinggang");
             }
         }
 
