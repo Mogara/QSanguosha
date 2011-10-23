@@ -405,7 +405,12 @@ void Photo::installDelayedTrick(CardItem *trick){
 
     QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
     item->setPixmap(QPixmap(player->topDelayedTrick()->getIconPath()));
-    item->setToolTip(player->topDelayedTrick()->getDescription());
+    QString tooltip;
+    if(player->topDelayedTrick()->isVirtualCard())
+        tooltip=Sanguosha->getCard((player->topDelayedTrick()->getSubcards()).at(0))->getDescription();
+    else
+        tooltip=player->topDelayedTrick()->getDescription();
+    item->setToolTip(tooltip);
 
     item->setPos(-10, 16 + judging_area.count() * 19);
     judging_area << trick;
