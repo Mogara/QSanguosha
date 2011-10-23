@@ -852,6 +852,8 @@ end
 
 function SmartAI:slashIsAvailable(player)
 	player = player or self.player
+	if player:hasFlag("tianyi_failed") or player:hasFlag("xianzhen_failed") then return false end
+	
 	if player:hasWeapon("crossbow") or player:hasSkill("paoxiao") then
 		return true
 	end
