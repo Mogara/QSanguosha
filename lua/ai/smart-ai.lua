@@ -1010,7 +1010,8 @@ function SmartAI:slashProhibit(card,enemy)
         if card:inherits("FireSlash") or self.player:hasWeapon("fan") then
             if self:hasArmor(enemy, "vine") then return true end
         end
-        if enemy:isChained() and not card:inherits("NatureSlash") then return true end
+        if enemy:isChained() and card:inherits("NatureSlash") then return true end
+		if enemy:getCardsNum("Jink")==0 and enemy:getHp()<2 and slashIsEffective(card,enemy) then return true end
     else    
 		if enemy:hasSkill("liuli") then 
 			if enemy:getHandcardNum()<1 then return false end
