@@ -3345,6 +3345,7 @@ end
 
 -- load other ai scripts
 dofile "lua/ai/standard-ai.lua"
+dofile "lua/ai/standard-skill-ai.lua"
 dofile "lua/ai/wind-ai.lua"
 dofile "lua/ai/fire-ai.lua"
 dofile "lua/ai/thicket-ai.lua"
@@ -3364,7 +3365,6 @@ dofile "lua/ai/playrule-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/value_config.lua"
 
-dofile "lua/ai/standard-skill-ai.lua"
 dofile "lua/ai/thicket-skill-ai.lua"
 dofile "lua/ai/fire-skill-ai.lua"
 dofile "lua/ai/yjcm-skill-ai.lua"
