@@ -345,7 +345,7 @@ sgs.ai_skill_invoke.jilve=function(self,data)
 	struct=data:toJudge()
 	if struct then if not struct.card then struct=nil end end
 	if not struct then assert(false) end
-	return (use and sgs.ai_skill_invoke["@guicai"](self,"dummyprompt",struct))
+	return (use and sgs.ai_skill_invoke["@guicai"](self,"dummyprompt",struct)~=".")
 end
 
 local jilve_skill={}
