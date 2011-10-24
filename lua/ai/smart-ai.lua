@@ -1252,7 +1252,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 				if use.to then use.to:append(friend) end
 				return
 			end		
-			if self:isEquip("SilverLion", friend) and friend:isWounded() then
+			if self:isEquip("SilverLion", friend) and friend:isWounded() and (friend:hasSkill("benghuai") or friend:getHp()<4) then
 				hasLion = true
 				target = friend
 			end
@@ -1319,7 +1319,7 @@ function SmartAI:useCardSnatch(snatch, use)
 				if use.to then use.to:append(friend) end
 				return
 			end		
-			if self:isEquip("SilverLion", friend) and friend:isWounded() then
+			if self:isEquip("SilverLion", friend) and friend:isWounded() and (friend:hasSkill("benghuai") or friend:getHp()<4) then
 				hasLion = true
 				target = friend
 			end
