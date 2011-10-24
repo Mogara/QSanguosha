@@ -73,6 +73,7 @@ sgs.ai_use_value =
 		--special
 		Analeptic = 5.98,
 		Jink=8.9,
+		Shit=-10,
 }
 
 sgs.ai_use_priority = {

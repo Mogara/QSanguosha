@@ -1958,6 +1958,8 @@ function SmartAI:getUseValue(card)
 			v=v+self:getCardsNum("Slash") 
 		elseif card:inherits("Jink") then
 			if self:getCardsNum("Jink")>1 then v=v-6 end
+		elseif card:inherits("Shit") and self.player:hasSkill("kuanggu") and card:getSuit()~=sgs.Card_Spade then
+			v = 0.1
 		end
 	elseif card:getTypeId() == sgs.Card_Trick then
 		if self.player:getWeapon() and not self:hasSkills(sgs.lose_equip_skill) and card:inherits("Collateral") then v=2 end
@@ -2950,6 +2952,12 @@ function SmartAI:cardNeed(card)
     end
     if card:inherits("Slash") and (self:getCardsNum("Slash")>0) then return 4 end
     if card:inherits("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash")>1) then return 6 end
+	if card:inherits("Nullification") and self:getCardsNum("Nullification")==0 then
+		if self.player:containsTrick("indulgence") or self.player:containsTrick("supply_shortage") then return 10 end
+		for _,friend in ipairs(self.friends) do
+			if friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage") then return 7 end
+		end
+	end
     return self:getUseValue(card)
 end
 
