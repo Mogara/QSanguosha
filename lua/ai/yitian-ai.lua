@@ -96,7 +96,7 @@ sgs.ai_skill_invoke.toudu = function(self, data)
 	return #self.enemies>0
 end
 
-sgs.ai_skill_playerchosen.toudu = sgs.ai_skill_playerchosen.choose_enemy
+sgs.ai_skill_playerchosen.toudu = sgs.ai_skill_playerchosen.zero_card_as_slash
 
 -- yitian-sword
 

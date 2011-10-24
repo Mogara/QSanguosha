@@ -148,4 +148,4 @@ sgs.ai_skill_use_func["LuanwuCard"]=function(card,use,self)
 	use.card = card
 end
 
-sgs.ai_skill_playerchosen.luanwu = sgs.ai_skill_playerchosen.choose_enemy
+sgs.ai_skill_playerchosen.luanwu = sgs.ai_skill_playerchosen.zero_card_as_slash
