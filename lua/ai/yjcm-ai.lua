@@ -80,7 +80,7 @@ sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	return "nothing"
 end
 
-sgs.ai_skill_playerchosen.xuanfeng_damage = sgs.ai_skill_playerchosen.choose_enemy
+sgs.ai_skill_playerchosen.xuanfeng_damage = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_skill_playerchosen.xuanfeng_slash = sgs.ai_skill_playerchosen.zero_card_as_slash
 
