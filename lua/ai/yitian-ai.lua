@@ -245,16 +245,22 @@ yishe_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func["YisheCard"]=function(card,use,self)
-	if not self.player:getPile("rice"):isEmpty() and not self.player:hasUsed("YisheCard") then use.card=card return end
-	local usecards=self:askForDiscard("gamerule", math.min(self:getOverflow(),5))
-	local cards=self.player:getHandcards()
-	cards=sgs.QList2Table(cards)
-	for _,card in ipairs(cards) do
-		if #usecards>4 then break end
-		if card:inherits("Shit") then table.insert(usecards,card:getId()) end
-	end
-	if #usecards>0 then
-		use.card=sgs.Card_Parse("@YisheCard=".. table.concat(usecards,"+"))
+	if self.player:getPile("rice"):isEmpty() then
+		local cards=self.player:getHandcards()
+		cards=sgs.QList2Table(cards)
+		local usecards={}
+		for _,card in ipairs(cards) do
+			if card:inherits("Shit") then table.insert(usecards,card:getId()) end
+		end
+		local discards = self:askForDiscard("gamerule", math.min(self:getOverflow(),5-#usecards))
+		for _,card in ipairs(discards) do
+			table.insert(usecards,card)
+		end
+		if #usecards>0 then
+			use.card=sgs.Card_Parse("@YisheCard=" .. table.concat(usecards,"+"))
+		end
+	else
+		if not self.player:hasUsed("YisheCard") then use.card=card return end
 	end
 end
 
