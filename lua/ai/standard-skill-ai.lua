@@ -3,9 +3,18 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 	local targetlist=sgs.QList2Table(targets)
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and not self:slashProhibit(slash ,target) then
-		return target
+		if self:isEnemy(target) and not self:slashProhibit(slash ,target) and self:slashIsEffective(slash,target) then
+			return target
 		end
+	end
+	return targets:first()
+end
+
+sgs.ai_skill_playerchosen.choose_enemy = function(self, targets)
+	local targetlist=sgs.QList2Table(targets)
+	self:sort(targetlist,"defense")
+	for _, target in ipairs(targetlist) do
+		if self:isEnemy(target) then return target end
 	end
 	return targets:first()
 end

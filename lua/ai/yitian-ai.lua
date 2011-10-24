@@ -96,14 +96,7 @@ sgs.ai_skill_invoke.toudu = function(self, data)
 	return #self.enemies>0
 end
 
-sgs.ai_skill_playerchosen.toudu = function(self, targets)
-	local enemies=sgs.QList2Table(targets)
-	for _, target in ipairs(enemies) do
-		if self:isEnemy(target) then
-			return target
-		end
-	end
-end
+sgs.ai_skill_playerchosen.toudu = sgs.ai_skill_playerchosen.choose_enemy
 
 -- yitian-sword
 
