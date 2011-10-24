@@ -7,6 +7,11 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 			return target
 		end
 	end
+	for i=#targetlist, 1, -1 do
+		if not self:slashProhibit(slash, targetlist[i]) then
+			return targetlist[i]
+		end
+	end
 	return targets:first()
 end
 
@@ -16,7 +21,7 @@ sgs.ai_skill_playerchosen.choose_enemy = function(self, targets)
 	for _, target in ipairs(targetlist) do
 		if self:isEnemy(target) then return target end
 	end
-	return targets:first()
+	return targetlist[#targetlist]
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)
