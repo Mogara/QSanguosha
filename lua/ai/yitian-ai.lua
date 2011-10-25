@@ -77,6 +77,10 @@ sgs.ai_skill_use["@lianli"] = function(self, prompt)
 	return "."	
 end
 
+sgs.ai_skill_invoke.lianli_slash = function(self, prompt)
+	return self:getCardsNum("Slash")==0
+end
+
 -- tongxin
 sgs.ai_skill_invoke.tongxin = true
 
@@ -96,14 +100,7 @@ sgs.ai_skill_invoke.toudu = function(self, data)
 	return #self.enemies>0
 end
 
-sgs.ai_skill_playerchosen.toudu = function(self, targets)
-	local enemies=sgs.QList2Table(targets)
-	for _, target in ipairs(enemies) do
-		if self:isEnemy(target) then
-			return target
-		end
-	end
-end
+sgs.ai_skill_playerchosen.toudu = sgs.ai_skill_playerchosen.zero_card_as_slash
 
 -- yitian-sword
 
@@ -245,16 +242,22 @@ yishe_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func["YisheCard"]=function(card,use,self)
-	if not self.player:getPile("rice"):isEmpty() and not self.player:hasUsed("YisheCard") then use.card=card return end
-	local usecards=self:askForDiscard("gamerule", math.min(self:getOverflow(),5))
-	local cards=self.player:getHandcards()
-	cards=sgs.QList2Table(cards)
-	for _,card in ipairs(cards) do
-		if #usecards>4 then break end
-		if card:inherits("Shit") then table.insert(usecards,card:getId()) end
-	end
-	if #usecards>0 then
-		use.card=sgs.Card_Parse("@YisheCard=".. table.concat(usecards,"+"))
+	if self.player:getPile("rice"):isEmpty() then
+		local cards=self.player:getHandcards()
+		cards=sgs.QList2Table(cards)
+		local usecards={}
+		for _,card in ipairs(cards) do
+			if card:inherits("Shit") then table.insert(usecards,card:getId()) end
+		end
+		local discards = self:askForDiscard("gamerule", math.min(self:getOverflow(),5-#usecards))
+		for _,card in ipairs(discards) do
+			table.insert(usecards,card)
+		end
+		if #usecards>0 then
+			use.card=sgs.Card_Parse("@YisheCard=" .. table.concat(usecards,"+"))
+		end
+	else
+		if not self.player:hasUsed("YisheCard") then use.card=card return end
 	end
 end
 

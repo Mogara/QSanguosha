@@ -3,11 +3,25 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 	local targetlist=sgs.QList2Table(targets)
 	self:sort(targetlist, "defense")
 	for _, target in ipairs(targetlist) do
-		if self:isEnemy(target) and not self:slashProhibit(slash ,target) then
-		return target
+		if self:isEnemy(target) and not self:slashProhibit(slash ,target) and self:slashIsEffective(slash,target) then
+			return target
+		end
+	end
+	for i=#targetlist, 1, -1 do
+		if not self:slashProhibit(slash, targetlist[i]) then
+			return targetlist[i]
 		end
 	end
 	return targets:first()
+end
+
+sgs.ai_skill_playerchosen.damage = function(self, targets)
+	local targetlist=sgs.QList2Table(targets)
+	self:sort(targetlist,"hp")
+	for _, target in ipairs(targetlist) do
+		if self:isEnemy(target) then return target end
+	end
+	return targetlist[#targetlist]
 end
 
 sgs.ai_skill_invoke.ice_sword=function(self, data)

@@ -79,13 +79,7 @@ sgs.ai_skill_use_func["QuhuCard"] = function(card, use, self)
 	end
 end
 
-sgs.ai_skill_playerchosen.quhu = function(self, targets)
-	for _, player in sgs.qlist(targets) do
-		if self:isEnemy(player) then
-			return player
-		end
-	end
-end
+sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 	self:sort(self.friends)
