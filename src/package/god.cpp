@@ -558,8 +558,7 @@ public:
                     player->removeMark("wuqian");
                 }
 
-                const General *general2 = shenlubu->getGeneral2();
-                if(general2 == NULL || !general2->hasSkill("wushuang"))
+                if(!shenlubu->hasInnateSkill("wushuang"))
                     shenlubu->loseSkill("wushuang");
             }
         }
