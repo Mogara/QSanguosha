@@ -1780,7 +1780,7 @@ function SmartAI:useEquipCard(card, use)
 	 	elseif self.player:isChained()  and (self.player:getArmor():inherits("vine")) and not (card:objectName()=="silver_lion") then use.card=card
 	 	elseif self.player:hasSkill("leiji") or self.player:hasSkill("tiandu") then use.card=card
 	 	end
-	elseif card:inheris("Monkey") or self.lua_ai:useCard(card) then
+	elseif card:inherits("Monkey") or self.lua_ai:useCard(card) then
 		use.card = card
 	end
 end
