@@ -22,7 +22,7 @@
 #include <QDateTime>
 
 Room::Room(QObject *parent, const QString &mode)
-    :QThread(parent), mode(mode), owner(NULL), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
+    :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2),
     game_started(false), game_finished(false), signup_count(0),
     L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), _virtual(false)
@@ -1116,29 +1116,32 @@ void Room::prepareForStart(){
                 player->setRole("rebel");
             broadcastProperty(player, "role");
         }
-    }else if(Config.value("FreeAssign", false).toBool() && owner->getState() == "online"){
-        owner->invoke("askForAssign");
-        getResult("assignRolesCommand", owner);
+    }else if(Config.value("FreeAssign", false).toBool()){
+        ServerPlayer *owner = getOwner();
+        if(owner && owner->getState() == "online"){
+            owner->invoke("askForAssign");
+            getResult("assignRolesCommand", owner);
 
-        if(result.isEmpty() || result == ".")
-            assignRoles();
-        else{
-            QStringList assignments = result.split("+");
-            for(int i=0; i<assignments.length(); i++){
-                QString assignment = assignments.at(i);
-                QStringList texts = assignment.split(":");
-                QString name = texts.value(0);
-                QString role = texts.value(1);
+            if(result.isEmpty() || result == ".")
+                assignRoles();
+            else{
+                QStringList assignments = result.split("+");
+                for(int i=0; i<assignments.length(); i++){
+                    QString assignment = assignments.at(i);
+                    QStringList texts = assignment.split(":");
+                    QString name = texts.value(0);
+                    QString role = texts.value(1);
 
-                ServerPlayer *player = findChild<ServerPlayer *>(name);
-                setPlayerProperty(player, "role", role);
+                    ServerPlayer *player = findChild<ServerPlayer *>(name);
+                    setPlayerProperty(player, "role", role);
 
-                players.swap(i, players.indexOf(player));
+                    players.swap(i, players.indexOf(player));
+                }
             }
-        }
-    }else{
+        }else
+            assignRoles();
+    }else
         assignRoles();
-    }
 
     adjustSeats();
 }
@@ -1216,11 +1219,9 @@ void Room::reportDisconnection(){
         }
     }
 
-    if(player == owner){
-        owner = NULL;
+    if(player->isOwner()){
         foreach(ServerPlayer *p, players){
             if(p->getState() == "online"){
-                owner = p;
                 p->setOwner(true);
                 broadcastProperty(p, "owner");
                 break;
@@ -1288,7 +1289,7 @@ void Room::processRequest(const QString &request){
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QString &){
-    if(player && player != owner)
+    if(player && !player->isOwner())
         return;
 
     if(isFull())
@@ -1322,6 +1323,15 @@ void Room::fillRobotsCommand(ServerPlayer *player, const QString &){
     }
 }
 
+ServerPlayer *Room::getOwner() const{
+    foreach(ServerPlayer *player, players){
+        if(player->isOwner())
+            return player;
+    }
+
+    return NULL;
+}
+
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
     player->setObjectName(generatePlayerName());
     player->setProperty("avatar", avatar);
@@ -1333,8 +1343,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     if(!is_robot){
         player->sendProperty("objectName");
 
+        ServerPlayer *owner = getOwner();
         if(owner == NULL){
-            owner = player;
             player->setOwner(true);
             broadcastProperty(player, "owner");
         }

@@ -97,6 +97,7 @@ public:
     bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
+    ServerPlayer *getOwner() const;
 
     void reconnect(ServerPlayer *player, ClientSocket *socket);
     void marshal(ServerPlayer *player);
@@ -168,7 +169,6 @@ protected:
 private:
     QString mode;
     QList<ServerPlayer*> players, alive_players;
-    ServerPlayer *owner;
     int player_count;
     ServerPlayer *current;
     ServerPlayer *reply_player;
