@@ -400,7 +400,8 @@ zhiba_skill.getTurnUseCard = function(self)
 		or self.player:getHandcardNum() < self.player:getHp()
 		or self.player == lord
 		or self.player:getKingdom() ~= "wu"
-		or self.player:hasUsed("ZhibaCard") then
+		or self.player:hasUsed("ZhibaCard")
+		or not lord:hasSkill("sunce_zhiba") then
 		return
 	end
 

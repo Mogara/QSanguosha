@@ -77,6 +77,10 @@ sgs.ai_skill_use["@lianli"] = function(self, prompt)
 	return "."	
 end
 
+sgs.ai_skill_invoke.lianli_slash = function(self, prompt)
+	return self:getCardsNum("Slash")==0
+end
+
 -- tongxin
 sgs.ai_skill_invoke.tongxin = true
 
