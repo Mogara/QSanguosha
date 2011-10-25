@@ -33,6 +33,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["roomEnd"] = &Client::roomEnd;
     callbacks["roomCreated"] = &Client::roomCreated;
     callbacks["roomError"] = &Client::roomError;
+    callbacks["hallEntered"] = &Client::hallEntered;
 
     callbacks["setup"] = &Client::setup;
     callbacks["addPlayer"] = &Client::addPlayer;

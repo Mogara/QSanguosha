@@ -11,6 +11,13 @@
 
 static HallDialog *HallDialogInstance;
 
+HallDialog *HallDialog::GetInstance(MainWindow *main_window){
+    if(HallDialogInstance == NULL)
+        HallDialogInstance = new HallDialog(main_window);
+
+    return HallDialogInstance;
+}
+
 HallDialog::HallDialog(MainWindow *main_window)
     :QDialog(main_window), main_window(main_window), room_row(0)
 {
@@ -175,4 +182,8 @@ void Client::roomError(const QString &errorStr){
 
     QString msg = map.value(errorStr, tr("Unknown room error: %1").arg(errorStr));
     QMessageBox::warning(HallDialogInstance, tr("Warning"), msg);
+}
+
+void Client::hallEntered(const QString &){
+    HallDialogInstance->show();
 }

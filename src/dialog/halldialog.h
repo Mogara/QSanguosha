@@ -10,7 +10,8 @@ class HallDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit HallDialog(MainWindow *main_window);
+    static HallDialog *GetInstance(MainWindow *main_window);
+
     void refreshRooms(int page);
     void joinRoom(int room_id);
 
@@ -19,6 +20,8 @@ public:
     void roomEnd();
 
 private:
+    explicit HallDialog(MainWindow *main_window);
+
     MainWindow *main_window;
     QTableWidget *table;
     int current_page;

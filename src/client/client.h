@@ -41,6 +41,7 @@ public:
     void roomEnd(const QString &);
     void roomCreated(const QString &idstr);
     void roomError(const QString &errorStr);
+    void hallEntered(const QString &);
 
     void disconnectFromHost();
     void request(const QString &message);
