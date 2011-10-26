@@ -139,10 +139,11 @@ sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	local beggar = getBeggar(self)
 
 	local cards = self.player:getHandcards()
-	local n = math.floor(self.player:getHandcardNum()/2)
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards,true)
 	local card_ids = {}
-	for i=1, n do
-		table.insert(card_ids, cards:at(i-1):getEffectiveId())
+	for i=1, math.floor(#cards/2) do
+		table.insert(card_ids, cards[i]:getEffectiveId())
 	end
 
 	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "->" .. beggar:objectName()

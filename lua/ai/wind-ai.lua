@@ -154,7 +154,7 @@ huangtianv_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("HuangtianCard") then return nil end
     if self.player:isLord() then return nil end
     if self.player:getKingdom() ~= "qun" then return nil end
-	if not self.player:getLord():hasSkill("huangtian") then return nil end
+	if not self.room:getLord():hasSkill("huangtian") then return nil end
 
     local cards = self.player:getCards("h")	
     cards=sgs.QList2Table(cards)

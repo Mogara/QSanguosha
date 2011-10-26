@@ -55,7 +55,6 @@ sgs.dynamic_value = {
 
 sgs.zhangfei_keep_value = 
 {
-Shit = 6,
 Peach = 6,
 Analeptic = 5.8,
 Jink = 5.7,
@@ -67,7 +66,6 @@ ExNihilo = 4.7
 
 sgs.zhaoyun_keep_value = 
 {
-Shit = 6,
 Peach = 6,
 Analeptic = 5.8,
 Jink = 5.7,
@@ -79,7 +77,6 @@ ExNihilo = 4.7
 
 sgs.huangyueying_keep_value = 
 {
-Shit 		= 6,
 Peach 		= 6,
 Analeptic 	= 5.9,
 Jink 		= 5.8,
@@ -97,7 +94,6 @@ FireAttack	=4.9
 
 sgs.xuchu_keep_value = 
 {
-Shit 			= 6,
 Peach 			= 6,
 Analeptic 		= 5.8,
 Jink 			= 5.7,
@@ -116,7 +112,6 @@ DefensiveHorse 	= 4
 
 sgs.sunshangxiang_keep_value = 
 {
-Shit = 6,
 Peach = 6,
 Jink = 5.1,
 Crossbow = 5,
@@ -137,7 +132,6 @@ OffensiveHorse = 5
 
 sgs.xiahouyuan_keep_value = 
 {
-Shit = 6,
 Peach = 6,
 Jink = 5.1,
 Crossbow = 5,

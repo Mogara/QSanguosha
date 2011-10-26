@@ -1065,7 +1065,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 		for _, friend in ipairs(self.friends_noself) do						
 			local slash_prohibit=false
 			slash_prohibit=self:slashProhibit(card,friend)
-			if (self.player:hasSkill("pojun") and friend:getHp() >3 and self:getCardsNum("Jink", friend) == 0) 
+			if (self.player:hasSkill("pojun") and friend:getHp() >4 and self:getCardsNum("Jink", friend) == 0) 
 			or (friend:hasSkill("leiji") and self:getCardsNum("Jink", friend) > 0)
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp()>=1 and self:getCardsNum("Jink", friend)==0)
 			then
@@ -1725,9 +1725,9 @@ sgs.weapon_range =
 function SmartAI:evaluateEquip(card)
 	local deltaSelfThreat = 0
 	local currentRange 
-			if not card then return -1
-			else
-			currentRange = sgs.weapon_range[card:className()] or 0
+	if not card then return -1
+	else
+		currentRange = sgs.weapon_range[card:className()] or 0
 	end
 	for _,enemy in ipairs(self.enemies) do
 		if self.player:distanceTo(enemy) <= currentRange then
@@ -1765,10 +1765,14 @@ function SmartAI:evaluateEquip(card)
 end
 
 function SmartAI:useEquipCard(card, use)
-	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 and self:hasSameEquip(card) then return end	
+	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum()<8 and card:getNumber()<7 and self:hasSameEquip(card) then return end
+	if self:hasSkills(sgs.lose_equip_skill) and not card:inherits("GaleShell") then
+		use.card = card
+	end	
 	if card:inherits("Weapon") then
+		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
-		if use.isDummy and self.weaponUsed then return end
+		if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
 		if self.player:getHandcardNum()<=self.player:getHp() then return end
 		use.card = card		
 		end
@@ -1916,7 +1920,8 @@ function SmartAI:getKeepValue(card,kept)
     local value	
     if sgs[self.player:getGeneralName().."_keep_value"] then							
         value=sgs[self.player:getGeneralName().."_keep_value"][class_name]
-	elseif sgs[self.player:getGeneralName().."_suit_value"] then
+	end
+	if (not value) and sgs[self.player:getGeneralName().."_suit_value"] then
 		value=sgs[self.player:getGeneralName().."_suit_value"][suit_string]
 	end
 	if not value then 
@@ -2421,6 +2426,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		
 		if flags:match("j") then
 			local tricks = who:getCards("j")
+			local lightning
 			for _, trick in sgs.qlist(tricks) do
 				if trick:inherits("Lightning") then
 					lightning = trick:getId()
@@ -2990,7 +2996,7 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 		end
 	end
 	if self.player:hasSkill("hongyan") and result:getSuit() == sgs.Card_Spade then 
-		result = sgs.Sanguosha:cloneCard(card:objectName(), sgs.Card_heart, card:getNumber())
+		result = sgs.Sanguosha:cloneCard(result:objectName(), sgs.Card_heart, result:getNumber())
 		result:setSkillName("hongyan")
 	end
 
