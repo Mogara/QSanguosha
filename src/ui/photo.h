@@ -48,8 +48,9 @@ public:
     void setFrame(FrameType type);
 
 public slots:
-    void updateAvatar();
+    void updateAvatar();    
     void updateSmallAvatar();
+    void updateReadyItem(bool visible);
     void updatePhase();
     void updatePile(const QString &pile_name);
     void refresh();
@@ -68,10 +69,10 @@ protected:
 private:
     const ClientPlayer *player;
     QPixmap avatar, small_avatar;
-    QGraphicsPixmapItem *kingdom_item;
+    QGraphicsPixmapItem *kingdom_item, *ready_item;
     QPixmap kingdom_frame;
     QPixmap handcard;
-    QPixmap chain;
+    QPixmap chain;    
     RoleCombobox *role_combobox;
     QList<QGraphicsProxyWidget *> pile_buttons;
     QGraphicsPixmapItem *action_item, *save_me_item;

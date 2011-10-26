@@ -52,6 +52,7 @@ void Room::initCallbacks(){
     callbacks["replyGongxinCommand"] = &Room::commonCommand;
     callbacks["assignRolesCommand"] = &Room::commonCommand;
 
+    callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
     callbacks["chooseCommand"] = &Room::chooseCommand;
@@ -1332,6 +1333,30 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
+void Room::toggleReadyCommand(ServerPlayer *player, const QString &){
+    if(game_started)
+        return;
+
+    setPlayerProperty(player, "ready", ! player->isReady());
+
+    if(player->isReady() && isFull()){
+        bool allReady = true;
+        foreach(ServerPlayer *player, players){
+            if(!player->isReady()){
+                allReady = false;
+                break;
+            }
+        }
+
+        if(allReady){
+            foreach(ServerPlayer *player, players)
+                setPlayerProperty(player, "ready", false);
+
+            start();
+        }
+    }
+}
+
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot){
     player->setObjectName(generatePlayerName());
     player->setProperty("avatar", avatar);
@@ -1350,6 +1375,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         }
     }
 
+    signup_count ++;
+
     // introduce the new joined player to existing players except himself
     player->introduceTo(NULL);
 
@@ -1363,12 +1390,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             if(p != player)
                 p->introduceTo(player);
         }
-    }
-
-    signup_count ++;
-
-    if(isFull())
-        start();
+    }else
+        toggleReadyCommand(player, QString());
 }
 
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
@@ -1840,8 +1863,6 @@ void Room::marshal(ServerPlayer *player){
         if(p != player)
             p->introduceTo(player);
     }
-
-
 
     QStringList player_circle;
     foreach(ServerPlayer *player, players)

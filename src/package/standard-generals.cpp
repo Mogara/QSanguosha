@@ -359,7 +359,6 @@ public:
         if(event == PhaseChange && zhenji->getPhase() == Player::Start){
             Room *room = zhenji->getRoom();
             while(zhenji->askForSkillInvoke("luoshen")){
-                zhenji->setFlags("luoshen");
                 room->playSkillEffect(objectName());
 
                 JudgeStruct judge;
@@ -373,10 +372,9 @@ public:
                     break;
             }
 
-            zhenji->setFlags("-luoshen");
         }else if(event == FinishJudge){
-            if(zhenji->hasFlag("luoshen")){
-                JudgeStar judge = data.value<JudgeStar>();
+            JudgeStar judge = data.value<JudgeStar>();
+            if(judge->reason == objectName()){
                 if(judge->card->isBlack()){
                     zhenji->obtainCard(judge->card);
                     return true;

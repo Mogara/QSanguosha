@@ -85,6 +85,10 @@ void Dashboard::createRight(){
     kingdom = new QGraphicsPixmapItem(right);
     kingdom->setPos(91, 54);
 
+    ready_item = new QGraphicsPixmapItem(QPixmap("image/system/ready.png"), avatar);
+    ready_item->setPos(2, 43);
+    ready_item->hide();
+
     chain_icon = new Pixmap("image/system/chain.png");
     chain_icon->setParentItem(right);
     chain_icon->setPos(small_avatar->pos());
@@ -172,6 +176,7 @@ void Dashboard::setPlayer(const ClientPlayer *player){
     connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
     connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
+    connect(player, SIGNAL(ready_changed(bool)), this, SLOT(updateReadyItem(bool)));
 
     mark_item->setDocument(player->getMarkDoc());
 
@@ -226,6 +231,10 @@ void Dashboard::updateSmallAvatar(){
     }
 
     update();
+}
+
+void Dashboard::updateReadyItem(bool visible){
+    ready_item->setVisible(visible);
 }
 
 // similar with Photo::refresh, just an alias to update

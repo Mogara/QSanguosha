@@ -189,6 +189,7 @@ void Client::setup(const QString &setup_str){
 
     if(ServerInfo.parse(setup_str)){
         emit server_connected();
+        request("toggleReady .");
     }else{
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }

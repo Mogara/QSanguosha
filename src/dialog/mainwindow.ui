@@ -75,7 +75,7 @@
    </widget>
    <widget class="QMenu" name="menuCheat">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>Cheat</string>
@@ -84,6 +84,7 @@
     <addaction name="actionDamage_maker"/>
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
+    <addaction name="actionSend_lowlevel_command"/>
    </widget>
    <widget class="QMenu" name="menuDIY">
     <property name="title">
@@ -300,6 +301,9 @@
    </property>
   </action>
   <action name="actionGet_card">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Get card ...</string>
    </property>
@@ -346,6 +350,11 @@
   <action name="actionReplay_file_convert">
    <property name="text">
     <string>Replay file convert ...</string>
+   </property>
+  </action>
+  <action name="actionSend_lowlevel_command">
+   <property name="text">
+    <string>Send lowlevel command ...</string>
    </property>
   </action>
  </widget>

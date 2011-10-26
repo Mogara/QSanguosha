@@ -58,6 +58,7 @@ public:
 public slots:
     void updateAvatar();
     void updateSmallAvatar();
+    void updateReadyItem(bool visible);
     void refresh();
     void sortCards(int sort_type);
     void reverseSelection();
@@ -74,7 +75,7 @@ private:
     QList<CardItem*> card_items;
     CardItem *selected;
     Pixmap *avatar, *small_avatar;
-    QGraphicsPixmapItem *kingdom;
+    QGraphicsPixmapItem *kingdom, *ready_item;
     QGraphicsTextItem *mark_item;
     QGraphicsPixmapItem *action_item;
 

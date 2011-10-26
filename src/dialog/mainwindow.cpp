@@ -813,3 +813,10 @@ void MainWindow::on_actionReplay_file_convert_triggered()
         }
     }
 }
+
+void MainWindow::on_actionSend_lowlevel_command_triggered()
+{
+    QString command = QInputDialog::getText(this, tr("Send low level command"), tr("Please input the raw low level command"));
+    if(!command.isEmpty())
+        ClientInstance->request(command);
+}

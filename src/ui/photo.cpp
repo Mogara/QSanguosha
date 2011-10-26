@@ -78,6 +78,10 @@ Photo::Photo()
     kingdom_item = new QGraphicsPixmapItem(this);
     kingdom_item->setPos(-12, -6);
 
+    ready_item = new QGraphicsPixmapItem(QPixmap("image/system/ready.png"), this);
+    ready_item->setPos(86, 132);
+    ready_item->hide();
+
     mark_item = new QGraphicsTextItem(this);
     mark_item->setPos(2, 99);
     mark_item->setDefaultTextColor(Qt::white);
@@ -225,11 +229,13 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(ready_changed(bool)), this, SLOT(updateReadyItem(bool)));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
         connect(player, SIGNAL(drank_changed()), this, SLOT(setDrankState()));
         connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
+
 
         mark_item->setDocument(player->getMarkDoc());
     }
@@ -318,6 +324,10 @@ void Photo::updateSmallAvatar(){
 
     hide_avatar = false;
     update();
+}
+
+void Photo::updateReadyItem(bool visible){
+    ready_item->setVisible(visible);
 }
 
 void Photo::refresh(){

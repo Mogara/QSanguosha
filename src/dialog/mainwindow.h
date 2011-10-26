@@ -76,6 +76,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionSend_lowlevel_command_triggered();
     void on_actionReplay_file_convert_triggered();
     void on_actionAI_Melee_triggered();
     void on_actionPackaging_triggered();
