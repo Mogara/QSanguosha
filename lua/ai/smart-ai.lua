@@ -1043,6 +1043,10 @@ function SmartAI:slashProhibit(card,enemy)
 		if enemy:hasSkill("shenjun") and (enemy:getGeneral():isMale()~=self.player:getGeneral():isMale()) and not card:inherits("ThunderSlash") then
 			return true
 		end
+		
+		if enemy:hasSkill("xiangle") and self:getCardsNum("Slash")+self:getCardsNum("Analpetic")+math.max(self:getCardsNum("Jink")-1,0)<2 then
+			return true
+		end
 	end
 
 	return not self:slashIsEffective(card, enemy)
