@@ -178,7 +178,6 @@ private:
     QList<int> *draw_pile, *discard_pile;
     bool game_started;
     bool game_finished;
-    int signup_count;
     lua_State *L;
     QList<AI *> ais;
 

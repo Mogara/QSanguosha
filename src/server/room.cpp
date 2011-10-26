@@ -24,7 +24,7 @@
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
     draw_pile(&pile1), discard_pile(&pile2),
-    game_started(false), game_finished(false), signup_count(0),
+    game_started(false), game_finished(false),
     L(NULL), thread(NULL), thread_3v3(NULL), sem(new QSemaphore), provided(NULL), _virtual(false)
 {
     player_count = Sanguosha->getPlayerCount(mode);
@@ -855,9 +855,8 @@ ServerPlayer *Room::addSocket(ClientSocket *socket){
     return player;
 }
 
-bool Room::isFull() const
-{
-    return signup_count == player_count;
+bool Room::isFull() const{
+    return players.length() == player_count;
 }
 
 bool Room::isFinished() const{
@@ -1171,7 +1170,7 @@ void Room::reportDisconnection(){
         players.removeOne(player);
     }else if(player->getRole().isEmpty()){
         // second case
-        if(signup_count < player_count){
+        if(players.length() < player_count){
             player->setParent(NULL);
             players.removeOne(player);
 
@@ -1182,7 +1181,6 @@ void Room::reportDisconnection(){
             }
 
             broadcastInvoke("removePlayer", player->objectName());
-            signup_count --;
         }
     }else{
         if(!game_started){
@@ -1318,8 +1316,8 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &){
 }
 
 void Room::fillRobotsCommand(ServerPlayer *player, const QString &){
-    int left = player_count - signup_count, i;
-    for(i=0; i<left; i++){
+    int left = player_count - players.length();
+    for(int i=0; i<left; i++){
         addRobotCommand(player, QString());
     }
 }
@@ -1374,8 +1372,6 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
             broadcastProperty(player, "owner");
         }
     }
-
-    signup_count ++;
 
     // introduce the new joined player to existing players except himself
     player->introduceTo(NULL);
