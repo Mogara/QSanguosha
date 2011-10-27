@@ -2507,7 +2507,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	local new_flag=""
     if flags:match("h") then new_flag="h" end
     if flags:match("e") then new_flag=new_flag.."e" end
-    return self:getCardRandomly(who, new_flag)							
+    return self:getCardRandomly(who, new_flag) or who:getCards(flags):first():getEffectiveId()							
 end
 
 function SmartAI:askForCard(pattern, prompt, data)
