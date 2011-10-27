@@ -889,12 +889,12 @@ local function getSkillViewCard(card, class_name, player, card_place)
 				return ("slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
 			end
 		end	
+		if player:hasSkill("wusheng") then
+			if card:isRed() and not card:inherits("Peach") then
+				return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end	
 		if card_place ~= sgs.Player_Equip then
-			if player:hasSkill("wusheng") then
-				if card:isRed() and not card:inherits("Peach") then
-					return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
-				end
-			end	
 			if player:hasSkill("longdan") and card:inherits("Jink") then
 				return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
 			end
