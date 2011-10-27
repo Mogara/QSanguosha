@@ -178,11 +178,14 @@ sgs.ai_card_intention["QiangxiCard"]=function(card,from,to,source)
         return sgs.ai_card_intention.general(to,80)
 end
 
-sgs.ai_carduse_intention["LijianCard"]=function(card,from,to,source)
+sgs.ai_carduse_intention["LijianCard"]=function(card,from,to,source, different)
 --        from:getRoom():output("a LijianCard")
         if not sgs.ai_lijian_effect then
             sgs.ai_lijian_effect=true
-            return sgs.ai_card_intention.general(to,70)
+			local intension_value = -70
+			if different then intension_value = 70 end
+			
+            return sgs.ai_card_intention.general(to, intension_value)
         else
             sgs.ai_lijian_effect=false
             return 0
@@ -207,6 +210,12 @@ sgs.ai_carduse_intention["HaoshiCard"]=function(card,from,to,source)
         return sgs.ai_card_intention.general(to,-80)
 end
 
+sgs.ai_carduse_intention["DimengCard"]=function(card,from,to,source, different)
+		local intension_value = -70
+		if different then intension_value = 70 end
+        return sgs.ai_card_intention.general(to,intension_value)
+end
+
 sgs.ai_carduse_intention["FanjianCard"]=function(card,from,to,source)
         return sgs.ai_card_intention.general(to,70)
 end
@@ -215,9 +224,12 @@ sgs.ai_carduse_intention["TianyiCard"]=function(card,from,to,source)
         return sgs.ai_card_intention.general(to,70)
 end
 
-sgs.ai_carduse_intention["QuhuCard"]=function(card,from,to,source)
+sgs.ai_carduse_intention["QuhuCard"]=function(card,from,to,source, different)
 		speakTrigger(card,from,to)
-        return sgs.ai_card_intention.general(to, 70)
+		
+		local intension_value = -70 
+		if different then intension_value = 70 end
+        return sgs.ai_card_intention.general(to, intension_value)
 end
 
 sgs.ai_carduse_intention["JujianCard"]=function(card,from,to,source)
@@ -253,8 +265,10 @@ sgs.ai_card_intention["ZhijianCard"]=function(card,from,to,source)
         return sgs.ai_card_intention.general(to,-80)
 end
 
-sgs.ai_card_intention["JixiCard"]=function(card,from,to,source)
-        return sgs.ai_card_intention.general(to,80)
+sgs.ai_card_intention["JixiCard"]=function(card,from,to,source, different)
+		local intension_value = -80
+		if different then intension_value = 80 end
+        return sgs.ai_card_intention.general(to, intension_value)
 end
 
 sgs.ai_explicit={}
