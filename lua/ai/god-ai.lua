@@ -207,7 +207,13 @@ sgs.ai_skill_use_func["ShenfenCard"]=function(card,use,self)
 end
 
 --qinyin
-sgs.ai_skill_invoke.qinyin = true
+sgs.ai_skill_invoke.qinyin = function(self, data)
+	for _,friend in ipairs(self.friends) do
+		if friend:isWounded() then return true end
+	end
+	if sgs.ai_skill_invoke.qinyin(self,"up+down")=="down" then return true end
+	return false
+end
 
 sgs.ai_skill_choice.qinyin = function(self, choices)
 	self:sort(self.friends, "hp")

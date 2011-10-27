@@ -277,7 +277,8 @@ jixi_skill.getTurnUseCard = function(self)
 
 	if self.player:getPile("field"):isEmpty()
 		or #targets == 0
-		or self.player:getHandcardNum()>=self.player:getHp() then
+		or (self.player:getHandcardNum()>=self.player:getHp() and
+		self.player:getPile("field"):length()<= self.room:getAlivePlayers():length()/2) then
 		return
 	end
 	return sgs.Card_Parse("@JixiCard=.")
