@@ -973,6 +973,9 @@ public:
         if(!huashen_skill.isEmpty())
             room->detachSkillFromPlayer(zuoci, huashen_skill);
 
+        if(zuoci->tag["Huashens"].toList().isEmpty()){
+            AcquireGenerals(zuoci, 1);
+        }
         QVariantList huashens = zuoci->tag["Huashens"].toList();
         QStringList huashen_generals;
         foreach(QVariant huashen, huashens)
