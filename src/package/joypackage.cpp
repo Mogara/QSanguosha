@@ -19,8 +19,18 @@ void Shit::onMove(const CardMoveStruct &move) const{
        && move.to == NULL
        && from->isAlive()){
 
-        if(getSuit() == Spade){
-            from->getRoom()->loseHp(from);
+        LogMessage log;
+        log.card_str = getEffectIdString();
+        log.from = from;
+
+        Room *room = from->getRoom();
+
+        if(getSuit() == Spade){            
+            log.type = "$ShitLostHp";
+            room->sendLog(log);
+
+            room->loseHp(from);
+
             return;
         }
 
@@ -35,7 +45,10 @@ void Shit::onMove(const CardMoveStruct &move) const{
             damage.nature = DamageStruct::Normal;
         }
 
-        from->getRoom()->damage(damage);
+        log.type = "$ShitDamage";
+        room->sendLog(log);
+
+        room->damage(damage);
     }
 }
 
