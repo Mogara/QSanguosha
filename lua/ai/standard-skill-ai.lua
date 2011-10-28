@@ -499,7 +499,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		return
 	end
 	
-	if (self.player:getHandcardNum()>self.player:getHp()) or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2 and not self.player:isKongcheng()) then 
+	if self:getOverflow()>0 or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2 and not self.player:isKongcheng()) then 
 		if #self.friends_noself == 0 then return end
 		
 		self:sort(self.friends_noself, "handcard")

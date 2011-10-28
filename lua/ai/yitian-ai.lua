@@ -113,10 +113,7 @@ sgs.ai_skill_invoke["yitian-lost"] = function(self, data)
 	end
 end
 
-sgs.ai_skill_playerchosen["yitian_lost"] = function(self, targets)
-	self:sort(self.enemies, "hp")
-	return self.enemies[1]
-end
+sgs.ai_skill_playerchosen["yitian_lost"] = sgs.ai_skill_playerchosen.damage
 
 sgs.ai_skill_invoke["yitian_sword"] = function(self, targets)
 	local slash=self:getCard("Slash")

@@ -5,11 +5,7 @@ end
 
 -- Sunjian's AI
 sgs.ai_skill_choice.yinghun = function(self, choices)
-	if self:isFriend(self.yinghun) then
-		return "dxt1"
-	else
-		return "d1tx"
-	end
+	return self.yinghunchoice
 end
 
 sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
@@ -19,11 +15,25 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 	end
 
 	if #self.friends > 1 then
+		for _, friend in ipairs(self.friends_noself) do
+			if self:hasSkills(sgs.lose_equip_skill, friend) and friend:getEquips():length()>x/2 then
+				self.yinghun = friend
+				self.yinghunchoice = "d1tx"
+				break
+			end
+		end
 		self:sort(self.friends, "chaofeng")
 		self.yinghun = self.friends_noself[1]
+		self.yinghunchoice = "dxt1"
 	else
 		self:sort(self.enemies, "chaofeng")
-		self.yinghun = self.enemies[1]
+		for _, enemy in ipairs(self.enemies) do
+			if not self:hasSkills(sgs.lose_equip_skill, enemy) or enemy:getEquips():length()<x/2 then
+				self.yinghun = enemy
+				self.yinghunchoice = "d1tx"
+				break
+			end
+		end
 	end
 
 	if self.yinghun then
