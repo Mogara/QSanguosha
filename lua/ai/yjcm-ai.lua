@@ -228,11 +228,7 @@ end
 sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 	local abandon_handcard = {}
 	local index = 0
-	local hasPeach=false
-	local find_peach = self.player:getCards("h")
-	for _, ispeach in sgs.qlist(find_peach) do
-		if ispeach:inherits("Peach") then hasPeach=true break end
-	end
+	local hasPeach = (self:getCardsNum("Peach") > 0)
 
 	local trick_num, basic_num, equip_num = 0, 0, 0
 	if not hasPeach and self.player:isWounded() and self.player:getHandcardNum() >=3 then
@@ -266,41 +262,47 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 			use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(abandon_handcard, "+"))
 			return
 		end
-	else
-		local cards = self.player:getHandcards()
-		cards=sgs.QList2Table(cards)
-		self:sortByUseValue(cards, true)
-		local slash_num = self:getCardsNum("Slash")
-		local jink_num = self:getCardsNum("Jink")
-		for _, friend in ipairs(self.friends_noself) do
-			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
-				for _, card in ipairs(cards) do
-					if #abandon_handcard == 3 then break end
-					if not card:inherits("Nullification") and not card:inherits("EquipCard") and
-						not card:inherits("Peach") and not card:inherits("Jink") and
-						not card:inherits("Indulgence") and not card:inherits("SupplyShortage") then
+	end
+	local cards = self.player:getHandcards()
+	cards=sgs.QList2Table(cards)
+	self:sortByUseValue(cards, true)
+	local slash_num = self:getCardsNum("Slash")
+	local jink_num = self:getCardsNum("Jink")
+	for _, friend in ipairs(self.friends_noself) do
+		if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
+			for _, card in ipairs(cards) do
+				if #abandon_handcard == 3 then break end
+				if not card:inherits("Nullification") and not card:inherits("EquipCard") and
+					not card:inherits("Peach") and not card:inherits("Jink") and
+					not card:inherits("Indulgence") and not card:inherits("SupplyShortage") then
+					table.insert(abandon_handcard, card:getId())
+					index = 5
+				elseif card:inherits("Slash") and slash_num > 1 then
+					if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="crossbow") or
+						not self.player:getWeapon() then
 						table.insert(abandon_handcard, card:getId())
 						index = 5
-					elseif card:inherits("Slash") and slash_num > 1 then
-						if (self.player:getWeapon() and not self.player:getWeapon():objectName()=="crossbow") or
-							not self.player:getWeapon() then
-							table.insert(abandon_handcard, card:getId())
-							index = 5
-							slash_num = slash_num - 1
-						end
-					elseif card:inherits("Jink") and jink_num > 1 then
-						table.insert(abandon_handcard, card:getId())
-						index = 5
-						jink_num = jink_num - 1
+						slash_num = slash_num - 1
 					end
-				end
-				if index == 5 then
-					use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(abandon_handcard, "+"))
-					if use.to then use.to:append(friend) end
-					return
+				elseif card:inherits("Jink") and jink_num > 1 then
+					table.insert(abandon_handcard, card:getId())
+					index = 5
+					jink_num = jink_num - 1
 				end
 			end
+			if index == 5 then
+				use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(abandon_handcard, "+"))
+				if use.to then use.to:append(friend) end
+				return
+			end
 		end
+	end
+	if #self.friends_noself>0 and self:getOverflow()>0 then
+		self:sort(self.friends_noself, "handcard")
+		local discard = self:askForDiscard("gamerule", self:getOverflow())
+		use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(discard, "+"))
+		if use.to then use.to:append(self.friends_noself[1]) end
+		return
 	end
 end
 

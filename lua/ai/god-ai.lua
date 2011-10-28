@@ -211,7 +211,7 @@ sgs.ai_skill_invoke.qinyin = function(self, data)
 	for _,friend in ipairs(self.friends) do
 		if friend:isWounded() then return true end
 	end
-	if sgs.ai_skill_invoke.qinyin(self,"up+down")=="down" then return true end
+	if sgs.ai_skill_choice.qinyin(self,"up+down")=="down" then return true end
 	return false
 end
 
@@ -227,7 +227,7 @@ end
 
 --yeyan
 local yeyan_skill={}
-yeyan_skill.name = "yeyan"
+yeyan_skill.name = "smallyeyan"
 table.insert(sgs.ai_skills, yeyan_skill)
 yeyan_skill.getTurnUseCard=function(self)
 	if self.player:getMark("@flame") == 0 then return end
@@ -259,18 +259,50 @@ yeyan_skill.getTurnUseCard=function(self)
 		end
 	end
 
-	if self.player:getHp() + self:getCardsNum("Peach") + self:getCardsNum("Analeptic") <= 1 then
+	self.yeyanchained = false
+	if self.player:getHp() + self:getCardsNum("Peach") + self:getCardsNum("Analeptic") <= 2 then
 		return sgs.Card_Parse("@SmallYeyanCard=.")
 	end
+	local target_num = 0
+	local chained = 0
+	for _, enemy in ipairs(self.enemies) do
+		if self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getHp()<=1 then 
+			target_num = target_num + 1
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:isChained() then 
+			if chained == 0 then target_num = target_num +1 end
+			chained = chained + 1
+		end
+	end
+	self.yeyanchained = (chained > 1)
+	if target_num > 2 or (target_num > 1 and self.yeyanchained) or #self.friends_noself == 0 then return sgs.Card_Parse("@SmallYeyanCard=.") end
 end
 
 sgs.ai_skill_use_func["SmallYeyanCard"]=function(card,use,self)
 	local num = 0
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if use.to then use.to:append(enemy) end
-		num = num + 1
+		if num >=3 then break end
+		if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then
+			if use.to then use.to:append(enemy) end
+			num = num + 1
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if num >=3 then break end
+		if self.yeyanchained and enemy:isChained() and not (self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy)) then
+			if use.to then use.to:append(enemy) end
+			num = num + 1
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
 		if num >= 3 then break end
+		if not ((self.yeyanchained and enemy:isChained()) or (self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy))) then
+			if use.to then use.to:append(enemy) end
+			num = num + 1
+		end
 	end
 	use.card = card
 end

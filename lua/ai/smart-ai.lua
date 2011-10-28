@@ -810,7 +810,7 @@ sgs.ai_skill_use["slash"] = function(self, prompt)
 	if not slash then return "." end
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
-			return ("%d- > %s"):format(slash:getId(), enemy:objectName())
+			return ("%d->%s"):format(slash:getId(), enemy:objectName())
 		end
 	end
 	return "."
@@ -1715,7 +1715,10 @@ sgs.weapon_range  =
 	IceSword = 2,
 	Fan = 4,
 	MoonSpear = 3,
-	GudingBlade = 2,	
+	GudingBlade = 2,
+	YitianSword = 2,
+	SPMoonSpear = 3,
+	YxSword = 3
 }
 
 function SmartAI:evaluateEquip(card)
@@ -1767,7 +1770,8 @@ function SmartAI:useEquipCard(card, use)
 	end	
 	if self:hasSameEquip(card) and
 		((self.player:hasSkill("rende") and self:getOverflow() > 0) or self.player:hasSkill("qingnang")
-		or (self.player:hasSkill("yongsi") and self:getOverflow() < 3)) then return end
+		or (self.player:hasSkill("yongsi") and self:getOverflow() < 3)
+		or (self.player:hasSkill("qixi") and card:isBlack())) then return end
 	if card:inherits("Weapon") then
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
@@ -1949,7 +1953,11 @@ function SmartAI:getUseValue(card)
 	end
 	
 	if card:getTypeId() == sgs.Card_Equip then 
-		if self:hasEquip(card) then return 9 end
+		if self:hasEquip(card) then
+			if card:inherits("OffensiveHorse") and self.player:getAttackRange()>2 then return 5.5 end
+			if card:inherits("DefensiveHorse") and self:isEquip("EightDiagram") then return 5.5 end
+			return 9
+		end
 		if not self:hasSameEquip(card) then v = 6.7 end
 		if self.weaponUsed and card:inherits("Weapon") then v = 2 end
 		if self.player:hasSkill("qiangxi") and card:inherits("Weapon") then v = 2 end
@@ -2255,7 +2263,7 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local offensive_horse = self.player:getOffensiveHorse()
 	local defensive_horse = self.player:getDefensiveHorse()
 	
-	if include_equip and weapon:inherits("YitianSword") then
+	if include_equip and weapon and weapon:inherits("YitianSword") then
 		table.insert(to_discard, weapon:getId())
 		weapon = nil
 	end
