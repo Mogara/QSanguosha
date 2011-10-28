@@ -269,8 +269,8 @@ jixi_skill.getTurnUseCard = function(self)
 		self.player:getPile("field"):length()<= self.room:getAlivePlayers():length()/2) then
 		return
 	end
-	local snatch=self.player:getPile("field"):first()
-	snatch=sgs.Sanguosha:cloneCard("Snatch", snatch:getSuit(), snatch:getNumber())
+	local snatch=sgs.Sanguosha:getCard(self.player:getPile("field"):first())
+	snatch=sgs.Sanguosha:cloneCard("snatch", snatch:getSuit(), snatch:getNumber())
 	local use={isDummy=true}
 	self:useCardSnatch(snatch,use)
 	if use.card then return sgs.Card_Parse("@JixiCard=.") end
@@ -281,18 +281,27 @@ sgs.ai_skill_use_func["JixiCard"] = function(card, use, self)
 end
 
 sgs.ai_skill_playerchosen.jixi = function(self, targets)
-	local snatch=sgs.Sanguosha:getCard(self.jixi)
-	snatch=sgs.Sanguosha:cloneCard("Snatch", snatch:getSuit(), snatch:getNumber())
-	local use={isDummy=true}
-	self:useCardSnatch(snatch,use)
-	if use.card then return use.to end
-	local targetlist=sgs.QList2Table(targets)
-	self:sort(targetlist,"defense")
-	return targetlist[1]
+	local snatch = sgs.Sanguosha:getCard(self.jixi)
+	snatch = sgs.Sanguosha:cloneCard("snatch", snatch:getSuit(), snatch:getNumber())
+	local choices = {}
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and not target:getCards("he"):isEmpty()
+			and self:hasTrickEffective(snatch, target) then
+			table.insert(choices, target)
+		elseif self:isFriend(target) and not target:getCards("j"):isEmpty()
+			and self:hasTrickEffective(snatch, target) then
+			table.insert(choices, target)
+		end
+	end
+
+	if #choices == 0 then return targets:at(0) end
+
+	self:sort(choices, "hp")
+	return choices[1]
 end
 
 sgs.ai_skill_askforag.jixi = function(self, card_ids)
-	self.jixi=card_ids:at(math.random(0,card_ids:length()-1))
+	self.jixi=card_ids[math.random(1,#card_ids)]
 	return self.jixi
 end
 

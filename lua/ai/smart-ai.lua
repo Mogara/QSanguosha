@@ -2250,19 +2250,29 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	
 	local to_discard = {}
 	
+	local weapon = self.player:getWeapon()
+	local armor = self.player:getArmor()
+	local offensive_horse = self.player:getOffensiveHorse()
+	local defensive_horse = self.player:getDefensiveHorse()
+	
+	if include_equip and weapon:inherits("YitianSword") then
+		table.insert(to_discard, weapon:getId())
+		weapon = nil
+	end
+	
 	if include_equip and self:hasSkills(sgs.lose_equip_skill) then
 		local weapon = self.player:getWeapon()
 		local armor = self.player:getArmor()
 		local offensive_horse = self.player:getOffensiveHorse()
 		local defensive_horse = self.player:getDefensiveHorse()
 		if #to_discard < discard_num and armor then
-			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId())
-			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) end
+			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
+			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
 		end
-		if #to_discard < discard_num and offensive_horse then table.insert(to_discard, offensive_horse:getId()) end
-		if #to_discard < discard_num and weapon then table.insert(to_discard, weapon:getId()) end
-		if #to_discard < discard_num and defensive_horse then table.insert(to_discard, defensive_horse:getId()) end
-		if #to_discard < discard_num and armor then table.insert(to_discard, armor:getId()) end
+		if #to_discard < discard_num and offensive_horse then table.insert(to_discard, offensive_horse:getId()) offensive_horse = nil end
+		if #to_discard < discard_num and weapon then table.insert(to_discard, weapon:getId()) weapon = nil end
+		if #to_discard < discard_num and defensive_horse then table.insert(to_discard, defensive_horse:getId()) defensive_horse = nil end
+		if #to_discard < discard_num and armor then table.insert(to_discard, armor:getId()) armor = nil end
 	end
 	
 	for _, card in ipairs(cards) do
@@ -2273,13 +2283,9 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	end
 	
 	if include_equip then
-		local weapon = self.player:getWeapon()
-		local armor = self.player:getArmor()
-		local offensive_horse = self.player:getOffensiveHorse()
-		local defensive_horse = self.player:getDefensiveHorse()
 		if #to_discard < discard_num and armor then
-			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId())
-			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) end
+			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
+			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
 		end
 		if #to_discard < discard_num and offensive_horse then table.insert(to_discard, offensive_horse:getId()) end
 		if #to_discard < discard_num and weapon then table.insert(to_discard, weapon:getId()) end
