@@ -926,10 +926,6 @@ local function getSkillViewCard(card, class_name, player, card_place)
 			if player:hasSkill("jiuchi") and card:getSuit() == sgs.Card_Spade then 
 				return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
 			end
-			if player:hasSkill("jiushi") and player:faceUp() then 
-				player:turnOver()
-				return ("analeptic:jiushi[%s:%s]=%s"):format("no_suit", "-", ".")
-			end
 		end
 	elseif class_name == "Nullification" then
 		if card_place ~= sgs.Player_Equip then
@@ -986,6 +982,9 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 			if card_str then return sgs.Card_Parse(card_str) end
 		end
     end
+	if self.player:hasSkill("jiushi") and self.player:faceUp() and self.player:getPhase()==sgs.Player_Play then
+		return sgs.Card_Parse("analeptic:jiushi[no_suit:0]=.")
+	end
 end
 
 function SmartAI:slashProhibit(card,enemy)
