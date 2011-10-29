@@ -982,7 +982,7 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 			if card_str then return sgs.Card_Parse(card_str) end
 		end
     end
-	if self.player:hasSkill("jiushi") and self.player:faceUp() and self.player:getPhase()==sgs.Player_Play then
+	if self.player:hasSkill("jiushi") and self.player:faceUp() then
 		return sgs.Card_Parse("analeptic:jiushi[no_suit:0]=.")
 	end
 end
