@@ -59,6 +59,43 @@ bool PindianStruct::isSuccess() const{
     return from_card->getNumber() > to_card->getNumber();
 }
 
+JudgeStructPattern::JudgeStructPattern(){
+}
+
+bool JudgeStructPattern::match(const Player *player, const Card *card) const{
+    if(pattern.isEmpty())
+        return false;
+
+    if(isRegex){
+        QString class_name = card->metaObject()->className();
+        Card::Suit suit = card->getSuit();
+        if(player->hasSkill("hongyan") && suit == Card::Spade)
+            suit = Card::Heart;
+
+        QString number = card->getNumberString();
+        QString card_str = QString("%1:%2:%3").arg(class_name).arg(Card::Suit2String(suit)).arg(number);
+
+        return QRegExp(pattern).exactMatch(card_str);
+    }else{
+        const CardPattern *card_pattern = Sanguosha->getPattern(pattern);
+        return card_pattern && card_pattern->match(player, card);
+    }
+}
+
+JudgeStructPattern &JudgeStructPattern::operator =(const QRegExp &rx){
+    pattern = rx.pattern();
+    isRegex = true;
+
+    return *this;
+}
+
+JudgeStructPattern &JudgeStructPattern::operator =(const QString &str){
+    pattern = str;
+    isRegex = false;
+
+    return *this;
+}
+
 JudgeStruct::JudgeStruct()
     :who(NULL), card(NULL), good(true)
 {
@@ -69,18 +106,10 @@ bool JudgeStruct::isGood(const Card *card) const{
     if(card == NULL)
         card = this->card;
 
-    QString class_name = card->metaObject()->className();
-    Card::Suit suit = card->getSuit();
-    if(who->hasSkill("hongyan") && suit == Card::Spade)
-        suit = Card::Heart;
-
-    QString number = card->getNumberString();
-    QString card_str = QString("%1:%2:%3").arg(class_name).arg(Card::Suit2String(suit)).arg(number);
-
     if(good)
-        return pattern.exactMatch(card_str);
+        return pattern.match(who, card);
     else
-        return !pattern.exactMatch(card_str);
+        return !pattern.match(who, card);
 }
 
 bool JudgeStruct::isBad() const{
