@@ -286,3 +286,11 @@ sgs.ai_skill_use_func["YisheAskCard"]=function(card,use,self)
 		use.card = card
 	end
 end
+
+
+sgs.ai_skill_invoke.gongmou = true
+
+sgs.ai_skill_playerchosen.gongmou = function(self,choices)
+	self:sort(self.enemies,"defense")
+	return self.enemies[1]
+end
