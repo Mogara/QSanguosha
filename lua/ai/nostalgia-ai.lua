@@ -8,6 +8,21 @@ sgs.ai_skill_invoke.danlao = function(self, data)
 	end
 end
 
+sgs.ai_skill_invoke.jilei = function(self, data)
+	local damage = data:toDamage()
+	if not damage then return false end
+	self.jilei_source = damage.from
+	return self:isEnemy(damage.from)
+end	
+
+sgs.ai_skill_choice.jilei = function(self, choices)
+	if (self.jilei_source:hasSkill("paoxiao") or self:isEquip("Crossbow",self.jilei_source)) and self.jilei_source:inMyAttackRange(self.player) then
+		return "basic"
+	else
+		return "trick"
+	end
+end
+	
 --tianxiang
 sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local friend_lost_hp = 10

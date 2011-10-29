@@ -2262,16 +2262,20 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local offensive_horse = self.player:getOffensiveHorse()
 	local defensive_horse = self.player:getDefensiveHorse()
 	
+	if reason == "gongmou" then
+		for _, card in ipairs(cards) do
+			if #to_discard >= discard_num then break end
+			if card:inherits("Shit") then table.insert(to_discard, card:getId()) end
+		end
+	end
+	
 	if include_equip and weapon and weapon:inherits("YitianSword") then
 		table.insert(to_discard, weapon:getId())
 		weapon = nil
 	end
 	
-	if include_equip and self:hasSkills(sgs.lose_equip_skill) then
-		local weapon = self.player:getWeapon()
-		local armor = self.player:getArmor()
-		local offensive_horse = self.player:getOffensiveHorse()
-		local defensive_horse = self.player:getDefensiveHorse()
+	if include_equip and self:hasSkills(sgs.lose_equip_skill) and
+		not (not self.player:getCards("e"):isEmpty() and self.player:isJilei(self.player:getCards("e"):first())) then
 		if #to_discard < discard_num and armor then
 			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
 			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
@@ -2284,12 +2288,13 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	
 	for _, card in ipairs(cards) do
 		if #to_discard >= discard_num then break end
-		if not self.player:isJilei(card) then
+		if not self.player:isJilei(card) or reason == "gongmou" then
 			table.insert(to_discard, card:getEffectiveId())
 		end
 	end
 	
-	if include_equip then
+	if include_equip and
+		not (not self.player:getCards("e"):isEmpty() and self.player:isJilei(self.player:getCards("e"):first())) then
 		if #to_discard < discard_num and armor then
 			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
 			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
