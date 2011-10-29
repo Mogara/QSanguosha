@@ -264,7 +264,6 @@ jixi_skill.name="jixi"
 table.insert(sgs.ai_skills, jixi_skill)
 jixi_skill.getTurnUseCard = function(self)
 	if self.player:getPile("field"):isEmpty()
-		or #targets == 0
 		or (self.player:getHandcardNum()>=self.player:getHp() and
 		self.player:getPile("field"):length()<= self.room:getAlivePlayers():length()/2) then
 		return
