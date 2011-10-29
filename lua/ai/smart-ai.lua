@@ -2870,6 +2870,8 @@ function SmartAI:askForSinglePeach(dying)
 				elseif self:canViewAs(card, "Analeptic") then
 					card_str = getSkillViewCard(card, "Analeptic", self.player, self.room:getCardPlace(card:getEffectiveId()))
 					if card_str then return sgs.Card_Parse(card_str) end
+				elseif self:hasSkill("jiushi") and self.player:faceUp() then
+					return sgs.Card_Parse("analeptic:jiushi[no_suit,0]=.")
 				end
 			end
 			
