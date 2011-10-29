@@ -7,7 +7,7 @@ return {
 	[":shit"] = "当此牌在<font color='red'><b>你的回合</b></font>内从你的<font color='red'>手牌</font>进入<font color='red'>弃牌堆</font>时，\
 	你将受到自己对自己的1点伤害（黑桃为流失1点体力），其中方块为无属性伤害、梅花为雷电伤害、红桃为火焰伤害\
 	造成伤害的牌为此牌，在你的回合内，你可多次食用", 
-	["$ShitLoseHp"] = "%from 吃了 %card, 将流失1点体力",
+	["$ShitLostHp"] = "%from 吃了 %card, 将流失1点体力",
 	["$ShitDamage"] = "%from 吃了 %card, 将受到自己对自己的1点伤害",
 	
 -- disaster
