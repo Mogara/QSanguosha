@@ -263,6 +263,7 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 			return
 		end
 	end
+	abandon_handcard = {}
 	local cards = self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
@@ -271,7 +272,7 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 	for _, friend in ipairs(self.friends_noself) do
 		if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) or self.player:isWounded() then
 			for _, card in ipairs(cards) do
-				if #abandon_handcard == 3 then break end
+				if #abandon_handcard >= 3 then break end
 				if not card:inherits("Nullification") and not card:inherits("EquipCard") and
 					not card:inherits("Peach") and not card:inherits("Jink") and
 					not card:inherits("Indulgence") and not card:inherits("SupplyShortage") then
@@ -299,7 +300,7 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 	end
 	if #self.friends_noself>0 and self:getOverflow()>0 then
 		self:sort(self.friends_noself, "handcard")
-		local discard = self:askForDiscard("gamerule", self:getOverflow())
+		local discard = self:askForDiscard("gamerule", math.min(self:getOverflow(),3))
 		use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(discard, "+"))
 		if use.to then use.to:append(self.friends_noself[1]) end
 		return
