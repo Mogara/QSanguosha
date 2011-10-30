@@ -876,7 +876,7 @@ end
 
 local function zeroCardView(class_name, player)
 	if class_name == "Analeptic" then
-		if player:hasSkill("jiushi") and self.player:faceUp() then
+		if player:hasSkill("jiushi") and player:faceUp() then
 			return ("analeptic:jiushi[no_suit:0]=.")
 		end
 	end
