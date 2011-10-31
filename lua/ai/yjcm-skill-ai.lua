@@ -52,6 +52,9 @@ end
 
 sgs.ai_skill_use_func["XianzhenSlashCard"]=function(card,use,self)
 	local target = self.player:getTag("XianzhenTarget"):toPlayer()
+	if target:hasSkill("yizhong") and not target:getArmor() then
+		if self:askForCard("slash", "@xianzhen-slash") == "." then return end
+	end
 	if self:getCard("Slash") and not target:isDead() and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
 		use.card=card
 	end

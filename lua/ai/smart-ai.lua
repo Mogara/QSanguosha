@@ -2702,6 +2702,15 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
+		elseif parsedPrompt[1] == "@xianzhen-slash" then
+			local target = self.player:getTag("XianzhenTarget"):toPlayer()
+			if target:hasSkill("yizhong") and not target:getArmor() then
+				local slashes = self:getCards("Slash", self.player, "h")
+				for _, slash in ipairs(slashes) do
+					if not slash:isBlack() then return slash:getEffectiveId() end
+				end
+				return "."
+			end
 		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
