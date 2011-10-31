@@ -827,7 +827,7 @@ function SmartAI:slashIsEffective(slash, to)
 		return false
 	end
 
-	if self.player:hasWeapon("qinggang_sword") then
+	if self.player:hasWeapon("qinggang_sword") or (self.player:hasFlag("xianzhen_success") and self.room:getTag("XianzhenTarget"):toPlayer() == to) then
 		return true
 	end
 
@@ -2702,6 +2702,13 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
+		elseif parsedPrompt[1] == "@xianzhen-slash" then
+			local target = self.player:getTag("XianzhenTarget"):toPlayer()
+			local slashes = self:getCards("Slash")
+			for _, slash in ipairs(slashes) do
+				if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
+			end
+			return "."
 		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
@@ -3273,7 +3280,7 @@ function getCards(class_name, player, room, flag)
 			cards_str = isCompulsoryView(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
 			table.insert(cards, card_str)
-		elseif card:inherits(class_name) then table.insert(cards, card) 
+		elseif card:inherits(class_name) and not prohibitUseDirectly(card, player) then table.insert(cards, card) 
 		elseif getSkillViewCard(card, class_name, player, card_place) then
 			cards_str = getSkillViewCard(card, class_name, player, card_place)
 			card_str = sgs.Card_Parse(card_str)
