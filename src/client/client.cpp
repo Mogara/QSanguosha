@@ -1069,6 +1069,8 @@ void Client::warn(const QString &reason){
         msg = tr("Your password is wrong");
     else if(reason == "INVALID_FORMAT")
         msg = tr("Invalid signup string");
+    else if(reason == "LEVEL_LIMITATION")
+        msg = tr("Your level is not enough");
     else
         msg = tr("Unknown warning: %1").arg(reason);
 
