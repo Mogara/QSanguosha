@@ -827,7 +827,7 @@ function SmartAI:slashIsEffective(slash, to)
 		return false
 	end
 
-	if self.player:hasWeapon("qinggang_sword") then
+	if self.player:hasWeapon("qinggang_sword") or self.player:hasFlag("xianzhen_success") then
 		return true
 	end
 
@@ -2704,13 +2704,11 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
 		elseif parsedPrompt[1] == "@xianzhen-slash" then
 			local target = self.player:getTag("XianzhenTarget"):toPlayer()
-			if target:hasSkill("yizhong") and not target:getArmor() then
-				local slashes = self:getCards("Slash", self.player, "h")
-				for _, slash in ipairs(slashes) do
-					if not slash:isBlack() then return slash:getEffectiveId() end
-				end
-				return "."
+			local slashes = self:getCards("Slash", self.player, "h")
+			for _, slash in ipairs(slashes) do
+				if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
 			end
+			return "."
 		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then

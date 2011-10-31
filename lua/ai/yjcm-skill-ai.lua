@@ -37,12 +37,9 @@ xianzhen_skill.getTurnUseCard=function(self)
 			self:useBasicCard(slash,dummy_use,no_distance)
 
 			if dummy_use.card then
-
-
 				local card_id = max_card:getEffectiveId()
 				local card_str = "@XianzhenCard=" .. card_id
 				local card = sgs.Card_Parse(card_str)
-
 				return card
 			end
 		end
@@ -52,9 +49,8 @@ end
 
 sgs.ai_skill_use_func["XianzhenSlashCard"]=function(card,use,self)
 	local target = self.player:getTag("XianzhenTarget"):toPlayer()
-	if target:hasSkill("yizhong") and not target:getArmor() then
-		if self:askForCard("slash", "@xianzhen-slash") == "." then return end
-	end
+	if self:askForCard("slash", "@xianzhen-slash") == "." then return end
+	
 	if self:getCard("Slash") and not target:isDead() and not (target:hasSkill("kongcheng") and target:isKongcheng()) then
 		use.card=card
 	end
