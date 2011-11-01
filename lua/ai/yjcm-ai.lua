@@ -100,7 +100,7 @@ sgs.ai_skill_use_func["XuanhuoCard"] = function(card, use, self)
 	self:sortByUseValue(cards,true)
 
 	local target
-	for _, friend in ipairs(self.friends) do
+	for _, friend in ipairs(self.friends_noself) do
 		if self:hasSkills(sgs.lose_equip_skill, friend) then
 			for _, card in ipairs(cards) do
 				if card:getSuit() == sgs.Card_Heart and self.player:getHandcardNum() > 1 then
