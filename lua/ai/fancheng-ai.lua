@@ -101,7 +101,7 @@ sgs.ai_skill_use_func["FloodCard"]=function(card,use,self)
 	local players=self.room:getOtherPlayers(self.player)
 	for _,player in sgs.qlist(players) do
 		if player:getRole()=="rebel" then
-			eqs=eqs+self:getEquipNumber(player)
+                        eqs=eqs+self.player:getEquips():length()
 			if (player:getHandcardNum()<=2) or (player:getHp()<2) then
 				eqs=eqs+2
 			end
@@ -132,7 +132,7 @@ sgs.ai_skill_invoke.xiansheng=function(self)
 		end
 	end
 
-	if rebel*2+3>(self:getEquipNumber()*2+self.player:getHandcardNum()) then return true end
+        if rebel*2+3>(self.player:getEquips():length()*2+self.player:getHandcardNum()) then return true end
 	if self.player:getHp()==1 and self.player:getHandcardNum()<=1 then return true end
 	return false
 end
