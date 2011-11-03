@@ -3335,6 +3335,16 @@ function SmartAI:getCardsNum(class_name, player, flag)
 	return n
 end
 
+function SmartAI:cardProhibit(card, to)
+	if card:inherits("Slash") then return self:slashProhibit(card, to) end
+	if card:getTypeId() == sgs.Card_Trick then 
+		if card:isBlack() and to:hasSkill("weimu") then return true end
+		if card:inherits("Indulgence") or card:inherits("Snatch") and to:hasSkill("qianxun") then return true end
+		if card:inherits("kongcheng") and to:hasSkill("kongcheng") and to:isKongcheng() then return true end
+	end
+	return false
+end
+
 -- load other ai scripts
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard-skill-ai.lua"

@@ -7,9 +7,9 @@ local function card_for_qiaobian(self, who, return_prompt)
 			for _, judge in sgs.qlist(judges) do
 				card = judge
 
-				if card and return_prompt:match("target") then
+				if return_prompt:match("target") then
 					for _, enemy in ipairs(self.enemies) do
-						if enemy:getCards("j"):isEmpty() or not enemy:containsTrick(card:objectName()) then target = enemy break end
+						if not enemy:containsTrick(card:objectName()) and not self:cardProhibit(card, enemy) then target = enemy break end
 					end
 				end
 				if target then break end
