@@ -175,7 +175,7 @@ public:
             if(!room->askForSkillInvoke(jiangwei, objectName(), data))
                 return false;
             room->throwCard(card);
-            room->askForUseCard(jiangwei, "slash", "@yicai");
+            room->askForUseCard(jiangwei, "slash", "@askforslash");
         }
         return false;
     }
@@ -586,7 +586,7 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if(effect.card->inherits("Slash") && effect.card->isBlack()){
             if(room->askForSkillInvoke(hua, objectName(), data)){
-                room->askForUseCard(hua, "slash", "@badao");
+                room->askForUseCard(hua, "slash", "@askforslash");
             }
         }
         return false;

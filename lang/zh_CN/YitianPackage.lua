@@ -8,7 +8,6 @@ return {
 	["yitian_cards"] = "倚天卡牌包",
 	["yitian_sword"] = "倚天剑",
 	["yitian-lost"] = "倚天剑",
-	["yitian-slash"] = "请使用一张【杀】",
 	["jilei:basic"] = "基本牌", 
 	["jilei:equip"] = "装备牌", 
 	["jilei:trick"] = "锦囊牌", 

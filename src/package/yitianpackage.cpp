@@ -17,7 +17,7 @@ public:
            return false;
 
         if(player->askForSkillInvoke("yitian_sword"))
-            player->getRoom()->askForUseCard(player, "slash", "yitian-slash");
+            player->getRoom()->askForUseCard(player, "slash", "@askforslash");
 
         return false;
     }
