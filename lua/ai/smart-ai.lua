@@ -804,9 +804,8 @@ end
 
 -- yicai,badao,yitian-slash,moon-spear-slash
 sgs.ai_skill_use["slash"] = function(self, prompt)
-	if prompt ~= "@yicai" and prompt ~= "@badao" and
-		prompt ~= "yitian-slash" and prompt ~= "@moon-spear-slash" then return "." end
-    local slash = self:getCard("Slash")
+	if prompt ~= "@askforslash" and prompt ~= "@moon-spear-slash" then return "." end
+	local slash = self:getCard("Slash")
 	if not slash then return "." end
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy, true) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
