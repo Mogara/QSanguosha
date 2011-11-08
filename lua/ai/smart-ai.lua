@@ -2613,6 +2613,17 @@ function SmartAI:askForCard(pattern, prompt, data)
 		elseif not self:isFriend(who) then return "."
 		end
 		return self:getCardId("Slash") or "."
+	elseif parsedPrompt[1] == "@weidai-analeptic" then
+		local who = data:toPlayer()
+		if self:isEnemy(who) then return "." end
+		local cards = self.player:getHandcards()
+		cards = sgs.QList2Table(cards)
+		for _, fcard in ipairs(cards) do
+			if fcard:getSuit() == sgs.Card_Spade and fcard:getNumber() > 1 and fcard:getNumber() < 10 then
+				return fcard:getEffectiveId()
+			end
+		end
+		return "."
 	end
 
 	if parsedPrompt[1] == "double-sword-card" then 

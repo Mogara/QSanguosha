@@ -94,17 +94,6 @@ end
 sgs.ai_skill_use["@@weidai"] = function(self, prompt)
 	return "@WeidaiCard=.->."
 end
-sgs.ai_skill_invoke[".S29"]=function(self, prompt, data)
-	if self:isEnemy(data:toPlayer()) or self.player:getKingdom() ~= "wu" then return "." end
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	for _, fcard in ipairs(cards) do
-		if fcard:getNumber() > 1 and fcard:getNumber() < 10 then
-			return fcard
-		end
-	end
-	return "."
-end
 
 -- fuzuo
 sgs.ai_skill_choice["fuzuo"] = function(self , choices)
