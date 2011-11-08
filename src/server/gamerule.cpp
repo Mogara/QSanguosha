@@ -425,17 +425,8 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             if(room->getMode() == "02_1v1"){
                 QStringList list = player->tag["1v1Arrange"].toStringList();
 
-                if(!list.isEmpty()){
-                    player->tag["1v1ChangeGeneral"] = list.takeFirst();
-                    player->tag["1v1Arrange"] = list;
-
-                    DamageStar damage = data.value<DamageStar>();
-
-                    if(damage == NULL)
-                        changeGeneral1v1(player);
-
+                if(!list.isEmpty())
                     return false;
-                }
             }
 
             QString winner = getWinner(player);
@@ -461,6 +452,21 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
             setGameProcess(room);
 
+            if(room->getMode() == "02_1v1"){
+                QStringList list = player->tag["1v1Arrange"].toStringList();
+
+                if(!list.isEmpty()){
+                    player->tag["1v1ChangeGeneral"] = list.takeFirst();
+                    player->tag["1v1Arrange"] = list;
+
+                    DamageStar damage = data.value<DamageStar>();
+
+                    if(damage == NULL){
+                        changeGeneral1v1(player);
+                        return false;
+                    }
+                }
+            }
 
             break;
         }
