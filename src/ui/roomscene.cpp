@@ -663,14 +663,14 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
         ugoku->setStartValue(DrawPilePos);
-        ugoku->setDuration(500);
-        ugoku->setEasingCurve(QEasingCurve::OutBounce);
+        ugoku->setDuration(1000);
+        ugoku->setEasingCurve(QEasingCurve::OutQuart);
         ugoku->setEndValue(photo->pos() + QPointF(20 *i, 0));
 
         QPropertyAnimation *kieru = new QPropertyAnimation(pixmap, "opacity");
-        kieru->setDuration(900);
-        kieru->setKeyValueAt(0.8, 1.0);
+        kieru->setKeyValueAt(0.4, 1.0);
         kieru->setEndValue(0.0);
+        kieru->setDuration(500);
 
         moving->addAnimation(ugoku);
         disappering->addAnimation(kieru);
@@ -1039,7 +1039,8 @@ void RoomScene::moveNCards(int n, const QString &from, const QString &to){
         ugoku->setDuration(1000);
 
         QPropertyAnimation *kieru = new QPropertyAnimation(card_pixmap, "opacity");
-        kieru->setStartValue(1.0);
+        kieru->setStartValue(0.0);
+        kieru->setKeyValueAt(0.2, 1.0);
         kieru->setKeyValueAt(0.8, 1.0);
         kieru->setEndValue(0.0);
         kieru->setDuration(1000);
