@@ -46,7 +46,20 @@ void Settings::init(){
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
+
+
+    if(!contains("BanPackages")){
+        QStringList banlist;
+        banlist << "nostalgia" << "yitian" << "wisdom" << "test"
+                << "disaster" << "god" << "YJCM" << "yitian_cards"
+                << "sp" << "sp_cards"
+                << "joy" << "joy_equip";
+
+        setValue("BanPackages", banlist);
+    }
+
     BanPackages = value("BanPackages").toStringList();
+
     ContestMode = value("ContestMode", false).toBool();
     FreeChoose = value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
