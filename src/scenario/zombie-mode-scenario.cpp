@@ -33,7 +33,7 @@ public:
 
         QString gender = player->getGeneral()->isMale() ? "male" : "female";
         room->broadcastInvoke("playAudio", QString("zombify-%1").arg(gender));
-        room->broadcastInvoke("updateStateItem", getRoleStateString());
+        room->broadcastInvoke("updateStateItem", room->getRoleStateString());
 
         player->tag.remove("zombie");
     }
