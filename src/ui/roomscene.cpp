@@ -247,7 +247,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // chat box
         chat_box = new QTextEdit;
-        chat_box->resize(230 + widen_width, 195);
+        chat_box->resize(230 + widen_width, 175);
 
         QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
         chat_box_widget->setPos(-343 - widen_width, -83);
@@ -272,7 +272,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
         if(circular){
-            chat_box->resize(268, 180);
+            chat_box->resize(268, 165);
             chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
@@ -288,7 +288,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // log box
         log_box = new ClientLogBox;
-        log_box->resize(chat_box->width(), 213);
+        log_box->resize(chat_box->width(), 205);
         log_box->setTextColor(Config.TextEditColor);
 
         QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
@@ -345,6 +345,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
     skill_dock->titleBarWidget()->hide();
+    skill_dock->setStyleSheet(Config.value("style/dock").toString());
     main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
 
     addWidgetToSkillDock(sort_combobox, true);
@@ -564,10 +565,8 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 }
 
 void RoomScene::changeTextEditBackground(){
-    QPalette palette;
-    palette.setBrush(QPalette::Base, backgroundBrush());
-    chat_box->setPalette(palette);
-    log_box->setPalette(palette);
+    chat_box->setStyleSheet("background-color: rgba(117, 107, 97, 85%);");
+    log_box->setStyleSheet("background-color: rgba(97, 83, 77, 85%);");
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
@@ -1264,6 +1263,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
     button->setText(skill->getText());
     button->setToolTip(skill->getDescription());
     button->setDisabled(skill->getFrequency() == Skill::Compulsory);
+    //button->setStyleSheet(Config.value("style/button").toString());
 
     if(skill->isLordSkill())
         button->setIcon(QIcon("image/system/roles/lord.png"));
@@ -1273,7 +1273,9 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 }
 
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
-    widget->setFixedHeight(30);
+    if(widget->inherits("QPushButton"))widget->setFixedHeight(26);
+    else widget->setFixedHeight(20);
+    widget->setStyleSheet(Config.value("style/button").toString());
 
     QWidget *container = skill_dock->widget();
     QHBoxLayout *container_layout = NULL;
