@@ -1273,8 +1273,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 }
 
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
-    if(widget->inherits("QPushButton"))widget->setFixedHeight(26);
-    else widget->setFixedHeight(20);
+    if(widget->inherits("QComboBox"))widget->setFixedHeight(20);
+    else widget->setFixedHeight(26);
     widget->setStyleSheet(Config.value("style/button").toString());
 
     QWidget *container = skill_dock->widget();
