@@ -67,6 +67,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["jilei"] = &Client::jilei;
     callbacks["pile"] = &Client::pile;
 
+    callbacks["updateStateItem"] = &Client::updateStateItem;
+
     callbacks["playSkillEffect"] = &Client::playSkillEffect;
     callbacks["playCardEffect"] = &Client::playCardEffect;
     callbacks["playAudio"] = &Client::playAudio;
@@ -1771,4 +1773,9 @@ void Client::selectOrder(){
     request("selectOrder " + order);
 
     setStatus(NotActive);
+}
+
+void Client::updateStateItem(const QString &state_str)
+{
+    emit role_state_changed(state_str);
 }

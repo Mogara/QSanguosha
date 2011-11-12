@@ -113,6 +113,7 @@ public:
     void setFixedDistance(const QString &set_str);
     void pile(const QString &pile_str);
     void transfigure(const QString &transfigure_tr);
+    void updateStateItem(const QString &state_str);
 
     void moveCard(const QString &move_str);
     void moveNCards(const QString &move_str);
@@ -261,6 +262,8 @@ signals:
     void arrange_started();
     void general_recovered(int index, const QString &name);
     void general_revealed(bool self, const QString &general);
+
+    void role_state_changed(const QString & state_str);
 
     void assign_asked();
 };

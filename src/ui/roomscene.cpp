@@ -157,6 +157,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer*,QString)), this, SLOT(acquireSkill(const ClientPlayer*,QString)));
     connect(ClientInstance, SIGNAL(animated(QString,QStringList)), this, SLOT(doAnimation(QString,QStringList)));
     connect(ClientInstance, SIGNAL(judge_result(QString,QString)), this, SLOT(showJudgeResult(QString,QString)));
+    connect(ClientInstance, SIGNAL(role_state_changed(QString)),this, SLOT(update_state_item(QString)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
@@ -2682,34 +2683,11 @@ void RoomScene::createStateItem(){
 
     QPixmap state("image/system/state.png");
 
-    QGraphicsItem *state_item = addPixmap(state);//QPixmap("image/system/state.png"));
+    state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(-110, -90);
-    char roles[100] = {0}, *role;
+    char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
-    for(role = roles; *role!='\0'; role++){
-        static QPixmap lord("image/system/roles/small-lord.png");
-        static QPixmap loyalist("image/system/roles/small-loyalist.png");
-        static QPixmap rebel("image/system/roles/small-rebel.png");
-        static QPixmap renegade("image/system/roles/small-renegade.png");
-
-        QPixmap *to_add = NULL;
-        switch(*role){
-        case 'Z': to_add = &lord; break;
-        case 'C': to_add = &loyalist; break;
-        case 'N': to_add = &renegade; break;
-        case 'F': to_add = &rebel; break;
-        default:
-            break;
-        }
-
-        if(to_add){
-            QGraphicsPixmapItem *item = addPixmap(*to_add);
-            item->setPos(21*role_items.length(), 6);
-            item->setParentItem(state_item);
-
-            role_items << item;
-        }
-    }
+    updateStateItem(roles);
 
     QGraphicsTextItem *text_item = addText("");
     text_item->setParentItem(state_item);
@@ -3557,4 +3535,40 @@ void RoomScene::finishArrange(){
     ClientInstance->request("arrange " + names.join("+"));
 }
 
+void RoomScene::update_state_item(const QString &qstr)
+{
+    char *c_str2 = qstr.toLocal8Bit().data();
+    updateStateItem(c_str2);
+}
 
+void RoomScene::updateStateItem(char* roles)
+{
+    foreach(QGraphicsItem *item,state_item->childItems())
+        removeItem(item);
+    role_items.clear();
+
+    for(char *role = roles; *role!='\0'; role++){
+        static QPixmap lord("image/system/roles/small-lord.png");
+        static QPixmap loyalist("image/system/roles/small-loyalist.png");
+        static QPixmap rebel("image/system/roles/small-rebel.png");
+        static QPixmap renegade("image/system/roles/small-renegade.png");
+
+        QPixmap *to_add = NULL;
+        switch(*role){
+        case 'Z': to_add = &lord; break;
+        case 'C': to_add = &loyalist; break;
+        case 'N': to_add = &renegade; break;
+        case 'F': to_add = &rebel; break;
+        default:
+            break;
+        }
+
+        if(to_add){
+            QGraphicsPixmapItem *item = addPixmap(*to_add);
+            item->setPos(21*role_items.length(), 6);
+            item->setParentItem(state_item);
+
+            role_items << item;
+        }
+    }
+}
