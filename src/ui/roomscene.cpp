@@ -345,8 +345,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
     skill_dock->titleBarWidget()->hide();
-    skill_dock->setStyleSheet(Config.value("style/dock").toString());
+
     main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
+
+    QFile file("yee.qss");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        skill_dock->setStyleSheet(stream.readAll());
+    }
 
     addWidgetToSkillDock(sort_combobox, true);
 
@@ -1275,7 +1281,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool from_left){
 void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
     if(widget->inherits("QComboBox"))widget->setFixedHeight(20);
     else widget->setFixedHeight(26);
-    widget->setStyleSheet(Config.value("style/button").toString());
 
     QWidget *container = skill_dock->widget();
     QHBoxLayout *container_layout = NULL;

@@ -1,0 +1,69 @@
+*{
+	background-image: url(image/system/skill-dock.png);
+}
+
+QPushButton{
+	background-image: url(image/system/button/back.png);
+	border: 1px solid gray;
+	color: yellow;
+	font: 12px;
+	padding: 6px 12px 6px 12px;
+}
+QPushButton:disabled{
+	background-image: url(image/system/button/back_shade.png);
+	color: white;
+	font: 12px;
+}
+QCheckBox{
+	border: 1px solid gray;
+	color: yellow;
+	font: 12px;
+	padding: 1px 12px 1px 8px;
+}
+QCheckBox::indicator{
+	height: 0px;
+	width: 0px;
+}
+QCheckBox:unchecked{
+	background-image: url(image/system/button/frequent_checkbox/unchecked.png);
+}
+QCheckBox:unchecked:hover{
+	background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
+}
+QCheckBox:unchecked:pressed{
+	background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
+}
+QCheckBox:checked{
+	background-image: url(image/system/button/frequent_checkbox/checked.png);
+}
+QCheckBox:checked:hover{
+	background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
+}
+QCheckBox:checked:pressed{
+	background-image: url(image/system/button/frequent_checkbox/checked_press.png);
+}
+QComboBox{
+	background-image: url(image/system/button/back2.png);
+	border: 1px solid gray;
+	border-radius: 3px;
+	color: white;
+	padding: 1px 18px 1px 3px;
+}
+QComboBox:on{
+	padding-left: 4px;
+	padding-top: 3px;
+}
+QComboBox::drop-down{
+	border-bottom-right-radius: 3px;
+	border-left-color: darkgray;
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-top-right-radius: 3px;
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 15px;
+}
+QComboBox::down-arrow:on{
+	left: 1px;
+	top: 1px;
+}
