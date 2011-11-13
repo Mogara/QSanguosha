@@ -359,7 +359,7 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("MiddleAutumn");
+    return tr("Chibi");
 }
 
 QStringList Engine::getExtensions() const{
