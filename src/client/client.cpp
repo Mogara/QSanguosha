@@ -623,9 +623,9 @@ void Client::askForCardOrUseCard(const QString &request_str){
     else
         refusable = true;
 
-    if(card_pattern.startsWith(QChar('@'))){
-        QString skill_name = card_pattern;
-        skill_name.remove(QChar('@'));
+    QRegExp rx("^@@?(\\w+)(-card)?$");
+    if(rx.exactMatch(card_pattern)){
+        QString skill_name = rx.capturedTexts().at(1);
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill){
             QString text = prompt_doc->toHtml();
