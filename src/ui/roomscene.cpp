@@ -572,8 +572,8 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
 }
 
 void RoomScene::changeTextEditBackground(){
-    chat_box->setStyleSheet("background-color: rgba(117, 107, 97, 90);");
-    log_box->setStyleSheet("background-color: rgba(97, 83, 77, 90);");
+    chat_box->setStyleSheet("background-color: rgba(0,0,0,50%);");
+    log_box->setStyleSheet("background-color: rgba(0,0,0,50%);");
 }
 
 void RoomScene::addPlayer(ClientPlayer *player){
