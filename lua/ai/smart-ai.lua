@@ -2899,8 +2899,8 @@ end
 function SmartAI:fillSkillCards(cards)
     for _,skill in ipairs(sgs.ai_skills) do
         if self:hasSkill(skill) then       
-			for _, card in ipairs(cards) do
-				if prohibitUseDirectly(card, self.player) then table.remove(cards, card) end
+			for index, card in ipairs(cards) do
+				if prohibitUseDirectly(card, self.player) then table.remove(cards, index) end
 			end
 
             local skill_card = skill.getTurnUseCard(self)
