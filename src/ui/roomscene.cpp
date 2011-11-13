@@ -345,10 +345,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
     skill_dock->titleBarWidget()->hide();
+    skill_dock->setFixedHeight(30);
 
     main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
 
-    QFile file("yee.qss");
+    QFile file("sanguosha.qss");
     if(file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);
         skill_dock->setStyleSheet(stream.readAll());
