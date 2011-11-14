@@ -453,25 +453,29 @@ public:
 class Longluo: public TriggerSkill{
 public:
     Longluo():TriggerSkill("longluo"){
-        events << PhaseChange;
+        events << CardLost << PhaseChange;
         frequency = Frequent;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName());
-    }
-
-    virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
-        if(player->getPhase() == Player::Discard){
-            player->tag["cardnum"] = player->getHandcardNum();
-        }
-        else if(player->getPhase() == Player::Finish){
-            int drawnum = player->tag.value("cardnum", 0).toInt() - player->getHandcardNum();
-            if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
-                ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
-                if(target)
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::Finish){
+                int drawnum = player->getMark("longluo");
+                if(drawnum > 0 && player->askForSkillInvoke(objectName(), data)){
+                    ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName());
                     target->drawCards(drawnum);
+                }
+            }
+            else if(player->getPhase() == Player::Discard){
+                player->setMark("longluo", 0);
+            }
+            return false;
+        }
+        if(player->getPhase() == Player::Discard){
+            CardMoveStar move = data.value<CardMoveStar>();
+            if(move->to_place == Player::DiscardedPile){
+                player->addMark("longluo");
             }
         }
         return false;
