@@ -3551,7 +3551,7 @@ void RoomScene::update_state_item(const QString &qstr)
 
 void RoomScene::updateStateItem(char* roles)
 {
-    foreach(QGraphicsItem *item,state_item->childItems())
+    foreach(QGraphicsItem *item, role_items)
         removeItem(item);
     role_items.clear();
 
