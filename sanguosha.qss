@@ -1,61 +1,61 @@
 
-QWidget#skill_dock_container{
+QWidget#skill_bar_container{
 	background-image: url(image/system/skill-dock.png);
 	color:white;
 }
 
-#skill_dock_container QPushButton{
+#skill_bar_container QPushButton{
 	background-image: url(image/system/button/back.png);
 	border: 1px solid gray;
 	color: yellow;
 	font: 12px;
 	padding: 6px 12px 6px 12px;
 }
-#skill_dock_container QPushButton:disabled{
+#skill_bar_container QPushButton:disabled{
 	background-image: url(image/system/button/back_shade.png);
 	color: white;
 	font: 12px;
 }
-#skill_dock_container QCheckBox{
+#skill_bar_container QCheckBox{
 	border: 1px solid gray;
 	color: yellow;
 	font: 12px;
 	padding: 1px 12px 1px 8px;
 }
-#skill_dock_container QCheckBox::indicator{
+#skill_bar_container QCheckBox::indicator{
 	height: 0px;
 	width: 0px;
 }
-#skill_dock_container QCheckBox:unchecked{
+#skill_bar_container QCheckBox:unchecked{
 	background-image: url(image/system/button/frequent_checkbox/unchecked.png);
 }
-#skill_dock_container QCheckBox:unchecked:hover{
+#skill_bar_container QCheckBox:unchecked:hover{
 	background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
 }
-#skill_dock_container QCheckBox:unchecked:pressed{
+#skill_bar_container QCheckBox:unchecked:pressed{
 	background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
 }
-#skill_dock_container QCheckBox:checked{
+#skill_bar_container QCheckBox:checked{
 	background-image: url(image/system/button/frequent_checkbox/checked.png);
 }
-#skill_dock_container QCheckBox:checked:hover{
+#skill_bar_container QCheckBox:checked:hover{
 	background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
 }
-#skill_dock_container QCheckBox:checked:pressed{
+#skill_bar_container QCheckBox:checked:pressed{
 	background-image: url(image/system/button/frequent_checkbox/checked_press.png);
 }
-#skill_dock_container QComboBox{
+#skill_bar_container QComboBox{
 	background-image: url(image/system/button/back2.png);
 	border: 1px solid gray;
 	border-radius: 3px;
 	color: white;
 	padding: 1px 18px 1px 3px;
 }
-#skill_dock_container QComboBox:on{
+#skill_bar_container QComboBox:on{
 	padding-left: 4px;
 	padding-top: 3px;
 }
-#skill_dock_container QComboBox::drop-down{
+#skill_bar_container QComboBox::drop-down{
 	border-bottom-right-radius: 3px;
 	border-left-color: darkgray;
 	border-left-style: solid;
@@ -65,7 +65,7 @@ QWidget#skill_dock_container{
 	subcontrol-position: top right;
 	width: 15px;
 }
-#skill_dock_container QComboBox::down-arrow:on{
+#skill_bar_container QComboBox::down-arrow:on{
 	left: 1px;
 	top: 1px;
 }

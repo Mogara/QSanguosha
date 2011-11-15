@@ -34,6 +34,7 @@
 #include <QTimer>
 #include <QCommandLinkButton>
 #include <QFormLayout>
+#include <QStatusBar>
 
 #ifdef Q_OS_WIN32
 #include <QAxObject>
@@ -65,7 +66,7 @@ RoomScene *RoomSceneInstance;
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
-    main_window(main_window), skill_dock(NULL)
+    main_window(main_window)
 {
     RoomSceneInstance = this;
 
@@ -342,15 +343,17 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
 #endif
 
-    skill_dock = new QDockWidget(main_window);
-    skill_dock->setTitleBarWidget(new QWidget);
-    skill_dock->setAllowedAreas(Qt::BottomDockWidgetArea);
-    skill_dock->titleBarWidget()->hide();
-    skill_dock->setFixedHeight(30);
+    QHBoxLayout* skill_dock_layout = new QHBoxLayout;
+    QMargins margins = skill_dock_layout->contentsMargins();
+    margins.setTop(0);
+    margins.setBottom(5);
+    skill_dock_layout->setContentsMargins(margins);
+    skill_dock_layout->addStretch();
 
-
+    main_window->statusBar()->setObjectName("skill_bar_container");
+    main_window->statusBar()->setLayout(skill_dock_layout);
     addWidgetToSkillDock(sort_combobox, true);
-    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
+
     createStateItem();
 }
 
@@ -1277,37 +1280,15 @@ void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
     if(widget->inherits("QComboBox"))widget->setFixedHeight(20);
     else widget->setFixedHeight(26);
 
-    QWidget *container = skill_dock->widget();
-    QHBoxLayout *container_layout = NULL;
-    if(container == NULL){
-        container = new QWidget;
-        QHBoxLayout *layout = new QHBoxLayout;
-        QMargins margins = layout->contentsMargins();
-        margins.setTop(0);
-        margins.setBottom(5);
-        layout->setContentsMargins(margins);
-        container->setLayout(layout);
-        container->setObjectName("skill_dock_container");
-        layout->addStretch();
-
-        skill_dock->setWidget(container);
-
-        container_layout = layout;
-    }else{
-        QLayout *layout = container->layout();
-        container_layout = qobject_cast<QHBoxLayout *>(layout);
-    }
-
-    if(from_left)
-        container_layout->insertWidget(0, widget);
+    if(!from_left)
+        main_window->statusBar()->addPermanentWidget(widget);
     else
-        container_layout->addWidget(widget);
+        main_window->statusBar()->addWidget(widget);
 }
 
 void RoomScene::removeWidgetFromSkillDock(QWidget *widget){
-    QWidget *container = skill_dock->widget();
-    if(container)
-        container->layout()->removeWidget(widget);
+    QStatusBar * bar = main_window->statusBar();
+    bar->removeWidget(widget);
 }
 
 void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name){
@@ -2964,9 +2945,6 @@ void RoomScene::onMusicFinish(){
 #endif
 #endif
 void RoomScene::freeze(){
-    main_window->removeDockWidget(skill_dock);
-    delete skill_dock;
-    skill_dock = NULL;
 
     ClientInstance->disconnectFromHost();
     dashboard->setEnabled(false);
