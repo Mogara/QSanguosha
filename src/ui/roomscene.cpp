@@ -344,19 +344,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     skill_dock = new QDockWidget(main_window);
     skill_dock->setTitleBarWidget(new QWidget);
+    skill_dock->setAllowedAreas(Qt::BottomDockWidgetArea);
     skill_dock->titleBarWidget()->hide();
     skill_dock->setFixedHeight(30);
 
-    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
-
-    QFile file("sanguosha.qss");
-    if(file.open(QIODevice::ReadOnly)){
-        QTextStream stream(&file);
-        skill_dock->setStyleSheet(stream.readAll());
-    }
 
     addWidgetToSkillDock(sort_combobox, true);
-
+    main_window->addDockWidget(Qt::BottomDockWidgetArea, skill_dock);
     createStateItem();
 }
 
@@ -1293,6 +1287,7 @@ void RoomScene::addWidgetToSkillDock(QWidget *widget, bool from_left){
         margins.setBottom(5);
         layout->setContentsMargins(margins);
         container->setLayout(layout);
+        container->setObjectName("skill_dock_container");
         layout->addStretch();
 
         skill_dock->setWidget(container);
