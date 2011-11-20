@@ -186,15 +186,13 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 
 		local equips  = {}
 		if sunshangxiang and (max_equip~=0 or min_equip~=5) then
-			use.card = sgs.Card_Parse("@GanluCard=.")
-			if use.to then
-				use.to:append(sunshangxiang)
-			end
 			if (max_equip ~= 0) and ((max_equip-self:getCardsNum(".", sunshangxiang, "e"))>=0) then
-				if use.to then use.to:append(max_friend) end
+				use.card = sgs.Card_Parse("@GanluCard=.")
+				if use.to then use.to:append(sunshangxiang) use.to:append(max_friend) end
 				return
 			elseif(min_equip ~= 5) and ((self:getCardsNum(".", sunshangxiang, "e")-min_equip)>=0) then
-				if use.to then use.to:append(min_friend) end
+				use.card = sgs.Card_Parse("@GanluCard=.")
+				if use.to then use.to:append(sunshangxiang) use.to:append(max_friend) end
 				return
 			end
 		end
@@ -207,8 +205,10 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 					(self:getCardsNum(".", enemy, "e")>=self:getCardsNum(".", friend, "e")) and
 					(self:getCardsNum(".", enemy, "e")>0) then
 					use.card = sgs.Card_Parse("@GanluCard=.")
-					if use.to then use.to:append(friend) end
-					if use.to then use.to:append(enemy) end
+					if use.to then
+						use.to:append(friend)
+						use.to:append(enemy)
+					end
 					return
 				end
 			end

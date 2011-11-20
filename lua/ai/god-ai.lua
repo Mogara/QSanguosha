@@ -277,7 +277,8 @@ yeyan_skill.getTurnUseCard=function(self)
 		end
 	end
 	self.yeyanchained = (chained > 1)
-	if target_num > 2 or (target_num > 1 and self.yeyanchained) or #self.friends_noself == 0 then return sgs.Card_Parse("@SmallYeyanCard=.") end
+	if target_num > 2 or (target_num > 1 and self.yeyanchained) or
+	(#self.enemies + 1 == self.room:alivePlayerCount()) then return sgs.Card_Parse("@SmallYeyanCard=.") end
 end
 
 sgs.ai_skill_use_func["SmallYeyanCard"]=function(card,use,self)

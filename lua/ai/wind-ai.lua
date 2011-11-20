@@ -22,6 +22,8 @@ end
 sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
         self:updatePlayers(true)
 	self:sort(self.enemies,"defense")
+	if self.player:containsTrick("lightning") and self.player:getCards("j"):length()==1
+		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies,true) then return false end
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
 	local selfDef = getDefense(self.player)
