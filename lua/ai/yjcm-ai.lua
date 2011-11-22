@@ -192,7 +192,7 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 				return
 			elseif(min_equip ~= 5) and ((self:getCardsNum(".", sunshangxiang, "e")-min_equip)>=0) then
 				use.card = sgs.Card_Parse("@GanluCard=.")
-				if use.to then use.to:append(sunshangxiang) use.to:append(max_friend) end
+				if use.to then use.to:append(sunshangxiang) use.to:append(min_friend) end
 				return
 			end
 		end
