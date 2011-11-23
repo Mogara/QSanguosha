@@ -500,11 +500,16 @@ function SmartAI:sort(players, key)
 	table.sort(players, func)
 end
 
+sgs.ai_event_filter={}
+
 function SmartAI:filterEvent(event, player, data)
 	if event==sgs.ChoiceMade then
 		local carduse=data:toCardUse()
 		if carduse and carduse:isValid() then
-
+			local filter = sgs.ai_event_filter[carduse.card:className()]
+			if type(filter) == "function" then
+				filter(card_use.from, sgs.QList2Table(carduse.to))
+			end
 		end
 	elseif event == sgs.CardUsed then
 		self:updatePlayers()
