@@ -501,7 +501,12 @@ function SmartAI:sort(players, key)
 end
 
 function SmartAI:filterEvent(event, player, data)
-	if event == sgs.CardUsed then
+	if event==sgs.ChoiceMade then
+		local carduse=data:toCardUse()
+		if carduse and carduse:isValid() then
+
+		end
+	elseif event == sgs.CardUsed then
 		self:updatePlayers()
 	elseif event == sgs.CardEffect then
 		self:updatePlayers()
