@@ -1,11 +1,11 @@
 -- translation for WisdomPackage
 
 local t = {
-	["wisdom"] = "智包", 
+	["wisdom"] = "智包",
 	["designer:wisdoms"] = "太阳神三国杀创意小组",
 
-	["wisxuyou"] = "许攸", 
-	["wisjiangwei"] = "姜维", 
+	["wisxuyou"] = "许攸",
+	["wisjiangwei"] = "姜维",
 	["wisjiangwan"] = "蒋琬",
 	["wissunce"] = "孙策",
 	["wiszhangzhao"] = "张昭",
@@ -76,8 +76,8 @@ local t = {
 	["forbid_shien:yes"] = "永久关闭【师恩】发动提示（不可逆操作）",
 	["forbid_shien:no"] = "不关闭【师恩】发动提示",
 
-	["cv:wisxuyou"] = "", 
-	["cv:wisjiangwei"] = "", 
+	["cv:wisxuyou"] = "",
+	["cv:wisjiangwei"] = "",
 	["cv:wisjiangwan"] = "",
 	["cv:wissunce"] = "",
 	["cv:wiszhangzhao"] = "",
@@ -85,8 +85,8 @@ local t = {
 	["cv:wistianfeng"] = "",
 	["cv:wisshuijing"] = "",
 
-	["~wisxuyou"] = "智之许攸，不幸阵亡", 
-	["~wisjiangwei"] = "智之姜维，不幸阵亡", 
+	["~wisxuyou"] = "智之许攸，不幸阵亡",
+	["~wisjiangwei"] = "智之姜维，不幸阵亡",
 	["~wisjiangwan"] = "智之蒋琬，不幸阵亡",
 	["~wissunce"] = "智之孙策，不幸阵亡",
 	["~wiszhangzhao"] = "智之张昭，不幸阵亡",
