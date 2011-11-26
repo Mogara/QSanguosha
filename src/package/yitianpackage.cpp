@@ -73,10 +73,13 @@ void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPla
 void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
 
-    RecoverStruct recover;
-    recover.card = this;
-    recover.who = effect.from;
-    room->recover(effect.to, recover);
+    if(effect.to->isWounded()){
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        room->recover(effect.to, recover);
+    }else
+        effect.to->drawCards(2);
 }
 
 class ChengxiangViewAsSkill: public ViewAsSkill{
