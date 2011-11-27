@@ -91,6 +91,7 @@ public:
     void marshal(ServerPlayer *player) const;
 
     void addToPile(const QString &pile_name, int card_id, bool open = true);
+    void gainAnExtraTurn();
 
     void copyFrom(ServerPlayer* sp);
 

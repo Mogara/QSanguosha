@@ -737,6 +737,14 @@ void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open){
     room->moveCardTo(Sanguosha->getCard(card_id), this, Player::Special, open);
 }
 
+void ServerPlayer::gainAnExtraTurn(){
+    ServerPlayer *current = room->getCurrent();
+
+    room->setCurrent(this);
+    room->getThread()->trigger(TurnStart, this);
+    room->setCurrent(current);
+}
+
 void ServerPlayer::copyFrom(ServerPlayer* sp)
 {
     ServerPlayer *b = this;

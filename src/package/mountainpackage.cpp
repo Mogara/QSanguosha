@@ -854,9 +854,7 @@ public:
                     log.to << player;
                     room->sendLog(log);
 
-                    room->setCurrent(player);
-                    room->getThread()->trigger(TurnStart, player);
-                    room->setCurrent(liushan);
+                    player->gainAnExtraTurn();
                 }
 
                 break;

@@ -62,12 +62,12 @@ bool ChengxiangCard::targetsFeasible(const QList<const Player *> &targets, const
 }
 
 void ChengxiangCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
-    QList<ServerPlayer *> to = targets;
-
-    if(to.isEmpty())
+    if(targets.isEmpty()){
+        QList<ServerPlayer *> to;
         to << source;
-
-    return SkillCard::use(room, source, to);
+        SkillCard::use(room, source, to);
+    }else
+        SkillCard::use(room, source, targets);
 }
 
 void ChengxiangCard::onEffect(const CardEffectStruct &effect) const{

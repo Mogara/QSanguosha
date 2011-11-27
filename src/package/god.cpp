@@ -1115,7 +1115,7 @@ public:
         log.arg = QString::number(n);
         room->sendLog(log);
 
-        room->getThread()->trigger(TurnStart, shensimayi);
+        shensimayi->gainAnExtraTurn();
 
         return false;
     }

@@ -299,6 +299,7 @@ public:
     void marshal(ServerPlayer *player) const;
 
     void addToPile(const char *pile_name, int card_id, bool open = true);
+    void gainAnExtraTurn();
 };
 
 %extend ServerPlayer{
