@@ -751,7 +751,6 @@ public:
     QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except) const;
     QList<ServerPlayer *> getAllPlayers() const;
     QList<ServerPlayer *> getAlivePlayers() const;
-    void output(const char *message);
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     void killPlayer(ServerPlayer *victim, DamageStruct *reason = NULL);
     void revivePlayer(ServerPlayer *player);
