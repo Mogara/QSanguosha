@@ -1109,7 +1109,7 @@ function SmartAI:slashProhibit(card,enemy)
 end
 
 
-function SmartAI:useBasicCard(card, use,no_distance)
+function SmartAI:useBasicCard(card, use, no_distance)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if card:getSkillName() == "wushen" then no_distance = true end
 	if (self.player:getHandcardNum() == 1 
@@ -1159,9 +1159,9 @@ function SmartAI:useBasicCard(card, use,no_distance)
 				self:slashIsEffective(card, enemy) then
 					-- fill the card use struct
 					local anal = self:searchForAnaleptic(use,enemy,card)
-					if anal and not self:isEquip("SilverLion", enemy) then 
+					if anal and not self:isEquip("SilverLion", enemy) and (not use.to or use.to:isEmpty()) then
 						use.card = anal
-						return 
+						return
 					end
 					use.card = card
 					if use.to then use.to:append(enemy) end
@@ -2406,6 +2406,8 @@ end
 -- @param judge The JudgeStruct that contains the judge information
 -- @return True if it is needed to retrial
 function SmartAI:needRetrial(judge)
+	local reason = judge.reason
+	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
 	if self:isFriend(judge.who) then
 		return not judge:isGood()
 	elseif self:isEnemy(judge.who) then
@@ -2702,10 +2704,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 		else return "." 
 		end	
 	elseif parsedPrompt[1] == "@hujia-jink" then
-		local who = data:toPlayer()
-		if self.player:hasSkill("hujia") and who:hasSkill("hujia") then return "."
-		elseif not self:isFriend(who) then return "."
-		end
+		if not self:isFriend(sgs.hujiasource) then return "." end
 		return self:getCardId("Jink") or "."
 	elseif parsedPrompt[1] == "@lianli-jink" or parsedPrompt[1] == "@lianli-slash" then
 		local players = self.room:getOtherPlayers(self.player)
@@ -2716,10 +2715,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 		if not self:isFriend(target) then return "." end
 		if parsedPrompt[1] then return self:getCardId("Slash") or "." else return self:getCardId("Jink") or "." end
 	elseif parsedPrompt[1] == "@jijiang-slash" then
-		local who = data:toPlayer()
-		if self.player:hasSkill("jijiang") and who:hasSkill("jijiang") then return "."
-		elseif not self:isFriend(who) then return "."
-		end
+		if not self:isFriend(sgs.jijiangsource) then return "." end
 		return self:getCardId("Slash") or "."
 	elseif parsedPrompt[1] == "@weidai-analeptic" then
 		local who = data:toPlayer()

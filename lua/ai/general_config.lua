@@ -81,6 +81,7 @@ sgs.ai_use_priority = {
 
 --skill cards
 		XinzhanCard = 9.2,
+		LexueCard = 10,
 		GuhuoCard = 10,
 		TianyiCard = 4,
 		JieyinCard = 2.5,

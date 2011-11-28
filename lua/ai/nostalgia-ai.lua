@@ -127,9 +127,8 @@ sgs.ai_skill_choice["guhuo"] = function(self, choices)
 		self:sort(self.friends,"hp")
 		if self.player:getHp()<self.friends[#self.friends]:getHp() then return "noquestion" end
 	end
-	if self.player:getLostHp() == 0 then return "question" end
-	local r=math.random(0,1)
-	if r==0 then return "question" else return "noquestion" end
+	local r=math.random(0,self.player:getHp()-1)
+	if r==0 then return "noquestion" else return "question" end
 end
 
 local guhuo_skill={}
