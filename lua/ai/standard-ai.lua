@@ -4,10 +4,13 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 sgs.ai_skill_invoke.jijiang = function(self, data)
-	if self:getCardsNum("Slash")<=0 then
-		return true
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:inherits("Slash") then
+			return false
+		end
 	end
-	return false
+	return true
 end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
