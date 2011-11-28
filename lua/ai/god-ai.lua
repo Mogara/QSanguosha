@@ -20,16 +20,7 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
 	if self.player:usedTimes("GongxinCard")>0 then return end
 	self:sort(self.enemies,"handcard")
 
-	for _,enemy in ipairs(self.enemies) do
-		local cards = enemy:getHandcards()
-			for _, acard in sgs.qlist(cards) do
-				if acard:getSuit() == sgs.Card_Heart and not acard:inherits("Shit") then
-					use.card = card
-					if use.to then use.to:append(enemy) end
-					return
-				end
-			end
-	end
+	return self.enemies[#self.enemies]
 end
 
 --function shenlubu_ai:useTrickCard(card, use)
@@ -172,7 +163,7 @@ wuqian_skill.getTurnUseCard=function(self)
 
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and
+			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(enemy) and
 				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) then return sgs.Card_Parse(card_str)
 			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
 			end

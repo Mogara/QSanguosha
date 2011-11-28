@@ -445,7 +445,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 						return
 					end
 				end
-			elseif friend:hasSkill("qingnang") and friend:getHp() < 2 and friend:getHandcardNum() < 1 then
+			end
+			if friend:hasSkill("qingnang") and friend:getHp() < 2 and friend:getHandcardNum() < 1 then
 				for _, hcard in sgs.qlist(cards) do
 					if hcard:isRed() and not (hcard:inherits("ExNihilo") or hcard:inherits("Peach")) then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
@@ -453,7 +454,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 						return
 					end
 				end
-			elseif friend:hasSkill("jizhi") then
+			end
+			if friend:hasSkill("jizhi") then
 				for _, hcard in sgs.qlist(cards) do
 					if hcard:getTypeId() == sgs.Card_Trick then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
@@ -461,7 +463,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 						return
 					end
 				end
-			elseif friend:hasSkill("guose") then
+			end
+			if friend:hasSkill("guose") then
 				for _, hcard in sgs.qlist(cards) do
 					if hcard:getSuit() == sgs.Card_Diamond then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
@@ -469,7 +472,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 						return
 					end
 				end
-			elseif friend:hasSkill("leiji") then
+			end
+			if friend:hasSkill("leiji") then
 				for _, hcard in sgs.qlist(cards) do
 					if hcard:getSuit() == sgs.Card_Spade then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
@@ -477,7 +481,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 						return
 					end
 				end
-			elseif friend:hasSkill("xiaoji") then
+			end
+			if friend:hasSkill("xiaoji") then
 				for _, hcard in sgs.qlist(cards) do
 					if hcard:inherits("EquipCard") then 
 						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
@@ -486,7 +491,42 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 					end
 				end
 			end
-			
+			if not friend:getOffensiveHorse() then
+				for _, hcard in sgs.qlist(cards) do
+					if hcard:inherits("OffensiveHorse") then 
+						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+						if use.to then use.to:append(friend) end
+						return
+					end
+				end
+			end
+			if not friend:getArmor() then
+				for _, hcard in sgs.qlist(cards) do
+					if hcard:inherits("Armor") then 
+						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+						if use.to then use.to:append(friend) end
+						return
+					end
+				end
+			end
+			if not friend:getWeapon() then
+				for _, hcard in sgs.qlist(cards) do
+					if hcard:inherits("Weapon") then 
+						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+						if use.to then use.to:append(friend) end
+						return
+					end
+				end
+			end
+			if not friend:getDefensiveHorse() then
+				for _, hcard in sgs.qlist(cards) do
+					if hcard:inherits("DefensiveHorse") then 
+						use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+						if use.to then use.to:append(friend) end
+						return
+					end
+				end			
+			end			
 		end
 	end
 	

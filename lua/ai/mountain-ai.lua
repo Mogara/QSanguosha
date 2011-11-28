@@ -247,7 +247,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	end
 
 	local limit = self.player:getMaxCards()
-	return self.player:getHandcardNum() <= limit
+	return self.player:getHandcardNum() <= limit and not self.player:isKongcheng()
 end
 
 sgs.ai_skill_playerchosen.fangquan = function(self, targets)

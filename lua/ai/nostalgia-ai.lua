@@ -117,21 +117,19 @@ sgs.ai_skill_choice["guhuo"] = function(self, choices)
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
+	if self.player:getHp()<2 then return "noquestion" end
 	for _, other in ipairs(players) do
 		if other:hasSkill("guhuo") then yuji = other break end
 	end
 	if self.lua_ai:isFriend(yuji) then return "noquestion"
+	elseif sgs.questioner then return "noquestion"
 	else
-		if self.player:getHp() >= 2 then
-			local r = math.random(0, 1)
-			if r == 0 then
-				return "question"
-			else
-				return "noquestion"
-			end
-		else return "noquestion"
-		end
+		self:sort(self.friends,"hp")
+		if self.player:getHp()<self.friends[#self.friends]:getHp() then return "noquestion" end
 	end
+	if self.player:getLostHp() == 0 then return "question" end
+	local r=math.random(0,1)
+	if r==0 then return "question" else return "noquestion" end
 end
 
 local guhuo_skill={}
