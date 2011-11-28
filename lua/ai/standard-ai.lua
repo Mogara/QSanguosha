@@ -10,7 +10,7 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 			return false
 		end
 	end
-	return true
+	if sgs.jijiangsource then return false else return true end
 end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
@@ -51,6 +51,7 @@ end
 -- hujia
 sgs.ai_skill_invoke.hujia = function(self, data)
 	local cards = self.player:getHandcards()
+	if sgs.hujiasource then return false end
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getKingdom() == "wei" and self:isEquip("EightDiagram", friend) then return true end
 	end

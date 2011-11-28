@@ -183,6 +183,9 @@ function SmartAI:updatePlayers(inclusive)
 	
 	self.role  = self.player:getRole()
 	
+	sgs.jijiangsource = nil
+	sgs.hujiasource = nil
+	
 	if isRolePredictable() then
 		if (self.role == "lord") or (self.role == "loyalist") then self:refreshRoyalty(self.player,300)
 		elseif (self.role == "rebel") then self:refreshRoyalty(self.player,-300)
@@ -500,15 +503,29 @@ function SmartAI:sort(players, key)
 	table.sort(players, func)
 end
 
-sgs.ai_event_filter={}
-
 function SmartAI:filterEvent(event, player, data)
 	if event==sgs.ChoiceMade then
 		local carduse=data:toCardUse()
 		if carduse and carduse:isValid() then
-			local filter = sgs.ai_event_filter[carduse.card:className()]
-			if type(filter) == "function" then
-				filter(card_use.from, sgs.QList2Table(carduse.to))
+			if carduse.card:inherits("JijiangCard") then
+				sgs.jijiangsource = player
+			else
+				sgs.jijiangsource = nil
+			end
+		elseif data:toString() then
+			promptlist = data:toString():split(":")
+			if promptlist[1] == "cardResponsed" and promptlist[4] ~= "_nil_" then
+				if promptlist[3] == "@hujia-jink" then
+					sgs.hujiasource = nil
+				elseif promptlist[3] == "@jijiang-slash" then
+					sgs.jijiangsource = nil
+				end
+			elseif promptlist[1] == "skillInvoke" and promptlist[3] == "yes" then
+				if promptlist[2] == "hujia" then
+					sgs.hujiasource = player
+				elseif promptlist[2] == "jijiang" then
+					sgs.jijiangsource = player
+				end
 			end
 		end
 	elseif event == sgs.CardUsed then
@@ -1113,6 +1130,7 @@ function SmartAI:useBasicCard(card, use,no_distance)
 					local anal = self:searchForAnaleptic(use,enemy,card)
 					if anal and not self:isEquip("SilverLion", enemy) then 
 						use.card = anal
+						if use.to then use.to:clear()
 						return 
 					end
 					use.card = card
