@@ -385,7 +385,6 @@ sgs.ai_skill_use_func["LexueCard"] = function(card, use, self)
 			if hcard:getSuit() == lexuesrc:getSuit() then
 				local lexue = ("%s:lexue[%s:%s]=%d"):format(lexuesrc:objectName(),
 					lexuesrc:getSuitString(), lexuesrc:getNumberString(), hcard:getId())
-				self.room:writeToConsole(lexue)
 				lexue = sgs.Card_Parse(lexue)
 				if self:getUseValue(lexue) > self:getUseValue(hcard) then
 					if lexue:inherits("BasicCard") then

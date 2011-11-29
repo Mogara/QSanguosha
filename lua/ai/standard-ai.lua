@@ -165,7 +165,6 @@ sgs.ai_skill_invoke["@guicai"]=function(self,prompt,judge)
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		local card_id = self:getRetrialCardId(cards, judge)
 		if card_id ~= -1 then
-			self.room:writeToConsole(card_id)
 			return "@GuicaiCard=" .. card_id
 		end
 	end
