@@ -668,6 +668,7 @@ function SmartAI:getEnemies(player)
 end
 
 function SmartAI:isFriend(other, another)
+	if not other then self.room:writeToConsole(debug.traceback()) end
 	if another then 
 		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
 	end
@@ -1099,7 +1100,8 @@ function SmartAI:slashProhibit(card,enemy)
 			end
 			if mark > 0 then
 				for _,friend in ipairs(self.friends) do
-					if friend:getMark("@nightmare") == mark and (not self:isWeak(friend) or friend:isLord()) then return true end
+					if friend:getMark("@nightmare") == mark and (not self:isWeak(friend) or friend:isLord()) and
+						not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 				end
 			end
 		end
