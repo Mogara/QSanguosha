@@ -1900,7 +1900,7 @@ function SmartAI:getTurnUse()
     end    
     
     self:fillSkillCards(cards)
-    
+	
     self:sortByUseValue(cards)
     
     if self.player:hasSkill("paoxiao") or 
@@ -1974,7 +1974,7 @@ function SmartAI:activate(use)
 --	self:sortByUsePriority(self.toUse)
 	self:sortByDynamicUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
-		if not self.player:isJilei(card) and not prohibitUseDirectly(card,self.player) then
+		if not self.player:isJilei(card) then
 			local type = card:getTypeId()
 
 			if type == sgs.Card_Basic then
@@ -3009,8 +3009,13 @@ function SmartAI:hasSkill(skill)
 end
 
 function SmartAI:fillSkillCards(cards)
-	for index, card in ipairs(cards) do
-		if prohibitUseDirectly(card, self.player) then table.remove(cards, index) end
+	local i = 1
+	while i <= #cards do
+		if prohibitUseDirectly(cards[i], self.player) then
+			table.remove(cards, i)
+		else
+			i = i + 1
+		end
 	end
     for _,skill in ipairs(sgs.ai_skills) do
         if self:hasSkill(skill) then

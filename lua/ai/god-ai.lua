@@ -20,7 +20,8 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
 	if self.player:usedTimes("GongxinCard")>0 then return end
 	self:sort(self.enemies,"handcard")
 
-	return self.enemies[#self.enemies]
+	use.card = card
+	if use.to then use.to:append(self.enemies[#self.enemies]) end
 end
 
 --function shenlubu_ai:useTrickCard(card, use)
