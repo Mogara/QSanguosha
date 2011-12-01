@@ -165,7 +165,7 @@ wuqian_skill.getTurnUseCard=function(self)
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
 			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy) and
-				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) then return sgs.Card_Parse(card_str)
+				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) and card:IsAvailable(self.player) then return sgs.Card_Parse(card_str)
 			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
 			end
 		end
@@ -359,24 +359,18 @@ end
 sgs.ai_skill_invoke.lianpo = true
 
 sgs.ai_skill_invoke.jilve=function(self,data)
-	local struct
 	local n=self.player:getMark("@bear")
 	local use=(n>2 or self:getOverflow()>0)
-	struct=data:toCard()
-	if not struct then
-		struct=data:toCardUse()
-		if struct then
-			if not struct.card then struct=nil elseif struct.card:inherits("ExNihilo") then use=true end
-		end
+	if sgs.lastevent == sgs.AskForRetrial or sgs.lastevent == sgs.StartJudge then
+		local judge = data:toJudge()
+		return (use or judge.who == self.player) and self:needRetrial(judge)
+	elseif sgs.lastevent == sgs.Damage then
+		return use and self:askForUseCard("@@fangzhu","@fangzhu")~="."
+	else
+		local card = data:toCard()
+		card = card or data:toCardUse().card
+		return use or card:inherits("ExNihilo")
 	end
-	if struct then return use end
-	struct=data:toDamage()
-	if struct then if not struct.to==self.player then struct=nil end end
-	if struct then return (use and self:askForUseCard("@@fangzhu","@fangzhu")~=".") end
-	struct=data:toJudge()
-	if struct then if not struct.card then struct=nil end end
-	if not struct then assert(false) end
-	return (use and sgs.ai_skill_invoke["@guicai"](self,"dummyprompt",struct)~=".")
 end
 
 local jilve_skill={}
@@ -416,4 +410,18 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 	self:sort(targetlist, "hp")
 	if self.player:getRole() == "loyalist" and targetlist[1]:isLord() then return targetlist[2] end
 	return targetlist[1]
+end
+
+local longhun_skill={}
+longhun_skill.name="longhun"
+table.insert(sgs.ai_skills, longhun_skill)
+longhun_skill.getTurnUseCard = function(self)
+	if self.player:getHp()>1 then return end
+	local cards=sgs.QList2Table(self.player:getCards("he"))
+	self:sortByUseValue(cards,true)
+	for _, card in ipairs(cards) do
+		if card:getSuit() == sgs.Card_Diamond then
+			return sgs.Card_Parse(("fire_slash:longhun[%s:%s]=%d"):format(card:getSuitString(),card:getNumberString(),card:getId()))
+		end
+	end
 end

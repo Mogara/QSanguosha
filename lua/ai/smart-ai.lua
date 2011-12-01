@@ -506,6 +506,7 @@ function SmartAI:sort(players, key)
 end
 
 function SmartAI:filterEvent(event, player, data)
+	sgs.lastevent = event
 	if event==sgs.ChoiceMade then
 		local carduse=data:toCardUse()
 		if carduse and carduse:isValid() then
@@ -519,12 +520,12 @@ function SmartAI:filterEvent(event, player, data)
 			end
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
-			if promptlist[1] == "cardResponsed" and promptlist[4] ~= "_nil_" then
-				if promptlist[3] == "@hujia-jink" then
+			if promptlist[1] == "cardResponsed" then
+				if promptlist[3] == "@hujia-jink" and promptlist[5] ~= "_nil_" then
 					sgs.hujiasource = nil
-				elseif promptlist[3] == "@jijiang-slash" then
+				elseif promptlist[3] == "@jijiang-slash" and promptlist[5] ~= "_nil_" then
 					sgs.jijiangsource = nil
-				elseif promptlist[3] == "@lianli-jink" then
+				elseif promptlist[3] == "@lianli-jink" and promptlist[4] ~= "_nil_" then
 					sgs.lianlisource = nil
 				end
 			elseif promptlist[1] == "skillInvoke" and promptlist[3] == "yes" then
@@ -947,7 +948,7 @@ local function getSkillViewCard(card, class_name, player, card_place)
 	if class_name == "Slash" then
 		if player:hasSkill("longhun") and player:getHp() <= 1 then
 			if card:getSuit() == sgs.Card_Diamond then
-				return ("slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
+				return ("fire_slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
 			end
 		end	
 		if player:hasSkill("wusheng") then
@@ -2835,11 +2836,13 @@ function SmartAI:askForCard(pattern, prompt, data)
 	elseif pattern == "jink" then
 		if (parsedPrompt[1] == "@wushuang-jink-1" or parsedPrompt[1] == "@roulin1-jink-1" or parsedPrompt[1] == "@roulin2-jink-1") 
 			and self:getCardsNum("Jink") < 2 then return "." end
+		if parsedPrompt[1] == "archery-attack-jink" then
+			if self.player:hasSkill("shenjun") and target:getGender()~=self.player:getGender() then return "." end
+			if self.player:getMark("@fog") > 0 then return "." end
+		end
 		if target then
 			if self:isFriend(target) then
 				if parsedPrompt[1] == "archery-attack-jink"  then
-					if self.player:hasSkill("shenjun") and target:getGender()~=self.player:getGender() then return "." end
-					if self.player:getMark("@fog") > 0 then return "." end
 					local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)	
 					if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 				end
@@ -2968,10 +2971,9 @@ function SmartAI:askForSinglePeach(dying)
 		else
 			card_str = self:getCardId("Peach")
 		end
-		if card_str then return sgs.Card_Parse(card_str) end
 	end
 	
-	return "."
+	return card_str or "."
 end
 
 function SmartAI:getChainedFriends()

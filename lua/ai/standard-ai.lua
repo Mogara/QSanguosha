@@ -158,8 +158,8 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_skill_invoke["@guicai"]=function(self,prompt,judge)
-	judge = judge or self.player:getTag("Judge"):toJudge()
+sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
+	local judge = self.player:getTag("Judge"):toJudge()
 
 	if self:needRetrial(judge) then
 		local cards = sgs.QList2Table(self.player:getHandcards())
