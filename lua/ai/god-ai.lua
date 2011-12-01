@@ -363,7 +363,8 @@ sgs.ai_skill_invoke.jilve=function(self,data)
 	local use=(n>2 or self:getOverflow()>0)
 	if sgs.lastevent == sgs.AskForRetrial or sgs.lastevent == sgs.StartJudge then
 		local judge = data:toJudge()
-		return (use or judge.who == self.player) and self:needRetrial(judge)
+		if not self:needRetrial(judge) then return false end
+		return (use or judge.who == self.player) and self:getRetrialCardId(sgs.QList2Table(self.player:getHandcards()),judge) ~= -1
 	elseif sgs.lastevent == sgs.Damage then
 		return use and self:askForUseCard("@@fangzhu","@fangzhu")~="."
 	else
