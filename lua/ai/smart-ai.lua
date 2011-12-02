@@ -2716,7 +2716,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if p:getMark("@tied")>0 then target = p break end
 		end
 		if not self:isFriend(target) then return "." end
-		if parsedPrompt[1] then return self:getCardId("Slash") or "." else return self:getCardId("Jink") or "." end
+		if parsedPrompt[1] == "@lianli-slash" then return self:getCardId("Slash") or "." else return self:getCardId("Jink") or "." end
 	elseif parsedPrompt[1] == "@jijiang-slash" then
 		if not self:isFriend(sgs.jijiangsource) then return "." end
 		return self:getCardId("Slash") or "."
