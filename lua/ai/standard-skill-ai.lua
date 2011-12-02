@@ -247,7 +247,7 @@ jieyin_skill.getTurnUseCard=function(self)
 		local first, second
 		self:sortByUseValue(cards,true)
 		for _, card in ipairs(cards) do
-			if card:getTypeId() ~= sgs.Card_Equip then
+			if card:getTypeId() ~= sgs.Card_Equip and not (card:inherits("Shit") and self:isWeak() and self:getAllPeachNum()==0) then
 				if not first then first  = cards[1]:getEffectiveId()
 				else second = cards[2]:getEffectiveId()
 				end
@@ -570,7 +570,7 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		for _, zcard in sgs.qlist(zcards) do
-			if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") then
+			if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") and not self.player:isJilei(zcard) then
 				table.insert(unpreferedCards,zcard:getId())
 			end	
 		end

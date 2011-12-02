@@ -201,9 +201,15 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 	for _, friend in ipairs(self.friends) do
 		for _, enemy in ipairs(self.enemies) do
 			if not self:hasSkills(sgs.lose_equip_skill, enemy) then
-				if ((self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e"))<= lost_hp) and
-					(self:getCardsNum(".", enemy, "e")>=self:getCardsNum(".", friend, "e")) and
-					(self:getCardsNum(".", enemy, "e")>0) then
+				local ee = self:getCardsNum(".",enemy,"e")
+				if self:isEquip("GaleShell", enemy) then ee = ee - 1 end
+				local fe = self:getCardsNum(".",friend, "e")
+				if self:isEquip("GaleShell", friend) then fe = fe - 1 end
+				local value = self:evaluateArmor(enemy:getArmor(),friend) - self:evaluateArmor(friend:getArmor(),enemy)
+					- self:evaluateArmor(friend:getArmor(),friend) + self:evaluateArmor(enemy:getArmor(),enemy)
+				if self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e") <= lost_hp and
+					self:getCardsNum(".", enemy, "e")>0 and
+					(ee > fe or (ee == fe and value>0)) then
 					use.card = sgs.Card_Parse("@GanluCard=.")
 					if use.to then
 						use.to:append(friend)
@@ -212,6 +218,22 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 					return
 				end
 			end
+		end
+	end
+
+	target = nil
+	for _,friend in ipairs(self.friends) do
+		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) then target = friend break end
+	end
+	if not target then return end
+	for _,friend in ipairs(self.friends) do
+		if friend~=target and math.abs(self:getCardsNum(".", friend, "e")-self:getCardsNum(".", target, "e")) <= lost_hp then
+			use.card = sgs.Card_Parse("@GanluCard=.")
+			if use.to then
+				use.to:append(friend)
+				use.to:append(target)
+			end
+			return
 		end
 	end
 end
