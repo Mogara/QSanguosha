@@ -81,6 +81,7 @@ return {
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 
 	["sp_machao"] = "SP马超",
+	["sp_jiaxu"] = "SP贾诩",
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["sp_moonspear"] = "SP银月枪",

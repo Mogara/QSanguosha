@@ -399,6 +399,10 @@ SPPackage::SPPackage()
     sp_machao->addSkill("mashu");
     sp_machao->addSkill("tieji");
 
+    General *sp_jiaxu = new General(this, "sp_jiaxu", "wei", 3, true, true);
+    sp_jiaxu->addSkill("wansha");
+    sp_jiaxu->addSkill("luanwu");
+    sp_jiaxu->addSkill("weimu");
 }
 
 ADD_PACKAGE(SP);
