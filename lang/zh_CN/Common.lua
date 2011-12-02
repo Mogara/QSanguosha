@@ -75,7 +75,7 @@ return {
 	["$MoveCard"] = "%to 从 %from 处得到了 %card",
 	["$PasteCard"] = "%from 给 %to 贴了张 %card",
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
-	["$DiscardCard"] = "%from 弃了 %card",
+	["$DiscardCard"] = "%from 弃置了 %card",
 	["$RecycleCard"] = "%from 从弃牌堆回收了 %card",
 	["$Dismantlement"] = "%from 被拆掉了 %card",
 	["$ShowCard"] = "%from 展示了 %card",
