@@ -28,6 +28,14 @@ public:
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card) const = 0;
 };
 
+class SPConvertSkill: public GameStartSkill{
+public:
+    SPConvertSkill(const QString &name, const QString &from, const QString &to);
+
+    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual void onGameStart(ServerPlayer *player) const;
+};
+
 class DistanceSkill: public Skill{
 public:
     DistanceSkill(const QString &name);
