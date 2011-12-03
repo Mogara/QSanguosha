@@ -77,14 +77,16 @@ return {
 	["guixiang"] = "归乡",
 	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
 	
+	["sp_jiaxu"] = "SP贾诩",
 	["guiwei"] = "归魏",
 	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
+	["cv:sp_jiaxu"] = "落凤一箭",
 	
 	["fanqun"] = "返群",
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
 
 	["sp_machao"] = "SP马超",
-	["sp_jiaxu"] = "SP贾诩",
+	
 --sp_card
 	["sp_cards"] = "SP卡牌包",
 	["sp_moonspear"] = "SP银月枪",
