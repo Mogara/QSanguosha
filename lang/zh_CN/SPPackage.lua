@@ -24,7 +24,6 @@ return {
 
 	["sp_diaochan"] = "SP貂蝉",
 	["tuoqiao"] = "脱壳",
-	["$tuoqiao"] = "变身！",
 	["xuwei"] = "续尾",
 	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
 	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
@@ -45,17 +44,12 @@ return {
 	["$yongsi2"] = "呐~哈哈哈哈哈",
 	["$yongsi3"] = "呀呀呀呀呀呀",
 	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
-	["$weidi"] = "嘿嘿嘿嘿",
 	["~yuanshu"] = "呃呀~~~~~~~",
 
 	["~gongsunzan"] = "如今阵败吾已无颜苟活于世",
-	["~sp_sunshangxiang"] = "自古红颜多薄命啊",
-	["~sp_diaochan"] = "太美也是种罪过",
-	["~weipangde"] = "吾宁死于刀下，岂降汝乎",
 
 	["sp_sunshangxiang"] = "SP孙尚香",
 	["chujia"] = "出嫁",
-	["$chujia"] = "嗯嘿",
 	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
 
 	["shenlvbu1"] = "神吕布(1)",
