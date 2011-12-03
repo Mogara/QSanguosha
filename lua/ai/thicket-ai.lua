@@ -137,7 +137,7 @@ end
 
 -- haoshi
 sgs.ai_skill_invoke.haoshi = function(self, data)
-	if self.player:getHandcardNum() <= 1 then
+	if self.player:getHandcardNum() <= 1 and not self.player:hasSkill("yongsi") then
 		return true
 	end
 

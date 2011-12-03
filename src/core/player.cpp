@@ -727,13 +727,13 @@ bool Player::isJilei(const Card *card) const{
 
         foreach(int card_id, card->getSubcards()){
             const Card *c = Sanguosha->getCard(card_id);
-            if(jilei_set.contains(c->getTypeId()))
+            if(jilei_set.contains(c->getTypeId())&&!(c->isEquipped()))
                 return true;
         }
 
         return false;
     }else
-        return jilei_set.contains(type);
+        return jilei_set.contains(type)&&!(card->isEquipped());
 }
 
 bool Player::isCaoCao() const{
