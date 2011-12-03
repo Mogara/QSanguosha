@@ -1279,7 +1279,7 @@ GodPackage::GodPackage()
     shenlubu->addSkill(new Wuqian);
     shenlubu->addSkill(new Shenfen);
 
-    related_skills.insertMulti("kuangbao", "#@wrath");
+    related_skills.insertMulti("kuangbao", "#@wrath-2");
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2);
     shenzhaoyun->addSkill(new Juejing);

@@ -555,7 +555,7 @@ FirePackage::FirePackage()
     pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
 
-    related_skills.insertMulti("niepan", "#@nirvana");
+    related_skills.insertMulti("niepan", "#@nirvana-1");
 
     taishici = new General(this, "taishici", "wu");
     taishici->addSkill(new Tianyi);
