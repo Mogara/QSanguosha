@@ -253,22 +253,6 @@ public:
     }
 };
 
-class Guixiang: public GameStartSkill{
-public:
-    Guixiang():GameStartSkill("guixiang"){
-        frequency = Limited;
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        if(player->getGeneralName() == "caiwenji"
-           && player->askForSkillInvoke(objectName()))
-        {
-            player->getRoom()->setPlayerProperty(player, "general", "sp_caiwenji");
-            player->getRoom()->setPlayerProperty(player, "kingdom", "wei");
-        }
-    }
-};
-
 class Tuntian: public DistanceSkill{
 public:
     Tuntian():DistanceSkill("tuntian"){
@@ -1154,7 +1138,7 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false);
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new Guixiang);
+    caiwenji->addSkill(new SPConvertSkill("guixiang", "caiwenji", "sp_caiwenji"));
 
     General *zuoci = new General(this, "zuoci", "qun", 3);
     zuoci->addSkill(new Huashen);
