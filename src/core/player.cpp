@@ -293,7 +293,7 @@ bool Player::hasLordSkill(const QString &skill_name) const{
         return true;
 
     QString mode = getGameMode();
-    if(mode == "06_3v3" || mode == "02_1v1" || mode == "02p")
+    if(mode == "06_3v3" || mode == "02_1v1")
         return false;
 
     if(isLord())
