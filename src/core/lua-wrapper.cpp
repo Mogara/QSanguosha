@@ -101,6 +101,7 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str){
     }
 
     new_card->setUserString(user_string);
+    new_card->setSkillName(name);
     return new_card;
 }
 
