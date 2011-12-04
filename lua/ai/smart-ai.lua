@@ -876,7 +876,7 @@ function SmartAI:slashIsEffective(slash, to)
 		ThunderSlash = sgs.DamageStruct_Thunder,
 	}
 
-	if not self:damageIsEffective(player, nature[slash:className()]) then return false end
+	if not self:damageIsEffective(to, nature[slash:className()]) then return false end
 
 	if self.player:hasWeapon("qinggang_sword") or (self.player:hasFlag("xianzhen_success") and self.room:getTag("XianzhenTarget"):toPlayer() == to) then
 		return true
