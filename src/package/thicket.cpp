@@ -232,7 +232,7 @@ public:
         }
 
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = zhurong->tag.value("LierenTarget", NULL).value<ServerPlayer *>();
+        ServerPlayer *target = zhurong->tag["LierenTarget"].value<ServerPlayer *>();
         if(target && damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
             && !target->isKongcheng() && target != zhurong){
             Room *room = zhurong->getRoom();
