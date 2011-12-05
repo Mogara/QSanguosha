@@ -373,7 +373,7 @@ local lexue_skill={name="lexue"}
 table.insert(sgs.ai_skills,lexue_skill)
 lexue_skill.getTurnUseCard = function(self)
 	if not self.player:hasUsed("LexueCard") then return sgs.Card_Parse("@LexueCard=.") end
-	if self.player:hasFlag("lexue") and self.lexuesuccess then return sgs.Card_Parse("@LexueCard=.") end
+	if self.player:hasFlag("lexue") then return sgs.Card_Parse("@LexueCard=.") end
 end
 
 sgs.ai_skill_use_func["LexueCard"] = function(card, use, self)
@@ -383,30 +383,36 @@ sgs.ai_skill_use_func["LexueCard"] = function(card, use, self)
 		self:sortByUseValue(cards, true)
 		for _, hcard in ipairs(cards) do
 			if hcard:getSuit() == lexuesrc:getSuit() then
-				local lexue = ("%s:lexue[%s:%s]=%d"):format(lexuesrc:objectName(),
-					lexuesrc:getSuitString(), lexuesrc:getNumberString(), hcard:getId())
-				lexue = sgs.Card_Parse(lexue)
-				if self:getUseValue(lexue) > self:getUseValue(hcard) then
-					if lexue:inherits("BasicCard") then
-						self:useBasicCard(lexue, use)
+				local lexue = sgs.Sanguosha:cloneCard(lexuesrc:objectName(), lexuesrc:getSuit(), lexuesrc:getNumber())
+				lexue:addSubcard(hcard:getId())
+				lexue:setSkillName("lexue")
+				if self:getUseValue(lexuesrc) > self:getUseValue(hcard) then
+					if lexuesrc:inherits("BasicCard") then
+						self:useBasicCard(lexuesrc, use)
+						if use.card then use.card = lexue return end
 					else
-						self:useTrickCard(lexue, use)
+						self:useTrickCard(lexuesrc, use)
+						if use.card then use.card = lexue return end
 					end
 				end
 			end						
 		end
 	else
-		use.card = card
-		if use.to then
-			self:sort(self.enemies, "hp")
-			enemy = self.enemies[1]
-			if self:isWeak(enemy) and not enemy:isKongcheng() then
-				use.to:append(enemy)
-				return
-			end
+		local target
+		self:sort(self.enemies, "hp")
+		enemy = self.enemies[1]
+		if self:isWeak(enemy) and not enemy:isKongcheng() then
+			target = enemy
+		else
 			self:sort(self.friends_noself, "handcard")
-			friend = self.friends_noself[#self.friends_noself]
-			if not friend:isKongcheng() then use.to:append(friend) end
+			target = self.friends_noself[#self.friends_noself]
+			if target:isKongcheng() then target = nil end
 		end
+		if not target then
+			self:sort(self.enemies,"handcard")
+			if not self.enemies[1]:isKongcheng() then target = self.enemies[1] else return end
+		end
+		use.card = card
+		if use.to then use.to:append(target) end
 	end
 end
