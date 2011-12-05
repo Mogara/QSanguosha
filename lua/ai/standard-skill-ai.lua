@@ -418,7 +418,7 @@ local rende_skill={}
 rende_skill.name="rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard=function(self)
-	if self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit") then 
+	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit")) and not self.player:isKongcheng() then 
 		local card_id = self:getCardRandomly(self.player, "h")
 		return sgs.Card_Parse("@RendeCard=" .. card_id)
 	end
