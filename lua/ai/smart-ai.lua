@@ -992,7 +992,7 @@ local function getSkillViewCard(card, class_name, player, card_place)
 				return ("peach:longhun[%s:%s]=%d"):format(suit, number, card_id)
 			end
 		end	
-		if player:hasSkill("jijiu") and card:isRed() and self.room:getCurrent()~=player then 
+		if player:hasSkill("jijiu") and card:isRed() and player:getPhase()==sgs.Player_NotActive then 
 			return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
 		end
 	elseif class_name == "Analeptic" then
