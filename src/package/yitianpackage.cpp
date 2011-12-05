@@ -161,6 +161,10 @@ public:
         return PhaseChangeSkill::triggerable(target) && target->getPhase() == Player::Discard;
     }
 
+    virtual int getPriority() const{
+        return 3;
+    }
+
     virtual bool onPhaseChange(ServerPlayer *) const{
         return true;
     }
