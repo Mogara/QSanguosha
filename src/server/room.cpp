@@ -1536,8 +1536,7 @@ void Room::run(){
             names << general->objectName();
         }
 
-        names.removeOne("wuxingzhuge");
-        names.removeOne("zhibasunquan");
+        names.removeOne("yuji");
 
         foreach(ServerPlayer *player, players){
             if(player == lord)
