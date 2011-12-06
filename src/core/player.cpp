@@ -436,11 +436,9 @@ Player::Phase Player::getPhase() const{
 }
 
 void Player::setPhase(Phase phase){
-    if(this->phase != phase){
-        this->phase = phase;
+    this->phase = phase;
 
-        emit phase_changed();
-    }
+    emit phase_changed();
 }
 
 bool Player::faceUp() const{
