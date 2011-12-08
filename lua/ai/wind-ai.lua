@@ -154,7 +154,6 @@ table.insert(sgs.ai_skills,huangtianv_skill)
 
 huangtianv_skill.getTurnUseCard=function(self)
     if self.player:hasUsed("HuangtianCard") then return nil end
-    if self.player:isLord() then return nil end
     if self.player:getKingdom() ~= "qun" then return nil end
 
     local cards = self.player:getCards("h")	
@@ -186,7 +185,7 @@ end
 sgs.ai_skill_use_func["HuangtianCard"]=function(card,use,self)
     local targets = {}
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:hasLordSkill("Huangtian") then 
+		if friend:hasLordSkill("huangtian") then 
 			table.insert(targets, friend)
 		end
 	end

@@ -314,7 +314,7 @@ end
 local yisheask_skill={name="yisheask"}
 table.insert(sgs.ai_skills,yisheask_skill)
 yisheask_skill.getTurnUseCard = function(self)
-	for _, player in ipairs(self.friends_noself) do
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if player:hasSkill("yishe") and not player:getPile("rice"):isEmpty() then return sgs.Card_Parse("@YisheAskCard=.") end
 	end
 end
@@ -323,15 +323,16 @@ sgs.ai_skill_use_func["YisheAskCard"]=function(card,use,self)
 	if self.player:usedTimes("YisheAskCard")>1 then return end
 	local zhanglu
 	local cards
-	for _, player in ipairs(self.friends_noself) do
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if player:hasSkill("yishe") and not player:getPile("rice"):isEmpty() then zhanglu=player cards=player:getPile("rice") break end
 	end	
 	if not zhanglu then return end
 	cards = sgs.QList2Table(cards)
-	card_id = sgs.ai_skill_askforag.qixing(self, cards)
-	if card_id > -1 then
-		sgs.yisheasksource=self.player
-		use.card = card
+	for _, pcard in ipairs(cards) do
+		if not sgs.Sanguosha:getCard(pcard):inherits("Shit") then
+			use.card = card
+			return
+		end
 	end
 end
 
@@ -406,7 +407,7 @@ sgs.ai_skill_use_func["LexueCard"] = function(card, use, self)
 		else
 			self:sort(self.friends_noself, "handcard")
 			target = self.friends_noself[#self.friends_noself]
-			if target:isKongcheng() then target = nil end
+			if target and target:isKongcheng() then target = nil end
 		end
 		if not target then
 			self:sort(self.enemies,"handcard")

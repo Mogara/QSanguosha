@@ -1,7 +1,9 @@
 	-- this script file contains the AI classes for gods
 
--- guixin, always invoke
-sgs.ai_skill_invoke.guixin = true
+-- guixin
+sgs.ai_skill_invoke.guixin = function(self,data)
+	return self.room:alivePlayerCount() > 2
+end
 
 -- shelie
 sgs.ai_skill_invoke.shelie = true
@@ -24,14 +26,7 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
 	if use.to then use.to:append(self.enemies[#self.enemies]) end
 end
 
---function shenlubu_ai:useTrickCard(card, use)
---	if self.player:getMark("@wrath") > 0 then
-		--return super.useTrickCard(self, card, use)
-	--end
---end
-
 sgs.ai_skill_choice.wumou = "discard"
-
 
 --wushen
 wushen_skill={}
@@ -86,14 +81,10 @@ end
 sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends) do
-		local cards = friend:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if (card:inherits("FireAttack") and friend:getHandcardNum() >= 4) or card:inherits("FireSlash") then
-				friendly_fire = true
-				break
-			end
+		if friend:hasSkill("huoji") or self:isEquip("Fan",friend) or (friend:hasSkill("smallyeyan") and friend:getMark("@flame")>0) then
+			friendly_fire = true
+			break
 		end
-		if friendly_fire then break end
 	end
 
 	local is_chained = 0
@@ -125,20 +116,12 @@ end
 sgs.ai_skill_use["@dawu"] = function(self, prompt)
 	self:sort(self.friends, "hp")
 	for _, friend in ipairs(self.friends) do
-		if friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then
+		if friend:getHp()<=1 or
+			(friend:getHp()==2 and (not friend:getArmor() or friend:getArmor():inherits("GaleShell")) and friend:getHandcardNum() < 2) then
 			return "@DawuCard=.->" .. friend:objectName()
 		end
 	end
-
 	return "."
-end
-
-sgs.ai_skill_playerchosen.dawu = function(self, targets)
-	for _, friend in sgs.qlist(targets) do
-		if self:isFriend(friend) and friend:getHp() == 1 and not friend:getArmor() and friend:getHandcardNum() <= friend:getHp() then return friend end
-	end
-
-	return self.friends[1]
 end
 
 --wumou
@@ -165,7 +148,7 @@ wuqian_skill.getTurnUseCard=function(self)
 	if has_enemy and self:getCardsNum("Slash") > 0 then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
 			if card:inherits("Slash") and self:slashIsEffective(card, has_enemy) and self.player:canSlash(has_enemy) and
-				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) and card:IsAvailable(self.player) then return sgs.Card_Parse(card_str)
+				(self:getCardsNum("Analeptic") > 0 or has_enemy:getHp() <= 1) and card:isAvailable(self.player) then return sgs.Card_Parse(card_str)
 			elseif card:inherits("Duel") then return sgs.Card_Parse(card_str)
 			end
 		end
@@ -258,7 +241,7 @@ yeyan_skill.getTurnUseCard=function(self)
 	local target_num = 0
 	local chained = 0
 	for _, enemy in ipairs(self.enemies) do
-		if self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getHp()<=1 then 
+		if self:isEquip("Vine", enemy) or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale")>0 or enemy:getHp()<=1 then
 			target_num = target_num + 1
 		end
 	end
@@ -270,7 +253,7 @@ yeyan_skill.getTurnUseCard=function(self)
 	end
 	self.yeyanchained = (chained > 1)
 	if target_num > 2 or (target_num > 1 and self.yeyanchained) or
-	(#self.enemies + 1 == self.room:alivePlayerCount() and self.room:alivePalyerCount() < sgs.Sanguosha:getPlayerCount(self.room:getMode())) then
+	(#self.enemies + 1 == self.room:alivePlayerCount() and self.room:alivePlayerCount() < sgs.Sanguosha:getPlayerCount(self.room:getMode())) then
 		return sgs.Card_Parse("@SmallYeyanCard=.")
 	end
 end
@@ -280,21 +263,23 @@ sgs.ai_skill_use_func["SmallYeyanCard"]=function(card,use,self)
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if num >=3 then break end
-		if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then
+		if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0 then
 			if use.to then use.to:append(enemy) end
 			num = num + 1
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if num >=3 then break end
-		if self.yeyanchained and enemy:isChained() and not (self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy)) then
+		if self.yeyanchained and enemy:isChained() and not
+			(self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0) then
 			if use.to then use.to:append(enemy) end
 			num = num + 1
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if num >= 3 then break end
-		if not ((self.yeyanchained and enemy:isChained()) or (self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy))) then
+		if not ((self.yeyanchained and enemy:isChained()) or
+			(self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0)) then
 			if use.to then use.to:append(enemy) end
 			num = num + 1
 		end

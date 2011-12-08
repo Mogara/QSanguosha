@@ -515,6 +515,11 @@ function SmartAI:filterEvent(event, player, data)
 			else
 				sgs.jijiangsource = nil
 			end
+			if carduse.card:inherits("YisheAskCard") then
+				sgs.yisheasksource = player
+			else
+				sgs.yisheasksource = nil
+			end
 			if carduse.card:inherits("GuhuoCard") then
 				sgs.questioner = nil
 			end
@@ -931,6 +936,7 @@ local function prohibitUseDirectly(card, player)
 	if player:hasSkill("jiejiu") then return card:inherits("Analeptic") 
 	elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
 	elseif player:hasSkill("ganran") then return card:getTypeId() == sgs.Card_Equip
+	elseif player:hasSkill("wumou") then return card:isNDTrick() and player:getMark("@wrath") == 0 and player:getHp()<3
 	end
 end
 
@@ -1066,7 +1072,7 @@ function SmartAI:slashProhibit(card,enemy)
 			self:slashIsEffective(card,enemy) then return true end
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
-		if enemy:hasSkill("duanchang") or enemy:hasSkill("huilei") and self:isWeak(enemy) then return true end
+		if (enemy:hasSkill("duanchang") or enemy:hasSkill("huilei") or enemy:hasSkill("dushi")) and self:isWeak(enemy) then return true end
     else    
 		if enemy:hasSkill("liuli") then 
 			if enemy:getHandcardNum() < 1 then return false end
@@ -1075,8 +1081,10 @@ function SmartAI:slashProhibit(card,enemy)
 			end
 		end
 		
-		if enemy:hasSkill("leiji") then 
-			if self.player:hasSkill("tieji") or self.player:hasSkill("liegong") then return false end
+		if enemy:hasSkill("leiji") then
+			local hcard = enemy:getHandcardNum()
+			if self.player:hasSkill("tieji") or 
+				(self.player:hasSkill("liegong") and (hcard>=self.player:getHp() or hcard<=self.player:getAttackRange())) then return false end
 			
 			if enemy:getHandcardNum() >= 2 then return true end
 			if self:isEquip("EightDiagram", enemy) then 
@@ -1117,6 +1125,8 @@ function SmartAI:slashProhibit(card,enemy)
 					if friend:getMark("@nightmare") == mark and (not self:isWeak(friend) or friend:isLord()) and
 						not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 				end
+				if self.player:getRole()~="rebel" and self.room:getLord():getMark("@nightmare") == mark and
+					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 			end
 		end
 
@@ -1128,6 +1138,8 @@ function SmartAI:slashProhibit(card,enemy)
 			(self.player:getHandcardNum()>3 or self:getCardsNum("Shit")>0) then
 			return true
 		end
+		
+		if enemy:hasSkill("dushi") and self.player:isLord() and self:isWeak(enemy) then return true end
 	end
 
 	return not self:slashIsEffective(card, enemy)
@@ -2640,10 +2652,6 @@ function SmartAI:askForCardChosen(who, flags, reason)
 					if who:distanceTo(enemy) <= 1 then return who:getWeapon():getId() end
 				end
 			end
-
-			if who:getArmor() and self:evaluateArmor(who:getArmor(),who)>3 then
-				return who:getArmor():getId()
-			end
 			
 			if who:getDefensiveHorse() then
 				for _,friend in ipairs(self.friends) do
@@ -2651,6 +2659,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 					 	return who:getDefensiveHorse():getId()
 					end
 				end
+			end
+			
+			if who:getArmor() and self:evaluateArmor(who:getArmor(),who)>3 then
+				return who:getArmor():getId()
 			end
 		end
 

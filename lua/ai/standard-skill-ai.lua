@@ -418,6 +418,13 @@ local rende_skill={}
 rende_skill.name="rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard=function(self)
+	for _, player in ipairs(self.friends_noself) do
+		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
+			or player:hasSkill("longluo")) and player:faceUp() and not self.player:isKongcheng() then
+			local card_id = self:getCardRandomly(self.player, "h")
+			return sgs.Card_Parse("@RendeCard=" .. card_id)
+		end
+	end
 	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit")) and not self.player:isKongcheng() then 
 		local card_id = self:getCardRandomly(self.player, "h")
 		return sgs.Card_Parse("@RendeCard=" .. card_id)
@@ -543,15 +550,38 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		if #self.friends_noself == 0 then return end
 		
 		self:sort(self.friends_noself, "handcard")
-		local friend = self.friends_noself[1]
+		local friend
+		for _, player in ipairs(self.friends_noself) do
+			if (player:isKongcheng() and (player:hasSkill("kongcheng") or (player:hasSkill("zhiji") and not player:hasSkill("guanxing")))) or
+				(not self:isWeak(player) and self:hasSkills(sgs.need_kongcheng,player)) then
+			else friend = player break end
+		end
+		if not friend then return end
 		local card_id = self:getCardRandomly(self.player, "h")
 		if not sgs.Sanguosha:getCard(card_id):inherits("Shit") then
 			use.card = sgs.Card_Parse("@RendeCard=" .. card_id)
+			if use.to then use.to:append(friend) end
+			return
 		end
-		if use.to then use.to:append(friend) end
-		return
     end
 	
+	local special={}
+	for _,player in ipairs(self.friends_noself) do
+		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
+			or player:hasSkill("longluo")) and player:faceUp() then
+			table.insert(special, player)
+		end
+	end
+	
+	if #special == 0 then return end
+	self:sort(special, "defense")
+	for _, card in sgs.qlist(self.player:getHandcards()) do
+		if (not card:inherits("Jink") or self:getCardsNum("Jink")>1) and not card:inherits("Shit") then
+			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
+			if use.to then use.to:append(special[1]) end
+			return
+		end
+	end
 end
 
 local zhiheng_skill={}
@@ -570,7 +600,7 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		for _, zcard in sgs.qlist(zcards) do
-			if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") and not self.player:isJilei(zcard) then
+			if not zcard:inherits("Peach") and not zcard:inherits("ExNihilo") then
 				table.insert(unpreferedCards,zcard:getId())
 			end	
 		end
@@ -624,6 +654,10 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
 			end
 		end	
 	end	
+	
+	for index = #unpreferedCards, 1, -1 do
+		if self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.remove(unpreferedCards, index) end
+	end
 	
 	if #unpreferedCards>0 then 
 		use.card = sgs.Card_Parse("@ZhihengCard="..table.concat(unpreferedCards,"+")) 
