@@ -22,8 +22,15 @@ sgs.ai_skill_use_func["GongxinCard"]=function(card,use,self)
 	if self.player:usedTimes("GongxinCard")>0 then return end
 	self:sort(self.enemies,"handcard")
 
-	use.card = card
-	if use.to then use.to:append(self.enemies[#self.enemies]) end
+	for index = #self.enemies, 1, -1 do
+		if not self.enemies[index]:isKongcheng() then
+			use.card = card
+			if use.to then
+				use.to:append(self.enemies[index])
+			end
+			return
+		end
+	end
 end
 
 sgs.ai_skill_choice.wumou = "discard"
@@ -178,6 +185,7 @@ shenfen_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func["ShenfenCard"]=function(card,use,self)
+	if self:isFriend(self.room:getLord()) and self:isWeak(self.room:getLord()) and not self.player:isLord() then return end
 	use.card = card
 end
 

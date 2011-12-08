@@ -936,7 +936,7 @@ local function prohibitUseDirectly(card, player)
 	if player:hasSkill("jiejiu") then return card:inherits("Analeptic") 
 	elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
 	elseif player:hasSkill("ganran") then return card:getTypeId() == sgs.Card_Equip
-	elseif player:hasSkill("wumou") then return card:isNDTrick() and player:getMark("@wrath") == 0 and player:getHp()<3
+	elseif player:hasSkill("wumou") then return card:isNDTrick() and not card:inherits("AOE")
 	end
 end
 
