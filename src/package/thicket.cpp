@@ -256,7 +256,7 @@ public:
                 }
             }
         }
-        zhurong->tag["LierenTarget"] = NULL;
+        zhurong->tag.remove("LierenTarget");
         return false;
     }
 };
