@@ -220,21 +220,14 @@ public:
 class Lieren: public TriggerSkill{
 public:
     Lieren():TriggerSkill("lieren"){
-        events << SlashHit << Damage;
+        events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent event, ServerPlayer *zhurong, QVariant &data) const{
-        if(event == SlashHit){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if(effect.to)
-                zhurong->tag["LierenTarget"] = QVariant::fromValue(effect.to);
-            return false;
-        }
-
+    virtual bool trigger(TriggerEvent , ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = zhurong->tag["LierenTarget"].value<ServerPlayer *>();
-        if(target && damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
-            && !target->isKongcheng() && target != zhurong){
+        ServerPlayer *target = damage.to;
+        if(damage.card && damage.card->inherits("Slash") && !zhurong->isKongcheng()
+            && !target->isKongcheng() && target != zhurong && !damage.chain){
             Room *room = zhurong->getRoom();
             if(room->askForSkillInvoke(zhurong, objectName(), data)){
                 room->playSkillEffect(objectName(), 1);
@@ -256,7 +249,7 @@ public:
                 }
             }
         }
-        zhurong->tag.remove("LierenTarget");
+
         return false;
     }
 };
