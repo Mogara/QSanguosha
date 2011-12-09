@@ -126,7 +126,6 @@ public:
     void changeTextEditBackground();
     void adjustItems();
     void showIndicator(const QString &from, const QString &to);
-    void updateStateItem(char* roles);
 
     static void FillPlayerNames(QComboBox *combobox, bool add_none);
 
@@ -281,7 +280,7 @@ private slots:
     void showOwnerButtons(bool owner);
     void showJudgeResult(const QString &who, const QString &result);
     void showPlayerCards();
-    void update_state_item(const QString& qstr);
+    void updateStateItem(const QString &roles);
 
     void clearPile();
     void removeLightBox();
