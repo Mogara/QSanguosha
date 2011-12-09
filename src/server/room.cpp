@@ -184,31 +184,21 @@ void Room::revivePlayer(ServerPlayer *player){
     broadcastInvoke("revivePlayer", player->objectName());
 }
 
-QString Room::getRoleStateString()
-{
-    int lords=0,rebels=0,loyals=0,renes=0;
-    foreach(ServerPlayer * player,getAlivePlayers())
-    {
-        switch(player->getRoleEnum())
-        {
-        case Player::Lord:
-            lords++;break;
-            case Player::Renegade:
-            renes++;break;
-            case Player::Rebel:
-            rebels++;break;
-            case Player::Loyalist:
-            loyals++;break;
-        default:
-            break;
-        }
+QString Room::getRoleStateString(){
+    int table[4] = {0};
+    foreach(ServerPlayer *player, alive_players){
+        table[player->getRoleEnum()] ++;
     }
-    QString op="";
-    for(int i=0;i<lords;i++)op+="Z";
-    for(int i=0;i<loyals;i++)op+="C";
-    for(int i=0;i<rebels;i++)op+="F";
-    for(int i=0;i<renes;i++)op+="N";
-    return op;
+
+    char buffer[256] = {0};
+    char *p = buffer;
+    for(int i=0; i<4; i++){
+        int count = table[i];
+        memset(p, i["ZCFN"], count);
+        p += count;
+    }
+
+    return buffer;
 }
 
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
