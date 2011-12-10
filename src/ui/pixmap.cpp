@@ -55,7 +55,7 @@ void Pixmap::MakeGray(QPixmap &pixmap){
         for(j=0; j<img.height(); j++){
             QRgb color = img.pixel(i, j);
             int gray = qGray(color);
-            color = qRgb(gray, gray, gray);
+            color = qRgba(gray, gray, gray, qAlpha(color));
             img.setPixel(i, j, color);
         }
     }

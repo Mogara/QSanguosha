@@ -185,21 +185,29 @@ void Room::revivePlayer(ServerPlayer *player){
     broadcastInvoke("updateStateItem", getRoleStateString());
 }
 
+static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2){
+    int role1 = player1->getRoleEnum();
+    int role2 = player2->getRoleEnum();
+
+    if(role1 != role2)
+        return role1 < role2;
+    else
+        return player1->isAlive();
+}
+
 QString Room::getRoleStateString(){
-    int table[4] = {0};
-    foreach(ServerPlayer *player, alive_players){
-        table[player->getRoleEnum()] ++;
+    QList<ServerPlayer *> players = this->players;
+    qSort(players.begin(), players.end(), CompareByRole);
+    QString roles;
+    foreach(ServerPlayer *p, players){
+        QChar c = "ZCFN"[p->getRoleEnum()];
+        if(p->isDead())
+            c = c.toLower();
+
+        roles.append(c);
     }
 
-    char buffer[256] = {0};
-    char *p = buffer;
-    for(int i=0; i<4; i++){
-        int count = table[i];
-        memset(p, i["ZCFN"], count);
-        p += count;
-    }
-
-    return buffer;
+    return roles;
 }
 
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
