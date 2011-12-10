@@ -182,7 +182,7 @@ void Room::revivePlayer(ServerPlayer *player){
     }
 
     broadcastInvoke("revivePlayer", player->objectName());
-    broadcastInvoke("updateStateItem", getRoleStateString());
+    updateStateItem();
 }
 
 static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2){
@@ -195,7 +195,7 @@ static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2){
         return player1->isAlive();
 }
 
-QString Room::getRoleStateString(){
+void Room::updateStateItem(){
     QList<ServerPlayer *> players = this->players;
     qSort(players.begin(), players.end(), CompareByRole);
     QString roles;
@@ -207,7 +207,7 @@ QString Room::getRoleStateString(){
         roles.append(c);
     }
 
-    return roles;
+    broadcastInvoke("updateStateItem", roles);
 }
 
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
@@ -238,7 +238,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     log.arg = victim->getRole();
     log.from = killer;
 
-    broadcastInvoke("updateStateItem", getRoleStateString());
+    updateStateItem();
 
     if(killer){
         if(killer == victim)
