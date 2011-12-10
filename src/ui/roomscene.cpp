@@ -3530,8 +3530,7 @@ void RoomScene::updateStateItem(const QString &roles)
         map[QChar('N')] = QPixmap("image/system/roles/small-renegade.png");
     }
 
-    for(int i=0; i<roles.length(); i++){
-        QChar c = roles.at(i);
+    foreach(QChar c, roles){
         if(map.contains(c)){
             QGraphicsPixmapItem *item = addPixmap(map.value(c));
             item->setPos(21*role_items.length(), 6);

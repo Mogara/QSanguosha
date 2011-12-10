@@ -182,6 +182,7 @@ void Room::revivePlayer(ServerPlayer *player){
     }
 
     broadcastInvoke("revivePlayer", player->objectName());
+    broadcastInvoke("updateStateItem", getRoleStateString());
 }
 
 QString Room::getRoleStateString(){
