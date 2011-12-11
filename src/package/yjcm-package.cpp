@@ -122,7 +122,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return analeptic->isAvailable(player) && player->faceUp();
+        return analeptic->IsAvailable(player) && player->faceUp();
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
