@@ -236,7 +236,6 @@ void Photo::setPlayer(const ClientPlayer *player)
         connect(player, SIGNAL(action_taken()), this, SLOT(setActionState()));
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
 
-
         mark_item->setDocument(player->getMarkDoc());
     }
 
@@ -293,6 +292,8 @@ void Photo::updateAvatar(){
 
         avatar_area->setToolTip(QString());
         small_avatar_area->setToolTip(QString());
+
+        ready_item->hide();
     }
 
     hide_avatar = false;

@@ -117,12 +117,14 @@ public:
 class Jiushi: public ZeroCardViewAsSkill{
 public:
     Jiushi():ZeroCardViewAsSkill("jiushi"){
-        analeptic = new Analeptic(Card::NoSuit, 0);
+        Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
         analeptic->setSkillName("jiushi");
+
+        this->analeptic = analeptic;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return analeptic->IsAvailable(player) && player->faceUp();
+        return Analeptic::IsAvailable(player) && player->faceUp();
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -138,7 +140,7 @@ public:
     }
 
 private:
-    Analeptic *analeptic;
+    const Analeptic *analeptic;
 };
 
 class JiushiFlip: public TriggerSkill{
