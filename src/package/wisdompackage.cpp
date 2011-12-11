@@ -757,7 +757,7 @@ bool ShouyeCard::targetFilter(const QList<const Player *> &targets, const Player
 void ShouyeCard::onEffect(const CardEffectStruct &effect) const{
     effect.to->drawCards(1);
     if(effect.from->getMark("jiehuo") == 0)
-        effect.from->addMark("shouye");
+        effect.from->gainMark("@shouye");
 }
 
 class Shouye: public OneCardViewAsSkill{
@@ -794,7 +794,7 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return target->getMark("jiehuo") == 0
-                && target->getMark("shouye") > 6;
+                && target->getMark("@shouye") > 6;
     }
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
@@ -803,12 +803,12 @@ public:
         LogMessage log;
         log.type = "#JiehuoWake";
         log.from = player;
-        log.arg = objectName();
+        log.arg = "jiehuo";
         log.arg2 = "shouye";
         room->sendLog(log);
 
         room->setPlayerMark(player, "jiehuo", 1);
-        room->setPlayerMark(player, "shouye", 0);
+        player->loseAllMarks("@shouye");
         room->setPlayerMark(player, "shouyeonce", 1);
         room->acquireSkill(player, "shien");
 
