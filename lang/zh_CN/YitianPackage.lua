@@ -69,6 +69,8 @@ return {
 
 	["lianli-slash"] = "连理（杀）",
 	["lianli-jink"] = "连理(闪)",
+	["lianli-slash:slash"] = "你是否想你的连理角色替你出杀？",
+	["lianli-jink:jink"] = "你是否想你的连理角色替你出闪？",
 	["@lianli-slash"] = "请提供一张杀给你的连理对象",
 	["@lianli-jink"] = "请提供一张闪给你的连理对象",
 
