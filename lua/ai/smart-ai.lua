@@ -551,6 +551,9 @@ function SmartAI:filterEvent(event, player, data)
 			if carduse.card:inherits("GuhuoCard") then
 				sgs.questioner = nil
 			end
+			if carduse.card:inherits("LianliSlashCard") then
+				sgs.lianlislash = false
+			end
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
 			if promptlist[1] == "cardResponsed" then
@@ -560,6 +563,8 @@ function SmartAI:filterEvent(event, player, data)
 					sgs.jijiangsource = nil
 				elseif promptlist[3] == "@lianli-jink" and promptlist[4] ~= "_nil_" then
 					sgs.lianlisource = nil
+				elseif promptlist[3] == "@lianli-slash" and promptlist[4] ~= "_nil_" then
+					sgs.lianlislash=true
 				end
 			elseif promptlist[1] == "skillInvoke" and promptlist[3] == "yes" then
 				if promptlist[2] == "hujia" then

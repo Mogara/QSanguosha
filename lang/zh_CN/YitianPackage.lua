@@ -68,6 +68,7 @@ return {
 	["~xiahoujuan"] = "行与子逝兮，归于其室",
 
 	["lianli-slash"] = "连理（杀）",
+	["lianlislash"] = "连理（杀）",
 	["lianli-jink"] = "连理(闪)",
 	["lianli-slash:slash"] = "你是否想你的连理角色替你出杀？",
 	["lianli-jink:jink"] = "你是否想你的连理角色替你出闪？",
