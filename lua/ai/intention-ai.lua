@@ -285,6 +285,30 @@ sgs.ai_card_intention["HouyuanCard"]=sgs.ai_card_intention["JujianCard"]
 
 sgs.ai_card_intention["BawangCard"]=sgs.ai_card_intention["ShensuCard"]
 
+sgs.ai_card_intention["WeidaiCard"]=sgs.ai_card_intention["Peach"]
+
+sgs.ai_card_intention["GongxinCard"]=sgs.ai_card_intention["TianyiCard"]
+
+sgs.ai_card_intention["SmallYeyanCard"]=sgs.ai_card_intention["QiangxiCard"]
+
+sgs.ai_card_intention["MediumYeyanCard"]=function(card,from,to,source)
+	return sgs.ai_card_intention.general(to, 200)
+end
+
+sgs.ai_card_intention["GreatYeyanCard"]=sgs.ai_card_intention["SmallYeyanCard"]
+
+sgs.ai_card_intention["WuqianCard"]=sgs.ai_card_intention["XianzhenCard"]
+
+sgs.ai_card_intention["KuangfengCard"]=function(card,from,to,source)
+	return sgs.ai_card_intention.general(to, 80)
+end
+
+sgs.ai_card_intention["DawuCard"]=function(card,from,to,source)
+	return sgs.ai_card_intention.general(to, -70)
+end
+
+sgs.ai_card_intention["GaleShell"]=sgs.ai_card_intention["KuangfengCard"]
+
 sgs.ai_explicit={}
 sgs.ai_royalty={}
 sgs.ai_offensive_card=
