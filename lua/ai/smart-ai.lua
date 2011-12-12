@@ -702,19 +702,17 @@ function SmartAI:getEnemies(player)
 end
 
 function SmartAI:isFriend(other, another)
-	if not other or type(other)~="userdata" then self.room:writeToConsole(debug.traceback()) end
 	if another then return self:isFriend(other)==self:isFriend(another) end
     if useDefaultStrategy() then return self.lua_ai:isFriend(other) end
-    if self.player == other then return true end 
+    if self.player:objectName() == other:objectName() then return true end 
 	if self:objectiveLevel(other) < 0 then return true end
     return false
 end
 
 function SmartAI:isEnemy(other, another)
-	if not other or type(other)~="userdata" then self.room:writeToConsole(debug.traceback()) end
 	if another then return self:isFriend(other)~=self:isFriend(another) end
     if useDefaultStrategy() then return self.lua_ai:isEnemy(other) end
-    if self.player == other then return false end 
+    if self.player:objectName() == other:objectName() then return false end 
 	if self:objectiveLevel(other) > 0 then return true end
 	return false
 end

@@ -1,7 +1,7 @@
 -- when enemy using the peach
 sgs.ai_skill_invoke["grab_peach"] = function(self, data)
 	local struct= data:toCardUse()
-	return self:isEnemy(struct.from) and (not struct.to or self:isEnemy(struct.to))
+	return self:isEnemy(struct.from) and (struct.to:isEmpty() or self:isEnemy(struct.to:first()))
 end
 
 -- when murder Caiwenji
