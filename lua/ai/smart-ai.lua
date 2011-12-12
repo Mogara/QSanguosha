@@ -242,14 +242,15 @@ function SmartAI:updatePlayers(inclusive)
 		else
 			if self:objectiveLevel(player) <= 0 then return end
 			table.insert(elist,player)
-			self:updateLoyalTarget(player)
-			self:updateRebelTarget(player)
+--			self:updateLoyalTarget(player)
+--			self:updateRebelTarget(player)
 			
 			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
 		end
 	end
 end
 
+--[[
 function SmartAI:updateLoyalTarget(player)
 	if self.role == "rebel" then return end
 	
@@ -290,6 +291,7 @@ function SmartAI:printFEList()
 	
     self.room:output(self.player:getGeneralName().." list end")
 end
+]]
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
@@ -490,6 +492,32 @@ function SmartAI:sortEnemies(players)
     table.sort(players,comp_func)
 end
 
+function SmartAI:sortEnemiesByChaofeng(players)
+	local function getChaofeng(player)
+		local level = 0
+		if player:hasSkill("jieming") then level = self:getJiemingChaofeng(player) end
+		if level > 0 then level = 0 end
+		level = level + (sgs.ai_chaofeng[player:getGeneralName()] or 0)
+		level = level + (sgs.ai_chaofeng[player:getGeneral2Name()] or 0)
+		if player:isLord() then level = level + 3 end
+		return level
+	end
+	local comp_func = function(a,b)
+		alevel = getChaofeng(a)
+		blevel = getChaofeng(b)
+		if alevel~= blevel then
+			return alevel > blevel
+		end
+
+		alevel = getDefense(a)
+		blevel = getDefense(b)
+		if alevel~= blevel then
+			return alevel < blevel
+		end
+	end
+	table.sort(players,comp_func)
+end
+
 function SmartAI:hasWizard(players,onlyharm)
 	local skill
 	if onlyharm then skill = sgs.wizard_harm_skill else skill = sgs.wizard_skill end
@@ -674,22 +702,19 @@ function SmartAI:getEnemies(player)
 end
 
 function SmartAI:isFriend(other, another)
-	if not other then self.room:writeToConsole(debug.traceback()) end
-	if another then 
-		if self.lua_ai:isFriend(other) and self.lua_ai:isFriend(another) then return true end
-	end
+	if not other or type(other)~="userdata" then self.room:writeToConsole(debug.traceback()) end
+	if another then return self:isFriend(other)==self:isFriend(another) end
     if useDefaultStrategy() then return self.lua_ai:isFriend(other) end
-    if (self.player:objectName()) == (other:objectName()) then return true end 
+    if self.player == other then return true end 
 	if self:objectiveLevel(other) < 0 then return true end
     return false
 end
 
 function SmartAI:isEnemy(other, another)
-	if another then 
-		if self.lua_ai:isEnemy(other) and self.lua_ai:isEnemy(another) then return true end
-	end
+	if not other or type(other)~="userdata" then self.room:writeToConsole(debug.traceback()) end
+	if another then return self:isFriend(other)~=self:isFriend(another) end
     if useDefaultStrategy() then return self.lua_ai:isEnemy(other) end
-    if (self.player:objectName()) == (other:objectName()) then return false end 
+    if self.player == other then return false end 
 	if self:objectiveLevel(other) > 0 then return true end
 	return false
 end
@@ -1184,7 +1209,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			end
 		end	
 
-		self:sort(self.enemies, "defense")
+		self:sortEnemiesByChaofeng(self.enemies)
 		for _, enemy in ipairs(self.enemies) do
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
@@ -1917,7 +1942,7 @@ function SmartAI:evaluateArmor(card, player)
 	if ecard:inherits("Vine") then
 		for _, enemy in ipairs(self:getEnemies(player)) do
 			if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or enemy:hasSkill("huoji") then return -1 end
-			if enemy == self.player and (enemy:getCardId("FireSlash") or enemy:getCardId("FireAttack")) then return -1 end
+			if enemy == self.player and (self:getCardId("FireSlash", enemy) or self:getCardId("FireAttack",enemy)) then return -1 end
 		end
 	end
 	if #(self:getEnemies(player))<3 and ecard:inherits("Vine") then return 4 end
