@@ -1101,6 +1101,7 @@ function SmartAI:slashProhibit(card,enemy)
 		if self:getCardsNum("Jink",enemy) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card,enemy) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card,enemy) then return true end
 		if (enemy:hasSkill("duanchang") or enemy:hasSkill("huilei") or enemy:hasSkill("dushi")) and self:isWeak(enemy) then return true end
+		if self:isEquip("GudingBlade") and enemy:isKongcheng() then return true end
     else    
 		if enemy:hasSkill("liuli") then 
 			if enemy:getHandcardNum() < 1 then return false end
@@ -1191,7 +1192,8 @@ function SmartAI:useBasicCard(card, use, no_distance)
 		for _, friend in ipairs(self.friends_noself) do						
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,friend)
-			if (self.player:hasSkill("pojun") and friend:getHp()  > 4 and self:getCardsNum("Jink", friend) == 0) 
+			if (self.player:hasSkill("pojun") and friend:getHp() > 4 and self:getCardsNum("Jink", friend) == 0 
+				and friend:getHandcardNum() < 3)
 			or (friend:hasSkill("leiji") and (self:getCardsNum("Jink", friend) > 0 or (not self:isWeak(friend) and self:isEquip("EightDiagram",friend))))
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and self:getCardsNum("Jink", friend) == 0)
 			then
