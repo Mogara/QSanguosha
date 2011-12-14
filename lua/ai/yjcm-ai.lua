@@ -158,7 +158,7 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 	local enemy_equip = 0
 	local target
 
-	local has_xiaoji = false
+--[[local has_xiaoji = false
 	local xiaoji_equip = 0
 	local sunshangxiang
 	for _, friend in ipairs(self.friends) do
@@ -196,7 +196,7 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 				return
 			end
 		end
-	end
+	end]]
 
 	for _, friend in ipairs(self.friends) do
 		for _, enemy in ipairs(self.enemies) do
@@ -205,6 +205,7 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 				if self:isEquip("GaleShell", enemy) then ee = ee - 1 end
 				local fe = self:getCardsNum(".",friend, "e")
 				if self:isEquip("GaleShell", friend) then fe = fe - 1 end
+				if self:hasSkills(sgs.lose_equip_skill, friend) then ee = ee + fe end
 				local value = self:evaluateArmor(enemy:getArmor(),friend) - self:evaluateArmor(friend:getArmor(),enemy)
 					- self:evaluateArmor(friend:getArmor(),friend) + self:evaluateArmor(enemy:getArmor(),enemy)
 				if self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e") <= lost_hp and
@@ -223,7 +224,8 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 
 	target = nil
 	for _,friend in ipairs(self.friends) do
-		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) then target = friend break end
+		if self:isEquip("YitianSword", friend) or (self:isEquip("SilverLion",friend) and friend:isWounded()) 
+			or self:hasSkills(sgs.lose_equip_skill, friend) then target = friend break end
 	end
 	if not target then return end
 	for _,friend in ipairs(self.friends) do

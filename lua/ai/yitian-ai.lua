@@ -77,8 +77,30 @@ sgs.ai_skill_use["@lianli"] = function(self, prompt)
 	return "."	
 end
 
-sgs.ai_skill_invoke.lianli_slash = function(self, prompt)
+sgs.ai_skill_invoke.lianli_slash = function(self, data)
 	return self:getCardsNum("Slash")==0
+end
+
+sgs.ai_skill_invoke.lianli_jink = function(self, data)
+	local tied
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if player:getMark("@tied")>0 then tied = player break end
+	end
+	if self:isEquip("EightDiagram", tied) then return true end
+	return self:getCardsNum("Jink")==0
+end
+
+local lianli_slash_skill={name="lianli-slash"}
+table.insert(sgs.ai_skills, lianli_slash_skill)
+lianli_slash_skill.getTurnUseCard = function(self)
+	if self.player:getMark("@tied")>0 then return sgs.Card_Parse("@LianliSlashCard=.") end
+end
+
+sgs.ai_skill_use_func["LianliSlashCard"] = function(card, use, self)
+	if self.player:hasUsed("LianliSlashCard") and not sgs.lianlislash then return end
+	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	self:useBasicCard(slash, use)
+	if use.card then use.card = card end
 end
 
 -- tongxin
@@ -140,7 +162,11 @@ sgs.ai_skill_choice.wuling = function(self, choices)
 end
 
 -- caizhaoji_hujia
-sgs.ai_skill_invoke.caizhaoji_hujia = true
+sgs.ai_skill_invoke.caizhaoji_hujia = function(self, data)
+	local zhangjiao = self.room:findPlayerBySkillName("guidao")
+	if zhangjiao and self:isEnemy(zhangjiao) and zhangjiao:getCards("he"):length()>2 then return false end
+	return true
+end
 
 -- zhenggong, always invoke
 sgs.ai_skill_invoke.zhenggong  = true
