@@ -120,6 +120,8 @@ function SmartAI:initialize(player)
 			if not success then 
 				self.room:writeToConsole(result1) 
 				self.room:writeToConsole(debug.traceback()) 
+				self.room:writeToConsole("Event stack:")
+				self.room:outputEventStack()
 			else 
 				return result1, result2 
 			end  

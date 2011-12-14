@@ -21,6 +21,18 @@ struct LogMessage{
     QString arg2;
 };
 
+class EventTriplet{
+public:
+    EventTriplet(TriggerEvent event, ServerPlayer *target, QVariant *data)
+        :event(event), target(target), data(data){}
+    QString toString() const;
+
+private:
+    TriggerEvent event;
+    ServerPlayer *target;
+    QVariant *data;
+};
+
 class RoomThread : public QThread{
     Q_OBJECT
 
@@ -38,6 +50,8 @@ public:
     void run3v3();
     void action3v3(ServerPlayer *player);
 
+    const QList<EventTriplet> *getEventStack() const;
+
 protected:
     virtual void run();
 
@@ -48,6 +62,8 @@ private:
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];
     QSet<const TriggerSkill *> skillSet;
+
+    QList<EventTriplet> event_stack;
 };
 
 #endif // ROOMTHREAD_H

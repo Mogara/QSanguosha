@@ -870,6 +870,11 @@ public:
 			$self->output(msg);
 	}
 
+	void outputEventStack(){
+		if(Config.value("DebugOutput", false).toBool())
+			$self->outputEventStack();
+	}
+
 	void writeToConsole(const char *msg){
 		$self->output(msg);
 	}

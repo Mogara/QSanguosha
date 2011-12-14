@@ -145,6 +145,16 @@ void Room::output(const QString &message){
     emit room_message(message);
 }
 
+void Room::outputEventStack(){
+    QString msg;
+
+    foreach(EventTriplet triplet, *thread->getEventStack()){
+        msg.prepend(triplet.toString());
+    }
+
+    output(msg);
+}
+
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason){
     DyingStruct dying;
     dying.who = player;
