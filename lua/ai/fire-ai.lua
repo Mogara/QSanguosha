@@ -1,7 +1,7 @@
 -- this scripts contains the AI classes for generals of fire package
 
 -- bazhen
-sgs.ai_skill_invoke.bazhen = true
+sgs.ai_skill_invoke.bazhen = sgs.ai_skill_invoke.eight_diagram
 
 -- niepan
 sgs.ai_skill_invoke.niepan = function(self, data)

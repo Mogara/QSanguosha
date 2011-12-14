@@ -1226,7 +1226,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				self:slashIsEffective(card, enemy) then
 					-- fill the card use struct
 					local anal = self:searchForAnaleptic(use,enemy,card)
-					if anal and not self:isEquip("SilverLion", enemy) and (not use.to or use.to:isEmpty()) then
+					if anal and not self:isEquip("SilverLion", enemy) and (not use.to or use.to:isEmpty()) and not self:isWeak() then
 						use.card = anal
 						return
 					end
