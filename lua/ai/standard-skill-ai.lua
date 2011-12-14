@@ -115,7 +115,7 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 			if card:inherits("Slash") then
 				local dummy_use = {isDummy = true}
 				if self:getCardsNum("Slash") == 1 then
-					self:useBasicCard(card,dummy_use)
+					self:useBasicCard(card, dummy_use)
 					if dummy_use.card then shouldUse = false end
 				end
 			end
@@ -429,18 +429,16 @@ rende_skill.getTurnUseCard=function(self)
 	for _, player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
 			or player:hasSkill("longluo")) and player:faceUp() and not self.player:isKongcheng() then
-			local card_id = self:getCardRandomly(self.player, "h")
-			return sgs.Card_Parse("@RendeCard=" .. card_id)
+			return sgs.Card_Parse("@RendeCard=.")
 		end
 	end
 	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0 or self:getCard("Shit")) and not self.player:isKongcheng() then 
-		local card_id = self:getCardRandomly(self.player, "h")
-		return sgs.Card_Parse("@RendeCard=" .. card_id)
+		return sgs.Card_Parse("@RendeCard=.")
 	end
 end
 
 sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
-    if self.player:usedTimes("RendeCard") < 2 then
+   if self.player:usedTimes("RendeCard") < 2 then
 		local cards = self.player:getHandcards()
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getHp() == 1 then

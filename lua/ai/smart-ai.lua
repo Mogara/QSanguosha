@@ -499,7 +499,9 @@ function SmartAI:sortEnemiesByChaofeng(players)
 		if level > 0 then level = 0 end
 		level = level + (sgs.ai_chaofeng[player:getGeneralName()] or 0)
 		level = level + (sgs.ai_chaofeng[player:getGeneral2Name()] or 0)
-		if player:isLord() then level = level + 3 end
+		if player:isLord() then level = level + 1 end
+		if player:getArmor() and self:evaluateArmor(player:getArmor(), player)>0 then level = level - 1 end
+		if self:isWeak(player) then level = level + 1 end
 		return level
 	end
 	local comp_func = function(a,b)
