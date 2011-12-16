@@ -244,15 +244,14 @@ function SmartAI:updatePlayers(inclusive)
 		else
 			if self:objectiveLevel(player) <= 0 then return end
 			table.insert(elist,player)
---			self:updateLoyalTarget(player)
---			self:updateRebelTarget(player)
+			self:updateLoyalTarget(player)
+			self:updateRebelTarget(player)
 			
 			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
 		end
 	end
 end
 
---[[
 function SmartAI:updateLoyalTarget(player)
 	if self.role == "rebel" then return end
 	
@@ -293,7 +292,6 @@ function SmartAI:printFEList()
 	
     self.room:output(self.player:getGeneralName().." list end")
 end
-]]
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
@@ -492,34 +490,6 @@ function SmartAI:sortEnemies(players)
         end
     end
     table.sort(players,comp_func)
-end
-
-function SmartAI:sortEnemiesByChaofeng(players)
-	local function getChaofeng(player)
-		local level = 0
-		if player:hasSkill("jieming") then level = self:getJiemingChaofeng(player) end
-		if level > 0 then level = 0 end
-		level = level + (sgs.ai_chaofeng[player:getGeneralName()] or 0)
-		level = level + (sgs.ai_chaofeng[player:getGeneral2Name()] or 0)
-		if player:isLord() then level = level + 1 end
-		if player:getArmor() and self:evaluateArmor(player:getArmor(), player)>0 then level = level - 1 end
-		if self:isWeak(player) then level = level + 1 end
-		return level
-	end
-	local comp_func = function(a,b)
-		alevel = getChaofeng(a)
-		blevel = getChaofeng(b)
-		if alevel~= blevel then
-			return alevel > blevel
-		end
-
-		alevel = getDefense(a)
-		blevel = getDefense(b)
-		if alevel~= blevel then
-			return alevel < blevel
-		end
-	end
-	table.sort(players,comp_func)
 end
 
 function SmartAI:hasWizard(players,onlyharm)
@@ -1218,7 +1188,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			end
 		end	
 
-		self:sortEnemiesByChaofeng(self.enemies)
+		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
