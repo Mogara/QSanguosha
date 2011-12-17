@@ -35,6 +35,7 @@
 #include <QCommandLinkButton>
 #include <QFormLayout>
 #include <QStatusBar>
+#include <QMovie>
 
 #ifdef Q_OS_WIN32
 #include <QAxObject>
@@ -2989,6 +2990,24 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion){
     if(photo){
         photo->setEmotion(emotion);
     }
+
+        QLabel *item = new QLabel(emotion,main_window);
+        QMovie *movie = new QMovie(QString("image/system/animation/%1.gif").arg(emotion));
+
+        item->setMovie(movie);
+        movie->start();
+
+        connect(movie,SIGNAL(finished()),item,SLOT(deleteLater()));
+        QTimer::singleShot(1500, item, SLOT(deleteLater()));
+        movie->setBackgroundColor(QColor(0,0,0,0));
+        item->show();
+
+        int x = photo->scenePos().x() + main_window->width()/2;
+        int y = photo->scenePos().y() + main_window->height()/2;
+        int w = 128;
+        int h = 128;
+
+        item->setGeometry(x,y,w,h);
 }
 
 void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name){
@@ -3048,6 +3067,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
 }
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
+
     Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
     addItem(item);
 

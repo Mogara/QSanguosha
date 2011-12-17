@@ -1,4 +1,8 @@
-
+ 
+QStatusBar::item {
+     border: 0px solid grey;
+ }
+ 
 QWidget#skill_bar_container{
 	background-image: url(image/system/skill-dock.png);
 	color:white;

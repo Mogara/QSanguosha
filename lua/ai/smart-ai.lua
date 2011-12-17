@@ -91,10 +91,27 @@ end
 --- defense is defined as min(value, hp*3) + 2(if armor is present)
 function SmartAI.GetDefense(player)
 	local defense = math.min(SmartAI.GetValue(player), player:getHp() * 3)
-	if player:getArmor() then
+	if player:getArmor() and not player:getArmor():inherits("GaleShell") then
 		defense = defense + 2
 	end
-	
+	if not player:getArmor() and player:hasSkill("bazhen") then
+		defense = defense + 2
+	end
+	if player:hasSkill("ganglie") then
+		defense = defense + 1
+	end
+	if player:hasSkill("enyuan") then
+		defense = defense + 1
+	end
+	if player:hasSkill("yiji") then
+		defense = defense + 1
+	end
+	if player:hasSkill("jieming") then
+		defense = defense + 1
+	end
+	if player:getMark("@tied")>0 then
+		defense = defense + 1
+	end
 	return defense
 end
 
@@ -243,41 +260,8 @@ function SmartAI:updatePlayers(inclusive)
 			if self:objectiveLevel(player) < 4 then self.retain = 0 end
 		else
 			if self:objectiveLevel(player) <= 0 then return end
-			table.insert(elist,player)
---			self:updateLoyalTarget(player)
---			self:updateRebelTarget(player)
-			
+			table.insert(elist,player)	
 			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
-		end
-	end
-end
-
---[[
-function SmartAI:updateLoyalTarget(player)
-	if self.role == "rebel" then return end
-	
-    if (self:objectiveLevel(player) >= 4) then
-        if not sgs.loyal_target then sgs.loyal_target = player 
-		elseif player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.loyal_target = player
-        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target = player 
-        elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target = player 
-        elseif (sgs.loyal_target:getHp() > 1) and (getDefense(player) <= 3) then sgs.loyal_target = player 
-		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.loyal_target = player
-        elseif (sgs.loyal_target:getHandcardNum() > 0) and (player:getHandcardNum() == 0) then sgs.loyal_target = player 
-		elseif self:getCardsNum(".", sgs.loyal_target, "e") > self:getCardsNum(".", player, "e") then sgs.loyal_target = player 
-        end
-    end
-end
-
-function SmartAI:updateRebelTarget(player)
-	if self.role == "lord" or self.role == "loyalist" then return end
-	if not sgs.rebel_target then sgs.rebel_target = player end
-	if self.room:getLord():objectName() == player:objectName() then sgs.rebel_target = player
-	elseif self:objectiveLevel(player) >= 4 and self:objectiveLevel(player) < 5 then
-		if player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.rebel_target = player
-        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.rebel_target:getGeneralName()] or 0) then sgs.rebel_target = player 
-		elseif (sgs.rebel_target:getArmor()) and (not player:getArmor() and sgs.rebel_target:getHp() > player:getHp()) then sgs.rebel_target = player 
-		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.rebel_target = player
 		end
 	end
 end
@@ -293,7 +277,6 @@ function SmartAI:printFEList()
 	
     self.room:output(self.player:getGeneralName().." list end")
 end
-]]
 
 function SmartAI:objectiveLevel(player)
     if useDefaultStrategy() then 
@@ -492,34 +475,6 @@ function SmartAI:sortEnemies(players)
         end
     end
     table.sort(players,comp_func)
-end
-
-function SmartAI:sortEnemiesByChaofeng(players)
-	local function getChaofeng(player)
-		local level = 0
-		if player:hasSkill("jieming") then level = self:getJiemingChaofeng(player) end
-		if level > 0 then level = 0 end
-		level = level + (sgs.ai_chaofeng[player:getGeneralName()] or 0)
-		level = level + (sgs.ai_chaofeng[player:getGeneral2Name()] or 0)
-		if player:isLord() then level = level + 1 end
-		if player:getArmor() and self:evaluateArmor(player:getArmor(), player)>0 then level = level - 1 end
-		if self:isWeak(player) then level = level + 1 end
-		return level
-	end
-	local comp_func = function(a,b)
-		alevel = getChaofeng(a)
-		blevel = getChaofeng(b)
-		if alevel~= blevel then
-			return alevel > blevel
-		end
-
-		alevel = getDefense(a)
-		blevel = getDefense(b)
-		if alevel~= blevel then
-			return alevel < blevel
-		end
-	end
-	table.sort(players,comp_func)
 end
 
 function SmartAI:hasWizard(players,onlyharm)
@@ -1218,7 +1173,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			end
 		end	
 
-		self:sortEnemiesByChaofeng(self.enemies)
+		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
@@ -2746,10 +2701,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 		if flags:match("h") then
 			if not who:isKongcheng() then
-				local cards = who:getHandcards()
-				cards = sgs.QList2Table(cards)
-				self:sortByUseValue(cards)
-				return cards[1]:getId()
+				return -1
 			end
 		end
         

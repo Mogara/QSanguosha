@@ -227,5 +227,10 @@ sgs.ai_chaofeng = {
 
 		shencaocao = -6,
 		shenguanyu = -6,
+
+		sp_caiwenji = caiwenji,
+		sp_sunshangxiang = sunshangxiang,
+		sp_machao = machao,
+		sp_diaochan = diaochan,
 }
 
