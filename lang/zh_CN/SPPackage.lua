@@ -11,47 +11,64 @@ return {
 	["$jilei"] = "食之无味，弃之可惜",
 	["$danlao"] = "一人一口，分而食之",
 	["~yangxiu"] = "恃才傲物，方有此命",
+	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算",
+	["#Jilei"] = "%from 鸡肋了 %to 的 %arg",
+	["#JileiClear"] = "%from 的鸡肋效果消失",
 
 	["gongsunzan"] = "公孙瓒",
 	["yicong"] = "义从",
 	[":yicong"] = "<b>锁定技</b>，只要你的体力值大于2点，你计算与其他角色的距离时，始终-1；只要你的体力值为2点或更低，其他角色计算与你的距离时，始终+1",
+	["~gongsunzan"] = "如今阵败吾已无颜苟活于世",
+	["cv:gongsunzan"] = "",
 
 	["yuanshu"] = "袁术",
 	["yongsi"] = "庸肆",
 	[":yongsi"] = "<b>锁定技</b>，摸牌阶段，你额外摸X张牌，X为场上现存势力数。弃牌阶段，你至少弃掉等同于场上现存势力数的牌（不足则全弃）",
 	["weidi"] = "伪帝",
 	[":weidi"] = "<b>锁定技</b>，你视为拥有当前主公的主公技",
+	["$yongsi1"] = "嘿呀，还不错",
+	["$yongsi2"] = "呐~哈哈哈哈哈",
+	["$yongsi3"] = "呀呀呀呀呀呀",
+	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
+	["~yuanshu"] = "呃呀~~~~~~~",
+	["cv:yuanshu"] = "名将三国",
+	["#YongsiGood"] = "%from 的锁定技【庸肆】被触发，额外摸了 %arg 张牌",
+	["#YongsiBad"] = "%from 的锁定技【庸肆】被触发，必须至少弃掉 %arg 张牌",
+	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",
 
 	["sp_diaochan"] = "SP貂蝉",
 	["tuoqiao"] = "脱壳",
 	["xuwei"] = "续尾",
 	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
 	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
-
-	["#DanlaoAvoid"] = "%from 发动了技能【啖酪】，跳过了锦囊 %arg 对他的结算",
-	["#Jilei"] = "%from 鸡肋了 %to 的 %arg",
-	["#JileiClear"] = "%from 的鸡肋效果消失",
-	["#YongsiGood"] = "%from 的锁定技【庸肆】被触发，额外摸了 %arg 张牌",
-	["#YongsiBad"] = "%from 的锁定技【庸肆】被触发，必须至少弃掉 %arg 张牌",
-	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",
-
-	["cv:gongsunzan"] = "",
-	["cv:yuanshu"] = "名将三国",
-	["cv:sp_sunshangxiang"] = "",
 	["cv:sp_diaochan"] = "",
-
-	["$yongsi1"] = "嘿呀，还不错",
-	["$yongsi2"] = "呐~哈哈哈哈哈",
-	["$yongsi3"] = "呀呀呀呀呀呀",
-	["$yongsi4"] = "嗙啪~呜哈哈哈哈哈",
-	["~yuanshu"] = "呃呀~~~~~~~",
-
-	["~gongsunzan"] = "如今阵败吾已无颜苟活于世",
 
 	["sp_sunshangxiang"] = "SP孙尚香",
 	["chujia"] = "出嫁",
 	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
+	["cv:sp_sunshangxiang"] = "官方，背碗卤粉",
+	["hulaopass"] = "虎牢关模式",
 
+	["sp_guanyu"] = "SP关羽",
+	["danji"] = "单骑",
+	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
+	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
+
+	["sp_caiwenji"] = "SP蔡文姬",
+	["guixiang"] = "归乡",
+	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
+	["cv:sp_caiwenji"] = "呼呼",
+	
+	["sp_jiaxu"] = "SP贾诩",
+	["guiwei"] = "归魏",
+	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
+	["cv:sp_jiaxu"] = "落凤一箭",
+	
+	["sp_machao"] = "SP马超",
+	["fanqun"] = "返群",
+	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
+
+--hulao mode
 	["shenlvbu1"] = "神吕布(1)",
 	["shenlvbu2"] = "神吕布(2)",
 	["xiuluo"] = "修罗",
@@ -66,26 +83,6 @@ return {
 	["#ReformingRevive"] = "%from 从重整状态中复活!",
 	["draw_1v3"] = "重整摸牌",
 	["weapon_recast"] = "武器重铸",
-	["hulaopass"] = "虎牢关模式",
-
-	["sp_guanyu"] = "SP关羽",
-	["danji"] = "单骑",
-	[":danji"] = "<b>觉醒技</b>，回合开始阶段，若你的手牌数大于你当前的体力值，且本局主公为曹操时，你须减1点体力上限并永久获得技能“马术”。",
-	["#DanjiWake"] = "%from 的手牌数(%arg)多于体力值(%arg2)，且本局主公为曹操，达到【单骑】的觉醒条件",
-
-	["sp_caiwenji"] = "SP蔡文姬",
-	["guixiang"] = "归乡",
-	[":guixiang"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP蔡文姬，势力为魏",
-	
-	["sp_jiaxu"] = "SP贾诩",
-	["guiwei"] = "归魏",
-	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
-	["cv:sp_jiaxu"] = "落凤一箭",
-	
-	["fanqun"] = "返群",
-	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
-
-	["sp_machao"] = "SP马超",
 	
 --sp_card
 	["sp_cards"] = "SP卡牌包",
