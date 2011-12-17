@@ -88,7 +88,6 @@ function SmartAI.GetValue(player)
 	return player:getHp() * 2 + player:getHandcardNum()
 end
 
---- defense is defined as min(value, hp*3) + 2(if armor is present)
 function SmartAI.GetDefense(player)
 	local defense = math.min(SmartAI.GetValue(player), player:getHp() * 3)
 	if player:getArmor() and not player:getArmor():inherits("GaleShell") then
@@ -260,8 +259,40 @@ function SmartAI:updatePlayers(inclusive)
 			if self:objectiveLevel(player) < 4 then self.retain = 0 end
 		else
 			if self:objectiveLevel(player) <= 0 then return end
-			table.insert(elist,player)	
+			table.insert(elist,player)
+			self:updateLoyalTarget(player)
+			self:updateRebelTarget(player)
+			
 			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
+		end
+	end
+end
+
+function SmartAI:updateLoyalTarget(player)
+	if self.role == "rebel" then return end
+	
+    if (self:objectiveLevel(player) >= 4) then
+        if not sgs.loyal_target then sgs.loyal_target = player 
+		elseif player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.loyal_target = player
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.loyal_target:getGeneralName()] or 0) then sgs.loyal_target = player 
+        elseif (sgs.loyal_target:getArmor()) and (not player:getArmor()) then sgs.loyal_target = player 
+        elseif (sgs.loyal_target:getHp() > 1) and (getDefense(player) <= 3) then sgs.loyal_target = player 
+		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.loyal_target = player
+        elseif (sgs.loyal_target:getHandcardNum() > 0) and (player:getHandcardNum() == 0) then sgs.loyal_target = player 
+		elseif self:getCardsNum(".", sgs.loyal_target, "e") > self:getCardsNum(".", player, "e") then sgs.loyal_target = player 
+        end
+    end
+end
+
+function SmartAI:updateRebelTarget(player)
+	if self.role == "lord" or self.role == "loyalist" then return end
+	if not sgs.rebel_target then sgs.rebel_target = player end
+	if self.room:getLord():objectName() == player:objectName() then sgs.rebel_target = player
+	elseif self:objectiveLevel(player) >= 4 and self:objectiveLevel(player) < 5 then
+		if player:getHp() == 1 and sgs.rebel_target:getHp() >= 2 then sgs.rebel_target = player
+        elseif (sgs.ai_chaofeng[player:getGeneralName()] or 0) < (sgs.ai_chaofeng[sgs.rebel_target:getGeneralName()] or 0) then sgs.rebel_target = player 
+		elseif (sgs.rebel_target:getArmor()) and (not player:getArmor() and sgs.rebel_target:getHp() > player:getHp()) then sgs.rebel_target = player 
+		elseif sgs.rebel_target:getHp()-player:getHp() >= 2 then sgs.rebel_target = player
 		end
 	end
 end
@@ -923,7 +954,6 @@ local function prohibitUseDirectly(card, player)
 	if player:hasSkill("jiejiu") then return card:inherits("Analeptic") 
 	elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
 	elseif player:hasSkill("ganran") then return card:getTypeId() == sgs.Card_Equip
-	elseif player:hasSkill("wumou") then return card:isNDTrick() and not card:inherits("AOE")
 	end
 end
 
@@ -1145,6 +1175,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 		self.slash_targets = 3
 	end	
 	
+	self.predictedRange = self.player:getAttackRange()
 	if card:inherits("Slash") and self:slashIsAvailable() then
 		local target_count = 0
 		if self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
@@ -1178,7 +1209,6 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
 			if not slash_prohibit then
-				self.predictedRange = self.player:getAttackRange()
 				if ((self.player:canSlash(enemy, not no_distance)) or 
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy) <= self.predictedRange))) and 
 				self:objectiveLevel(enemy) > 3 and
@@ -1736,7 +1766,7 @@ end
 function SmartAI:useCardGodSalvation(card, use)				
 	local good, bad = 0, 0
 	
-	if self.player:hasSkill("wuyan") then 						
+	if self.player:hasSkill("wuyan") and self.player:isWounded() then 						
 		use.card = card
 		return 
 	end	
@@ -2142,6 +2172,9 @@ function SmartAI:getUseValue(card)
 		if self.player:getWeapon() and not self:hasSkills(sgs.lose_equip_skill) and card:inherits("Collateral") then v = 2 end
 		if self.player:getMark("shuangxiong") and card:inherits("Duel") then v = 8 end
 		if self.player:hasSkill("jizhi") then v = 8.7 end
+		if self.player:hasSkill("wumou") and card:isNDTrick() and not card:inherits("AOE") then
+			if not (card:inherits("Duel") and self.player:hasUsed("WuqianCard")) then v = 1 end
+		end
 		if not self:hasTrickEffective(card) then v = 0 end
 	end
 	
@@ -2242,6 +2275,25 @@ function SmartAI:getDynamicUsePriority(card)
 					dynamic_value = dynamic_value - 1
 					if self:isEnemy(player) then dynamic_value = dynamic_value - ((player:getHandcardNum()+player:getHp())/player:getHp())*dynamic_value
 					else dynamic_value = dynamic_value + ((player:getHandcardNum()+player:getHp())/player:getHp())*dynamic_value
+					end
+				end
+			elseif use_card:inherits("GodSalvation") then
+				local weak_mate, weak_enemy = 0, 0
+				for _, player in sgs.qlist(self.room:getAllPlayers()) do
+					if player:getHp() <= 1 and player:getHandcardNum() <= 1 then
+						if self:isEnemy(player) then weak_enemy = weak_enemy + 1
+						elseif self:isFriend(player) then weak_mate = weak_mate + 1
+						end
+					end
+				end
+				
+				if weak_enemy > weak_mate then 
+					for _, card in sgs.qlist(self.player:getHandcards()) do
+						if card:isAvailable(self.player) and sgs.dynamic_value.damage_card[card:className()] then 
+							if self:getDynamicUsePriority(card) - 0.5 > self:getUsePriority(card) then
+								dynamic_value = -5
+							end
+						end
 					end
 				end
 			elseif use_card:inherits("Peach") then 
