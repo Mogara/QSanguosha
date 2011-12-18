@@ -17,7 +17,7 @@ IndicatorItem::IndicatorItem(const QPointF &start, const QPointF &real_finish, P
 
     //setGraphicsEffect(halo);
     color = Sanguosha->getKingdomColor(player->getKingdom());
-    width = player->isLord() ? 3 : 2;
+    width = player->isLord() ? 4 : 3;
 }
 
 void IndicatorItem::doAnimation(){
@@ -31,6 +31,7 @@ void IndicatorItem::doAnimation(){
     QPropertyAnimation *pause = new QPropertyAnimation(this,"opacity");
     pause->setEndValue(0);
     pause->setEasingCurve(QEasingCurve::InQuart);
+    pause->setDuration(600);
 
     group->addAnimation(animation);
     group->addAnimation(pause);
@@ -50,6 +51,8 @@ void IndicatorItem::setFinish(const QPointF &finish){
 }
 
 void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    painter->setRenderHint(QPainter::Antialiasing);
+
     QPen pen(color);
     pen.setWidthF(width);
 
@@ -59,13 +62,18 @@ void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     QLinearGradient linearGrad(start - QPoint(baseX,baseY),
                                finish - QPoint(baseX,baseY));
     linearGrad.setColorAt(0, color.darker());
-    linearGrad.setColorAt(1, Qt::white);
+    linearGrad.setColorAt(1, color.lighter());
 
 
     QBrush brush(linearGrad);
     pen.setBrush(brush);
 
     painter->setPen(pen);
+    painter->drawLine(mapFromScene(start), mapFromScene(finish));
+
+    QPen pen2(QColor(200,200,200,130));
+    pen2.setWidth(6);
+    painter->setPen(pen2);
     painter->drawLine(mapFromScene(start), mapFromScene(finish));
 }
 

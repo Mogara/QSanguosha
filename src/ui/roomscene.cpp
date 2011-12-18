@@ -2139,6 +2139,9 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     else
         dashboard->update();
 
+    QStringList list = QString("%1:%2").arg(who).arg(delta).split(":");
+    doAnimation("hpChange",list);
+
     if(delta < 0){
         QString damage_effect;
         switch(delta){
@@ -2167,7 +2170,8 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         Sanguosha->playAudio(damage_effect);
 
         if(photo){
-            photo->setEmotion("damage");
+            //photo->setEmotion("damage");
+            setEmotion(who,"damage");
             photo->tremble();
         }
 
@@ -2277,8 +2281,7 @@ void RoomScene::onGameOver(){
             loser_list << player;
 
         if(player != Self){
-            Photo *photo = name2photo.value(player->objectName());
-            photo->setEmotion(win ? "good" : "bad", true);
+            setEmotion(player->objectName(),win ? "good" : "bad",true);
         }
     }
 
@@ -2985,10 +2988,10 @@ void RoomScene::moveFocus(const QString &who){
     }
 }
 
-void RoomScene::setEmotion(const QString &who, const QString &emotion){
+void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool permanent){
     Photo *photo = name2photo[who];
     if(photo){
-        photo->setEmotion(emotion);
+        photo->setEmotion(emotion,permanent);
     }
 
         QLabel *item = new QLabel(emotion,main_window);
@@ -3064,6 +3067,105 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args){
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
     connect(group, SIGNAL(finished()), item, SLOT(deleteLater()));
+}
+
+void RoomScene::animateHpChange(const QString &name, const QStringList &args)
+{
+    QString who = args.at(0);
+    if(who == Self->objectName())
+    {
+        int delta = - args.at(1).toInt();
+
+        int hp = Self->getHp() + delta;
+        int max_hp = Self->getMaxHP();
+
+        int index = hp < max_hp ?
+                    qMin(hp,5) : 5;
+
+        QString path = max_hp > 6 ?
+                    QString("image/system/magatamas/small-%1.png").arg(index) :
+                    QString("image/system/magatamas/%1.png").arg(index);
+
+        qreal width = max_hp > 6 ? 14 : 22;
+        qreal total_width = width*max_hp;
+        qreal skip = (121 - total_width)/(max_hp+1);
+        qreal start_x = dashboard->getRightPosition();
+
+        for(int i=0;i<delta;i++)
+        {
+            Pixmap *aniMaga = new Pixmap(path);
+            addItem(aniMaga);
+            aniMaga->show();
+            i+=hp-delta;
+
+            QPoint pos = QPoint(start_x + skip * (i+1) + i * width,5);
+            pos.rx() += dashboard->scenePos().x();
+            pos.ry() += dashboard->scenePos().y();
+            aniMaga->setPos(pos);
+
+            QPropertyAnimation *fade = new QPropertyAnimation(aniMaga,"opacity");
+            fade->setEndValue(0);
+            QPropertyAnimation *grow = new QPropertyAnimation(aniMaga,"scale");
+            grow->setEndValue(4);
+
+            connect(fade,SIGNAL(finished()),aniMaga,SLOT(deleteLater()));
+
+            QParallelAnimationGroup *group = new QParallelAnimationGroup;
+            group->addAnimation(fade);
+            group->addAnimation(grow);
+
+            group->start(QAbstractAnimation::DeleteWhenStopped);
+
+
+
+            i-=hp-delta;
+        }
+
+        return;
+    }
+
+    Photo *photo = name2photo[who];
+    const Player *player = photo->getPlayer();
+    int delta = - args.at(1).toInt();
+
+    int hp = qMax(0, player->getHp() + delta);
+
+    int index = 5;
+    if(player->getHp() + delta < player->getMaxHP())
+        index = qBound(0, hp, 5);
+
+    for(int i=0;i<delta;i++)
+    {
+
+        i+=player->getHp();
+        Pixmap *aniMaga = new Pixmap(QString("image/system/magatamas/small-%1.png").arg(index));
+        addItem(aniMaga);
+
+        QPoint pos = i>=5 ? QPoint(42,69):QPoint(26,86);
+        pos.rx() += (i%5)*16;
+        pos.rx() += photo->scenePos().x();
+        pos.ry() += photo->scenePos().y();
+        aniMaga->setPos(pos);
+
+        QPropertyAnimation *fade = new QPropertyAnimation(aniMaga,"opacity");
+        fade->setEndValue(0);
+        QPropertyAnimation *grow = new QPropertyAnimation(aniMaga,"scale");
+        grow->setEndValue(4);
+
+        connect(fade,SIGNAL(finished()),aniMaga,SLOT(deleteLater()));
+
+        QParallelAnimationGroup *group = new QParallelAnimationGroup;
+        group->addAnimation(fade);
+        group->addAnimation(grow);
+
+        group->start(QAbstractAnimation::DeleteWhenStopped);
+
+        aniMaga->show();
+
+        i-=player->getHp();
+    }
+
+
 }
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
@@ -3184,6 +3286,8 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
         map["lightbox"] = &RoomScene::doLightboxAnimation;
         map["huashen"] = &RoomScene::doHuashen;
         map["indicate"] = &RoomScene::doIndicate;
+
+        map["hpChange"] = &RoomScene::animateHpChange;
     }
 
     AnimationFunc func = map.value(name, NULL);
