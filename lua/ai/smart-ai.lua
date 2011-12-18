@@ -1976,7 +1976,7 @@ function SmartAI:useEquipCard(card, use)
 			end
 		end
 		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
-		if self:evaluateArmor(card) > 0 then use.card = card end
+		if self:evaluateArmor(card) > self:evaluateArmor() then use.card = card end
 		return
 	elseif card:inherits("OffensiveHorse") and self.player:hasSkill("rende") then
 		for _,friend in ipairs(self.friends_noself) do
