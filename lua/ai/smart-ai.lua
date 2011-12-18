@@ -200,11 +200,8 @@ function SmartAI:updatePlayers(inclusive)
 	table.insert(self.friends, self.player)
 
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
-
 	sgs.rebel_target = self.room:getLord()
-
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
-
 	self.role  = self.player:getRole()
 
 	sgs.jijiangsource = nil
@@ -334,7 +331,6 @@ function SmartAI:objectiveLevel(player)
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 
-
 	local hasRebel, hasLoyal, hasRenegade = false, false, false
 	for _,oplayer in ipairs(players) do
 		if oplayer:getRole() == "rebel" then hasRebel = true end
@@ -364,9 +360,11 @@ function SmartAI:objectiveLevel(player)
 
 		if not hasLoyal then
 			if #players == 2 then
-				if player:getRole() == "rebel" then return 5 else return 3.1 end
+				if players[1]:getHp() < players[2]:getHp() then 
+					if players[1] == player then return -1 else return 5 end
+				end
 			end
-			if player:getRole() == "renegade" then return -1 else return 5 end
+			if player:getRole() == "renegade" then return -2 else return 5 end
 		end
 
 		if hasRenegade then
@@ -376,6 +374,8 @@ function SmartAI:objectiveLevel(player)
 				else return -2
 				end
 			end
+		else
+			if player:getRole() == "rebel" then return 5 else return -2 end
 		end
 
 		if sgs.ai_explicit[player:objectName()] == "rebel" then return 5-modifier
@@ -389,7 +389,6 @@ function SmartAI:objectiveLevel(player)
 			then return 3
 		else return 0 end
 	elseif self.role == "loyalist" then
-
 		if not hasRebel then
 			if player:getRole() == "renegade" then return 5 else return -2 end
 		end
@@ -439,9 +438,7 @@ function SmartAI:objectiveLevel(player)
 			then return 3
 		else return 0 end
 	elseif self.role == "renegade" then
-
 		if #players == 1 then return 5 end
-		--if (#players == 2) and player:isLord() then return 0 end
 
 		if not hasRebel then
 			if player:isLord() then
