@@ -1222,31 +1222,33 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				self:objectiveLevel(enemy) > 3 and
 				self:slashIsEffective(card, enemy) then
 					-- fill the card use struct
-					local anal = self:searchForAnaleptic(use,enemy,card)
-					if anal and not self:isEquip("SilverLion", enemy) and (not use.to or use.to:isEmpty()) and not self:isWeak() then
-						use.card = anal
-						return
-					end
-					if self.player:getGender()~=enemy:getGender() and self:getCardsNum("DoubleSword",self.player,"h") > 0 then
-						self:useEquipCard(self:getCard("DoubleSword"), use)
-						if use.card then return end
-					end
-					if enemy:isKongcheng() and self:getCardsNum("GudingBlade", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("GudingBlade"), use)
-						if use.card then return end
-					end
-					if self:getOverflow()>0 and self:getCardsNum("Axe", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("Axe"), use)
-						if use.card then return end
-					end
-					if enemy:getArmor() and self:getCardsNum("Fan", self.player, "h") > 0 and
-						(enemy:getArmor():inherits("Vine") or enemy:getArmor():inherits("GaleShell")) then
-						self:useEquipCard(self:getCard("Fan"), use)
-						if use.card then return end
-					end
-					if enemy:getDefensiveHorse() and self:getCardsNum("KylinBow", self.player, "h") > 0 then
-						self:useEquipCard(self:getCard("KylinBow") ,use)
-						if use.card then return end
+					if not use.to or use.to:isEmpty() then
+						local anal = self:searchForAnaleptic(use,enemy,card)
+						if anal and not self:isEquip("SilverLion", enemy) and not self:isWeak() then
+							use.card = anal
+							return
+						end
+						if self.player:getGender()~=enemy:getGender() and self:getCardsNum("DoubleSword",self.player,"h") > 0 then
+							self:useEquipCard(self:getCard("DoubleSword"), use)
+							if use.card then return end
+						end
+						if enemy:isKongcheng() and self:getCardsNum("GudingBlade", self.player, "h") > 0 then
+							self:useEquipCard(self:getCard("GudingBlade"), use)
+							if use.card then return end
+						end
+						if self:getOverflow()>0 and self:getCardsNum("Axe", self.player, "h") > 0 then
+							self:useEquipCard(self:getCard("Axe"), use)
+							if use.card then return end
+						end
+						if enemy:getArmor() and self:getCardsNum("Fan", self.player, "h") > 0 and
+							(enemy:getArmor():inherits("Vine") or enemy:getArmor():inherits("GaleShell")) then
+							self:useEquipCard(self:getCard("Fan"), use)
+							if use.card then return end
+						end
+						if enemy:getDefensiveHorse() and self:getCardsNum("KylinBow", self.player, "h") > 0 then
+							self:useEquipCard(self:getCard("KylinBow") ,use)
+							if use.card then return end
+						end
 					end
 					use.card = card
 					if use.to then use.to:append(enemy) end
