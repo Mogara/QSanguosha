@@ -47,7 +47,6 @@ return {
 	["chujia"] = "出嫁",
 	[":chujia"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP孙尚香，势力为蜀",
 	["cv:sp_sunshangxiang"] = "官方，背碗卤粉",
-	["hulaopass"] = "虎牢关模式",
 
 	["sp_guanyu"] = "SP关羽",
 	["danji"] = "单骑",
@@ -69,6 +68,8 @@ return {
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
 
 --hulao mode
+	["hulaopass"] = "虎牢关模式",
+
 	["shenlvbu1"] = "神吕布(1)",
 	["shenlvbu2"] = "神吕布(2)",
 	["xiuluo"] = "修罗",
