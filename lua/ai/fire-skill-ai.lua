@@ -100,59 +100,12 @@ local tianyi_skill={}
 tianyi_skill.name="tianyi"
 table.insert(sgs.ai_skills,tianyi_skill)
 tianyi_skill.getTurnUseCard=function(self)
-
---[[if self.player:hasUsed("TianyiCard") then return nil end
-
-	local cards = self.player:getCards("h")
-	cards=sgs.QList2Table(cards)
-
-	local max_card = self:getMaxCard()
-	if not max_card then return end
-	local max_point = max_card:getNumber()
-
-	local slashNum=self:getCardsNum("Slash")
-	if max_card:inherits("Slash") then slashNum=slashNum-1 end
-
-	if slashNum >= 2 then
-		self:sort(self.enemies, "handcard")
-		for _, enemy in ipairs(self.enemies) do
-			local enemy_max_card = self:getMaxCard(enemy)
-			if enemy_max_card and max_point > enemy_max_card:getNumber() then
-
-				local slash=self:getCard("Slash")
-				local dummy_use={}
-				dummy_use.isDummy=true
-
-				local no_distance=true
-				self:useBasicCard(slash,dummy_use, no_distance)
-
-				if not dummy_use.card then
-					return
-				end
-
-				local card_id = max_card:getEffectiveId()
-				local card_str = "@TianyiCard=" .. card_id
-				local card = sgs.Card_Parse(card_str)
-				return card
-			end
-		end
-	else
-		self:sortByUseValue(cards, true)
-		for _, enemy in ipairs(self.enemies) do
-			if not enemy:isKongcheng() then
-				local card_id = cards[1]:getEffectiveId()
-				local card_str = "@TianyiCard=" .. card_id
-				local card = sgs.Card_Parse(card_str)
-				return card
-			end
-		end
-	end]]
 	if not self.player:hasUsed("TianyiCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@TianyiCard=.") end
 end
 
 sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-	if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang~=self.player then
+	if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName()~=self.player:objectName() then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByUseValue(cards,true)
 		use.card = sgs.Card_Parse("@TianyiCard=" .. cards[1]:getId())

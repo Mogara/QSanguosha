@@ -83,7 +83,13 @@ return {
 	[":beige"] = "每当一名角色每受到【杀】造成的一次伤害，你可以弃置一张牌，并令其进行一次判定，判定结果为：♥~该角色回复1点体力；♦~该角色摸两张牌；♣~伤害来源弃两张牌；♠~伤害来源将其武将牌翻面",
 	["duanchang"] = "断肠",
 	[":duanchang"] = "<b>锁定技</b>，杀死你的角色失去当前的所有武将技能。",	
-	["#DuanchangLoseSkills"] = "%from 的锁定技<b>断肠<b/> 被触发， 杀死他的角色 %to 将失去所有的技能";
+	["#DuanchangLoseSkills"] = "%from 的锁定技【%arg】被触发，杀死他的角色 %to 将失去所有的技能",
+	["$beige1"] = "欲死不能得，欲生无一可。", -- club
+	["$beige2"] = "此行远兮，君尚珍重！", -- spade
+	["$beige3"] = "翩翩吹我衣，肃肃入我耳。", -- diamond
+	["$beige4"] = "岂偕老之可期，庶尽欢于余年。", -- heart
+	["$duanchang1"] = "雁飞高兮邈难寻，空断肠兮思愔愔。",
+	["$duanchang2"] = "胡人落泪沾边草，汉使断肠对归客。",
 
 	["cv:zhanghe"] = "",
 	["cv:dengai"] = "",
@@ -91,7 +97,7 @@ return {
 	["cv:jiangwei"] = "Jr. Wakaran",
 	["cv:sunce"] = "",
 	["cv:erzhang"] = "",
-	["cv:caiwenji"] = "",
+	["cv:caiwenji"] = "呼呼",
 	["cv:zuoci"] = "",
 	["cv:zuocif"] = "",
 
