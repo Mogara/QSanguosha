@@ -106,7 +106,10 @@ void Dashboard::createRight(){
     handcard_pixmap->setPos(25, 127);
 
     handcard_num = new QGraphicsSimpleTextItem(handcard_pixmap);
-    handcard_num->setFont(Config.TinyFont);
+    handcard_num->setPos(6,8);
+
+     QFont serifFont("Times", 10, QFont::Bold);
+    handcard_num->setFont(serifFont);
     handcard_num->setBrush(Qt::white);
 
     handcard_pixmap->hide();
@@ -878,4 +881,9 @@ const ViewAsSkill *Dashboard::currentSkill() const{
 
 const Card *Dashboard::pendingCard() const{
     return pending_card;
+}
+
+int Dashboard::getRightPosition()
+{
+    return left_pixmap.width() + middle->rect().width();
 }

@@ -55,6 +55,8 @@ public:
     void killPlayer();
     void revivePlayer();
 
+    int getRightPosition();
+
 public slots:
     void updateAvatar();
     void updateSmallAvatar();

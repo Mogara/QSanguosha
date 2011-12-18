@@ -258,6 +258,8 @@ private:
     void doHuashen(const QString &name, const QStringList &args);
     void doIndicate(const QString &name, const QStringList &args);
 
+    void animateHpChange(const QString &name, const QStringList &args);
+
 private slots:
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
@@ -273,7 +275,7 @@ private slots:
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature);
     void moveFocus(const QString &who);
-    void setEmotion(const QString &who, const QString &emotion);
+    void setEmotion(const QString &who, const QString &emotion,bool permanent = false);
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(const QString &name, const QStringList &args);
     void adjustDashboard();
