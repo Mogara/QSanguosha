@@ -558,6 +558,12 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		end
     end
 	
+	if self.player:getHandcardNum()==1 then
+		for _, enemy in ipairs(self.enemies) do
+			if self:isEquip("GudingBlade", enemy) and enemy:canSlash(self.player, true) then return end
+		end
+	end
+
 	local special={}
 	for _,player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
