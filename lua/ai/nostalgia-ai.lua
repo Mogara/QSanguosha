@@ -154,8 +154,15 @@ guhuo_skill.getTurnUseCard=function(self)
 	local card_str = self:getGuhuoCard("Peach", self.player, true) or self:getGuhuoCard("Analeptic", self.player, true) or self:getGuhuoCard("Slash", self.player, true)
 	if card_str then return sgs.Card_Parse(card_str) end
 
-	local guhuo="peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
-	local guhuos=guhuo:split("|")
+	local guhuo = "peach|ex_nihilo|snatch|amazing_grace|archery_attack|fire_attack"
+	local guhuos = guhuo:split("|")
+	for _, package in ipairs(sgs.Sanguosha:getBanPackages()) do
+		if package == "maneuvering" then
+			table.remove(guhuos, #guhuos)
+			break
+		end
+	end
+
 	for _,card in ipairs(cards) do
 		if (card:inherits("Slash") and self:getCardsNum("Slash", self.player, "h")>=2 and not self:isEquip("Crossbow"))
 		or (card:inherits("Jink") and self:getCardsNum("Jink", self.player, "h")>=3) then

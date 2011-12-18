@@ -95,6 +95,10 @@ sgs.ai_skill_use["@@weidai"] = function(self, prompt)
 	return "@WeidaiCard=.->."
 end
 
+sgs.ai_skill_use_func["WeidaiCard"] = function(card, use, self)
+	use.card = card
+end
+
 -- fuzuo
 sgs.ai_skill_choice["fuzuo"] = function(self , choices)
 	return "cancel"

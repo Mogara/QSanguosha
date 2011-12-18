@@ -1070,6 +1070,30 @@ function SmartAI:searchForAnaleptic(use,enemy,slash)
 		end
 	end
 
+	if self.player:getPhase() == sgs.Player_Play then
+		if self.player:hasFlag("lexue") then
+			local lexuesrc = sgs.Sanguosha:getCard(self.player:getMark("lexue"))
+			if lexuesrc:inherits("Analeptic") then
+				local cards = sgs.QList2Table(self.player:getHandcards())
+				self:sortByUseValue(cards, true)
+				for _, hcard in ipairs(cards) do
+					if hcard:getSuit() == lexuesrc:getSuit() then
+						local lexue = sgs.Sanguosha:cloneCard("analeptic", lexuesrc:getSuit(), lexuesrc:getNumber())
+						lexue:addSubcard(hcard:getId())
+						lexue:setSkillName("lexue")
+						if self:getUseValue(lexuesrc) > self:getUseValue(hcard) then
+							return lexue
+						end
+					end
+				end
+			end
+		end
+
+		if self.player:hasLordSkill("weidai") and not self.player:hasUsed("WeidaiCard") then
+			return sgs.Card_Parse("@WeidaiCard=.")
+		end
+	end
+
 	local card_str = self:getCardId("Analeptic")
 	if card_str then return sgs.Card_Parse(card_str) end
 
@@ -1122,6 +1146,12 @@ function SmartAI:slashProhibit(card,enemy)
 			if self:isEquip("EightDiagram", enemy) then return true end
 		end
 
+		if enemy:hasLordSkill("hujia") then
+			for _, player in ipairs(self:getFriends(enemy)) do
+				if player:hasSkill("tiandu") and self:isEquip("EightDiagram", player) and player:getKingdom() == "wei" then return true end
+			end
+		end
+
 		if enemy:hasSkill("ganglie") then
 			if self.player:getHandcardNum()+self.player:getHp() < 5 then return true end
 		end
@@ -1138,7 +1168,7 @@ function SmartAI:slashProhibit(card,enemy)
 			return true
 		end
 
-		if enemy:hasSkill("wuhun") and self:isWeak(enemy) then
+		if enemy:hasSkill("wuhun") and self:isWeak(enemy) and not (enemy:isLord() and self.player:getRole() == "rebel") then
 			local mark = 0
 			for _, player in sgs.qlist(self.room:getAlivePlayers()) do
 				if player:getMark("@nightmare") > mark then mark = player:getMark("@nightmare") end

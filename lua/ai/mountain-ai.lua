@@ -382,71 +382,69 @@ local zhiba_skill={}
 zhiba_skill.name="zhiba_pindian"
 table.insert(sgs.ai_skills, zhiba_skill)
 zhiba_skill.getTurnUseCard = function(self)
-	local lord = self.room:getLord()
-	if lord:getHandcardNum() == 0
-		or self.player:getHandcardNum() == 0
-		or self.player:getHandcardNum() < self.player:getHp()
-		or self.player == lord
-		or self.player:getKingdom() ~= "wu"
-		or self.player:hasUsed("ZhibaCard")
-		or not lord:hasSkill("sunce_zhiba") then
-		return
-	end
-
-	local zhiba_str
-	local cards = self.player:getHandcards()
-
-	local max_num = 0, max_card
-	local min_num = 14, min_card
-	for _, hcard in sgs.qlist(cards) do
-		if hcard:getNumber() > max_num then
-			max_num = hcard:getNumber()
-			max_card = hcard
-		end
-
-		if hcard:getNumber() <= min_num and not (self:isFriend(lord) and hcard:inherits("Shit")) then
-			if hcard:getNumber() == min_num then
-				if min_card and self:getKeepValue(hcard) > self:getKeepValue(min_card) then
-					min_num = hcard:getNumber()
-					min_card = hcard
-				end
-			else
-				min_num = hcard:getNumber()
-				min_card = hcard
-			end
-		end
-	end
-
-	local lord_max_num = 0, lord_max_card
-	local lord_min_num = 14, lord_min_card
-	local lord_cards = lord:getHandcards()
-	for _, lcard in sgs.qlist(lord_cards) do
-		if lcard:getNumber() > lord_max_num then
-			lord_max_card = lcard
-			lord_max_num = lcard:getNumber()
-		end
-		if lcard:getNumber() < lord_min_num then
-			lord_min_num = lcard:getNumber()
-			lord_min_card = lcard
-		end
-	end
-
-	if self:isEnemy(lord) and max_num > lord_max_num then
-		zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
-	end
-	if self:isFriend(lord) and min_num < lord_min_num then
-		zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
-	end
-
- 	if not zhiba_str then return end
-
-	return sgs.Card_Parse(zhiba_str)
+	if self.player:isKongcheng() or self.player:getHandcardNum() < self.player:getHp() or self.player:getKingdom() ~= "wu"
+		or self.player:hasUsed("ZhibaCard") then return end
+	return sgs.Card_Parse("@ZhibaCard=.")
 end
 
 sgs.ai_skill_use_func["ZhibaCard"] = function(card, use, self)
-	use.card = card
-	if use.to then
-		use.to:append(self.room:getLord())
+	local lords = {}
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if player:hasLordSkill("sunce_zhiba") and not player:isKongcheng() then table.insert(lords, player) end
+	end
+	if #lords == 0 then return end
+	self:sort(lords, "defense")
+	for _, lord in ipairs(lords) do
+		local zhiba_str
+		local cards = self.player:getHandcards()
+
+		local max_num = 0, max_card
+		local min_num = 14, min_card
+		for _, hcard in sgs.qlist(cards) do
+			if hcard:getNumber() > max_num then
+				max_num = hcard:getNumber()
+				max_card = hcard
+			end
+
+			if hcard:getNumber() <= min_num and not (self:isFriend(lord) and hcard:inherits("Shit")) then
+				if hcard:getNumber() == min_num then
+					if min_card and self:getKeepValue(hcard) > self:getKeepValue(min_card) then
+						min_num = hcard:getNumber()
+						min_card = hcard
+					end
+				else
+					min_num = hcard:getNumber()
+					min_card = hcard
+				end
+			end
+		end
+
+		local lord_max_num = 0, lord_max_card
+		local lord_min_num = 14, lord_min_card
+		local lord_cards = lord:getHandcards()
+		for _, lcard in sgs.qlist(lord_cards) do
+			if lcard:getNumber() > lord_max_num then
+				lord_max_card = lcard
+				lord_max_num = lcard:getNumber()
+			end
+			if lcard:getNumber() < lord_min_num then
+				lord_min_num = lcard:getNumber()
+				lord_min_card = lcard
+			end
+		end
+
+		if self:isEnemy(lord) and max_num > lord_max_num then
+			zhiba_str = "@ZhibaCard=" .. max_card:getEffectiveId()
+		end
+		if self:isFriend(lord) and min_num < lord_min_num then
+			zhiba_str = "@ZhibaCard=" .. min_card:getEffectiveId()
+		end
+
+		if zhiba_str then
+			use.card = sgs.Card_Parse(zhiba_str)
+			if use.to then use.to:append(lord) end
+			return
+		end
 	end
 end
 
