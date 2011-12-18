@@ -96,20 +96,26 @@ function SmartAI.GetDefense(player)
 	if not player:getArmor() and player:hasSkill("bazhen") then
 		defense = defense + 2
 	end
-	if player:hasSkill("ganglie") then
-		defense = defense + 1
+	local m = sgs.masochism_skill:split("|")
+	for _, masochism in ipairs(m) do
+		if player:hasSkill(masochism) then
+			defense = defense + 1
+		end
 	end
-	if player:hasSkill("enyuan") then
-		defense = defense + 1
-	end
-	if player:hasSkill("yiji") then
-		defense = defense + 1
+	if player:getArmor() and player:getArmor():inherits("EightDiagram") and player:hasSkill("tiandu") then
+		defense = defense + 0.3
 	end
 	if player:hasSkill("jieming") then
 		defense = defense + 1
 	end
 	if player:getMark("@tied")>0 then
 		defense = defense + 1
+	end
+	if player:hasSkill("qingguo") and player:getHandcardNum()>1 then
+		defense = defense + 0.5
+	end
+	if player:hasSkill("longdan") and player:getHandcardNum()>2 then
+		defense = defense + 0.3
 	end
 	return defense
 end
@@ -744,6 +750,8 @@ sgs.ai_skill_invoke = {
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:hasSkill("guidao") and enemy:getCards("he"):length()>2 then return false end
 		end
+		
+		if self:getDamagedEffects(self) then return false end
 		if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
 		if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
 		return true
@@ -2328,7 +2336,7 @@ function SmartAI:getDynamicUsePriority(card)
 				self:sort(dummy_use.probably_hit, "defense")
 				local probably_hit
 				for _, hit in ipairs(dummy_use.probably_hit) do
-					if not self:hasSkills(masochism_skill, hit) then
+					if not self:hasSkills(sgs.masochism_skill, hit) then
 						probably_hit = hit
 						break
 					end
@@ -2983,6 +2991,8 @@ function SmartAI:askForCard(pattern, prompt, data)
 
 			end
 		end
+		
+		if self:getDamagedEffects(self) then return "." end
 		return self:getCardId("Jink") or "."
 	end
 end
@@ -3261,7 +3271,7 @@ end
 
 sgs.lose_equip_skill = "xiaoji|xuanfeng"
 sgs.need_kongcheng = "lianying|kongcheng"
-sgs.masochism_skill = "fankui|quhu|yiji|ganglie|enyuan|fangzhu"
+sgs.masochism_skill = "fankui|jieming|yiji|ganglie|enyuan|fangzhu"
 sgs.wizard_skill = "guicai|guidao|tiandu"
 sgs.wizard_harm_skill = "guicai|guidao"
 
@@ -3565,6 +3575,27 @@ function SmartAI:cardProhibit(card, to)
 		if card:inherits("Indulgence") or card:inherits("Snatch") and to:hasSkill("qianxun") then return true end
 		if card:inherits("Duel") and to:hasSkill("kongcheng") and to:isKongcheng() then return true end
 	end
+	return false
+end
+
+function SmartAI:getDamagedEffects(self, player)
+	player = player or self.player
+	
+	if (player:getHp() > 1 or player:hasSkill("buqu")) and self:hasSkills(sgs.masochism_skill, player) then
+		local attacker = self.room:getCurrent()
+		if self:isEnemy(attacker, player) and attacker:getHp() <= 1 then
+			if self:hasSkills("ganglie|enyuan", player) then return true end
+		end
+		
+		if player:hasSkill("jieming") then
+			for _, friend in ipairs(self:getFriends(player)) do
+				if math.min(friend:getMaxHP(), 5) - friend:getHandcardNum() >= 3 then return true end
+			end
+		elseif player:hasSkill("fangzhu") then
+			if player:getLostHp() <= 1 then return true end
+		end
+	end
+	
 	return false
 end
 
