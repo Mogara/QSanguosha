@@ -2153,21 +2153,21 @@ function SmartAI:getKeepValue(card,kept)
 
 	local class_name = card:className()
 	local suit_string = card:getSuitString()
-	local value
+	local value, newvalue
 	if sgs[self.player:getGeneralName().."_keep_value"] then
 		value = sgs[self.player:getGeneralName().."_keep_value"][class_name]
+		if value then return value end
 	end
-	if (not value) and sgs[self.player:getGeneralName().."_suit_value"] then
+	if sgs[self.player:getGeneralName().."_suit_value"] then
 		value = sgs[self.player:getGeneralName().."_suit_value"][suit_string]
 	end
-	if not value then
-		value = sgs.ai_keep_value[class_name] or 0
-		for _,acard in ipairs(kept) do
-			if acard:className() == card:className() then value = value-1.2
-			elseif acard:inherits("Slash") and card:inherits("Slash") then value = value-1
-			end
+	newvalue = sgs.ai_keep_value[class_name] or 0
+	for _,acard in ipairs(kept) do
+		if acard:className() == card:className() then newvalue = newvalue - 1.2
+		elseif acard:inherits("Slash") and card:inherits("Slash") then newvalue = newvalue - 1
 		end
 	end
+	if not value or newvalue > value then value = newvalue end
 	return value
 end
 
@@ -3211,6 +3211,11 @@ function SmartAI:cardNeed(card)
 	local class_name = card:className()
 	local suit_string = card:getSuitString()
 	local value
+	if card:inherits("Peach") then
+		self:sort(self.friends,"hp")
+		if self.friends[1]:getHp() < 2 then return 10 end
+		return self:getUseValue(card)
+	end
 	if sgs[self.player:getGeneralName().."_keep_value"] then
 		value = sgs[self.player:getGeneralName().."_keep_value"][class_name]
 		if value then return value+4 end
@@ -3220,12 +3225,7 @@ function SmartAI:cardNeed(card)
 		if value then return value+4 end
 	end
 
-	if card:inherits("Jink") and (self:getCardsNum("Jink") == 0) then return 5.9 end
-	if card:inherits("Peach") then
-		self:sort(self.friends,"hp")
-		if self.friends[1]:getHp() < 2 then return 10 end
-		return self:getUseValue(card)
-	end
+	if card:inherits("Jink") and self:getCardsNum("Jink") == 0 then return 5.9 end
 	if card:inherits("Analeptic") then
 		if self.player:getHp() < 2 then return 10 end
 	end
