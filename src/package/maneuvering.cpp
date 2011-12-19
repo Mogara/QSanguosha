@@ -329,6 +329,7 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     effect.to->setChained(chained);
 
     effect.to->getRoom()->broadcastProperty(effect.to, "chained");
+    effect.to->getRoom()->setEmotion(effect.to, "chain");
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
