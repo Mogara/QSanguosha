@@ -19,7 +19,7 @@
 #include <QPushButton>
 #include <QMenu>
 
-#include <pixmapanimation.h>
+#include "pixmapanimation.h"
 
 Photo::Photo()
     :Pixmap("image/system/photo-back.png"),
