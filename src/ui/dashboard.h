@@ -56,6 +56,7 @@ public:
     void revivePlayer();
 
     int getRightPosition();
+    int getMidPosition();
 
 public slots:
     void updateAvatar();

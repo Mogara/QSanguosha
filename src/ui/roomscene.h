@@ -7,6 +7,7 @@
 #include "client.h"
 #include "aux-skills.h"
 #include "clientlogbox.h"
+#include "sprite.h"
 
 class Window;
 class Button;
@@ -170,7 +171,7 @@ private:
     QComboBox *role_combobox;
     QPushButton *trust_button, *untrust_button;
     QPushButton *ok_button, *cancel_button, *discard_button;
-    QPushButton *reverse_button;
+    QPushButton *reverse_button, *free_discard;
     QMenu *known_cards_menu, *change_general_menu;
     Window *prompt_box;
     QGraphicsItem *control_panel;
@@ -204,6 +205,7 @@ private:
     ClientLogBox *log_box;
     QTextEdit *chat_box;
     QLineEdit *chat_edit;
+    QGraphicsProxyWidget *chat_box_widget;
 
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
@@ -259,6 +261,13 @@ private:
     void doIndicate(const QString &name, const QStringList &args);
 
     void animateHpChange(const QString &name, const QStringList &args);
+    void animatePopup(const QString &name, const QStringList &args);
+
+    //re-layout attempts
+    void reLayout();
+    void alignTo(Pixmap *object, QPoint pos, const QString &flags);
+    void alignTo(QWidget *object, QPoint pos, const QString &flags);
+    void alignTo(QGraphicsItem *object, QPoint pos, const QString &flags);
 
 private slots:
     void updateSkillButtons();

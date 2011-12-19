@@ -18,6 +18,8 @@ public:
     void setPath(const QString &path);
     bool valid();
 
+    void start(bool permanent = true,int interval = 50);
+
 signals:
     void finished();
 

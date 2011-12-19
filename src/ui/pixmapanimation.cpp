@@ -52,3 +52,9 @@ void PixmapAnimation::timerEvent(QTimerEvent *e)
 {
     advance(1);
 }
+
+void PixmapAnimation::start(bool permanent,int interval)
+{
+    startTimer(interval);
+    if(!permanent)connect(this,SIGNAL(finished()),this,SLOT(deleteLater()));
+}

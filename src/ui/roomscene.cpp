@@ -37,6 +37,8 @@
 #include <QStatusBar>
 #include <QMovie>
 
+
+
 #ifdef Q_OS_WIN32
 #include <QAxObject>
 #endif
@@ -250,10 +252,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
         // chat box
         chat_box = new QTextEdit;
         chat_box->resize(230 + widen_width, 175);
+        chat_box->setObjectName("chat_box");
 
-        QGraphicsProxyWidget *chat_box_widget = addWidget(chat_box);
+        chat_box_widget = addWidget(chat_box);
         chat_box_widget->setPos(-343 - widen_width, -83);
         chat_box_widget->setZValue(-2.0);
+        chat_box_widget->setObjectName("chat_box_widget");
 
         chat_box->setReadOnly(true);
         chat_box->setTextColor(Config.TextEditColor);
@@ -262,6 +266,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         // chat edit
         chat_edit = new QLineEdit;
         chat_edit->setFixedWidth(chat_box->width());
+        chat_edit->setObjectName("chat_edit");
 
 #if QT_VERSION >= 0x040700
         chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
@@ -271,6 +276,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_edit_widget->setWidget(chat_edit);
         chat_edit_widget->setX(0);
         chat_edit_widget->setY(chat_box->height());
+        chat_edit_widget->setObjectName("chat_edit_widget");
         connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
 
         if(circular){
@@ -278,7 +284,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
             chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
-            chat_edit->setFixedHeight(24);
+            //chat_edit->(24);
             chat_edit_widget->setX(0);
             chat_edit_widget->setY(chat_box->height()+1);
         }
@@ -292,10 +298,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
         log_box = new ClientLogBox;
         log_box->resize(chat_box->width(), 205);
         log_box->setTextColor(Config.TextEditColor);
+        log_box->setObjectName("log_box");
 
         QGraphicsProxyWidget *log_box_widget = addWidget(log_box);
         log_box_widget->setPos(114, -83);
         log_box_widget->setZValue(-2.0);
+        log_box_widget->setObjectName("log_box_widget");
         connect(ClientInstance, SIGNAL(log_received(QString)), log_box, SLOT(appendLog(QString)));
 
         if(circular){
@@ -356,6 +364,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addWidgetToSkillDock(sort_combobox, true);
 
     createStateItem();
+
+
 }
 
 void RoomScene::createButtons(){
@@ -2865,7 +2875,8 @@ void RoomScene::onGameStart(){
 
     // add free discard button
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
-        QPushButton *free_discard = dashboard->addButton("free-discard", 190, true);
+        free_discard = dashboard->addButton("free-discard", 190, true);
+        free_discard->setObjectName("free_discard");
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
@@ -2939,6 +2950,7 @@ void RoomScene::onGameStart(){
 #endif
 
 #endif
+    reLayout();
 }
 
 #ifdef AUDIO_SUPPORT
@@ -3168,6 +3180,35 @@ void RoomScene::animateHpChange(const QString &name, const QStringList &args)
 
 }
 
+void RoomScene::animatePopup(const QString &name, const QStringList &args)
+{
+    QPointF pos = getAnimationObject(args.at(0))->scenePos();
+
+    QPixmap *item = new QPixmap(QString("image/system/animation/%1.png").arg(name));
+    pos.rx()+=item->width()/2;
+    pos.ry()+=item->height()/2;
+
+    Sprite *sprite = new Sprite();
+    sprite->setParent(this);
+    sprite->setPixmapAtMid(*item);
+    Sprite *glare = new Sprite();
+    glare->setPixmapAtMid(*item);
+
+    sprite->setResetTime(300);
+    sprite->addKeyFrame(0,"opacity",0);
+    sprite->addKeyFrame(500,"opacity",1);
+    sprite->addKeyFrame(800,"opacity",1);
+    //sprite->addKeyFrame(1000,"opacity",0);
+    sprite->addKeyFrame(0,"scale",0.2,QEasingCurve::OutQuad);
+    sprite->addKeyFrame(300,"scale",1);
+    sprite->addKeyFrame(800,"scale",1.2);
+
+    sprite->start();
+
+    addItem(sprite);
+    sprite->setPos(pos);
+}
+
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
 
     Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
@@ -3275,7 +3316,7 @@ void RoomScene::doIndicate(const QString &name, const QStringList &args){
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
-        map["peach"] = &RoomScene::doMovingAnimation;
+        map["peach"] = &RoomScene::animatePopup;
         map["nullification"] = &RoomScene::doMovingAnimation;
 
         map["analeptic"] = &RoomScene::doAppearingAnimation;
@@ -3673,4 +3714,126 @@ void RoomScene::updateStateItem(const QString &roles)
             role_items << item;
         }
     }
+}
+
+void RoomScene::reLayout()
+{
+    QPoint pos = QPoint(dashboard->getMidPosition(),0);
+
+    int skip = 10;
+    int padding_left = 5;
+    int padding_top = -5;
+
+    pos.rx()+= padding_left;
+    pos.ry()+= padding_top;
+
+    alignTo(trust_button,pos,"xlyb");
+    alignTo(untrust_button,pos,"xlyb");
+    pos.rx()+=trust_button->width();
+    pos.rx()+=skip;
+
+    alignTo(reverse_button,pos,"xlyb");
+    pos.rx()+=reverse_button->width();
+    pos.rx()+=skip*2;
+
+
+    if(free_discard)
+    {
+        alignTo(free_discard,pos,"xlyb");
+        pos.rx()+=free_discard->width();
+        pos.rx()+=skip;
+    }
+
+    pos = QPoint(0,0);
+
+    pos.rx()-= padding_left;
+    pos.ry()+=padding_top;
+
+    alignTo(discard_button,pos,"xryb");
+    pos.rx()-=discard_button->width();
+    pos.rx()-=skip;
+
+    alignTo(cancel_button,pos,"xryb");
+    pos.rx()-=cancel_button->width();
+    pos.rx()-=skip;
+
+    alignTo(ok_button,pos,"xryb");
+    pos.rx()-=ok_button->width();
+    pos.rx()-=skip;
+    //ok_button->move(-10,-10);
+
+
+    if(!Config.value("circularView",false).toBool())
+    {
+        pos.rx() = dashboard->x() + (dashboard->getMidPosition() + dashboard->getRightPosition())/2;
+
+        alignTo(state_item,pos,"xm");
+
+        pos.ry() = state_item->y();
+        pos.rx() = state_item->x()-padding_left;
+        alignTo(chat_box_widget,pos,"xryt");
+
+        pos.rx() = state_item->x() + state_item->boundingRect().width() + padding_left;
+        alignTo(log_box,pos,"xlyt");
+
+        log_box->setFixedHeight(chat_box->height() + chat_edit->height());
+    }
+    else
+    {
+        pos.ry() = -main_window->height()/2 + 30;
+        pos.ry() -= padding_top*2;
+        pos.rx() = state_item->x() + state_item->boundingRect().width()/2;
+
+        alignTo(state_item,pos,"xmyt");
+
+        pos.ry()+=state_item->boundingRect().height();
+        alignTo(log_box,pos,"xmyt");
+
+        pos.ry()+=log_box->height();
+        alignTo(chat_box_widget,pos,"xmyt");
+
+    }
+
+}
+
+void RoomScene::alignTo(Pixmap *object, QPoint pos, const QString &flags)
+{
+    QPointF to = object->pos();
+    if(flags.contains("xl"))to.rx() = pos.x();
+    else if(flags.contains("xr"))to.rx() = pos.x() - object->boundingRect().width();
+    else if(flags.contains("xm"))to.rx() = pos.x() - object->boundingRect().width()/2;
+
+    if(flags.contains("yt"))to.ry() = pos.y();
+    else if(flags.contains("yb"))to.ry() = pos.y() - object->boundingRect().height();
+    else if(flags.contains("ym"))to.ry() = pos.y() - object->boundingRect().height()/2;
+
+    object->setPos(to);
+}
+
+void RoomScene::alignTo(QWidget *object, QPoint pos, const QString &flags)
+{
+    QPoint to = object->pos();
+    if(flags.contains("xl"))to.rx() = pos.x();
+    else if(flags.contains("xr"))to.rx() = pos.x() - object->width();
+    else if(flags.contains("xm"))to.rx() = pos.x() - object->width()/2;
+
+    if(flags.contains("yt"))to.ry() = pos.y();
+    else if(flags.contains("yb"))to.ry() = pos.y() - object->height();
+    else if(flags.contains("ym"))to.ry() = pos.y() - object->height()/2;
+
+    object->move(to.x(),to.y());
+}
+
+void RoomScene::alignTo(QGraphicsItem* object, QPoint pos, const QString &flags)
+{
+    QPointF to = object->pos();
+    if(flags.contains("xl"))to.rx() = pos.x();
+    else if(flags.contains("xr"))to.rx() = pos.x() - object->boundingRect().width();
+    else if(flags.contains("xm"))to.rx() = pos.x() - object->boundingRect().width()/2;
+
+    if(flags.contains("yt"))to.ry() = pos.y();
+    else if(flags.contains("yb"))to.ry() = pos.y() - object->boundingRect().height();
+    else if(flags.contains("ym"))to.ry() = pos.y() - object->boundingRect().height()/2;
+
+    object->setPos(to);
 }

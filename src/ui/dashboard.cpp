@@ -31,6 +31,7 @@ Dashboard::Dashboard()
     setMiddleWidth(middle_width);
 
     sort_type = 0;
+
 }
 
 void Dashboard::createLeft(){
@@ -378,10 +379,11 @@ QPushButton *Dashboard::createButton(const QString &name){
     QIcon icon(icon_pixmap);
     icon.addPixmap(icon_pixmap_disabled, QIcon::Disabled);
 
-    button->setIcon(icon);
-    button->setIconSize(icon_pixmap.size());
+    //button->setIcon(icon);
+    //button->setIconSize(icon_pixmap.size());
     button->setFixedSize(icon_pixmap.size());
     button->setObjectName(name);
+    button->setProperty("game_control",true);
 
     button->setAttribute(Qt::WA_TranslucentBackground);
 
@@ -886,4 +888,9 @@ const Card *Dashboard::pendingCard() const{
 int Dashboard::getRightPosition()
 {
     return left_pixmap.width() + middle->rect().width();
+}
+
+int Dashboard::getMidPosition()
+{
+    return left_pixmap.width();
 }
