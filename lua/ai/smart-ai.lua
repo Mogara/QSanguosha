@@ -144,6 +144,7 @@ function SmartAI:initialize(player)
 				self.room:writeToConsole(debug.traceback())
 				self.room:writeToConsole("Event stack:")
 				self.room:outputEventStack()
+				self.room:writeToConsole("End of Event Stack")
 			else
 				return result1, result2
 			end
@@ -3192,6 +3193,15 @@ function SmartAI:useSkillCard(card,use)
 			use.card = nil
 		end
 	end
+	if not use.card then return end
+	local subcards = sgs.QList2Table(use.card:getSubcards())
+	local shit = 0
+	if #subcards > 0 then
+		for _, card in ipairs(subcards) do
+			if sgs.Sanguosha:getCard(card):inherits("Shit") then shit = shit + 1 end
+		end
+	end
+	if shit - self.player:getHp() > self:getAllPeachNum() then use.card = nil end
 end
 
 sgs.ai_skill_use_func = {}

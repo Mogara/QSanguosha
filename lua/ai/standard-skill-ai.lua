@@ -425,8 +425,10 @@ rende_skill.getTurnUseCard=function(self)
 	if self.player:isKongcheng() then return end
 	for _, player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
-			or player:hasSkill("longluo") or (not player:containsTrick("indulgence") and
-			(player:hasSkill("zhiheng") or player:hasSkill("yishe")))) and player:faceUp() then
+			or player:hasSkill("longluo")
+			or (not player:containsTrick("indulgence") and (player:hasSkill("zhiheng") or player:hasSkill("yishe")))
+			)
+			and player:faceUp() then
 			return sgs.Card_Parse("@RendeCard=.")
 		end
 	end
@@ -512,13 +514,15 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 				end
 				local dummy_use = {isDummy = true}
 				self:useSkillCard(sgs.Card_Parse("@ZhibaCard=."), dummy_use)
-				local subcard = sgs.Sanguosha:getCard(dummy_use.card:getEffectiveId())
-				if dummy_use.card and self:getUseValue(subcard)<6 and #self.friends>1 then
-					for _, player in ipairs(self.friends_noself) do
-						if player:getKingdom() == "wu" then
-							use.card = sgs.Card_Parse("@RendeCard=" .. subcard:getId())
-							if use.to then use.to:append(player) end
-							return
+				if dummy_use.card then
+					local subcard = sgs.Sanguosha:getCard(dummy_use.card:getEffectiveId())
+					if self:getUseValue(subcard)<6 and #self.friends>1 then
+						for _, player in ipairs(self.friends_noself) do
+							if player:getKingdom() == "wu" then
+								use.card = sgs.Card_Parse("@RendeCard=" .. subcard:getId())
+								if use.to then use.to:append(player) end
+								return
+							end
 						end
 					end
 				end
@@ -589,8 +593,10 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 	local special={}
 	for _,player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
-			or player:hasSkill("longluo") or (not player:containsTrick("indulgence") and
-			(player:hasSkill("zhiheng") or player:hasSkill("yishe")))) and player:faceUp() then
+			or player:hasSkill("longluo")
+			or (not player:containsTrick("indulgence") and (player:hasSkill("zhiheng") or player:hasSkill("yishe")))
+			)
+			and player:faceUp() then
 			table.insert(special, player)
 		end
 	end
@@ -684,9 +690,8 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
         for _,card in ipairs(cards) do
             if card:inherits("EquipCard") then
                 if (card:inherits("Weapon") and self.player:getHandcardNum() < 3) or
-                (card:inherits("DefensiveHorse") and self.player:getDefensiveHorse()) or
                 card:inherits("OffensiveHorse") or
-                (card:inherits("Armor") and self.player:getArmor()) or
+				(self:hasSameEquip(card, self.player) and not card:inherits("DefensiveHorse")) or
                  card:inherits("AmazingGrace") or
                  card:inherits("Lightning") then
                     table.insert(unpreferedCards,card:getId())
@@ -694,21 +699,17 @@ sgs.ai_skill_use_func["ZhihengCard"] = function(card, use, self)
             end
         end
 	
-		if self.player:getWeapon() then														
+		if self.player:getWeapon() and self.player:getHandcardNum()<3 then
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
 		end
 				
-		if self:isEquip("SilverLion") and self.player:isWounded() then
+		if (self:isEquip("SilverLion") and self.player:isWounded()) or self:isEquip("GaleShell") then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
 		end	
-				
-		local equips=self.player:getEquips()
-		for _,equip in sgs.qlist(equips) do
-			if equip:inherits("OffensiveHorse") and self.player:getWeapon() then
-				table.insert(unpreferedCards, equip:getId())
-				break
-			end
-		end	
+
+		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
+		end
 	end	
 	
 	for index = #unpreferedCards, 1, -1 do
