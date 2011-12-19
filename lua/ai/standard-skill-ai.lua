@@ -425,7 +425,8 @@ rende_skill.getTurnUseCard=function(self)
 	if self.player:isKongcheng() then return end
 	for _, player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
-			or player:hasSkill("longluo")) and player:faceUp() then
+			or player:hasSkill("longluo") or (not player:containsTrick("indulgence") and
+			(player:hasSkill("zhiheng") or player:hasSkill("yishe")))) and player:faceUp() then
 			return sgs.Card_Parse("@RendeCard=.")
 		end
 	end
@@ -498,6 +499,27 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 								return
 							end
 						end
+						if hcard:getNumber()>10 and self:hasSkills("tianyi|xianzhen|quhu", friend) then
+							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+							if use.to then use.to:append(friend) end
+							return
+						elseif hcard:getNumber()<8 and friend:hasSkill("chengxiang") and friend:getHandcardNum()<12 then
+							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
+							if use.to then use.to:append(friend) end
+							return
+						end
+					end
+				end
+				local dummy_use = {isDummy = true}
+				self:useSkillCard(sgs.Card_Parse("@ZhibaCard=."), dummy_use)
+				local subcard = sgs.Sanguosha:getCard(dummy_use.card:getEffectiveId())
+				if dummy_use.card and self:getUseValue(subcard)<6 and #self.friends>1 then
+					for _, player in ipairs(self.friends_noself) do
+						if player:getKingdom() == "wu" then
+							use.card = sgs.Card_Parse("@RendeCard=" .. subcard:getId())
+							if use.to then use.to:append(player) end
+							return
+						end
 					end
 				end
 				if hcard:inherits("Armor") then
@@ -567,7 +589,8 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 	local special={}
 	for _,player in ipairs(self.friends_noself) do
 		if ((player:hasSkill("haoshi") and not player:containsTrick("supply_shortage"))
-			or player:hasSkill("longluo")) and player:faceUp() then
+			or player:hasSkill("longluo") or (not player:containsTrick("indulgence") and
+			(player:hasSkill("zhiheng") or player:hasSkill("yishe")))) and player:faceUp() then
 			table.insert(special, player)
 		end
 	end
