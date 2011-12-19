@@ -264,6 +264,7 @@ private:
     void animatePopup(const QString &name, const QStringList &args);
 
     //re-layout attempts
+    bool game_started;
     void reLayout();
     void alignTo(Pixmap *object, QPoint pos, const QString &flags);
     void alignTo(QWidget *object, QPoint pos, const QString &flags);

@@ -503,6 +503,8 @@ void RoomScene::adjustItems(){
     int i;
     for(i=0; i<positions.length(); i++)
         photos.at(i)->setPos(positions.at(i));
+
+    reLayout();
 }
 
 QList<QPointF> RoomScene::getPhotoPositions() const{
@@ -2950,6 +2952,7 @@ void RoomScene::onGameStart(){
 #endif
 
 #endif
+    game_started = true;
     reLayout();
 }
 
@@ -3718,6 +3721,7 @@ void RoomScene::updateStateItem(const QString &roles)
 
 void RoomScene::reLayout()
 {
+    if(!game_started)return;
     QPoint pos = QPoint(dashboard->getMidPosition(),0);
 
     int skip = 10;
@@ -3782,6 +3786,7 @@ void RoomScene::reLayout()
     {
         pos.ry() = -main_window->height()/2 + 30;
         pos.ry() -= padding_top*2;
+
         pos.rx() = state_item->x() + state_item->boundingRect().width()/2;
 
         alignTo(state_item,pos,"xmyt");
