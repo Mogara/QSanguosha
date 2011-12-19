@@ -1,8 +1,9 @@
 #include "sprite.h"
-#include "QAnimationGroup"
-#include "QPropertyAnimation"
-#include "QParallelAnimationGroup"
-#include "QSequentialAnimationGroup"
+
+#include <QAnimationGroup>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
 
 Sprite::Sprite(QGraphicsItem *parent) :
     QGraphicsPixmapItem(parent),total_time(0)

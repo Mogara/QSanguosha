@@ -1,5 +1,5 @@
 #include "pixmapanimation.h"
-#include "QPainter.h"
+#include <QPainter>
 
 PixmapAnimation::PixmapAnimation(QGraphicsScene *scene) :
     QGraphicsItem(0,scene)
