@@ -23,7 +23,7 @@ public:
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     QPointF homePos() const;
-    void goBack(bool kieru = false);
+    void goBack(bool kieru = false,bool fadein = true,bool fadeout = true);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);

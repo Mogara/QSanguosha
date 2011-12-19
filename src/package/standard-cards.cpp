@@ -587,7 +587,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *jink = room->askForCard(effect.to, "jink", "archery-attack-jink:" + effect.from->objectName());
     if(jink)
-        room->broadcastInvoke("animate", QString("jink:%1").arg(effect.to->objectName()));
+        room->setEmotion(effect.to, "jink");
     else{
         DamageStruct damage;
         damage.card = this;

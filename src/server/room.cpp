@@ -400,7 +400,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink){
     if(jink == NULL)
         thread->trigger(SlashHit, effect.from, data);
     else{
-        broadcastInvoke("animate", QString("jink:%1").arg(effect.to->objectName()));
+        setEmotion(effect.to, "jink");
         thread->trigger(SlashMissed, effect.from, data);
     }
 }

@@ -572,11 +572,37 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     else
         indices = indices_table[photos.length() - 1];
 
+    qreal stretch_x = main_window->width()  - chat_box->width();
+    stretch_x/=1075;
+    qreal stretch_y = (main_window->height() - dashboard->boundingRect().height())/575;
+
+    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2,
+                             - dashboard->boundingRect().height()*(1-stretch_y)/2);
+
+
+    if(!Config.value("CircularView",false).toBool())
+    {
+        stretch_x = 1;
+        stretch_y = 1;
+        offset=QPoint(0,0);
+    }
+
     int i;
     for(i=0; i<photos.length(); i++){
         int index = indices[i];
-        positions << pos[index];
+        QPointF aposition = pos[index];
+
+        aposition.rx()*=stretch_x;
+        aposition.ry()*=stretch_y;
+
+        aposition.rx()+=offset.x();
+        aposition.ry()+=offset.y();
+
+        positions << aposition;
     }
+
+
+
 
     return positions;
 }
@@ -680,17 +706,18 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
 
         QPropertyAnimation *ugoku = new QPropertyAnimation(pixmap, "pos");
         ugoku->setStartValue(DrawPilePos);
-        ugoku->setDuration(1000);
-        ugoku->setEasingCurve(QEasingCurve::OutQuart);
+        ugoku->setDuration(800);
+        ugoku->setEasingCurve(QEasingCurve::OutQuad);
         ugoku->setEndValue(photo->pos() + QPointF(20 *i, 0));
 
         QPropertyAnimation *kieru = new QPropertyAnimation(pixmap, "opacity");
-        kieru->setKeyValueAt(0.4, 1.0);
+        kieru->setKeyValueAt(0, 1.0);
+        kieru->setKeyValueAt(0.8, 1.0);
         kieru->setEndValue(0.0);
-        kieru->setDuration(500);
+        kieru->setDuration(800);
 
         moving->addAnimation(ugoku);
-        disappering->addAnimation(kieru);
+        moving->addAnimation(kieru);
 
         connect(kieru, SIGNAL(finished()), pixmap, SLOT(deleteLater()));
     }
@@ -1142,7 +1169,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
     if(dest == NULL){
         if(dest_place == Player::DiscardedPile){
             card_item->setHomePos(DiscardedPos);
-            card_item->goBack();
+            card_item->goBack(true,false,false);
             card_item->setEnabled(true);
 
             card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
@@ -3204,7 +3231,7 @@ void RoomScene::animatePopup(const QString &name, const QStringList &args)
     //sprite->addKeyFrame(1000,"opacity",0);
     sprite->addKeyFrame(0,"scale",0.2,QEasingCurve::OutQuad);
     sprite->addKeyFrame(300,"scale",1);
-    sprite->addKeyFrame(800,"scale",1.2);
+    sprite->addKeyFrame(500,"scale",1.2);
 
     sprite->start();
 
@@ -3749,7 +3776,7 @@ void RoomScene::reLayout()
         pos.rx()+=skip;
     }
 
-    pos = QPoint(0,0);
+    pos = QPoint(dashboard->boundingRect().width()-dashboard->getRightPosition(),0);
 
     pos.rx()-= padding_left;
     pos.ry()+=padding_top;
@@ -3788,7 +3815,18 @@ void RoomScene::reLayout()
         pos.ry() = -main_window->height()/2 + 30;
         pos.ry() -= padding_top*2;
 
-        pos.rx() = state_item->x() + state_item->boundingRect().width()/2;
+        pos.rx() = main_window->width()/2 - padding_left
+                - chat_box->width()/2;
+                //state_item->x() + state_item->boundingRect().width()/2;
+
+        int height = main_window->height() - dashboard->boundingRect().height();
+        //height    += padding_top;
+        height    -= main_window->statusBar()->height()*2;
+        height    -= chat_edit->height()*2 + state_item->boundingRect().height();
+
+        chat_box->setFixedHeight(height/2);
+        chat_edit->move(0,chat_box->height());
+        log_box->setFixedHeight(height/2);
 
         alignTo(state_item,pos,"xmyt");
 
@@ -3798,6 +3836,7 @@ void RoomScene::reLayout()
         pos.ry()+=log_box->height();
         alignTo(chat_box_widget,pos,"xmyt");
 
+        dashboard->setWidth(main_window->width()-10);
     }
 
 }
