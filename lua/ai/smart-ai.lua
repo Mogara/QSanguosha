@@ -1414,7 +1414,7 @@ function SmartAI:useCardDismantlement(dismantlement, use)
 		for _, player in ipairs(players) do
 			if player:containsTrick("lightning") and not player:hasSkill("wuyan") then
 				use.card = dismantlement
-								if use.to then use.to:append(player) end
+				if use.to then use.to:append(player) end
 				return
 			end
 		end
@@ -2721,7 +2721,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 	else
 		if flags:match("e") then
-			if who:getWeapon() and self:isEquip("Crossbow",who) then
+			if self:isEquip("Crossbow",who) then
 				for _, friend in ipairs(self.friends) do
 					if who:distanceTo(friend) <= 1 then return who:getWeapon():getId() end
 				end
@@ -2740,6 +2740,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 
 			if who:getArmor() and self:evaluateArmor(who:getArmor(),who)>3 then
 				return who:getArmor():getId()
+			end
+
+			if self:isEquip("Monkey", who) then
+				return who:getOffensiveHorse():getId()
 			end
 		end
 
