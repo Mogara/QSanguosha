@@ -1,4 +1,4 @@
- QTextEdit#chat_box, QTextEdit#log_box{
+ QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
     background-color: rgba(43,45,31,200);
