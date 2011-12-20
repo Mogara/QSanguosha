@@ -270,6 +270,7 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 		elseif equip_num >= 3 then result_class = "EquipCard"
 		elseif basic_num >= 3 then result_class = "BasicCard"
 		end
+		local f
 		for _, friend in ipairs(self.friends_noself) do
 			if (friend:getHandcardNum()<2) or (friend:getHandcardNum()<friend:getHp()+1) then
 				for _, fcard in ipairs(cards) do
@@ -277,12 +278,12 @@ sgs.ai_skill_use_func["JujianCard"] = function(card, use, self)
 						table.insert(abandon_handcard, fcard:getId())
 						index = index + 1
 					end
-					if index == 3 then break end
+					if index == 3 then f = friend break end
 				end
 			end
 		end
 		if index == 3 then
-			if use.to then use.to:append(friend) end
+			if use.to then use.to:append(f) end
 			use.card = sgs.Card_Parse("@JujianCard=" .. table.concat(abandon_handcard, "+"))
 			return
 		end
