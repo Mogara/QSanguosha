@@ -1,9 +1,54 @@
- QTextEdit{
+ QTextEdit#chat_box, QTextEdit#log_box{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
     background-color: rgba(43,45,31,200);
-
  }
+
+ QScrollBar:vertical  {
+
+     margin: 22px 0 22px 0;
+ }
+
+QScrollBar:add-page
+{
+     background-color: rgba(0,0,0,200);
+}
+
+QScrollBar:sub-page
+{
+     background-color: rgba(0,0,0,200);
+}
+
+ QScrollBar::add-line:vertical  {
+
+     background-color: rgba(43,45,31,200);
+     height: 15px;
+     subcontrol-position: bottom;
+     subcontrol-origin: margin;
+ }
+
+ QScrollBar::sub-line:vertical  {
+
+     background-color: rgba(43,45,31,200);
+     height: 15px;
+     subcontrol-position: top;
+     subcontrol-origin: margin;
+ }
+
+QScrollBar::handle:vertical    {
+    border-image: url(image/system/button/scroll-handle.png);
+    min-height:100px;
+}
+
+QScrollBar::up-arrow:vertical
+{
+    border-image: url(image/system/button/scroll-up-arrow.png);
+}
+
+QScrollBar::down-arrow:vertical
+{
+    border-image: url(image/system/button/scroll-down-arrow.png);
+}
 
  QLineEdit#chat_edit{
     background-color: rgba(20,20,20,200);

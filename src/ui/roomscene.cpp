@@ -69,7 +69,7 @@ RoomScene *RoomSceneInstance;
 
 RoomScene::RoomScene(QMainWindow *main_window)
     :focused(NULL), special_card(NULL), viewing_discards(false),
-    main_window(main_window)
+      main_window(main_window),game_started(false)
 {
     RoomSceneInstance = this;
 
@@ -2905,7 +2905,6 @@ void RoomScene::onGameStart(){
     // add free discard button
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
         free_discard = dashboard->addButton("free-discard", 190, true);
-        free_discard->setObjectName("free_discard");
         free_discard->setToolTip(tr("Discard cards freely"));
         FreeDiscardSkill *discard_skill = new FreeDiscardSkill(this);
         button2skill.insert(free_discard, discard_skill);
@@ -3750,6 +3749,7 @@ void RoomScene::updateStateItem(const QString &roles)
 void RoomScene::reLayout()
 {
     if(!game_started)return;
+
     QPoint pos = QPoint(dashboard->getMidPosition(),0);
 
     int skip = 10;
@@ -3769,7 +3769,7 @@ void RoomScene::reLayout()
     pos.rx()+=skip*2;
 
 
-    if(free_discard)
+    if(ServerInfo.FreeChoose)
     {
         alignTo(free_discard,pos,"xlyb");
         pos.rx()+=free_discard->width();
