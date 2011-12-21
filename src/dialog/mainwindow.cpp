@@ -540,12 +540,12 @@ void MainWindow::on_actionBroadcast_triggered()
 void MainWindow::on_actionAcknowledgement_triggered()
 {
     QStringList contents;
-    contents.append("QSanguosha staff:");
+    contents.append(tr("QSanguosha staff:"));
 
-    contents.append("AI maintainance: William915, donle");
-    contents.append("Game Design: yuwentianqi");
-    contents.append("misc: Hypercross");
-    contents.append("founder: Moligaloo");
+    contents.append(tr("AI Maintainance: William915, donle"));
+    contents.append(tr("Game Design: Moligaloo, Ubun Tenkai"));
+    contents.append(tr("Miscellaneous: Hypercross"));
+    contents.append(tr("Founder: Moligaloo"));
 
     QString content;
     foreach(QString string, contents)

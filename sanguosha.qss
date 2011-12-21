@@ -1,13 +1,19 @@
- QTextEdit{
+QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
     background-color: rgba(43,45,31,200);
- }
+}
 
- QScrollBar:vertical  {
+QTextEdit[description="true"]{
+    border: 10px;
+    border-image: url(image/system/border.png)10 10 10 10 ;
+    background-color: rgba(255,255,255,255);
+}
+
+QScrollBar:vertical  {
 
      margin: 22px 0 22px 0;
- }
+}
 
 QScrollBar:add-page
 {
