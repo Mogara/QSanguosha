@@ -208,7 +208,7 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 				if self:hasSkills(sgs.lose_equip_skill, friend) then ee = ee + fe end
 				local value = self:evaluateArmor(enemy:getArmor(),friend) - self:evaluateArmor(friend:getArmor(),enemy)
 					- self:evaluateArmor(friend:getArmor(),friend) + self:evaluateArmor(enemy:getArmor(),enemy)
-				if self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e") <= lost_hp and
+				if math.abs(self:getCardsNum(".", enemy, "e")-self:getCardsNum(".", friend, "e")) <= lost_hp and
 					self:getCardsNum(".", enemy, "e")>0 and
 					(ee > fe or (ee == fe and value>0)) then
 					use.card = sgs.Card_Parse("@GanluCard=.")
