@@ -98,7 +98,7 @@ QPushButton#cancel:disabled{
     background-image: url(image/system/button/cancel-disabled.png);
 }
 
-QPushButton#discard{
+QPushButton#discard[game_control="true"]{
     background-image: url(image/system/button/discard.png);
 }
 

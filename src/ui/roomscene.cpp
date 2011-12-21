@@ -92,6 +92,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     {
         // create dashboard
         dashboard = new Dashboard;
+        dashboard->setObjectName("dashboard");
         addItem(dashboard);
 
         dashboard->setPlayer(Self);
