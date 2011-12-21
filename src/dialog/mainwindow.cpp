@@ -343,7 +343,7 @@ void MainWindow::on_actionAbout_triggered()
     QString forum_url = "http://qsanguosha.com";
     content.append(tr("Forum: <a href='%1'>%1</a> <br/>").arg(forum_url));
 
-    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
+    Window *window = new Window(tr("About QSanguosha"), QSize(365, 450));
     scene->addItem(window);
 
     window->addContent(content);
@@ -539,7 +539,28 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
+    QStringList contents;
+    contents.append("QSanguosha staff:");
 
+    contents.append("AI maintainance: William915, donle");
+    contents.append("Game Design: yuwentianqi");
+    contents.append("misc: Hypercross");
+    contents.append("founder: Moligaloo");
+
+    QString content;
+    foreach(QString string, contents)
+    {
+        content.append(QString("<p align='right'><i>%1</i></p>").arg(string));
+    }
+
+    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
