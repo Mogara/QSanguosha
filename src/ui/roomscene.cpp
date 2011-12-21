@@ -445,7 +445,7 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
     setWidget(widget);
 
     setParentItem(dashboard);
-    moveBy(0, -35);
+    setPos(0,-35);
 
     duration_str = FormatTime(replayer->getDuration());
 }
@@ -676,6 +676,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     if(item2player.isEmpty()){
         item2player.insert(avatar, Self);
         connect(avatar, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
+        connect(avatar, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
         foreach(Photo *photo, photos){
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
@@ -1467,7 +1468,7 @@ void RoomScene::updateTargetsEnablity(const Card *card){
             else animations->sendBack(item);
         }
 
-        item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        if(card)item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
 }
 
@@ -3812,7 +3813,7 @@ void RoomScene::reLayout()
     pos.rx()+=skip*2;
 
 
-    if(ServerInfo.FreeChoose)
+    if(ServerInfo.FreeChoose&& !ClientInstance->getReplayer())
     {
         alignTo(free_discard,pos,"xlyb");
         pos.rx()+=free_discard->width();
