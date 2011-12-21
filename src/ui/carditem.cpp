@@ -10,6 +10,7 @@
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
 
 CardItem::CardItem(const Card *card)
     :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true)
@@ -21,6 +22,7 @@ CardItem::CardItem(const Card *card)
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
 
     setToolTip(card->getDescription());
+    setAcceptHoverEvents(true);
 
     QPixmap frame_pixmap("image/system/frame/good.png");
     frame = new QGraphicsPixmapItem(frame_pixmap, this);
@@ -221,6 +223,7 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
     }else{
         emit released();
     }
+    emit leave_hover();
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -235,6 +238,16 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
         event->accept();
         emit double_clicked();
     }
+}
+
+void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    emit enter_hover();
+}
+
+void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    emit leave_hover();
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

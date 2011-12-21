@@ -2,9 +2,13 @@
 #define SPRITE_H
 
 #include <QObject>
+#include <QTimer>
 #include <QGraphicsItem>
+#include <QGraphicsEffect>
 #include <QMap>
 #include <QEasingCurve>
+
+#include "pixmap.h"
 
 class Sprite : public QObject, public QGraphicsPixmapItem
 {
@@ -42,6 +46,74 @@ private:
     QMap<QString,AnimationLine*> lines;
     int total_time;
     int resetTime;
+};
+
+class QAnimatedEffect : public QGraphicsEffect
+{
+    Q_OBJECT;
+public:
+    void setStay(bool stay);
+    void reset(){index =0;}
+
+protected:
+    bool stay;
+    qreal index;
+signals:
+    void loop_finished();
+};
+
+class EffectAnimation : public QObject
+{
+    Q_OBJECT
+public:
+    EffectAnimation();
+
+    void emphasize(QGraphicsItem *map,bool stay = true);
+    void sendBack(QGraphicsItem *map);
+    void effectOut(QGraphicsItem *map);
+    void deleteEffect(QAnimatedEffect* effect);
+
+public slots:
+
+    void deleteEffect();
+private:
+    QMap<QGraphicsItem*,QAnimatedEffect*> effects;
+    QMap<QGraphicsItem*,QAnimatedEffect*> registered;
+};
+
+
+
+class EmphasizeEffect : public QAnimatedEffect
+{
+    Q_OBJECT;
+
+public:
+    EmphasizeEffect(bool stay = false,QObject *parent = 0);
+
+
+protected:
+    virtual void draw(QPainter *painter);
+    virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
+
+protected:
+    void timerEvent(QTimerEvent *event);
+
+};
+
+class SentbackEffect : public QAnimatedEffect
+{
+    Q_OBJECT
+public:
+    SentbackEffect(bool stay = false,QObject * parent = 0);
+
+
+
+protected:
+    virtual void draw(QPainter *painter);
+    virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
+
+protected:
+    void timerEvent(QTimerEvent *event);
 };
 
 #endif // SPRITE_H

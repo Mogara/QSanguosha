@@ -32,6 +32,8 @@ Dashboard::Dashboard()
 
     sort_type = 0;
 
+    animations = new EffectAnimation();
+
 }
 
 void Dashboard::createLeft(){
@@ -168,6 +170,8 @@ void Dashboard::addCardItem(CardItem *card_item){
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
+    connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
+    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
 
     sortCards(sort_type);
 
@@ -317,7 +321,7 @@ void Dashboard::installDelayedTrick(CardItem *card){
     delayed_tricks << QPixmap(trick->getIconPath());
 
     card->setHomePos(mapToScene(QPointF(34, 37)));
-    card->goBack(true);
+    card->goBack(true,false);
 
     update();
 }
@@ -524,9 +528,6 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     int y = start_y + order * 32;
 
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getCard());
-    QFont font("Algerian",12);
-    font.setBold(true);
-    painter->setFont(font);
     painter->setPen(Qt::black);
 
     // draw image or name
@@ -536,10 +537,14 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
 
     if(label->isNull())
     {
+        painter->setPen(Qt::white);
         QString text = QString("%1").arg(card->label());
         painter->drawText(10, y + 20, text);
     }else
     {
+        QFont font("Algerian",12);
+        font.setBold(true);
+        painter->setFont(font);
         painter->drawPixmap(10,y + 2,label->width(),label->height(),*label);
     }
 
@@ -637,7 +642,7 @@ void Dashboard::adjustCards(const QList<CardItem *> &list, int y){
 
 void Dashboard::installEquip(CardItem *equip){
     equip->setHomePos(mapToScene(QPointF(34, 37)));
-    equip->goBack(true);
+    equip->goBack(true,false);
 
     int index = -1;
     const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard());
@@ -842,6 +847,7 @@ void Dashboard::onCardItemClicked(){
     }else{
         if(card_item->isPending()){
             unselectAll();
+            emit card_selected(NULL);
         }else{
             unselectAll();
             card_item->select();
@@ -881,6 +887,22 @@ void Dashboard::onCardItemThrown(){
             selected = card_item;
         emit card_to_use();
     }
+}
+
+void Dashboard::onCardItemHover()
+{
+    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    if(!card_item)return;
+
+    animations->emphasize(card_item);
+}
+
+void Dashboard::onCardItemLeaveHover()
+{
+    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    if(!card_item)return;
+
+    animations->effectOut(card_item);
 }
 
 void Dashboard::onMarkChanged(){

@@ -365,7 +365,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     createStateItem();
 
-
+    animations = new EffectAnimation();
 }
 
 void RoomScene::createButtons(){
@@ -678,6 +678,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
         foreach(Photo *photo, photos){
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
+            connect(photo, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
+            connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
         }
     }
 }
@@ -1408,10 +1410,12 @@ void RoomScene::enableTargets(const Card *card){
     if(card == NULL){
         bool inactive = ClientInstance->getStatus() == Client::NotActive;
         foreach(QGraphicsItem *item, item2player.keys()){
-            if(!inactive)
-                item->setOpacity(0.7);
+            //if(!inactive)
+                animations->effectOut(item);
+                //item->setOpacity(0.7);
 
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            item->setEnabled(true);
         }
 
         ok_button->setEnabled(false);
@@ -1420,7 +1424,8 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
-            item->setOpacity(1.0);
+            //item->setOpacity(1.0);
+            animations->effectOut(item);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1447,10 +1452,20 @@ void RoomScene::updateTargetsEnablity(const Card *card){
         if(item->isSelected())
             continue;
 
-        bool enabled = !Sanguosha->isProhibited(Self, player, card)
+        bool enabled;
+        if(card)enabled= !Sanguosha->isProhibited(Self, player, card)
                        && card->targetFilter(selected_targets, player, Self);
+        else enabled = true;
 
-        item->setOpacity(enabled ? 1.0 : 0.7);
+        //item->setOpacity(enabled ? 1.0 : 0.7);
+        if(enabled)animations->effectOut(item);
+        else
+        {
+            if(item->graphicsEffect() &&
+                    item->graphicsEffect()->inherits("SentbackEffect"));
+            else animations->sendBack(item);
+        }
+
         item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
 }
@@ -1470,11 +1485,13 @@ void RoomScene::updateSelectedTargets(){
             selected_targets.removeOne(player);
         }
 
-        updateTargetsEnablity(card);
+
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
     }else{
         selected_targets.clear();
     }
+
+    updateTargetsEnablity(card);
 }
 
 void RoomScene::useSelectedCard(){
@@ -1566,7 +1583,25 @@ void RoomScene::useSelectedCard(){
     const ViewAsSkill *skill = dashboard->currentSkill();
     if(skill)
         dashboard->stopPending();
+
+    updateTargetsEnablity();
 }
+
+void RoomScene::onSelectChange()
+{
+    QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
+    if(!photo)return;
+    if(photo->isSelected())animations->emphasize(photo);
+    else animations->effectOut(photo);
+}
+void RoomScene::onEnabledChange()
+{
+    QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
+    if(!photo)return;
+    if(photo->isEnabled())animations->effectOut(photo);
+    else animations->sendBack(photo);
+}
+
 
 void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
@@ -1578,6 +1613,7 @@ void RoomScene::useCard(const Card *card){
 void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
+    updateTargetsEnablity();
     if(card == NULL)
         return;
 
@@ -1991,6 +2027,8 @@ void RoomScene::updateStatus(Client::Status status){
         tick = 0;
         progress_bar->show();
     }
+
+    updateTargetsEnablity();
 }
 
 void RoomScene::doSkillButton(){
@@ -2017,6 +2055,8 @@ void RoomScene::doSkillButton(){
             useSelectedCard();
         }
     }
+
+    updateTargetsEnablity();
 }
 
 void RoomScene::updateTrustButton(){
@@ -2149,6 +2189,8 @@ void RoomScene::doCancelButton(){
             break;
         }
     }
+
+    updateTargetsEnablity();
 }
 
 void RoomScene::doDiscardButton(){

@@ -5,6 +5,7 @@
 #include "carditem.h"
 #include "player.h"
 #include "skill.h"
+#include "sprite.h"
 
 #include <QPushButton>
 #include <QComboBox>
@@ -96,6 +97,9 @@ private:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
+    //for animated effects
+    EffectAnimation *animations;
+
     // for parts creation
     void createLeft();
     void createRight();
@@ -117,6 +121,8 @@ private:
 private slots:
     void onCardItemClicked();
     void onCardItemThrown();
+    void onCardItemHover();
+    void onCardItemLeaveHover();
     void onMarkChanged();
     void setActionState();
 

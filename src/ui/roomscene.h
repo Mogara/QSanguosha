@@ -232,7 +232,7 @@ private:
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
     void unselectAllTargets(const QGraphicsItem *except = NULL);
-    void updateTargetsEnablity(const Card *card);
+    void updateTargetsEnablity(const Card *card = NULL);
 
     void callViewAsSkill();
     void cancelViewAsSkill();
@@ -262,6 +262,7 @@ private:
 
     void animateHpChange(const QString &name, const QStringList &args);
     void animatePopup(const QString &name, const QStringList &args);
+    EffectAnimation *animations;
 
     //re-layout attempts
     bool game_started;
@@ -305,6 +306,10 @@ private slots:
     void onGameStart();
     void onGameOver();
     void onStandoff();
+
+    //animations
+    void onSelectChange();
+    void onEnabledChange();
 
 #ifdef AUDIO_SUPPORT
 #ifndef  Q_OS_WIN32
