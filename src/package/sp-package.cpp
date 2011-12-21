@@ -281,19 +281,25 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        if(!target->askForSkillInvoke(objectName()))
-            return false;
+        bool once_success = false;
+        do{
+            once_success = false;
 
-        Room *room = target->getRoom();
-        int card_id = room->askForCardChosen(target, target, "j", objectName());
-        const Card *card = Sanguosha->getCard(card_id);
+            if(!target->askForSkillInvoke(objectName()))
+                return false;
 
-        QString suit_str = card->getSuitString();
-        QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
-        QString prompt = QString("@xiuluo:::%1").arg(suit_str);
-        if(room->askForCard(target, pattern, prompt)){
-            room->throwCard(card);
-        }
+            Room *room = target->getRoom();
+            int card_id = room->askForCardChosen(target, target, "j", objectName());
+            const Card *card = Sanguosha->getCard(card_id);
+
+            QString suit_str = card->getSuitString();
+            QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+            QString prompt = QString("@xiuluo:::%1").arg(suit_str);
+            if(room->askForCard(target, pattern, prompt)){
+                room->throwCard(card);
+                once_success = true;
+            }
+        }while(!target->getCards("j").isEmpty() && once_success);
 
         return false;
     }
