@@ -540,17 +540,17 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         painter->drawText(10, y + 20, text);
     }else
     {
-        painter->drawPixmap(10,y + 2,label->width(),label->height(),*label);
+        painter->drawPixmap(8, y - 1,label->width(),label->height(),*label);
     }
 
     // draw the suit of equip
-    QRect suit_rect(width - 18, y + 10, 13, 13);
+    QRect suit_rect(width - 19, y + 7, 13, 13);
     painter->drawPixmap(suit_rect, equip->getSuitPixmap());
 
 
     // draw the number of equip
 
-    painter->drawText(width - 5,y + 24,QString("%1").arg(card->getNumberString()));
+    painter->drawText(width - 6,y + 20,QString("%1").arg(card->getNumberString()));
 
 
 
