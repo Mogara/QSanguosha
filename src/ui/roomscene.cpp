@@ -1410,7 +1410,6 @@ void RoomScene::enableTargets(const Card *card){
     }
 
     if(card == NULL){
-        bool inactive = ClientInstance->getStatus() == Client::NotActive;
         foreach(QGraphicsItem *item, item2player.keys()){
             //if(!inactive)
                 animations->effectOut(item);
