@@ -138,10 +138,10 @@ void Dashboard::setActionState(){
 void Dashboard::setFilter(const FilterSkill *filter){
     this->filter = filter;
 
-    if(filter == NULL){
+    //if(filter == NULL){
         foreach(CardItem *card_item, card_items)
-            card_item->filter(NULL);
-    }
+            card_item->filter(filter);
+    //}
 }
 
 const FilterSkill *Dashboard::getFilter() const{
@@ -810,6 +810,7 @@ void Dashboard::startPending(const ViewAsSkill *skill){
     }
 
     updatePending();
+    adjustCards();
 }
 
 void Dashboard::stopPending(){
