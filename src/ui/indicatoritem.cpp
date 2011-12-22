@@ -81,5 +81,5 @@ QRectF IndicatorItem::boundingRect() const{
     qreal width = qAbs(start.x() - real_finish.x());
     qreal height = qAbs(start.y() - real_finish.y());
 
-    return QRectF(0, 0, width, height);
+    return QRectF(0, 0, width, height).adjusted(-2,-2,2,2);
 }

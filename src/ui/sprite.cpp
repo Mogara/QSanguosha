@@ -192,7 +192,7 @@ void EmphasizeEffect::draw(QPainter *painter){
     QSizeF s = this->sourceBoundingRect().size();
 
     qreal scale = -qCos(index)*0.025+0.025;
-    scale = 0.05 - scale;
+    scale = 0.1 - scale;
 
     QPoint offset;
 
@@ -205,8 +205,8 @@ void EmphasizeEffect::draw(QPainter *painter){
                   -s.height()*scale
                 );
 
-    const QRectF source(s.width()*0.05,
-                        s.height()*0.05,
+    const QRectF source(s.width()*0.1,
+                        s.height()*0.1,
                         s.width(),
                         s.height());
 
@@ -217,7 +217,7 @@ void EmphasizeEffect::draw(QPainter *painter){
 
 QRectF EmphasizeEffect::boundingRectFor(const QRectF &sourceRect) const
 {
-    qreal scale = 0.05;
+    qreal scale = 0.1;
     QRectF rect(sourceRect);
     rect.adjust(  -   sourceRect.width() * scale,
                   -   sourceRect.height() * scale,

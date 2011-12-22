@@ -177,7 +177,7 @@ void Dashboard::addCardItem(CardItem *card_item){
     sortCards(sort_type);
 
     handcard_num->setText(QString::number(Self->getHandcardNum()));
-    handcard_num->parentItem()->show();
+    //handcard_num->parentItem()->show();
 }
 
 void Dashboard::setPlayer(const ClientPlayer *player){
@@ -307,7 +307,7 @@ void Dashboard::unselectAll(){
 
     foreach(CardItem *card_item, card_items){
         card_item->unselect();
-        card_item->goBack();
+        //card_item->goBack();
     }
 }
 
@@ -853,7 +853,7 @@ void Dashboard::onCardItemClicked(){
         }else{
             unselectAll();
             card_item->select();
-            card_item->goBack();
+            //card_item->goBack();
             selected = card_item;
 
             emit card_selected(selected->getFilteredCard());

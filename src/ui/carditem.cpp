@@ -13,7 +13,8 @@
 #include <QGraphicsDropShadowEffect>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true),
+      is_pending(false)
 {
     Q_ASSERT(card != NULL);
 
@@ -33,7 +34,7 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :card(NULL), filtered_card(NULL), auto_back(true)
+    :card(NULL), filtered_card(NULL), auto_back(true), is_pending(false)
 {
     changeGeneral(general_name);
 }
@@ -172,8 +173,10 @@ void CardItem::select(){
         frame->show();
     else{
         home_pos.setY(PendingY);
-        setY(PendingY);
+        //setY(PendingY);
+        if(!hasFocus())goBack();
     }
+    is_pending = true;
 }
 
 void CardItem::unselect(){
@@ -181,15 +184,15 @@ void CardItem::unselect(){
         frame->hide();
     else{
         home_pos.setY(NormalY);
-        setY(NormalY);
+        //setY(NormalY);
+        if(!hasFocus())goBack();
     }
+
+    is_pending = false;
 }
 
 bool CardItem::isPending() const{
-    if(IsMultilayer())
-        return frame->isVisible();
-    else
-        return home_pos.y() == PendingY;
+    return is_pending;
 }
 
 bool CardItem::isEquipped() const{
@@ -265,5 +268,4 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->drawText(9, 18, card->getNumberString());
     }
 }
-
 

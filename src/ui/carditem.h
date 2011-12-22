@@ -41,6 +41,7 @@ public:
     static const int PendingY = NormalY - 40;
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -55,8 +56,7 @@ private:
     QPixmap suit_pixmap, icon_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
-    bool auto_back;
-
+    bool auto_back,is_pending;
 signals:
     void toggle_discards();
     void clicked();
