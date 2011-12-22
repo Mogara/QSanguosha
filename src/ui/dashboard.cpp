@@ -10,6 +10,7 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
+#include <QPixmapCache>
 
 Dashboard::Dashboard()
     :left_pixmap("image/system/dashboard-equip.png"), right_pixmap("image/system/dashboard-avatar.png"),
@@ -529,11 +530,14 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
     painter->setPen(Qt::black);
 
     // draw image or name
-    // FIXME : should load the image only once instead of every time update is called
     QString path = QString("image/equips/%1.png").arg(card->objectName());
-    QPixmap *label = new QPixmap(path);
+    QPixmap label;
+    if(!QPixmapCache::find(path, &label)){
+        label.load(path);
+        QPixmapCache::insert(path, label);
+    }
 
-    if(label->isNull())
+    if(label.isNull())
     {
         painter->setPen(Qt::white);
         QString text = QString("%1").arg(card->label());
@@ -543,7 +547,7 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         QFont font("Algerian",12);
         font.setBold(true);
         painter->setFont(font);
-        painter->drawPixmap(8,y + 2,label->width(),label->height(),*label);
+        painter->drawPixmap(8,y + 2,label.width(),label.height(),label);
     }
 
     // draw the suit of equip
@@ -559,7 +563,7 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
 
     painter->setPen(Qt::white);
     if(equip->isMarked()){
-        painter->drawRect(8,y + 2,label->width(),label->height());
+        painter->drawRect(8,y + 2,label.width(),label.height());
     }
 }
 
