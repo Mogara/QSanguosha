@@ -24,7 +24,6 @@ private:
 
 public slots:
     void appendLog(const QString &log_str);
-    void append(const QString &log_str);
     void appendSeparator();
 };
 
