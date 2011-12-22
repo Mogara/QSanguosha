@@ -545,7 +545,7 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         QFont font("Algerian",12);
         font.setBold(true);
         painter->setFont(font);
-        painter->drawPixmap(10,y + 2,label->width(),label->height(),*label);
+        painter->drawPixmap(8,y + 2,label->width(),label->height(),*label);
     }
 
     // draw the suit of equip
@@ -561,7 +561,7 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
 
     painter->setPen(Qt::white);
     if(equip->isMarked()){
-        painter->drawRect(start_x, y , width, height);
+        painter->drawRect(8,y + 2,label->width(),label->height());
     }
 }
 

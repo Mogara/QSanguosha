@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRotation>
 #include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
 
 #ifdef AUDIO_SUPPORT
 
@@ -24,6 +25,7 @@ Button::Button(const QString &label, qreal scale)
 {
 
     init();
+    startTimer(17);
 }
 
 Button::Button(const QString &label, const QSizeF &size)
@@ -38,6 +40,45 @@ void Button::init()
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    QPixmap *bg = new QPixmap("image/system/button/button.png");
+    QImage bgimg = bg->toImage();
+    outimg = new QImage(size.toSize(),QImage::Format_ARGB32);
+
+    qreal pad = 10;
+
+    int w = bgimg.width();
+    int h = bgimg.height();
+
+    int tw = outimg->width();
+    int th  =outimg->height();
+
+    qreal xc = (w - 2*pad)/(tw - 2*pad);
+    qreal yc = (h - 2*pad)/(th - 2*pad);
+
+    for(int i=0;i<tw;i++)
+        for(int j=0;j<th;j++)
+        {
+            int x = i;
+            int y = j;
+
+            if( x>=pad && x<=(tw - pad) ) x = pad + (x - pad)*xc;
+            else if(x>=(tw-pad))x = w - (tw - x);
+
+            if( y>=pad && y<=(th - pad) ) y = pad + (y - pad)*yc;
+            else if(y>=(th-pad))y = h - (th - y);
+
+
+            QRgb rgb = bgimg.pixel(x,y);
+            outimg->setPixel(i,j,rgb);
+        }
+
+    QGraphicsDropShadowEffect * effect = new QGraphicsDropShadowEffect;
+    effect->setBlurRadius(10);
+    effect->setColor(QColor(0,0,0,100));
+    this->setGraphicsEffect(effect);
+
+    glow = 0;
 }
 
 void Button::setMute(bool mute){
@@ -90,22 +131,36 @@ QRectF Button::boundingRect() const{
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     QRectF rect = boundingRect();
 
-    QPainterPath path;
-    path.addRoundedRect(rect, 5, 5);
+//    QPainterPath path;
+//    path.addRoundedRect(rect, 5, 5);
 
-    QColor rect_color(Qt::black);
+//    QColor rect_color(Qt::black);
+//    if(hasFocus())
+//        rect_color = QColor("orange");
+
+//    rect_color.setAlpha(0.43 * 255);
+//    painter->fillPath(path, rect_color);
+
+//    QPen pen(Config.TextEditColor);
+//    pen.setWidth(3);
+//    painter->setPen(pen);
+//    painter->drawPath(path);
+
+    painter->drawImage(rect,*outimg);
+
+
     if(hasFocus())
-        rect_color = QColor("orange");
-
-    rect_color.setAlpha(0.43 * 255);
-    painter->fillPath(path, rect_color);
-
-    QPen pen(Config.TextEditColor);
-    pen.setWidth(3);
-    painter->setPen(pen);
-    painter->drawPath(path);
+    {
+        if(glow<10)glow++;
+    }else if(glow>0)glow--;
+    painter->fillRect(rect,QColor(255,255,255,glow*5));
 
     painter->setFont(font);
     painter->setPen(Config.TextEditColor);
     painter->drawText(rect, Qt::AlignCenter, label);
+}
+
+void Button::timerEvent(QTimerEvent *)
+{
+    update();
 }

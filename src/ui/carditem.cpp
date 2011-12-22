@@ -254,15 +254,15 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     Pixmap::paint(painter, option, widget);
 
     if(card){
-        static QFont card_number_font("Times", 20, QFont::Bold);
-        painter->drawPixmap(8, 8, 18, 18, suit_pixmap);
+        static QFont card_number_font("Times", 10, QFont::Bold);
+        painter->drawPixmap(8, 20, 10, 10, suit_pixmap);
 
         painter->setFont(card_number_font);
         if(card->isRed())
             painter->setPen(Qt::red);
         else
             painter->setPen(Qt::black);
-        painter->drawText(8, 50, card->getNumberString());
+        painter->drawText(9, 18, card->getNumberString());
     }
 }
 

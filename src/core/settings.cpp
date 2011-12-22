@@ -23,7 +23,7 @@ Settings::Settings()
 
 void Settings::init(){
     if(!qApp->arguments().contains("-server")){
-        QString font_path = value("DefaultFontPath", "font/girl.ttf").toString();
+        QString font_path = value("DefaultFontPath", "font/font.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if(font_id!=-1){
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();

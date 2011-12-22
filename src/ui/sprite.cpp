@@ -213,7 +213,7 @@ void EmphasizeEffect::draw(QPainter *painter){
                         s.height());
 
 
-
+    painter->setRenderHint(QPainter::Antialiasing);
     painter->drawPixmap(target, pixmap, source);
 }
 

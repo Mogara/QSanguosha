@@ -6,20 +6,66 @@
 #include <QGraphicsRotation>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
 
 Window::Window(const QString &title, const QSizeF &size)
     :title(title), size(size), keep_when_disappear(false)
 {
     setFlags(ItemIsMovable);
 
-    yRotation = new QGraphicsRotation(this);
-    yRotation->setAngle(90);
-    yRotation->setOrigin(QVector3D(size.width()/2, size.height()/2, 0));
-    yRotation->setAxis(Qt::YAxis);
+    QPixmap *bg = new QPixmap("image/system/pmpt.png");
+    QImage bgimg = bg->toImage();
+    outimg = new QImage(size.toSize(),QImage::Format_ARGB32);
+
+    qreal pad = 10;
+
+    int w = bgimg.width();
+    int h = bgimg.height();
+
+    int tw = outimg->width();
+    int th  =outimg->height();
+
+    qreal xc = (w - 2*pad)/(tw - 2*pad);
+    qreal yc = (h - 2*pad)/(th - 2*pad);
+
+    for(int i=0;i<tw;i++)
+        for(int j=0;j<th;j++)
+        {
+            int x = i;
+            int y = j;
+
+            if( x>=pad && x<=(tw - pad) ) x = pad + (x - pad)*xc;
+            else if(x>=(tw-pad))x = w - (tw - x);
+
+            if( y>=pad && y<=(th - pad) ) y = pad + (y - pad)*yc;
+            else if(y>=(th-pad))y = h - (th - y);
+
+
+            QRgb rgb = bgimg.pixel(x,y);
+            outimg->setPixel(i,j,rgb);
+        }
+
+
+    scaleTransform = new QGraphicsScale(this);
+    scaleTransform->setXScale(1.05);
+    scaleTransform->setYScale(0.95);
+    scaleTransform->setOrigin(QVector3D(
+                                  this->boundingRect().width()/2,
+                                  this->boundingRect().height()/2,
+                                  0
+                                  ));
 
     QList<QGraphicsTransform *> transforms;
-    transforms << yRotation;
+    transforms << scaleTransform;
     setTransformations(transforms);
+
+    this->setOpacity(0.0);
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+    shadow->setBlurRadius(10);
+
+    shadow->setColor(QColor(0,0,0,80));
+    this->setGraphicsEffect(shadow);
 }
 
 void Window::addContent(const QString &content){
@@ -63,38 +109,67 @@ QRectF Window::boundingRect() const{
 void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     QRectF window_rect = boundingRect();
 
-    QPainterPath path;
-    path.addRoundedRect(window_rect, 10, 10);
+    //QPainterPath path;
+    //path.addRoundedRect(window_rect, 10, 10);
 
-    painter->fillPath(path, QColor(0x00, 0x00, 0x00, 0.80 * 255));
+    //painter->fillPath(path, QColor(0x00, 0x00, 0x00, 0.80 * 255));
 
-    QPen pen(Qt::white);
-    pen.setWidth(3);
-    painter->setPen(pen);    
-    painter->drawPath(path);
+//    QPen pen(Qt::white);
+//    pen.setWidth(3);
+//    painter->setPen(pen);
+//    painter->drawPath(path);
 
-    QPainterPath title_path;
-    title_path.addRoundedRect(0, 0, window_rect.width(), QFontMetrics(Config.SmallFont).height() + 10, 10, 10);
-    painter->fillPath(title_path, QColor(0xFF, 0xFF, 0x00, 0.43 * 255));
+    painter->drawImage(window_rect,*outimg);
+
+//    QPainterPath title_path;
+//    title_path.addRoundedRect(0, 0, window_rect.width(), QFontMetrics(Config.SmallFont).height() + 10, 10, 10);
+//    painter->fillPath(title_path, QColor(0xFF, 0xFF, 0x00, 0.43 * 255));
 
     painter->setFont(Config.SmallFont);
+    painter->setPen(Qt::yellow);
 
     QRectF title_rect(window_rect);
     title_rect.setY(5);
     painter->drawText(title_rect, Qt::AlignTop | Qt::AlignHCenter, title);
+
+
+
 }
 
 void Window::appear(){
-    QPropertyAnimation *y = new QPropertyAnimation(yRotation, "angle");
-    y->setEndValue(0);
-    y->start();
+    QPropertyAnimation *scale_x = new QPropertyAnimation(scaleTransform, "xScale");
+    QPropertyAnimation *scale_y = new QPropertyAnimation(scaleTransform, "yScale");
+    QPropertyAnimation *opacity = new QPropertyAnimation(this,"opacity");
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup();
+
+
+    scale_x->setEndValue(1);
+    scale_y->setEndValue(1);
+    opacity->setEndValue(1.0);
+    group->addAnimation(scale_x);
+    group->addAnimation(scale_y);
+    group->addAnimation(opacity);
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
 }
 
 void Window::disappear(){
-    QPropertyAnimation *y = new QPropertyAnimation(yRotation, "angle");
-    y->setEndValue(90);
-    y->start();
+    QPropertyAnimation *scale_x = new QPropertyAnimation(scaleTransform, "xScale");
+    QPropertyAnimation *scale_y = new QPropertyAnimation(scaleTransform, "yScale");
+    QPropertyAnimation *opacity = new QPropertyAnimation(this,"opacity");
+    QParallelAnimationGroup *group = new QParallelAnimationGroup();
+
+    scale_x->setEndValue(1.05);
+    scale_y->setEndValue(0.95);
+    opacity->setEndValue(0.0);
+    group->addAnimation(scale_x);
+    group->addAnimation(scale_y);
+    group->addAnimation(opacity);
+
+    group->start();
 
     if(!keep_when_disappear)
-        connect(y, SIGNAL(finished()), this, SLOT(deleteLater()));
+        connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
