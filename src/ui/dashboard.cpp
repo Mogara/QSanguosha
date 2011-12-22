@@ -521,8 +521,6 @@ void Dashboard::drawEquip(QPainter *painter, const CardItem *equip, int order){
         return;
 
     static const int width = 145;
-    static const int height = 25;
-    static const int start_x = 8;
     static const int start_y = 40;
 
     int y = start_y + order * 32;
