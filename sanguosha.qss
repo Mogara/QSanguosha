@@ -6,7 +6,7 @@ QTextEdit{
 
 QTextEdit[description="true"]{
     border: 10px;
-    border-image: url(image/system/border.png)10 10 10 10 ;
+	border-image: none;
     background-color: rgba(255,255,255,255);
 }
 
