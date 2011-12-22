@@ -25,7 +25,7 @@ Button::Button(const QString &label, qreal scale)
 {
 
     init();
-    startTimer(17);
+    startTimer(40);
 }
 
 Button::Button(const QString &label, const QSizeF &size)
@@ -151,9 +151,9 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     if(hasFocus())
     {
-        if(glow<10)glow++;
+        if(glow<5)glow++;
     }else if(glow>0)glow--;
-    painter->fillRect(rect,QColor(255,255,255,glow*5));
+    painter->fillRect(rect,QColor(255,255,255,glow*10));
 
     painter->setFont(font);
     painter->setPen(Config.TextEditColor);

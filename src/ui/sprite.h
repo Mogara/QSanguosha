@@ -73,6 +73,7 @@ public:
     void effectOut(QGraphicsItem *map);
     void deleteEffect(QAnimatedEffect* effect);
 
+    static int Multiply(int a,int bits, int k){ return (a*k)>>bits;}
 public slots:
 
     void deleteEffect();

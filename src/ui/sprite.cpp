@@ -292,11 +292,11 @@ void SentbackEffect::draw(QPainter *painter)
     int gray;
 
 
-    qreal scale = (index - 5.0)/8.0 ;
+    int scale = (index - 5)*4 ;
     if(scale<0) scale = -scale;
-    scale += 0.375;
+    scale += 3*4;
 
-    qreal grayer;
+    int grayer = 32 - scale;
 
     QRgb col;
 
@@ -306,12 +306,16 @@ void SentbackEffect::draw(QPainter *painter)
         {
             col = image.pixel(i, j);
             gray = qGray(col);
-            gray *= 0.4;
-             grayer = 1 - scale;
-            image.setPixel(i, j, qRgba(gray*grayer + qRed(col)*scale,
-                                      gray*grayer + qGreen(col)*scale,
-                                      gray*grayer + qBlue(col)*scale,
+            gray = EffectAnimation::Multiply(gray,5,13);
+
+            image.setPixel(i, j, qRgba(EffectAnimation::Multiply(gray,5,grayer) +
+                                       EffectAnimation::Multiply(qRed(col),5,scale),
+                                       EffectAnimation::Multiply(gray,5,grayer) +
+                                       EffectAnimation::Multiply(qGreen(col),5,scale),
+                                       EffectAnimation::Multiply(gray,5,grayer) +
+                                       EffectAnimation::Multiply(qBlue(col),5,scale),
                                        qAlpha(col)));
+
         }
     }
 
