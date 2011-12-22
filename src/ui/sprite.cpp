@@ -194,8 +194,6 @@ void EmphasizeEffect::draw(QPainter *painter){
     qreal scale = -qCos(index)*0.025+0.025;
     scale = 0.05 - scale;
 
-    QPointF off = QPointF(0,0);//QPointF(s.width()*scale,s.height()*scale);
-
     QPoint offset;
 
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
@@ -213,7 +211,7 @@ void EmphasizeEffect::draw(QPainter *painter){
                         s.height());
 
 
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
     painter->drawPixmap(target, pixmap, source);
 }
 

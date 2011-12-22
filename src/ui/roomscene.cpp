@@ -2274,7 +2274,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 void RoomScene::clearPile(){
     foreach(CardItem *item, discarded_queue){
         removeItem(item);
-        delete item;
+        //delete item;
     }
 
     discarded_queue.clear();
