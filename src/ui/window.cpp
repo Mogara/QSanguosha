@@ -66,14 +66,28 @@ Window::Window(const QString &title, const QSizeF &size)
 
     shadow->setColor(QColor(0,0,0,80));
     this->setGraphicsEffect(shadow);
+
+    QGraphicsTextItem * titleItem = new QGraphicsTextItem(this);
+
+    QString style;
+    style.append("font-size:18pt; ");
+    style.append("color:#77c379; ");
+    style.append(QString("font-family: %1").arg(Config.SmallFont.family()));
+
+    QString content;
+    content.append(QString("<h style=\"%1\">%2</h>")
+                   .arg(style).arg(title));
+
+    titleItem->setHtml(content);
+    titleItem->moveBy(size.width()/2 - titleItem->boundingRect().width()/2,10);
 }
 
 void Window::addContent(const QString &content){
     QGraphicsTextItem *content_item = new QGraphicsTextItem(this);
-    content_item->moveBy(10, 40);
+    content_item->moveBy(15, 40);
     content_item->setHtml(content);
     content_item->setDefaultTextColor(Qt::white);
-    content_item->setTextWidth(size.width() - 40);
+    content_item->setTextWidth(size.width() - 30);
 
     QFont *font = new QFont();
     font->setBold(true);
@@ -130,7 +144,7 @@ void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     QRectF title_rect(window_rect);
     title_rect.setY(5);
-    painter->drawText(title_rect, Qt::AlignTop | Qt::AlignHCenter, title);
+    //painter->drawText(title_rect, Qt::AlignTop | Qt::AlignHCenter, title);
 
 
 

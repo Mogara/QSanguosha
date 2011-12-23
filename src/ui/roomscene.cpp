@@ -314,7 +314,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     }
 
     {
-        prompt_box = new Window(tr("Sanguosha"), QSize(480, 200));
+        prompt_box = new Window(tr("QSanguosha"), QSize(480, 200));
         prompt_box->setOpacity(0);
         prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
         prompt_box->shift();
@@ -322,10 +322,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
         prompt_box->keepWhenDisappear();
 
         QGraphicsTextItem *text_item = new QGraphicsTextItem(prompt_box);
-        text_item->setPos(66, 45);
+        text_item->setPos(40, 45);
         text_item->setDefaultTextColor(Qt::white);
 
         QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
+        prompt_doc->setTextWidth(prompt_box->boundingRect().width() - 80);
         text_item->setDocument(prompt_doc);
 
         addItem(prompt_box);
