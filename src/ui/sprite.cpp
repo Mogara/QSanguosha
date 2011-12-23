@@ -252,7 +252,7 @@ SentbackEffect::SentbackEffect(bool stay, QObject *parent)
     this->setObjectName("backsender");
     index = 0;
     this->stay = stay;
-  QAnimatedEffect::startTimer(17); // About 60 FPS
+  QAnimatedEffect::startTimer(34); // About 30 FPS
 }
 
 void SentbackEffect::timerEvent(QTimerEvent *event)
@@ -264,7 +264,7 @@ void SentbackEffect::timerEvent(QTimerEvent *event)
     if(index == 0.0)emit loop_finished();
 
     if((index - 5.0)<=0.1 &&(index - 5.0)>=-0.1 && stay)return;
-    index = index >= 9.8 ? 0 : index+0.3;
+    index = index >= 9.7 ? 0 : index+0.7;
 }
 
 QRectF SentbackEffect::boundingRectFor(const QRectF &sourceRect) const
