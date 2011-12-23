@@ -184,14 +184,14 @@ EmphasizeEffect::EmphasizeEffect(bool stay,QObject *parent)
     this->setObjectName("emphasizer");
     index = 0;
     this->stay = stay;
-  QObject::startTimer(17); // About 60 FPS
+  QObject::startTimer(35); // About 30 FPS
 }
 
 void EmphasizeEffect::draw(QPainter *painter){
 
     QSizeF s = this->sourceBoundingRect().size();
 
-    qreal scale = -qCos(index)*0.025+0.025;
+    qreal scale = ( - qAbs(index - 50) + 50 )/1000.0;
     scale = 0.1 - scale;
 
     QPoint offset;
@@ -231,15 +231,12 @@ void EmphasizeEffect::timerEvent(QTimerEvent *event){
 
     update();
 
-    if(qCos(index)>0.9)emit loop_finished();
+    if(index==0)emit loop_finished();
 
-    if(qCos(index)<-0.9 && stay)return;
+    if(index==50 && stay)return;
 
-    qreal increment = 0.3;
+    index = index >= 100 ? 0 : index + 10;
 
-    if(qSin(index)<0 && stay)increment -= 0.2;
-
-    index = index >= 300 ? 0 : index + increment;
 }
 
 void QAnimatedEffect::setStay(bool stay)
@@ -249,6 +246,7 @@ void QAnimatedEffect::setStay(bool stay)
 
 SentbackEffect::SentbackEffect(bool stay, QObject *parent)
 {
+    grayed = 0;
     this->setObjectName("backsender");
     index = 0;
     this->stay = stay;
@@ -261,10 +259,10 @@ void SentbackEffect::timerEvent(QTimerEvent *event)
 
     update();
 
-    if(index == 0.0)emit loop_finished();
+    if(index == 0)emit loop_finished();
 
-    if((index - 5.0)<=0.1 &&(index - 5.0)>=-0.1 && stay)return;
-    index = index >= 9.7 ? 0 : index+0.7;
+    if(index==40 && stay)return;
+    index = index >= 80 ? 0 : index+10;
 }
 
 QRectF SentbackEffect::boundingRectFor(const QRectF &sourceRect) const
@@ -284,43 +282,32 @@ void SentbackEffect::draw(QPainter *painter)
 
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
 
-    QImage image = pixmap.toImage();
-    int width = image.width();
-    int height = image.height();
-    int gray;
-
-
-    int scale = (index - 5)*4 ;
-    if(scale<0) scale = -scale;
-    scale += 3*4;
-
-    int grayer = 32 - scale;
-
-    QRgb col;
-
-    for (int i = 0; i < width; ++i)
+    if(!grayed)
     {
-        for (int j = 0; j < height; ++j)
+        grayed = new QImage(pixmap.size(),QImage::Format_ARGB32);
+
+        QImage image = pixmap.toImage();
+        int width = image.width();
+        int height = image.height();
+        int gray;
+
+        QRgb col;
+
+        for (int i = 0; i < width; ++i)
         {
-            col = image.pixel(i, j);
-            gray = qGray(col);
-            gray = EffectAnimation::Multiply(gray,5,13);
-
-            image.setPixel(i, j, qRgba(EffectAnimation::Multiply(gray,5,grayer) +
-                                       EffectAnimation::Multiply(qRed(col),5,scale),
-                                       EffectAnimation::Multiply(gray,5,grayer) +
-                                       EffectAnimation::Multiply(qGreen(col),5,scale),
-                                       EffectAnimation::Multiply(gray,5,grayer) +
-                                       EffectAnimation::Multiply(qBlue(col),5,scale),
-                                       qAlpha(col)));
-
+            for (int j = 0; j < height; ++j)
+            {
+                col = image.pixel(i, j);
+                gray = qGray(col);
+                gray = EffectAnimation::Multiply(gray,5,13);
+                grayed->setPixel(i, j, qRgba(gray,gray,gray,qAlpha(col)));
+            }
         }
     }
 
-    //QSizeF s = sourceBoundingRect().size();
-    //QPointF off = QPointF( - s.width()*0.1, - s.height()*0.1);
-
-    painter->drawImage(offset,image);
+    painter->drawPixmap(offset,pixmap);
+    painter->setOpacity((40 - qAbs(index - 40))/80.0);
+    painter->drawImage(offset,*grayed);
 
     return;
 }

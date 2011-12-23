@@ -57,7 +57,7 @@ public:
 
 protected:
     bool stay;
-    qreal index;
+    int index;
 signals:
     void loop_finished();
 };
@@ -115,6 +115,8 @@ protected:
 
 protected:
     void timerEvent(QTimerEvent *event);
+private:
+    QImage *grayed;
 };
 
 #endif // SPRITE_H

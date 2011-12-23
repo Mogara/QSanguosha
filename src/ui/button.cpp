@@ -157,6 +157,7 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     painter->setFont(font);
     painter->setPen(Config.TextEditColor);
+    painter->setRenderHint(QPainter::TextAntialiasing);
     painter->drawText(rect, Qt::AlignCenter, label);
 }
 
