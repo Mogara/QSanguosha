@@ -297,7 +297,7 @@ void MainWindow::on_actionGeneral_Overview_triggered()
 
 void MainWindow::on_actionCard_Overview_triggered()
 {
-    CardOverview *overview = new CardOverview(this);
+    CardOverview *overview = CardOverview::GetInstance(this);
     overview->loadFromAll();
     overview->show();
 }

@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QTableWidgetItem>
 
+class MainWindow;
 namespace Ui {
     class CardOverview;
 }
@@ -13,6 +14,8 @@ namespace Ui {
 class CardOverview : public QDialog {
     Q_OBJECT
 public:
+    static CardOverview *GetInstance(QWidget *main_window);
+
     CardOverview(QWidget *parent = 0);
     void loadFromAll();
     void loadFromList(const QList<const Card*> &list);
