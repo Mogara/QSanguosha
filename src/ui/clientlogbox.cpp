@@ -43,6 +43,7 @@ void ClientLogBox::appendLog(
     if(type.startsWith("$")){
         const Card *card = Sanguosha->getCard(card_str.toInt());
         QString log_name = card->getLogName();
+        log_name = bold(log_name, Qt::yellow);
 
         log = Sanguosha->translate(type);
         log.replace("%from", from);
