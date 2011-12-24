@@ -298,8 +298,7 @@ void SentbackEffect::draw(QPainter *painter)
             for (int j = 0; j < height; ++j)
             {
                 col = image.pixel(i, j);
-                gray = qGray(col);
-                gray = EffectAnimation::Multiply(gray,5,13);
+                gray = qGray(col) >> 1;
                 grayed->setPixel(i, j, qRgba(gray,gray,gray,qAlpha(col)));
             }
         }
