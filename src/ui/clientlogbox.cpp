@@ -65,15 +65,17 @@ void ClientLogBox::appendLog(
         if(card == NULL)
             return;
         QString card_name = card->getLogName();
+        card_name = bold(card_name, Qt::yellow);
 
         if(card->isVirtualCard()){
             QString skill_name = Sanguosha->translate(card->getSkillName());
+            skill_name = bold(skill_name, Qt::yellow);
 
             QList<int> card_ids = card->getSubcards();
             QStringList subcard_list;
             foreach(int card_id, card_ids){
                 const Card *subcard = Sanguosha->getCard(card_id);
-                subcard_list << subcard->getLogName();
+                subcard_list << bold(subcard->getLogName(), Qt::yellow);
             }
 
             QString subcard_str = subcard_list.join(",");
