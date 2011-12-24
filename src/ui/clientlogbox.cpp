@@ -155,3 +155,8 @@ void ClientLogBox::appendSeparator(){
     if(player->getPhase() == Player::NotActive)
         append("<font color='white'>------------------------</font>");
 }
+
+void ClientLogBox::append(const QString &text)
+{
+    QTextEdit::append(QString("<p style=\"margin:3px p2x; line-height:120%;\">%1</p>").arg(text));
+}
