@@ -25,8 +25,8 @@ public:
     void setResetTime(int time);
     void setPixmapAtMid(const QPixmap &pixmap);
 
-    qreal getX();
-    qreal getY();
+    qreal getX() const;
+    qreal getY() const;
 
 signals:
     void finished();
@@ -37,7 +37,7 @@ public slots:
 private:
     struct AnimationLine
     {
-        AnimationLine(){frames[0] = 1;};
+        AnimationLine(){frames[0] = 1;}
         QString name;
         QMap<int,qreal> frames;
         QMap<int,QEasingCurve::Type> easings;
