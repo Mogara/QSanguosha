@@ -89,6 +89,7 @@ Photo::Photo()
     mark_item->setDefaultTextColor(Qt::white);
 
     role_combobox = NULL;
+    pile_button = NULL;
 }
 
 void Photo::setOrder(int order){
@@ -121,12 +122,7 @@ void Photo::createRoleCombobox(){
 
 void Photo::updateRoleComboboxPos()
 {
-    int i, n = pile_buttons.length();
-    for(i=0; i<n; i++){
-        QGraphicsProxyWidget *button_widget = pile_buttons.at(i);
-        button_widget->setPos(pos());
-        button_widget->moveBy(5, 15 + i * 10);
-    }
+    //if(pile_button)pile_button->setPos(46, 48);
 }
 
 void Photo::showProcessBar(){
@@ -522,56 +518,72 @@ static bool CompareByNumber(const Card *card1, const Card *card2){
 void Photo::updatePile(const QString &pile_name){
     QPushButton *button = NULL;
     QGraphicsProxyWidget *button_widget = NULL;
-    foreach(QGraphicsProxyWidget *pile_button, pile_buttons){
-        QWidget *widget = pile_button->widget();
-        if(widget->objectName() == pile_name){
-            button_widget = pile_button;
-            button = qobject_cast<QPushButton *>(widget);
-            break;
-        }
-    }
 
-    if(button == NULL){
+    if(pile_button == NULL){
         button = new QPushButton;
         button->setObjectName(pile_name);
+        button->setProperty("private_pile","true");
 
         button_widget = new QGraphicsProxyWidget;
         button_widget->setWidget(button);
         button_widget->setPos(pos());
-        button_widget->moveBy(5, 15 + pile_buttons.length() * 10);
-        button_widget->resize(80, 20);
+        button_widget->moveBy(46, 68);
+        button_widget->resize(80, 16);
         scene()->addItem(button_widget);
-
-        pile_buttons << button_widget;
 
         QMenu *menu = new QMenu(button);
         button->setMenu(menu);
+
+        pile_button = button_widget;
+    }else
+    {
+        button_widget = pile_button;
+        button = qobject_cast<QPushButton *>(pile_button->widget());
     }
 
     ClientPlayer *who = qobject_cast<ClientPlayer *>(sender());
     if(who == NULL)
         return;
 
-    const QList<int> &pile = who->getPile(pile_name);
-    if(pile.isEmpty())
-        button_widget->hide();
-    else{
-        button_widget->show();
-        button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+    QStringList names = who->getPileNames();
+    button->menu()->clear();
+
+    button_widget->hide();
+    int active = 0;
+    foreach(QString pile_name,names)
+    {
+        const QList<int> &pile = who->getPile(pile_name);
+        if(!pile.isEmpty()){
+            button_widget->show();
+            active++;
+            button->setText(QString("%1 (%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+        }
+
+        QMenu *menu = button->menu();
+        //menu->clear();
+
+        QList<const Card *> cards;
+        foreach(int card_id, pile){
+            const Card *card = Sanguosha->getCard(card_id);
+            cards << card;
+        }
+
+        qSort(cards.begin(), cards.end(), CompareByNumber);
+        foreach(const Card *card, cards){
+            menu->addAction(card->getSuitIcon(),
+                            QString("%1 (%2)").arg(card->getFullName())
+                            .arg(Sanguosha->translate(pile_name)));
+        }
+        menu->addSeparator();
     }
+    if(active>1)button->setText(QString("Multiple"));
 
-    QMenu *menu = button->menu();
-    menu->clear();
-
-    QList<const Card *> cards;
-    foreach(int card_id, pile){
-        const Card *card = Sanguosha->getCard(card_id);
-        cards << card;
-    }
-
-    qSort(cards.begin(), cards.end(), CompareByNumber);
-    foreach(const Card *card, cards){
-        menu->addAction(card->getSuitIcon(), card->getFullName());
+    if(who->getMaxHP()>5)
+    {
+        button_widget->setPos(pos());
+        button_widget->moveBy(100, 68);
+        button_widget->resize(16,16);
+        button->setText(QString());
     }
 }
 
@@ -651,7 +663,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     // draw iron chain
     if(player->isChained())
-        painter->drawPixmap(28, 16, chain);
+        painter->drawPixmap(this->boundingRect().width() - 22, 5, chain);
 
     back_icon->setVisible(! player->faceUp());
 }

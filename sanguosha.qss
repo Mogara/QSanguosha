@@ -1,7 +1,7 @@
 QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
-    background-color: rgba(43,45,31,200);
+    background-color: rgba(43,45,31,120);
 }
 
 QTextEdit[description="true"]{
@@ -71,6 +71,12 @@ QStatusBar::item {
 QWidget#skill_bar_container{
 	background-image: url(image/system/skill-dock.png);
 	color:white;
+}
+
+QPushButton[private_pile="true"]{
+    background-color: rgba(43,63,53,100);
+    border-radius: 5px;
+    color: white;
 }
 
 QPushButton[game_control="true"]{

@@ -25,6 +25,7 @@ private:
 public slots:
     void appendLog(const QString &log_str);
     void appendSeparator();
+    void append(const QString &text);
 };
 
 #endif // CLIENTLOGBOX_H

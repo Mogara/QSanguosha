@@ -617,6 +617,15 @@ QList<int> Player::getPile(const QString &pile_name) const{
     return piles[pile_name];
 }
 
+QStringList Player::getPileNames() const{
+    QStringList names;
+    foreach(QString pile_name,piles.keys())
+    {
+        names.append(pile_name);
+    }
+    return names;
+}
+
 QString Player::getPileName(int card_id) const{
     foreach(QString pile_name, piles.keys()){
         QList<int> pile = piles[pile_name];

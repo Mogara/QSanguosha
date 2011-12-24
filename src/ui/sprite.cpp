@@ -63,7 +63,7 @@ void Sprite::start(int loops)
         pgroup->addAnimation(sgroup);
     }
 
-    if(--loops)connect(pgroup,SIGNAL(finished()),this,SLOT(start(loops)));
+    if(--loops)connect(pgroup,SIGNAL(finished()),this,SLOT(start(int)));
     else connect(pgroup,SIGNAL(finished()),this,SLOT(deleteLater()));
     pgroup->start(QAbstractAnimation::DeleteWhenStopped);
 }
@@ -80,12 +80,12 @@ void Sprite::setPixmapAtMid(const QPixmap &pixmap)
     this->setOffset( - pixmap.width()/2, - pixmap.height()/2);
 }
 
-qreal Sprite::getX()
+qreal Sprite::getX() const
 {
     return pos().x();
 }
 
-qreal Sprite::getY()
+qreal Sprite::getY() const
 {
     return pos().y();
 }
