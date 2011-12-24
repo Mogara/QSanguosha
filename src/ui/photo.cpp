@@ -576,7 +576,7 @@ void Photo::updatePile(const QString &pile_name){
         }
         menu->addSeparator();
     }
-    if(active>1)button->setText(QString("Multiple"));
+    if(active>1)button->setText(QString(tr("Multiple")));
 
     if(who->getMaxHP()>5)
     {

@@ -355,6 +355,8 @@ public:
             if(room->askForSkillInvoke(sunce, objectName(), data)){
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
+                    if(sunce->hasFlag("drank"))
+                        room->setPlayerFlag(sunce, "-drank");
                     room->askForUseCard(sunce, "@@bawang", "@bawang");
                 }
             }
