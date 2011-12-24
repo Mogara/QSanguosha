@@ -63,7 +63,7 @@ void Sprite::start(int loops)
         pgroup->addAnimation(sgroup);
     }
 
-    if(--loops)connect(pgroup,SIGNAL(finished()),this,SLOT(start(loops)));
+    if(--loops)connect(pgroup,SIGNAL(finished()),this,SLOT(start(int)));
     else connect(pgroup,SIGNAL(finished()),this,SLOT(deleteLater()));
     pgroup->start(QAbstractAnimation::DeleteWhenStopped);
 }
