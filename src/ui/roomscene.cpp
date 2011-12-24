@@ -1585,8 +1585,6 @@ void RoomScene::useSelectedCard(){
     const ViewAsSkill *skill = dashboard->currentSkill();
     if(skill)
         dashboard->stopPending();
-
-    updateTargetsEnablity();
 }
 
 void RoomScene::onSelectChange()
@@ -1615,7 +1613,6 @@ void RoomScene::useCard(const Card *card){
 void RoomScene::callViewAsSkill(){
     const Card *card = dashboard->pendingCard();
 
-    updateTargetsEnablity();
     if(card == NULL)
         return;
 
@@ -2029,8 +2026,6 @@ void RoomScene::updateStatus(Client::Status status){
         tick = 0;
         progress_bar->show();
     }
-
-    updateTargetsEnablity();
 }
 
 void RoomScene::doSkillButton(){
@@ -2057,8 +2052,6 @@ void RoomScene::doSkillButton(){
             useSelectedCard();
         }
     }
-
-    updateTargetsEnablity();
 }
 
 void RoomScene::updateTrustButton(){
@@ -2191,8 +2184,6 @@ void RoomScene::doCancelButton(){
             break;
         }
     }
-
-    updateTargetsEnablity();
 }
 
 void RoomScene::doDiscardButton(){
