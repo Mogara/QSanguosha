@@ -21,6 +21,7 @@ public:
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
@@ -33,6 +34,7 @@ private:
     QFont font;
     QImage *outimg;
     int glow;
+    int timer_id;
 
     void init();
 

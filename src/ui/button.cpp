@@ -25,7 +25,6 @@ Button::Button(const QString &label, qreal scale)
 {
 
     init();
-    startTimer(40);
 }
 
 Button::Button(const QString &label, const QSizeF &size)
@@ -102,6 +101,11 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *){
 #endif
     }
 #endif
+    timer_id = QObject::startTimer(40);
+}
+
+void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *){
+    timer_id = QObject::startTimer(40);
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -152,7 +156,12 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     if(hasFocus())
     {
         if(glow<5)glow++;
-    }else if(glow>0)glow--;
+        else QObject::killTimer(timer_id);
+    }else
+    {
+        if(glow>0)glow--;
+        else QObject::killTimer(timer_id);
+    }
     painter->fillRect(rect,QColor(255,255,255,glow*10));
 
     painter->setFont(font);
