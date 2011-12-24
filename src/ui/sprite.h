@@ -25,8 +25,8 @@ public:
     void setResetTime(int time);
     void setPixmapAtMid(const QPixmap &pixmap);
 
-    qreal getX();
-    qreal getY();
+    qreal getX() const;
+    qreal getY() const;
 
 signals:
     void finished();
