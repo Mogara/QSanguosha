@@ -5,6 +5,8 @@
 #include "carditem.h"
 #include "engine.h"
 #include "standard.h"
+#include "maneuvering.h"
+#include "wisdompackage.h"
 
 class SPMoonSpearSkill: public WeaponSkill{
 public:
@@ -213,6 +215,52 @@ public:
     }
 };
 
+WeidiCard::WeidiCard(){
+    target_fixed = true;
+}
+
+void WeidiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *yuanshu = card_use.from;
+
+    QStringList choices;
+    if(yuanshu->hasLordSkill("jijiang")&&Slash::IsAvailable(yuanshu))
+        choices << "jijiang";
+
+    if(yuanshu->hasLordSkill("weidai")&&Analeptic::IsAvailable(yuanshu))
+        choices << "weidai";
+
+    if(choices.isEmpty())
+        return;
+
+    QString choice;
+    if(choices.length() == 1)
+        choice = choices.first();
+    else
+        choice = room->askForChoice(yuanshu, "weidi", "jijiang+weidai");
+
+    if(choice == "jijiang"){
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer* target, room->getOtherPlayers(yuanshu)){
+            if(yuanshu->canSlash(target))
+                targets << target;
+        }
+
+        ServerPlayer* target = room->askForPlayerChosen(yuanshu, targets, "jijiang");
+        if(target){
+            CardUseStruct use;
+            use.card = new JijiangCard;
+            use.from = yuanshu;
+            use.to << target;
+            room->useCard(use);
+        }
+    }else{
+        CardUseStruct use;
+        use.card = new WeidaiCard;
+        use.from = yuanshu;
+        room->useCard(use);
+    }
+}
+
 class Weidi:public ZeroCardViewAsSkill{
 public:
     Weidi():ZeroCardViewAsSkill("weidi"){
@@ -220,11 +268,12 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasLordSkill("jijiang") && Slash::IsAvailable(player);
+        return (player->hasLordSkill("jijiang") && Slash::IsAvailable(player))
+                ||(player->hasLordSkill("weidai") && Analeptic::IsAvailable(player));
     }
 
     virtual const Card *viewAs() const{
-        return Sanguosha->cloneSkillCard("JijiangCard");
+        return new WeidiCard;
     }
 };
 
@@ -414,6 +463,8 @@ SPPackage::SPPackage()
     sp_jiaxu->addSkill("luanwu");
     sp_jiaxu->addSkill("weimu");
     sp_jiaxu->addSkill("#@chaos-1");
+
+    addMetaObject<WeidiCard>();
 }
 
 ADD_PACKAGE(SP);
