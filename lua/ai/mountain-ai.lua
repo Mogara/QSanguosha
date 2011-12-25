@@ -94,18 +94,12 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	end
 
 	if prompt == "@qiaobian-draw" then
-		self:sort(self.enemies, "handcard")
-		local first, second
-		if #self.enemies > 1 then
-			first, second = self.enemies[1], self.enemies[2]
-			if first:getHandcardNum() > 0 and second:getHandcardNum() > 0 then
-				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. first:objectName() .."+".. second:objectName()
-			end
-		elseif #self.enemies == 1 and #self.friends > 1 then
-			first = self.enemies[1]
-			if first:getHandcardNum() > 0 then
-				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. first:objectName()
-			end
+		local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
+		if cardstr:match("->") then
+			local targetstr = cardstr:split("->")[2]
+			return "@QiaobianCard=" .. card:getEffectiveId() .. "->" .. targetstr
+		else
+			return "."
 		end
 	end
 
@@ -453,10 +447,4 @@ sgs.ai_skill_choice["zhiba_pindian"] = function(self, choices)
 	if self:isEnemy(who) then return "reject"
 	else return "accept"
 	end
-end
-
-sgs.ai_skill_choice["huashen"] = function(self, choices)
-	local parseprompt = choices:split("+")
-	local index = math.random(1, #parseprompt)
-	return choices[index]
 end
