@@ -13,7 +13,10 @@ Window::Window(const QString &title, const QSizeF &size)
 {
     setFlags(ItemIsMovable);
 
-    QPixmap *bg = new QPixmap("image/system/pmpt.png");
+    QPixmap *bg;
+    bg = size.width()>size.height() ?
+                new QPixmap("image/system/tip.png")
+              : new QPixmap("image/system/about.png");
     QImage bgimg = bg->toImage();
     outimg = new QImage(size.toSize(),QImage::Format_ARGB32);
 
