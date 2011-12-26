@@ -1,14 +1,4 @@
-sgs.ai_skill_invoke.jueji=function(self,data)
-	local target=data:toPlayer()
-	if target:getHandcardNum()<1 or (target:getHandcardNum()==1 and self:hasSkills(sgs.need_kongcheng,target)) then
-		return false
-	end
-	local handcard=target:getHandcardNum()
-	local max_point=self:getMaxCard():getNumber()
-	local poss=((max_point-1)/13)^handcard
-	if math.random()<=poss then return true end
-
-end
+sgs.ai_skill_invoke.jueji = true
 
 sgs.ai_skill_use["@@jueji"]=function(self,prompt)
 	local target
