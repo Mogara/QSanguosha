@@ -746,7 +746,14 @@ end
 sgs.ai_skill_invoke = {
 	eight_diagram = function(self, data)
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:hasSkill("guidao") and enemy:getCards("he"):length()>2 then return false end
+			if enemy:hasSkill("guidao") then
+				if not enemy:getCards("e"):isEmpty() then
+					for _, card in sgs.qlist(enemy:getCards("e")) do
+						if card:isBlack() then return false end
+					end
+				end
+				if enemy:getHandcardNum() > 2 then return false end
+			end
 		end
 		
 		if self:getDamagedEffects(self) then return false end
@@ -795,7 +802,7 @@ function SmartAI:askForYiji(cards)
 				if card:inherits("Nullification") then
 					return friend, card_id
 				end
-			else
+			elseif not (friend:isKongcheng() and friend:hasSkill("kongcheng")) then
 				if card:inherits("Jink") then
 					if friend:getHp() < 2 and self:getCardsNum("Jink", friend) < 1 then
 						return friend, card_id
@@ -1323,6 +1330,8 @@ function SmartAI:useBasicCard(card, use, no_distance)
 
 			use.card = card
 		end
+	elseif card:inherits("Shit") and not self.player:isWounded() and self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 then
+		use.card = card
 	end
 end
 
@@ -1617,6 +1626,7 @@ function SmartAI:useCardDuel(duel, use)
 			local n1 = self:getCardsNum("Slash")
 			local n2 = enemy:getHandcardNum()
 			if enemy:hasSkill("wushuang") then n2 = n2*2 end
+			if self.player:hasSkill("wushuang") then n1 = n1*2 end
 			local useduel
 			if self:hasTrickEffective(duel, enemy) then
 				if n1 >= n2 then
@@ -1831,7 +1841,7 @@ function SmartAI:useCardGodSalvation(card, use)
 end
 
 function SmartAI:useCardAmazingGrace(card, use)
-	if #self.friends >= #self.enemies then
+	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1) then
 		use.card = card
 	elseif self.player:hasSkill("wuyan") then
 		use.card = card
@@ -1877,7 +1887,7 @@ function SmartAI:useTrickCard(card, use)
 			bad = bad + self:getCardsNum("Peach")
 		end
 
-		if good > bad then
+		if good > bad or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1) then
 			use.card = card
 		end
 	else
@@ -1989,6 +1999,9 @@ end
 function SmartAI:useEquipCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:hasSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and not card:inherits("GaleShell") then
+		use.card = card
+	end
+	if self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng) and not card:inherits("GaleShell") then
 		use.card = card
 	end
 	if self:hasSameEquip(card) and
@@ -2661,6 +2674,15 @@ function SmartAI:getCardRandomly(who, flags)
 			end
 		end
 	end
+	if self:isEquip("GaleShell", who) then
+		if self:isEnemy(who) and card == who:getArmor() then
+			if r ~= (cards:length()-1) then
+				card = cards:at(r+1)
+			else
+				card = cards:at(r-1)
+			end
+		end
+	end
 	return card:getEffectiveId()
 end
 
@@ -2979,7 +3001,9 @@ function SmartAI:askForCard(pattern, prompt, data)
 		elseif parsedPrompt[1] == "savage-assault-slash"  then
 			if not self:damageIsEffective(nil, nil, target) then return "." end
 			local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
-			if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+			if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
+				(self.player:getHp()>1 or self:getAllPeachNum()>0))
+				or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
 		elseif parsedPrompt[1] == "@xianzhen-slash" then
@@ -3001,9 +3025,11 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if self:isFriend(target) then
 				if parsedPrompt[1] == "archery-attack-jink"  then
 					local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
-					if (self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+					if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
+						(self.player:getHp()>1 or self:getAllPeachNum()>0))
+						or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
+
 				end
-				if self.player:hasSkill("yiji") and (self.player:getLostHp() < 2) then return "." end
 				if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 then return "." end
 				if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 				if target:hasSkill("guagu") and self.player:isLord() then return "." end
