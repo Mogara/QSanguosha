@@ -550,7 +550,7 @@ void MainWindow::on_actionAcknowledgement_triggered()
     contents.append(tr("QSanguosha staff:"));
 
     contents.append(tr("AI Maintainance: William915, donle"));
-    contents.append(tr("Game Design: Moligaloo, Ubun Tenkai"));
+    contents.append(tr("Game Design: Moligaloo, Ubun Tenkei"));
     contents.append(tr("Miscellaneous: Hypercross"));
     contents.append(tr("Founder: Moligaloo"));
 

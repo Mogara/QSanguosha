@@ -1841,7 +1841,8 @@ function SmartAI:useCardGodSalvation(card, use)
 end
 
 function SmartAI:useCardAmazingGrace(card, use)
-	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1) then
+	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1)
+		or self.player:hasSkill("jizhi") then
 		use.card = card
 	elseif self.player:hasSkill("wuyan") then
 		use.card = card
@@ -3002,7 +3003,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if not self:damageIsEffective(nil, nil, target) then return "." end
 			local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
 			if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-				(self.player:getHp()>1 or self:getAllPeachNum()>0))
+				(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
 				or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
@@ -3026,7 +3027,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 				if parsedPrompt[1] == "archery-attack-jink"  then
 					local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
 					if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-						(self.player:getHp()>1 or self:getAllPeachNum()>0))
+						(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
 						or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 
 				end

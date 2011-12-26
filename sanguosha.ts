@@ -1873,7 +1873,8 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="553"/>
-        <source>Game Design: Moligaloo, Ubun Tenkai</source>
+        <source>Game Design: Moligaloo, Ubun Tenkei</source>
+        <oldsource>Game Design: Moligaloo, Ubun Tenkai</oldsource>
         <translation>游戏设计：太阳神上，宇文天启</translation>
     </message>
     <message>
