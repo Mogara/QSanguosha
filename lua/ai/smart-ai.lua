@@ -1328,6 +1328,13 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
 			end
 
+			if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
+				self:sort(self.friends, "hp")
+				for _, friend in ipairs(self.friends) do
+					if friend:isWounded() and friend:getGeneral():isMale() then return end
+				end
+			end
+
 			use.card = card
 		end
 	elseif card:inherits("Shit") and not self.player:isWounded() then

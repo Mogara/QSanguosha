@@ -516,7 +516,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 				self:useSkillCard(sgs.Card_Parse("@ZhibaCard=."), dummy_use)
 				if dummy_use.card then
 					local subcard = sgs.Sanguosha:getCard(dummy_use.card:getEffectiveId())
-					if self:getUseValue(subcard)<6 and #self.friends>1 then
+					if self:getUseValue(subcard) < 6 and #self.friends>1 then
 						for _, player in ipairs(self.friends_noself) do
 							if player:getKingdom() == "wu" then
 								use.card = sgs.Card_Parse("@RendeCard=" .. subcard:getId())
@@ -568,11 +568,26 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 	
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 	if zhugeliang and zhugeliang:objectName() ~= self.player:objectName() and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
-		local shit = self:getCard("Shit") or self:getCard("Disaster")
+		local shit = self:getCard("Shit") or self:getCard("Disaster") or self:getCard("GodSalvation") or self:getCard("AmazingGrace")
 		if shit then
 			use.card = sgs.Card_Parse("@RendeCard=" .. shit:getId())
 			if use.to then use.to:append(zhugeliang) end
 			return
+		end
+		for _, card in ipairs(self:getCards("EquipCard")) do
+			if self:hasSameEquip(card, zhugeliang) or (card:inherits("OffensiveHorse") and not card:inherits("Monkey")) then
+				use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
+				if use.to then use.to:append(zhugeliang) end
+				return
+			end
+		end
+		if zhugeliang:getHp() < 2 then
+			local slash = self:getCard("Slash")
+			if slash then
+				use.card = sgs.Card_Parse("@RendeCard=" .. slash:getId())
+				if use.to then use.to:append(zhugeliang) end
+				return
+			end
 		end
 	end
 	
