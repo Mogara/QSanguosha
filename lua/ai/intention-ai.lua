@@ -62,7 +62,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,to,source)
     if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
     local value=sgs.ai_card_intention.general(to,80+modifier)
     
-    if to:hasSkill("leiji") and (getCardsNum("Jink", to)>0) and (to:getHandcardNum()>2) then 
+    if to:hasSkill("leiji") and (getCardsNum("Jink", to)>0 or (to:getArmor() and to:getArmor():objectName() == "eight_diagram")) and (to:getHandcardNum()>2) then 
         return -value/1.5
     end
     speakTrigger(card,from,to)
@@ -87,7 +87,7 @@ end
 
 sgs.ai_card_intention["Duel"]=function(card,from,to,source)
     if sgs.ai_lijian_effect then 
-        sgs.ai_lijian_effect=false
+        sgs.ai_lijian_effect = false
         return 0 
     end
     return sgs.ai_card_intention.general(to,80)
@@ -179,17 +179,10 @@ sgs.ai_card_intention["QiangxiCard"]=function(card,from,to,source)
 end
 
 sgs.ai_carduse_intention["LijianCard"]=function(card,from,to,source, different)
---        from:getRoom():output("a LijianCard")
-        if not sgs.ai_lijian_effect then
-            sgs.ai_lijian_effect=true
-			local intension_value = -70
-			if different then intension_value = 70 end
-			
-            return sgs.ai_card_intention.general(to, intension_value)
-        else
-            sgs.ai_lijian_effect=false
-            return 0
-        end
+        sgs.ai_lijian_effect=true
+		local intension_value = -70
+		if different then intension_value = 70 end
+        return sgs.ai_card_intention.general(to, intension_value)
 end
 
 sgs.ai_carduse_intention["JieyinCard"]=function(card,from,to,source)

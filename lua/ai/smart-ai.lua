@@ -631,11 +631,11 @@ function SmartAI:filterEvent(event, player, data)
 		local source =  self.room:getCurrent()
 
 		for _, eachTo in ipairs(to) do
-			local use_intension = sgs.ai_carduse_intention[card:className()]
+			local use_intension = sgs.ai_carduse_intention[card:className()] or sgs.ai_card_intention[card:className()]
 			if use_intension then
 				local different = true
 				if self:isFriend(from, eachTo) then different = false end
-				local intention =  use_intension(card,from,eachTo,source,different) or use_intension(card,from,eachTo,source)
+				local intention = use_intension(card,from,eachTo,source,different) or use_intension(card,from,eachTo,source)
 				self:refreshRoyalty(from,intention)
 
 				if eachTo:isLord() and intention < 0 then
