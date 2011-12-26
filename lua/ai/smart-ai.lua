@@ -1330,8 +1330,19 @@ function SmartAI:useBasicCard(card, use, no_distance)
 
 			use.card = card
 		end
-	elseif card:inherits("Shit") and not self.player:isWounded() and self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 then
-		use.card = card
+	elseif card:inherits("Shit") and not self.player:isWounded() then
+		if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
+			use.card = card
+			return
+		end
+		local peach = self:getCard("Peach")
+		if peach then
+			self:sort(self.friends, "hp")
+			if not self:isWeak(self.friends[1]) then
+				use.card = card
+				return
+			end
+		end
 	end
 end
 
@@ -2001,9 +2012,11 @@ function SmartAI:useEquipCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:hasSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and not card:inherits("GaleShell") then
 		use.card = card
+		return
 	end
 	if self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng) and not card:inherits("GaleShell") then
 		use.card = card
+		return
 	end
 	if self:hasSameEquip(card) and
 		(self.player:hasSkill("rende") or self.player:hasSkill("qingnang")
@@ -2017,11 +2030,16 @@ function SmartAI:useEquipCard(card, use)
 		end
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
-		if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
-		if self.player:getHandcardNum() <= self.player:getHp() then return end
-		use.card = card
+			if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
+			if self.player:getHandcardNum() <= self.player:getHp() then return end
+			use.card = card
 		end
 	elseif card:inherits("Armor") then
+		local lion = self:getCard("SilverLion")
+		if lion and self.player:isWounded() and not self:isEquip("SilverLion") then
+			use.card = lion
+			return
+		end
 		if self.player:hasSkill("rende") and self:evaluateArmor(card)<4 then
 			for _,friend in ipairs(self.friends_noself) do
 				if not friend:getArmor() then return end
