@@ -566,6 +566,16 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 		return
 	end
 	
+	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+	if zhugeliang and zhugeliang:objectName() ~= self.player:objectName() and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
+		local shit = self:getCard("Shit") or self:getCard("Disaster")
+		if shit then
+			use.card = sgs.Card_Parse("@RendeCard=" .. shit:getId())
+			if use.to then use.to:append(zhugeliang) end
+			return
+		end
+	end
+	
 	if #self.friends == 1 then return end
 
 	if (self:getOverflow()>0 or (self.player:isWounded() and self.player:usedTimes("RendeCard") < 2)) then
