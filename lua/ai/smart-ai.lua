@@ -631,11 +631,11 @@ function SmartAI:filterEvent(event, player, data)
 		local source =  self.room:getCurrent()
 
 		for _, eachTo in ipairs(to) do
-			local use_intension = sgs.ai_carduse_intention[card:className()]
+			local use_intension = sgs.ai_carduse_intention[card:className()] or sgs.ai_card_intention[card:className()]
 			if use_intension then
 				local different = true
 				if self:isFriend(from, eachTo) then different = false end
-				local intention =  use_intension(card,from,eachTo,source,different) or use_intension(card,from,eachTo,source)
+				local intention = use_intension(card,from,eachTo,source,different) or use_intension(card,from,eachTo,source)
 				self:refreshRoyalty(from,intention)
 
 				if eachTo:isLord() and intention < 0 then
@@ -1328,10 +1328,28 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
 			end
 
+			if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
+				self:sort(self.friends, "hp")
+				for _, friend in ipairs(self.friends) do
+					if friend:isWounded() and friend:getGeneral():isMale() then return end
+				end
+			end
+
 			use.card = card
 		end
-	elseif card:inherits("Shit") and not self.player:isWounded() and self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 then
-		use.card = card
+	elseif card:inherits("Shit") and not self.player:isWounded() then
+		if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
+			use.card = card
+			return
+		end
+		local peach = self:getCard("Peach")
+		if peach then
+			self:sort(self.friends, "hp")
+			if not self:isWeak(self.friends[1]) then
+				use.card = card
+				return
+			end
+		end
 	end
 end
 
@@ -1841,7 +1859,8 @@ function SmartAI:useCardGodSalvation(card, use)
 end
 
 function SmartAI:useCardAmazingGrace(card, use)
-	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1) then
+	if #self.friends >= #self.enemies or (self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1)
+		or self.player:hasSkill("jizhi") then
 		use.card = card
 	elseif self.player:hasSkill("wuyan") then
 		use.card = card
@@ -2000,9 +2019,11 @@ function SmartAI:useEquipCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:hasSameEquip(card) then return end
 	if self:hasSkills(sgs.lose_equip_skill) and not card:inherits("GaleShell") then
 		use.card = card
+		return
 	end
 	if self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng) and not card:inherits("GaleShell") then
 		use.card = card
+		return
 	end
 	if self:hasSameEquip(card) and
 		(self.player:hasSkill("rende") or self.player:hasSkill("qingnang")
@@ -2016,11 +2037,16 @@ function SmartAI:useEquipCard(card, use)
 		end
 		if self.player:getWeapon() and self.player:getWeapon():inherits("YitianSword") then use.card = card return end
 		if self:evaluateEquip(card) > (self:evaluateEquip(self.player:getWeapon())) then
-		if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
-		if self.player:getHandcardNum() <= self.player:getHp() then return end
-		use.card = card
+			if (not use.to) and self.weaponUsed and (not self:hasSkills(sgs.lose_equip_skill)) then return end
+			if self.player:getHandcardNum() <= self.player:getHp() then return end
+			use.card = card
 		end
 	elseif card:inherits("Armor") then
+		local lion = self:getCard("SilverLion")
+		if lion and self.player:isWounded() and not self:isEquip("SilverLion") then
+			use.card = lion
+			return
+		end
 		if self.player:hasSkill("rende") and self:evaluateArmor(card)<4 then
 			for _,friend in ipairs(self.friends_noself) do
 				if not friend:getArmor() then return end
@@ -3002,7 +3028,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 			if not self:damageIsEffective(nil, nil, target) then return "." end
 			local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
 			if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-				(self.player:getHp()>1 or self:getAllPeachNum()>0))
+				(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
 				or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
@@ -3026,7 +3052,7 @@ function SmartAI:askForCard(pattern, prompt, data)
 				if parsedPrompt[1] == "archery-attack-jink"  then
 					local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
 					if ((self.player:hasSkill("jianxiong") and self:getAoeValue(aoe) > -10) and
-						(self.player:getHp()>1 or self:getAllPeachNum()>0))
+						(self.player:getHp()>1 or self:getAllPeachNum()>0 and not self.player:containsTrick("indulgence")))
 						or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 
 				end
