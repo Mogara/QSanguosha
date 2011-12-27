@@ -297,7 +297,8 @@ sgs.ai_skill_use_func["QingnangCard"]=function(card,use,self)
 	self:sort(self.friends, "defense")
 	
 	for _, friend in ipairs(self.friends) do
-		if friend:isWounded() then
+		if friend:isWounded() and
+			not (friend:hasSkill("hunzi") and friend:getMark("hunzi") == 0 and self:getAllPeachNum() > 1) then
 			use.card=card
 			if use.to then use.to:append(friend) end
 			return

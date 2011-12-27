@@ -114,6 +114,7 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 end
 
 sgs.ai_skill_choice["guhuo"] = function(self, choices)
+	if sgs.guhuotype and (sgs.guhuotype == "shit" or sgs.guhuotype == "amazing_grace") then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 	local yuji
