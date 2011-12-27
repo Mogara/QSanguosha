@@ -1317,6 +1317,8 @@ function SmartAI:useBasicCard(card, use, no_distance)
 		end
 
 	elseif card:inherits("Peach") and self.player:isWounded() then
+		if self.player:hasSkill("longhun") and not self.player:isLord() and
+			math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
 		if not (self.player:hasSkill("rende") and self:getOverflow() > 1 and #self.friends_noself > 0) then
 			local peaches = 0
 			local cards = self.player:getHandcards()
@@ -1338,17 +1340,23 @@ function SmartAI:useBasicCard(card, use, no_distance)
 
 			use.card = card
 		end
-	elseif card:inherits("Shit") and not self.player:isWounded() then
-		if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
-			use.card = card
-			return
-		end
-		local peach = self:getCard("Peach")
-		if peach then
-			self:sort(self.friends, "hp")
-			if not self:isWeak(self.friends[1]) then
+	elseif card:inherits("Shit") then
+		if self.player:getHp()>3 and self.player:hasSkill("shenfen") and self.player:hasSkill("kuangbao") then use.card = card return end
+		if self.player:hasSkill("kuanggu") and card:getSuitString() ~= "spade" then use.card = card return end
+		if not self.player:isWounded() then
+			if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
 				use.card = card
 				return
+			end
+			if sgs[self.player:getGeneralName() .. "_suit_value"] and
+				(sgs[self.player:getGeneralName() .. "_suit_value"][card:getSuitString()] or 0) > 0 then return end
+			local peach = self:getCard("Peach")
+			if peach then
+				self:sort(self.friends, "hp")
+				if not self:isWeak(self.friends[1]) then
+					use.card = card
+					return
+				end
 			end
 		end
 	end

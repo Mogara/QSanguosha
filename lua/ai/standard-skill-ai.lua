@@ -298,6 +298,7 @@ sgs.ai_skill_use_func["QingnangCard"]=function(card,use,self)
 	
 	for _, friend in ipairs(self.friends) do
 		if friend:isWounded() and
+			not (friend:hasSkill("longhun") and self:getAllPeachNum() > 0) and
 			not (friend:hasSkill("hunzi") and friend:getMark("hunzi") == 0 and self:getAllPeachNum() > 1) then
 			use.card=card
 			if use.to then use.to:append(friend) end
@@ -506,7 +507,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 							if use.to then use.to:append(friend) end
 							return
-						elseif hcard:getNumber()<8 and friend:hasSkill("chengxiang") and friend:getHandcardNum()<12 then
+						elseif hcard:getNumber()<8 and friend:hasSkill("chengxiang") and friend:getHandcardNum() < 12 then
 							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 							if use.to then use.to:append(friend) end
 							return
@@ -517,7 +518,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 				self:useSkillCard(sgs.Card_Parse("@ZhibaCard=."), dummy_use)
 				if dummy_use.card then
 					local subcard = sgs.Sanguosha:getCard(dummy_use.card:getEffectiveId())
-					if self:getUseValue(subcard) < 6 and #self.friends>1 then
+					if self:getUseValue(subcard) < 6 and #self.friends > 1 then
 						for _, player in ipairs(self.friends_noself) do
 							if player:getKingdom() == "wu" then
 								use.card = sgs.Card_Parse("@RendeCard=" .. subcard:getId())
