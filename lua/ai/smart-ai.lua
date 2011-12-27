@@ -544,6 +544,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			if carduse.card:inherits("GuhuoCard") then
 				sgs.questioner = nil
+				sgs.guhuotype = carduse.card:toString():split(":")[2]
 			end
 			if carduse.card:inherits("LianliSlashCard") then
 				sgs.lianlislash = false
@@ -752,7 +753,7 @@ sgs.ai_skill_invoke = {
 						if card:isBlack() then return false end
 					end
 				end
-				if enemy:getHandcardNum() > 2 then return false end
+				if enemy:getHandcardNum() > 1 then return false end
 			end
 		end
 		
@@ -1326,6 +1327,13 @@ function SmartAI:useBasicCard(card, use, no_distance)
 
 			for _, friend in ipairs(self.friends_noself) do
 				if (self.player:getHp()-friend:getHp() > peaches) and (friend:getHp() < 3) and not friend:hasSkill("buqu") then return end
+			end
+
+			if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
+				self:sort(self.friends, "hp")
+				for _, friend in ipairs(self.friends) do
+					if friend:isWounded() and friend:getGeneral():isMale() then return end
+				end
 			end
 
 			use.card = card
@@ -2035,8 +2043,10 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:inherits("Armor") then
+		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
 		local lion = self:getCard("SilverLion")
-		if lion and self.player:isWounded() and not self:isEquip("SilverLion") then
+		if lion and self.player:isWounded() and not self:isEquip("SilverLion") and not card:inherits("SilverLion") and
+			not (self:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
 			use.card = lion
 			return
 		end
@@ -2045,7 +2055,6 @@ function SmartAI:useEquipCard(card, use)
 				if not friend:getArmor() then return end
 			end
 		end
-		if card:inherits("GaleShell") then self:useGaleShell(card, use) return end
 		if self:evaluateArmor(card) > self:evaluateArmor() then use.card = card end
 		return
 	elseif card:inherits("OffensiveHorse") and self.player:hasSkill("rende") then
