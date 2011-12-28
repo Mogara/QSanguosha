@@ -603,10 +603,22 @@ void MainWindow::on_actionScript_editor_triggered()
 MeleeDialog::MeleeDialog(QWidget *parent)
     :QDialog(parent)
 {
+    server=NULL;
+    lordCount=0;
+    lordWinCount=0;
+    loyalistCount=0;
+    loyalistWinCount=0;
+    renegadeCount=0;
+    renegadeWinCount=0;
+    rebelCount=0;
+    rebelWinCount=0;
+
     setWindowTitle(tr("AI Melee"));
 
-    QGroupBox *general_box = createGeneralBox();
-    QGroupBox *result_box = createResultBox();
+//    QGroupBox *general_box = createGeneralBox();
+//    QGroupBox *result_box = createResultBox();
+    general_box = createGeneralBox();
+    result_box = createResultBox();
     QGraphicsView *record_view = new QGraphicsView;
     record_view->setMinimumWidth(500);
 
@@ -641,12 +653,18 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     QSpinBox *spinbox = new QSpinBox;
     spinbox->setRange(1, 2000);
     spinbox->setValue(10);
+    spinbox->setEnabled(false);
 
     QPushButton *start_button = new QPushButton(tr("Start"));
     connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
 
+    QCheckBox *loop_checkbox = new QCheckBox(tr("LOOP"));
+    loop_checkbox->setObjectName("loop_checkbox");
+
     form_layout->addRow(tr("Test times"), spinbox);
-    form_layout->addWidget(start_button);
+    form_layout->addRow(loop_checkbox, start_button);
+    // form_layout->addWidget(start_button);
+    // form_layout->addWidget(loop_checkbox);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(avatar_button);
@@ -770,6 +788,12 @@ QGroupBox *MeleeDialog::createResultBox(){
     renegade_edit->setReadOnly(true);
     total_edit->setReadOnly(true);
 
+    lord_edit->setObjectName("lord_edit");;
+    loyalist_edit->setObjectName("loyalist_edit");
+    rebel_edit->setObjectName("rebel_edit");
+    renegade_edit->setObjectName("renegade_edit");
+    total_edit->setObjectName("total_edit");
+
     layout->addRow(tr("Lord"), lord_edit);
     layout->addRow(tr("Loyalist"), loyalist_edit);
     layout->addRow(tr("Rebel"), rebel_edit);
@@ -847,4 +871,44 @@ void MainWindow::on_actionSend_lowlevel_command_triggered()
     QString command = QInputDialog::getText(this, tr("Send low level command"), tr("Please input the raw low level command"));
     if(!command.isEmpty())
         ClientInstance->request(command);
+}
+void MeleeDialog::updateResultBox(QString role, int win){
+    // role types << "lord" << "loyalist" << "renegade" << "rebel";
+    // int lordCount,lordWinCount,loyalistCount,loyalistWinCount,renegadeCount,renegadeWinCount,rebelCount,rebelWinCount;
+    QLineEdit *lord_edit = new QLineEdit;
+    QLineEdit *loyalist_edit = new QLineEdit;
+    QLineEdit *rebel_edit = new QLineEdit;
+    QLineEdit *renegade_edit = new QLineEdit;
+    QLineEdit *total_edit = new QLineEdit;
+    lord_edit=result_box->findChild<QLineEdit *>("lord_edit");
+    loyalist_edit=result_box->findChild<QLineEdit *>("loyalist_edit");
+    rebel_edit=result_box->findChild<QLineEdit *>("rebel_edit");
+    renegade_edit=result_box->findChild<QLineEdit *>("renegade_edit");
+    total_edit=result_box->findChild<QLineEdit *>("total_edit");
+    int totalCount,totalWinCount;
+
+    if(role=="lord"){
+        lordCount++;
+        lordWinCount+=win;
+        lord_edit->setText(QString::number(lordWinCount) +" / "+QString::number(lordCount));
+    }
+    else if(role=="loyalist"){
+        loyalistCount++;
+        loyalistWinCount+=win;
+        loyalist_edit->setText(QString::number(loyalistWinCount) +" / "+QString::number(loyalistCount));
+    }
+    else if(role=="renegade"){
+        renegadeCount++;
+        renegadeWinCount+=win;
+        renegade_edit->setText(QString::number(renegadeWinCount) +" / "+QString::number(renegadeCount));
+    }
+    else if(role=="rebel"){
+        rebelCount++;
+        rebelWinCount+=win;
+        rebel_edit->setText(QString::number(rebelWinCount) +" / "+QString::number(rebelCount));
+    }
+    else {;}
+    totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
+    totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
+    total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount));
 }

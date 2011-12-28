@@ -622,7 +622,21 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			self:refreshRoyalty(from,intention)
 		end
-
+	elseif event == sgs.Damaged then
+		local damage = data:toDamage()
+		local card = damage.card
+		local from = damage.from
+		local to   = damage.to
+		local source = self.room:getCurrent()
+		
+		if not damage.card then 
+			local intention = sgs.ai_card_intention.general(from, 100) 
+			self:refreshRoyalty(from, intention)				
+			
+			if to:isLord() and intention < 0 then
+				sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
+			end
+		end
 	elseif event == sgs.CardUsed then
 		local struct =  data:toCardUse()
 		local card  = struct.card
@@ -703,7 +717,7 @@ end
 
 function SmartAI:isFriend(other, another)
 	if another then return self:isFriend(other)==self:isFriend(another) end
-	if useDefaultStrategy() then return self.lua_ai:isFriend(other) end
+	if isRolePredictable() then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
 	if self:objectiveLevel(other) < 0 then return true end
 	return false
@@ -711,7 +725,7 @@ end
 
 function SmartAI:isEnemy(other, another)
 	if another then return self:isFriend(other)~=self:isFriend(another) end
-	if useDefaultStrategy() then return self.lua_ai:isEnemy(other) end
+	if isRolePredictable() then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
 	if self:objectiveLevel(other) > 0 then return true end
 	return false
@@ -1341,8 +1355,11 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			use.card = card
 		end
 	elseif card:inherits("Shit") then
+		if (card:getSuit() == sgs.Card_Heart or card:getSuit() == sgs.Card_Club) and self.player:isChained() and
+			#(self:getChainedFriends()) > #(self:getChainedEnemies()) then return end
 		if self.player:getHp()>3 and self.player:hasSkill("shenfen") and self.player:hasSkill("kuangbao") then use.card = card return end
 		if self.player:hasSkill("kuanggu") and card:getSuitString() ~= "spade" then use.card = card return end
+		if card:getSuit() == sgs.Card_Heart and (self:isEquip("GaleShell") or self:isEquip("Vine")) then return end
 		if not self.player:isWounded() then
 			if self:hasSkills(sgs.need_kongcheng) and self.player:getHandcardNum() == 1 then
 				use.card = card
@@ -1658,6 +1675,8 @@ function SmartAI:useCardDuel(duel, use)
 			if self:hasTrickEffective(duel, enemy) then
 				if n1 >= n2 then
 					useduel = true
+				elseif n2 > n1*2 + 1 then
+					useduel = false
 				elseif n1 > 0 then
 					local percard = 0.35
 					if enemy:hasSkill("paoxiao") or enemy:hasWeapon("crossbow") then percard = 0.2 end

@@ -49,11 +49,17 @@ private slots:
     void onGameOver(const QString &winner);
 
 private:
+    // role types << "lord" << "loyalist" << "renegade" << "rebel";
+    int lordCount,lordWinCount,loyalistCount,loyalistWinCount,renegadeCount,renegadeWinCount,rebelCount,rebelWinCount;
     QGroupBox *createGeneralBox();
     QGroupBox *createResultBox();
+    void updateResultBox(QString role, int win);
 
     QToolButton *avatar_button;
     QGraphicsScene *record_scene;
+    QGroupBox *general_box;
+    QGroupBox *result_box;
+    Server *server;
 };
 
 class MainWindow : public QMainWindow {
