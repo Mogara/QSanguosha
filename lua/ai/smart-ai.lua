@@ -622,7 +622,14 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			self:refreshRoyalty(from,intention)
 		end
-
+	elseif event == sgs.Damaged then
+		local damage = data:toDamage()
+		local card = damage.card
+		local from = damage.from
+		local to   = damage.to
+		local source = self.room:getCurrent()
+		
+		if not damage.card then sgs.ai_card_intention.general(from, 100) end
 	elseif event == sgs.CardUsed then
 		local struct =  data:toCardUse()
 		local card  = struct.card
