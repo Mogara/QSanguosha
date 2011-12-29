@@ -890,25 +890,24 @@ void MeleeDialog::updateResultBox(QString role, int win){
     if(role=="lord"){
         lordCount++;
         lordWinCount+=win;
-        lord_edit->setText(QString::number(lordWinCount) +" / "+QString::number(lordCount));
+        lord_edit->setText(QString::number(lordWinCount) +" / "+QString::number(lordCount) + " = " + QString::number(100.0*(double)lordWinCount/lordCount,'f',2) + "%");
     }
     else if(role=="loyalist"){
         loyalistCount++;
         loyalistWinCount+=win;
-        loyalist_edit->setText(QString::number(loyalistWinCount) +" / "+QString::number(loyalistCount));
+        loyalist_edit->setText(QString::number(loyalistWinCount) +" / "+QString::number(loyalistCount) + " = " + QString::number(100.0*(double)loyalistWinCount/loyalistCount,'f',2) + "%");
     }
     else if(role=="renegade"){
         renegadeCount++;
         renegadeWinCount+=win;
-        renegade_edit->setText(QString::number(renegadeWinCount) +" / "+QString::number(renegadeCount));
+        renegade_edit->setText(QString::number(renegadeWinCount) +" / "+QString::number(renegadeCount) + " = " + QString::number(100.0*(double)renegadeWinCount/renegadeCount,'f',2) + "%");
     }
     else if(role=="rebel"){
         rebelCount++;
         rebelWinCount+=win;
-        rebel_edit->setText(QString::number(rebelWinCount) +" / "+QString::number(rebelCount));
+        rebel_edit->setText(QString::number(rebelWinCount) +" / "+QString::number(rebelCount) + " = " + QString::number(100.0*(double)rebelWinCount/rebelCount,'f',2) + "%");
     }
-    else {;}
     totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
     totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
-    total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount));
+    total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
 }
