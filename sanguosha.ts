@@ -2567,6 +2567,11 @@
         <translation>补全电脑</translation>
     </message>
     <message>
+        <location filename="src/ui/roomscene.cpp" line="2938"/>
+        <source>&lt;font color=&apos;white&apos;&gt;------- Game Start --------&lt;/font&gt;</source>
+        <translation>&lt;font color=&apos;white&apos;&gt;------- 游戏开始 --------&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="src/ui/roomscene.cpp" line="1533"/>
         <source>The OK button should be disabled when client is not active!</source>
         <translation>确定按钮在客户端非活动状态下是不能被禁用的!</translation>
@@ -2673,11 +2678,6 @@
         <location filename="src/ui/roomscene.cpp" line="2682"/>
         <source>Select skill</source>
         <translation>选择技能</translation>
-    </message>
-    <message>
-        <location filename="src/ui/roomscene.cpp" line="2938"/>
-        <source>------- Game Start --------</source>
-        <translation>------- 游戏开始 --------</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2943"/>
