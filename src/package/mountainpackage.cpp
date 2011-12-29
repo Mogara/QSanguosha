@@ -295,6 +295,7 @@ public:
 
             if(player->askForSkillInvoke("tuntian", data)){
                 Room *room = player->getRoom();
+                room->playSkillEffect("tuntian");
 
                 JudgeStruct judge;
                 judge.pattern = QRegExp("(.*):(heart):(.*)");
@@ -341,6 +342,10 @@ public:
         log.arg = QString::number(dengai->getPile("field").length());
         room->sendLog(log);
 
+        room->playSkillEffect("zaoxian", 1);
+        room->broadcastInvoke("animate", "lightbox:$zaoxian1:4000");
+        room->getThread()->delay(4000);
+
         room->acquireSkill(dengai, "jixi");
 
         return false;
@@ -349,6 +354,7 @@ public:
 
 JixiCard::JixiCard(){
     target_fixed = true;
+    mute = true;
 }
 
 void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -397,6 +403,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     use.from = dengai;
     use.to << target;
 
+    room->playSkillEffect("zaoxian", qrand() % 2 + 2);
     room->useCard(use);
 }
 
