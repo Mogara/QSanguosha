@@ -3705,6 +3705,10 @@ function SmartAI:assignKeep(num,start)
 	end
 end
 
+function SmartAI:log(outString)
+    self.room:output(outString)
+end
+
 -- load other ai scripts
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard-skill-ai.lua"
