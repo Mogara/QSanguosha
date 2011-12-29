@@ -74,6 +74,7 @@ return {
 	["lianli-jink:jink"] = "你是否想你的连理角色替你出闪？",
 	["@lianli-slash"] = "请提供一张杀给你的连理对象",
 	["@lianli-jink"] = "请提供一张闪给你的连理对象",
+	[":lianli-slash"] = "与你处于连理状态的女性角色可以替你出杀",
 
 	["@@lianli-card"] = "请选择一名要连理的对象",
 	["#LianliConnection"] = "%from 与 %to 结为连理",
