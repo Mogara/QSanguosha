@@ -8,7 +8,7 @@ sgs.ai_anti_lord={}
 sgs.ai_lord_tolerance={}
 
 sgs.ai_card_intention["general"]=function(to,level)
-	if to:isLord() then
+	if to and to:isLord() then
 		return -level*2
 	elseif sgs.ai_explicit[to:objectName()]=="loyalist" then
 		return -level
