@@ -11,7 +11,7 @@ ServerInfoStruct ServerInfo;
 #include <QCheckBox>
 
 bool ServerInfoStruct::parse(const QString &str){
-    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCAM12]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):([+\\w]*):([FSCBAM12]*)");
     if(!rx.exactMatch(str)){
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -46,6 +46,7 @@ bool ServerInfoStruct::parse(const QString &str){
     FreeChoose = flags.contains("F");
     Enable2ndGeneral = flags.contains("S");
     EnableScene = flags.contains("C");
+    EnableBasara= flags.contains("B");
     EnableAI = flags.contains("A");
     DisableChat = flags.contains("M");
 

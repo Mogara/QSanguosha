@@ -1457,6 +1457,21 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 }
 
 void Room::chooseGenerals(){
+    if(Config.EnableBasara){
+
+        getLord()->setProperty("general", Sanguosha->getGeneral("anjiang"));
+        getLord()->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+        broadcastProperty(getLord(), "general", "anjiang");
+        broadcastProperty(getLord(), "general2", "anjiang");
+
+        foreach(ServerPlayer *p, players){
+            p->setGeneralName("anjiang");
+            p->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+            broadcastProperty(p,"general2","anjiang");
+        }
+        return;
+    }
+
     // for lord
     QStringList lord_list;
     if(mode == "08same")
@@ -2020,6 +2035,7 @@ void Room::startGame(){
         game_rule = new GameRule(this);
 
     thread->constructTriggerTable(game_rule);
+    if(Config.EnableBasara)thread->addTriggerSkill(new BasaraMode(this));
 
     if(scenario){
         const ScenarioRule *rule = scenario->getRule();
