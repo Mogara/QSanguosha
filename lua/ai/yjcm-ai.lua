@@ -369,7 +369,7 @@ sgs.ai_skill_use_func["MingceCard"]=function(card,use,self)
 	self:sort(self.friends_noself, "defense")
 	local friends = self.friends_noself
 	for _, friend in ipairs(friends) do
-		if friend:getHp() <= 2 and friend:getHandcardNum() < 2 then
+		if friend:getHp() <= 2 and friend:getHandcardNum() < 2 and not (friend:hasSkill("kongcheng") and friend:isKoncheng()) then
 			target = friend
 			break
 		end
@@ -378,10 +378,17 @@ sgs.ai_skill_use_func["MingceCard"]=function(card,use,self)
 	if not target then
 		local maxAttackRange=0
 		for _, friend in ipairs(friends) do
-			if friend:getAttackRange() > maxAttackRange then
+			if friend:getAttackRange() > maxAttackRange and not (friend:hasSkill("kongcheng") and friend:isKongcheng()) then
 				maxAttackRange = friend:getAttackRange()
 				target = friend
 			end
+		end
+	end
+
+	if not target then
+		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+		if zhugeliang and zhugeliang:isKongcheng() and zhugeliang:getHp() < 2 and zhugeliang:objectName() ~= self.player:objectName() then
+			target = zhugeliang
 		end
 	end
 
@@ -394,10 +401,12 @@ sgs.ai_skill_use_func["MingceCard"]=function(card,use,self)
 end
 
 sgs.ai_skill_choice.mingce = function(self, choices)
+	local chengong = self.room:findPlayerBySkillName("mingce")
+	if chengong and not self:isFriend(chengong) then return "draw" end
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	if self.player:getHandcardNum()<=2 then return "draw" end
 	if self.player:getHp()<=1 then return "draw" end
-	for _,enemy in ipairs(self.enemies) do
+	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy) and not self:slashProhibit(slash ,enemy) then return "use" end
 	end
 	return "draw"

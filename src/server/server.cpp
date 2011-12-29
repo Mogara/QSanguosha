@@ -138,6 +138,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     contest_mode_checkbox->setToolTip(tr("Requires password to login, hide screen name and disable kicking"));
 
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
+    free_choose_checkbox->setToolTip(tr("This option enables the cheat menu"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
 
     free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));

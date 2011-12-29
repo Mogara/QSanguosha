@@ -16,15 +16,15 @@ jiuchi_skill.getTurnUseCard=function(self)
 		end
 	end
 
-		if not card then return nil end
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		local card_str = ("analeptic:jiuchi[spade:%s]=%d"):format(number, card_id)
-		local analeptic = sgs.Card_Parse(card_str)
+	if not card then return nil end
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("analeptic:jiuchi[spade:%s]=%d"):format(number, card_id)
+	local analeptic = sgs.Card_Parse(card_str)
 
-		assert(analeptic)
+	assert(analeptic)
 
-		return analeptic
+	return analeptic
 
 end
 
@@ -46,16 +46,16 @@ duanliang_skill.getTurnUseCard=function(self)
 		end
 	end
 
-		if not card then return nil end
-		local suit = card:getSuitString()
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		local card_str = ("supply_shortage:duanliang[%s:%s]=%d"):format(suit, number, card_id)
-		local skillcard = sgs.Card_Parse(card_str)
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("supply_shortage:duanliang[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
 
-		assert(skillcard)
+	assert(skillcard)
 
-		return skillcard
+	return skillcard
 
 end
 
