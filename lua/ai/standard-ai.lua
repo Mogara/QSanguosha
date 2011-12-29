@@ -119,7 +119,7 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 				end
 			end
 	end
-				--self:updateRoyalty(-0.8*sgs.ai_royalty[target:objectName()],self.player:objectName())
+	--self:updateLoyalty(-0.8*sgs.ai_loyalty[target:objectName()],self.player:objectName())
 	return true
 end
 
@@ -137,7 +137,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	for _, player in ipairs(others) do
 		if player:hasFlag("slash_source") then
 			source = player
-			 break
+			break
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
