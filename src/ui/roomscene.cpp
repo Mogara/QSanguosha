@@ -2935,7 +2935,7 @@ void RoomScene::onGameStart(){
     if(control_panel)
         control_panel->hide();
 
-    log_box->append(tr("------- Game Start --------"));
+    log_box->append(tr("<font color='white'>------- Game Start --------</font>"));
 
     // add free discard button
     if(ServerInfo.FreeChoose && !ClientInstance->getReplayer()){
