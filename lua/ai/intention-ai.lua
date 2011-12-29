@@ -8,7 +8,8 @@ sgs.ai_anti_lord={}
 sgs.ai_lord_tolerance={}
 
 sgs.ai_card_intention["general"]=function(to,level)
-	if to and to:isLord() then
+	if not to then return 0 end
+	if to:isLord() then
 		return -level*2
 	elseif sgs.ai_explicit[to:objectName()]=="loyalist" then
 		return -level
@@ -82,7 +83,7 @@ sgs.ai_card_intention["ThunderSlash"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Peach"]=function(card,from,to,source)
-return sgs.ai_card_intention.general(to,-80)
+	return sgs.ai_card_intention.general(to,-80)
 end
 
 sgs.ai_card_intention["Duel"]=function(card,from,to,source)
