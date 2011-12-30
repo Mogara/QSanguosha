@@ -44,8 +44,6 @@ protected:
             room_scene->adjustItems();
         }
     }
-
-
 };
 
 MainWindow::MainWindow(QWidget *parent)
