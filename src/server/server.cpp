@@ -174,6 +174,8 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     basara_checkbox = new QCheckBox("Enable Basara");
     basara_checkbox->setChecked(Config.EnableBasara);
+    basara_checkbox->setEnabled(second_general_checkbox->isChecked());
+    connect(second_general_checkbox,SIGNAL(toggled(bool)),basara_checkbox, SLOT(setEnabled(bool)));
 
     QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
     BanPairDialog *banpair_dialog = new BanPairDialog(this);
@@ -210,8 +212,8 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
     layout->addLayout(HLay(second_general_checkbox, banpair_button));
     layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
-    layout->addWidget(scene_checkbox);		//changjing
     layout->addWidget(basara_checkbox);
+    layout->addWidget(scene_checkbox);		//changjing
     layout->addWidget(announce_ip_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
@@ -722,7 +724,7 @@ bool ServerDialog::config(){
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
-    Config.EnableBasara= basara_checkbox->isChecked();
+    Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
