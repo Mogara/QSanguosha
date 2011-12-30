@@ -362,7 +362,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock_layout->addStretch();
 
     main_window->statusBar()->setObjectName("skill_bar_container");
-    main_window->statusBar()->setLayout(skill_dock_layout);
+    //main_window->statusBar()->setLayout(skill_dock_layout);
     addWidgetToSkillDock(sort_combobox, true);
 
     createStateItem();

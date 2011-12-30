@@ -18,6 +18,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QMenu>
+#include <QGraphicsDropShadowEffect>
 
 #include "pixmapanimation.h"
 
@@ -58,6 +59,12 @@ Photo::Photo()
     skill_name_item->setBrush(Qt::white);
     skill_name_item->setFont(Config.SmallFont);
     skill_name_item->moveBy(10, 30);
+
+    QGraphicsDropShadowEffect * drp = new QGraphicsDropShadowEffect;
+    drp->setBlurRadius(10);
+    drp->setColor(Qt::yellow);
+    drp->setOffset(0);
+    skill_name_item->setGraphicsEffect(drp);
 
     emotion_item = new QGraphicsPixmapItem(this);
     emotion_item->moveBy(10, 0);

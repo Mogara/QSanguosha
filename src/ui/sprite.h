@@ -71,6 +71,7 @@ class EffectAnimation : public QObject
 public:
     EffectAnimation();
 
+    void fade(QGraphicsItem * map);
     void emphasize(QGraphicsItem *map,bool stay = true);
     void sendBack(QGraphicsItem *map);
     void effectOut(QGraphicsItem *map);
@@ -97,9 +98,6 @@ protected:
     virtual void draw(QPainter *painter);
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
 
-protected:
-    void timerEvent(QTimerEvent *event);
-
 };
 
 class SentbackEffect : public QAnimatedEffect
@@ -114,10 +112,18 @@ protected:
     virtual void draw(QPainter *painter);
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
 
-protected:
-    void timerEvent(QTimerEvent *event);
 private:
     QImage *grayed;
+};
+
+class FadeEffect : public QAnimatedEffect
+{
+    Q_OBJECT
+public:
+    FadeEffect(bool stay = false, QObject * parent = 0);
+
+protected:
+    virtual void draw(QPainter *painter);
 };
 
 #endif // SPRITE_H
