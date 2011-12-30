@@ -50,10 +50,13 @@ private:
 
 class QAnimatedEffect : public QGraphicsEffect
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_PROPERTY(int index READ getIndex WRITE setIndex)
 public:
     void setStay(bool stay);
     void reset(){index =0;}
+    int getIndex(){return index;}
+    void setIndex(int ind){index = ind;}
 
 protected:
     bool stay;
@@ -84,7 +87,7 @@ private:
 
 class EmphasizeEffect : public QAnimatedEffect
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     EmphasizeEffect(bool stay = false,QObject *parent = 0);

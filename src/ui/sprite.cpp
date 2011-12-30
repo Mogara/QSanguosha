@@ -184,7 +184,12 @@ EmphasizeEffect::EmphasizeEffect(bool stay,QObject *parent)
     this->setObjectName("emphasizer");
     index = 0;
     this->stay = stay;
-  QObject::startTimer(35); // About 30 FPS
+    //QObject::startTimer(80); // About 30 FPS
+    QPropertyAnimation * anim = new QPropertyAnimation(this,"index");
+    connect(anim,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+    anim->setEndValue(40);
+    anim->setDuration((40 - index)* 5);
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void EmphasizeEffect::draw(QPainter *painter){
@@ -199,7 +204,7 @@ void EmphasizeEffect::draw(QPainter *painter){
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
 
     const QRectF target = boundingRect().adjusted(
-                  s.width()*scale,
+                  s.width()*scale-1,
                   s.height()*scale,
                   -s.width()*scale,
                   -s.height()*scale
@@ -230,18 +235,24 @@ void EmphasizeEffect::timerEvent(QTimerEvent *event){
     Q_UNUSED(event);
 
     update();
-
-    if(index==0)emit loop_finished();
-
-    if(index==50 && stay)return;
-
-    index = index >= 100 ? 0 : index + 10;
-
 }
 
 void QAnimatedEffect::setStay(bool stay)
 {
     this->stay=stay;
+
+    if(!stay)
+    {
+        QPropertyAnimation * anim = new QPropertyAnimation(this,"index");
+        anim->setEndValue(0);
+        anim->setDuration(index * 5);
+
+        connect(anim,SIGNAL(finished()),this,SLOT(deleteLater()));
+        connect(anim,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+
+
+    }
 }
 
 SentbackEffect::SentbackEffect(bool stay, QObject *parent)
@@ -250,7 +261,13 @@ SentbackEffect::SentbackEffect(bool stay, QObject *parent)
     this->setObjectName("backsender");
     index = 0;
     this->stay = stay;
-  QAnimatedEffect::startTimer(34); // About 30 FPS
+  //QAnimatedEffect::startTimer(34); // About 30 FPS
+
+    QPropertyAnimation * anim = new QPropertyAnimation(this,"index");
+    connect(anim,SIGNAL(valueChanged(QVariant)),this,SLOT(update()));
+    anim->setEndValue(40);
+    anim->setDuration((40 - index)* 5);
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void SentbackEffect::timerEvent(QTimerEvent *event)
