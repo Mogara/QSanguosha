@@ -3,6 +3,7 @@
 #include "room.h"
 #include "standard.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QTime>
 
@@ -153,7 +154,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event){
     case GameStart: {
-        if(player->getGeneral()->getKingdom() == "god" && room->getMode() != "06basara"){
+        if(player->getGeneral()->getKingdom() == "god" && !Config.EnableBasara){
                 QString new_kingdom = room->askForKingdom(player);
                 room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -881,9 +882,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
     switch(event){
     case GameStart:{
         if(player->isLord()){
-//            foreach(ServerPlayer *p, room->getAllPlayers()){
-//                room->setPlayerProperty(p, "maxhp", p->getMaxHP()-1);
-//            }
 
             QSet<QString> selected_set;
             const Package *godpack = Sanguosha->findChild<const Package *>("god");
@@ -933,8 +931,10 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
     case CardLost:{
         if(player->getPhase() == Player::NotActive){
             CardMoveStar cms = data.value<CardMoveStar>();
-            if(cms->from_place == Player::Hand)playerShowed(player);
-            else if(cms->from_place == Player::Equip)playerShowed(player);
+            if(cms->from_place == Player::Hand)
+                playerShowed(player);
+            else if(cms->from_place == Player::Equip)
+                playerShowed(player);
         }
         break;
     }
