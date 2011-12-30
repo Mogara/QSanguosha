@@ -933,13 +933,27 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
 
         break;
     }
-    case CardLost:{
+    case CardEffected:{
         if(player->getPhase() == Player::NotActive){
-            CardMoveStar cms = data.value<CardMoveStar>();
-            if(cms->from_place == Player::Hand)
+            CardEffectStruct ces = data.value<CardEffectStruct>();
+            if(ces.card)
+                if(ces.card->inherits("TrickCard") ||
+                        ces.card->inherits("Slash"))
                 playerShowed(player);
-            else if(cms->from_place == Player::Equip)
-                playerShowed(player);
+
+            const ProhibitSkill* prohibit = room->isProhibited(ces.from,ces.to,ces.card);
+            if(prohibit)
+            {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = ces.to;
+                log.arg  = prohibit->objectName();
+                log.arg2 = ces.card->objectName();
+
+                room->sendLog(log);
+
+                return true;
+            }
         }
         break;
     }
