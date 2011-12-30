@@ -894,17 +894,17 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 foreach(QString n, choices)
                     choices_generals << Sanguosha->getGeneral(n);
 
-                rechoose:
-                QString first_name = room->askForGeneral(p, choices);
-                const General *first = Sanguosha->getGeneral(first_name);
+                QString first_name;
+                do{
+                    first_name = room->askForGeneral(p, choices);
+                    const General *first = Sanguosha->getGeneral(first_name);
 
-                foreach(const General *g, choices_generals)
-                    if(g->getKingdom() == first->getKingdom() && g != first){
-                        selected_generals << g;
-                        selected << g->objectName();
-                    }
-                if(selected.isEmpty())
-                    goto rechoose;
+                    foreach(const General *g, choices_generals)
+                        if(g->getKingdom() == first->getKingdom() && g != first){
+                            selected_generals << g;
+                            selected << g->objectName();
+                        }
+                }while(selected.isEmpty());
 
                 QString second_name = room->askForGeneral(p, selected);
                 selected_set.insert(first_name);
@@ -915,6 +915,11 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 QVariant player_roles;
                 player_roles.setValue(roles);
                 room->setTag(p->objectName(), player_roles);
+                LogMessage log;
+                log.type = "#BasaraGeneralChosen";
+                log.arg = first_name;
+                log.arg2 = second_name;
+                p->invoke("log",log.toString());
 
                 const General * gen = Sanguosha->getGeneral(first_name);
                 foreach(const TriggerSkill *skill, gen->getTriggerSkills())
