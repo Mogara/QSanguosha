@@ -16,6 +16,7 @@ struct ServerInfoStruct{
     bool FreeChoose;
     bool Enable2ndGeneral;   
     bool EnableScene;
+    bool EnableBasara;
     bool EnableAI;
     bool DisableChat;
     int MaxHPScheme;

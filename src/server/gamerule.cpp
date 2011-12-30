@@ -3,6 +3,7 @@
 #include "room.h"
 #include "standard.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QTime>
 
@@ -153,7 +154,7 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
 
     switch(event){
     case GameStart: {
-            if(player->getGeneral()->getKingdom() == "god"){
+        if(player->getGeneral()->getKingdom() == "god" && !Config.EnableBasara){
                 QString new_kingdom = room->askForKingdom(player);
                 room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -809,3 +810,149 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     return GameRule::trigger(event, player, data);
 }
 
+BasaraMode::BasaraMode(QObject *parent)
+    :GameRule(parent)
+{
+    setObjectName("basara_mode");
+
+    events << CardLost << Predamaged;
+}
+
+int BasaraMode::getPriority() const
+{
+    return 5;
+}
+
+void BasaraMode::playerShowed(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    QStringList names = room->getTag(player->objectName()).toStringList();
+    if(names.isEmpty())
+        return;
+
+    QString answer = room->askForChoice(player, "RevealGeneral", "yes+no");
+    if(answer == "yes"){
+
+        QString general_name = room->askForGeneral(player,names);
+
+        generalShowed(player,general_name);
+        playerShowed(player);
+    }
+}
+
+void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
+{
+    Room * room = player->getRoom();
+    QStringList names = room->getTag(player->objectName()).toStringList();
+    if(names.isEmpty())return;
+
+    if(player->getGeneralName() == "anjiang")
+    {
+        QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(general_name);
+        player->invoke("transfigure", transfigure_str);
+        room->setPlayerProperty(player,"general",general_name);
+    }else
+    {
+        QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
+        player->invoke("transfigure", transfigure_str);
+        room->setPlayerProperty(player,"general2",general_name);
+    }
+
+        room->setPlayerProperty(player,"maxhp",player->getGeneralMaxHP());
+        if(player->getHp() > player->getMaxHP())
+            room->setPlayerProperty(player,"hp",player->getMaxHP());
+
+        room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+
+        names.removeOne(general_name);
+        room->setTag(player->objectName(),QVariant::fromValue(names));
+
+        LogMessage log;
+        log.type = "#BasaraReveal";
+        log.from = player;
+        log.arg  = player->getGeneralName();
+        log.arg2 = player->getGeneral2Name();
+
+        room->sendLog(log);
+        room->broadcastInvoke("playAudio","choose-item");
+}
+
+bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
+    Room *room = player->getRoom();
+
+    switch(event){
+    case GameStart:{
+        if(player->isLord()){
+
+            QSet<QString> selected_set;
+            const Package *godpack = Sanguosha->findChild<const Package *>("god");
+            foreach(const General *general, godpack->findChildren<const General *>())
+                selected_set.insert(general->objectName());
+
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                QStringList choices = Sanguosha->getRandomGenerals(5, selected_set), selected;
+                QList<const General *> choices_generals, selected_generals;
+                foreach(QString n, choices)
+                    choices_generals << Sanguosha->getGeneral(n);
+
+                rechoose:
+                QString first_name = room->askForGeneral(p, choices);
+                const General *first = Sanguosha->getGeneral(first_name);
+
+                foreach(const General *g, choices_generals)
+                    if(g->getKingdom() == first->getKingdom() && g != first){
+                        selected_generals << g;
+                        selected << g->objectName();
+                    }
+                if(selected.isEmpty())
+                    goto rechoose;
+
+                QString second_name = room->askForGeneral(p, selected);
+                selected_set.insert(first_name);
+                selected_set.insert(second_name);
+
+                QStringList roles;
+                roles << first_name << second_name;
+                QVariant player_roles;
+                player_roles.setValue(roles);
+                room->setTag(p->objectName(), player_roles);
+
+                const General * gen = Sanguosha->getGeneral(first_name);
+                foreach(const TriggerSkill *skill, gen->getTriggerSkills())
+                    room->getThread()->addTriggerSkill(skill);
+
+                gen = Sanguosha->getGeneral(second_name);
+                foreach(const TriggerSkill *skill, gen->getTriggerSkills())
+                    room->getThread()->addTriggerSkill(skill);
+            }
+        }
+
+        break;
+    }
+    case CardLost:{
+        if(player->getPhase() == Player::NotActive){
+            CardMoveStar cms = data.value<CardMoveStar>();
+            if(cms->from_place == Player::Hand)
+                playerShowed(player);
+            else if(cms->from_place == Player::Equip)
+                playerShowed(player);
+        }
+        break;
+    }
+
+    case PhaseChange:{
+        if(player->getPhase() == Player::Start)
+            playerShowed(player);
+
+        break;
+    }
+    case Predamaged:{
+        playerShowed(player);
+        break;
+    }
+
+    default:
+        break;
+    }
+
+    return false;
+}
