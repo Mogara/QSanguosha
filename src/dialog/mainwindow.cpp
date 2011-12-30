@@ -31,7 +31,6 @@ class FitView : public QGraphicsView
 public:
     FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
-        //startTimer(100);
     }
 
 protected:
@@ -46,10 +45,6 @@ protected:
         }
     }
 
-    virtual void timerEvent(QTimerEvent *)
-    {
-        update();
-    }
 
 };
 
