@@ -172,7 +172,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
 
-    basara_checkbox = new QCheckBox("Enable Basara");
+    basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
     basara_checkbox->setEnabled(second_general_checkbox->isChecked());
     connect(second_general_checkbox,SIGNAL(toggled(bool)),basara_checkbox, SLOT(setEnabled(bool)));
