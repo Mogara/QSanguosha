@@ -816,6 +816,8 @@ BasaraMode::BasaraMode(QObject *parent)
     setObjectName("basara_mode");
 
     events << CardLost << Predamaged;
+
+    ban_list << "dongzhuo";
 }
 
 int BasaraMode::getPriority() const
@@ -876,6 +878,41 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->broadcastInvoke("playAudio","choose-item");
 }
 
+void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) const{
+    if(choices.isEmpty())
+        return;
+
+    QStringList chosens = choices, new_choices;
+    do{
+        QString choice = player->findReasonable(chosens, true);
+
+        if(choice.isEmpty()){
+            if(chosens.length() != choices.length()){
+                choices = new_choices;
+                return;
+            }
+
+            QString kingdom = player->getKingdom();
+            QStringList names = Sanguosha->getLimitedGeneralNames(), choose_names;
+
+            foreach(QString name, names){
+                if(Sanguosha->getGeneral(name)->getKingdom() == kingdom)
+                    choose_names << name;
+            }
+
+            choice = player->findReasonable(choose_names);
+            choices.clear();
+            choices << choice;
+            return;
+        }
+        else{
+            new_choices << choice;
+            chosens.removeOne(choice);
+        }
+    }while(!chosens.isEmpty());
+
+}
+
 bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
 
@@ -887,6 +924,9 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             const Package *godpack = Sanguosha->findChild<const Package *>("god");
             foreach(const General *general, godpack->findChildren<const General *>())
                 selected_set.insert(general->objectName());
+
+            foreach(QString ban_name, ban_list)
+                selected_set.insert(ban_name);
 
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 QStringList choices = Sanguosha->getRandomGenerals(5, selected_set), selected;
@@ -904,7 +944,12 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                             selected_generals << g;
                             selected << g->objectName();
                         }
+
+                    ServerPlayer *first_player = new ServerPlayer(room);
+                    first_player->setGeneral(first);
+                    setBannedGenerals(first_player, selected);
                 }while(selected.isEmpty());
+
 
                 QString second_name = room->askForGeneral(p, selected);
                 selected_set.insert(first_name);

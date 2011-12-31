@@ -80,7 +80,7 @@ public:
     // 3v3 methods
     void addToSelected(const QString &general);
     QStringList getSelected() const;
-    QString findReasonable(const QStringList &generals);
+    QString findReasonable(const QStringList &generals, bool no_unreasonable = false);
     void clearSelected();
 
     int getGeneralMaxHP() const;
