@@ -617,7 +617,7 @@ function SmartAI:filterEvent(event, player, data)
 			sgs.ai_snat_disma_effect = false
 			local intention = sgs.ai_card_intention.general(from,70)
 			if place == sgs.Player_Judging then
-				if card:inherits("Indulgence") or card:inherits("SupplyShortage") then intention = -intention else intention = 0 end
+				if not card:inherits("Lightning") and not card:inherits("Disaster") then intention = -intention else intention = 0 end
 			elseif place == sgs.Player_Equip then
 				if player:getLostHp() > 1 and card:inherits("SilverLion") then intention = -intention end
 				if self:hasSkills(sgs.lose_equip_skill, player) then intention = 0 end
