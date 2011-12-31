@@ -367,12 +367,14 @@ function SmartAI:objectiveLevel(player)
 			then return 3
 		else return 0 end
 	elseif self.role == "renegade" then
-		local loyalish_hp, rebel_hp = 0, 0
+		local loyalish_hp, rebel_hp, loyalish_count, rebel_count = 0, 0
 		for _, aplayer in ipairs(players) do
-			if aplayer:getRole() == "rebel" then
+			if (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel") then
 				rebel_hp = rebel_hp + aplayer:getHp()
-			else
+			elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") then
 				loyalish_hp = loyalish_hp + aplayer:getHp()
+			elseif not aplayer:isLord() then
+				return 0
 			end
 		end
 		if (loyalish_hp-loyalish_num) <= (rebel_hp-rebel_num) then
