@@ -37,6 +37,7 @@ SOURCES += src/main.cpp \
 	src/dialog/roleassigndialog.cpp \
 	src/dialog/scenario-overview.cpp \
         src/dialog/halldialog.cpp \
+        src/package/exppattern.cpp \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
 	src/package/joypackage.cpp \
@@ -117,6 +118,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/playercarddialog.h \
 	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
+        src/package/exppattern.h \
 	src/package/firepackage.h \
 	src/package/god.h \
 	src/package/joypackage.h \
