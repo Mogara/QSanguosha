@@ -117,6 +117,10 @@ QList<ServerPlayer *> Room::getOtherPlayers(ServerPlayer *except) const{
     return other_players;
 }
 
+QList<ServerPlayer *> Room::getPlayers() const{
+    return players ;
+}
+
 QList<ServerPlayer *> Room::getAllPlayers() const{
     if(current == NULL)
         return alive_players;
