@@ -5,6 +5,7 @@
 #include "general.h"
 #include "skill.h"
 #include "package.h"
+#include "exppattern.h"
 
 #ifdef AUDIO_SUPPORT
 #include "irrKlang.h"
