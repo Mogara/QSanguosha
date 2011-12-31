@@ -354,7 +354,7 @@ public:
     }
 };
 
-class AllcardPattern: public CardPattern{
+class AllCardPattern: public CardPattern{
 public:
     virtual bool match(const Player *player, const Card *card) const{
         return true;
@@ -376,9 +376,9 @@ private:
     Card::Suit suit;
 };
 
-class AllsuitPattern: public CardPattern{
+class AllSuitPattern: public CardPattern{
 public:
-    AllsuitPattern(Card::Suit suit)
+    AllSuitPattern(Card::Suit suit)
         :suit(suit)
     {
     }
@@ -451,11 +451,11 @@ StandardPackage::StandardPackage()
     patterns[".black"] = new ColorPattern("black");
     patterns[".red"] = new ColorPattern("red");
 
-    patterns[".."] = new AllcardPattern;
-    patterns["..S"] = new AllsuitPattern(Card::Spade);
-    patterns["..C"] = new AllsuitPattern(Card::Club);
-    patterns["..H"] = new AllsuitPattern(Card::Heart);
-    patterns["..D"] = new AllsuitPattern(Card::Diamond);
+    patterns[".."] = new AllCardPattern;
+    patterns["..S"] = new AllSuitPattern(Card::Spade);
+    patterns["..C"] = new AllSuitPattern(Card::Club);
+    patterns["..H"] = new AllSuitPattern(Card::Heart);
+    patterns["..D"] = new AllSuitPattern(Card::Diamond);
 
     patterns["slash"] = new SlashPattern;
     patterns["jink"] = new NamePattern("jink");
