@@ -626,6 +626,7 @@ function SmartAI:filterEvent(event, player, data)
 		if reason == "beige" then
 			local caiwenji = self.room:findPlayerBySkillName("beige")
 			local intention = sgs.ai_card_intention.general(player, -60)
+			if player:objectName() == caiwenji:objectName() then intention = 0 end
 			self:refreshLoyalty(caiwenji, intention)
 		end
 	end
