@@ -291,7 +291,10 @@ int Engine::getRoleIndex() const{
 }
 
 const CardPattern *Engine::getPattern(const QString &name) const{
-    return patterns.value(name, NULL);
+    const CardPattern * ptn = patterns.value(name, NULL);
+    if(ptn)return ptn;
+
+    return new ExpPattern(name);
 }
 
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{

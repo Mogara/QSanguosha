@@ -22,7 +22,7 @@ QTextEdit[description="true"]{
     background-color: rgba(255,255,255,255);
 }
 
-QScrollBar:vertical  {
+QTextEdit QScrollBar:vertical  {
 
      margin: 22px 0 22px 0;
 }
