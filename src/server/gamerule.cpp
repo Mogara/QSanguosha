@@ -900,6 +900,7 @@ void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) c
                     choose_names << name;
             }
 
+            qShuffle(choose_names);
             choice = player->findReasonable(choose_names);
             choices.clear();
             choices << choice;
