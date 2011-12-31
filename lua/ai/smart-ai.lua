@@ -1201,7 +1201,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				and friend:getHandcardNum() < 3)
 			or (friend:hasSkill("leiji") 
 			and (self:getCardsNum("Jink", friend) > 0 or (not self:isWeak(friend) and self:isEquip("EightDiagram",friend)))
-			and hasExplicitRebel(self.room))
+			and (hasExplicitRebel(self.room) or not friend:isLord()))
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and self:getCardsNum("Jink", friend) == 0)
 			then
 				if not slash_prohibit then
