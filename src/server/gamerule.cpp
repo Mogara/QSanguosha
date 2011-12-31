@@ -857,9 +857,9 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         room->setPlayerProperty(player,"general2",general_name);
     }
 
+        int hp = player->getLostHp() == 0 ? 0 : player->getHp();
         room->setPlayerProperty(player,"maxhp",player->getGeneralMaxHP());
-        if(player->getHp() > player->getMaxHP())
-            room->setPlayerProperty(player,"hp",player->getMaxHP());
+        room->setPlayerProperty(player,"hp",hp == 0 ? player->getMaxHP() : hp);
 
         room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
 
