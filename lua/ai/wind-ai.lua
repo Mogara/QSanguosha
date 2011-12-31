@@ -140,12 +140,10 @@ sgs.ai_skill_invoke["@guidao"]=function(self,prompt)
 
 	if #cards == 0 then return "." end
 	local card_id = self:getRetrialCardId(cards, judge)
-	if card_id == -1 then
-		if (self:isFriend(judge.who) and self:needRetrial(judge)) or (self:isEnemy(judge.who) and not self:needRetrial(judge)) then
-			self:sortByUseValue(cards, true)
-			if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
-				return "@GuidaoCard=" .. cards[1]:getId()
-			end
+	if card_id == -1 and self:needRetrial(judge) then
+		self:sortByUseValue(cards, true)
+		if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
+			return "@GuidaoCard=" .. cards[1]:getId()
 		end
 	elseif self:needRetrial(judge) or self:getUseValue(judge.card) > self:getUseValue(sgs.Sanguosha:getCard(card_id)) then
 		return "@GuidaoCard=" .. card_id
