@@ -747,6 +747,9 @@ BasaraMode::BasaraMode(QObject *parent)
     events << CardLost << Predamaged;
 
     ban_list << "dongzhuo";
+    skill_mark["niepan"] = "@nirvana";
+    skill_mark["smallyeyan"] = "@flame";
+    skill_mark["luanwu"] = "@chaos";
 }
 
 int BasaraMode::getPriority() const
@@ -786,6 +789,11 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
         QString transfigure_str = QString("%1:%2").arg(player->getGeneral2Name()).arg(general_name);
         player->invoke("transfigure", transfigure_str);
         room->setPlayerProperty(player,"general2",general_name);
+    }
+
+    foreach(QString skill_name, skill_mark.keys()){
+        if(player->hasSkill(skill_name))
+            player->setMark(skill_mark[skill_name], 1);
     }
 
         int hp = player->getLostHp() == 0 ? 0 : player->getHp();
@@ -846,6 +854,7 @@ void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) c
 bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
     player->tag["event"] = event;
+    player->tag["event_data"] = data;
 
     switch(event){
     case GameStart:{
