@@ -2760,6 +2760,7 @@ void Room::askForGeneralAsync(ServerPlayer *player){
     }
 
     QStringList selected = player->getSelected();
+    selected.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
     const char *command = player->getGeneral() ? "doChooseGeneral2" : "doChooseGeneral";
 
     player->invoke(command, selected.join("+"));

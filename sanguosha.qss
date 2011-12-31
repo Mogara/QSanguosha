@@ -54,8 +54,10 @@ QScrollBar:sub-page
  }
 
 QScrollBar::handle:vertical    {
-    border-image: url(image/system/button/scroll-handle.png);
-    min-height:100px;
+    border : 2px solid gray;
+    border-radius: 6px;
+    background-color: solid gray;
+    min-height : 12px;
 }
 
 QScrollBar::up-arrow:vertical
