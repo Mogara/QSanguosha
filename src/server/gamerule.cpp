@@ -833,7 +833,7 @@ void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) c
             QStringList names = Sanguosha->getLimitedGeneralNames(), choose_names;
 
             foreach(QString name, names){
-                if(Sanguosha->getGeneral(name)->getKingdom() == kingdom)
+                if(Sanguosha->getGeneral(name)->getKingdom() == kingdom && name != player->getGeneralName())
                     choose_names << name;
             }
 
