@@ -793,7 +793,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
     foreach(QString skill_name, skill_mark.keys()){
         if(player->hasSkill(skill_name))
-            player->setMark(skill_mark[skill_name], 1);
+            room->setPlayerMark(player, skill_mark[skill_name], 1);
     }
 
         int hp = player->getLostHp() == 0 ? 0 : player->getHp();
