@@ -64,12 +64,6 @@ Window::Window(const QString &title, const QSizeF &size)
 
     this->setOpacity(0.0);
 
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
-    shadow->setBlurRadius(10);
-
-    shadow->setColor(QColor(0,0,0,200));
-    this->setGraphicsEffect(shadow);
-
     QGraphicsTextItem * titleItem = new QGraphicsTextItem(this);
 
     QString style;
