@@ -94,7 +94,7 @@ void Window::addContent(const QString &content){
 
     QFont *font = new QFont();
     font->setBold(true);
-    font->setPointSize(12);
+    font->setPointSize(10);
     content_item->setFont(*font);
 }
 

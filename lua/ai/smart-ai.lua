@@ -129,9 +129,7 @@ function SmartAI:initialize(player)
 
 	self.role  = player:getRole()
 
-	if sgs.ai_assumed[self.role] then sgs.ai_assumed[self.role] = sgs.ai_assumed[self.role] +1
-	elseif self.role~= "lord" then sgs.ai_assumed[self.role]  = 1
-	end
+	if self.role ~= "lord" then sgs.ai_assumed[self.role] = (sgs.ai_assumed[self.role] or 0) + 1 end
 
 	self.lua_ai = sgs.LuaAI(player)
 	self.lua_ai.callback = function(method_name, ...)
@@ -141,6 +139,7 @@ function SmartAI:initialize(player)
 			success, result1, result2 = pcall(method, self, ...)
 			if not success then
 				self.room:writeToConsole(result1)
+				self.room:writeToConsole(method_name)
 				self.room:writeToConsole(debug.traceback())
 				self.room:writeToConsole("Event stack:")
 				self.room:outputEventStack()
@@ -201,15 +200,14 @@ function SmartAI:updatePlayers(inclusive)
 	table.insert(self.friends, self.player)
 
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
-	sgs.rebel_target = self.room:getLord()
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
-	self.role  = self.player:getRole()
 
 	sgs.jijiangsource = nil
 	sgs.hujiasource = nil
 	sgs.lianlisource = nil
 	sgs.questioner = nil
 
+	-- if self.player:isLord() then self:printFEList() end
 	if isRolePredictable() then
 		if (self.role == "lord") or (self.role == "loyalist") then self:refreshLoyalty(self.player,300)
 		elseif (self.role == "rebel") then self:refreshLoyalty(self.player,-300)
@@ -272,23 +270,22 @@ end
 
 function SmartAI:printFEList()
 	for _, player in ipairs (self.enemies) do
-		self.room:output("enemy "..player:getGeneralName()..(sgs.ai_explicit[player:objectName()] or ""))
+		self.room:writeToConsole("enemy "..player:getGeneralName()..(sgs.ai_explicit[player:objectName()] or "") .. player:getRole())
 	end
 
 	for _, player in ipairs (self.friends_noself) do
-		self.room:output("friend "..player:getGeneralName()..(sgs.ai_explicit[player:objectName()] or ""))
+		self.room:writeToConsole("friend "..player:getGeneralName()..(sgs.ai_explicit[player:objectName()] or "") .. player:getRole())
 	end
 
-	self.room:output(self.player:getGeneralName().." list end")
+	self.room:writeToConsole(self.player:getGeneralName().." list end")
 end
 
 function SmartAI:objectiveLevel(player)
 	if useDefaultStrategy() then
 		if self.player:getRole() == "renegade" then
-		elseif player:getRole() == "renegade" then
+		elseif player:getRole() == "renegade" then return 4.1
 		elseif self:isFriend(player) then return -2
 		elseif player:isLord() then return 5
-		elseif player:getRole() == "renegade" then return 4.1
 		else return 4.5 end
 	end
 
@@ -301,6 +298,7 @@ function SmartAI:objectiveLevel(player)
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 
+	if #players == 1 then return 5 end
 	local hasRebel, hasLoyal, hasRenegade = false, false, false
 	for _,oplayer in ipairs(players) do
 		if oplayer:getRole() == "rebel" then hasRebel = true end
@@ -320,32 +318,20 @@ function SmartAI:objectiveLevel(player)
 	if hasRenegade then loyal_num = loyalish_num-1 else loyal_num = loyalish_num end
 
 	if self.role == "lord" then
-
-		if #players == 1  then return 5 end
-
 		if not hasRebel then
-			local name = player:objectName()
-			if player:getRole() == "renegade" then return 5 else return -2 end
-		end
-
-		if not hasLoyal then
-			if #players == 2 then
-				if players[1]:getHp() < players[2]:getHp() then 
-					if players[1] == player then return -1 else return 5 end
+			local comp_func = function(a, b)
+				local aname = a:objectName()
+				local bname = b:objectName()
+				if sgs.ai_loyalty[aname] * sgs.ai_loyalty[bname] < 0 then
+					return sgs.ai_loyalty[aname] < 0
+				elseif (sgs.ai_anti_lord[aname] or 0)~=(sgs.ai_anti_lord[bname] or 0) then
+					return (sgs.ai_anti_lord[aname] or 0) > (sgs.ai_anti_lord[bname] or 0)
+				else
+					return (sgs.ai_renegade_suspect[aname] or 0) > (sgs.ai_renegade_suspect[bname] or 0)
 				end
 			end
-			if player:getRole() == "renegade" then return -2 else return 5 end
-		end
-
-		if hasRenegade then
-			if rebel_num+1 == loyal_num then
-				if player:getRole() == "renegade" then return 4
-				elseif player:getRole() == "rebel" then return 5
-				else return -2
-				end
-			end
-		else
-			if player:getRole() == "rebel" then return 5 else return -2 end
+			table.sort(players, comp_func)
+			if player:objectName() == players[1]:objectName() then return 5 else return -2 end
 		end
 
 		if sgs.ai_explicit[player:objectName()] == "rebel" then return 5-modifier
@@ -354,53 +340,26 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return -1
 		elseif (self:singleRole()) == "rebel" then return 4.6-modifier
 		elseif (self:singleRole()) == "loyalist" then return -1
-		elseif (sgs.ai_loyalty[player:objectName()] <= 0) and
+		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3
 		else return 0 end
 	elseif self.role == "loyalist" then
-		if not hasRebel then
-			if player:getRole() == "renegade" then return 5 else return -2 end
-		end
-
-		if loyalish_num <= rebel_num then
-			if player:getRole() == "lord" then return -2
-			elseif player:getRole() == "renegade" then return -1
-			elseif player:getRole() == "rebel" then return 5
-			end
-		end
-
-		if sgs.ai_explicit[player:objectName()] == "rebel" then return 5-modifier
-		elseif sgs.ai_explicit[player:objectName()] == "rebelish" then return 5-modifier
-		elseif player:isLord() then return -2
-		elseif sgs.ai_explicit[player:objectName()] == "loyalist" then return -1
-		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return -1
+		if player:isLord() then return -2
+		elseif #players == 2 then return 5
+		elseif not hasRenegade and loyal_num == 1 then return 5
+		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return 5-modifier
+		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return -1
 		elseif (self:singleRole()) == "rebel" then return 4-modifier
 		elseif (self:singleRole()) == "loyalist" then return -1
-		elseif (sgs.ai_loyalty[player:objectName()] <= 0) and
+		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3.1
 		else return 0 end
 	elseif self.role == "rebel" then
-		if player:isLord() then return 5 end
-		if not hasRebel then
-			if player:getRole() == "renegade" and #players > 2 then return -1
-			elseif player:getRole() == "renegade" and #players == 2 then
-				if (self.player:getHp()+player:getHp() <= (self.room:getLord()):getHp()) then
-					return -1
-				else
-					return 3.1
-				end
-			end
-		elseif not hasLoyal then
-			if player:getRole() == "lord" then return 5
-			elseif player:getRole() == "renegade" then return 3.1
-			else return -2
-			end
-		elseif sgs.ai_explicit[player:objectName()] == "loyalist" then return 5-modifier
-		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return 5-modifier
-		elseif sgs.ai_explicit[player:objectName()] == "rebel" then return -1
-		elseif sgs.ai_explicit[player:objectName()] == "rebelish" then return -1
+		if player:isLord() then return 5
+		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return 5-modifier
+		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return -1
 		elseif (self:singleRole()) == "rebel" then return -1
 		elseif (self:singleRole()) == "loyalist" then return 4-modifier
 		elseif (sgs.ai_loyalty[player:objectName()] > 0) and
@@ -408,52 +367,30 @@ function SmartAI:objectiveLevel(player)
 			then return 3
 		else return 0 end
 	elseif self.role == "renegade" then
-		if #players == 1 then return 5 end
-
-		if not hasRebel then
-			if player:isLord() then
-				if player:getHp() > 2 then return 3.1 else return -1 end
-			else return 5 end
-		end
-
-		if rebel_num > loyalish_num then
-			if player:getRole() == "rebel" then return 5 else return -1 end
-		elseif rebel_num < loyalish_num then
-			if player:getRole() == "rebel" then return -1
-			elseif player:getRole() == "loyalist" and not player:isLord() then return 5
-			elseif player:isLord() then
-				if player:getHp() > 2 then return 3.1 else return -1 end
-			end
-		else
-			local loyalish_count, rebel_count = 0, 0
-			local loyalish_hp, rebel_hp = 0, 0
-			for _, aplayer in ipairs(players) do
-				if aplayer:getRole() == "rebel" then
-					rebel_hp = rebel_hp + aplayer:getHp()
-					rebel_count = rebel_count + 1
-				else
-					loyalish_hp = loyalish_hp + aplayer:getHp()
-					loyalish_count = loyalish_count + 1
-				end
-			end
-			if (loyalish_hp-loyalish_count) <= (rebel_hp-rebel_count) then
-				if player:getRole() == "rebel" then return 5
-				else return -1 end
+		local loyalish_hp, rebel_hp = 0, 0
+		for _, aplayer in ipairs(players) do
+			if aplayer:getRole() == "rebel" then
+				rebel_hp = rebel_hp + aplayer:getHp()
 			else
-				if player:getRole() == "rebel" then return 3.1
-				else
-					if player:isLord() and loyalish_count == 1 then
-						if loyalish_hp > rebel_hp then return 5 else return -2 end
-					elseif loyalish_count > 1 then
-						if player:isLord() then
-							if player:getHp() < 3 then return -1 else return 4 end
-						else return 5
-						end
+				loyalish_hp = loyalish_hp + aplayer:getHp()
+			end
+		end
+		if (loyalish_hp-loyalish_num) <= (rebel_hp-rebel_num) then
+			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
+			else return -1 end
+		else
+			if sgs.ai_loyalty[player:objectName()] < 0 then return 3.1
+			else
+				if player:isLord() and loyalish_num == 1 then
+					if loyalish_hp > rebel_hp then return 5 else return -2 end
+				elseif loyalish_num > 1 then
+					if player:isLord() then
+						if player:getHp() < 3 then return -1 else return 4 end
+					else return 5
 					end
 				end
 			end
 		end
-
 	end
 	return 1
 end
@@ -518,14 +455,26 @@ function SmartAI:filterEvent(event, player, data)
 			if carduse.card:inherits("LianliSlashCard") then
 				sgs.lianlislash = false
 			end
+			if carduse.card:inherits("LijianCard") then
+				sgs.ai_lijian_effect = true
+			end
+			if carduse.card:inherits("QuhuCard") then
+				sgs.ai_quhu_effect = true
+			end
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
 			if promptlist[1] == "cardResponsed" then
 				if promptlist[3] == "@hujia-jink" and promptlist[5] ~= "_nil_" then
+					local intention = sgs.ai_card_intention["general"](sgs.hujiasource, -80)
+					self:refreshLoyalty(player, intention)
 					sgs.hujiasource = nil
 				elseif promptlist[3] == "@jijiang-slash" and promptlist[5] ~= "_nil_" then
+					local intention = sgs.ai_card_intention["general"](sgs.jijiangsource, -40)
+					self:refreshLoyalty(player, intention)
 					sgs.jijiangsource = nil
 				elseif promptlist[3] == "@lianli-jink" and promptlist[4] ~= "_nil_" then
+					local intention = sgs.ai_card_intention["general"](sgs.lianlisource, -80)
+					self:refreshLoyalty(player, intention)
 					sgs.lianlisource = nil
 				elseif promptlist[3] == "@lianli-slash" and promptlist[4] ~= "_nil_" then
 					sgs.lianlislash=true
@@ -537,6 +486,8 @@ function SmartAI:filterEvent(event, player, data)
 					sgs.jijiangsource = player
 				elseif promptlist[2] == "lianli-jink" then
 					sgs.lianlisource = player
+				elseif promptlist[2] == "pojun" then
+					sgs.ai_pojun_effect = true
 				end
 			elseif data:toString() == "skillChoice:guhuo:question" then
 				sgs.questioner = player
@@ -565,6 +516,9 @@ function SmartAI:filterEvent(event, player, data)
 
 	if (event == sgs.PhaseChange) or (event == sgs.GameStart) then
 		self:updatePlayers()
+		if self.player:isLord() and player:isLord() and (player:getPhase() == sgs.Player_Play or event == sgs.GameStart) then
+			--self:printFEList()
+		end
 	end
 
 	if not sgs.recorder then
@@ -574,30 +528,41 @@ function SmartAI:filterEvent(event, player, data)
 	if self~= sgs.recorder then return end
 
 	if event == sgs.CardEffect then
-		local struct =  data:toCardEffect()
-		local card  = struct.card
-		local to	= struct.to
-		local from  = struct.from
-		local source =  self.room:getCurrent()
-
-		if sgs.ai_card_intention[card:className()] then
-			local intention = sgs.ai_card_intention[card:className()](card,from,to,source)
-			if to:isLord() and intention < 0 then
-			sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
-			end
-			self:refreshLoyalty(from,intention)
+		local struct = data:toCardEffect()
+		local card = struct.card
+		local from = struct.from
+		local to = struct.to
+		if card:inherits("Collateral") then sgs.ai_collateral = true end
+		if card:inherits("Dismantlment") or card:inherits("Snatch") then
+			sgs.ai_snat_disma_effect = true
+			sgs.ai_snat_dism_from = struct.from
 		end
-	elseif event == sgs.Damaged then
+		if card:inherits("Slash") and to:hasSkill("leiji") and 
+			(getCardsNum("Jink", to)>0 or (to:getArmor() and to:getArmor():objectName() == "eight_diagram"))
+			and (to:getHandcardNum()>2 or from:getState() == "robot") then
+			sgs.ai_leiji_effect = true
+		end
+	end
+	if event == sgs.Damaged then
 		local damage = data:toDamage()
 		local card = damage.card
 		local from = damage.from
 		local to   = damage.to
 		local source = self.room:getCurrent()
 		
-		if not damage.card then 
-			local intention = sgs.ai_card_intention.general(from, 100) 
+		if not damage.card then
+			local intention
+			if sgs.ai_quhu_effect then
+				sgs.quhu_effect = false
+				local xunyu = self.room:findPlayerBySkillName("quhu")
+				intention = sgs.ai_card_intention.general(to, 80)
+				from = xunyu
+			else
+				intention = sgs.ai_card_intention.general(to, 100) 
+			end
+			
+			if from:objectName() == to:objectName() then intention = 0 end
 			self:refreshLoyalty(from, intention)
-
 			if to:isLord() and intention < 0 then
 				sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
 			end
@@ -610,34 +575,58 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local source =  self.room:getCurrent()
 
-		for _, eachTo in ipairs(to) do
-			local use_intention = sgs.ai_carduse_intention[card:className()] or sgs.ai_card_intention[card:className()]
-			if use_intention then
-				local different = true
-				if self:isFriend(from, eachTo) then different = false end
-				local intention = use_intention(card,from,eachTo,source,different) or use_intention(card,from,eachTo,source)
-				self:refreshLoyalty(from,intention)
-
-				if eachTo:isLord() and intention < 0 then
-					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
+		if card:inherits("LijianCard") then
+			if self:isFriend(to[1], to[2]) then
+				self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[1], 80))
+				--self.room:writeToConsole("LijianCard:diaochan->" .. to[1]:getGeneralName() .. "+" .. to[2]:getGeneralName())
+				if to[1]:isLord() or to[2]:isLord() then
+					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
 				end
 			end
-			self.room:output(eachTo:objectName())
+		else
+			for _, eachTo in ipairs(to) do
+				local use_intention = sgs.ai_card_intention[card:className()]
+				if use_intention and from:objectName()~=eachTo:objectName() then
+					local different = true
+					if self:isFriend(from, eachTo) then different = false end
+					local intention = use_intention(card,from,eachTo,source,different) or use_intention(card,from,eachTo,source)
+					--self.room:writeToConsole(card:className() .. ":" .. from:getGeneralName() .. "->" .. eachTo:getGeneralName())
+					self:refreshLoyalty(from,intention)
+
+					if eachTo:isLord() and intention < 0 then
+						sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
+					end
+				end
+				self.room:output(eachTo:objectName())
+			end
 		end
 	elseif event == sgs.CardLost then
 		local move = data:toCardMove()
 		local from = move.from
 		local to =   move.to
 		local place = move.from_place
+		local card = sgs.Sanguosha:getCard(move.card_id)
 		if sgs.ai_snat_disma_effect then
 			sgs.ai_snat_disma_effect = false
 			local intention = sgs.ai_card_intention.general(from,70)
-			if place == 2 then intention = -intention end
-
+			if place == sgs.Player_Judging then
+				if card:inherits("Indulgence") or card:inherits("SupplyShortage") then intention = -intention else intention = 0 end
+			elseif place == sgs.Player_Equip then
+				if player:getLostHp() > 1 and card:inherits("SilverLion") then intention = -intention end
+				if self:hasSkills(sgs.lose_equip_skill, player) then intention = 0 end
+			end
 			if from:isLord() and intention < 0 then
 				sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] = (sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] or 0)+1
 			end
 			self:refreshLoyalty(sgs.ai_snat_dism_from,intention)
+		end
+	elseif event == sgs.StartJudge then
+		local judge = data:toJudge()
+		local reason = judge.reason
+		if reason == "beige" then
+			local caiwenji = self.room:findPlayerBySkillName("beige")
+			local intention = sgs.ai_card_intention.general(player, -60)
+			self:refreshLoyalty(caiwenji, intention)
 		end
 	end
 end
@@ -690,7 +679,7 @@ function SmartAI:isEnemy(other, another)
 	if another then return self:isFriend(other)~=self:isFriend(another) end
 	if isRolePredictable() then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
-	if self:objectiveLevel(other) > 0 then return true end
+	if self:objectiveLevel(other) >= 0 then return true end
 	return false
 end
 
@@ -1183,7 +1172,12 @@ function SmartAI:slashProhibit(card,enemy)
 
 	return not self:slashIsEffective(card, enemy)
 end
-
+local function hasExplicitRebel(room)
+	for _, player in sgs.qlist(room:getAllPlayers()) do
+		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
+	end
+	return false
+end
 
 function SmartAI:useBasicCard(card, use, no_distance)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
@@ -1205,7 +1199,9 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			slash_prohibit = self:slashProhibit(card,friend)
 			if (self.player:hasSkill("pojun") and friend:getHp() > 4 and self:getCardsNum("Jink", friend) == 0
 				and friend:getHandcardNum() < 3)
-			or (friend:hasSkill("leiji") and (self:getCardsNum("Jink", friend) > 0 or (not self:isWeak(friend) and self:isEquip("EightDiagram",friend))))
+			or (friend:hasSkill("leiji") 
+			and (self:getCardsNum("Jink", friend) > 0 or (not self:isWeak(friend) and self:isEquip("EightDiagram",friend)))
+			and (hasExplicitRebel(self.room) or not friend:isLord()))
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and self:getCardsNum("Jink", friend) == 0)
 			then
 				if not slash_prohibit then
@@ -2762,7 +2758,9 @@ function SmartAI:askForCardChosen(who, flags, reason)
 		end
 
 		if flags:match("e") then
-			if who:isWounded() and self:isEquip("SilverLion", who) then return who:getArmor():getId() end
+			local zhangjiao = self.room:findPlayerBySkillName("leiji")
+			if who:isWounded() and self:isEquip("SilverLion", who) and (not zhangjiao or self:isFriend(zhangjiao))
+				then return who:getArmor():getId() end
 			if self:isEquip("GaleShell", who) then return who:getArmor():getId() end
 			if self:hasSkills(sgs.lose_equip_skill, who) then
 				local equips = who:getEquips()
