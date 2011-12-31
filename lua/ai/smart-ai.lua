@@ -2675,20 +2675,6 @@ function SmartAI:askForChoice(skill_name, choices)
 	end
 end
 
-sgs.ai_skill_choice.RevealGeneral = function(self, choices)
-	local anjiang = 0
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:getGeneralName() == "anjiang" then
-			anjiang = anjiang + 1
-		end
-	end
-	if math.random() > (anjiang + 1)/(self.room:alivePlayerCount() + 1) then
-		return "yes"
-	else
-		return "no"
-	end
-end
-
 function SmartAI:getCardRandomly(who, flags)
 	local cards = who:getCards(flags)
 	if cards:isEmpty() then return end
@@ -3749,5 +3735,6 @@ dofile "lua/ai/yjcm-skill-ai.lua"
 
 dofile "lua/ai/fancheng-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
+dofile "lua/ai/basara-ai.lua"
 
 dofile "lua/ai/guanxing-ai.lua"
