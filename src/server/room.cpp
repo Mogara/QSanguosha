@@ -1459,14 +1459,14 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 void Room::chooseGenerals(){
     if(Config.EnableBasara){
 
-        getLord()->setProperty("general", Sanguosha->getGeneral("anjiang"));
-        getLord()->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+        getLord()->setGeneralName("anjiang");
+        getLord()->setGeneral2Name("anjiang");
         broadcastProperty(getLord(), "general", "anjiang");
         broadcastProperty(getLord(), "general2", "anjiang");
 
         foreach(ServerPlayer *p, players){
             p->setGeneralName("anjiang");
-            p->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+            p->setGeneral2Name("anjiang");
             broadcastProperty(p,"general2","anjiang");
         }
         return;
@@ -2760,6 +2760,7 @@ void Room::askForGeneralAsync(ServerPlayer *player){
     }
 
     QStringList selected = player->getSelected();
+    selected.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
     const char *command = player->getGeneral() ? "doChooseGeneral2" : "doChooseGeneral";
 
     player->invoke(command, selected.join("+"));

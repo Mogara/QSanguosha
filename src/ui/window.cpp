@@ -67,7 +67,7 @@ Window::Window(const QString &title, const QSizeF &size)
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(10);
 
-    shadow->setColor(QColor(0,0,0,80));
+    shadow->setColor(QColor(0,0,0,200));
     this->setGraphicsEffect(shadow);
 
     QGraphicsTextItem * titleItem = new QGraphicsTextItem(this);
@@ -94,7 +94,7 @@ void Window::addContent(const QString &content){
 
     QFont *font = new QFont();
     font->setBold(true);
-    font->setPointSize(12);
+    font->setPointSize(10);
     content_item->setFont(*font);
 }
 
@@ -126,31 +126,7 @@ QRectF Window::boundingRect() const{
 void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     QRectF window_rect = boundingRect();
 
-    //QPainterPath path;
-    //path.addRoundedRect(window_rect, 10, 10);
-
-    //painter->fillPath(path, QColor(0x00, 0x00, 0x00, 0.80 * 255));
-
-//    QPen pen(Qt::white);
-//    pen.setWidth(3);
-//    painter->setPen(pen);
-//    painter->drawPath(path);
-
     painter->drawImage(window_rect,*outimg);
-
-//    QPainterPath title_path;
-//    title_path.addRoundedRect(0, 0, window_rect.width(), QFontMetrics(Config.SmallFont).height() + 10, 10, 10);
-//    painter->fillPath(title_path, QColor(0xFF, 0xFF, 0x00, 0.43 * 255));
-
-    painter->setFont(Config.SmallFont);
-    painter->setPen(Qt::yellow);
-
-    QRectF title_rect(window_rect);
-    title_rect.setY(5);
-    //painter->drawText(title_rect, Qt::AlignTop | Qt::AlignHCenter, title);
-
-
-
 }
 
 void Window::appear(){

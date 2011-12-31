@@ -96,7 +96,7 @@ void Dashboard::createRight(){
     chain_icon = new Pixmap("image/system/chain.png");
     chain_icon->setParentItem(right);
     chain_icon->setPos(small_avatar->pos());
-    chain_icon->moveBy(-35,-50);
+    chain_icon->moveBy(-25 ,-45);
     chain_icon->hide();
     chain_icon->setZValue(1.0);
 
@@ -404,15 +404,15 @@ QPushButton *Dashboard::addButton(const QString &name, int x, bool from_left){
 
 QProgressBar *Dashboard::addProgressBar(){
     QProgressBar *progress_bar = new QProgressBar;
-    progress_bar->setOrientation(Qt::Vertical);
     progress_bar->setMinimum(0);
     progress_bar->setMaximum(100);
-    progress_bar->setFixedSize(12, 124);
+    progress_bar->setFixedSize(300, 15);
+    progress_bar->setTextVisible(false);
 
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(right);
     widget->setWidget(progress_bar);
-    widget->setParentItem(right);
-    widget->setPos(3, 39);
+    widget->setParentItem(middle);
+    widget->setPos(300, - 25);
 
     progress_bar->hide();
 
