@@ -916,6 +916,7 @@ void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) c
 
 bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
     Room *room = player->getRoom();
+    player->tag["event"] = event;
 
     switch(event){
     case GameStart:{
@@ -961,6 +962,7 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 QVariant player_roles;
                 player_roles.setValue(roles);
                 room->setTag(p->objectName(), player_roles);
+                p->tag["roles"] = QString("%1+%2").arg(first_name).arg(second_name);
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
                 log.arg = first_name;
