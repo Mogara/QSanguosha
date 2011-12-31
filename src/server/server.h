@@ -89,8 +89,6 @@ private:
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
-    QComboBox *challenge_combobox;
-    QList<QLabel *> challenge_avatars;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QCheckBox *ai_enable_checkbox;
@@ -108,7 +106,6 @@ private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void onHttpDone(bool error);
-    void updateChallengeLabel(int index);
     void select3v3Generals();
     void edit1v1Banlist();
 };

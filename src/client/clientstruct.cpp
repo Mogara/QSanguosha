@@ -31,7 +31,7 @@ bool ServerInfoStruct::parse(const QString &str){
     QStringList ban_packages = texts.at(4).split("+");
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach(const Package *package, packages){
-        if(package->inherits("Scenario") || package->inherits("ChallengeModeSet"))
+        if(package->inherits("Scenario"))
             continue;
 
         QString package_name = package->objectName();

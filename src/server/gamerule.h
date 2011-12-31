@@ -21,15 +21,6 @@ private:
     QString getWinner(ServerPlayer *victim) const;
 };
 
-class BossMode : public GameRule{
-    Q_OBJECT
-
-public:
-    BossMode(QObject *parent);
-
-    virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const;
-};
-
 class HulaoPassMode: public GameRule{
     Q_OBJECT
 

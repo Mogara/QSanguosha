@@ -633,9 +633,6 @@ public:
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const char *name) const;
 
-    const ChallengeModeSet *getChallengeModeSet() const;
-    const ChallengeMode *getChallengeMode(const char *name) const;
-
     const General *getGeneral(const char *name) const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const char *skill_name) const;

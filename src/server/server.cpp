@@ -5,7 +5,6 @@
 #include "nativesocket.h"
 #include "banpairdialog.h"
 #include "scenario.h"
-#include "challengemode.h"
 #include "contestdb.h"
 #include "choosegeneraldialog.h"
 
@@ -440,54 +439,6 @@ QGroupBox *ServerDialog::createGameModeBox(){
         item_list << HLay(scenario_button, scenario_combobox);
     }
 
-#if 0
-
-    {
-        // add challenge modes
-        QRadioButton *challenge_button = new QRadioButton(tr("Challenge mode"));
-        challenge_button->setObjectName("challenge");
-        mode_group->addButton(challenge_button);
-
-        challenge_combobox = new QComboBox;
-
-        const ChallengeModeSet *set = Sanguosha->getChallengeModeSet();
-        QList<const ChallengeMode *> modes = set->allModes();
-        QStringList names;
-        foreach(const ChallengeMode *mode, modes)
-            names << mode->objectName();
-
-        foreach(QString name, names){
-            QString text = Sanguosha->translate(name);
-            challenge_combobox->addItem(text, name);
-        }
-
-        QHBoxLayout *challenge_layout = new QHBoxLayout;
-        int i;
-        for(i=0; i<4; i++){
-            QLabel *avatar = new QLabel;
-            challenge_avatars << avatar;
-            challenge_layout->addWidget(avatar);
-        }
-
-        connect(challenge_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateChallengeLabel(int)));
-
-        if(mode_group->checkedButton() == NULL){
-            int index = names.indexOf(Config.GameMode);
-            if(index != -1){
-                challenge_button->setChecked(true);
-                challenge_combobox->setCurrentIndex(index);
-                updateChallengeLabel(index);
-            }
-        }else
-            updateChallengeLabel(0);
-
-        //layout->addWidget(challenge_button);
-        //layout->addWidget(challenge_combobox);
-        //layout->addLayout(challenge_layout);
-    }
-
-#endif
-
     QVBoxLayout *left = new QVBoxLayout;
     QVBoxLayout *right = new QVBoxLayout;
 
@@ -516,28 +467,6 @@ QGroupBox *ServerDialog::createGameModeBox(){
     return mode_box;
 }
 
-void ServerDialog::updateChallengeLabel(int index){
-    QString name = challenge_combobox->itemData(index).toString();
-    const ChallengeMode *mode = Sanguosha->getChallengeMode(name);
-
-    if(mode == NULL)
-        return;
-
-    QStringList generals = mode->getGenerals();
-
-    if(challenge_avatars.length() != generals.length())
-        return;
-
-    int i;
-    for(i=0; i<generals.length(); i++){
-        const General *general = Sanguosha->getGeneral(generals.at(i));
-
-        QPixmap avatar_pixmap(general->getPixmapPath("tiny"));
-        QLabel *avatar = challenge_avatars.at(i);
-        avatar->setPixmap(avatar_pixmap);
-        avatar->setToolTip(general->getSkillDescription());
-    }
-}
 
 QLayout *ServerDialog::createButtonLayout(){
     QHBoxLayout *button_layout = new QHBoxLayout;
@@ -736,8 +665,6 @@ bool ServerDialog::config(){
     QString objname = mode_group->checkedButton()->objectName();
     if(objname == "scenario")
         Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
-    else if(objname == "challenge")
-        Config.GameMode = challenge_combobox->itemData(challenge_combobox->currentIndex()).toString();
     else
         Config.GameMode = objname;
 

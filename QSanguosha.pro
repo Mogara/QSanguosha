@@ -55,12 +55,9 @@ SOURCES += src/main.cpp \
 	src/package/yitianpackage.cpp \
 	src/package/yjcm-package.cpp \
 	src/scenario/boss-mode-scenario.cpp \
-	src/scenario/challengemode.cpp \
 	src/scenario/couple-scenario.cpp \
 	src/scenario/fancheng-scenario.cpp \
 	src/scenario/guandu-scenario.cpp \
-	src/scenario/hongyan-scenario.cpp \
-	src/scenario/legend-mode-scenario.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/scenerule.cpp \
 	src/scenario/zombie-mode-scenario.cpp \
@@ -136,12 +133,9 @@ HEADERS += src/client/aux-skills.h \
 	src/package/yitianpackage.h \
 	src/package/yjcm-package.h \
 	src/scenario/boss-mode-scenario.h \
-	src/scenario/challengemode.h \
 	src/scenario/couple-scenario.h \
 	src/scenario/fancheng-scenario.h \
 	src/scenario/guandu-scenario.h \
-	src/scenario/hongyan-scenario.h \
-	src/scenario/legend-mode-scenario.h \
 	src/scenario/scenario.h \
 	src/scenario/scenerule.h \
 	src/scenario/zombie-mode-scenario.h \
@@ -223,8 +217,3 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss
-
-
-
-
-

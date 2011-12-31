@@ -1981,7 +1981,7 @@ void Room::startGame(){
         }
     }
 
-    if((Config.Enable2ndGeneral || mode == "08boss") && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3"){
+    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3"){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
@@ -2029,9 +2029,7 @@ void Room::startGame(){
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
     GameRule *game_rule;
-    if(mode == "08boss")
-        game_rule = new BossMode(this);
-    else if(mode == "04_1v3")
+    if(mode == "04_1v3")
         game_rule = new HulaoPassMode(this);
     else if(Config.EnableScene)	//changjing
         game_rule = new SceneRule(this);	//changjing
