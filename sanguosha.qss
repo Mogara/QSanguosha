@@ -1,3 +1,15 @@
+QProgressBar{
+    color : solid gray;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: transparent;
+    padding: 0px;
+    text-align : center ;
+}
+QProgressBar::chunk{
+    background: #B22222;
+}
+
 QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;

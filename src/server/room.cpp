@@ -1459,14 +1459,14 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 void Room::chooseGenerals(){
     if(Config.EnableBasara){
 
-        getLord()->setProperty("general", Sanguosha->getGeneral("anjiang"));
-        getLord()->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+        getLord()->setGeneralName("anjiang");
+        getLord()->setGeneral2Name("anjiang");
         broadcastProperty(getLord(), "general", "anjiang");
         broadcastProperty(getLord(), "general2", "anjiang");
 
         foreach(ServerPlayer *p, players){
             p->setGeneralName("anjiang");
-            p->setProperty("general2",Sanguosha->getGeneral("anjiang"));
+            p->setGeneral2Name("anjiang");
             broadcastProperty(p,"general2","anjiang");
         }
         return;

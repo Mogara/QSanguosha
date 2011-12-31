@@ -39,13 +39,13 @@ Photo::Photo()
     back_icon->setZValue(1.0);
 
     progress_bar = new QProgressBar;
-    progress_bar->setOrientation(Qt::Vertical);
     progress_bar->setMinimum(0);
     progress_bar->setMaximum(100);
     progress_bar->setValue(0);
     progress_bar->hide();
-    progress_bar->setMaximumWidth(10);
-    progress_bar->setMaximumHeight(pixmap.height());
+    progress_bar->setMaximumHeight(15);
+    progress_bar->setMaximumWidth(pixmap.width());
+    progress_bar->setTextVisible(false);
     timer_id = 0;
 
     frame_item = new QGraphicsPixmapItem(this);
@@ -53,7 +53,7 @@ Photo::Photo()
 
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
     widget->setWidget(progress_bar);
-    widget->setPos(pixmap.width() - 15, 0);
+    widget->setPos( -6 , - 25);
 
     skill_name_item = new QGraphicsSimpleTextItem(this);
     skill_name_item->setBrush(Qt::white);
