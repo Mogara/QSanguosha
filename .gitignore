@@ -13,3 +13,4 @@ doc/*.html
 swig/*.bat
 .DS_Store
 liblua5.1.dylib
+font/font.ttf
