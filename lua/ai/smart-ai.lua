@@ -331,7 +331,13 @@ function SmartAI:objectiveLevel(player)
 				end
 			end
 			table.sort(players, comp_func)
-			if player:objectName() == players[1]:objectName() then return 5 else return -2 end
+			if (sgs.ai_anti_lord[players[1]:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[players[1]:objectName()]  or 0) > 2 then
+				if player:objectName() == players[1]:objectName() then return 5 else return -2 end
+			elseif self:isWeak(player) then
+				return -1
+			else
+				return 0
+			end
 		end
 
 		if sgs.ai_explicit[player:objectName()] == "rebel" then return 5-modifier
