@@ -151,6 +151,8 @@ public slots:
     void makeKilling();
     void makeReviving();
 
+    EffectAnimation * getEA() const{return animations;}
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -263,6 +265,7 @@ private:
     void animateHpChange(const QString &name, const QStringList &args);
     void animatePopup(const QString &name, const QStringList &args);
     EffectAnimation *animations;
+
 
     //re-layout attempts
     bool game_started;

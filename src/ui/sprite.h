@@ -50,10 +50,13 @@ private:
 
 class QAnimatedEffect : public QGraphicsEffect
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_PROPERTY(int index READ getIndex WRITE setIndex)
 public:
     void setStay(bool stay);
     void reset(){index =0;}
+    int getIndex(){return index;}
+    void setIndex(int ind){index = ind;}
 
 protected:
     bool stay;
@@ -68,6 +71,7 @@ class EffectAnimation : public QObject
 public:
     EffectAnimation();
 
+    void fade(QGraphicsItem * map);
     void emphasize(QGraphicsItem *map,bool stay = true);
     void sendBack(QGraphicsItem *map);
     void effectOut(QGraphicsItem *map);
@@ -84,7 +88,7 @@ private:
 
 class EmphasizeEffect : public QAnimatedEffect
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     EmphasizeEffect(bool stay = false,QObject *parent = 0);
@@ -93,9 +97,6 @@ public:
 protected:
     virtual void draw(QPainter *painter);
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
-
-protected:
-    void timerEvent(QTimerEvent *event);
 
 };
 
@@ -111,10 +112,18 @@ protected:
     virtual void draw(QPainter *painter);
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
 
-protected:
-    void timerEvent(QTimerEvent *event);
 private:
     QImage *grayed;
+};
+
+class FadeEffect : public QAnimatedEffect
+{
+    Q_OBJECT
+public:
+    FadeEffect(bool stay = false, QObject * parent = 0);
+
+protected:
+    virtual void draw(QPainter *painter);
 };
 
 #endif // SPRITE_H

@@ -328,6 +328,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
         prompt_doc->setTextWidth(prompt_box->boundingRect().width() - 80);
         text_item->setDocument(prompt_doc);
+        text_item->setFont(QFont("SimHei",10));
 
         addItem(prompt_box);
     }
@@ -362,7 +363,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     skill_dock_layout->addStretch();
 
     main_window->statusBar()->setObjectName("skill_bar_container");
-    main_window->statusBar()->setLayout(skill_dock_layout);
+    //main_window->statusBar()->setLayout(skill_dock_layout);
     addWidgetToSkillDock(sort_combobox, true);
 
     createStateItem();
@@ -3069,24 +3070,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool perm
     if(photo){
         photo->setEmotion(emotion,permanent);
     }
-
-        QLabel *item = new QLabel(emotion,main_window);
-        QMovie *movie = new QMovie(QString("image/system/animation/%1.gif").arg(emotion));
-
-        item->setMovie(movie);
-        movie->start();
-
-        connect(movie,SIGNAL(finished()),item,SLOT(deleteLater()));
-        QTimer::singleShot(1500, item, SLOT(deleteLater()));
-        movie->setBackgroundColor(QColor(0,0,0,0));
-        item->show();
-
-        int x = photo->scenePos().x() + main_window->width()/2;
-        int y = photo->scenePos().y() + main_window->height()/2;
-        int w = 128;
-        int h = 128;
-
-        item->setGeometry(x,y,w,h);
+        //doAppearingAnimation(emotion,QStringList(who));
 }
 
 void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name){
@@ -3258,14 +3242,14 @@ void RoomScene::animatePopup(const QString &name, const QStringList &args)
     Sprite *glare = new Sprite();
     glare->setPixmapAtMid(*item);
 
-    sprite->setResetTime(300);
+    sprite->setResetTime(200);
     sprite->addKeyFrame(0,"opacity",0);
-    sprite->addKeyFrame(500,"opacity",1);
-    sprite->addKeyFrame(800,"opacity",1);
+    sprite->addKeyFrame(400,"opacity",1);
+    sprite->addKeyFrame(600,"opacity",1);
     //sprite->addKeyFrame(1000,"opacity",0);
     sprite->addKeyFrame(0,"scale",0.2,QEasingCurve::OutQuad);
-    sprite->addKeyFrame(300,"scale",1);
-    sprite->addKeyFrame(500,"scale",1.2);
+    sprite->addKeyFrame(400,"scale",1);
+    sprite->addKeyFrame(600,"scale",1.2);
 
     sprite->start();
 

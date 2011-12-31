@@ -112,6 +112,7 @@ QWidget *PlayerCardDialog::createHandcardButton(){
     }
 
     QCommandLinkButton *button = new QCommandLinkButton(tr("Handcard"));
+    button->setObjectName("handcard_button");
     int num = player->getHandcardNum();
     if(num == 0){
         button->setDescription(tr("This guy has no any hand cards"));
@@ -173,6 +174,7 @@ QWidget *PlayerCardDialog::createEquipArea(){
     if(layout->count() == 0){
         QCommandLinkButton *no_equip = new QCommandLinkButton(tr("No equip"));
         no_equip->setEnabled(false);
+        no_equip->setObjectName("noequip_button");
         return no_equip;
     }else{
         area->setLayout(layout);
@@ -196,6 +198,7 @@ QWidget *PlayerCardDialog::createJudgingArea(){
     if(layout->count() == 0){
         QCommandLinkButton *button = new QCommandLinkButton(tr("No judging cards"));
         button->setEnabled(false);
+        button->setObjectName("nojuding_button");
         return button;
     }else{
         area->setLayout(layout);

@@ -1,3 +1,15 @@
+QProgressBar{
+    color : solid gray;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: transparent;
+    padding: 0px;
+    text-align : center ;
+}
+QProgressBar::chunk{
+    background: #B22222;
+}
+
 QTextEdit{
     border: 10px;
     border-image: url(image/system/border.png)10 10 10 10 ;
@@ -42,8 +54,10 @@ QScrollBar:sub-page
  }
 
 QScrollBar::handle:vertical    {
-    border-image: url(image/system/button/scroll-handle.png);
-    min-height:100px;
+    border : 2px solid gray;
+    border-radius: 6px;
+    background-color: solid gray;
+    min-height : 12px;
 }
 
 QScrollBar::up-arrow:vertical
@@ -68,7 +82,7 @@ QStatusBar::item {
      border: 0px solid grey;
  }
  
-QWidget#skill_bar_container{
+QStatusBar{
 	background-image: url(image/system/skill-dock.png);
 	color:white;
 }
