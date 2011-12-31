@@ -52,6 +52,11 @@ public:
     virtual int getPriority() const;
     void playerShowed(ServerPlayer *player) const;
     void generalShowed(ServerPlayer *player,QString general_name) const;
+
+    void setBannedGenerals(ServerPlayer *player, QStringList &choices) const;
+
+private:
+    QStringList ban_list;
 };
 
 #endif // GAMERULE_H

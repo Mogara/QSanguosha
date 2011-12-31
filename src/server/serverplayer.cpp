@@ -210,7 +210,7 @@ QStringList ServerPlayer::getSelected() const{
 
 #include "banpairdialog.h"
 
-QString ServerPlayer::findReasonable(const QStringList &generals){
+QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable){
     if(Config.Enable2ndGeneral){
         foreach(QString name, generals){
             if(getGeneral()){
@@ -222,6 +222,9 @@ QString ServerPlayer::findReasonable(const QStringList &generals){
             }
         }
     }
+
+    if(no_unreasonable)
+        return NULL;
 
     return generals.first();
 }
