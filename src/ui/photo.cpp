@@ -121,8 +121,13 @@ void Photo::createRoleCombobox(){
     role_combobox = new RoleCombobox(this);
 
     QString role = player->getRole();
+    if(Config.EnableHegemony)
+        goto no_role_fix;
+
     if(!role.isEmpty())
         role_combobox->fix(role);
+
+    no_role_fix:
 
     connect(player, SIGNAL(role_changed(QString)), role_combobox, SLOT(fix(QString)));
 }
