@@ -35,6 +35,7 @@ public:
     bool Enable2ndGeneral;
     bool EnableScene;	//changjing
     bool EnableBasara;
+    bool EnableHegemony;
     int MaxHpScheme;
     bool AnnounceIP;
     QString Address;

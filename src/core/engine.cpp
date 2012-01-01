@@ -104,7 +104,6 @@ Engine::Engine()
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
-    //modes["06basara"] = tr("6 players(Basara Mode)");
     modes["06_3v3"] = tr("6 players (3v3)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
@@ -389,6 +388,8 @@ QString Engine::getSetupString() const{
         flags.append("C");
     if(Config.EnableBasara)
         flags.append("B");
+    if(Config.EnableHegemony)
+        flags.append("H");
     if(Config.EnableAI)
         flags.append("A");
     if(Config.DisableChat)
@@ -447,6 +448,24 @@ void Engine::getRoles(const QString &mode, char *roles) const{
         return;
     }else if(mode == "04_1v3"){
         qstrcpy(roles, "ZFFF");
+        return;
+    }else if(Config.EnableHegemony){
+        static const char *table[] = {
+            "",
+            "",
+
+            "ZN", // 2
+            "ZNN", // 3
+            "ZNNN", // 4
+            "ZNNNN", // 5
+            "ZNNNNN", // 6
+            "ZNNNNNN", // 7
+            "ZNNNNNNN", // 8
+            "ZNNNNNNNN", // 9
+            "ZNNNNNNNNN" // 10
+        };
+
+        qstrcpy(roles, table[n]);
         return;
     }
 

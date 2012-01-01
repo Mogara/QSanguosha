@@ -86,6 +86,7 @@ private:
     QCheckBox *second_general_checkbox;
     QCheckBox *scene_checkbox;	//changjing
     QCheckBox *basara_checkbox;
+    QCheckBox *hegemony_checkbox;
     QComboBox *max_hp_scheme_combobox;
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;

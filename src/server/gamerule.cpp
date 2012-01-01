@@ -763,6 +763,16 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
     if(names.isEmpty())
         return;
 
+    if(Config.EnableHegemony){
+        QList<ServerPlayer *> showed_players;
+        foreach(ServerPlayer *p, room->getAllPlayers())
+            if(p->getGeneralName() != "anjiang")
+                showed_players << p;
+
+        if(showed_players.length() >= 3 && player->getGeneralName() == "anjiang")
+            return;
+    }
+
     QString answer = room->askForChoice(player, "RevealGeneral", "yes+no");
     if(answer == "yes"){
 
@@ -957,6 +967,67 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
         break;
     }
 
+    case Dying:{
+        if(Config.EnableHegemony && player->isLord()){
+            QList<ServerPlayer *> players = room->getAlivePlayers();
+            players.removeOne(player);
+            if(players.isEmpty())
+                break;
+
+            qShuffle(players);
+            ServerPlayer *p = players.first();
+            room->setPlayerProperty(player, "role", "renegade");
+            room->setPlayerProperty(p, "role", "lord");
+        }
+
+        break;
+    }
+
+    case Death:{
+        if(Config.EnableHegemony){
+            bool has_anjiang = false, has_diff_kingdoms = false;
+            QString init_kingdom;
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                if(p->getGeneralName() == "anjiang"){
+                    has_anjiang = true;
+                }
+
+                if(init_kingdom.isEmpty()){
+                    init_kingdom = p->getKingdom();
+                }
+                else if(init_kingdom != p->getKingdom()){
+                    has_diff_kingdoms = true;
+                }
+            }
+
+            if(!has_anjiang && !has_diff_kingdoms){
+                QStringList winners;
+                foreach(ServerPlayer *p, room->getAlivePlayers()){
+                    winners << p->objectName();
+                }
+
+                room->gameOver(winners.join("+"));
+            }
+
+            if(player->getGeneralName() == "anjiang"){
+                QStringList generals = room->getTag(player->objectName()).toStringList();
+                room->transfigure(player, generals.at(0), false, false);
+                room->setPlayerProperty(player, "general2", generals.at(1));
+                room->setPlayerProperty(player, "kingdom", Sanguosha->getGeneral(generals.at(0))->getKingdom());
+            }
+
+            DamageStar damage = data.value<DamageStar>();
+            if(damage->from && damage->from->getKingdom() == damage->to->getKingdom()){
+                damage->from->throwAllEquips();
+                damage->from->throwAllHandCards();
+            }
+            else{
+                damage->from->drawCards(3);
+            }
+        }
+
+        break;
+    }
     default:
         break;
     }
