@@ -139,10 +139,16 @@ void RoomThread3v3::arrange(ServerPlayer *player, const QStringList &arranged){
         room->players.at(5)->setGeneralName(arranged.at(0));
         room->players.at(0)->setGeneralName(arranged.at(1));
         room->players.at(1)->setGeneralName(arranged.at(2));
+        room->setTag(room->players.at(5)->objectName(),QStringList(arranged.at(0)));
+        room->setTag(room->players.at(0)->objectName(),QStringList(arranged.at(1)));
+        room->setTag(room->players.at(1)->objectName(),QStringList(arranged.at(2)));
     }else{
         room->players.at(2)->setGeneralName(arranged.at(0));
         room->players.at(3)->setGeneralName(arranged.at(1));
         room->players.at(4)->setGeneralName(arranged.at(2));
+        room->setTag(room->players.at(2)->objectName(),QStringList(arranged.at(0)));
+        room->setTag(room->players.at(3)->objectName(),QStringList(arranged.at(1)));
+        room->setTag(room->players.at(4)->objectName(),QStringList(arranged.at(2)));
     }
 
     room->sem->release();

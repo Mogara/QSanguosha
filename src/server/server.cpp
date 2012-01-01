@@ -173,8 +173,6 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
-    basara_checkbox->setEnabled(second_general_checkbox->isChecked());
-    connect(second_general_checkbox,SIGNAL(toggled(bool)),basara_checkbox, SLOT(setEnabled(bool)));
 
     QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
     BanPairDialog *banpair_dialog = new BanPairDialog(this);
