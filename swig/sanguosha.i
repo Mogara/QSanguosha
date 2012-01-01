@@ -445,6 +445,7 @@ enum TriggerEvent{
     FinishJudge,
 
 	Pindian,
+	TurnedOver,
 
     Predamage,
     Predamaged,
