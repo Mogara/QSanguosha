@@ -358,7 +358,7 @@
         <translation>主公选择了 %1，%2</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="164"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="161"/>
         <source>Free choose ...</source>
         <translation>自由选将 ...</translation>
     </message>
@@ -1235,45 +1235,36 @@
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="111"/>
-        <source>8 players (boss mode)</source>
-        <translation>8 人局 [魔王模式]</translation>
-    </message>
-    <message>
-        <location filename="src/core/engine.cpp" line="112"/>
         <source>8 players (same mode)</source>
         <translation>8 人局 [同将模式]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="113"/>
+        <location filename="src/core/engine.cpp" line="112"/>
         <source>9 players</source>
         <translation>9 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="114"/>
+        <location filename="src/core/engine.cpp" line="113"/>
         <source>10 players</source>
         <translation>10 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="121"/>
+        <location filename="src/core/engine.cpp" line="120"/>
         <source>Lua script error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="190"/>
+        <location filename="src/core/engine.cpp" line="189"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="344"/>
+        <location filename="src/core/engine.cpp" line="341"/>
         <source>Chibi</source>
         <translation>赤壁</translation>
     </message>
     <message>
-        <source>%1 [Challenge mode]</source>
-        <translation>%1 【挑战模式】</translation>
-    </message>
-    <message>
-        <location filename="src/core/engine.cpp" line="422"/>
+        <location filename="src/core/engine.cpp" line="419"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1281,17 +1272,17 @@
 <context>
     <name>FreeChooseDialog</name>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="219"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="216"/>
         <source>Free choose generals</source>
         <translation>自由选择武将</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="245"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="242"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/choosegeneraldialog.cpp" line="248"/>
+        <location filename="src/dialog/choosegeneraldialog.cpp" line="245"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -1821,14 +1812,6 @@
         <location filename="src/dialog/mainwindow.cpp" line="338"/>
         <source>Compilation time: %1 %2 &lt;br/&gt;</source>
         <translation>编译时间: %1 %2 &lt;br/&gt;</translation>
-    </message>
-    <message>
-        <source>Project home: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <translation>项目主页: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
-    </message>
-    <message>
-        <source>Forum: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <translation>论坛: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="346"/>
@@ -2451,10 +2434,10 @@
         <location filename="src/ui/roomscene.cpp" line="2516"/>
         <location filename="src/ui/roomscene.cpp" line="2526"/>
         <location filename="src/ui/roomscene.cpp" line="2541"/>
-        <location filename="src/ui/roomscene.cpp" line="3409"/>
-        <location filename="src/ui/roomscene.cpp" line="3414"/>
-        <location filename="src/ui/roomscene.cpp" line="3439"/>
-        <location filename="src/ui/roomscene.cpp" line="3445"/>
+        <location filename="src/ui/roomscene.cpp" line="3410"/>
+        <location filename="src/ui/roomscene.cpp" line="3415"/>
+        <location filename="src/ui/roomscene.cpp" line="3440"/>
+        <location filename="src/ui/roomscene.cpp" line="3446"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2482,10 +2465,6 @@
         <location filename="src/ui/roomscene.cpp" line="110"/>
         <source>Sort by availability</source>
         <translation>按可用性排序</translation>
-    </message>
-    <message>
-        <source>Sanguosha</source>
-        <translation>太阳神三国杀</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="1075"/>
@@ -2571,6 +2550,11 @@
         <location filename="src/ui/roomscene.cpp" line="136"/>
         <source>Change general ...</source>
         <translation>修改武将 ...</translation>
+    </message>
+    <message>
+        <location filename="src/ui/roomscene.cpp" line="317"/>
+        <source>QSanguosha</source>
+        <translation>太阳神三国杀</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="891"/>
@@ -2681,52 +2665,52 @@
         <translation>自由扔掉任意手牌和装备</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3396"/>
+        <location filename="src/ui/roomscene.cpp" line="3397"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3409"/>
+        <location filename="src/ui/roomscene.cpp" line="3410"/>
         <source>Only the lord can kick!</source>
         <translation>只有主公才能踢人!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3414"/>
+        <location filename="src/ui/roomscene.cpp" line="3415"/>
         <source>This function is disabled in contest mode</source>
         <translation>此功能在竞赛模式下是禁用的</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3429"/>
+        <location filename="src/ui/roomscene.cpp" line="3430"/>
         <source>Kick</source>
         <translation>踢人</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3430"/>
+        <location filename="src/ui/roomscene.cpp" line="3431"/>
         <source>Please select the player to kick</source>
         <translation>请选择被踢玩家</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3439"/>
+        <location filename="src/ui/roomscene.cpp" line="3440"/>
         <source>Only lord can surrender!</source>
         <translation>只有主公才能投降!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3445"/>
+        <location filename="src/ui/roomscene.cpp" line="3446"/>
         <source>When there are more than 2 players, the lord can surrender!</source>
         <translation>只有场上存活人数大于2时才能投降!</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3450"/>
+        <location filename="src/ui/roomscene.cpp" line="3451"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3450"/>
+        <location filename="src/ui/roomscene.cpp" line="3451"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
     <message>
-        <location filename="src/ui/roomscene.cpp" line="3655"/>
+        <location filename="src/ui/roomscene.cpp" line="3656"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>
