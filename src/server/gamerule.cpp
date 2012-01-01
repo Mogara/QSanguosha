@@ -746,7 +746,7 @@ BasaraMode::BasaraMode(QObject *parent)
 
     events << CardLost << Predamaged;
 
-    ban_list << "dongzhuo";
+    ban_list << "dongzhuo" << "zuoci";
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
@@ -831,6 +831,8 @@ void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) c
 
             QString kingdom = player->getKingdom();
             QStringList names = Sanguosha->getLimitedGeneralNames(), choose_names;
+            foreach(QString ban_name, ban_list)
+                names.removeOne(ban_name);
 
             foreach(QString name, names){
                 if(Sanguosha->getGeneral(name)->getKingdom() == kingdom && name != player->getGeneralName())
