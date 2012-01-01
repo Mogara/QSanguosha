@@ -194,6 +194,39 @@ function useDefaultStrategy()
 	if (mode:find("02_1v1") or mode:find("03p")) then return true end
 end
 
+function getHegemonyStrategy(self, player)
+	local anjiangs = {}
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:getGeneralName() == "anjiang" then
+			table.insert(anjiangs, p) 
+		end
+	end
+	
+	local player_friends, self_friends = 0, 0		
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:getKingdom() == self.player:getKingdom() then self_friends = self_friends + 1
+		elseif p:getKingdom() == player:getKingdom() then player_friends = player_friends + 1
+		end
+	end
+	
+	if self.player:getKingdom() ~= "god" then 
+		if self.player:getKingdom() == player:getKingdom() then return -2
+		else
+			if #anjiangs >= self.room:getAllPlayers():length() - #anjiangs then
+				if player:getKingdom() ~= "god" then return -1 else return 4 end
+			else
+				if player:getKingdom() ~= "god" then 
+					if self_friends > player_friends then return 0 else return 5 end
+				end
+			end
+		end
+	else
+		if player:getKingdom() ~= "god" then return 5 else return -1 end
+	end
+	
+	return 0 end
+end
+
 -- this function create 2 tables contains the friends and enemies, respectively
 function SmartAI:updatePlayers(inclusive)
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
@@ -281,6 +314,8 @@ function SmartAI:printFEList()
 end
 
 function SmartAI:objectiveLevel(player)
+	if sgs.GetConfig("EnableHegemony", true) then return getHegemonyStrategy(self, player) end
+	
 	if useDefaultStrategy() then
 		if self.player:getRole() == "renegade" then
 		elseif player:getRole() == "renegade" then return 4.1

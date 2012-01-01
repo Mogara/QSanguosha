@@ -54,6 +54,21 @@ AI::Relation AI::GetRelationBoss(const ServerPlayer *a, const ServerPlayer *b){
         return Friend;
 }
 
+AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b){
+    if(a->getKingdom() == b->getKingdom()){
+        if(a->getKingdom() != "god")
+            return Friend;
+        else
+            return Neutrality;
+    }
+    else{
+        if(a->getKingdom() == "god" || b->getKingdom() == "god")
+            return Neutrality;
+        else
+            return Enemy;
+    }
+}
+
 AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){
     RoleMapping map, map_good, map_bad;
     if(map.isEmpty()){
@@ -112,6 +127,8 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
         return GetRelation3v3(self, other);
     else if(room->getMode() == "08_boss")
         return GetRelationBoss(self, other);
+    else if(Config.EnableHegemony)
+        return GetRelationHegemony(self, other);
 
     return GetRelation(self, other);
 }
