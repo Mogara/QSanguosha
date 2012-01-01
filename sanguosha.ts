@@ -1181,7 +1181,7 @@
     <message>
         <location filename="src/core/engine.cpp" line="100"/>
         <source>2 players (KOF style)</source>
-        <translation>2 人局 (KOF 模式)</translation>
+        <translation>2 人局 [KOF 模式]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="101"/>
@@ -1196,7 +1196,7 @@
     <message>
         <location filename="src/core/engine.cpp" line="103"/>
         <source>4 players (Hulao Pass)</source>
-        <translation>4 人局 (虎牢关1v3)</translation>
+        <translation>4 人局 [虎牢关1v3]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="104"/>
@@ -1211,12 +1211,12 @@
     <message>
         <location filename="src/core/engine.cpp" line="106"/>
         <source>6 players (2 renegades)</source>
-        <translation>6 人局（双内奸）</translation>
+        <translation>6 人局 [双内奸]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="107"/>
         <source>6 players (3v3)</source>
-        <translation>6 人局（3v3）</translation>
+        <translation>6 人局 [3v3]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="108"/>
@@ -1231,17 +1231,17 @@
     <message>
         <location filename="src/core/engine.cpp" line="110"/>
         <source>8 players (2 renegades)</source>
-        <translation>8 人局（双内奸）</translation>
+        <translation>8 人局 [双内奸]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="111"/>
         <source>8 players (boss mode)</source>
-        <translation>8 人局 (魔王模式)</translation>
+        <translation>8 人局 [魔王模式]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="112"/>
         <source>8 players (same mode)</source>
-        <translation>8 人局 (同将模式)</translation>
+        <translation>8 人局 [同将模式]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="113"/>
@@ -1270,7 +1270,7 @@
     </message>
     <message>
         <source>%1 [Challenge mode]</source>
-        <translation type="obsolete">%1 【挑战模式】</translation>
+        <translation>%1 【挑战模式】</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="422"/>
@@ -1824,11 +1824,11 @@
     </message>
     <message>
         <source>Project home: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <translation type="obsolete">项目主页: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
+        <translation>项目主页: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
         <source>Forum: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <translation type="obsolete">论坛: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
+        <translation>论坛: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="346"/>
@@ -2485,7 +2485,7 @@
     </message>
     <message>
         <source>Sanguosha</source>
-        <translation type="obsolete">三国杀</translation>
+        <translation>太阳神三国杀</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="1075"/>
