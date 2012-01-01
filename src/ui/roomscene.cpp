@@ -530,6 +530,12 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     case 9: nine = 1; break;
     }
 
+    if(ServerInfo.GameMode == "06_3v3" )
+    {
+        six   = 0;
+        nine = 1;
+    }
+
     if(Config.value("CircularView").toBool()){
         cxw=1;
         cxw2=0;
@@ -560,12 +566,12 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     };
 
     static int indices_table_3v3[][5] = {
-        {0, 3, 4, 5, 8}, // lord
-        {0, 1, 4, 5, 6}, // loyalist (right), same with rebel (right)
-        {2, 3, 4, 7, 8}, // rebel (left), same with loyalist (left)
-        {0, 3, 4, 5, 8}, // renegade, same with lord
-        {0, 1, 4, 5, 6}, // rebel (right)
-        {2, 3, 4, 7, 8}, // loyalist (left)
+        {0, 2, 4, 6, 8}, // lord
+        {0, 1, 5, 6, 7}, // loyalist (right), same with rebel (right)
+        {1, 2, 3, 7, 8}, // rebel (left), same with loyalist (left)
+        {0, 2, 4, 6, 8}, // renegade, same with lord
+        {0, 1, 5, 6, 7}, // rebel (right)
+        {1, 2, 3, 7, 8}, // loyalist (left)
     };
 
     QList<QPointF> positions;

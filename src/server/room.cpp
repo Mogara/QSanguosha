@@ -1476,7 +1476,7 @@ void Room::chooseGenerals(){
 //        return;
 //    }
 
-    // for lord
+    // for lord.
     QStringList lord_list;
     if(mode == "08same")
         lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
