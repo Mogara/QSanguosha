@@ -156,9 +156,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     }
 
     bool free_choose = ServerInfo.FreeChoose;
-    if(ServerInfo.GameMode == "08boss"){
-        free_choose = Self->getRole() == "lord" || Self->getRole() == "renegade";
-    }
 
     if(free_choose){
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));

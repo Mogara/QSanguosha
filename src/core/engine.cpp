@@ -108,7 +108,6 @@ Engine::Engine()
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
-    modes["08boss"] = tr("8 players (boss mode)");
     modes["08same"] = tr("8 players (same mode)");
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
@@ -260,10 +259,10 @@ QString Engine::translate(const QString &to_translate) const{
 }
 
 int Engine::getRoleIndex() const{
-    if(ServerInfo.GameMode == "08boss"){
-        return 2;
-    }else if(ServerInfo.GameMode == "06_3v3"){
+    if(ServerInfo.GameMode == "06_3v3"){
         return 4;
+    }else if(Config.EnableHegemony){
+        return 5;
     }else
         return 1;
 }
@@ -543,8 +542,11 @@ QStringList Engine::getLords() const{
     // add intrinsic lord
     foreach(QString lord, lord_list){
         const General *general = generals.value(lord);
-        if(!ban_package.contains(general->getPackage()))
-            lords << lord;
+		if(ban_package.contains(general->getPackage()))
+             continue;
+         if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+             continue;
+         lords << lord;
     }
 
     return lords;
