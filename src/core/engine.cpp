@@ -542,11 +542,11 @@ QStringList Engine::getLords() const{
     // add intrinsic lord
     foreach(QString lord, lord_list){
         const General *general = generals.value(lord);
-		if(ban_package.contains(general->getPackage()))
-             continue;
-         if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-             continue;
-         lords << lord;
+        if(ban_package.contains(general->getPackage()))
+            continue;
+        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+            continue;
+        lords << lord;
     }
 
     return lords;
