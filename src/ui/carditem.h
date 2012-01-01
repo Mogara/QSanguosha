@@ -53,7 +53,7 @@ protected:
 
 private:
     const Card *card, *filtered_card;
-    QPixmap suit_pixmap, icon_pixmap;
+    QPixmap suit_pixmap, icon_pixmap, number_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
     bool auto_back,is_pending;
