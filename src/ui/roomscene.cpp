@@ -2954,8 +2954,13 @@ void RoomScene::onGameStart(){
         connect(player, SIGNAL(phase_changed()), log_box, SLOT(appendSeparator()));
     }
 
+    if(Config.EnableHegemony)
+        goto no_role_box;
+
     foreach(Photo *photo, photos)
         photo->createRoleCombobox();
+
+    no_role_box:
 
 #ifdef AUDIO_SUPPORT
     if(!Config.EnableBgMusic)

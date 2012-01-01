@@ -224,7 +224,7 @@ function getHegemonyStrategy(self, player)
 		if player:getKingdom() ~= "god" then return 5 else return -1 end
 	end
 	
-	return 0 end
+	return 0 
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
