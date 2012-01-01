@@ -297,6 +297,7 @@ private slots:
     void showJudgeResult(const QString &who, const QString &result);
     void showPlayerCards();
     void updateStateItem(const QString &roles);
+    void adjustPrompt();
 
     void clearPile();
     void removeLightBox();

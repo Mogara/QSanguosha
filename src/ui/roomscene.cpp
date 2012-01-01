@@ -36,6 +36,7 @@
 #include <QFormLayout>
 #include <QStatusBar>
 #include <QMovie>
+#include <QtCore>
 
 
 
@@ -322,13 +323,16 @@ RoomScene::RoomScene(QMainWindow *main_window)
         prompt_box->keepWhenDisappear();
 
         QGraphicsTextItem *text_item = new QGraphicsTextItem(prompt_box);
+        text_item->setParent(prompt_box);
         text_item->setPos(40, 45);
         text_item->setDefaultTextColor(Qt::white);
 
         QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
         prompt_doc->setTextWidth(prompt_box->boundingRect().width() - 80);
         text_item->setDocument(prompt_doc);
-        text_item->setFont(QFont("SimHei",10));
+        text_item->setFont(Config.TinyFont);
+
+        connect(prompt_doc,SIGNAL(contentsChanged()),this,SLOT(adjustPrompt()));
 
         addItem(prompt_box);
     }
@@ -3766,6 +3770,27 @@ void RoomScene::updateStateItem(const QString &roles)
             role_items << item;
         }
     }
+}
+
+void RoomScene::adjustPrompt()
+{
+    static int fitSize = 140 ;
+    QGraphicsTextItem *text_item = prompt_box->findChild<QGraphicsTextItem*>();
+    int height = ClientInstance->getPromptDoc()->size().height();
+
+    QFont ft=text_item->font();
+    int fz = ft.pixelSize() * qSqrt(fitSize*1.0/height);
+    if(fz > 30)fz = 30;
+
+    ft.setPixelSize(fz);
+    text_item->setFont(ft);
+
+    while(ClientInstance->getPromptDoc()->size().height()>fitSize)
+    {
+        ft.setPixelSize(ft.pixelSize()-1);
+        text_item->setFont(ft);
+    }
+    //else text_item->setFont(QFont("SimHei",10));
 }
 
 void RoomScene::reLayout()
