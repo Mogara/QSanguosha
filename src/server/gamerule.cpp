@@ -567,7 +567,11 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
 
     if(killer->getRoom()->getMode() == "06_3v3"){
         killer->drawCards(3);
-    }else{
+    }
+    else if(Config.EnableHegemony){
+        return;
+    }
+    else{
         if(victim->getRole() == "rebel" && killer != victim){
             killer->drawCards(3);
         }else if(victim->getRole() == "loyalist" && killer->getRole() == "lord"){
@@ -1019,15 +1023,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 room->setPlayerProperty(player, "kingdom", Sanguosha->getGeneral(generals.at(0))->getKingdom());
             }
 
-            QMap<QString, QString> roles;
-            if(roles.isEmpty()){
-                roles["wei"] = "lord";
-                roles["shu"] = "loyalist";
-                roles["wu"] = "rebel";
-                roles["qun"] = "renegade";
-            }
-            room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
-
             DamageStar damage = data.value<DamageStar>();
             if(damage->from && damage->from->getKingdom() == damage->to->getKingdom()){
                 damage->from->throwAllEquips();
@@ -1036,6 +1031,15 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             else if(damage->from){
                 damage->from->drawCards(3);
             }
+
+            QMap<QString, QString> roles;
+            if(roles.isEmpty()){
+                roles["wei"] = "lord";
+                roles["shu"] = "loyalist";
+                roles["wu"] = "rebel";
+                roles["qun"] = "renegade";
+            }
+            room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
         }
 
         break;
