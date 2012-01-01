@@ -1019,6 +1019,15 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 room->setPlayerProperty(player, "kingdom", Sanguosha->getGeneral(generals.at(0))->getKingdom());
             }
 
+            QMap<QString, QString> roles;
+            if(roles.isEmpty()){
+                roles["wei"] = "lord";
+                roles["shu"] = "loyalist";
+                roles["wu"] = "rebel";
+                roles["qun"] = "renegade";
+            }
+            room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
+
             DamageStar damage = data.value<DamageStar>();
             if(damage->from && damage->from->getKingdom() == damage->to->getKingdom()){
                 damage->from->throwAllEquips();
