@@ -174,6 +174,11 @@ QWidget *ServerDialog::createAdvancedTab(){
     basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
 
+    hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
+    hegemony_checkbox->setChecked(Config.EnableHegemony);
+    hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
+    connect(basara_checkbox,SIGNAL(toggled(bool)),hegemony_checkbox, SLOT(setEnabled(bool)));
+
     QPushButton *banpair_button = new QPushButton(tr("Ban pairs table ..."));
     BanPairDialog *banpair_dialog = new BanPairDialog(this);
     connect(banpair_button, SIGNAL(clicked()), banpair_dialog, SLOT(exec()));
@@ -210,6 +215,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addLayout(HLay(second_general_checkbox, banpair_button));
     layout->addLayout(HLay(new QLabel(tr("Max HP scheme")), max_hp_scheme_combobox));
     layout->addWidget(basara_checkbox);
+    layout->addWidget(hegemony_checkbox);
     layout->addWidget(scene_checkbox);		//changjing
     layout->addWidget(announce_ip_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
@@ -652,6 +658,7 @@ bool ServerDialog::config(){
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();		//changjing
     Config.EnableBasara= basara_checkbox->isChecked() && basara_checkbox->isEnabled();
+    Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
     Config.MaxHpScheme = max_hp_scheme_combobox->currentIndex();
     Config.AnnounceIP = announce_ip_checkbox->isChecked();
     Config.Address = address_edit->text();
@@ -679,6 +686,7 @@ bool ServerDialog::config(){
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("EnableScene", Config.EnableScene);	//changjing
     Config.setValue("EnableBasara",Config.EnableBasara);
+    Config.setValue("EnableHegemony",Config.EnableHegemony);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("RolePredictable", role_predictable_checkbox->isChecked());

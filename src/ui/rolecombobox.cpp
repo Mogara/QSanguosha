@@ -26,7 +26,6 @@ RoleCombobox::RoleCombobox(Photo *photo)
 {
     int index = Sanguosha->getRoleIndex();
     items << new RoleComboboxItem("unknown", 0)
-            << new RoleComboboxItem("lord", index)
             << new RoleComboboxItem("loyalist", index)
             << new RoleComboboxItem("rebel", index)
             << new RoleComboboxItem("renegade", index);

@@ -2957,6 +2957,7 @@ void RoomScene::onGameStart(){
     foreach(Photo *photo, photos)
         photo->createRoleCombobox();
 
+
 #ifdef AUDIO_SUPPORT
     if(!Config.EnableBgMusic)
 #ifdef Q_OS_WIN32
