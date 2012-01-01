@@ -1024,7 +1024,7 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 damage->from->throwAllEquips();
                 damage->from->throwAllHandCards();
             }
-            else{
+            else if(damage->from){
                 damage->from->drawCards(3);
             }
         }
