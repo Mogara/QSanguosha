@@ -871,6 +871,9 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
     switch(event){
     case GameStart:{
         if(player->isLord()){
+            if(Config.EnableHegemony){
+                room->setPlayerProperty(player, "maxhp", player->getMaxHP() - 1);
+            }
 
             QSet<QString> selected_set;
             const Package *godpack = Sanguosha->findChild<const Package *>("god");
