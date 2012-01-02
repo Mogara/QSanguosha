@@ -249,7 +249,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     LogMessage log;
     log.to << victim;
-    log.arg = victim->getRole();
+    log.arg = Config.EnableHegemony ? victim->getKingdom() : victim->getRole();
     log.from = killer;
 
     updateStateItem();
