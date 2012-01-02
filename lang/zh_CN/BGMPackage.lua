@@ -1,4 +1,4 @@
--- translation for SP Package
+-- translation for Board Game Magazine Package
 
 return {
 	["BGM"] = "桌游志",

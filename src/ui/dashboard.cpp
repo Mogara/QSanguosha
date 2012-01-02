@@ -320,7 +320,16 @@ void Dashboard::hideAvatar(){
 void Dashboard::installDelayedTrick(CardItem *card){
     judging_area << card;
     const DelayedTrick *trick = DelayedTrick::CastFrom(card->getCard());
-    delayed_tricks << QPixmap(trick->getIconPath());
+    QGraphicsPixmapItem *item = new QGraphicsPixmapItem(this);
+    item->setPixmap(QPixmap(trick->getIconPath()));
+    QString tooltip;
+    if(trick->isVirtualCard())
+        tooltip=Sanguosha->getCard((trick->getSubcards()).at(0))->getDescription();
+    else
+        tooltip=trick->getDescription();
+    item->setToolTip(tooltip);
+    item->setPos(3 + delayed_tricks.length() * 27, 5);
+    delayed_tricks << item;
 
     card->setHomePos(mapToScene(QPointF(34, 37)));
     card->goBack(true,false);
@@ -487,13 +496,6 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     drawEquip(painter, armor, 1);
     drawEquip(painter, defensive_horse, 2);
     drawEquip(painter, offensive_horse, 3);
-
-    // draw player's judging area
-    int i;
-    for(i=0; i<delayed_tricks.count(); i++){
-        QPoint pos(3 + i * 27, 5);
-        painter->drawPixmap(pos, delayed_tricks.at(i));
-    }
 
     drawHp(painter);
 
@@ -698,7 +700,10 @@ CardItem *Dashboard::takeCardItem(int card_id, Player::Place place){
             card_item->hideFrame();
             int index = judging_area.indexOf(card_item);
             judging_area.removeAt(index);
-            delayed_tricks.removeAt(index);
+            delete delayed_tricks.takeAt(index);
+            for(int i=0; i<delayed_tricks.count(); i++){
+                delayed_tricks.at(i)->setPos(3 + i * 27, 5);
+            }
         }
     }
 
