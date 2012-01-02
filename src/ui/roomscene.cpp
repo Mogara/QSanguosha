@@ -330,7 +330,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
         QTextDocument *prompt_doc = ClientInstance->getPromptDoc();
         prompt_doc->setTextWidth(prompt_box->boundingRect().width() - 80);
         text_item->setDocument(prompt_doc);
-        text_item->setFont(Config.TinyFont);
+
+        QFont qf = Config.TinyFont;
+        qf.setBold(true);
+        text_item->setFont(qf);
 
         connect(prompt_doc,SIGNAL(contentsChanged()),this,SLOT(adjustPrompt()));
 

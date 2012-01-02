@@ -58,14 +58,15 @@ QWidget *ServerDialog::createBasicTab(){
     timeout_spinbox->setMaximum(30);
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
-
-    QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
-    connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
-
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(false);
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
+
+    // add 1v1 banlist edit button
+    QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
+    edit_button->setFixedWidth(100);
+    connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
 
     QFormLayout *form_layout = new QFormLayout;
     QHBoxLayout *hlay = new QHBoxLayout;
@@ -73,7 +74,11 @@ QWidget *ServerDialog::createBasicTab(){
     hlay->addWidget(nolimit_checkbox);
     hlay->addWidget(edit_button);
     form_layout->addRow(tr("Server name"), server_name_edit);
-    form_layout->addRow(tr("Operation timeout"), hlay);
+    QHBoxLayout * lay = new QHBoxLayout;
+    lay->addWidget(timeout_spinbox);
+    lay->addWidget(nolimit_checkbox);
+    lay->addWidget(edit_button);
+    form_layout->addRow(tr("Operation timeout"), lay);
     form_layout->addRow(createGameModeBox());
 
     QWidget *widget = new QWidget;
@@ -274,10 +279,11 @@ void BanlistDialog::switchTo(int item)
     list = lists.at(item);
 }
 
-BanlistDialog::BanlistDialog(QDialog *parent)
+
+BanlistDialog::BanlistDialog(QWidget *parent)
     :QDialog(parent)
 {
-    setWindowTitle(tr("Select generals that are excluded in 1v1 mode"));
+    setWindowTitle(tr("Select generals that are excluded"));
 
     if(ban_list.isEmpty())
         ban_list << "1v1" << "Basara" << "Zombie";
