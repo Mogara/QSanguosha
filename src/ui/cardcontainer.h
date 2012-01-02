@@ -7,6 +7,20 @@ class ClientPlayer;
 #include "pixmap.h"
 #include "carditem.h"
 
+class CloseButton: public Pixmap{
+    Q_OBJECT
+
+public:
+    CloseButton();
+
+protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+signals:
+    void clicked();
+};
+
 class GrabCardItem: public CardItem{
     Q_OBJECT
 
@@ -38,6 +52,7 @@ public slots:
 
 private:
     QList<GrabCardItem *> items;
+    CloseButton* close_button;
 
     void addCardItem(int card_id, const QPointF &pos);
 
@@ -73,20 +88,6 @@ private:
     static const qreal middle_y = 157;
     static const qreal skip = 102;
     static const qreal card_width = 93;
-};
-
-class CloseButton: public Pixmap{
-    Q_OBJECT
-
-public:
-    CloseButton();
-
-protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
-    void clicked();
 };
 
 #endif // CARDCONTAINER_H

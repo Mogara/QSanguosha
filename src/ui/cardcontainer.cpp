@@ -22,6 +22,10 @@ CardContainer::CardContainer() :
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
+    close_button = new CloseButton;
+    close_button->setParentItem(this);
+    close_button->setPos(517, 21);
+    close_button->hide();
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids){
@@ -72,7 +76,7 @@ void CardContainer::clear(){
     }
 
     items.clear();
-
+    close_button->hide();
     hide();
 }
 
@@ -112,6 +116,7 @@ int CardContainer::getFirstEnabled() const{
 }
 
 void CardContainer::startChoose(){
+    close_button->hide();
     foreach(GrabCardItem *item, items){
         connect(item, SIGNAL(grabbed()), this, SLOT(grabItem()));
         connect(item, SIGNAL(double_clicked()), this, SLOT(chooseItem()));
@@ -127,9 +132,7 @@ void CardContainer::startGongxin(){
 }
 
 void CardContainer::addCloseButton(bool dispose){
-    CloseButton *close_button = new CloseButton;
-    close_button->setParentItem(this);
-    close_button->setPos(517, 21);
+    close_button->show();
 
     if(dispose)
         connect(close_button, SIGNAL(clicked()), this, SLOT(deleteLater()));

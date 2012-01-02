@@ -18,7 +18,8 @@ CardItem::CardItem(const Card *card)
 {
     Q_ASSERT(card != NULL);
 
-    suit_pixmap.load(QString("image/system/cardsuit/%1.png").arg(card->getSuitString()));
+    suit_pixmap.load(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+    cardsuit_pixmap.load(QString("image/system/cardsuit/%1.png").arg(card->getSuitString()));
     number_pixmap.load(QString("image/system/%1/%2.png").arg(card->isBlack()?"black":"red").arg(card->getNumberString()));
     icon_pixmap.load(card->getIconPath());
     setTransformOriginPoint(pixmap.width()/2, pixmap.height()/2);
@@ -258,7 +259,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     Pixmap::paint(painter, option, widget);
 
     if(card){
-        painter->drawPixmap(0, 14, suit_pixmap);
+        painter->drawPixmap(0, 14, cardsuit_pixmap);
         painter->drawPixmap(0, 2, number_pixmap);
     }
 }
