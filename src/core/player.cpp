@@ -293,10 +293,10 @@ bool Player::hasLordSkill(const QString &skill_name) const{
         return true;
 
     QString mode = getGameMode();
-    if(mode == "06_3v3" || mode == "02_1v1" || Config.EnableHegemony)
+    if(mode == "06_3v3" || mode == "02_1v1")
         return false;
 
-    if(isLord())
+    if(isLord() || Config.EnableHegemony)
         return hasInnateSkill(skill_name);
 
     if(hasSkill("weidi")){
