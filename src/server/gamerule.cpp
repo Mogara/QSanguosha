@@ -907,6 +907,7 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
                 sp->invoke("transfigure", transfigure_str);
                 room->setPlayerProperty(sp,"general","anjiang");
+                room->setPlayerProperty(sp,"kingdom","god");
 
                 LogMessage log;
                 log.type = "#BasaraGeneralChosen";
@@ -970,10 +971,8 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 QStringList generals = room->getTag(player->objectName()).toStringList();
                 room->setPlayerProperty(player, "general", generals.at(0));
                 if(Config.Enable2ndGeneral)room->setPlayerProperty(player, "general2", generals.at(1));
-                room->setPlayerProperty(player, "kingdom", player->getKingdom());
+                room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
                 room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
-
-                room->broadcastInvoke("killPlayer", player->objectName());
             }
 
             DamageStar damage = data.value<DamageStar>();

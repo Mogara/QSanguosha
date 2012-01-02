@@ -237,7 +237,10 @@ function getHegemonyStrategy(self, player)
 			if p:getKingdom() == self:getHegKingdom() then party = party +1 end
 		end
 		
-		if party < 3 and (party + 1) >= self.room:getAllPlayers():length()/2 then
+		self:log(party..' '..self.room:getAllPlayers():length())
+		
+		if (party < 3) and 
+		(2 * party + 2 >= self.room:getAllPlayers():length()) then
 			if self:getHegKingdom() == player:getKingdom() then return -1 else return 5 end
 		else
 			return 4 end
