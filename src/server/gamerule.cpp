@@ -902,6 +902,8 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             if(Config.EnableHegemony)
                 room->setTag("SkipNormalDeathProcess", true);
 
+            room->setPlayerProperty(player, "maxhp", player->getMaxHP() - 1);
+
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");

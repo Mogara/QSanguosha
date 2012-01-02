@@ -293,7 +293,7 @@ bool Player::hasLordSkill(const QString &skill_name) const{
         return true;
 
     QString mode = getGameMode();
-    if(mode == "06_3v3" || mode == "02_1v1")
+    if(mode == "06_3v3" || mode == "02_1v1" || Config.EnableHegemony)
         return false;
 
     if(isLord())
