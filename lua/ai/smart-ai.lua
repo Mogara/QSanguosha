@@ -410,8 +410,7 @@ function SmartAI:objectiveLevel(player)
 	elseif self.role == "renegade" then
 		if SmartAI.GetValue(self.room:getLord()) < 6 and hasRebel then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
-			elseif player:isLord() then return -3
-			else return -1 end
+			elseif player:isLord() then return -3 end
 		end
 		local loyalish_hp, rebel_hp, loyalish_count, rebel_count = 0, 0
 		for _, aplayer in ipairs(players) do
