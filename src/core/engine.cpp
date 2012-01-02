@@ -343,6 +343,18 @@ QString Engine::getVersionName() const{
     return tr("Chibi");
 }
 
+QString Engine::getVersionNum() const{
+    return "14";
+}
+
+QColor Engine::getVersionColor() const{
+    return QColor(255,51,0);
+}
+
+QColor Engine::getVersionNameColor() const{
+    return QColor(255,204,0);
+}
+
 QStringList Engine::getExtensions() const{
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
