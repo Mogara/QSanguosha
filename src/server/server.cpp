@@ -59,14 +59,21 @@ QWidget *ServerDialog::createBasicTab(){
     timeout_spinbox->setValue(Config.OperationTimeout);
     timeout_spinbox->setSuffix(tr(" seconds"));
 
+    QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
+    connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
+
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(false);
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
 
     QFormLayout *form_layout = new QFormLayout;
+    QHBoxLayout *hlay = new QHBoxLayout;
+    hlay->addWidget(timeout_spinbox);
+    hlay->addWidget(nolimit_checkbox);
+    hlay->addWidget(edit_button);
     form_layout->addRow(tr("Server name"), server_name_edit);
-    form_layout->addRow(tr("Operation timeout"), HLay(timeout_spinbox, nolimit_checkbox));
+    form_layout->addRow(tr("Operation timeout"), hlay);
     form_layout->addRow(createGameModeBox());
 
     QWidget *widget = new QWidget;
@@ -261,19 +268,19 @@ void ServerDialog::ensureEnableAI(){
     ai_enable_checkbox->setChecked(true);
 }
 
-void KOFBanlistDialog::switchTo(int item)
+void BanlistDialog::switchTo(int item)
 {
     this->item = item;
     list = lists.at(item);
 }
 
-KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
+BanlistDialog::BanlistDialog(QDialog *parent)
     :QDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded in 1v1 mode"));
 
     if(ban_list.isEmpty())
-        ban_list << "1v1" << "basara" << "zombie";
+        ban_list << "1v1" << "Basara" << "Zombie";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
@@ -301,7 +308,7 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
         //vlay->addLayout(hlayout);
         apage->setLayout(vlay);
 
-        tab->addTab(apage,item);
+        tab->addTab(apage,Sanguosha->translate(item));
     }
 
     QPushButton *add = new QPushButton(tr("Add ..."));
@@ -326,7 +333,7 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
     connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
 }
 
-void KOFBanlistDialog::addGeneral(const QString &name){
+void BanlistDialog::addGeneral(const QString &name){
     const General *general = Sanguosha->getGeneral(name);
     QIcon icon(general->getPixmapPath("tiny"));
     QString text = Sanguosha->translate(name);
@@ -334,13 +341,13 @@ void KOFBanlistDialog::addGeneral(const QString &name){
     item->setData(Qt::UserRole, name);
 }
 
-void KOFBanlistDialog::removeGeneral(){
+void BanlistDialog::removeGeneral(){
     int row = list->currentRow();
     if(row != -1)
         delete list->takeItem(row);
 }
 
-void KOFBanlistDialog::save(){
+void BanlistDialog::save(){
     QSet<QString> banset;
 
     int i;
@@ -352,7 +359,7 @@ void KOFBanlistDialog::save(){
     Config.setValue(QString("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
 }
 
-void KOFBanlistDialog::saveAll()
+void BanlistDialog::saveAll()
 {
     int i = 0;
     foreach(QListWidget * list, lists)
@@ -363,7 +370,7 @@ void KOFBanlistDialog::saveAll()
 }
 
 void ServerDialog::edit1v1Banlist(){
-    KOFBanlistDialog *dialog = new KOFBanlistDialog(this);
+    BanlistDialog *dialog = new BanlistDialog(this);
     dialog->exec();
 }
 
@@ -430,13 +437,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
             button->setObjectName(itor.key());
             mode_group->addButton(button);
 
-            if(itor.key() == "02_1v1"){
-                // add 1v1 banlist edit button
-                QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
-                connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
-                item_list << HLay(button, edit_button);
-
-            }else if(itor.key() == "06_3v3"){
+            if(itor.key() == "06_3v3"){
                 // add 3v3 options
                 QGroupBox *box = create3v3Box();
                 connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));

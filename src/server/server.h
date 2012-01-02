@@ -41,11 +41,11 @@ private slots:
     void toggleCheck();
 };
 
-class KOFBanlistDialog: public QDialog{
+class BanlistDialog: public QDialog{
     Q_OBJECT
 
 public:
-    KOFBanlistDialog(QDialog *parent);
+    BanlistDialog(QDialog *parent);
 
 private:
     QList<QListWidget *>lists;

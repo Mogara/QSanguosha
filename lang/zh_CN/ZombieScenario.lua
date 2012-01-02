@@ -1,6 +1,7 @@
 
 return {
 	["zombie_mode"] = "僵尸模式",
+	["Zombie"] = "僵尸模式",
 	["zombie"] = "僵尸",
 	["xunmeng"] = "迅猛",
 	["#Xunmeng"] = "%from 的【迅猛】效果被触发，伤害从 %arg 点上升至 %arg2 点",
