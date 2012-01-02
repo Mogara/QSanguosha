@@ -553,7 +553,21 @@ QStringList Engine::getLords() const{
 }
 
 QStringList Engine::getRandomLords() const{
-    QStringList lords = getLords();
+    QStringList banlist_ban;
+    if(Config.EnableBasara)
+        banlist_ban = Config.value("Banlist/basara").toStringList();
+
+    if(Config.GameMode == "zombie_mode")
+        banlist_ban.append(Config.value("Banlist/zombie").toStringList());
+
+    QStringList lords;
+
+    foreach(QString alord,getLords())
+    {
+        if(banlist_ban.contains(alord))continue;
+
+        lords << alord;
+    }
 
     QStringList nonlord_list;
     foreach(QString nonlord, this->nonlord_list){
@@ -562,6 +576,9 @@ QStringList Engine::getRandomLords() const{
             continue;
 
         if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+            continue;
+
+        if(banlist_ban.contains(general->objectName()))
             continue;
 
         nonlord_list << nonlord;

@@ -16,7 +16,7 @@ void RoomThread1v1::run(){
     // initialize the random seed for this thread
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
 
-    QSet<QString> banset = Config.value("1v1/Banlist").toStringList().toSet();
+    QSet<QString> banset = Config.value("Banlist/1v1").toStringList().toSet();
     general_names = Sanguosha->getRandomGenerals(10, banset);
 
     QStringList known_list = general_names.mid(0, 6);

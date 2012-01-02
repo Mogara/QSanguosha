@@ -232,11 +232,13 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
         }
         if(Config.EnableBasara)
         {
-            static QStringList ban_list;
-            if(!ban_list.size())
-            {
-                ban_list << "dongzhuo" << "zuoci";
-            }
+            QStringList ban_list = Config.value("Banlist/basara").toStringList();
+
+            if(ban_list.contains(name))continue;
+        }
+        if(Config.GameMode == "zombie_mode")
+        {
+            QStringList ban_list = Config.value("Banlist/zombie").toStringList();
 
             if(ban_list.contains(name))continue;
         }

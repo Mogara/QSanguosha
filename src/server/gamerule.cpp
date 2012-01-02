@@ -876,10 +876,22 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
                 sp->invoke("transfigure", transfigure_str);
                 room->setPlayerProperty(sp,"general","anjiang");
-                if(!Config.Enable2ndGeneral)continue;
-                transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
-                sp->invoke("transfigure", transfigure_str);
-                room->setPlayerProperty(sp,"general2","anjiang");
+
+                LogMessage log;
+                log.type = "#BasaraGeneralChosen";
+                log.arg = room->getTag(sp->objectName()).toStringList().at(0);
+
+                if(Config.Enable2ndGeneral)
+                {
+
+                    transfigure_str = QString("%1:%2").arg(sp->getGeneral2Name()).arg("anjiang");
+                    sp->invoke("transfigure", transfigure_str);
+                    room->setPlayerProperty(sp,"general2","anjiang");
+
+                    log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
+                }
+
+                sp->invoke("log",log.toString());
             }
         }
 

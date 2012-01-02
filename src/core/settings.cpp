@@ -105,9 +105,9 @@ void Settings::init(){
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/chibi.jpg").toString();
 
-    if(!contains("1v1/Banlist")){
+    if(!contains("Banlist/1v1")){
         QStringList banlist;
         banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
-        setValue("1v1/Banlist", banlist);
+        setValue("Banlist/1v1", banlist);
     }
 }

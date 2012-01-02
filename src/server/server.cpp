@@ -261,21 +261,47 @@ void ServerDialog::ensureEnableAI(){
     ai_enable_checkbox->setChecked(true);
 }
 
+void KOFBanlistDialog::switchTo(int item)
+{
+    this->item = item;
+    list = lists.at(item);
+}
+
 KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
     :QDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded in 1v1 mode"));
 
+    if(ban_list.isEmpty())
+        ban_list << "1v1" << "basara" << "zombie";
     QVBoxLayout *layout = new QVBoxLayout;
 
-    list = new QListWidget;
-    list->setIconSize(General::TinyIconSize);
-    list->setViewMode(QListView::IconMode);
-    list->setDragDropMode(QListView::NoDragDrop);
+    QTabWidget *tab = new QTabWidget;
+    layout->addWidget(tab);
+    connect(tab,SIGNAL(currentChanged(int)),this,SLOT(switchTo(int)));
 
-    QStringList banlist = Config.value("1v1/Banlist").toStringList();
-    foreach(QString name, banlist){
-        addGeneral(name);
+    foreach(QString item,ban_list)
+    {
+        QWidget *apage = new QWidget;
+
+        list = new QListWidget;
+        list->setIconSize(General::TinyIconSize);
+        list->setViewMode(QListView::IconMode);
+        list->setDragDropMode(QListView::NoDragDrop);
+
+        QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
+        foreach(QString name, banlist){
+            addGeneral(name);
+        }
+
+        lists << list;
+
+        QVBoxLayout * vlay = new QVBoxLayout;
+        vlay->addWidget(list);
+        //vlay->addLayout(hlayout);
+        apage->setLayout(vlay);
+
+        tab->addTab(apage,item);
     }
 
     QPushButton *add = new QPushButton(tr("Add ..."));
@@ -284,16 +310,15 @@ KOFBanlistDialog::KOFBanlistDialog(QDialog *parent)
 
     connect(remove, SIGNAL(clicked()), this, SLOT(removeGeneral()));
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(save()));
+    connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(add);
     hlayout->addWidget(remove);
     hlayout->addWidget(ok);
-
-    layout->addWidget(list);
     layout->addLayout(hlayout);
+
     setLayout(layout);
 
     FreeChooseDialog *chooser = new FreeChooseDialog(this, false);
@@ -324,7 +349,17 @@ void KOFBanlistDialog::save(){
     }
 
     QStringList banlist = banset.toList();
-    Config.setValue("1v1/Banlist", QVariant::fromValue(banlist));
+    Config.setValue(QString("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
+}
+
+void KOFBanlistDialog::saveAll()
+{
+    int i = 0;
+    foreach(QListWidget * list, lists)
+    {
+        switchTo(i++);
+        save();
+    }
 }
 
 void ServerDialog::edit1v1Banlist(){
