@@ -25,6 +25,7 @@ public:
     QPointF homePos() const;
     void goBack(bool kieru = false,bool fadein = true,bool fadeout = true);
     const QPixmap &getSuitPixmap() const;
+    const QPixmap &getNumberPixmap() const;
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);
     void showAvatar(const General *general);

@@ -809,7 +809,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         QString general_name = room->askForGeneral(player,names);
 
         generalShowed(player,general_name);
-        room->getThread()->trigger(GameOverJudge, player);
+        if(Config.EnableHegemony)room->getThread()->trigger(GameOverJudge, player);
         playerShowed(player);
     }
 }
@@ -838,7 +838,7 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
     }
 
     room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
-    room->setPlayerProperty(player, "role", roles[player->getGeneral()->getKingdom()]);
+    if(Config.EnableHegemony)room->setPlayerProperty(player, "role", roles[player->getGeneral()->getKingdom()]);
 
     names.removeOne(general_name);
     room->setTag(player->objectName(),QVariant::fromValue(names));
@@ -901,8 +901,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
         if(player->isLord()){
             if(Config.EnableHegemony)
                 room->setTag("SkipNormalDeathProcess", true);
-
-            room->setPlayerProperty(player, "maxhp", player->getMaxHP() - 1);
 
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {

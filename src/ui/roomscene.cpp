@@ -2756,7 +2756,7 @@ void RoomScene::createStateItem(){
     QPixmap state("image/system/state.png");
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
-    state_item->setPos(-110, -90);
+    state_item->setPos(-110, -80);
     char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     updateStateItem(roles);

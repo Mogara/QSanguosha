@@ -130,6 +130,10 @@ const QPixmap &CardItem::getSuitPixmap() const{
     return suit_pixmap;
 }
 
+const QPixmap &CardItem::getNumberPixmap() const{
+    return number_pixmap;
+}
+
 const QPixmap &CardItem::getIconPixmap() const{
     return icon_pixmap;
 }

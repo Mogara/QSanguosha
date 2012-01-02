@@ -1895,6 +1895,8 @@ bool Room::hasWelfare(const ServerPlayer *player) const{
         return player->isLord() || player->getRole() == "renegade";
     else if(mode == "04_1v3")
         return false;
+    else if(Config.EnableHegemony)
+        return false;
     else
         return player->isLord() && player_count > 4;
 }
