@@ -331,9 +331,17 @@ RoomScene::RoomScene(QMainWindow *main_window)
         prompt_doc->setTextWidth(prompt_box->boundingRect().width() - 80);
         text_item->setDocument(prompt_doc);
 
-        QFont qf = Config.TinyFont;
-        qf.setBold(true);
+        QFont qf = Config.SmallFont;
+        qf.setPixelSize(18);
+        qf.setStyleStrategy(QFont::PreferAntialias);
+        //qf.setBold(true);
         text_item->setFont(qf);
+
+        QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
+        drp->setOffset(0);
+        drp->setColor(Qt::white);
+        drp->setBlurRadius(5);
+        //text_item->setGraphicsEffect(drp);
 
         connect(prompt_doc,SIGNAL(contentsChanged()),this,SLOT(adjustPrompt()));
 
@@ -3783,7 +3791,7 @@ void RoomScene::adjustPrompt()
 
     QFont ft=text_item->font();
     int fz = ft.pixelSize() * qSqrt(fitSize*1.0/height);
-    if(fz > 25)fz = 25;
+    if(fz > 21)fz = 21;
 
     ft.setPixelSize(fz);
     text_item->setFont(ft);

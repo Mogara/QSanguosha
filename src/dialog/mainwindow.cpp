@@ -31,6 +31,7 @@ class FitView : public QGraphicsView
 public:
     FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
+        setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
 protected:

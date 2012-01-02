@@ -629,7 +629,7 @@ void Client::askForCardOrUseCard(const QString &request_str){
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if(skill){
             QString text = prompt_doc->toHtml();
-            text.append(tr("<br/><br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
+            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
             prompt_doc->setHtml(text);
         }
     }
@@ -665,7 +665,7 @@ void Client::askForSkillInvoke(const QString &invoke_str){
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if(skill){
-        text.append(tr("<br/><br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
+        text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getDescription()));
     }
 
     prompt_doc->setHtml(text);
