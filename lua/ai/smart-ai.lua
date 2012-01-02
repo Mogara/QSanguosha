@@ -2845,10 +2845,6 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			end
 		end
 
-		if (who:getHandcardNum() < 2) and (not who:isKongcheng()) and
-			not self:hasSkills(sgs.need_kongcheng, who) then return -1
-		end
-
 		if flags:match("e") then
 			if who:getArmor() and self:evaluateArmor(who:getArmor(), who)>0
 				and not (who:getArmor():inherits("SilverLion") and self:isWeak(who)) then

@@ -68,7 +68,7 @@ return {
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",
 
 --hulao mode
-	["hulaopass"] = "虎牢关模式",
+	["Hulaopass"] = "虎牢关模式",
 
 	["shenlvbu1"] = "神吕布(1)",
 	["shenlvbu2"] = "神吕布(2)",

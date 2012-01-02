@@ -7,4 +7,5 @@ return
 	["RevealGeneral"] = "展示武将",
 	["anjiang"] = "暗将",
 	["#BasaraGeneralChosen"] = "你选择的武将为 %arg 和 %arg2",
+	["Hegemony"] = "国战模式"
 }
