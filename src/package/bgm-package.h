@@ -1,5 +1,5 @@
-#ifndef ZHUOYOUZHI_H
-#define ZHUOYOUZHI_H
+#ifndef BGMPACKAGE_H
+#define BGMPACKAGE_H
 
 #include "package.h"
 #include "card.h"
@@ -12,4 +12,4 @@ class BGMPackage : public Package{
 public:
     BGMPackage();
 };
-#endif // ZHUOYOUZHI_H
+#endif // BGMPACKAGE_H
