@@ -568,9 +568,6 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     if(killer->getRoom()->getMode() == "06_3v3"){
         killer->drawCards(3);
     }
-    else if(Config.EnableHegemony){
-        return;
-    }
     else{
         if(victim->getRole() == "rebel" && killer != victim){
             killer->drawCards(3);
@@ -591,6 +588,30 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         case Player::Renegade: winner = "lord+loyalist"; break;
         default:
             break;
+        }
+    }else if(Config.EnableHegemony){
+        bool has_anjiang = false, has_diff_kingdoms = false;
+        QString init_kingdom;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            if(room->getTag(p->objectName()).toStringList().size()){
+                has_anjiang = true;
+            }
+
+            if(init_kingdom.isEmpty()){
+                init_kingdom = p->getKingdom();
+            }
+            else if(init_kingdom != p->getKingdom()){
+                has_diff_kingdoms = true;
+            }
+        }
+
+        if(!has_anjiang && !has_diff_kingdoms){
+            QStringList winners;
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                winners << p->objectName();
+            }
+
+            winner = winners.join("+");
         }
     }else{
         QStringList alive_roles = room->aliveRoles(victim);
@@ -877,6 +898,9 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
     switch(event){
     case GameStart:{
         if(player->isLord()){
+            if(Config.EnableHegemony)
+                room->setTag("SkipNormalDeathProcess", true);
+
             foreach(ServerPlayer* sp, room->getAlivePlayers())
             {
                 QString transfigure_str = QString("%1:%2").arg(sp->getGeneralName()).arg("anjiang");
@@ -936,52 +960,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
     }
     case Predamaged:{
         playerShowed(player);
-        break;
-    }
-
-    case Dying:{
-        if(Config.EnableHegemony && player->isLord()){
-            QList<ServerPlayer *> players = room->getAlivePlayers();
-            players.removeOne(player);
-            if(players.isEmpty())
-                break;
-
-            qShuffle(players);
-            ServerPlayer *p = players.first();
-            room->setPlayerProperty(player, "role", "renegade");
-            room->setPlayerProperty(p, "role", "lord");
-        }
-
-        break;
-    }
-
-    case GameOverJudge:{
-        if(Config.EnableHegemony){
-            bool has_anjiang = false, has_diff_kingdoms = false;
-            QString init_kingdom;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                if(room->getTag(p->objectName()).toStringList().size()){
-                    has_anjiang = true;
-                }
-
-                if(init_kingdom.isEmpty()){
-                    init_kingdom = p->getKingdom();
-                }
-                else if(init_kingdom != p->getKingdom()){
-                    has_diff_kingdoms = true;
-                }
-            }
-
-            if(!has_anjiang && !has_diff_kingdoms){
-                QStringList winners;
-                foreach(ServerPlayer *p, room->getAlivePlayers()){
-                    winners << p->objectName();
-                }
-
-                room->gameOver(winners.join("+"));
-            }
-
-        }
         break;
     }
 
