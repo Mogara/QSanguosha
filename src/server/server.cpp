@@ -280,7 +280,7 @@ void BanlistDialog::switchTo(int item)
 }
 
 
-BanlistDialog::BanlistDialog(QWidget *parent)
+BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     :QDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded"));
@@ -327,8 +327,8 @@ BanlistDialog::BanlistDialog(QWidget *parent)
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
-    hlayout->addWidget(add);
-    hlayout->addWidget(remove);
+    if(!view) hlayout->addWidget(add);
+    if(!view) hlayout->addWidget(remove);
     hlayout->addWidget(ok);
     layout->addLayout(hlayout);
 

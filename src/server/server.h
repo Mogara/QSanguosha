@@ -45,7 +45,7 @@ class BanlistDialog: public QDialog{
     Q_OBJECT
 
 public:
-    BanlistDialog(QWidget *parent);
+    BanlistDialog(QWidget *parent, bool view = false);
 
 private:
     QList<QListWidget *>lists;

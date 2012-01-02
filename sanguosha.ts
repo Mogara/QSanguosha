@@ -1719,7 +1719,7 @@
     <message>
         <location filename="src/dialog/mainwindow.ui" line="363"/>
         <source>View ban list</source>
-        <translation type="unfinished"></translation>
+        <translation>查看禁选表</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="236"/>
@@ -2407,7 +2407,7 @@
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="2420"/>
+        <location filename="src/server/room.cpp" line="2422"/>
         <source>Card can not parse:
  %1</source>
         <translation>卡牌字符串无法解析:
