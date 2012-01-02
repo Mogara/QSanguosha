@@ -45,7 +45,7 @@ class KOFBanlistDialog: public QDialog{
     Q_OBJECT
 
 public:
-    KOFBanlistDialog(QDialog *parent);
+    KOFBanlistDialog(QWidget *parent);
 
 private:
     QList<QListWidget *>lists;

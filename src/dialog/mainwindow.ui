@@ -41,6 +41,7 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
+    <addaction name="actionView_ban_list"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
@@ -355,6 +356,11 @@
   <action name="actionSend_lowlevel_command">
    <property name="text">
     <string>Send lowlevel command ...</string>
+   </property>
+  </action>
+  <action name="actionView_ban_list">
+   <property name="text">
+    <string>View ban list</string>
    </property>
   </action>
  </widget>

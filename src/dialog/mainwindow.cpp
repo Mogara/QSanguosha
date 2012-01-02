@@ -904,3 +904,9 @@ void MeleeDialog::updateResultBox(QString role, int win){
     totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
     total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
 }
+
+void MainWindow::on_actionView_ban_list_triggered()
+{
+    KOFBanlistDialog *dialog = new KOFBanlistDialog(this);
+    dialog->exec();
+}
