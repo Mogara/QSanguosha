@@ -754,6 +754,11 @@ BasaraMode::BasaraMode(QObject *parent)
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
+
+    roles["wei"] = "lord";
+    roles["shu"] = "loyalist";
+    roles["wu"] = "rebel";
+    roles["qun"] = "renegade";
 }
 
 int BasaraMode::getPriority() const
@@ -810,19 +815,20 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
             room->setPlayerMark(player, skill_mark[skill_name], 1);
     }
 
-        room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+    room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
+    room->setPlayerProperty(player, "role", roles[player->getGeneral()->getKingdom()]);
 
-        names.removeOne(general_name);
-        room->setTag(player->objectName(),QVariant::fromValue(names));
+    names.removeOne(general_name);
+    room->setTag(player->objectName(),QVariant::fromValue(names));
 
-        LogMessage log;
-        log.type = "#BasaraReveal";
-        log.from = player;
-        log.arg  = player->getGeneralName();
-        log.arg2 = player->getGeneral2Name();
+    LogMessage log;
+    log.type = "#BasaraReveal";
+    log.from = player;
+    log.arg  = player->getGeneralName();
+    log.arg2 = player->getGeneral2Name();
 
-        room->sendLog(log);
-        room->broadcastInvoke("playAudio","choose-item");
+    room->sendLog(log);
+    room->broadcastInvoke("playAudio","choose-item");
 }
 
 void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) const{
@@ -983,9 +989,10 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
         if(Config.EnableHegemony){
             if(player->getGeneralName() == "anjiang"){
                 QStringList generals = room->getTag(player->objectName()).toStringList();
-                room->transfigure(player, generals.at(0), false, false);
+                room->setPlayerProperty(player, "general", generals.at(0));
                 room->setPlayerProperty(player, "general2", generals.at(1));
                 room->setPlayerProperty(player, "kingdom", Sanguosha->getGeneral(generals.at(0))->getKingdom());
+                room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
             }
 
             DamageStar damage = data.value<DamageStar>();
@@ -997,14 +1004,6 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 damage->from->drawCards(3);
             }
 
-            QMap<QString, QString> roles;
-            if(roles.isEmpty()){
-                roles["wei"] = "lord";
-                roles["shu"] = "loyalist";
-                roles["wu"] = "rebel";
-                roles["qun"] = "renegade";
-            }
-            room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
         }
 
         break;

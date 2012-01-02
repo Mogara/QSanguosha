@@ -49,6 +49,7 @@ public:
 private:
     QStringList ban_list;
     QMap<QString, QString> skill_mark;
+    QMap<QString, QString> roles;
 };
 
 #endif // GAMERULE_H

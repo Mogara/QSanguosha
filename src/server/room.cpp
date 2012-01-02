@@ -1500,7 +1500,7 @@ void Room::chooseGenerals(){
         }
     }
     QList<ServerPlayer *> to_assign = players;
-    if(!Config.EnableHegemony)to_assign.removeOne(the_lord);
+    if(!Config.EnableHegemony)to_assign.removeOne(getLord());
     assignGeneralsForPlayers(to_assign);
     foreach(ServerPlayer *player, to_assign){
         askForGeneralAsync(player);

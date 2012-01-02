@@ -47,7 +47,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
 
     ServerPlayer *lord = player->getRoom()->getLord();
     QString lord_kingdom;
-    if(lord->getGeneral()->isLord())
+    if(lord->getGeneral() && lord->getGeneral()->isLord())
         lord_kingdom = lord->getKingdom();
 
     foreach(QString candidate, candidates){
