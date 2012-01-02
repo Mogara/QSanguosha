@@ -22,8 +22,14 @@ public:
         if(event == CardFinished){
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
-        }else if(event == CardResponsed)
+
+            if(card == player->tag["MoonSpearSlash"].value<CardStar>()){
+                card = NULL;
+            }
+        }else if(event == CardResponsed){
             card = data.value<CardStar>();
+            player->tag["MoonSpearSlash"] = data;
+        }
 
         if(card == NULL || !card->isBlack())
             return false;
