@@ -969,9 +969,11 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             if(player->getGeneralName() == "anjiang"){
                 QStringList generals = room->getTag(player->objectName()).toStringList();
                 room->setPlayerProperty(player, "general", generals.at(0));
-                room->setPlayerProperty(player, "general2", generals.at(1));
-                room->setPlayerProperty(player, "kingdom", Sanguosha->getGeneral(generals.at(0))->getKingdom());
+                if(Config.Enable2ndGeneral)room->setPlayerProperty(player, "general2", generals.at(1));
+                room->setPlayerProperty(player, "kingdom", player->getKingdom());
                 room->setPlayerProperty(player, "role", roles[player->getKingdom()]);
+
+                room->broadcastInvoke("killPlayer", player->objectName());
             }
 
             DamageStar damage = data.value<DamageStar>();

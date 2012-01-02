@@ -192,6 +192,22 @@ function useDefaultStrategy()
 	local mode = sgs.GetConfig("GameMode", "")
 	if (mode == "06_3v3") or (not mode:find("0")) then return true end
 	if (mode:find("02_1v1") or mode:find("03p")) then return true end
+	if (sgs.GetConfig("EnableHegemony",false)) then return true end
+end
+
+function getHegKingdom(player)
+	if not (sgs.GetConfig("EnableHegemony",false)) then return player:getKingdom() end
+	
+	local names = player:getRoom():getTag(player:objectName()):toStringList()
+	
+	if #names<1 then return player:getKingdom() end
+	local blah = sgs.Sanguosha:getGeneral(names[1]):getKingdom()
+	--player:getRoom():output(blah)
+	return blah
+end
+
+function SmartAI:getHegKingdom()
+	return getHegKingdom(self.player)
 end
 
 function getHegemonyStrategy(self, player)
@@ -204,13 +220,33 @@ function getHegemonyStrategy(self, player)
 	
 	local player_friends, self_friends = 0, 0		
 	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		if p:getKingdom() == self.player:getKingdom() then self_friends = self_friends + 1
-		elseif p:getKingdom() == player:getKingdom() then player_friends = player_friends + 1
+		if p:getKingdom() == self:getHegKingdom() then self_friends = self_friends + 1
+		elseif p:getKingdom() == player:getKingdom() 
+			and not (p:getKingdom() == "god") then player_friends = player_friends + 1
 		end
 	end
 	
+	--if self is shown , then befriend the friends & hostile to all others
+	
+	if self.player:getKingdom() ~= "god" then
+		if self.player:getKingdom() == player:getKingdom() then return -1 else return 5 end
+	--if self is not shown, then hostile to all except for friend in later game
+	else
+		local party = 0
+		for _, p in sgs.qlist(self.room:getAllPlayers()) do
+			if p:getKingdom() == self:getHegKingdom() then party = party +1 end
+		end
+		
+		if party < 3 and (party + 1) >= self.room:getAllPlayers():length()/2 then
+			if self:getHegKingdom() == player:getKingdom() then return -1 else return 5 end
+		else
+			return 4 end
+	end
+	
+	-- below is not executed at all
+	
 	if self.player:getKingdom() ~= "god" then 
-		if self.player:getKingdom() == player:getKingdom() then return -2
+		if self.player:getKingdom() == player:getKingdom() then return -1
 		else
 			if #anjiangs >= self.room:getAllPlayers():length() - #anjiangs then
 				if player:getKingdom() ~= "god" then return -1 else return 4 end
@@ -221,7 +257,7 @@ function getHegemonyStrategy(self, player)
 			end
 		end
 	else
-		if player:getKingdom() ~= "god" then return 5 else return -1 end
+		if player:getKingdom() ~= "god" then return 5 else return 4 end
 	end
 	
 	return 0 
@@ -314,7 +350,7 @@ function SmartAI:printFEList()
 end
 
 function SmartAI:objectiveLevel(player)
-	if sgs.GetConfig("EnableHegemony", true) then return getHegemonyStrategy(self, player) end
+	if sgs.GetConfig("EnableHegemony", false) then return getHegemonyStrategy(self, player) end
 	
 	if useDefaultStrategy() then
 		if self.player:getRole() == "renegade" then

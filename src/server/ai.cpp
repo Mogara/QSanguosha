@@ -55,18 +55,26 @@ AI::Relation AI::GetRelationBoss(const ServerPlayer *a, const ServerPlayer *b){
 }
 
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b){
-    if(a->getKingdom() == b->getKingdom()){
-        if(a->getKingdom() != "god")
-            return Friend;
-        else
-            return Neutrality;
-    }
-    else{
-        if(a->getKingdom() == "god" || b->getKingdom() == "god")
-            return Neutrality;
-        else
-            return Enemy;
-    }
+    const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
+    const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
+
+    const QString aName = aShown ?
+                a->getGeneralName() :
+                a->getRoom()->getTag(a->objectName()).toStringList().first();
+    const QString bName = bShown ?
+                b->getGeneralName() :
+                b->getRoom()->getTag(b->objectName()).toStringList().first();
+
+    const QString aKingdom = Sanguosha->getGeneral(aName)->getKingdom();
+    const QString bKingdom = Sanguosha->getGeneral(bName)->getKingdom();
+
+
+    qDebug() << aKingdom << bKingdom <<aShown << bShown;
+
+    if(bShown)
+        return aKingdom == bKingdom ? Friend :Enemy;
+    else
+        return aShown ? Neutrality : Enemy;
 }
 
 AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){

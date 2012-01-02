@@ -6,6 +6,7 @@ public:
 	QVariant(bool);
 	int toInt() const;
 	QString toString() const;
+	QStringList toStringList() const;
 	bool toBool() const;
 };
 
