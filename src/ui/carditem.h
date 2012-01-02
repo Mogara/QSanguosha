@@ -56,7 +56,7 @@ private:
     QPixmap suit_pixmap, icon_pixmap, number_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
-    bool auto_back,is_pending;
+    bool auto_back;
 signals:
     void toggle_discards();
     void clicked();
