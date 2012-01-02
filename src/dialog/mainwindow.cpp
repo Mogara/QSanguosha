@@ -907,6 +907,6 @@ void MeleeDialog::updateResultBox(QString role, int win){
 
 void MainWindow::on_actionView_ban_list_triggered()
 {
-    KOFBanlistDialog *dialog = new KOFBanlistDialog(this);
+    BanlistDialog *dialog = new BanlistDialog(this, true);
     dialog->exec();
 }
