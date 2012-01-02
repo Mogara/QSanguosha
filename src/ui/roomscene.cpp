@@ -3783,7 +3783,7 @@ void RoomScene::adjustPrompt()
 
     QFont ft=text_item->font();
     int fz = ft.pixelSize() * qSqrt(fitSize*1.0/height);
-    if(fz > 30)fz = 30;
+    if(fz > 25)fz = 25;
 
     ft.setPixelSize(fz);
     text_item->setFont(ft);

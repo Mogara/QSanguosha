@@ -1477,28 +1477,30 @@ void Room::chooseGenerals(){
 //    }
 
     // for lord.
-    QStringList lord_list;
-    if(mode == "08same")
-        lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
-    else
-        lord_list = Sanguosha->getRandomLords();
-    ServerPlayer *the_lord = getLord();
-    QString general = askForGeneral(the_lord, lord_list);
-    the_lord->setGeneralName(general);
-    if(!Config.EnableBasara)broadcastProperty(the_lord, "general", general);
+    if(!Config.EnableHegemony)
+    {
+        QStringList lord_list;
+        if(mode == "08same")
+            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+        else
+            lord_list = Sanguosha->getRandomLords();
+        ServerPlayer *the_lord = getLord();
+        QString general = askForGeneral(the_lord, lord_list);
+        the_lord->setGeneralName(general);
+        if(!Config.EnableBasara)broadcastProperty(the_lord, "general", general);
 
-    if(mode == "08same"){
-        foreach(ServerPlayer *p, players){
-            if(!p->isLord())
-                p->setGeneralName(general);
+        if(mode == "08same"){
+            foreach(ServerPlayer *p, players){
+                if(!p->isLord())
+                    p->setGeneralName(general);
+            }
+
+            Config.Enable2ndGeneral = false;
+            return;
         }
-
-        Config.Enable2ndGeneral = false;
-        return;
     }
-
     QList<ServerPlayer *> to_assign = players;
-    to_assign.removeOne(the_lord);
+    if(!Config.EnableHegemony)to_assign.removeOne(the_lord);
     assignGeneralsForPlayers(to_assign);
     foreach(ServerPlayer *player, to_assign){
         askForGeneralAsync(player);
