@@ -809,6 +809,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         QString general_name = room->askForGeneral(player,names);
 
         generalShowed(player,general_name);
+        room->getThread()->trigger(GameOverJudge, player);
         playerShowed(player);
     }
 }
