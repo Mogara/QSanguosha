@@ -86,7 +86,7 @@ private:
     int sort_type;
     QGraphicsSimpleTextItem *handcard_num;
     QList<CardItem *> judging_area;
-    QList<QPixmap> delayed_tricks;
+    QList<QGraphicsItem *> delayed_tricks;
     QGraphicsPixmapItem *death_item;
     Pixmap *chain_icon, *back_icon;
 
