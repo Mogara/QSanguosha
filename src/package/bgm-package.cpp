@@ -5,9 +5,9 @@
 #include "carditem.h"
 #include "engine.h"
 
-class ChongZheng: public TriggerSkill{
+class ChongZhen: public TriggerSkill{
 public:
-    ChongZheng(): TriggerSkill("chongzheng"){
+    ChongZhen(): TriggerSkill("chongzhen"){
         events << CardResponsed << CardEffect << CardEffected;
     }
 
@@ -15,13 +15,13 @@ public:
         return 4;
     }
 
-    void doChongZheng(ServerPlayer *player, const Card *card) const{
+    void doChongZhen(ServerPlayer *player, const Card *card) const{
         if(card->getSkillName() != "longdan")
             return;
 
         Room *room = player->getRoom();
 
-        ServerPlayer *target = player->tag["ChongZhengTarget"].value<PlayerStar>();
+        ServerPlayer *target = player->tag["ChongZhenTarget"].value<PlayerStar>();
         if(!target || target->isKongcheng() || !room->askForSkillInvoke(player, objectName()))
             return;
 
@@ -32,16 +32,16 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
-            doChongZheng(player, card);
+            doChongZhen(player, card);
         }
         else{
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if(event == CardEffected)
-                player->tag["ChongZhengTarget"] = QVariant::fromValue(effect.from);
+                player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
             else
-                player->tag["ChongZhengTarget"] = QVariant::fromValue(effect.to);
+                player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
 
-            doChongZheng(player, effect.card);
+            doChongZhen(player, effect.card);
         }
 
         return false;
@@ -51,7 +51,7 @@ public:
 BGMPackage::BGMPackage():Package("BGM"){
     General *sp_zhaoyun = new General(this, "sp_zhaoyun", "qun", 3, true, true);
     sp_zhaoyun->addSkill("longdan");
-    sp_zhaoyun->addSkill(new ChongZheng);
+    sp_zhaoyun->addSkill(new ChongZhen);
 }
 
 ADD_PACKAGE(BGM)
