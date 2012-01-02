@@ -13,8 +13,8 @@
 #include <QGraphicsDropShadowEffect>
 
 CardItem::CardItem(const Card *card)
-    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true),
-      is_pending(false)
+    :Pixmap(card->getPixmapPath(), false), card(card), filtered_card(card), auto_back(true)
+
 {
     Q_ASSERT(card != NULL);
 
@@ -36,7 +36,7 @@ CardItem::CardItem(const Card *card)
 }
 
 CardItem::CardItem(const QString &general_name)
-    :card(NULL), filtered_card(NULL), auto_back(true), is_pending(false)
+    :card(NULL), filtered_card(NULL), auto_back(true)
 {
     changeGeneral(general_name);
 }
@@ -178,7 +178,6 @@ void CardItem::select(){
         //setY(PendingY);
         if(!hasFocus())goBack();
     }
-    is_pending = true;
 }
 
 void CardItem::unselect(){
@@ -189,12 +188,10 @@ void CardItem::unselect(){
         //setY(NormalY);
         if(!hasFocus())goBack();
     }
-
-    is_pending = false;
 }
 
 bool CardItem::isPending() const{
-    return is_pending;
+    return home_pos.y() == PendingY;
 }
 
 bool CardItem::isEquipped() const{

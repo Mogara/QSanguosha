@@ -1480,6 +1480,8 @@ void Room::chooseGenerals(){
     QStringList lord_list;
     if(mode == "08same")
         lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+    else if(Config.EnableHegemony)
+        lord_list = Sanguosha->getRandomGenerals(3);
     else
         lord_list = Sanguosha->getRandomLords();
     ServerPlayer *the_lord = getLord();
