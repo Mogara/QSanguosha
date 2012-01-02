@@ -968,6 +968,7 @@ public:
 
     static QString SelectSkill(ServerPlayer *zuoci, bool acquire_instant = true){
         Room *room = zuoci->getRoom();
+        room->playSkillEffect("huashen");
 
         QString huashen_skill = zuoci->tag["HuashenSkill"].toString();
         if(!huashen_skill.isEmpty())
@@ -1103,9 +1104,11 @@ public:
         int n = damage.damage;
         if(n == 0)
             return;
-
-        if(zuoci->getRoom()->askForSkillInvoke(zuoci, objectName()))
+        Room *room = zuoci->getRoom();
+        if(room->askForSkillInvoke(zuoci, objectName())){
+            room->playSkillEffect(objectName());
             Huashen::AcquireGenerals(zuoci, n);
+        }
     }
 };
 

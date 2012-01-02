@@ -104,8 +104,8 @@ return {
 	["cv:sunce"] = "",
 	["cv:erzhang"] = "",
 	["cv:caiwenji"] = "呼呼",
-	["cv:zuoci"] = "",
-	["cv:zuocif"] = "",
+	["cv:zuoci"] = "东方胤弘",
+	["cv:zuocif"] = "东方小萝莉",
 
 	["zuoci"] = "左慈",
 	["zuocif"] = "左慈(女)",

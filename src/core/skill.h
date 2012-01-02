@@ -182,12 +182,14 @@ class SPConvertSkill: public GameStartSkill{
 
 public:
     SPConvertSkill(const QString &name, const QString &from, const QString &to);
+    SPConvertSkill(const QString &name, const QString &from, const QString &to, bool transfigure);
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onGameStart(ServerPlayer *player) const;
 
 private:
     QString from, to;
+    bool transfigure;
 };
 
 class ProhibitSkill: public Skill{

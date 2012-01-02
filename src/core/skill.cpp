@@ -297,7 +297,13 @@ bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) con
 }
 
 SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to)
-    :GameStartSkill(name), from(from), to(to)
+    :GameStartSkill(name), from(from), to(to), transfigure(false)
+{
+    frequency = Limited;
+}
+
+SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to, bool transfigure)
+    :GameStartSkill(name), from(from), to(to), transfigure(transfigure)
 {
     frequency = Limited;
 }
@@ -309,12 +315,16 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
     if(player->askForSkillInvoke(objectName())){
         Room *room = player->getRoom();
-        room->setPlayerProperty(player, "general", to);
+        if(transfigure)
+            room->transfigure(player, to, true, false);
+        else
+            room->setPlayerProperty(player, "general", to);
 
         const General *general = Sanguosha->getGeneral(to);
         const QString kingdom = general->getKingdom();
         if(kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);
+
     }
 }
 
