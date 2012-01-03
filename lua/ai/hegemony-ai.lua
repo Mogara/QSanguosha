@@ -35,8 +35,9 @@ if sgs.GetConfig("EnableHegemony", false) then
 		end
 
 		if self:getHegKingdom() == player:getKingdom() and self:getHegKingdom() ~= "god" then return -1
+		elseif player:getKingdom() ~= "god" then return 5
 		elseif sgs.ai_explicit[player:objectName()] == self.player:getKingdom() then return -1
-		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) > 0 then return 5
+		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) > 0 then return 4
 		end
 		
 		return 0
@@ -94,11 +95,10 @@ if sgs.GetConfig("EnableHegemony", false) then
 		local flist = {}
 		local elist = {}
 		self.friends = flist
-		self.enemy = elist
+		self.enemies = elist
 		self.friends_noself = {}
-		self.enemies = {}
 		
-		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		--[[for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if self.room:getAllPlayers():length() == 2 then table.insert(self.enemies, player)
 			else
 				if self.player:getGeneralName() == "anjiang" then
@@ -111,7 +111,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 					if player:getGeneral():getKingdom() ~= self.player:getGeneral():getKingdom() then table.insert(self.enemies, player) end
 				end
 			end
-		end
+		end]]
 		
 		local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 		for _, aplayer in ipairs(players) do
