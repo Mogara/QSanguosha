@@ -538,8 +538,8 @@ function SmartAI:filterEvent(event, player, data)
 		sgs.recorder = self
 	end
 
-	if self~= sgs.recorder then return end
-
+	if self ~= sgs.recoreder then return end
+	
 	if event == sgs.CardEffect then
 		local struct = data:toCardEffect()
 		local card = struct.card
