@@ -25,7 +25,7 @@ public:
         if(!target || target->isKongcheng() || !room->askForSkillInvoke(player, objectName()))
             return;
 
-        int card_id = target->getRandomHandCardId();
+        int card_id = room->askForCardChosen(player, target, "h", objectName());
         room->moveCardTo(Sanguosha->getCard(card_id), player, Player::Hand, false);
     }
 
