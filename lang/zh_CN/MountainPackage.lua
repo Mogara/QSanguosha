@@ -9,7 +9,12 @@ return {
 	["@qiaobian-draw"] = "你可弃置1张手牌跳过摸牌阶段，并获得其他至多两名角色各一张手牌",
 	["@qiaobian-play"] = "你可弃置1张手牌跳过出牌阶段，并将场上的一张牌移动到另一名角色区域里的相应位置",
 	["@qiaobian-discard"] = "你可弃置1张手牌跳过弃牌阶段",
-	
+	["$qiaobian1"] = "虚招令旗，以之惑敌。", -- judge
+	["$qiaobian2"] = "绝其汲道，困其刍粮。", -- draw
+	["$qiaobian3"] = "以守为攻，后发制人。", -- play
+	["$qiaobian4"] = "停止前进，扎营御敌！", -- discard
+	["~zhanghe"] = "归兵勿追，追兵难归啊……",
+
 	["dengai"] = "邓艾",
 	["tuntian"] = "屯田",
 	[":tuntian"] = "你的回合外，每当失去牌时，可进行一次判定，将非红桃结果的判定牌置于你的武将牌上，称为“田”；每有一张“田”，你计算与其他角色的距离便-1",
@@ -97,7 +102,7 @@ return {
 	["$duanchang1"] = "雁飞高兮邈难寻，空断肠兮思愔愔。",
 	["$duanchang2"] = "胡人落泪沾边草，汉使断肠对归客。",
 
-	["cv:zhanghe"] = "",
+	["cv:zhanghe"] = "爪子",
 	["cv:dengai"] = "烨子",
 	["cv:liushan"] = "迷宫",
 	["cv:jiangwei"] = "Jr. Wakaran",
