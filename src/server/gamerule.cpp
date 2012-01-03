@@ -938,12 +938,13 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
             }
 
             DamageStar damage = data.value<DamageStar>();
-            if(damage->from && damage->from->getKingdom() == damage->to->getKingdom()){
-                damage->from->throwAllEquips();
-                damage->from->throwAllHandCards();
+            ServerPlayer *killer = damage ? damage->from : NULL;
+            if(killer && killer->getKingdom() == damage->to->getKingdom()){
+                killer->throwAllEquips();
+                killer->throwAllHandCards();
             }
-            else if(damage->from && damage->from->isAlive()){
-                damage->from->drawCards(3);
+            else if(killer && killer->isAlive()){
+                killer->drawCards(3);
             }
 
         }
