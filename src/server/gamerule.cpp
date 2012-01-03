@@ -886,6 +886,7 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 }
 
                 sp->invoke("log",log.toString());
+                sp->tag["roles"] = room->getTag(sp->objectName()).toStringList().join("+");
             }
         }
 

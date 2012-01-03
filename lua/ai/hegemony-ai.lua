@@ -13,7 +13,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 	SmartAI.getHegKingdom = function(self)
 		local names = self.room:getTag(self.player:objectName()):toStringList()
 
-		if names:isEmpty() then return self.player:getKingdom() end
+		if #names == 0 then return self.player:getKingdom() end
 		local kingdom = sgs.Sanguosha:getGeneral(names[1]):getKingdom()
 		return kingdom
 	end
@@ -36,8 +36,10 @@ if sgs.GetConfig("EnableHegemony", false) then
 
 		if self:getHegKingdom() == player:getKingdom() and self:getHegKingdom() ~= "god" then return -1
 		elseif sgs.ai_explicit[player:objectName()] == self.player:getKingdom() then return -1
-		elseif (sgs.ai_loyalty[self.player:getHegKingdom()][player:objectName()] or 0) > 0 then return 5
-		else return 0 end
+		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) > 0 then return 5
+		end
+		
+		return 0
 	end
 
 	SmartAI.isFriend = function(self, player)
@@ -48,7 +50,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		return self:objectiveLevel(player) >= 0
 	end
 
-	sgs.ai_intention["general"] = function(to, level)
+	sgs.ai_card_intention["general"] = function(to, level)
 		sgs.hegemony_to = to
 		sgs.hegemony_level = level
 		return level
@@ -94,6 +96,23 @@ if sgs.GetConfig("EnableHegemony", false) then
 		self.friends = flist
 		self.enemy = elist
 		self.friends_noself = {}
+		self.enemies = {}
+		
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if self.room:getAllPlayers():length() == 2 then table.insert(self.enemies, player)
+			else
+				if self.player:getGeneralName() == "anjiang" then
+					local generals = self.player:getTag("roles"):toString():split("+")
+					local general = sgs.Sanguosha:getGeneral(generals[1])
+					if(player:getGeneralName() ~= "anjiang") then
+						if general:getKingdom() ~= player:getGeneral():getKingdom() then table.insert(self.enemies, player) end
+					end
+				else
+					if player:getGeneral():getKingdom() ~= self.player:getGeneral():getKingdom() then table.insert(self.enemies, player) end
+				end
+			end
+		end
+		
 		local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 		for _, aplayer in ipairs(players) do
 			if self:isFriend(aplayer) then table.insert(flist, aplayer) end
