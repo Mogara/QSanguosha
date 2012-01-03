@@ -181,8 +181,7 @@ class SPConvertSkill: public GameStartSkill{
     Q_OBJECT
 
 public:
-    SPConvertSkill(const QString &name, const QString &from, const QString &to);
-    SPConvertSkill(const QString &name, const QString &from, const QString &to, bool transfigure);
+    SPConvertSkill(const QString &name, const QString &from, const QString &to, bool transfigure = false);
 
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onGameStart(ServerPlayer *player) const;
