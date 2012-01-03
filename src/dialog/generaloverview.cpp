@@ -25,13 +25,13 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals){
     ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(generals.length());
+    ui->tableWidget->setRowCount(generals.length()-1);
     ui->tableWidget->setIconSize(QSize(20,20));
     QIcon lord_icon("image/system/roles/lord.png");
 
-    int i;
-    for(i=0; i<generals.length(); i++){
-        const General *general = generals[i];
+    int i=0;
+    foreach(const General *general, generals){
+        if(general->objectName() == "anjiang") continue;
 
         QString name, kingdom, gender, max_hp, package;
 
@@ -70,6 +70,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
         ui->tableWidget->setItem(i, 2, gender_item);
         ui->tableWidget->setItem(i, 3, max_hp_item);
         ui->tableWidget->setItem(i, 4, package_item);
+        i++;
     }
 
     ui->tableWidget->setColumnWidth(0, 80);
@@ -163,8 +164,10 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     foreach(const Skill *skill, skills){
         addLines(skill);
     }
-
-    QString last_word = Sanguosha->translate("~" + general->objectName());
+    QString generalname = general->objectName();
+    if(generalname.startsWith("sp_") && generalname!="sp_pangde")
+        generalname = generalname.right(generalname.length()-3);
+    QString last_word = Sanguosha->translate("~" + generalname);
     if(!last_word.startsWith("~")){
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
         button_layout->addWidget(death_button);

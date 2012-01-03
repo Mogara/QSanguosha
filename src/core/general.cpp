@@ -145,7 +145,10 @@ QString General::getSkillDescription() const{
 }
 
 void General::lastWord() const{
-    QString filename = QString("audio/death/%1.ogg").arg(objectName());
+    QString general_name = objectName();
+    if(general_name.startsWith("sp_") && general_name!="sp_pangde")
+        general_name = general_name.right(general_name.length()-3);
+    QString filename = QString("audio/death/%1.ogg").arg(general_name);
     Sanguosha->playEffect(filename);
 }
 
