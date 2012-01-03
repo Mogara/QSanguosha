@@ -771,7 +771,6 @@ BasaraMode::BasaraMode(QObject *parent)
 
     events << CardLost << Predamaged;
 
-    ban_list << "dongzhuo" << "zuoci";
     skill_mark["niepan"] = "@nirvana";
     skill_mark["smallyeyan"] = "@flame";
     skill_mark["luanwu"] = "@chaos";
@@ -794,12 +793,13 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
         return;
 
     if(Config.EnableHegemony){
-        QList<ServerPlayer *> showed_players;
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if(p->getGeneralName() != "anjiang")
-                showed_players << p;
+        QMap<QString, int> kingdom_roles;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            kingdom_roles[p->getGeneral()->getKingdom()]++;
+        }
 
-        if(showed_players.length() >= 3 && player->getGeneralName() == "anjiang")
+        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 1
+                && player->getGeneralName() == "anjiang")
             return;
     }
 
@@ -851,44 +851,6 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
     room->sendLog(log);
     room->broadcastInvoke("playAudio","choose-item");
-}
-
-void BasaraMode::setBannedGenerals(ServerPlayer *player, QStringList &choices) const{
-    if(choices.isEmpty())
-        return;
-
-    QStringList chosens = choices, new_choices;
-    do{
-        QString choice = player->findReasonable(chosens, true);
-
-        if(choice.isEmpty()){
-            if(chosens.length() != choices.length()){
-                choices = new_choices;
-                return;
-            }
-
-            QString kingdom = player->getKingdom();
-            QStringList names = Sanguosha->getLimitedGeneralNames(), choose_names;
-            foreach(QString ban_name, ban_list)
-                names.removeOne(ban_name);
-
-            foreach(QString name, names){
-                if(Sanguosha->getGeneral(name)->getKingdom() == kingdom && name != player->getGeneralName())
-                    choose_names << name;
-            }
-
-            qShuffle(choose_names);
-            choice = player->findReasonable(choose_names);
-            choices.clear();
-            choices << choice;
-            return;
-        }
-        else{
-            new_choices << choice;
-            chosens.removeOne(choice);
-        }
-    }while(!chosens.isEmpty());
-
 }
 
 bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
