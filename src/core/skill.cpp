@@ -296,12 +296,6 @@ bool GameStartSkill::trigger(TriggerEvent, ServerPlayer *player, QVariant &) con
     return false;
 }
 
-SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to)
-    :GameStartSkill(name), from(from), to(to), transfigure(false)
-{
-    frequency = Limited;
-}
-
 SPConvertSkill::SPConvertSkill(const QString &name, const QString &from, const QString &to, bool transfigure)
     :GameStartSkill(name), from(from), to(to), transfigure(transfigure)
 {

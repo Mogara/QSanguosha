@@ -2578,8 +2578,13 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     static QStringList labels;
-    if(labels.isEmpty())
-        labels << tr("General") << tr("Name") << tr("Alive") << tr("Role");
+    if(labels.isEmpty()){
+        labels << tr("General") << tr("Name") << tr("Alive");
+        if(Config.EnableHegemony)
+            labels << tr("Nationality");
+        else
+            labels << tr("Role");
+    }
     table->setHorizontalHeaderLabels(labels);
 
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -2604,11 +2609,18 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 2, item);
 
         item = new QTableWidgetItem;
-        QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
-        item->setIcon(icon);
+
+        if(Config.EnableHegemony){
+            QIcon icon(QString("image/kingdom/icon/%1.png").arg(player->getKingdom()));
+            item->setIcon(icon);
+            item->setText(Sanguosha->translate(player->getKingdom()));
+        }else{
+            QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
+            item->setIcon(icon);
+            item->setText(Sanguosha->translate(player->getRole()));
+        }
         if(!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-        item->setText(Sanguosha->translate(player->getRole()));
         table->setItem(i, 3, item);
     }
 }
@@ -3764,6 +3776,7 @@ void RoomScene::updateStateItem(const QString &roles)
         removeItem(item);
     role_items.clear();
 
+    if(Config.EnableHegemony) return;
     static QMap<QChar, QPixmap> map;
     if(map.isEmpty()){
         AddRoleIcon(map, 'Z', "lord");

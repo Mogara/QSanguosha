@@ -128,6 +128,10 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 		end
 	end
 	if slashcount > 1 or (slashcount == 1 and #self.enemies > 1) then
+		local slash = self:getCard("Slash")
+		assert(slash)
+		local dummy_use = {isDummy = true}
+		self:useBasicCard(slash, dummy_use)
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				local h = enemy:getHandcardNum()
@@ -139,16 +143,18 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 				end
 			end
 		end
-		self:sort(self.friends_noself,"handcard")
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				local h = friend:getHandcardNum()
-				local poss = ((14-max_card:getNumber())/13)^h
-				if math.random() > poss then
-					use.card = sgs.Card_Parse("@TianyiCard=" .. max_card:getId())
-					if use.to then use.to:append(friend) end
-					return
+		if dummy_use.card then
+			self:sort(self.friends_noself,"handcard")
+			for index = #self.friends_noself, 1, -1 do
+				local friend = self.friends_noself[index]
+				if not friend:isKongcheng() then
+					local h = friend:getHandcardNum()
+					local poss = ((14-max_card:getNumber())/13)^h
+					if math.random() > poss then
+						use.card = sgs.Card_Parse("@TianyiCard=" .. max_card:getId())
+						if use.to then use.to:append(friend) end
+						return
+					end
 				end
 			end
 		end

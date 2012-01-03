@@ -44,10 +44,7 @@ public:
     void playerShowed(ServerPlayer *player) const;
     void generalShowed(ServerPlayer *player,QString general_name) const;
 
-    void setBannedGenerals(ServerPlayer *player, QStringList &choices) const;
-
 private:
-    QStringList ban_list;
     QMap<QString, QString> skill_mark;
     QMap<QString, QString> roles;
 };
