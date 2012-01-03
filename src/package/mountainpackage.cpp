@@ -226,7 +226,7 @@ public:
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         DamageStar damage = data.value<DamageStar>();
 
-        if(damage && damage->from){
+        if(damage && damage->from && damage->from->getGeneralName() != "anjiang"){
             Room *room = player->getRoom();
 
             LogMessage log;
