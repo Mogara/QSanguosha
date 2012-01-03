@@ -3764,6 +3764,7 @@ void RoomScene::updateStateItem(const QString &roles)
         removeItem(item);
     role_items.clear();
 
+    if(Config.EnableHegemony) return;
     static QMap<QChar, QPixmap> map;
     if(map.isEmpty()){
         AddRoleIcon(map, 'Z', "lord");

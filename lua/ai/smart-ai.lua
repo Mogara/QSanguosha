@@ -192,78 +192,6 @@ function useDefaultStrategy()
 	local mode = sgs.GetConfig("GameMode", "")
 	if (mode == "06_3v3") or (not mode:find("0")) then return true end
 	if (mode:find("02_1v1") or mode:find("03p")) then return true end
-	if (sgs.GetConfig("EnableHegemony",false)) then return true end
-end
-
-function getHegKingdom(player)
-	if not (sgs.GetConfig("EnableHegemony",false)) then return player:getKingdom() end
-	
-	local names = player:getRoom():getTag(player:objectName()):toStringList()
-	
-	if #names<1 then return player:getKingdom() end
-	local blah = sgs.Sanguosha:getGeneral(names[1]):getKingdom()
-	--player:getRoom():output(blah)
-	return blah
-end
-
-function SmartAI:getHegKingdom()
-	return getHegKingdom(self.player)
-end
-
-function getHegemonyStrategy(self, player)
-	local anjiangs = {}
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		if p:getGeneralName() == "anjiang" then
-			table.insert(anjiangs, p) 
-		end
-	end
-	
-	local player_friends, self_friends = 0, 0		
-	for _, p in sgs.qlist(self.room:getAllPlayers()) do
-		if p:getKingdom() == self:getHegKingdom() then self_friends = self_friends + 1
-		elseif p:getKingdom() == player:getKingdom() 
-			and not (p:getKingdom() == "god") then player_friends = player_friends + 1
-		end
-	end
-	
-	--if self is shown , then befriend the friends & hostile to all others
-	
-	if self.player:getKingdom() ~= "god" then
-		if self.player:getKingdom() == player:getKingdom() then return -1 else return 5 end
-	--if self is not shown, then hostile to all except for friend in later game
-	else
-		local party = 0
-		for _, p in sgs.qlist(self.room:getAllPlayers()) do
-			if p:getKingdom() == self:getHegKingdom() then party = party +1 end
-		end
-		
-		self:log(party..' '..self.room:getAllPlayers():length())
-		
-		if (party < 3) and 
-		(2 * party + 2 >= self.room:getAllPlayers():length()) then
-			if self:getHegKingdom() == player:getKingdom() then return -1 else return 5 end
-		else
-			return 4 end
-	end
-	
-	-- below is not executed at all
-	
-	if self.player:getKingdom() ~= "god" then 
-		if self.player:getKingdom() == player:getKingdom() then return -1
-		else
-			if #anjiangs >= self.room:getAllPlayers():length() - #anjiangs then
-				if player:getKingdom() ~= "god" then return -1 else return 4 end
-			else
-				if player:getKingdom() ~= "god" then 
-					if self_friends > player_friends then return 0 else return 5 end
-				end
-			end
-		end
-	else
-		if player:getKingdom() ~= "god" then return 5 else return 4 end
-	end
-	
-	return 0 
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
@@ -353,8 +281,6 @@ function SmartAI:printFEList()
 end
 
 function SmartAI:objectiveLevel(player)
-	if sgs.GetConfig("EnableHegemony", false) then return getHegemonyStrategy(self, player) end
-	
 	if useDefaultStrategy() then
 		if self.player:getRole() == "renegade" then
 		elseif player:getRole() == "renegade" then return 4.1
@@ -594,9 +520,9 @@ function SmartAI:filterEvent(event, player, data)
 				elseif selfexp == "rebelish" then selfexp = "rebel"
 				end
 				sgs.ai_explicit[player:objectName()] = nil
-				sgs.ai_assumed[selfexp] = sgs.ai_assumed[selfexp]+1
+				sgs.ai_assumed[selfexp] = (sgs.ai_assumed[selfexp] or 0)+1
 			end
-			sgs.ai_assumed[player:getRole()] = sgs.ai_assumed[player:getRole()]-1
+			sgs.ai_assumed[player:getRole()] = (sgs.ai_assumed[player:getRole()] or 0)-1
 		end
 	end
 
@@ -3817,5 +3743,6 @@ dofile "lua/ai/yjcm-skill-ai.lua"
 dofile "lua/ai/fancheng-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
 dofile "lua/ai/basara-ai.lua"
+dofile "lua/ai/hegemony-ai.lua"
 
 dofile "lua/ai/guanxing-ai.lua"
