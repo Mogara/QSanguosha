@@ -2734,7 +2734,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 					lightning = trick:getId()
 				elseif trick:inherits("Indulgence") or trick:getSuit() == sgs.Card_Diamond then
 					indulgence = trick:getId()
-				else
+				elseif not trick:inherits("Disaster") then
 					supply_shortage = trick:getId()
 				end
 			end
