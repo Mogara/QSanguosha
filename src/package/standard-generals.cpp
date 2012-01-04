@@ -1006,11 +1006,11 @@ public:
                 if(room->askForUseCard(daqiao, "@@liuli", prompt)){
                     foreach(ServerPlayer *player, players){
                         if(player->hasFlag("liuli_target")){
+                            effect.to = player;
+                            room->cardEffect(effect);
+
                             room->setPlayerFlag(effect.from, "-slash_source");
                             room->setPlayerFlag(player, "-liuli_target");
-                            effect.to = player;
-
-                            room->cardEffect(effect);
                             return true;
                         }
                     }
@@ -1411,7 +1411,7 @@ TestPackage::TestPackage()
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
 
-    new General(this, "anjiang", "god", 4,true,true);
+    new General(this, "anjiang", "god", 4,true, true, true);
 }
 
 ADD_PACKAGE(Test)

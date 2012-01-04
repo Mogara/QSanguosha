@@ -298,6 +298,8 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals){
     for(int i=0; i<generals.length(); i++){
         const General *general = generals.at(i);
         QString general_name = general->objectName();
+        if(general->isTotallyHidden())
+            continue;
 
         QString text = QString("%1[%2]")
                        .arg(Sanguosha->translate(general_name))

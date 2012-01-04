@@ -108,7 +108,8 @@ sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 	end
 	local usecard=false
 	if friendly_fire and is_chained > 1 then usecard=true end
-	if target[1] then
+	self:sort(self.friends, "hp")
+	if target[1] and not self:isWeak(self.friends[1]) then
 		if target[1]:getArmor() and target[1]:getArmor():objectName() == "vine" then usecard=true end
 	end
 	if usecard then

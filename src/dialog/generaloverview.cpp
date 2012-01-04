@@ -24,14 +24,21 @@ GeneralOverview::GeneralOverview(QWidget *parent) :
 }
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals){
+    QList<const General *> copy_generals = generals;
+    QMutableListIterator<const General *> itor = copy_generals;
+    while(itor.hasNext()){
+        if(itor.next()->isTotallyHidden())
+            itor.remove();
+    }
+
     ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(generals.length());
+    ui->tableWidget->setRowCount(copy_generals.length());
     ui->tableWidget->setIconSize(QSize(20,20));
     QIcon lord_icon("image/system/roles/lord.png");
 
     int i;
-    for(i=0; i<generals.length(); i++){
-        const General *general = generals[i];
+    for(i=0; i<copy_generals.length(); i++){
+        const General *general = copy_generals[i];
 
         QString name, kingdom, gender, max_hp, package;
 
@@ -165,7 +172,14 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     }
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
+    if(last_word.startsWith("~")){
+        QStringList origin_generals = general->objectName().split("_");
+        if(origin_generals.length()>1)
+            last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
+    }
+
     if(!last_word.startsWith("~")){
+
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
         button_layout->addWidget(death_button);
 

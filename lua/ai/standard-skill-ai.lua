@@ -545,7 +545,7 @@ sgs.ai_skill_use_func["RendeCard"] = function(card, use, self)
 					self:sort(self.friends_noself)
 					for _, friend in ipairs(self.friends_noself) do
 						if not self:hasSameEquip(hcard, friend) or friend:hasSkill("shensu")
-							or (self:hasSkills("zhijian|mingce|xiaoji|xuanfeng", friend) and not friend:containsTrick("indulgence"))  then
+							or (self:hasSkills("zhijian|mingce|xiaoji|xuanfeng|taichen", friend) and not friend:containsTrick("indulgence"))  then
 							use.card = sgs.Card_Parse("@RendeCard=" .. hcard:getId())
 							if use.to then use.to:append(friend) end
 							return
