@@ -103,7 +103,7 @@ void Settings::init(){
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     Volume = value("Volume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/chibi.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
     if(!contains("Banlist/1v1")){
         QStringList banlist;
