@@ -1026,6 +1026,11 @@ public:
     }
 
     virtual void onGameStart(ServerPlayer *zuoci) const{
+        if(zuoci->getGeneral2Name().startsWith("zuoci")){
+            zuoci->getRoom()->setPlayerProperty(zuoci, "general2", zuoci->getGeneralName());
+            zuoci->getRoom()->setPlayerProperty(zuoci, "general", "zuoci");
+        }
+
         AcquireGenerals(zuoci, 2);
         SelectSkill(zuoci);
     }
