@@ -8,7 +8,7 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed << CardEffect << CardEffected;
+        events << CardResponsed << CardEffect << CardEffected << CardFinished;
     }
 
     virtual int getPriority() const{
@@ -34,12 +34,24 @@ public:
             CardStar card = data.value<CardStar>();
             doChongZhen(player, card);
         }
+        else if(event == CardFinished){
+            player->tag["ChongZhenTarget"] = NULL;
+        }
         else{
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(event == CardEffected)
-                player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
-            else
+            if(event == CardEffected){
+                if(effect.card->inherits("Duel")
+                        || effect.card->inherits("ArcheryAttack")
+                        || effect.card->inherits("SavageAssault")
+                        || effect.card->inherits("Slash"))
+                    player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
+            }
+            else{
+                if(effect.to->hasFlag("liuli_target"))
+                    return false;
+
                 player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
+            }
 
             doChongZhen(player, effect.card);
         }
