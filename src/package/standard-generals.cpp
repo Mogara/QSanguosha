@@ -1006,11 +1006,11 @@ public:
                 if(room->askForUseCard(daqiao, "@@liuli", prompt)){
                     foreach(ServerPlayer *player, players){
                         if(player->hasFlag("liuli_target")){
+                            effect.to = player;
+                            room->cardEffect(effect);
+
                             room->setPlayerFlag(effect.from, "-slash_source");
                             room->setPlayerFlag(player, "-liuli_target");
-                            effect.to = player;
-
-                            room->cardEffect(effect);
                             return true;
                         }
                     }

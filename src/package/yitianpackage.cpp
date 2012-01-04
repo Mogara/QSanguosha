@@ -976,6 +976,11 @@ public:
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         Room *room = player->getRoom();
         if(event == GameStart){
+            if(player->getGeneral2Name().startsWith("luboyan")){
+                room->setPlayerProperty(player, "general2", player->getGeneralName());
+                room->setPlayerProperty(player, "general", "luboyan");
+            }
+
             QString gender = room->askForChoice(player, objectName(), "male+female");
             bool is_male = player->getGeneral()->isMale();
             if(gender == "female"){
