@@ -7,8 +7,8 @@
 #include <QSize>
 #include <QFile>
 
-General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden)
-    :QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female), hidden(hidden)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
+    :QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female), hidden(hidden), never_shown(never_shown)
 {
     static QChar lord_symbol('$');
     if(name.contains(lord_symbol)){
@@ -56,6 +56,10 @@ bool General::isLord() const{
 
 bool General::isHidden() const{
     return hidden;
+}
+
+bool General::isTotallyHidden() const{
+    return never_shown;
 }
 
 QString General::getPixmapPath(const QString &category) const{

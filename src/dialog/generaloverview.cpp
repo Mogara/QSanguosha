@@ -32,6 +32,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals){
     int i;
     for(i=0; i<generals.length(); i++){
         const General *general = generals[i];
+        if(general->isTotallyHidden())
+            continue;
 
         QString name, kingdom, gender, max_hp, package;
 
@@ -165,7 +167,11 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     }
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
+    if(last_word.startsWith("~"))
+        last_word = Sanguosha->translate(("~") + general->objectName().split("_").at(1));
+
     if(!last_word.startsWith("~")){
+
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
         button_layout->addWidget(death_button);
 
