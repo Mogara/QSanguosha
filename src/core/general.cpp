@@ -152,8 +152,11 @@ QString General::getSkillDescription() const{
 void General::lastWord() const{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly))
-        filename = QString("audio/death/%1.ogg").arg(objectName().split("_").at(1));
+    if(!file.open(QIODevice::ReadOnly)){
+        QStringList origin_generals = objectName().split("_");
+        if(origin_generals.length()>1)
+            filename = QString("audio/death/%1.ogg").arg(origin_generals.at(1));
+    }
     Sanguosha->playEffect(filename);
 }
 

@@ -167,8 +167,11 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     }
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
-    if(last_word.startsWith("~"))
-        last_word = Sanguosha->translate(("~") + general->objectName().split("_").at(1));
+    if(last_word.startsWith("~")){
+        QStringList origin_generals = general->objectName().split("_");
+        if(origin_generals.length()>1)
+            last_word = Sanguosha->translate(("~") +  origin_generals.at(1));
+    }
 
     if(!last_word.startsWith("~")){
 
