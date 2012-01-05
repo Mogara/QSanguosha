@@ -191,7 +191,7 @@ end
 function useDefaultStrategy()
 	local mode = sgs.GetConfig("GameMode", "")
 	if (mode == "06_3v3") or (not mode:find("0")) then return true end
-	if (mode:find("02_1v1") or mode:find("03p") or mode:find("04_1v3") then return true end
+	if mode:find("02_1v1") or mode:find("03p") or mode:find("04_1v3") then return true end
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
