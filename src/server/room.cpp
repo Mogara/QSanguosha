@@ -1009,7 +1009,7 @@ void Room::resetAI(ServerPlayer *player){
     }
 }
 
-void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start){
+void Room::transfigure(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start, const QString &old_general){
     LogMessage log;
     log.type = "#Transfigure";
     log.from = player;
@@ -1019,8 +1019,14 @@ void Room::transfigure(ServerPlayer *player, const QString &new_general, bool fu
     QString transfigure_str = QString("%1:%2").arg(player->getGeneralName()).arg(new_general);
     player->invoke("transfigure", transfigure_str);
 
-    setPlayerProperty(player, "general", new_general);
-    broadcastProperty(player,"general");
+    if(Config.Enable2ndGeneral && !old_general.isEmpty() && player->getGeneral2Name() == old_general){
+        setPlayerProperty(player, "general2", new_general);
+        broadcastProperty(player, "general2");
+    }
+    else{
+        setPlayerProperty(player, "general", new_general);
+        broadcastProperty(player, "general");
+    }
     thread->addPlayerSkills(player, invoke_start);
 
     player->setMaxHP(player->getGeneralMaxHP());
