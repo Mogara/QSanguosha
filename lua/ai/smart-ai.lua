@@ -130,7 +130,7 @@ function SmartAI:initialize(player)
 	self.role  = player:getRole()
 
 	if self.role ~= "lord" then sgs.ai_assumed[self.role] = (sgs.ai_assumed[self.role] or 0) + 1 end
-
+	-- self.room:writeToConsole(self.player:getSeat() .. " " .. self:getHegGeneralName() .. " " .. self:getHegKingdom())
 	self.lua_ai = sgs.LuaAI(player)
 	self.lua_ai.callback = function(method_name, ...)
 		local method = self[method_name]
@@ -156,7 +156,7 @@ function SmartAI:initialize(player)
 		--self.room:output("initialized"..self.player:objectName()..self.role)
 		sgs.ai_loyalty[self.player:objectName()] = 0
 	end
-	if self.player:isLord() then
+	if self.player:isLord() and not sgs.GetConfig("EnableHegemony", false) then
 		sgs.ai_loyalty[self.player:objectName()] = 160
 		sgs.ai_explicit[self.player:objectName()] = "loyalist"
 		if (sgs.ai_chaofeng[self.player:getGeneralName()] or 0) < 3 then
