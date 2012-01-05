@@ -8,11 +8,11 @@
 class ChongZhen: public TriggerSkill{
 public:
     ChongZhen(): TriggerSkill("chongzhen"){
-        events << CardResponsed << CardEffect << CardEffected << CardFinished;
+        events << CardResponsed << SlashEffect << CardEffected << CardFinished;
     }
 
     virtual int getPriority() const{
-        return 4;
+        return 3;
     }
 
     void doChongZhen(ServerPlayer *player, const Card *card) const{
@@ -30,30 +30,27 @@ public:
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
-        if(event == CardResponsed){
+        if(event == CardFinished){
+            player->tag["ChongZhenTarget"] = NULL;
+        }
+        else if(event == CardResponsed){
             CardStar card = data.value<CardStar>();
             doChongZhen(player, card);
         }
-        else if(event == CardFinished){
-            player->tag["ChongZhenTarget"] = NULL;
-        }
-        else{
+        else if(event == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if(event == CardEffected){
-                if(effect.card->inherits("Duel")
-                        || effect.card->inherits("ArcheryAttack")
-                        || effect.card->inherits("SavageAssault")
-                        || effect.card->inherits("Slash"))
-                    player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
-            }
-            else{
-                if(effect.to->hasFlag("liuli_target"))
-                    return false;
-
-                player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
-            }
+            if(effect.card->inherits("Duel")
+                    || effect.card->inherits("ArcheryAttack")
+                    || effect.card->inherits("SavageAssault")
+                    || effect.card->inherits("Slash"))
+                player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
 
             doChongZhen(player, effect.card);
+        }
+        else{
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.to);
+            doChongZhen(player, effect.slash);
         }
 
         return false;

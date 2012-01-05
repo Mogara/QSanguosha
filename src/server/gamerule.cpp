@@ -740,6 +740,11 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
 
                         room->revivePlayer(player);
                     }else if(player->isWounded()){
+                        if(player->getHp() > 0 && (room->askForChoice(player, "Hulaopass", "recover+draw") == "draw")){
+                            player->drawCards(1, false);
+                            return false;
+                        }
+
                         LogMessage log;
                         log.type = "#ReformingRecover";
                         log.from = player;
