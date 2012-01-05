@@ -300,26 +300,22 @@ function SmartAI:objectiveLevel(player)
 	players = sgs.QList2Table(players)
 
 	if #players == 1 then return 5 end
-	local hasRebel, hasLoyal, hasRenegade = false, false, false
-	for _,oplayer in ipairs(players) do
-		if oplayer:getRole() == "rebel" then hasRebel = true end
-		if oplayer:getRole() == "loyalist" then hasLoyal = true end
-		if oplayer:getRole() == "renegade" then hasRenegade = true end
-		if hasRebel and hasLoyal and hasRenegade then break end
-	end
 
-	local rebel_num, loyalish_num, loyal_num = 0, 0, 0
+	local rebel_num, loyalish_num, loyal_num, renegade_num = 0, 0, 0, 0
 	for _, aplayer in ipairs (players) do
 		if aplayer:getRole() == "rebel" then
 			rebel_num = rebel_num + 1
-		else
-			loyalish_num = loyalish_num + 1
+		elseif aplayer:getRole() == "loyal" then
+			loyal_num = loyal_num + 1
+		elseif aplayer:getRole() == "renegade" then
+			renegade_num = renegade_num + 1
 		end
 	end
-	if hasRenegade then loyal_num = loyalish_num-1 else loyal_num = loyalish_num end
+
+	loyalish_num = loyal_num + renegade_num
 
 	if self.role == "lord" then
-		if not hasRebel then
+		if rebel_num > 0 then
 			local comp_func = function(a, b)
 				local aname = a:objectName()
 				local bname = b:objectName()
@@ -354,7 +350,7 @@ function SmartAI:objectiveLevel(player)
 	elseif self.role == "loyalist" then
 		if player:isLord() then return -2
 		elseif #players == 2 then return 5
-		elseif not hasRenegade and loyal_num == 1 then return 5
+		elseif renegade_num == 0 and loyal_num == 1 then return 5
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return 5-modifier
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return -1
 		elseif (self:singleRole()) == "rebel" then return 4-modifier
@@ -374,20 +370,21 @@ function SmartAI:objectiveLevel(player)
 			then return 3
 		else return 0 end
 	elseif self.role == "renegade" then
-		if SmartAI.GetValue(self.room:getLord()) < 6 and hasRebel then
+		if SmartAI.GetValue(self.room:getLord()) < 6 and rebel_num > 0 then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			elseif player:isLord() then return -3 end
 		end
-		local loyalish_hp, rebel_hp, loyalish_count, rebel_count = 0, 0
+		local ambig_num, loyalish_hp, rebel_hp = 0, 0, 0
 		for _, aplayer in ipairs(players) do
 			if (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel") then
 				rebel_hp = rebel_hp + aplayer:getHp()
 			elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") then
 				loyalish_hp = loyalish_hp + aplayer:getHp()
 			elseif not aplayer:isLord() then
-				return 0
+				ambig_num = ambig_num + 1
 			end
 		end
+		if ambig_num > renegade_num then return 0 end
 		if (loyalish_hp-loyalish_num) <= (rebel_hp-rebel_num) then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			else return -1 end
@@ -726,6 +723,9 @@ end
 -- used for SmartAI:askForSkillInvoke
 sgs.ai_skill_invoke = {
 	eight_diagram = function(self, data)
+		if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
+		if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
+		if self.player:hasSkill("tiandu") then return true end
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:hasSkill("guidao") then
 				if not enemy:getCards("e"):isEmpty() then
@@ -738,8 +738,6 @@ sgs.ai_skill_invoke = {
 		end
 		
 		if self:getDamagedEffects(self) then return false end
-		if sgs.hujiasource and not self:isFriend(sgs.hujiasource) then return false end
-		if sgs.lianlisource and not self:isFriend(sgs.lianlisource) then return false end
 		return true
 	end,
 
