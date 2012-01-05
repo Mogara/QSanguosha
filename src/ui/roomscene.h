@@ -8,6 +8,7 @@
 #include "aux-skills.h"
 #include "clientlogbox.h"
 #include "sprite.h"
+#include "chatwidget.h"
 
 class Window;
 class Button;
@@ -208,6 +209,7 @@ private:
     QTextEdit *chat_box;
     QLineEdit *chat_edit;
     QGraphicsProxyWidget *chat_box_widget;
+    ChatWidget *chat_widget;
 
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
@@ -310,6 +312,8 @@ private slots:
     void onGameStart();
     void onGameOver();
     void onStandoff();
+    void appendChatEdit(QString txt);
+    void appendChatBox(QString txt);
 
     //animations
     void onSelectChange();

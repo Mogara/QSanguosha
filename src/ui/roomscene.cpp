@@ -263,12 +263,21 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         chat_box->setReadOnly(true);
         chat_box->setTextColor(Config.TextEditColor);
-        connect(ClientInstance, SIGNAL(line_spoken(QString)), chat_box, SLOT(append(QString)));
+        connect(ClientInstance, SIGNAL(line_spoken(QString)), this, SLOT(appendChatBox(QString)));
 
         // chat edit
         chat_edit = new QLineEdit;
         chat_edit->setFixedWidth(chat_box->width());
         chat_edit->setObjectName("chat_edit");
+
+        // chatwidget chatface and easytext
+        chat_widget = new ChatWidget();
+        chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+        chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
+        chat_widget->setZValue(1.0);
+        addItem(chat_widget);
+        connect(chat_widget,SIGNAL(return_button_click()),this, SLOT(speak()));
+        connect(chat_widget,SIGNAL(chat_widget_msg(QString)),this, SLOT(appendChatEdit(QString)));
 
 #if QT_VERSION >= 0x040700
         chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
@@ -286,9 +295,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
             chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
-            //chat_edit->(24);
             chat_edit_widget->setX(0);
             chat_edit_widget->setY(chat_box->height()+1);
+
+            chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+            chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
         }
 
         if(ServerInfo.DisableChat)
@@ -3907,6 +3918,9 @@ void RoomScene::reLayout()
         pos.ry()+=log_box->height();
         alignTo(chat_box_widget,pos,"xmyt");
 
+        chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+        chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
+
         dashboard->setWidth(main_window->width()-10);
     }
 
@@ -3952,4 +3966,17 @@ void RoomScene::alignTo(QGraphicsItem* object, QPoint pos, const QString &flags)
     else if(flags.contains("ym"))to.ry() = pos.y() - object->boundingRect().height()/2;
 
     object->setPos(to);
+}
+
+void RoomScene::appendChatEdit(QString txt){
+    chat_edit->setText(chat_edit->text()+" "+txt);
+    chat_edit->setFocus();
+}
+
+void RoomScene::appendChatBox(QString txt){
+    QString prefix = "<img src='image/system/chatface/";
+    QString suffix = ".png'></img>";
+    txt=txt.replace("<#", prefix);
+    txt=txt.replace("#>", suffix);
+    chat_box->append(txt);
 }
