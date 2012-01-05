@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "scenario.h"
 #include "lua.hpp"
-#include "banpairdialog.h"
+#include "banpair.h"
 
 #ifdef AUDIO_SUPPORT
 

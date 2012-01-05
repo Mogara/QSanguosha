@@ -110,4 +110,26 @@ void Settings::init(){
         banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
         setValue("Banlist/1v1", banlist);
     }
+    if(!contains("Banlist/Pairs")){
+        QStringList banlist;
+        banlist << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan" << "+lubuoyanf";
+        banlist << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji";
+        banlist << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao";
+        banlist << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu";
+        banlist << "luxun+liubei" << "luxun+wolong" << "luxun+yuji";
+        banlist << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning";
+        banlist << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying";
+        banlist << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao";
+        banlist << "dengai+shenzhugeliang" << "dengai+shensimayi";
+        banlist << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao";
+        banlist << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun";
+        banlist << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu";
+        banlist << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong";
+        banlist << "sunquan+sunshangxiang" << "wuguotai+gujia" << "wuguotai+xunyu";
+        banlist << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe";
+        banlist << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia";
+        banlist << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi";
+
+        setValue("Banlist/Pairs", banlist);
+    }
 }

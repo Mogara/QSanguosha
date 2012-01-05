@@ -7,7 +7,7 @@
 #include "gamerule.h"
 #include "scenerule.h"	//changjing
 #include "contestdb.h"
-#include "banpairdialog.h"
+#include "banpair.h"
 #include "roomthread3v3.h"
 #include "roomthread1v1.h"
 #include "server.h"
