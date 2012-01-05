@@ -88,7 +88,8 @@ SOURCES += src/main.cpp \
 	swig/sanguosha_wrap.cxx \
     src/ui/pixmapanimation.cpp \
     src/ui/sprite.cpp \
-    src/core/banpair.cpp
+    src/core/banpair.cpp \
+    src/ui/chatwidget.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -168,7 +169,8 @@ HEADERS += src/client/aux-skills.h \
 	src/util/socket.h \
     src/ui/pixmapanimation.h \
     src/ui/sprite.h \
-    src/core/banpair.h
+    src/core/banpair.h \
+    src/ui/chatwidget.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -219,6 +221,8 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss
+
+
 
 
 
