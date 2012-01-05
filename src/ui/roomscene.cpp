@@ -1172,6 +1172,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     else{
         CardItem *new_card = card_item->deleteCardDesc();
         removeItem(card_item);
+        delete card_item;
         card_item = new_card;
         addItem(card_item);
         putCardItem(dest, dest_place, card_item);
