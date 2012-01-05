@@ -61,9 +61,9 @@ public:
 };
 
 BGMPackage::BGMPackage():Package("BGM"){
-    General *sp_zhaoyun = new General(this, "sp_zhaoyun", "qun", 3, true, true);
-    sp_zhaoyun->addSkill("longdan");
-    sp_zhaoyun->addSkill(new ChongZhen);
+    General *bgm_zhaoyun = new General(this, "bgm_zhaoyun", "qun", 3, true, true);
+    bgm_zhaoyun->addSkill("longdan");
+    bgm_zhaoyun->addSkill(new ChongZhen);
 }
 
 ADD_PACKAGE(BGM)
