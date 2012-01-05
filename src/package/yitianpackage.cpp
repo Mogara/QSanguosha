@@ -478,7 +478,7 @@ void LianliSlashCard::onEffect(const CardEffectStruct &effect) const{
     if(xiahoujuan){
         const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash");
         if(slash){
-            zhangfei->invoke("increaseSlashCount");
+            zhangfei->invoke("addHistory", "Slash");
             room->cardEffect(slash, zhangfei, effect.to);
             return;
         }
