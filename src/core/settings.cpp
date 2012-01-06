@@ -101,13 +101,36 @@ void Settings::init(){
     EnableEffects = value("EnableEffects", true).toBool();
     EnableLastWord = value("EnableLastWord", true).toBool();
     EnableBgMusic = value("EnableBgMusic", true).toBool();
-    Volume = value("Volume", 1.0f).toFloat();
+    BGMVolume = value("BGMVolume", 1.0f).toFloat();
+    EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundBrush = value("BackgroundBrush", "backdrop/chibi.jpg").toString();
+    BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
     if(!contains("Banlist/1v1")){
         QStringList banlist;
         banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
         setValue("Banlist/1v1", banlist);
+    }
+    if(!contains("Banlist/Pairs")){
+        QStringList banlist;
+        banlist << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan";
+        banlist << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji";
+        banlist << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao";
+        banlist << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu";
+        banlist << "luxun+liubei" << "luxun+wolong" << "luxun+yuji";
+        banlist << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning";
+        banlist << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying";
+        banlist << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao";
+        banlist << "dengai+shenzhugeliang" << "dengai+shensimayi";
+        banlist << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao";
+        banlist << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun";
+        banlist << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu";
+        banlist << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong";
+        banlist << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu";
+        banlist << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe";
+        banlist << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia";
+        banlist << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi";
+
+        setValue("Banlist/Pairs", banlist);
     }
 }

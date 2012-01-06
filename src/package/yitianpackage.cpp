@@ -985,10 +985,10 @@ public:
             bool is_male = player->getGeneral()->isMale();
             if(gender == "female"){
                 if(is_male)
-                    room->transfigure(player, "luboyanf", false, false);
+                    room->transfigure(player, "luboyanf", false, false, "luboyan");
             }else if(gender == "male"){
                 if(!is_male)
-                    room->transfigure(player, "luboyan", false, false);
+                    room->transfigure(player, "luboyan", false, false, "luboyanf");
             }
 
             LogMessage log;
@@ -1007,7 +1007,8 @@ public:
                 QString new_general = "luboyan";
                 if(player->getGeneral()->isMale())
                     new_general.append("f");
-                room->transfigure(player, new_general, false, false);
+                QString old_general = new_general.endsWith("f")?"luboyan":"luboyanf";
+                room->transfigure(player, new_general, false, false, old_general);
             }
         }else if(event == Predamaged){
             DamageStruct damage = data.value<DamageStruct>();
@@ -1304,8 +1305,8 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer 
     }
 
     QString general = room->askForGeneral(source, shu_generals);
-
-    room->transfigure(source, general, false);
+    source->tag["newgeneral"] = general;
+    room->transfigure(source, general, false, false, "jiangboyue");
     room->acquireSkill(source, "xunzhi", false);
     source->setFlags("xunzhi");
 }
@@ -1314,10 +1315,6 @@ class XunzhiViewAsSkill: public ZeroCardViewAsSkill{
 public:
     XunzhiViewAsSkill():ZeroCardViewAsSkill("#xunzhi"){
 
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getGeneral()->hasSkill("xunzhi");
     }
 
     virtual const Card *viewAs() const{
@@ -1336,7 +1333,7 @@ public:
            target->hasFlag("xunzhi"))
         {
             Room *room = target->getRoom();
-            room->transfigure(target, parent()->objectName(), false);
+            room->transfigure(target, parent()->objectName(), false, false, target->tag.value("newgeneral", "").toString());
             room->killPlayer(target);
         }
 

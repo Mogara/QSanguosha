@@ -265,3 +265,30 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     }
 }
 
+
+void CardItem::writeCardDesc(QString card_owner)
+{
+     if(card){
+         int x, y;
+         x=(93-card_owner.toLocal8Bit().length()*6)/2;
+         y=115;
+         QPainter painter(&pixmap);
+         static QFont card_desc_font("SimSun", 9, QFont::Normal);
+         painter.setFont(card_desc_font);
+         painter.setPen(Qt::black);
+
+         painter.drawText(x, y-1, card_owner);
+         painter.drawText(x, y+1, card_owner);
+         painter.drawText(x-1, y, card_owner);
+         painter.drawText(x+1, y, card_owner);
+
+         painter.setPen(Qt::yellow);
+         painter.drawText(x, y, card_owner);
+     }
+}
+
+CardItem *CardItem::deleteCardDesc(){
+    CardItem *new_item = new CardItem(this->getCard());
+    new_item->setPos(this->x(), this->y());
+    return new_item;
+}

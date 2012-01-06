@@ -1,4 +1,6 @@
 return {
+	["Pairs"] = "双将",
+
 	["spade"] = "黑桃",
 	["club"] = "梅花",
 	["heart"] = "红桃",

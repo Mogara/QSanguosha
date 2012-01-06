@@ -8,6 +8,7 @@
 #include "aux-skills.h"
 #include "clientlogbox.h"
 #include "sprite.h"
+#include "chatwidget.h"
 
 class Window;
 class Button;
@@ -208,6 +209,7 @@ private:
     QTextEdit *chat_box;
     QLineEdit *chat_edit;
     QGraphicsProxyWidget *chat_box_widget;
+    ChatWidget *chat_widget;
 
 #ifdef AUDIO_SUPPORT
     QSharedMemory *memory;
@@ -223,7 +225,7 @@ private:
     KOFOrderBox *enemy_box, *self_box;
 
     CardItem *takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id);
-    void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item);
+    void putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item, QString show_name = "");
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     void chooseSkillButton();
@@ -310,6 +312,9 @@ private slots:
     void onGameStart();
     void onGameOver();
     void onStandoff();
+
+    void appendChatEdit(QString txt);
+    void appendChatBox(QString txt);
 
     //animations
     void onSelectChange();

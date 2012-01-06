@@ -4,10 +4,10 @@ if sgs.GetConfig("EnableHegemony", false) then
 	end
 
 	sgs.ai_loyalty = {
-		wei = {name = "wei"},
-		wu = {name = "wu"},
-		shu = {name = "shu"},
-		qun = {name = "qun"},
+		wei = {},
+		wu = {},
+		shu = {},
+		qun = {},
 	}
 
 	SmartAI.getHegKingdom = function(self)
@@ -18,7 +18,14 @@ if sgs.GetConfig("EnableHegemony", false) then
 		return kingdom
 	end
 
+	SmartAI.getHegGeneralName = function(self, player)
+		player = player or self.player
+		local names = self.room:getTag(player:objectName()):toStringList()
+		if #names > 0 then return names[1] else return player:getGeneralName() end
+	end
+	
 	SmartAI.objectiveLevel = function(self, player)
+		if self.player:objectName() == player:objectName() then return -5 end
 		local anjiangs = {}
 		for _, p in sgs.qlist(self.room:getAllPlayers()) do
 			if p:getGeneralName() == "anjiang" then
@@ -26,18 +33,10 @@ if sgs.GetConfig("EnableHegemony", false) then
 			end
 		end
 
-		local player_friends, self_friends = 0, 0
-		for _, p in sgs.qlist(self.room:getAllPlayers()) do
-			if p:getKingdom() == self:getHegKingdom() then self_friends = self_friends + 1
-			elseif p:getKingdom() == player:getKingdom()
-				and not (p:getKingdom() == "god") then player_friends = player_friends + 1
-			end
-		end
-
-		if self:getHegKingdom() == player:getKingdom() and self:getHegKingdom() ~= "god" then return -1
+		if self:getHegKingdom() == player:getKingdom() and self:getHegKingdom() ~= "god" then return -3
 		elseif player:getKingdom() ~= "god" then return 5
-		elseif sgs.ai_explicit[player:objectName()] == self.player:getKingdom() then return -1
-		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) > 0 then return 4
+		elseif sgs.ai_explicit[player:objectName()] == self:getHegKingdom() then return -1
+		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) < 0 then return 4
 		end
 		
 		return 0
@@ -53,42 +52,53 @@ if sgs.GetConfig("EnableHegemony", false) then
 
 	sgs.ai_card_intention["general"] = function(to, level)
 		sgs.hegemony_to = to
-		sgs.hegemony_level = level
-		return level
+		return -level
 	end
 
-	SmartAI.refreshLoyalty = function(player, intention)
-		if not sgs.recorder then sgs.recorder = self end
-		if not sgs.hegemony_to or sgs.hegemony_level ~= intention or self ~= sgs.recorder then return end
+	SmartAI.refreshLoyalty = function(self, player, intention)
 		local to = sgs.hegemony_to
 		local kingdom = to:getKingdom()
 		if kingdom ~= "god" then
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention
+			if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
 		elseif sgs.ai_explicit[player:objectName()] then
+			kingdom = sgs.ai_explicit[player:objectName()]
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention * 0.7
+			if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
 		else
 			for _, aplayer in sgs.qlist(player:getRoom():getOtherPlayers(self.player)) do
 				local kingdom = aplayer:getKingdom()
 				if aplayer:objectName() ~= to:objectName() and kingdom ~= "god" then
-					sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) - intention * 0.3
+					sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) - intention * 0.6
+					if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
+					if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
 				end
 			end
 		end
-		local intention_count, min_intention = 0
-		local min_kingdom
-		for _, list in ipairs(sgs.ai_loyalty) do
+		local neg_loyalty_count, pos_loyalty_count, max_loyalty, max_kingdom = 0, 0
+		local kingdoms = {"wei", "wu", "shu", "qun"}
+		for _, akingdom in ipairs(kingdoms) do
+			local list = sgs.ai_loyalty[akingdom]
 			if list[player:objectName()] then
-				if not min_intention then min_intention = list[player:objectName()] min_kingdom = list.name end
-				if list[player:objectName()] > 0 then
-					intention_count = intention_count + 1
-				elseif min_intention > list[player:objectName()] then
-					min_intention = list[player:objectName()]
-					min_kingdom = list.name
+				if not max_loyalty then max_loyalty = list[player:objectName()] max_kingdom = akingdom end
+				if list[player:objectName()] < 0 then
+					neg_loyalty_count = neg_loyalty_count + 1
+				elseif list[player:objectName()] > 0 then
+					pos_loyalty_count = pos_loyalty_count + 1
 				end
+				if max_loyalty < list[player:objectName()] then
+					max_loyalty = list[player:objectName()]
+					max_kingdom = akingdom
+				end				
 			end
 		end
-		if intention_count < 3 then return end
-		sgs.ai_explicit[player:objectName()] = min_kingdom
+		-- self.room:writeToConsole(max_loyalty .. " " .. neg_loyalty_count .. " " .. pos_loyalty_count .. " " .. (max_kingdom or "nil"))
+		if neg_loyalty_count > 2 or pos_loyalty_count > 0 then
+			sgs.ai_explicit[player:objectName()] = max_kingdom
+		end
+		self:printAll(player, intention)
 	end
 
 	SmartAI.updatePlayers = function(self, inclusive)
@@ -97,21 +107,6 @@ if sgs.GetConfig("EnableHegemony", false) then
 		self.friends = flist
 		self.enemies = elist
 		self.friends_noself = {}
-		
-		--[[for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if self.room:getAllPlayers():length() == 2 then table.insert(self.enemies, player)
-			else
-				if self.player:getGeneralName() == "anjiang" then
-					local generals = self.player:getTag("roles"):toString():split("+")
-					local general = sgs.Sanguosha:getGeneral(generals[1])
-					if(player:getGeneralName() ~= "anjiang") then
-						if general:getKingdom() ~= player:getGeneral():getKingdom() then table.insert(self.enemies, player) end
-					end
-				else
-					if player:getGeneral():getKingdom() ~= self.player:getGeneral():getKingdom() then table.insert(self.enemies, player) end
-				end
-			end
-		end]]
 		
 		local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 		for _, aplayer in ipairs(players) do
@@ -129,5 +124,15 @@ if sgs.GetConfig("EnableHegemony", false) then
 				return
 			end
 		end
+	end
+	
+	SmartAI.printAll = function(self, player, intention)
+		local name = player:objectName()
+		self.room:writeToConsole(self:getHegGeneralName(player) .. math.floor(intention*10)/10 ..
+		" R" .. math.floor((sgs.ai_loyalty["shu"][name] or 0)*10)/10 ..
+		" G" .. math.floor((sgs.ai_loyalty["wu"][name] or 0)*10)/10 ..
+		" B" .. math.floor((sgs.ai_loyalty["wei"][name] or 0)*10)/10 ..
+		" Q" .. math.floor((sgs.ai_loyalty["qun"][name] or 0)*10)/10 ..
+		" E" .. (sgs.ai_explicit[name] or "nil"))
 	end
 end

@@ -32,6 +32,8 @@ public:
     void hideFrame();
     void setAutoBack(bool auto_back);
     void changeGeneral(const QString &general_name);
+    void writeCardDesc(QString card_owner);
+    CardItem *deleteCardDesc();
 
     void select();
     void unselect();

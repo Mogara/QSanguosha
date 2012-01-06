@@ -116,11 +116,11 @@ QPushButton#untrust:disabled{
     background-image: url(image/system/button/untrust-disabled.png);
 }
 
-QPushButton#cancel{
+QPushButton#cancel[game_control="true"]{
     background-image: url(image/system/button/cancel.png);
 }
 
-QPushButton#cancel:disabled{
+QPushButton#cancel:disabled[game_control="true"]{
     background-image: url(image/system/button/cancel-disabled.png);
 }
 

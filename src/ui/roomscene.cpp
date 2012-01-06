@@ -263,12 +263,21 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
         chat_box->setReadOnly(true);
         chat_box->setTextColor(Config.TextEditColor);
-        connect(ClientInstance, SIGNAL(line_spoken(QString)), chat_box, SLOT(append(QString)));
+        connect(ClientInstance, SIGNAL(line_spoken(QString)), this, SLOT(appendChatBox(QString)));
 
         // chat edit
         chat_edit = new QLineEdit;
         chat_edit->setFixedWidth(chat_box->width());
         chat_edit->setObjectName("chat_edit");
+
+        // chatwidget chatface and easytext
+        chat_widget = new ChatWidget();
+        chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+        chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
+        chat_widget->setZValue(1.0);
+        addItem(chat_widget);
+        connect(chat_widget,SIGNAL(return_button_click()),this, SLOT(speak()));
+        connect(chat_widget,SIGNAL(chat_widget_msg(QString)),this, SLOT(appendChatEdit(QString)));
 
 #if QT_VERSION >= 0x040700
         chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
@@ -286,9 +295,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
             chat_box_widget->setPos(367 , -38);
 
             chat_edit->setFixedWidth(chat_box->width());
-            //chat_edit->(24);
             chat_edit_widget->setX(0);
             chat_edit_widget->setY(chat_box->height()+1);
+
+            chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+            chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
         }
 
         if(ServerInfo.DisableChat)
@@ -1151,7 +1162,23 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     if(card_item->scene() == NULL)
         addItem(card_item);
 
-    putCardItem(dest, dest_place, card_item);
+    if(src != NULL && src_place != Player::Judging)
+    {
+        QString from_general;
+        from_general= src->getGeneralName();
+        from_general = Sanguosha->translate(from_general);
+        putCardItem(dest, dest_place, card_item, from_general);
+    }
+    else{
+        if(src_place == Player::DiscardedPile && dest_place == Player::Hand){
+            CardItem *new_card = card_item->deleteCardDesc();
+            removeItem(card_item);
+            delete card_item;
+            card_item = new_card;
+            addItem(card_item);
+        }
+        putCardItem(dest, dest_place, card_item);
+    }
 
     QString card_str = QString::number(card_id);
     if(src && dest){
@@ -1192,9 +1219,12 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     }
 }
 
-void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item){
+void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, CardItem *card_item, QString show_name){
     if(dest == NULL){
         if(dest_place == Player::DiscardedPile){
+            if(!show_name.isEmpty())
+                card_item->writeCardDesc(show_name);
+
             card_item->setHomePos(DiscardedPos);
             card_item->goBack(true,false,false);
             card_item->setEnabled(true);
@@ -3031,7 +3061,7 @@ void RoomScene::onGameStart(){
     BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
 
     if(BackgroundMusic)
-        BackgroundMusic->setVolume(Config.Volume);
+        BackgroundMusic->setVolume(Config.BGMVolume);
 #else
     if (!BackgroundMusic) {
         SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
@@ -3907,6 +3937,9 @@ void RoomScene::reLayout()
         pos.ry()+=log_box->height();
         alignTo(chat_box_widget,pos,"xmyt");
 
+        chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+        chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
+
         dashboard->setWidth(main_window->width()-10);
     }
 
@@ -3952,4 +3985,17 @@ void RoomScene::alignTo(QGraphicsItem* object, QPoint pos, const QString &flags)
     else if(flags.contains("ym"))to.ry() = pos.y() - object->boundingRect().height()/2;
 
     object->setPos(to);
+}
+
+void RoomScene::appendChatEdit(QString txt){
+    chat_edit->setText(chat_edit->text()+" "+txt);
+    chat_edit->setFocus();
+}
+
+void RoomScene::appendChatBox(QString txt){
+    QString prefix = "<img src='image/system/chatface/";
+    QString suffix = ".png'></img>";
+    txt=txt.replace("<#", prefix);
+    txt=txt.replace("#>", suffix);
+    chat_box->append(txt);
 }

@@ -5,7 +5,7 @@
 #include "settings.h"
 #include "scenario.h"
 #include "lua.hpp"
-#include "banpairdialog.h"
+#include "banpair.h"
 
 #ifdef AUDIO_SUPPORT
 
@@ -613,6 +613,15 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     QStringList all_generals = getLimitedGeneralNames();
 
     Q_ASSERT(all_generals.count() >= count);
+
+    if(Config.EnableBasara){
+        QSet<QString> basara_ban;
+        foreach(QString general, all_generals)
+            if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !ban_set.contains(general))
+                basara_ban.insert(general);
+
+        all_generals = all_generals.toSet().subtract(basara_ban).toList();
+    }
 
     if(!ban_set.isEmpty()){
         QSet<QString> general_set = all_generals.toSet();

@@ -5,6 +5,7 @@
 #include "ai.h"
 #include "settings.h"
 #include "recorder.h"
+#include "banpair.h"
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), socket(NULL), room(room),
@@ -207,8 +208,6 @@ void ServerPlayer::addToSelected(const QString &general){
 QStringList ServerPlayer::getSelected() const{
     return selected;
 }
-
-#include "banpairdialog.h"
 
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable){
 

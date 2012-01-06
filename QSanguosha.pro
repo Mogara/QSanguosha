@@ -22,7 +22,6 @@ SOURCES += src/main.cpp \
 	src/core/player.cpp \
 	src/core/settings.cpp \
 	src/core/skill.cpp \
-	src/dialog/banpairdialog.cpp \
 	src/dialog/cardeditor.cpp \
 	src/dialog/cardoverview.cpp \
 	src/dialog/choosegeneraldialog.cpp \
@@ -88,7 +87,9 @@ SOURCES += src/main.cpp \
 	src/util/recorder.cpp \
 	swig/sanguosha_wrap.cxx \
     src/ui/pixmapanimation.cpp \
-    src/ui/sprite.cpp
+    src/ui/sprite.cpp \
+    src/core/banpair.cpp \
+    src/ui/chatwidget.cpp
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -101,7 +102,6 @@ HEADERS += src/client/aux-skills.h \
 	src/core/player.h \
 	src/core/settings.h \
 	src/core/skill.h \
-	src/dialog/banpairdialog.h \
 	src/dialog/cardeditor.h \
 	src/dialog/cardoverview.h \
 	src/dialog/choosegeneraldialog.h \
@@ -168,7 +168,9 @@ HEADERS += src/client/aux-skills.h \
 	src/util/recorder.h \
 	src/util/socket.h \
     src/ui/pixmapanimation.h \
-    src/ui/sprite.h
+    src/ui/sprite.h \
+    src/core/banpair.h \
+    src/ui/chatwidget.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -219,3 +221,15 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss
+
+
+
+
+
+
+
+
+
+
+
+
