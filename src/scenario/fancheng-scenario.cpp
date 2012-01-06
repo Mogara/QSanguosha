@@ -299,8 +299,8 @@ public:
                     room->acquireSkill(player, "flood");
                     room->acquireSkill(player, "xiansheng");
 
-                    ServerPlayer *sp_pangde = room->findPlayer("sp_pangde");
-                    room->acquireSkill(sp_pangde, "taichen_fight");
+                    ServerPlayer *panglingming = room->findPlayer("panglingming");
+                    room->acquireSkill(panglingming, "taichen_fight");
 
                     ServerPlayer *huatuo = room->findPlayer("huatuo");
                     room->installEquip(huatuo, "hualiu");
@@ -319,7 +319,7 @@ public:
 
         case Death:{
                 DamageStar damage = data.value<DamageStar>();
-                if(player->getGeneralName() == "sp_pangde" &&
+                if(player->getGeneralName() == "panglingming" &&
                    damage && damage->from && damage->from->isLord())
                 {
                     damage = NULL;
@@ -342,7 +342,7 @@ FanchengScenario::FanchengScenario()
 {
     lord = "guanyu";
     loyalists << "huatuo";
-    rebels << "caoren" << "sp_pangde" << "xuhuang";
+    rebels << "caoren" << "panglingming" << "xuhuang";
     renegades << "lumeng";
 
     rule = new FanchengRule(this);

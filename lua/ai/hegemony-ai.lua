@@ -60,20 +60,20 @@ if sgs.GetConfig("EnableHegemony", false) then
 		local kingdom = to:getKingdom()
 		if kingdom ~= "god" then
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention
-			if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
-			if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] > 160 then sgs.ai_loyalty[kingdom][player:objectName()] = 160 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] < -160 then sgs.ai_loyalty[kingdom][player:objectName()] = -160 end
 		elseif sgs.ai_explicit[player:objectName()] then
 			kingdom = sgs.ai_explicit[player:objectName()]
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention * 0.7
-			if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
-			if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] > 160 then sgs.ai_loyalty[kingdom][player:objectName()] = 160 end
+			if sgs.ai_loyalty[kingdom][player:objectName()] < -160 then sgs.ai_loyalty[kingdom][player:objectName()] = -160 end
 		else
 			for _, aplayer in sgs.qlist(player:getRoom():getOtherPlayers(self.player)) do
 				local kingdom = aplayer:getKingdom()
 				if aplayer:objectName() ~= to:objectName() and kingdom ~= "god" then
 					sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) - intention * 0.6
-					if sgs.ai_loyalty[kingdom][player:objectName()] > 80 then sgs.ai_loyalty[kingdom][player:objectName()] = 80 end
-					if sgs.ai_loyalty[kingdom][player:objectName()] < -80 then sgs.ai_loyalty[kingdom][player:objectName()] = -80 end
+					if sgs.ai_loyalty[kingdom][player:objectName()] > 160 then sgs.ai_loyalty[kingdom][player:objectName()] = 160 end
+					if sgs.ai_loyalty[kingdom][player:objectName()] < -160 then sgs.ai_loyalty[kingdom][player:objectName()] = -160 end
 				end
 			end
 		end
@@ -94,7 +94,6 @@ if sgs.GetConfig("EnableHegemony", false) then
 				end				
 			end
 		end
-		-- self.room:writeToConsole(max_loyalty .. " " .. neg_loyalty_count .. " " .. pos_loyalty_count .. " " .. (max_kingdom or "nil"))
 		if neg_loyalty_count > 2 or pos_loyalty_count > 0 then
 			sgs.ai_explicit[player:objectName()] = max_kingdom
 		end

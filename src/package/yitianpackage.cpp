@@ -1943,8 +1943,8 @@ YitianPackage::YitianPackage()
     yitianjian->addSkill(new Zhenwei);
     yitianjian->addSkill(new Yitian);
 
-    General *sp_pangde = new General(this, "sp_pangde", "wei");
-    sp_pangde->addSkill(new Taichen);
+    General *panglingming = new General(this, "panglingming", "wei");
+    panglingming->addSkill(new Taichen);
 
     skills << new LianliSlashViewAsSkill << new YisheAsk;
 

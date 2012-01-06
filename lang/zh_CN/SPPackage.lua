@@ -62,6 +62,11 @@ return {
 	[":guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP贾诩，势力为魏",
 	["cv:sp_jiaxu"] = "落凤一箭",
 	
+	["sp_pangde"] = "SP庞德",
+	["pangde_guiwei"] = "归魏",
+	[":pangde_guiwei"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP庞德，势力为魏",
+	["cv:sp_pangde"] = "Glory",
+
 	["sp_machao"] = "SP马超",
 	["fanqun"] = "返群",
 	[":fanqun"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP马超，势力为群",

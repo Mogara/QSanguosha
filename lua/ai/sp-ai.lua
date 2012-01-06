@@ -109,6 +109,8 @@ end
 
 -- same as guixiang
 sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
+
+sgs.ai_skill_invoke.pangde_guiwei = sgs.ai_skill_invoke.guixiang
 	
 
 sgs.ai_skill_invoke.sp_moonspear = function(self, data)

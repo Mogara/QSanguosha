@@ -448,6 +448,10 @@ SPPackage::SPPackage()
     sp_jiaxu->addSkill("weimu");
     sp_jiaxu->addSkill("#@chaos-1");
 
+    General *sp_pangde = new General(this, "sp_pangde", "wei", 4, true, true);
+    sp_pangde->addSkill("mengjin");
+    sp_pangde->addSkill("mashu");
+
     addMetaObject<WeidiCard>();
 }
 
