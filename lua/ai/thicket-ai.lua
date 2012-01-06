@@ -26,8 +26,9 @@ sgs.ai_skill_use["@@yinghun"] = function(self, prompt)
 		self.yinghun = self.friends_noself[1]
 		self.yinghunchoice = "dxt1"
 	else
-		self:sort(self.enemies, "chaofeng")
-		for _, enemy in ipairs(self.enemies) do
+		self:sort(self.enemies, "handcard")
+		for index = #self.enemies, 1, -1 do
+			local enemy = self.enemies[index]
 			if not self:hasSkills(sgs.lose_equip_skill, enemy) or enemy:getEquips():length()<x/2 then
 				self.yinghun = enemy
 				self.yinghunchoice = "d1tx"
