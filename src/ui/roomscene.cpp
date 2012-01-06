@@ -367,8 +367,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     timer_id = 0;
     tick = 0;
 
-    adjustItems();
-
 #ifdef JOYSTICK_SUPPORT
 
     if(Config.value("JoystickEnabled", false).toBool()){
@@ -393,6 +391,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addWidgetToSkillDock(sort_combobox, true);
 
     createStateItem();
+
+    adjustItems();
 
     animations = new EffectAnimation();
 }
@@ -431,6 +431,8 @@ void RoomScene::createButtons(){
     connect(ok_button, SIGNAL(clicked()), this, SLOT(doOkButton()));
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
+
+    free_discard = NULL;
 }
 
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard){
@@ -3845,7 +3847,7 @@ void RoomScene::adjustPrompt()
 
 void RoomScene::reLayout()
 {
-    if(!game_started)return;
+    //if(!game_started)return;
 
     QPoint pos = QPoint(dashboard->getMidPosition(),0);
 
@@ -3866,7 +3868,7 @@ void RoomScene::reLayout()
     pos.rx()+=skip*2;
 
 
-    if(ServerInfo.FreeChoose&& !ClientInstance->getReplayer())
+    if(free_discard)
     {
         alignTo(free_discard,pos,"xlyb");
         pos.rx()+=free_discard->width();
@@ -3943,6 +3945,7 @@ void RoomScene::reLayout()
 
 void RoomScene::alignTo(Pixmap *object, QPoint pos, const QString &flags)
 {
+    if(object == NULL)return;
     QPointF to = object->pos();
     if(flags.contains("xl"))to.rx() = pos.x();
     else if(flags.contains("xr"))to.rx() = pos.x() - object->boundingRect().width();
@@ -3957,6 +3960,7 @@ void RoomScene::alignTo(Pixmap *object, QPoint pos, const QString &flags)
 
 void RoomScene::alignTo(QWidget *object, QPoint pos, const QString &flags)
 {
+    if(object == NULL)return;
     QPoint to = object->pos();
     if(flags.contains("xl"))to.rx() = pos.x();
     else if(flags.contains("xr"))to.rx() = pos.x() - object->width();
@@ -3971,6 +3975,7 @@ void RoomScene::alignTo(QWidget *object, QPoint pos, const QString &flags)
 
 void RoomScene::alignTo(QGraphicsItem* object, QPoint pos, const QString &flags)
 {
+    if(object == NULL)return;
     QPointF to = object->pos();
     if(flags.contains("xl"))to.rx() = pos.x();
     else if(flags.contains("xr"))to.rx() = pos.x() - object->boundingRect().width();
