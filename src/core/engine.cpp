@@ -614,7 +614,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if(Config.EnableBasara){
+    if(Config.EnableHegemony){
         QSet<QString> basara_ban;
         foreach(QString general, all_generals)
             if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !ban_set.contains(general))
