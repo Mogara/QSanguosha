@@ -337,23 +337,24 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 
     QPushButton *add = new QPushButton(tr("Add ..."));
     QPushButton *remove = new QPushButton(tr("Remove"));
-    add2nd = new QPushButton(tr("Add 2nd general ..."));
+    if(!view)add2nd = new QPushButton(tr("Add 2nd general ..."));
     QPushButton *ok = new QPushButton(tr("OK"));
 
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
     connect(remove, SIGNAL(clicked()), this, SLOT(doRemoveButton()));
     connect(add, SIGNAL(clicked()), this, SLOT(doAddButton()));
-    connect(add2nd, SIGNAL(clicked()), this, SLOT(doAdd2ndButton()));
+    if(!view)connect(add2nd, SIGNAL(clicked()), this, SLOT(doAdd2ndButton()));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     if(!view){
         hlayout->addWidget(add2nd);
+        add2nd->hide();
         hlayout->addWidget(add);
         hlayout->addWidget(remove);
     }
-    add2nd->hide();
+
     hlayout->addWidget(ok);
     layout->addLayout(hlayout);
 
