@@ -294,9 +294,6 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         QWidget *apage = new QWidget;
 
         list = new QListWidget;
-        list->setIconSize(General::TinyIconSize);
-        list->setViewMode(QListView::IconMode);
-        list->setDragDropMode(QListView::NoDragDrop);
         list->setObjectName(item);
 
         QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
@@ -353,12 +350,21 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         add2nd->hide();
         hlayout->addWidget(add);
         hlayout->addWidget(remove);
+        list = lists.first();
     }
 
     hlayout->addWidget(ok);
     layout->addLayout(hlayout);
 
     setLayout(layout);
+
+    foreach(QListWidget * alist , lists)
+    {
+        if(alist->objectName() == "Pairs")continue;
+        alist->setIconSize(General::TinyIconSize);
+        alist->setViewMode(QListView::IconMode);
+        alist->setDragDropMode(QListView::NoDragDrop);
+    }
 }
 
 void BanlistDialog::addGeneral(const QString &name){
@@ -373,6 +379,7 @@ void BanlistDialog::addGeneral(const QString &name){
         QIcon icon(general->getPixmapPath("tiny"));
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(icon, text, list);
+        item->setSizeHint(QSize(60,60));
         item->setData(Qt::UserRole, name);
     }
 }
