@@ -315,7 +315,7 @@ function SmartAI:objectiveLevel(player)
 	loyalish_num = loyal_num + renegade_num
 
 	if self.role == "lord" then
-		if rebel_num > 0 then
+		if rebel_num == 0 then
 			local comp_func = function(a, b)
 				local aname = a:objectName()
 				local bname = b:objectName()
