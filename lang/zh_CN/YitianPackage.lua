@@ -244,7 +244,7 @@ return {
 	["cv:dengshizai"] = "阿澈",
 	["cv:zhanggongqi"] = "",
 	["cv:yitianjian"] = "",
-	["cv:sp_pangde"] = "Glory",
+	["cv:panglingming"] = "Glory",
 
 	["designer:shencc"] = "官方内测第三版",
 	["designer:caochong"] = "太阳神上",
@@ -262,6 +262,6 @@ return {
 	["designer:dengshizai"] = "Bu懂",
 	["designer:zhanggongqi"] = "背碗卤粉, Jr. Wakaran",
 	["designer:yitianjian"] = "太阳神上",
-	["designer:sp_pangde"] = "太阳神上",
+	["designer:panglingming"] = "太阳神上",
 }
 
