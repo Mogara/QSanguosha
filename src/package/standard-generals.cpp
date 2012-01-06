@@ -1199,7 +1199,7 @@ class Tuoqiao: public GameStartSkill{
 public:
     Tuoqiao():GameStartSkill("tuoqiao"){
         frequency = Limited;
-        default_choice = "SP Diaochan";
+        default_choice = "SP-Diaochan";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1209,8 +1209,8 @@ public:
     virtual void onGameStart(ServerPlayer *player) const{
         if(player->askForSkillInvoke(objectName())){
             Room *room = player->getRoom();
-            QString choice = room->askForChoice(player, objectName(), "SP Diaochan+BGM Diaochan");
-            if(choice == "SP Diaochan") choice = "sp_diaochan"; else choice = "bgm_diaochan";
+            QString choice = room->askForChoice(player, objectName(), "SP-Diaochan+BGM-Diaochan");
+            if(choice == "SP-Diaochan") choice = "sp_diaochan"; else choice = "bgm_diaochan";
             room->transfigure(player, choice, true, false, "diaochan");
         }
     }
