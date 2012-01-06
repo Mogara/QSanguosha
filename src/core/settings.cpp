@@ -101,7 +101,8 @@ void Settings::init(){
     EnableEffects = value("EnableEffects", true).toBool();
     EnableLastWord = value("EnableLastWord", true).toBool();
     EnableBgMusic = value("EnableBgMusic", true).toBool();
-    Volume = value("Volume", 1.0f).toFloat();
+    BGMVolume = value("BGMVolume", 1.0f).toFloat();
+    EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 

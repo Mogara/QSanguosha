@@ -3061,7 +3061,7 @@ void RoomScene::onGameStart(){
     BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
 
     if(BackgroundMusic)
-        BackgroundMusic->setVolume(Config.Volume);
+        BackgroundMusic->setVolume(Config.BGMVolume);
 #else
     if (!BackgroundMusic) {
         SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);

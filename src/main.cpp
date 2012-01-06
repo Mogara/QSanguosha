@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 #ifdef  Q_OS_WIN32
     SoundEngine = irrklang::createIrrKlangDevice();
     if(SoundEngine)
-        SoundEngine->setSoundVolume(Config.Volume);
+        SoundEngine->setSoundVolume(Config.EffectVolume);
 #else
     SoundEngine = new Phonon::MediaObject(qApp);
     SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, qApp);

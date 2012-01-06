@@ -37,7 +37,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->circularViewCheckBox->setChecked(Config.value("CircularView", false).toBool());
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
 
-    ui->volumeSlider->setValue(100 * Config.Volume);
+    ui->bgmVolumeSlider->setValue(100 * Config.BGMVolume);
+    ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
 
     // tab 2
     ui->nullificationSpinBox->setValue(Config.NullificationCountDown);
@@ -109,17 +110,20 @@ void ConfigDialog::saveConfig()
     Config.NullificationCountDown = count_down;
     Config.setValue("NullificationCountDown", count_down);
 
-    float volume = ui->volumeSlider->value() / 100.0;
-    Config.Volume = volume;
-    Config.setValue("Volume", volume);
+    float volume = ui->bgmVolumeSlider->value() / 100.0;
+    Config.BGMVolume = volume;
+    Config.setValue("BGMVolume", volume);
+    volume = ui->effectVolumeSlider->value() / 100.0;
+    Config.EffectVolume = volume;
+    Config.setValue("EffectVolume", volume);
 
 #ifdef AUDIO_SUPPORT
 #ifdef  Q_OS_WIN32
     if(SoundEngine)
-        SoundEngine->setSoundVolume(Config.Volume);
+        SoundEngine->setSoundVolume(Config.EffectVolume);
 #else
     if(SoundOutput)
-        SoundOutput->setVolume(Config.Volume);
+        SoundOutput->setVolume(Config.EffectVolume);
 #endif
 #endif
 
