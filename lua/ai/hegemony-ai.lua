@@ -25,6 +25,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 	end
 	
 	SmartAI.objectiveLevel = function(self, player)
+		if self.player:objectName() == player:objectName() then return -5 end
 		local anjiangs = {}
 		for _, p in sgs.qlist(self.room:getAllPlayers()) do
 			if p:getGeneralName() == "anjiang" then

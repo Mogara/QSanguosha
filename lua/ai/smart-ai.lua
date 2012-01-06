@@ -352,6 +352,8 @@ function SmartAI:objectiveLevel(player)
 		if player:isLord() then return -2
 		elseif #players == 2 then return 5
 		elseif renegade_num == 0 and loyal_num == 1 then return 5
+		elseif rebel_num == 0 and 
+			((sgs.ai_anti_lord[player:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[player:objectName()]  or 0) > 2) then return 5
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return 5-modifier
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return -1
 		elseif (self:singleRole()) == "rebel" then return 4-modifier
