@@ -328,8 +328,9 @@ function SmartAI:objectiveLevel(player)
 				end
 			end
 			table.sort(players, comp_func)
-			if (sgs.ai_anti_lord[players[1]:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[players[1]:objectName()]  or 0) > 2 then
-				if player:objectName() == players[1]:objectName() then return 5 else return -2 end
+			if (sgs.ai_anti_lord[player:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[player:objectName()]  or 0) > 2 then
+				if player:objectName() == players[1]:objectName() or (renegade_num == 2 and player:objectName() == players[2]:objectName())
+					then return 5 else return -2 end
 			elseif self:isWeak(player) then
 				return -1
 			else
