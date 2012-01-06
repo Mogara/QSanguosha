@@ -33,7 +33,7 @@ public:
     void setAutoBack(bool auto_back);
     void changeGeneral(const QString &general_name);
     void writeCardDesc(QString card_owner);
-    CardItem *deleteCardDesc();
+    void deleteCardDesc();
 
     void select();
     void unselect();
@@ -56,7 +56,7 @@ protected:
 
 private:
     const Card *card, *filtered_card;
-    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap;
+    QPixmap suit_pixmap, icon_pixmap, number_pixmap, cardsuit_pixmap, *owner_pixmap;
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
     bool auto_back;

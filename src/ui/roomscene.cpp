@@ -1171,11 +1171,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     }
     else{
         if(src_place == Player::DiscardedPile && dest_place == Player::Hand){
-            CardItem *new_card = card_item->deleteCardDesc();
-            removeItem(card_item);
-            delete card_item;
-            card_item = new_card;
-            addItem(card_item);
+            card_item->deleteCardDesc();
         }
         putCardItem(dest, dest_place, card_item);
     }

@@ -33,6 +33,7 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 
     avatar = NULL;
+    owner_pixmap = NULL;
 }
 
 CardItem::CardItem(const QString &general_name)
@@ -262,6 +263,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(card){
         painter->drawPixmap(0, 14, cardsuit_pixmap);
         painter->drawPixmap(0, 2, number_pixmap);
+        if(owner_pixmap)painter->drawPixmap(0,0,*owner_pixmap);
     }
 }
 
@@ -272,7 +274,9 @@ void CardItem::writeCardDesc(QString card_owner)
          int x, y;
          x=(93-card_owner.toLocal8Bit().length()*6)/2;
          y=115;
-         QPainter painter(&pixmap);
+         owner_pixmap = new QPixmap(pixmap.size());
+         owner_pixmap->fill(QColor(0,0,0,0));
+         QPainter painter(owner_pixmap);
          static QFont card_desc_font("SimSun", 9, QFont::Normal);
          painter.setFont(card_desc_font);
          painter.setPen(Qt::black);
@@ -287,8 +291,7 @@ void CardItem::writeCardDesc(QString card_owner)
      }
 }
 
-CardItem *CardItem::deleteCardDesc(){
-    CardItem *new_item = new CardItem(this->getCard());
-    new_item->setPos(this->x(), this->y());
-    return new_item;
+void CardItem::deleteCardDesc(){
+    delete owner_pixmap;
+    owner_pixmap = NULL;
 }
