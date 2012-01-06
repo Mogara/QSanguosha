@@ -611,22 +611,17 @@ QStringList Engine::getLimitedGeneralNames() const{
 
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{
     QStringList all_generals = getLimitedGeneralNames();
+    QSet<QString> general_set = all_generals.toSet();
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if(Config.EnableHegemony){
-        QSet<QString> basara_ban;
-        foreach(QString general, all_generals)
-            if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !ban_set.contains(general))
-                basara_ban.insert(general);
+    QSet<QString> extra_ban;
+    if(Config.EnableBasara) general_set =
+            general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
+    if(Config.EnableHegemony) general_set =
+            general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
-        all_generals = all_generals.toSet().subtract(basara_ban).toList();
-    }
-
-    if(!ban_set.isEmpty()){
-        QSet<QString> general_set = all_generals.toSet();
-        all_generals = general_set.subtract(ban_set).toList();
-    }
+    all_generals = general_set.subtract(ban_set).toList();
 
     // shuffle them
     qShuffle(all_generals);

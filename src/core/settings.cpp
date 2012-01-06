@@ -1,6 +1,7 @@
 #include "settings.h"
 #include "photo.h"
 #include "card.h"
+#include "engine.h"
 
 #include <QFontDatabase>
 #include <QStringList>
@@ -111,6 +112,20 @@ void Settings::init(){
         banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
         setValue("Banlist/1v1", banlist);
     }
+    if(!contains("Banlist/Basara")){
+        QStringList banlist;
+        banlist << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu";
+        setValue("Banlist/Basara", banlist);
+    }
+    if(!contains("Banlist/Hegemony")){
+        QStringList banlist;
+        foreach(QString general, Sanguosha->getLimitedGeneralNames()){
+            if(Sanguosha->getGeneral(general)->getKingdom() == "god")
+                banlist << general;
+        }
+        banlist << "xiahoujuan";
+        setValue("Banlist/Hegemony", banlist);
+    }
     if(!contains("Banlist/Pairs")){
         QStringList banlist;
         banlist << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan";
@@ -130,6 +145,9 @@ void Settings::init(){
         banlist << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe";
         banlist << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia";
         banlist << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi";
+        banlist << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang";
+        banlist << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu";
+        banlist << "bgm_diaochan+caizhaoji";
 
         setValue("Banlist/Pairs", banlist);
     }

@@ -76,9 +76,8 @@ if sgs.GetConfig("EnableHegemony", false) then
 	SmartAI.getHegKingdom = function(self)
 		local names = self.room:getTag(self.player:objectName()):toStringList()
 
-		if #names == 0 then assert(self.player:getKingdom()~="god") return self.player:getKingdom() end
+		if #names == 0 then return self.player:getKingdom() end
 		local kingdom = sgs.Sanguosha:getGeneral(names[1]):getKingdom()
-		assert(kingdom~="god")
 		return kingdom
 	end
 
@@ -90,24 +89,29 @@ if sgs.GetConfig("EnableHegemony", false) then
 	
 	SmartAI.objectiveLevel = function(self, player, recursive)
 		if self.player:objectName() == player:objectName() then return -5 end
-		local liege = 0
+		local lieges = {}
+		local liege_hp = 0
 		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if self:getHegKingdom() == aplayer:getKingdom() then liege = liege + 1 end
+			if self:getHegKingdom() == aplayer:getKingdom() then table.insert(lieges, aplayer) end
+			liege_hp = liege_hp + aplayer:getHp()
 		end
 		
 		if self:getHegKingdom() == player:getKingdom() then
 			if recursive then return -3 end
-			if self.player:getKingdom() == "god" and liege >= 2 then
-				local enemy = 0
+			if self.player:getKingdom() == "god" and #lieges >= 2 then
+				self:sort(lieges, "hp")
+				if player:objectName() ~= lieges[1]:objectName() then return -3 end
+				local enemy, enemy_hp = 0, 0
 				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-					if self:objectiveLevel(aplayer, true) > 0 then enemy = enemy + 1 end
+					if self:objectiveLevel(aplayer, true) > 0 then enemy = enemy + 1 enemy_hp = enemy_hp + aplayer:getHp() end
 				end
-				if enemy > liege then return -3 elseif enemy == liege then return 0 else return 4 end
+				local liege
+				if enemy_hp - enemy >= liege_hp - #lieges then return -3 else return 4 end
 			end
 			return -3
 		elseif player:getKingdom() ~= "god" then return 5
 		elseif sgs.ai_explicit[player:objectName()] == self:getHegKingdom() then 
-			if self.player:getKingdom() ~= "god" and liege >= 1 and not recursive then
+			if self.player:getKingdom() ~= "god" and #lieges >= 1 and not recursive then
 				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 					if self:objectiveLevel(aplayer, true) >= 0 then return -1 end
 				end
@@ -184,7 +188,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		else
 			sgs.ai_explicit[player:objectName()] = nil
 		end
-		self:printAll(player, intention)
+		-- self:printAll(player, intention)
 	end
 
 	SmartAI.updatePlayers = function(self, inclusive)
@@ -201,6 +205,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		for _, aplayer in ipairs(flist) do
 			table.insert(self.friends_noself, aplayer)
 		end
+		table.insert(flist, self.player)
 		for _, aplayer in ipairs(players) do
 			if self:isEnemy(aplayer) then table.insert(elist, aplayer) end
 		end
