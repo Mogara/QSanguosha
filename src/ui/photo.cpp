@@ -708,7 +708,8 @@ void Photo::killPlayer(){
         MakeGray(small_avatar);
 
     kingdom_frame = QPixmap();
-    role_combobox->hide();
+    if(!ServerInfo.EnableHegemony)
+        role_combobox->hide();
 
     if(save_me_item)
         save_me_item->hide();
