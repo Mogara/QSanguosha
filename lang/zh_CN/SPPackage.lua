@@ -37,10 +37,9 @@ return {
 	["#YongsiWorst"] = "%from 的锁定技【庸肆】被触发，弃掉了所有的装备和手牌（共 %arg 张）",
 
 	["sp_diaochan"] = "SP貂蝉",
+	["SP Diaochan"] = "SP貂蝉",
 	["tuoqiao"] = "脱壳",
-	["xuwei"] = "续尾",
-	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉",
-	[":xuwei"] = "狗尾续貂，变身为原版貂蝉",
+	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉或桌游志貂蝉",
 	["cv:sp_diaochan"] = "",
 
 	["sp_sunshangxiang"] = "SP孙尚香",

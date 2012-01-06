@@ -1195,25 +1195,25 @@ public:
     }
 };
 
-class Tuoqiao: public ZeroCardViewAsSkill{
+class Tuoqiao: public GameStartSkill{
 public:
-    Tuoqiao():ZeroCardViewAsSkill("tuoqiao"){
-        huanzhuang_card = new HuanzhuangCard;
+    Tuoqiao():GameStartSkill("tuoqiao"){
+        frequency = Limited;
+        default_choice = "SP Diaochan";
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        if(player->hasUsed("HuanzhuangCard"))
-            return false;
-
-        return player->getGeneralName() == "diaochan";
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return GameStartSkill::triggerable(target) && target->getGeneralName() == "diaochan";
     }
 
-    virtual const Card *viewAs() const{
-        return huanzhuang_card;
+    virtual void onGameStart(ServerPlayer *player) const{
+        if(player->askForSkillInvoke(objectName())){
+            Room *room = player->getRoom();
+            QString choice = room->askForChoice(player, objectName(), "SP Diaochan+BGM Diaochan");
+            if(choice == "SP Diaochan") choice = "sp_diaochan"; else choice = "bgm_diaochan";
+            room->transfigure(player, choice, true, false, "diaochan");
+        }
     }
-
-private:
-    HuanzhuangCard *huanzhuang_card;
 };
 
 class Qianxun: public ProhibitSkill{
@@ -1360,7 +1360,6 @@ void StandardPackage::addGenerals(){
     addMetaObject<QingnangCard>();
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
-    addMetaObject<HuanzhuangCard>();
     addMetaObject<CheatCard>();
 }
 

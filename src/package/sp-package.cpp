@@ -301,27 +301,6 @@ public:
     }
 };
 
-class Xuwei: public ZeroCardViewAsSkill{
-public:
-    Xuwei():ZeroCardViewAsSkill("xuwei"){
-        huanzhuang_card = new HuanzhuangCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        if(player->hasUsed("HuanzhuangCard"))
-            return false;
-
-        return player->getGeneralName() == "sp_diaochan";
-    }
-
-    virtual const Card *viewAs() const{
-        return huanzhuang_card;
-    }
-
-private:
-    HuanzhuangCard *huanzhuang_card;
-};
-
 class Xiuluo: public PhaseChangeSkill{
 public:
     Xiuluo():PhaseChangeSkill("xiuluo"){
@@ -435,7 +414,6 @@ SPPackage::SPPackage()
     General *sp_diaochan = new General(this, "sp_diaochan", "qun", 3, false, true);
     sp_diaochan->addSkill("lijian");
     sp_diaochan->addSkill("biyue");
-    sp_diaochan->addSkill(new Xuwei);
 
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true);
     sp_sunshangxiang->addSkill("jieyin");
