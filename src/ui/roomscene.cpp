@@ -2418,8 +2418,10 @@ void RoomScene::addRestartButton(QDialog *dialog){
     dialog->resize(main_window->width()/2, dialog->height());
 
     QPushButton *restart_button = new QPushButton(tr("Restart Game"));
+    QPushButton *return_button = new QPushButton(tr("Return to main menu"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
+    hlayout->addWidget(return_button);
     hlayout->addWidget(restart_button);
 
     QPushButton *save_button = new QPushButton(tr("Save record"));
@@ -2430,8 +2432,10 @@ void RoomScene::addRestartButton(QDialog *dialog){
         layout->addLayout(hlayout);
 
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
     connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+    connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
 void RoomScene::saveReplayRecord(){
