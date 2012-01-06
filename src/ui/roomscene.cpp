@@ -63,8 +63,8 @@
 #endif
 #endif
 
-static QPointF DiscardedPos(-6, -2);
-static QPointF DrawPilePos(-102, -2);
+static QPointF DiscardedPos(-6, 8);
+static QPointF DrawPilePos(-108, 8);
 
 RoomScene *RoomSceneInstance;
 
@@ -395,6 +395,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     adjustItems();
 
     animations = new EffectAnimation();
+    drawPile = NULL;
 }
 
 void RoomScene::createButtons(){
@@ -3073,6 +3074,13 @@ void RoomScene::onGameStart(){
 
 #endif
     game_started = true;
+    drawPile = new Pixmap("image/system/card-back.png");
+    addItem(drawPile);
+    drawPile->setPos(DrawPilePos);
+    QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
+    drp->setOffset(6);
+    drp->setColor(QColor(0,0,0));
+    drawPile->setGraphicsEffect(drp);
     reLayout();
 }
 
@@ -3847,7 +3855,8 @@ void RoomScene::adjustPrompt()
 
 void RoomScene::reLayout()
 {
-    //if(!game_started)return;
+    //if(!Config.value("circularView",false).toBool())
+    //    if(!game_started)return;
 
     QPoint pos = QPoint(dashboard->getMidPosition(),0);
 
@@ -3896,10 +3905,6 @@ void RoomScene::reLayout()
 
     if(!Config.value("circularView",false).toBool())
     {
-        pos.rx() = dashboard->x() + (dashboard->getMidPosition() + dashboard->getRightPosition())/2;
-
-        alignTo(state_item,pos,"xm");
-
         pos.ry() = state_item->y();
         pos.rx() = state_item->x()-padding_left;
         alignTo(chat_box_widget,pos,"xryt");
