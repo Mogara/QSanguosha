@@ -274,8 +274,40 @@ void MainWindow::enterRoom(){
     }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
+    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
 
     gotoScene(room_scene);
+}
+
+void MainWindow::gotoStartScene(){
+    StartScene *start_scene = new StartScene;
+
+    QList<QAction*> actions;
+    actions << ui->actionStart_Game
+            << ui->actionStart_Server
+            << ui->actionPC_Console_Start
+            << ui->actionReplay
+            << ui->actionConfigure
+            << ui->actionGeneral_Overview
+            << ui->actionCard_Overview
+            << ui->actionScenario_Overview
+            << ui->actionAbout
+            << ui->actionAcknowledgement;
+
+    foreach(QAction *action, actions)
+        start_scene->addButton(action);
+
+    setCentralWidget(view);
+    restoreFromConfig();
+
+    gotoScene(start_scene);
+
+    addAction(ui->actionShow_Hide_Menu);
+    addAction(ui->actionFullscreen);
+    addAction(ui->actionMinimize_to_system_tray);
+
+    systray = NULL;
+    delete ClientInstance;
 }
 
 void MainWindow::startGameInAnotherInstance(){

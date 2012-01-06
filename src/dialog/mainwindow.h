@@ -110,6 +110,7 @@ private slots:
     void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
+    void gotoStartScene();
     void startGameInAnotherInstance();
     void changeBackground();
     void on_actionView_ban_list_triggered();

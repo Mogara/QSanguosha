@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
     qApp->installTranslator(&qt_translator);
     qApp->installTranslator(&translator);
 
-    Config.init();
     Sanguosha = new Engine;
+    Config.init();
     BanPair::loadBanPairs();
 
     if(qApp->arguments().contains("-server")){
