@@ -803,7 +803,7 @@ void BasaraMode::playerShowed(ServerPlayer *player) const{
             kingdom_roles[p->getGeneral()->getKingdom()]++;
         }
 
-        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 1
+        if(kingdom_roles[Sanguosha->getGeneral(names.first())->getKingdom()] >= 2
                 && player->getGeneralName() == "anjiang")
             return;
     }
