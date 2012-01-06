@@ -68,10 +68,10 @@ void StartScene::switchToServer(Server *server){
     if(SoundEngine) {
 #ifdef  Q_OS_WIN32
         SoundEngine->drop();
-        SoundEngine = NULL;
 #else
         delete SoundEngine;
 #endif
+        SoundEngine = NULL;
     }
 #endif
 

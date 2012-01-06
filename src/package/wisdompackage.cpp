@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "room.h"
 #include "maneuvering.h"
+#include "general.h"
 
 JuaoCard::JuaoCard(){
     once = true;

@@ -162,10 +162,10 @@ Engine::~Engine(){
     if(SoundEngine) {
 #ifdef  Q_OS_WIN32
         SoundEngine->drop();
-        SoundEngine = NULL;
 #else
         delete SoundEngine;
 #endif
+        SoundEngine = NULL;
     }
 #endif
 
@@ -677,10 +677,10 @@ void Engine::playEffect(const QString &filename) const{
     if(filename.isNull())
         return;
 
-#ifdef  Q_OS_WIN32
     if(SoundEngine == NULL)
         return;
 
+#ifdef  Q_OS_WIN32
     if(SoundEngine->isCurrentlyPlaying(filename.toAscii()))
         return;
     SoundEngine->play2D(filename.toAscii());

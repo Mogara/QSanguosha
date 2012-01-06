@@ -5,6 +5,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "carditem.h"
+#include "general.h"
 
 class ZombieRule: public ScenarioRule{
 public:
