@@ -10,12 +10,10 @@ if sgs.GetConfig("EnableHegemony", false) then
 			table.insert(players, player)
 		end
 		
-		self.room:writeToConsole(players[1]:getGeneralName())
 		local anjiang = {}
 		for _, player in sgs.qlist(self.room:getAllPlayers()) do
 			if player:getGeneralName() == "anjiang" then table.insert(anjiang, player:getSeat()) end
 		end
-		-- self.room:writeToConsole(players[1]:getGeneralName() .. " " .. self.room:alivePlayerCount() .. " " .. #self.friends .. " " .. #self.enemies .. " " .. table.concat(anjiang,"+"))
 
 		if event == sgs.Predamaged then
 			local damage = data:toDamage()
@@ -29,9 +27,9 @@ if sgs.GetConfig("EnableHegemony", false) then
 			end
 		end
 		
-		if SmartAI.GetValue(self.player) < 6 then self.room:writeToConsole("no-<6") return "no" end
+		if SmartAI.GetValue(self.player) < 6 then return "no" end
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if self:isFriend(player) then self.room:writeToConsole("yes-friend") return "yes" end
+			if self:isFriend(player) then return "yes" end
 		end
 		local vequips, defense = 0
 		if self.player:getWeapon() or self:hasHegSkills("yitian", players) then vequips = vequips + 1 end
@@ -91,7 +89,6 @@ if sgs.GetConfig("EnableHegemony", false) then
 	end
 	
 	SmartAI.objectiveLevel = function(self, player, recursive)
-		if not player then self.room:writeToConsole(debug.traceback()) end
 		if self.player:objectName() == player:objectName() then return -5 end
 		local liege = 0
 		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -187,7 +184,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		else
 			sgs.ai_explicit[player:objectName()] = nil
 		end
-		-- self:printAll(player, intention)
+		self:printAll(player, intention)
 	end
 
 	SmartAI.updatePlayers = function(self, inclusive)
