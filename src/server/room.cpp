@@ -1735,9 +1735,21 @@ int Room::getCardFromPile(const QString &card_pattern){
 void Room::choose2Command(ServerPlayer *player, const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
     if(general == NULL){
-        GeneralSelector *selector = GeneralSelector::GetInstance();
-        QString choice = selector->selectSecond(player, player->getSelected());
-        general = Sanguosha->getGeneral(choice);
+        if(Config.EnableHegemony)
+        {
+            foreach(QString name,player->getSelected())
+            {
+                if(name == player->getGeneralName())continue;
+                if(Sanguosha->getGeneral(name)->getKingdom()
+                        == player->getGeneral()->getKingdom())
+                    general = Sanguosha->getGeneral(name);
+            }
+        }else
+        {
+            GeneralSelector *selector = GeneralSelector::GetInstance();
+            QString choice = selector->selectSecond(player, player->getSelected());
+            general = Sanguosha->getGeneral(choice);
+        }
     }
 
     player->setGeneral2Name(general->objectName());
@@ -1749,9 +1761,24 @@ void Room::choose2Command(ServerPlayer *player, const QString &general_name){
 void Room::chooseCommand(ServerPlayer *player, const QString &general_name){
     const General *general = Sanguosha->getGeneral(general_name);
     if(general == NULL){
-        GeneralSelector *selector = GeneralSelector::GetInstance();
-        QString choice = selector->selectFirst(player, player->getSelected());
-        general = Sanguosha->getGeneral(choice);
+        if(Config.EnableHegemony && Config.Enable2ndGeneral)
+        {
+            foreach(QString name, player->getSelected())
+            {
+                foreach(QString other,player->getSelected())
+                {
+                    if(name == other)continue;
+                    if(Sanguosha->getGeneral(name)->getKingdom()
+                            == Sanguosha->getGeneral(other)->getKingdom())
+                        general = Sanguosha->getGeneral(name);
+                }
+            }
+        }else
+        {
+            GeneralSelector *selector = GeneralSelector::GetInstance();
+            QString choice = selector->selectFirst(player, player->getSelected());
+            general = Sanguosha->getGeneral(choice);
+        }
     }
 
     player->setGeneral(general);
