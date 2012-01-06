@@ -87,7 +87,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-    if(ServerInfo.EnableHegemony && generals.length()>2)
+    if(ServerInfo.EnableHegemony && ServerInfo.Enable2ndGeneral
+            &&generals.length()>2)
     {
         int index = 0;
         foreach(const General *general, generals)
