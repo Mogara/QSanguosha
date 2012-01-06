@@ -39,7 +39,7 @@ return {
 	["sp_diaochan"] = "SP貂蝉",
 	["SP-Diaochan"] = "SP貂蝉",
 	["tuoqiao"] = "脱壳",
-	[":tuoqiao"] = "金蝉脱壳，变身为SP貂蝉或桌游志貂蝉",
+	[":tuoqiao"] = "<b>限定技</b>，游戏开始时，你可以选择变身为SP貂蝉或桌游志貂蝉",
 	["cv:sp_diaochan"] = "",
 
 	["sp_sunshangxiang"] = "SP孙尚香",
