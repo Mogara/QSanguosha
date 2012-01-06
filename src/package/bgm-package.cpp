@@ -31,7 +31,7 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const{
         if(event == CardFinished){
-            player->tag["ChongZhenTarget"] = NULL;
+            player->tag["ChongZhenTarget"] = QVariant::fromValue(NULL);
         }
         else if(event == CardResponsed){
             CardStar card = data.value<CardStar>();

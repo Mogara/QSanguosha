@@ -1,6 +1,7 @@
 #include "couple-scenario.h"
 #include "skill.h"
 #include "engine.h"
+#include "room.h"
 
 class CoupleScenarioRule: public ScenarioRule{
 public:
