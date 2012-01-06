@@ -58,7 +58,6 @@ public:
 };
 
 LihunCard::LihunCard(){
-
 }
 
 bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -74,31 +73,25 @@ bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player 
 void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->throwCard(this);
-    effect.from->setFlags("lihun_used");
     effect.from->turnOver();
-    QList<const Card *> handcards = effect.to->getHandcards();
-    foreach(const Card *cd, handcards){
+    foreach(const Card *cd, effect.to->getHandcards()){
         room->moveCardTo(cd, effect.from, Player::Hand, false);
     }
     room->setTag("Lihun_Target", QVariant::fromValue(effect.to));
 }
 
-class Lihun:public OneCardViewAsSkill{
+class LihunSelect: public OneCardViewAsSkill{
 public:
-    Lihun():OneCardViewAsSkill("lihun"){
+    LihunSelect():OneCardViewAsSkill("lihun"){
 
     }
 
     virtual bool viewFilter(const CardItem *to_select) const{
-        return !to_select->isEquipped();
+        return true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("LihunCard");
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return false;
     }
 
     virtual const Card *viewAs(CardItem *card_item) const{
@@ -108,15 +101,19 @@ public:
     }
 };
 
-class LihunGiveback: public TriggerSkill{
+class Lihun: public TriggerSkill{
 public:
-    LihunGiveback():TriggerSkill("#lihungiveback"){
+    Lihun():TriggerSkill("lihun"){
         events << PhaseChange;
+        view_as_skill = new LihunSelect;
+    }
 
+    virtual int getPriority() const{
+        return 3;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target->hasSkill(objectName()) && target->hasFlag("lihun_used");
+        return target->hasUsed("LihunCard");
     }
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *diaochan, QVariant &data) const{
@@ -124,41 +121,30 @@ public:
 
         if(event == PhaseChange && diaochan->getPhase() == Player::Discard){
             ServerPlayer *target = room->getTag("Lihun_Target").value<PlayerStar>();
-            int x = target->getHp();
-            QList<int> allcards_id;
-            QList<const Card *> equips;
-            QList<const Card *> handcards;
-            if(diaochan->hasEquip()){
-                equips = diaochan->getEquips();
-                foreach(const Card *cd, equips){
-                    int id = cd->getEffectiveId();
-                    allcards_id << id;
+            if(diaochan->getCards("he").length() <= target->getHp()){
+                foreach(const Card *card, diaochan->getCards("he")){
+                    room->moveCardTo(card,
+                                     target,
+                                     Player::Hand,
+                                     room->getCardPlace(card->getEffectiveId()) == Player::Hand ? false : true);
                 }
             }
-            if(!diaochan->isKongcheng()){
-                handcards = diaochan->getHandcards();
-                foreach(const Card *cd, handcards){
-                    int id = cd->getEffectiveId();
-                    allcards_id << id;
-                }
-            }
-            if(allcards_id.isEmpty())
-                return false;
-            else if(allcards_id.length() <= x){
-                foreach(int id, allcards_id){
-                    room->moveCardTo(Sanguosha->getCard(id), target, Player::Hand, false);
-                }
-            }else if(allcards_id.length() > x){
+            else{
                 int i;
-                for(i = 0; i < x; i++){
-                    room->fillAG(allcards_id, diaochan);
-                    int selected_id = room->askForAG(diaochan, allcards_id, false, "lihungiveback");
-                    room->moveCardTo(Sanguosha->getCard(selected_id), target, Player::Hand, false);
-                    allcards_id.removeOne(selected_id);
-                    diaochan->invoke("clearAG");
+                for(i = 0; i < target->getHp(); i++){
+                    if(diaochan->isNude())
+                        return false;
+
+                    int card_id = room->askForCardChosen(diaochan, diaochan, "he", objectName());
+                    const Card *card = Sanguosha->getCard(card_id);
+                    room->moveCardTo(card,
+                                     target,
+                                     Player::Hand,
+                                     room->getCardPlace(card_id) == Player::Hand ? false : true);
                 }
             }
         }
+
         return false;
     }
 };
@@ -168,12 +154,9 @@ BGMPackage::BGMPackage():Package("BGM"){
     bgm_zhaoyun->addSkill("longdan");
     bgm_zhaoyun->addSkill(new ChongZhen);
 
-    General *bgm_diaochan = new General(this, "bgm_diaochan", "qun", 3, true, true);
+    General *bgm_diaochan = new General(this, "bgm_diaochan", "qun", 3, false, true);
     bgm_diaochan->addSkill(new Lihun);
-    bgm_diaochan->addSkill(new LihunGiveback);
     bgm_diaochan->addSkill("biyue");
-
-    related_skills.insertMulti("lihun", "#lihungiveback");
 
     addMetaObject<LihunCard>();
 }
