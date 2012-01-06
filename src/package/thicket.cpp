@@ -7,6 +7,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "engine.h"
+#include "general.h"
 
 class Xingshang: public TriggerSkill{
 public:

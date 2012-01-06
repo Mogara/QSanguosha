@@ -3022,12 +3022,7 @@ void RoomScene::onGameStart(){
 
 #ifdef AUDIO_SUPPORT
     if(!Config.EnableBgMusic)
-#ifdef Q_OS_WIN32
-        if(SoundEngine == NULL)
-#else
-        if(BackgroundMusic == NULL)
-#endif
-            return;
+        return;
 
     bool play_music = false;
     if(memory->isAttached() || memory->attach()){
@@ -3055,20 +3050,26 @@ void RoomScene::onGameStart(){
 
     // start playing background music
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
-#ifdef  Q_OS_WIN32
-    const char *filename = bgmusic_path.toLocal8Bit().data();
-    BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
 
-    if(BackgroundMusic)
-        BackgroundMusic->setVolume(Config.BGMVolume);
+#ifdef  Q_OS_WIN32
+    if(SoundEngine) {
+        const char *filename = bgmusic_path.toLocal8Bit().data();
+        BackgroundMusic = SoundEngine->play2D(filename, true, false, true);
+
+        if(BackgroundMusic)
+            BackgroundMusic->setVolume(Config.BGMVolume);
+    }
 #else
-    if (!BackgroundMusic) {
+    if(BackgroundMusic == NULL) {
         SoundOutput = new Phonon::AudioOutput(Phonon::GameCategory, this);
         BackgroundMusic = new Phonon::MediaObject(this);
-        Phonon::createPath(BackgroundMusic, SoundOutput);
-        BackgroundMusic->setCurrentSource(Phonon::MediaSource(bgmusic_path));
-        BackgroundMusic->play();
         connect(BackgroundMusic, SIGNAL(aboutToFinish()), SLOT(onMusicFinish()));
+        Phonon::createPath(BackgroundMusic, SoundOutput);
+    }
+    if(BackgroundMusic) {
+        // This crashes when running twice
+        // BackgroundMusic->setCurrentSource(bgmusic_path);
+        // BackgroundMusic->play();
     }
 #endif
 

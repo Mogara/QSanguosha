@@ -4,6 +4,7 @@
 #include "carditem.h"
 #include "settings.h"
 #include "maneuvering.h"
+#include "general.h"
 
 GongxinCard::GongxinCard(){
     once = true;
