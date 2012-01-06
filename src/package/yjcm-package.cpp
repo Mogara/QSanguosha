@@ -6,6 +6,7 @@
 #include "carditem.h"
 #include "engine.h"
 #include "ai.h"
+#include "general.h"
 
 class Yizhong: public TriggerSkill{
 public:
