@@ -87,6 +87,27 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
+    if(ServerInfo.EnableHegemony && generals.length()>2)
+    {
+        int index = 0;
+        foreach(const General *general, generals)
+        {
+            int party = 0;
+            foreach(const General *other, generals)
+                if(other->getKingdom() == general->getKingdom())
+                    party ++;
+            if(party<2)
+                buttons.at(index)->setEnabled(false);
+            if(Self->getGeneral())
+                    if(Self->getGeneral()->getKingdom()
+                        != general->getKingdom()||
+                        Self->getGeneralName() ==
+                            general->objectName())
+                buttons.at(index)->setEnabled(false);
+            index ++;
+        }
+    }
+
     QLayout *layout = NULL;
     const int columns = generals.length() > 10 ? 6 : 5;
     if(generals.length() <= columns){
@@ -128,7 +149,17 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-    mapper->setMapping(this, generals.first()->objectName());
+    QString default_name = generals.first()->objectName();
+    for(int i=0;i<buttons.size();i++)
+    {
+        if(buttons.at(i)->isEnabled())
+        {
+            default_name = generals.at(i)->objectName();
+            break;
+        }
+    }
+
+    mapper->setMapping(this, default_name);
     connect(this, SIGNAL(rejected()), mapper, SLOT(map()));
 
     connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(chooseItem(QString)));

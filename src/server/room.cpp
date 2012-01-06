@@ -1442,6 +1442,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 }
 
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
+
     QSet<QString> existed;
     foreach(ServerPlayer *player, players){
         if(player->getGeneral())
@@ -1449,14 +1450,54 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
 
         if(player->getGeneral2())
             existed << player->getGeneral2Name();
+
+        if(Config.EnableHegemony)
+            existed.unite(player->getSelected().toSet());
     }
 
-    const int max_choice = Config.EnableHegemony ? 3 : Config.value("MaxChoice", 5).toInt();
+    const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ? 5
+                                           : Config.value("MaxChoice", 5).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total-existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
     QStringList choices = Sanguosha->getRandomGenerals(total-existed.size(), existed);
+
+    if(Config.EnableHegemony)
+    {
+        if(to_assign.first()->getGeneral())
+            foreach(ServerPlayer *sp,players)
+        {
+            QStringList old_list = sp->getSelected();
+            sp->clearSelected();
+            QString choice;
+
+            //keep legal generals
+            foreach(QString name, old_list)
+            {
+                if(Sanguosha->getGeneral(name)->getKingdom()
+                        != sp->getGeneral()->getKingdom()
+                        || sp->findReasonable(old_list,true)
+                        == name)
+                {
+                    sp->addToSelected(name);
+                    old_list.removeOne(name);
+                }
+            }
+
+            //drop the rest and add new generals
+            while(old_list.length())
+            {
+                choice = sp->findReasonable(choices);
+                sp->addToSelected(choice);
+                old_list.pop_front();
+                choices.removeOne(choice);
+            }
+            return;
+        }
+    }
+
+
     foreach(ServerPlayer *player, to_assign){
         player->clearSelected();
 
