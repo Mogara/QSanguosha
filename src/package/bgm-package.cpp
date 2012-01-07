@@ -77,7 +77,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
     foreach(const Card *cd, effect.to->getHandcards()){
         room->moveCardTo(cd, effect.from, Player::Hand, false);
     }
-    room->setTag("Lihun_Target", QVariant::fromValue(effect.to));
+    room->setTag("LihunTarget", QVariant::fromValue(effect.to));
 }
 
 class LihunSelect: public OneCardViewAsSkill{
@@ -120,7 +120,10 @@ public:
         Room *room = diaochan->getRoom();
 
         if(event == PhaseChange && diaochan->getPhase() == Player::Discard){
-            ServerPlayer *target = room->getTag("Lihun_Target").value<PlayerStar>();
+            ServerPlayer *target = room->getTag("LihunTarget").value<PlayerStar>();
+            if(!target)
+                return false;
+
             if(diaochan->getCards("he").length() <= target->getHp()){
                 foreach(const Card *card, diaochan->getCards("he")){
                     room->moveCardTo(card,
@@ -143,6 +146,7 @@ public:
                                      room->getCardPlace(card_id) == Player::Hand ? false : true);
                 }
             }
+            room->removeTag("LihunTarget");
         }
 
         return false;
