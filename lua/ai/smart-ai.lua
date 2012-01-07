@@ -281,7 +281,7 @@ function SmartAI:printFEList()
 end
 
 function SmartAI:objectiveLevel(player)
-	if useDefaultStrategy() then
+	if isRolePredictable() then
 		if self.player:getRole() == "renegade" then
 		elseif player:getRole() == "renegade" then return 4.1
 		elseif self:isFriend(player) then return -2
