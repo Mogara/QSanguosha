@@ -95,7 +95,27 @@ if sgs.GetConfig("EnableHegemony", false) then
 			if self:getHegKingdom() == aplayer:getKingdom() then table.insert(lieges, aplayer) end
 			liege_hp = liege_hp + aplayer:getHp()
 		end
-		
+
+		local plieges = {}
+		local modifier = 0
+		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			local kingdom = aplayer:getKingdom()
+			if kingdom == "god" then kingdom = sgs.ai_explicit[aplayer:objectName()] end
+			if kingdom then plieges[kingdom] = (plieges[kingdom] or 0) + 1 end
+		end
+		local kingdoms = {"wei", "wu", "shu", "qun"}
+		local max_kingdom = 0
+		for _, akingdom in ipairs(kingdoms) do
+			if (plieges[akingdom] or 0) > max_kingdom then max_kingdom = plieges[akingdom] end
+		end
+
+		if max_kingdom > 0 then
+			local kingdom = player:getKingdom()
+			if kingdom == "god" then kingdom = sgs.ai_explicit[player:objectName()] end
+			if not kingdom or (plieges[kingdom] or 0) < max_kingdom then modifier = -2
+			elseif (plieges[kingdom] or 0) > 2 then modifier = 2 end
+		end
+
 		if self:getHegKingdom() == player:getKingdom() then
 			if recursive then return -3 end
 			if self.player:getKingdom() == "god" and #lieges >= 2 then
@@ -109,7 +129,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 				if enemy_hp - enemy >= liege_hp - #lieges then return -3 else return 4 end
 			end
 			return -3
-		elseif player:getKingdom() ~= "god" then return 5
+		elseif player:getKingdom() ~= "god" then return 5 + modifier
 		elseif sgs.ai_explicit[player:objectName()] == self:getHegKingdom() then 
 			if self.player:getKingdom() ~= "god" and #lieges >= 1 and not recursive then
 				for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -118,8 +138,8 @@ if sgs.GetConfig("EnableHegemony", false) then
 				return 4
 			end
 			return -1
-		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) == -160 then return 5
-		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) < -80 then return 3
+		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) == -160 then return 5 + modifier
+		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) < -80 then return 4 + modifier
  		end
 		
 		return 0
