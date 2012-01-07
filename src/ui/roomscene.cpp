@@ -3111,8 +3111,10 @@ void RoomScene::freeze(){
     chat_edit->setEnabled(false);
 
 #ifdef AUDIO_SUPPORT
+#ifdef  Q_OS_WIN32
     if(BackgroundMusic)
         BackgroundMusic->stop();
+#endif
 #endif
 
     progress_bar->hide();
