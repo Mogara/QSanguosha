@@ -153,7 +153,7 @@ void Settings::init(){
         if(!banlist.contains(ban_general))
                 banlist << ban_general;
     }
-    setValue("Ban/Basara", banlist);
+    setValue("Banlist/Basara", banlist);
 
     banlist = value("Banlist/Hegemony").toStringList();
     foreach(QString ban_general, hegemony_ban){
