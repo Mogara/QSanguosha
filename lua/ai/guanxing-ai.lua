@@ -1,11 +1,3 @@
-local function Reverse(self, cardlist)
-	local Reverse_list = {}
-	for i=#cardlist, 1, -1 do
-		table.insert(Reverse_list, cardlist[i])
-	end
-	return Reverse_list
-end
-
 sgs.ai_judgestring = 
 {
 	indulgence = "heart",
@@ -21,7 +13,6 @@ local function getIdToCard(self, cards)
 	for _, card_id in ipairs(cards) do
 		local card = sgs.Sanguosha:getCard(card_id)
 		table.insert(tocard, card)
-		self:log(card:objectName()..":"..card:getSuitString())
 	end
 	return tocard
 end
@@ -29,7 +20,6 @@ end
 local function getBackToId(self, cards)
 	local cards_id = {}
 	for _, card in ipairs(cards) do
-		self:log(card:objectName()..":"..card:getSuitString())
 		table.insert(cards_id, card:getEffectiveId())
 	end
 	return cards_id
@@ -37,14 +27,13 @@ end
 
 local function getOwnCards(self, up, bottom, next_judge)
 	self:sortByUseValue(bottom)
-	local has_slash = self:getCardsNum("Slash")>0
+	local has_slash = self:getCardsNum("Slash") > 0
 	local hasNext = false
 	for index, gcard in ipairs(bottom) do
 		if index == 3 then break end
 		if #next_judge > 0 then
 			table.insert(up, gcard) 
 			table.remove(bottom, index)
-			self:log(gcard:objectName() .. "!!!!!")
 			hasNext = true
 		else
 			if has_slash then 
@@ -81,18 +70,16 @@ local function GuanXing(self, cards)
 	
 	local judge = self.player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = Reverse(self, judge)
+	judge = sgs.reverse(self, judge)
 	
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1
 		local lightning_flag = false
 		local judge_str = sgs.ai_judgestring[need_judge:objectName()] or sgs.ai_judgestring[need_judge:getSuitString()]
-		self:log("------------------>"..judge_str ..":")
 		
 		for _, for_judge in ipairs(bottom) do
 			if judge_str == "spade" and not lightning_flag then
 				has_lightning = need_judge
-				self:log("Lightning------->"..for_judge:getSuitString()..":"..for_judge:getNumber())
 				if for_judge:getNumber() >= 2 and for_judge:getNumber() <= 9 then lightning_flag = true end
 			end
 			if (judge_str == for_judge:getSuitString() and not lightning_flag) or 
@@ -122,7 +109,7 @@ local function GuanXing(self, cards)
 	local next_player = self.player:getNextAlive()
 	judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = Reverse(self, judge)
+	judge = sgs.reverse(self, judge)
 	if has_lightning then table.insert(judge, 1, has_lightning) end
 	
 	has_judged = false
@@ -133,11 +120,6 @@ local function GuanXing(self, cards)
 		local lightning_flag = false
 		if pos > #judge then break end
 		local judge_str = sgs.ai_judgestring[judge[pos]:objectName()] or sgs.ai_judgestring[judge[pos]:getSuitString()]
-		if self:isFriend(next_player) then
-			self:log("------------------>"..judge_str ..":friend")
-		else
-			self:log("------------------>"..judge_str ..":enemy")
-		end
 	
 		for _, for_judge in ipairs(bottom) do
 			if judge_str == "spade" and not lightning_flag then
@@ -198,7 +180,6 @@ local function GuanXing(self, cards)
 	
 	up, bottom = getOwnCards(self, up, bottom, next_judge) 
 	
-	self:log("-------------After Change--------------")
 	up = getBackToId(self, up)
 	bottom = getBackToId(self, bottom)
 	return up, bottom
@@ -211,7 +192,7 @@ local function XinZhan(self, cards)
 	local next_player = self.player:getNextAlive()
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = Reverse(self, judge)
+	judge = sgs.reverse(self, judge)
 	
 	bottom = getIdToCard(self, cards)
 	for judge_count, need_judge in ipairs(judge) do
