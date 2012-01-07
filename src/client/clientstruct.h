@@ -45,6 +45,8 @@ private:
     QLabel *player_count_label;
     QLabel *two_general_label;
     QLabel *scene_label;
+    QLabel *basara_label;
+    QLabel *hegemony_label;
     QLabel *max_hp_label;
     QLabel *free_choose_label;
     QLabel *enable_ai_label;
