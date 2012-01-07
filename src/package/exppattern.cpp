@@ -54,9 +54,20 @@ bool ExpPattern::matchOne(const Player *player,const Card *card, QString exp) co
     if(!checkpoint)return false;
     if(factors.size()<4)return true;
 
+    checkpoint = false;
+
     QString place = factors.at(3);
-    if(place == ".")return true;
-    else if(place == "red" && card->isRed())return true;
-    else if(place == "black" && card->isBlack())return true;
+    if(place == ".")checkpoint = true;
+    else if(place == "equipped" && card->isEquipped())checkpoint = true;
+    else if(place == "hand" && !card->isEquipped())checkpoint = true;
+    if(!checkpoint)return false;
+    if(factors.size()<5)return true;
+
+    QString color = factors.at(4);
+    if(color == ".")return true;
+    else if (color == "red" && card->isRed())return true;
+    else if (color == "black" && card->isBlack())return true;
+
     return false;
+
 }
