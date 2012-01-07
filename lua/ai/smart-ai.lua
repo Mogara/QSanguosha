@@ -377,6 +377,10 @@ function SmartAI:objectiveLevel(player)
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			elseif player:isLord() then return -3 end
 		end
+		if rebel_num == 0 then
+			if player:isLord() and self:isWeak(player) then return -1 end
+			return 5
+		end
 		local ambig_num, loyalish_hp, rebel_hp = 0, 0, 0
 		for _, aplayer in ipairs(players) do
 			if (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel") then
@@ -392,7 +396,7 @@ function SmartAI:objectiveLevel(player)
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			else return -1 end
 		else
-			if sgs.ai_loyalty[player:objectName()] < 0 then return 3.1
+			if sgs.ai_loyalty[player:objectName()] < 0 then return 0
 			else
 				if player:isLord() and loyalish_num == 1 then
 					if loyalish_hp > rebel_hp then return 5 else return -2 end
