@@ -44,8 +44,6 @@ public:
                     || effect.card->inherits("SavageAssault")
                     || effect.card->inherits("Slash"))
                 player->tag["ChongZhenTarget"] = QVariant::fromValue(effect.from);
-
-            doChongZhen(player, effect.card);
         }
         else{
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
