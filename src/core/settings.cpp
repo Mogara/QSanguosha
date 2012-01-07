@@ -107,48 +107,65 @@ void Settings::init(){
 
     BackgroundBrush = value("BackgroundBrush", "backdrop/new-version.jpg").toString();
 
-    if(!contains("Banlist/1v1")){
-        QStringList banlist;
-        banlist << "sunquan" << "huatuo" << "zhangliao" << "liubei";
-        setValue("Banlist/1v1", banlist);
-    }
-    if(!contains("Banlist/Basara")){
-        QStringList banlist;
-        banlist << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu";
-        setValue("Banlist/Basara", banlist);
-    }
-    if(!contains("Banlist/Hegemony")){
-        QStringList banlist;
-        foreach(QString general, Sanguosha->getLimitedGeneralNames()){
-            if(Sanguosha->getGeneral(general)->getKingdom() == "god")
-                banlist << general;
-        }
-        banlist << "xiahoujuan";
-        setValue("Banlist/Hegemony", banlist);
-    }
-    if(!contains("Banlist/Pairs")){
-        QStringList banlist;
-        banlist << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan";
-        banlist << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji";
-        banlist << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao";
-        banlist << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu";
-        banlist << "luxun+liubei" << "luxun+wolong" << "luxun+yuji";
-        banlist << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning";
-        banlist << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying";
-        banlist << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao";
-        banlist << "dengai+shenzhugeliang" << "dengai+shensimayi";
-        banlist << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao";
-        banlist << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun";
-        banlist << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu";
-        banlist << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong";
-        banlist << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu";
-        banlist << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe";
-        banlist << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia";
-        banlist << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi";
-        banlist << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang";
-        banlist << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu";
-        banlist << "bgm_diaochan+caizhaoji";
+    QStringList kof_ban, basara_ban, hegemony_ban, pairs_ban;
 
-        setValue("Banlist/Pairs", banlist);
+    kof_ban << "sunquan" << "huatuo" << "zhangliao" << "liubei";
+
+    basara_ban << "dongzhuo" << "zuoci" << "shenzhugeliang" << "shenlubu";
+
+    hegemony_ban.append(basara_ban);
+    hegemony_ban << "xiahoujuan";
+    foreach(QString general, Sanguosha->getLimitedGeneralNames()){
+        if(Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
+            hegemony_ban << general;
     }
+
+    pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan"
+                << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji"
+                << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
+                << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu"
+                << "luxun+liubei" << "luxun+wolong" << "luxun+yuji"
+                << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning"
+                << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying"
+                << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao"
+                << "dengai+shenzhugeliang" << "dengai+shensimayi"
+                << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
+                << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun"
+                << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu"
+                << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
+                << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
+                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe"
+                << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia"
+                << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi"
+                << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang"
+                << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu"
+                << "bgm_diaochan+caizhaoji";
+
+    QStringList banlist = value("Banlist/1v1").toStringList();
+    foreach(QString ban_general, kof_ban){
+        if(!banlist.contains(ban_general))
+            banlist << ban_general;
+    }
+    setValue("Banlist/1v1", banlist);
+
+    banlist = value("Banlist/Basara").toStringList();
+    foreach(QString ban_general, basara_ban){
+        if(!banlist.contains(ban_general))
+                banlist << ban_general;
+    }
+    setValue("Ban/Basara", banlist);
+
+    banlist = value("Banlist/Hegemony").toStringList();
+    foreach(QString ban_general, hegemony_ban){
+        if(!banlist.contains(ban_general))
+                banlist << ban_general;
+    }
+    setValue("Banlist/Hegemony", banlist);
+
+    banlist = value("Banlist/Pairs").toStringList();
+    foreach(QString ban_general, pairs_ban){
+        if(!banlist.contains(ban_general))
+                banlist << ban_general;
+    }
+    setValue("Banlist/Pairs", banlist);
 }

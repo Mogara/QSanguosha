@@ -263,7 +263,7 @@ QString Engine::translate(const QString &to_translate) const{
 int Engine::getRoleIndex() const{
     if(ServerInfo.GameMode == "06_3v3"){
         return 4;
-    }else if(Config.EnableHegemony){
+    }else if(ServerInfo.EnableHegemony){
         return 5;
     }else
         return 1;
@@ -303,14 +303,14 @@ int Engine::getGeneralCount(bool include_banned) const{
         if(ban_package.contains(general->getPackage()))
             total--;
 
-        if(Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+        if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
 
-        if(Config.EnableBasara &&
+        if(ServerInfo.EnableBasara &&
                 Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
             total -- ;
 
-        if(Config.EnableHegemony &&
+        if(ServerInfo.EnableHegemony &&
                 Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
             total -- ;
     }
@@ -623,7 +623,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    QSet<QString> extra_ban;
     if(Config.EnableBasara) general_set =
             general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
     if(Config.EnableHegemony) general_set =

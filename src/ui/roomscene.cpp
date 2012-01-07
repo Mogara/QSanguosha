@@ -2613,7 +2613,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     static QStringList labels;
     if(labels.isEmpty()){
         labels << tr("General") << tr("Name") << tr("Alive");
-        if(Config.EnableHegemony)
+        if(ServerInfo.EnableHegemony)
             labels << tr("Nationality");
         else
             labels << tr("Role");
@@ -2643,7 +2643,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
 
         item = new QTableWidgetItem;
 
-        if(Config.EnableHegemony){
+        if(ServerInfo.EnableHegemony){
             QIcon icon(QString("image/kingdom/icon/%1.png").arg(player->getKingdom()));
             item->setIcon(icon);
             item->setText(Sanguosha->translate(player->getKingdom()));
@@ -3817,7 +3817,7 @@ void RoomScene::updateStateItem(const QString &roles)
         removeItem(item);
     role_items.clear();
 
-    if(Config.EnableHegemony) return;
+    if(ServerInfo.EnableHegemony) return;
     static QMap<QChar, QPixmap> map;
     if(map.isEmpty()){
         AddRoleIcon(map, 'Z', "lord");
