@@ -109,11 +109,11 @@ sgs.ai_card_intention["IronChain"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Dismantlement"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
+	return sgs.ai_card_intention.general(to,40)
 end
 
 sgs.ai_card_intention["Snatch"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
+	return sgs.ai_card_intention.general(to,40)
 end
 
 sgs.ai_card_intention["TuxiCard"]=function(card,from,to,source)

@@ -287,7 +287,7 @@ function SmartAI:objectiveLevel(player)
 				if not aplayer:isLord() then sgs.ai_explicit[aplayer:objectName()] = aplayer:getRole() end
 				if aplayer:getRole() == "rebel" then sgs.ai_loyalty[aplayer:objectName()] = -160 else sgs.ai_loyalty[aplayer:objectName()] = 160 end
 			end
-		elseif player:getRole() == "renegade" then return 4.1
+		-- elseif player:getRole() == "renegade" then return 4.1
 		elseif self:isFriend(player) then return -2
 		elseif player:isLord() then return 5
 		else return 4.5 end
@@ -557,7 +557,7 @@ function SmartAI:filterEvent(event, player, data)
 		local from = struct.from
 		local to = struct.to
 		if card:inherits("Collateral") then sgs.ai_collateral = true end
-		if card:inherits("Dismantlment") or card:inherits("Snatch") then
+		if card:inherits("Dismantlment") or card:inherits("Snatch") or card:getSkillName() == "qixi" or card:getSkillName() == "jixi" then
 			sgs.ai_snat_disma_effect = true
 			sgs.ai_snat_dism_from = struct.from
 		end
@@ -2676,7 +2676,7 @@ function SmartAI:needRetrial(judge)
 	local reason = judge.reason
 	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
 	if self:isFriend(judge.who) then
-		if not self.player:hasSkill("guidao") and judge.reason == "luoshen" and self:getOverflow(judge.who) > 1 and self:getHandcardNum() < 3
+		if not self.player:hasSkill("guidao") and judge.reason == "luoshen" and self:getOverflow(judge.who) > 1 and self.player:getHandcardNum() < 3
 			and not self:isEquip("Crossbow", judge.who) then return false end
 		return not judge:isGood()
 	elseif self:isEnemy(judge.who) then
@@ -3241,8 +3241,8 @@ function SmartAI:askForSinglePeach(dying)
 		local buqu = dying:getPile("buqu")
 		if not buqu:isEmpty() then
 			local same = false
-			for i, card_id in ipairs(buqu) do
-				for j, card_id2 in ipairs(buqu) do
+			for i, card_id in sgs.qlist(buqu) do
+				for j, card_id2 in sgs.qlist(buqu) do
 					if i ~= j and sgs.Sanguosha:getCard(card_id):getNumber() == sgs.Sanguosha:getCard(card_id2):getNumber() then
 						same = true
 						break
