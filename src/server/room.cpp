@@ -2737,7 +2737,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         // throw the first card which suit is Heart
         QList<const Card *> cards = target->getHandcards();
         foreach(const Card *card, cards){
-            if(card->getSuit() == Card::Heart){
+            if(card->getSuit() == Card::Heart && !card->inherits("Shit")){
                 showCard(target, card->getEffectiveId());
                 thread->delay();
                 throwCard(card);

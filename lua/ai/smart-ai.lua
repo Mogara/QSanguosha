@@ -283,7 +283,11 @@ end
 function SmartAI:objectiveLevel(player)
 	if isRolePredictable() then
 		if self.player:getRole() == "renegade" then
-		elseif player:getRole() == "renegade" then return 4.1
+			for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if not aplayer:isLord() then sgs.ai_explicit[aplayer:objectName()] = aplayer:getRole() end
+				if aplayer:getRole() == "rebel" then sgs.ai_loyalty[aplayer:objectName()] = -160 else sgs.ai_loyalty[aplayer:objectName()] = 160 end
+			end
+		-- elseif player:getRole() == "renegade" then return 4.1
 		elseif self:isFriend(player) then return -2
 		elseif player:isLord() then return 5
 		else return 4.5 end
@@ -394,6 +398,7 @@ function SmartAI:objectiveLevel(player)
 			end
 		end
 		if ambig_num > renegade_num then return 0 end
+		if math.abs(loyalish_hp-loyalish_num-rebel_hp+rebel_num) < 2 or (self:isWeak() and #self.enemies > 1) then return 0 end
 		if (loyalish_hp-loyalish_num) <= (rebel_hp-rebel_num) then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			else return -1 end
@@ -552,7 +557,7 @@ function SmartAI:filterEvent(event, player, data)
 		local from = struct.from
 		local to = struct.to
 		if card:inherits("Collateral") then sgs.ai_collateral = true end
-		if card:inherits("Dismantlment") or card:inherits("Snatch") then
+		if card:inherits("Dismantlment") or card:inherits("Snatch") or card:getSkillName() == "qixi" or card:getSkillName() == "jixi" then
 			sgs.ai_snat_disma_effect = true
 			sgs.ai_snat_dism_from = struct.from
 		end
@@ -1251,7 +1256,9 @@ function SmartAI:useBasicCard(card, use, no_distance)
 				if ((self.player:canSlash(enemy, not no_distance)) or
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy) <= self.predictedRange))) and
 				self:objectiveLevel(enemy) > 3 and
-				self:slashIsEffective(card, enemy) then
+				self:slashIsEffective(card, enemy) and
+				not (not self:isWeak(enemy) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
+					and self:getOverflow() > 0 and not self:isEquip("Crossbow")) then
 					-- fill the card use struct
 					local usecard = card
 					if not use.to or use.to:isEmpty() then
@@ -1297,7 +1304,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 							end
 						end
 					end
-					use.card = usecard
+					use.card = use.card or usecard
 					if use.to then use.to:append(enemy) end
 					target_count = target_count+1
 					if self.slash_targets <= target_count then return end
@@ -1713,7 +1720,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 
 	local enemies = self:exclude(self.enemies, card)
 	for _, enemy in ipairs(enemies) do
-		if self:hasSkills("yongsi|haoshi|tuxi", enemy) or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1) and
+		if (self:hasSkills("yongsi|haoshi|tuxi", enemy) or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)) and
 			not enemy:containsTrick("supply_shortage") and enemy:faceUp() then
 			use.card = card
 			if use.to then use.to:append(enemy) end
@@ -2006,7 +2013,7 @@ function SmartAI:evaluateEquip(card)
 		end
 	end
 
-	if card:inherits("Crossbow") and deltaSelfThreat~= 0 then
+	if card:inherits("Crossbow") and deltaSelfThreat ~= 0 then
 		if self.player:hasSkill("kurou") then deltaSelfThreat = deltaSelfThreat*3+10 end
 		deltaSelfThreat = deltaSelfThreat + self:getCardsNum("Slash")*3-2
 	elseif card:inherits("Blade") then
@@ -2669,6 +2676,8 @@ function SmartAI:needRetrial(judge)
 	local reason = judge.reason
 	if reason == "typhoon" or reason == "earthquake" or reason == "volcano" or reason == "mudslide" then return false end
 	if self:isFriend(judge.who) then
+		if not self.player:hasSkill("guidao") and judge.reason == "luoshen" and self:getOverflow(judge.who) > 1 and self.player:getHandcardNum() < 3
+			and not self:isEquip("Crossbow", judge.who) then return false end
 		return not judge:isGood()
 	elseif self:isEnemy(judge.who) then
 		return judge:isGood()
@@ -3145,7 +3154,10 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 		if self:isFriend(next_player) and next_player:containsTrick("indulgence") then
 			if #card_ids == 1 then return -1 end
 		end
-		return card_ids[1]
+		for _, card_id in ipairs(card_ids) do
+			if not sgs.Sanguosha:getCard(card_id):inherits("Shit") then return card_id end
+		end
+		return -1
 	end
 	local ids = card_ids
 	local cards = {}
@@ -3226,6 +3238,19 @@ function SmartAI:askForSinglePeach(dying)
 	local card_str
 
 	if self:isFriend(dying) then
+		local buqu = dying:getPile("buqu")
+		if not buqu:isEmpty() then
+			local same = false
+			for i, card_id in sgs.qlist(buqu) do
+				for j, card_id2 in sgs.qlist(buqu) do
+					if i ~= j and sgs.Sanguosha:getCard(card_id):getNumber() == sgs.Sanguosha:getCard(card_id2):getNumber() then
+						same = true
+						break
+					end
+				end
+			end
+			if not same then return "." end
+		end
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic") or self:getCardId("Peach")
 		else
@@ -3325,7 +3350,7 @@ function SmartAI:cardNeed(card)
 	if card:inherits("Peach") then
 		self:sort(self.friends,"hp")
 		if self.friends[1]:getHp() < 2 then return 10 end
-		if self.player:getHp() < 2 or self.player:hasSkill("kurou") then return 14 end
+		if (self.player:getHp() < 3 and not self:hasSkill("longhun")) or self:hasSkills("kurou|benghuai") then return 14 end
 		return self:getUseValue(card)
 	end
 	if self:isWeak() and card:inherits("Jink") then return 12 end
