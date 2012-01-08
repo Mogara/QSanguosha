@@ -176,6 +176,7 @@ houyuan_skill.getTurnUseCard=function(self)
 end
 
 sgs.ai_skill_use_func["HouyuanCard"] = function(card, use, self)
+	if #self.friends == 1 then return end
 	local target
 	local max_x = 20
 	for _, friend in ipairs(self.friends_noself) do

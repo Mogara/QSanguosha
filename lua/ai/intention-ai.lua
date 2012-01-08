@@ -215,6 +215,13 @@ sgs.ai_card_intention["JixiCard"]=function(card,from,to,source, different)
 	return sgs.ai_card_intention.general(to, intention_value)
 end
 
+sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
+	if from:getPhase() == sgs.Player_Draw then
+		return sgs.ai_card_intention["TuxiCard"](card, from, to, source)
+	end
+	return 0
+end
+
 sgs.ai_card_intention["ChengxiangCard"]=sgs.ai_card_intention["QingnangCard"]
 
 sgs.ai_card_intention["JuejiCard"]=sgs.ai_card_intention["TianyiCard"]
