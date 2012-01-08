@@ -1588,7 +1588,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do
 		if not enemy:isNude() and self:hasTrickEffective(snatch, enemy) and
- 			not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
+			not (self:hasSkills(sgs.lose_equip_skill, enemy) and enemy:getHandcardNum() == 0) and
 			not (enemy:getCards("he"):length() == 1 and self:isEquip("GaleShell",enemy)) then
 			if enemy:getHandcardNum() == 1 then
 				if enemy:hasSkill("kongcheng") or enemy:hasSkill("lianying") then return end
@@ -2837,9 +2837,13 @@ function SmartAI:askForCardChosen(who, flags, reason)
 				for _, friend in ipairs(self.friends) do
 					if who:distanceTo(friend) <= 1 then return who:getWeapon():getId() end
 				end
-				for _, enemy in ipairs(self.enemies) do
-					if who:distanceTo(enemy) <= 1 then return who:getWeapon():getId() end
-				end
+			end
+
+			self:sort(self.friends, "hp")
+			local friend = self.friends[1]
+			if self:isWeak(friend) then
+				if who:getWeapon() and who:distanceTo(friend) > 1 then return who:getWeapon():getId() end
+				if who:getOffensiveHorse() and who:distanceTo(friend) > 1 then return who:getOffensiveHorse():getId() end
 			end
 
 			if who:getDefensiveHorse() then
@@ -3355,7 +3359,7 @@ function SmartAI:cardNeed(card)
 		if (self.player:getHp() < 3 and not self:hasSkill("longhun")) or self:hasSkills("kurou|benghuai") then return 14 end
 		return self:getUseValue(card)
 	end
-	if self:isWeak() and card:inherits("Jink") then return 12 end
+	if self:isWeak() and card:inherits("Jink") and self:getCardsNum("Jink") < self.player:getHp() then return 12 end
 	if sgs[self.player:getGeneralName().."_keep_value"] then
 		value = sgs[self.player:getGeneralName().."_keep_value"][class_name]
 		if value then return value+4 end
@@ -3539,7 +3543,9 @@ end
 
 function SmartAI:isWeak(player)
 	player = player or self.player
-	return ((player:getHp() <= 2 and player:getHandcardNum() <= 2) or player:getHp() <= 1) and not player:hasSkill("buqu")
+	local hcard = player:getHandcardNum()
+	if player:hasSkill("longhun") then hcard = player:getCards("he"):length() end
+	return ((player:getHp() <= 2 and hcard <= 2) or player:getHp() <= 1) and not player:hasSkill("buqu")
 end
 
 function SmartAI:getAoeValue(card, player)
@@ -3799,7 +3805,7 @@ function SmartAI:assignKeep(num,start)
 end
 
 function SmartAI:log(outString)
-    self.room:output(outString)
+	self.room:output(outString)
 end
 
 -- load other ai scripts
