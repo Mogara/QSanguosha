@@ -70,7 +70,7 @@ end
 
 sgs.ai_skill_use["@@bawang"] = function(self, prompt)
 	local first_index, second_index
-	for i=1, #self.enemies-1 do
+	for i=1, #self.enemies do
 		if not (self.enemies[i]:hasSkill("kongcheng") and self.enemies[i]:isKongcheng()) then
 			if not first_index then
 				first_index = i

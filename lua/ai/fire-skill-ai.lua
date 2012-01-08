@@ -46,16 +46,16 @@ huoji_skill.getTurnUseCard=function(self)
 		end
 	end
 
-		if not card then return nil end
-		local suit = card:getSuitString()
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		local card_str = ("fire_attack:huoji[%s:%s]=%d"):format(suit, number, card_id)
-		local skillcard = sgs.Card_Parse(card_str)
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("fire_attack:huoji[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
 
-		assert(skillcard)
+	assert(skillcard)
 
-		return skillcard
+	return skillcard
 
 end
 
@@ -179,19 +179,6 @@ sgs.ai_skill_use_func["TianyiCard"]=function(card,use,self)
 			end
 		end
 	end
---[[for _, enemy in ipairs(self.enemies) do
-		local enemy_max_card = self:getMaxCard(enemy)
-		if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1)
-			and (enemy_max_card and max_point > enemy_max_card:getNumber()) then
-
-			if use.to then
-				use.to:append(enemy)
-
-			end
-			use.card=card
-			break
-		end
-	end]]
 end
 
 

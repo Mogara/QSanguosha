@@ -158,46 +158,6 @@ sgs.ai_skill_use_func["GanluCard"] = function(card, use, self)
 	local enemy_equip = 0
 	local target
 
---[[local has_xiaoji = false
-	local xiaoji_equip = 0
-	local sunshangxiang
-	for _, friend in ipairs(self.friends) do
-		if friend:hasSkill("xiaoji") then
-			has_xiaoji = true
-			xiaoji_equip = self:getCardsNum(".", friend, "e")
-			sunshangxiang = friend
-			break
-		end
-	end
-	if has_xiaoji then
-		local max_equip, max_friend = 0
-		local min_equip, min_friend = 5
-		for _, friend in ipairs(self.friends) do
-			if not friend:hasSkill("xiaoji") then
-				if (self:getCardsNum(".", friend, "e") > max_equip) and (self:getCardsNum(".", friend, "e")-xiaoji_equip<=lost_hp) then
-					max_equip = self:getCardsNum(".", friend, "e")
-					max_friend = friend
-				elseif (self:getCardsNum(".", friend, "e") < min_equip) and (xiaoji_equip-self:getCardsNum(".", friend, "e")<=lost_hp) then
-					min_equip = self:getCardsNum(".", friend, "e")
-					min_friend = friend
-				end
-			end
-		end
-
-		local equips  = {}
-		if sunshangxiang and (max_equip~=0 or min_equip~=5) then
-			if (max_equip ~= 0) and ((max_equip-self:getCardsNum(".", sunshangxiang, "e"))>=0) then
-				use.card = sgs.Card_Parse("@GanluCard=.")
-				if use.to then use.to:append(sunshangxiang) use.to:append(max_friend) end
-				return
-			elseif(min_equip ~= 5) and ((self:getCardsNum(".", sunshangxiang, "e")-min_equip)>=0) then
-				use.card = sgs.Card_Parse("@GanluCard=.")
-				if use.to then use.to:append(sunshangxiang) use.to:append(min_friend) end
-				return
-			end
-		end
-	end]]
-
 	for _, friend in ipairs(self.friends) do
 		for _, enemy in ipairs(self.enemies) do
 			if not self:hasSkills(sgs.lose_equip_skill, enemy) then
