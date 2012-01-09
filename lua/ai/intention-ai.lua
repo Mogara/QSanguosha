@@ -57,6 +57,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,to,source)
 	local value=sgs.ai_card_intention.general(to,80+modifier)
 
 	if sgs.ai_leiji_effect then
+		if from and from:hasSkill("liegong") then return 0 end
 		sgs.ai_leiji_effect = false
 		return -value/1.5
 	end
