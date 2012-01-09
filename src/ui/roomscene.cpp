@@ -88,6 +88,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         Photo *photo = new Photo;
         photos << photo;
         addItem(photo);
+        photo->setZValue(-0.5);
     }
 
     {
@@ -1935,6 +1936,7 @@ void RoomScene::doTimeout(){
             break;
         }
 
+    case Client::AskForSkillInvoke:
     case Client::AskForYiji:{
             cancel_button->click();
             break;
