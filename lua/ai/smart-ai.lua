@@ -2918,6 +2918,7 @@ end
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
+	if pattern == ".H" or pattern == "..H" and self.player:hasSkill("hongyan") then return "." end
 
 	local target, target2
 	if not prompt then return end
