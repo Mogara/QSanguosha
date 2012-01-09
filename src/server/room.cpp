@@ -602,7 +602,7 @@ trust:
             broadcastInvoke("animate", QString("nullification:%1:%2")
                             .arg(player->objectName()).arg(to->objectName()));
 
-            QVariant decisionData = QVariant::fromValue(use);
+            QVariant decisionData = QVariant::fromValue("Nullification:"+trick->objectName()+":"+to->objectName()+":"+(positive?"true":"false"));
             thread->trigger(ChoiceMade, player, decisionData);
             setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
 
@@ -2189,6 +2189,9 @@ void Room::drawCards(ServerPlayer *player, int n){
         }
     }else
         broadcastInvoke("drawNCards", draw_str, player);
+
+    QVariant data = QVariant::fromValue(n);
+    thread->trigger(CardDrawnDone, player, data);
 }
 
 void Room::throwCard(const Card *card){
@@ -2288,6 +2291,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *to, Player::Place place, b
 
     if(from)
         thread->trigger(CardLostDone, from);
+    if(to)
+        thread->trigger(CardGotDone, to);
 }
 
 void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope){
@@ -2364,7 +2369,11 @@ void Room::doMove(const CardMoveStruct &move, const QSet<ServerPlayer *> &scope)
         QVariant data = QVariant::fromValue(move_star);
         thread->trigger(CardLost, move.from, data);
     }
-
+    if(move.to){
+        CardMoveStar move_star = &move;
+        QVariant data = QVariant::fromValue(move_star);
+        thread->trigger(CardGot, move.to, data);
+    }
     Sanguosha->getCard(move.card_id)->onMove(move);
 }
 
@@ -2738,7 +2747,7 @@ void Room::doGongxin(ServerPlayer *shenlumeng, ServerPlayer *target){
         // throw the first card which suit is Heart
         QList<const Card *> cards = target->getHandcards();
         foreach(const Card *card, cards){
-            if(card->getSuit() == Card::Heart){
+            if(card->getSuit() == Card::Heart && !card->inherits("Shit")){
                 showCard(target, card->getEffectiveId());
                 thread->delay();
                 throwCard(card);

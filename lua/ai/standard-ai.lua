@@ -140,17 +140,35 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 			break
 		end
 	end
+	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy,true) and not (source:objectName() == enemy:objectName()) then
 			local cards = self.player:getCards("he")
 			cards=sgs.QList2Table(cards)
 			for _,card in ipairs(cards) do
-				if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(enemy)>1 then local bullshit
+				if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(enemy)>1 then
 				elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(enemy)
 					and self.player:distanceTo(enemy)>1 then
-					local bullshit
 				else
 					return "@LiuliCard="..card:getEffectiveId().."->"..enemy:objectName()
+				end
+			end
+		end
+	end
+	if self:isWeak() then
+		for _, friend in ipairs(self.friends_noself) do
+		if not self:isWeak(friend) then
+			if self.player:canSlash(friend,true) and not (source:objectName() == friend:objectName()) then
+					local cards = self.player:getCards("he")
+					cards=sgs.QList2Table(cards)
+					for _,card in ipairs(cards) do
+						if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(friend)>1 then
+						elseif card:inherits("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(friend)
+							and self.player:distanceTo(friend)>1 then
+						else
+							return "@LiuliCard="..card:getEffectiveId().."->".. friend:objectName()
+						end
+					end
 				end
 			end
 		end

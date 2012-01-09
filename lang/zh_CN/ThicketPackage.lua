@@ -55,7 +55,7 @@ return {
 	[":baonue"] = "<b>主公技</b>，每当其他群雄角色造成一次伤害后，可进行一次判定，若为黑桃，你回复1点体力",
 	[":benghuai:"] = "请选择减体力还是体力上限:",
 	["benghuai:hp"] = "体力",
-	["benghuai:max_hp"] = "体力上限",
+	["benghuai:maxhp"] = "体力上限",
 	["baonue:yes"] = "你可进行一次判定，若判定结果为黑桃，则董卓回复一点体力",
 	["yinghun:d1tx"] = "摸一张牌，弃X张",
 	["yinghun:dxt1"] = "摸X张牌，弃一张牌",

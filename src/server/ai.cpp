@@ -71,10 +71,7 @@ AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *
 
     qDebug() << aKingdom << bKingdom <<aShown << bShown;
 
-    if(bShown)
-        return aKingdom == bKingdom ? Friend :Enemy;
-    else
-        return aShown ? Neutrality : Enemy;
+    return aKingdom == bKingdom ? Friend :Enemy;
 }
 
 AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b){

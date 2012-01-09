@@ -57,6 +57,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,to,source)
 	local value=sgs.ai_card_intention.general(to,80+modifier)
 
 	if sgs.ai_leiji_effect then
+		if from and from:hasSkill("liegong") then return 0 end
 		sgs.ai_leiji_effect = false
 		return -value/1.5
 	end
@@ -109,11 +110,11 @@ sgs.ai_card_intention["IronChain"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Dismantlement"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
+	return sgs.ai_card_intention.general(to,40)
 end
 
 sgs.ai_card_intention["Snatch"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
+	return sgs.ai_card_intention.general(to,40)
 end
 
 sgs.ai_card_intention["TuxiCard"]=function(card,from,to,source)
@@ -213,6 +214,13 @@ sgs.ai_card_intention["JixiCard"]=function(card,from,to,source, different)
 	local intention_value = -80
 	if different then intention_value = 80 end
 	return sgs.ai_card_intention.general(to, intention_value)
+end
+
+sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
+	if from:getPhase() == sgs.Player_Draw then
+		return sgs.ai_card_intention["TuxiCard"](card, from, to, source)
+	end
+	return 0
 end
 
 sgs.ai_card_intention["ChengxiangCard"]=sgs.ai_card_intention["QingnangCard"]

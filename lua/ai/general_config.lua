@@ -48,6 +48,7 @@ sgs.ai_use_value =
 
 
 	Indulgence=8,
+	Nullification = 8,
 	SupplyShortage=7,
 
 	Peach = 6,
