@@ -40,9 +40,11 @@ protected:
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
 
+        if(matrix().m11()>1)setMatrix(QMatrix());
+
         if(scene()->inherits("RoomScene")){
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            room_scene->adjustItems();
+            room_scene->adjustItems(matrix());
         }
     }
 };

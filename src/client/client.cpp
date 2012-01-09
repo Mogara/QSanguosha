@@ -862,6 +862,12 @@ void Client::speakToServer(const QString &text){
 }
 
 void Client::addHistory(const QString &add_str){
+    if(add_str == "pushPile")
+    {
+        emit card_used();
+        return;
+    }
+
     QRegExp rx("(.+)(#\\d+)?");
     if(rx.exactMatch(add_str)){
         QStringList texts = rx.capturedTexts();

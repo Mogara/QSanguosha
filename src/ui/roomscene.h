@@ -126,7 +126,7 @@ class RoomScene : public QGraphicsScene{
 public:
     RoomScene(QMainWindow *main_window);
     void changeTextEditBackground();
-    void adjustItems();
+    void adjustItems(QMatrix transform = QMatrix());
     void showIndicator(const QString &from, const QString &to);
 
     static void FillPlayerNames(QComboBox *combobox, bool add_none);
@@ -170,6 +170,7 @@ private:
     Dashboard *dashboard;
     Pixmap *avatar;
     QQueue<CardItem*> discarded_queue;
+    QQueue<CardItem*> piled_discards;
     QMainWindow *main_window;
     QComboBox *role_combobox;
     QPushButton *trust_button, *untrust_button;
@@ -230,8 +231,7 @@ private:
     void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
     void chooseSkillButton();
 
-    void viewDiscards();
-    void hideDiscards();
+    void putToDiscard(CardItem* item);
 
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
@@ -272,7 +272,8 @@ private:
 
     //re-layout attempts
     bool game_started;
-    void reLayout();
+    QMatrix view_transform;
+    void reLayout(QMatrix matrix = QMatrix());
     void alignTo(Pixmap *object, QPoint pos, const QString &flags);
     void alignTo(QWidget *object, QPoint pos, const QString &flags);
     void alignTo(QGraphicsItem *object, QPoint pos, const QString &flags);
@@ -307,6 +308,9 @@ private slots:
 
     void showCard(const QString &player_name, int card_id);
     void viewDistance();
+
+    void viewDiscards();
+    void hideDiscards();
 
     void speak();
 
