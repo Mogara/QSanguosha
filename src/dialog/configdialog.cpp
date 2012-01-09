@@ -97,7 +97,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 {
     ui->bgPathLineEdit->clear();
 
-    QString filename = "backdrop/chibi.jpg";
+    QString filename = "backdrop/new-version.jpg";
     Config.BackgroundBrush = filename;
     Config.setValue("BackgroundBrush", filename);
 
