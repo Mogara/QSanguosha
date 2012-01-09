@@ -6,10 +6,10 @@ local function card_for_qiaobian(self, who, return_prompt)
 		if not judges:isEmpty() then
 			for _, judge in sgs.qlist(judges) do
 				card = judge
-
-				if return_prompt:match("target") then
-					for _, enemy in ipairs(self.enemies) do
-						if not enemy:containsTrick(card:objectName()) and not self:cardProhibit(card, enemy) then target = enemy break end
+				for _, enemy in ipairs(self.enemies) do
+					if not enemy:containsTrick(card:objectName()) and not self:cardProhibit(card, enemy) then
+						target = enemy
+						break
 					end
 				end
 				if target then break end
@@ -26,7 +26,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 				end
 			end
 
-			if card and return_prompt:match("target") then
+			if card then
 				for _, friend in ipairs(self.friends) do
 					if friend == who then
 					elseif friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then
@@ -37,7 +37,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 			end
 		end
 	else
-		local equips = who:getCards("e")
+		--[[local equips = who:getCards("e")
 		if equips:isEmpty() then return end
 		for _, equip in sgs.qlist(equips) do
 			if equip:inherits("Armor") then card = equip break
@@ -45,14 +45,28 @@ local function card_for_qiaobian(self, who, return_prompt)
 			elseif equip:inherits("Weapon") then card = equip break
 			elseif equip:inherits("OffensiveHorse") then card = equip break
 			end
-		end
+		end]]
 
-		if card and return_prompt:match("target") then
+		if not who:hasEquip() or (who:getCards("e"):length() == 1 and who:getArmor() and who:getArmor():inherits("GaleShell")) then return end
+		local card_id = self:askForCardChosen(who, "e", "snatch")
+		if card_id > 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
+		local targets = {}
+		if card then
 			for _, friend in ipairs(self.friends) do
 				if friend:getCards("e"):isEmpty() or not self:hasSameEquip(card, friend) then
-					target = friend
+					table.insert(targets, friend)
 					break
 				end
+			end
+		end
+		
+		if #targets > 0 then
+			if card:inherits("Weapon") or card:inherits("OffensiveHorse") then
+				self:sort(targets, "threat")
+				target = targets[#targets]
+			else
+				self:sort(targets,"defense")
+				target = targets[1]
 			end
 		end
 	end
@@ -73,6 +87,7 @@ end
 sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
 	local who = self.room:getTag("QiaobianTarget"):toPlayer()
 	if who then
+		if not card_for_qiaobian(self, who, "target") then self.room:writeToConsole("NULL") end
 		return card_for_qiaobian(self, who, "target")
 	end
 end
@@ -104,19 +119,19 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	end
 
 	if prompt == "@qiaobian-play" then
-		if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
+		-- if self.player:getHandcardNum()-2 > self.player:getHp() then return "." end
 
 		self:sort(self.enemies, "hp")
 		local has_armor = true
 		local judge
 		for _, friend in ipairs(self.friends_noself) do
-			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, "card+target") then
+			if not friend:getCards("j"):isEmpty() and card_for_qiaobian(self, friend, ".") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 		end
 
 		for _, friend in ipairs(self.friends_noself) do
-			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, "card+target") then
+			if not friend:getCards("e"):isEmpty() and self:hasSkills(sgs.lose_equip_skill, friend) and card_for_qiaobian(self, friend, ".") then
 				return "@QiaobianCard=" .. card:getEffectiveId() .."->".. friend:objectName()
 			end
 			if not friend:getArmor() then has_armor = false end
@@ -128,18 +143,18 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 				if self:getUseValue(hcard) > top_value then	top_value = self:getUseValue(hcard) end
 			end
 		end
-		if top_value >= 3.7 then return "." end
+		if top_value >= 3.7 and #(self:getTurnUse())>0 then return "." end
 
 		local targets = {}
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:getArmor() and not has_armor and card_for_qiaobian(self, enemy, ".") then
+			if card_for_qiaobian(self, enemy, ".") then
 				table.insert(targets, enemy)
 			end
 		end
-
-		self:sort(targets, "defense")
-		for _, target in ipairs(targets) do
-			return "@QiaobianCard=" .. card:getEffectiveId() .."->".. target:objectName()
+		
+		if #targets > 0 then
+			self:sort(targets, "defense")
+			return "@QiaobianCard=" .. card:getEffectiveId() .."->".. targets[#targets]:objectName()
 		end
 	end
 

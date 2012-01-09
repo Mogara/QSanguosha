@@ -2777,7 +2777,6 @@ end
 sgs.ai_skill_cardchosen = {}
 function SmartAI:askForCardChosen(who, flags, reason)
 	self.room:output(reason)
-
 	local cardchosen = sgs.ai_skill_cardchosen[string.gsub(reason,"%-","_")]
 	local card
 	if type(cardchosen) == "function" then
@@ -2841,7 +2840,7 @@ function SmartAI:askForCardChosen(who, flags, reason)
 
 			self:sort(self.friends, "hp")
 			local friend = self.friends[1]
-			if self:isWeak(friend) then
+			if self:isWeak(friend) and who:inMyAttackRange(friend) then
 				if who:getWeapon() and who:distanceTo(friend) > 1 then return who:getWeapon():getId() end
 				if who:getOffensiveHorse() and who:distanceTo(friend) > 1 then return who:getOffensiveHorse():getId() end
 			end
@@ -2908,10 +2907,6 @@ function SmartAI:askForCardChosen(who, flags, reason)
 			if not who:isKongcheng() then
 				return -1
 			end
-		end
-
-		if not who:isKongcheng() then
-			return -1
 		end
 	end
 	local new_flag = ""
