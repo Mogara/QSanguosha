@@ -404,11 +404,15 @@ function SmartAI:objectiveLevel(player)
 				end
 			elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") or aplayer:isLord() then
 				local loyal_hp
+				local modifier = 1
+				if aplayer:isLord() then
+					if rebel_num ==1 then modifier = 1.5 else modifier = rebel_num + 1 end
+				end
 				if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 				else loyal_hp = aplayer:getHp() end
-				loyal_value = loyal_value + loyal_hp + math.max(self.GetDefense(aplayer) - loyal_hp * 2, 0) * 0.7
+				loyal_value = loyal_value + (loyal_hp + math.max(self.GetDefense(aplayer) - loyal_hp * 2, 0) * 0.7)/modifier
 				if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
-					loyal_value = loyal_value + math.min(1.5, sgs.weapon_range[aplayer:getWeapon():className()]/2) * 0.4
+					loyal_value = loyal_value + math.min(1.5, sgs.weapon_range[aplayer:getWeapon():className()]/2) * 0.4/modifier
 				end
 			elseif not aplayer:isLord() then
 				ambig_num = ambig_num + 1
