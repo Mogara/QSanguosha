@@ -1415,7 +1415,9 @@ void Client::askForYiji(const QString &card_list){
 }
 
 void Client::askForPlayerChosen(const QString &players){
-    players_to_choose = players.split("+");
+    skill_name = players.split(":").at(1);
+    QString player_list = players.split(":").at(0);
+    players_to_choose = player_list.split("+");
 
     Q_ASSERT(!players_to_choose.isEmpty());
 

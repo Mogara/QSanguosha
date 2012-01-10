@@ -162,6 +162,7 @@ public:
     bool refusable;
     bool include_equip;
     int discard_num;
+    QString skill_name;
     QList<const Card*> discarded_list;
     QDialog *ask_dialog;
     QStringList players_to_choose;   

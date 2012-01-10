@@ -2833,7 +2833,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     foreach(ServerPlayer *target, targets)
         options << target->objectName();
 
-    player->invoke("askForPlayerChosen", options.join("+"));
+    player->invoke("askForPlayerChosen", options.join("+") + ":" + reason.split("-").first());
 
     getResult("choosePlayerCommand", player);
 
