@@ -70,7 +70,7 @@ local function GuanXing(self, cards)
 	
 	local judge = self.player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = sgs.reverse(self, judge)
+	judge = sgs.reverse(judge)
 	
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1
@@ -109,7 +109,7 @@ local function GuanXing(self, cards)
 	local next_player = self.player:getNextAlive()
 	judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = sgs.reverse(self, judge)
+	judge = sgs.reverse(judge)
 	if has_lightning then table.insert(judge, 1, has_lightning) end
 	
 	has_judged = false
@@ -192,7 +192,7 @@ local function XinZhan(self, cards)
 	local next_player = self.player:getNextAlive()
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
-	judge = sgs.reverse(self, judge)
+	judge = sgs.reverse(judge)
 	
 	bottom = getIdToCard(self, cards)
 	for judge_count, need_judge in ipairs(judge) do
