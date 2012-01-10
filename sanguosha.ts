@@ -2645,7 +2645,7 @@
     <message>
         <location filename="src/ui/roomscene.cpp" line="2058"/>
         <source>Please choose a player&lt;br/&gt; &lt;b&gt;Source&lt;/b&gt;: %1&lt;br/&gt;</source>
-        <translation type="unfinished">请选择一名角色r&lt;br/&gt; &lt;b&gt;技能来源&lt;/b&gt;: %1&lt;br/&gt;</translation>
+        <translation>请选择一名角色&lt;br/&gt; &lt;b&gt;技能来源&lt;/b&gt;: %1&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="src/ui/roomscene.cpp" line="2398"/>
