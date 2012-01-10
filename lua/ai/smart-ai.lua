@@ -3287,6 +3287,38 @@ function SmartAI:askForSinglePeach(dying)
 	return card_str or "."
 end
 
+function SmartAI:askForSuit()
+	return math.min(math.floor(math.random(0,8)/2),3)
+end
+
+function SmartAI:askForPindian(requestor, reason)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local compare_func = function(a, b)
+		return a:getNumber() < b:getNumber()
+	end
+	table.sort(cards, compare_func)
+	local maxcard, mincard, minusecard
+	for _, card in ipairs(cards) do
+		if self:getUseValue(card) < 6 then mincard = card break end
+	end
+	for _, card in ipairs(sgs.reverse(cards)) do
+		if self:getUseValue(card) < 6 then maxcard = card break end
+	end
+	if reason == "zhiba" and self.player:hasLordSkill("sunce_zhiba") then return maxcard end
+	self:sortByUseValue(cards, true)
+	minusecard = cards[1]
+	maxcard = maxcard or minusecard
+	mincard = mincard or minusecard
+	if self:isFriend(requestor) then return mincard end
+	if reason == "jueji" then
+		if (maxcard:getNumber()/13)^requestor:getHandcardNum() > 0.6 then return maxcard else return minusecard end
+	end
+	if ("tianyi|xianzhen"):match(reason) then
+		if requestor:getHandcardNum() > 2 then return maxcard else return minusecard end
+	end
+	return maxcard
+end
+
 function SmartAI:getChainedFriends()
 	local chainedFriends = {}
 	for _, friend in ipairs(self.friends) do
