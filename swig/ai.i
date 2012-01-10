@@ -71,6 +71,8 @@ public:
 	virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);
 	virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason);
 	virtual const Card *askForSinglePeach(ServerPlayer *dying);
+	virtual const Card *askForPindian(ServerPlayer *requestor, const char *reanson);
+	virtual Card::Suit askForSuit();
 	
 	LuaFunction callback;
 };
@@ -361,6 +363,53 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying){
 		return TrustAI::askForSinglePeach(dying);
 		
 	return Card::Parse(result);
+}
+
+const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason){
+	lua_State *L = room->getLuaState();
+
+	pushCallback(L, __func__);
+	SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
+	lua_pushstring(L, reason.toAscii());
+
+	int error = lua_pcall(L, 3, 1, 0);
+	if(error){
+		const char *error_msg = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		room->output(error_msg);
+
+		return TrustAI::askForPindian(requestor, reason);
+	}
+
+	void *card_ptr;
+	int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
+	lua_pop(L, 1);
+	if(SWIG_IsOK(result))
+		return static_cast<const Card *>(card_ptr);
+	else
+		return TrustAI::askForPindian(requestor, reason);
+}
+
+Card::Suit LuaAI::askForSuit(){
+	lua_State *L = room->getLuaState();
+
+	pushCallback(L, __func__);
+	int error = lua_pcall(L, 1, 1, 0);
+	if(error){
+		const char *error_msg = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		room->output(error_msg);
+
+		return TrustAI::askForSuit();
+	}
+
+	if(lua_isnumber(L, -1)){
+        Card::Suit result = (Card::Suit)lua_tointeger(L, -1);
+		lua_pop(L, 1);
+		return result;
+	}
+
+    return TrustAI::askForSuit();
 }
 
 %}

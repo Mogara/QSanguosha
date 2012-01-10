@@ -2051,7 +2051,12 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
-            ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player"));
+            const Skill *skill = Sanguosha->getSkill(ClientInstance->skill_name);
+            if(skill)
+                ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player<br/> <b>Source</b>: %1<br/>").arg(skill->getDescription()));
+            else
+                ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player"));
+
 
             choose_skill->setPlayerNames(ClientInstance->players_to_choose);
             dashboard->startPending(choose_skill);
