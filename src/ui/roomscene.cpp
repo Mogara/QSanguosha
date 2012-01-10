@@ -542,17 +542,7 @@ void RoomScene::adjustItems(QMatrix matrix){
     QList<QPointF> positions = getPhotoPositions();
     int i;
     for(i=0; i<positions.length(); i++)
-    {
-        QPointF pos = positions.at(i);
-        if(Config.value("CircularView",false).toBool())
-        {
-            pos.rx() /= matrix.m11();
-            pos.ry() /= matrix.m22();
-            pos.rx() += matrix.dx();
-            pos.ry() += matrix.dy();
-        }
-        photos.at(i)->setPos(pos);
-    }
+        photos.at(i)->setPos(positions.at(i));
 
     reLayout(matrix);
 }
@@ -628,11 +618,14 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     else
         indices = indices_table[photos.length() - 1];
 
-    qreal stretch_x = main_window->width()  - chat_box->width();
-    stretch_x/=1075;
-    qreal stretch_y = (main_window->height() - dashboard->boundingRect().height())/575;
+    qreal stretch_x = dashboard->boundingRect().width() - chat_box->width();
+    stretch_x/=1060;
+    qreal stretch_y = (state_item->boundingRect().height()
+                       + log_box->height()
+                       + chat_box->height()
+                       + chat_edit->height())/480;
 
-    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2,
+    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2 - 20,
                              - dashboard->boundingRect().height()*(1-stretch_y)/2);
 
 
@@ -1033,7 +1026,7 @@ void RoomScene::viewDiscards(){
     if(!sender()->inherits("QAction")){
         int width = qMin(400,discarded_queue.length()*93);
         int start = DiscardedPos.x() - width/2 + 150;
-        int y     = DiscardedPos.y() - 150;
+        int y     = DiscardedPos.y() - 140;
         if(!Config.value("CircularView", false).toBool())
         {
             width = 0;
@@ -3056,7 +3049,7 @@ void RoomScene::onGameStart(){
         selector_box->deleteLater();
         selector_box = NULL;
 
-        chat_box->show();
+        chat_widget->show();
         log_box->show();
 
         if(self_box && enemy_box){
@@ -3650,6 +3643,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     QString path = QString("image/system/3v3/select-%1.png").arg(temperature);
     selector_box = new Pixmap(path, true);
     addItem(selector_box);
+    selector_box->setZValue(guanxing_box->zValue());
     selector_box->shift();
 
     const static int start_x = 62;
@@ -3680,7 +3674,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
 }
 
 void RoomScene::fillGenerals(const QStringList &names){
-    chat_box->hide();
+    chat_widget->hide();
     log_box->hide();
 
     if(ServerInfo.GameMode == "06_3v3")
