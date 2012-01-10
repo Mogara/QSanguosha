@@ -544,10 +544,13 @@ void RoomScene::adjustItems(QMatrix matrix){
     for(i=0; i<positions.length(); i++)
     {
         QPointF pos = positions.at(i);
-        pos.rx() /= matrix.m11();
-        pos.ry() /= matrix.m22();
-        pos.rx() += matrix.dx();
-        pos.ry() += matrix.dy();
+        if(Config.value("CircularView",false).toBool())
+        {
+            pos.rx() /= matrix.m11();
+            pos.ry() /= matrix.m22();
+            pos.rx() += matrix.dx();
+            pos.ry() += matrix.dy();
+        }
         photos.at(i)->setPos(pos);
     }
 
