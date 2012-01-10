@@ -394,8 +394,8 @@ void MainWindow::changeBackground(){
         QBrush brush(pixmap);
 
         if(pixmap.width() > 100 && pixmap.height() > 100){
-            qreal dx = -width()/2.0;
-            qreal dy = -height()/2.0;
+            qreal dx = -scene->width()/2.0;
+            qreal dy = -scene->height()/2.0;
             qreal sx = width() / qreal(pixmap.width());
             qreal sy = height() / qreal(pixmap.height());
 

@@ -1056,13 +1056,11 @@ void RoomScene::hideDiscards(){
 
     piled_discards.clear();
     if(top)
-    {
         piled_discards.append(top);
-        top->setZValue(-1.0);
-    }
 
     foreach(CardItem *card_item, discarded_queue){
         card_item->setHomePos(DiscardedPos);
+        card_item->setZValue(card_item->zValue()-0.8);
         card_item->goBack();
         piled_discards.enqueue(card_item);
     }

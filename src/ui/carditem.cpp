@@ -81,8 +81,8 @@ QPointF CardItem::homePos() const{
 
 void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
     if(home_pos == pos()){
-//        if(kieru)
-//            setOpacity(0.0);
+        if(kieru && home_pos != QPointF(-6, 8))
+            setOpacity(0.0);
         return;
     }
 
