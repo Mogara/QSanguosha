@@ -303,14 +303,14 @@ int Engine::getGeneralCount(bool include_banned) const{
         if(ban_package.contains(general->getPackage()))
             total--;
 
-        if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
+        else if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
 
-        if(ServerInfo.EnableBasara &&
+        else if(ServerInfo.EnableBasara &&
                 Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
             total -- ;
 
-        if(ServerInfo.EnableHegemony &&
+        else if(ServerInfo.EnableHegemony &&
                 Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
             total -- ;
     }
