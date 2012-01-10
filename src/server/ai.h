@@ -107,6 +107,8 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying);
+    virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason);
+    virtual Card::Suit askForSuit();
 
     virtual ServerPlayer *askForYiji(const QList<int> &cards, int &card_id);
     virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only);
