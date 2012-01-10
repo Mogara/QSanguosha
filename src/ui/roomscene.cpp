@@ -95,6 +95,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         // create dashboard
         dashboard = new Dashboard;
         dashboard->setObjectName("dashboard");
+        dashboard->setZValue(0.8);
         addItem(dashboard);
 
         dashboard->setPlayer(Self);
@@ -276,7 +277,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_widget = new ChatWidget();
         chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
         chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
-        chat_widget->setZValue(1.0);
+        chat_widget->setZValue(-1.0);
         addItem(chat_widget);
         connect(chat_widget,SIGNAL(return_button_click()),this, SLOT(speak()));
         connect(chat_widget,SIGNAL(chat_widget_msg(QString)),this, SLOT(appendChatEdit(QString)));
@@ -1061,7 +1062,7 @@ void RoomScene::hideDiscards(){
     if(top)
     {
         piled_discards.append(top);
-        top->setZValue(-0.2);
+        top->setZValue(-1.0);
     }
 
     foreach(CardItem *card_item, discarded_queue){
@@ -1277,7 +1278,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 
             card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
-            card_item->setZValue(-0.1+0.0001*ClientInstance->discarded_list.length());
+            card_item->setZValue(0.0001*ClientInstance->discarded_list.length());
 
 //            if(discarded_queue.length() > 8){
 //                CardItem *first = discarded_queue.dequeue();
@@ -2877,6 +2878,7 @@ void RoomScene::createStateItem(){
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(-110, -80);
+    state_item->setZValue(-1.0);
     char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     updateStateItem(roles);
