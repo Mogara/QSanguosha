@@ -13,7 +13,13 @@ bool ExpPattern::match(const Player *player, const Card *card) const
     return false;
 }
 
-bool ExpPattern::matchOne(const Player *player,const Card *card, QString exp) const
+// '|' means 'and', '#' means 'or'.
+// the expression splited by '#' has 3 parts,
+// 1st part means the card name, and ',' means more than one options.
+// 2nd patt means the card suit, and ',' means more than one options.
+// 3rd part means the card number, and ',' means more than one options,
+// the number uses '~' to make a scale for valid expressions
+bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) const
 {
     QStringList factors = exp.split('|');
 
