@@ -380,6 +380,7 @@ void MainWindow::on_actionAbout_triggered()
 
     Window *window = new Window(tr("About QSanguosha"), QSize(365, 450));
     scene->addItem(window);
+    window->setZValue(9.0);
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
