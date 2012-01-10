@@ -78,8 +78,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
-        DiscardedPos = QPointF(-260, 30);
-        DrawPilePos = QPointF(-140, 30);
+        DiscardedPos = QPointF(-140, 30);
+        DrawPilePos = QPointF(-260, 30);
     }
 
     // create photos
@@ -95,7 +95,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         // create dashboard
         dashboard = new Dashboard;
         dashboard->setObjectName("dashboard");
-        dashboard->setZValue(0.8);
+        //dashboard->setZValue(0.8);
         addItem(dashboard);
 
         dashboard->setPlayer(Self);
@@ -1265,8 +1265,6 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             if(!show_name.isEmpty())
                 card_item->writeCardDesc(show_name);
 
-//            card_item->setHomePos(DiscardedPos);
-//            card_item->goBack(true,false,false);
             putToDiscard(card_item);
             card_item->setEnabled(true);
 
