@@ -7,6 +7,7 @@ require "middleclass"
 -- initialize the random seed for later use
 math.randomseed(os.time())
 
+sgs.ai_renegade_threshold = 0.3
 -- compare functions
 sgs.ai_compare_funcs = {
 	hp = function(a, b)
@@ -385,33 +386,55 @@ function SmartAI:objectiveLevel(player)
 			if player:isLord() and self:isWeak(player) then return -1 end
 			return 5
 		end
-		local ambig_num, loyalish_hp, rebel_hp = 0, 0, 0
+		local ambig_num, loyal_value, rebel_value = 0, 0, 0
 		for _, aplayer in ipairs(players) do
 			if (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel") then
-				if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = rebel_hp + 4
-				else rebel_hp = rebel_hp + aplayer:getHp() end
-			elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") then
-				if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loayalish_hp = loyalish_hp + 4
-				else loyalish_hp = loyalish_hp + aplayer:getHp() end
+				local rebel_hp
+				if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
+				else rebel_hp = aplayer:getHp() end
+				if aplayer:getMaxHP() == 3 then rebel_value = rebel_value + 0.5 end
+				rebel_value = rebel_value + rebel_hp + math.max(self.GetDefense(aplayer) - rebel_hp * 2, 0) * 0.7
+				if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
+					rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],self.room:alivePlayerCount()/2)/2) * 0.4
+				end
+				if aplayer:inMyAttackRange(self.room:getLord()) and rebel_num > 1 then
+					rebel_value = rebel_value + 0.2
+					if aplayer:getWeapon() and aplayer:getWeapon():inherits("Crossbow") or aplayer:hasSkill("paoxiao") then
+						rebel_value = rebel_value + 0.4
+					end
+				end
+			elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") or aplayer:isLord() then
+				local loyal_hp
+				local modifier = 1
+				if aplayer:isLord() then
+					if rebel_num ==1 then modifier = 1.5 else modifier = rebel_num + 1 end
+				end
+				if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
+				else loyal_hp = aplayer:getHp() end
+				if aplayer:getMaxHP() == 3 then loyal_value = loyal_value + 0.5 end
+				loyal_value = loyal_value + (loyal_hp + math.max(self.GetDefense(aplayer) - loyal_hp * 2, 0) * 0.7)/modifier
+				if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
+					rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],self.room:alivePlayerCount()/2)/2) * 0.4
+				end
+				if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
+					loyal_value = loyal_value + math.min(1.5, sgs.weapon_range[aplayer:getWeapon():className()]/2) * 0.4/modifier
+				end
 			elseif not aplayer:isLord() then
 				ambig_num = ambig_num + 1
 			end
 		end
-		if ambig_num > renegade_num then return 0 end
-		if math.abs(loyalish_hp-loyalish_num-rebel_hp+rebel_num) < 2 or (self:isWeak() and #self.enemies > 1) then return 0 end
-		if (loyalish_hp-loyalish_num) <= (rebel_hp-rebel_num) then
+		if ambig_num > renegade_num then return 1 end
+		if (math.abs(loyal_value-rebel_value) < sgs.ai_renegade_threshold and loyal_value > 8) or (self:isWeak() and #self.enemies > 1) then return 0 end
+		if loyal_value <= rebel_value then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
 			else return -1 end
 		else
-			if sgs.ai_loyalty[player:objectName()] < 0 then return 0
+			if sgs.ai_loyalty[player:objectName()] < 0 or (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return -3
 			else
-				if player:isLord() and loyalish_num == 1 then
-					if loyalish_hp > rebel_hp then return 5 else return -2 end
-				elseif loyalish_num > 1 then
-					if player:isLord() then
-						if player:getHp() < 3 then return -1 else return 4 end
-					else return 5
-					end
+				if player:isLord() then
+					if rebel_num > 0 then return 3 else return 5 end
+				else
+					return 5
 				end
 			end
 		end
@@ -1940,6 +1963,7 @@ function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("chengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if card:inherits("AOE") then
 		if self.player:hasSkill("wuyan") then return end
+		if self.role == "renegade" and not self:isWeak(self.room:getLord()) then use.card = card return end
 		local good, bad = 0, 0
 		for _, friend in ipairs(self.friends_noself) do
 			if self:aoeIsEffective(card, friend) then
@@ -3352,7 +3376,7 @@ function SmartAI:cardNeed(card)
 	if card:inherits("Peach") then
 		self:sort(self.friends,"hp")
 		if self.friends[1]:getHp() < 2 then return 10 end
-		if (self.player:getHp() < 3 and not self:hasSkill("longhun")) or self:hasSkills("kurou|benghuai") then return 14 end
+		if (self.player:getHp() < 3 or self.player:getLostHp() > 1 and not self:hasSkill("longhun")) or self:hasSkills("kurou|benghuai") then return 14 end
 		return self:getUseValue(card)
 	end
 	if self:isWeak() and card:inherits("Jink") and self:getCardsNum("Jink") < self.player:getHp() then return 12 end

@@ -1812,6 +1812,7 @@ void Room::useCard(const CardUseStruct &card_use, bool add_history){
 
         card_use.from->addHistory(key);
         card_use.from->invoke("addHistory", key);
+        broadcastInvoke("addHistory","pushPile");
     }
 
     card = card_use.card->validate(&card_use);

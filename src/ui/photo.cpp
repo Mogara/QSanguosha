@@ -531,12 +531,12 @@ void Photo::updatePile(const QString &pile_name){
         button->setObjectName(pile_name);
         button->setProperty("private_pile","true");
 
-        button_widget = new QGraphicsProxyWidget;
+        button_widget = new QGraphicsProxyWidget(this);
         button_widget->setWidget(button);
-        button_widget->setPos(pos());
+        //button_widget->setPos(pos());
         button_widget->moveBy(46, 68);
         button_widget->resize(80, 16);
-        scene()->addItem(button_widget);
+        //scene()->addItem(button_widget);
 
         QMenu *menu = new QMenu(button);
         button->setMenu(menu);

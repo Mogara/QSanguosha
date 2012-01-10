@@ -52,6 +52,7 @@ void RoleCombobox::setupItems(){
 
         RoleComboboxItem *item = items.at(i);
         item->setPos(x, y);
+        item->setZValue(1.0);
     }
 }
 

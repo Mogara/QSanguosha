@@ -81,7 +81,7 @@ QPointF CardItem::homePos() const{
 
 void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
     if(home_pos == pos()){
-        if(kieru)
+        if(kieru && home_pos != QPointF(-6, 8))
             setOpacity(0.0);
         return;
     }
@@ -89,7 +89,7 @@ void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutQuad);
-    goback->setDuration(300);
+    goback->setDuration(500);
 
     if(kieru){
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -124,7 +124,10 @@ void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
 
         group->start(QParallelAnimationGroup::DeleteWhenStopped);
     }else
+    {
+        setOpacity(this->isEnabled() ? 1.0 : 0.7);
         goback->start(QPropertyAnimation::DeleteWhenStopped);
+    }
 }
 
 const QPixmap &CardItem::getSuitPixmap() const{

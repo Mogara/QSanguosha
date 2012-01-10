@@ -40,9 +40,11 @@ protected:
         if(Config.FitInView)
             fitInView(sceneRect(), Qt::KeepAspectRatio);
 
+        if(matrix().m11()>1)setMatrix(QMatrix());
+
         if(scene()->inherits("RoomScene")){
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            room_scene->adjustItems();
+            room_scene->adjustItems(matrix());
         }
     }
 };
@@ -392,10 +394,14 @@ void MainWindow::changeBackground(){
         QBrush brush(pixmap);
 
         if(pixmap.width() > 100 && pixmap.height() > 100){
-            qreal dx = -width()/2.0;
-            qreal dy = -height()/2.0;
-            qreal sx = width() / qreal(pixmap.width());
-            qreal sy = height() / qreal(pixmap.height());
+            qreal _width = width()/view->matrix().m11();
+            qreal _height= height()/view->matrix().m22();
+
+            qreal dx = -_width/2.0;
+            qreal dy = -_height/2.0;
+            qreal sx = _width / qreal(pixmap.width());
+            qreal sy = _height / qreal(pixmap.height());
+
 
             QTransform transform;
             transform.translate(dx, dy);

@@ -78,8 +78,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     bool circular = Config.value("CircularView", false).toBool();
     if(circular){
-        DiscardedPos = QPointF(-140, -60);
-        DrawPilePos = QPointF(-260, -60);
+        DiscardedPos = QPointF(-260, 30);
+        DrawPilePos = QPointF(-140, 30);
     }
 
     // create photos
@@ -88,12 +88,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
         Photo *photo = new Photo;
         photos << photo;
         addItem(photo);
+        photo->setZValue(-0.5);
     }
 
     {
         // create dashboard
         dashboard = new Dashboard;
         dashboard->setObjectName("dashboard");
+        dashboard->setZValue(0.8);
         addItem(dashboard);
 
         dashboard->setPlayer(Self);
@@ -176,6 +178,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(n_cards_drawed(ClientPlayer*,int)), SLOT(drawNCards(ClientPlayer*,int)));
 
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
+    connect(ClientInstance, SIGNAL(card_used()), this, SLOT(hideDiscards()));
 
     {
         guanxing_box = new GuanxingBox;
@@ -274,7 +277,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_widget = new ChatWidget();
         chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
         chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
-        chat_widget->setZValue(1.0);
+        chat_widget->setZValue(-1.0);
         addItem(chat_widget);
         connect(chat_widget,SIGNAL(return_button_click()),this, SLOT(speak()));
         connect(chat_widget,SIGNAL(chat_widget_msg(QString)),this, SLOT(appendChatEdit(QString)));
@@ -392,10 +395,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     createStateItem();
 
-    adjustItems();
+    //adjustItems();
 
     animations = new EffectAnimation();
     drawPile = NULL;
+    view_transform = QMatrix();
 }
 
 void RoomScene::createButtons(){
@@ -523,10 +527,14 @@ void RoomScene::createReplayControlBar(){
     new ReplayerControlBar(dashboard);
 }
 
-void RoomScene::adjustItems(){
+void RoomScene::adjustItems(QMatrix matrix){
+    if(matrix.m11()>1)matrix.setMatrix(1,0,0,1,matrix.dx(),matrix.dy());
+
+    dashboard->setWidth((main_window->width()-10)/ matrix.m11()) ;
+
     qreal dashboard_width = dashboard->boundingRect().width();
     qreal x = - dashboard_width/2;
-    qreal main_height = main_window->centralWidget()->height();
+    qreal main_height = main_window->centralWidget()->height() / matrix.m22();
     qreal y = main_height/2 - dashboard->boundingRect().height();
 
     dashboard->setPos(x, y);
@@ -536,7 +544,7 @@ void RoomScene::adjustItems(){
     for(i=0; i<positions.length(); i++)
         photos.at(i)->setPos(positions.at(i));
 
-    reLayout();
+    reLayout(matrix);
 }
 
 QList<QPointF> RoomScene::getPhotoPositions() const{
@@ -610,11 +618,14 @@ QList<QPointF> RoomScene::getPhotoPositions() const{
     else
         indices = indices_table[photos.length() - 1];
 
-    qreal stretch_x = main_window->width()  - chat_box->width();
-    stretch_x/=1075;
-    qreal stretch_y = (main_window->height() - dashboard->boundingRect().height())/575;
+    qreal stretch_x = dashboard->boundingRect().width() - chat_box->width();
+    stretch_x/=1060;
+    qreal stretch_y = (state_item->boundingRect().height()
+                       + log_box->height()
+                       + chat_box->height()
+                       + chat_edit->height())/480;
 
-    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2,
+    QPointF offset = QPoint( - chat_box->width()*(1-stretch_x)/2 - 20,
                              - dashboard->boundingRect().height()*(1-stretch_y)/2);
 
 
@@ -999,17 +1010,34 @@ void RoomScene::chooseGeneral(const QStringList &generals){
     dialog->exec();
 }
 
+void RoomScene::putToDiscard(CardItem *item)
+{
+    discarded_queue.enqueue(item);
+    viewDiscards();
+    item->goBack(true,false,false);
+}
+
 void RoomScene::viewDiscards(){
     if(ClientInstance->discarded_list.isEmpty()){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
     }
 
-    if(sender()->inherits("CardItem")){
+    if(!sender()->inherits("QAction")){
+        int width = qMin(400,discarded_queue.length()*93);
+        int start = DiscardedPos.x() - width/2 + 150;
+        int y     = DiscardedPos.y() - 140;
+        if(!Config.value("CircularView", false).toBool())
+        {
+            width = 0;
+            start = DiscardedPos.x();
+            y     = DiscardedPos.y();
+        }
+
         int i;
         for(i=0; i< discarded_queue.length(); i++){
             CardItem *card_item = discarded_queue.at(i);
-            card_item->setHomePos(QPointF(card_item->x() + i*card_item->boundingRect().width(), card_item->y()));
+            card_item->setHomePos(QPointF(start + i*width/discarded_queue.length(), y));
             card_item->goBack();
         }
     }else{
@@ -1020,10 +1048,23 @@ void RoomScene::viewDiscards(){
 }
 
 void RoomScene::hideDiscards(){
+
+    CardItem* top = NULL;
+    if(piled_discards.size())top = piled_discards.last();
+    foreach(CardItem *card_item,piled_discards)
+        if(card_item != top)removeItem(card_item);
+
+    piled_discards.clear();
+    if(top)
+        piled_discards.append(top);
+
     foreach(CardItem *card_item, discarded_queue){
         card_item->setHomePos(DiscardedPos);
+        card_item->setZValue(card_item->zValue()-0.8);
         card_item->goBack();
+        piled_discards.enqueue(card_item);
     }
+    discarded_queue.clear();
 }
 
 void RoomScene::toggleDiscards(){
@@ -1224,21 +1265,21 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
             if(!show_name.isEmpty())
                 card_item->writeCardDesc(show_name);
 
-            card_item->setHomePos(DiscardedPos);
-            card_item->goBack(true,false,false);
+//            card_item->setHomePos(DiscardedPos);
+//            card_item->goBack(true,false,false);
+            putToDiscard(card_item);
             card_item->setEnabled(true);
 
             card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
 
             card_item->setZValue(0.0001*ClientInstance->discarded_list.length());
-            discarded_queue.enqueue(card_item);
 
-            if(discarded_queue.length() > 8){
-                CardItem *first = discarded_queue.dequeue();
-                delete first;
-            }
+//            if(discarded_queue.length() > 8){
+//                CardItem *first = discarded_queue.dequeue();
+//                delete first;
+//            }
 
-            connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
+            //connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
             card_item->setHomePos(DrawPilePos);
@@ -1890,6 +1931,7 @@ void RoomScene::doTimeout(){
             break;
         }
 
+    case Client::AskForSkillInvoke:
     case Client::AskForYiji:{
             cancel_button->click();
             break;
@@ -2331,12 +2373,12 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 }
 
 void RoomScene::clearPile(){
-    foreach(CardItem *item, discarded_queue){
+    foreach(CardItem *item, piled_discards){
         removeItem(item);
         //delete item;
     }
 
-    discarded_queue.clear();
+    piled_discards.clear();
 }
 
 void RoomScene::onStandoff(){
@@ -2830,6 +2872,7 @@ void RoomScene::createStateItem(){
 
     state_item = addPixmap(state);//QPixmap("image/system/state.png"));
     state_item->setPos(-110, -80);
+    state_item->setZValue(-1.0);
     char roles[100] = {0};
     Sanguosha->getRoles(ServerInfo.GameMode, roles);
     updateStateItem(roles);
@@ -3004,7 +3047,7 @@ void RoomScene::onGameStart(){
         selector_box->deleteLater();
         selector_box = NULL;
 
-        chat_box->show();
+        chat_widget->show();
         log_box->show();
 
         if(self_box && enemy_box){
@@ -3101,12 +3144,13 @@ void RoomScene::onGameStart(){
     game_started = true;
     drawPile = new Pixmap("image/system/card-back.png");
     addItem(drawPile);
+    drawPile->setZValue(-1.0);
     drawPile->setPos(DrawPilePos);
     QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
     drp->setOffset(6);
     drp->setColor(QColor(0,0,0));
     drawPile->setGraphicsEffect(drp);
-    reLayout();
+    reLayout(view_transform);
 }
 
 #ifdef AUDIO_SUPPORT
@@ -3483,7 +3527,7 @@ void RoomScene::adjustDashboard(){
     if(action){
         bool expand = action->isChecked();
         dashboard->setWidth(expand ? main_window->width()-10 : 0);
-        adjustItems();
+        //adjustItems();
     }
 }
 
@@ -3597,6 +3641,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
     QString path = QString("image/system/3v3/select-%1.png").arg(temperature);
     selector_box = new Pixmap(path, true);
     addItem(selector_box);
+    selector_box->setZValue(guanxing_box->zValue());
     selector_box->shift();
 
     const static int start_x = 62;
@@ -3627,7 +3672,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names){
 }
 
 void RoomScene::fillGenerals(const QStringList &names){
-    chat_box->hide();
+    chat_widget->hide();
     log_box->hide();
 
     if(ServerInfo.GameMode == "06_3v3")
@@ -3880,8 +3925,10 @@ void RoomScene::adjustPrompt()
     //else text_item->setFont(QFont("SimHei",10));
 }
 
-void RoomScene::reLayout()
+void RoomScene::reLayout(QMatrix matrix)
 {
+    if(matrix.m11()>1)matrix.setMatrix(1,0,0,1,matrix.dx(),matrix.dy());
+    view_transform = matrix;
     //if(!Config.value("circularView",false).toBool())
     //    if(!game_started)return;
 
@@ -3943,16 +3990,16 @@ void RoomScene::reLayout()
     }
     else
     {
-        pos.ry() = -main_window->height()/2 + 30;
+        pos.ry() = -main_window->height()/2/matrix.m22() + 30;
         pos.ry() -= padding_top*2;
 
-        pos.rx() = main_window->width()/2 - padding_left
+        pos.rx() = main_window->width()/2/matrix.m22() - padding_left
                 - chat_box->width()/2;
                 //state_item->x() + state_item->boundingRect().width()/2;
 
-        int height = main_window->height() - dashboard->boundingRect().height();
+        int height = main_window->height()/matrix.m22() - dashboard->boundingRect().height();
         //height    += padding_top;
-        height    -= main_window->statusBar()->height()*2;
+        height    -= 60.0;
         height    -= chat_edit->height()*2 + state_item->boundingRect().height();
 
         chat_box->setFixedHeight(height/2);
@@ -3969,8 +4016,6 @@ void RoomScene::reLayout()
 
         chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
         chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
-
-        dashboard->setWidth(main_window->width()-10);
     }
 
 }
