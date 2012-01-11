@@ -1275,17 +1275,17 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="213"/>
+        <location filename="src/core/engine.cpp" line="216"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="375"/>
+        <location filename="src/core/engine.cpp" line="378"/>
         <source>Chibi</source>
         <translation>赤壁</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="453"/>
+        <location filename="src/core/engine.cpp" line="456"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2842,17 +2842,17 @@
 <context>
     <name>Select3v3GeneralDialog</name>
     <message>
-        <location filename="src/server/server.cpp" line="635"/>
+        <location filename="src/server/server.cpp" line="663"/>
         <source>Select generals in extend 3v3 mode</source>
         <translation>选择在扩展 3v3 模式中启用的武将</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="644"/>
+        <location filename="src/server/server.cpp" line="672"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="703"/>
+        <location filename="src/server/server.cpp" line="731"/>
         <source>Check/Uncheck all</source>
         <translation>全部勾选或取消勾选</translation>
     </message>
@@ -2860,22 +2860,22 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server/server.cpp" line="867"/>
+        <location filename="src/server/server.cpp" line="899"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="885"/>
+        <location filename="src/server/server.cpp" line="917"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="894"/>
+        <location filename="src/server/server.cpp" line="926"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="910"/>
+        <location filename="src/server/server.cpp" line="942"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -3088,13 +3088,18 @@
         <translation>电脑延迟</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="612"/>
-        <location filename="src/server/server.cpp" line="627"/>
+        <location filename="src/server/server.cpp" line="550"/>
+        <source>Mini Scenes</source>
+        <translation>小型场景</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="640"/>
+        <location filename="src/server/server.cpp" line="655"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="627"/>
+        <location filename="src/server/server.cpp" line="655"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -3110,6 +3115,7 @@
     </message>
     <message>
         <location filename="src/server/server.cpp" line="538"/>
+        <location filename="src/server/server.cpp" line="564"/>
         <source>%1 (%2 persons)</source>
         <translation>%1 (%2 人)</translation>
     </message>
@@ -3139,12 +3145,12 @@
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="586"/>
+        <location filename="src/server/server.cpp" line="614"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="587"/>
+        <location filename="src/server/server.cpp" line="615"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
