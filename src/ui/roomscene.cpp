@@ -2051,9 +2051,15 @@ void RoomScene::updateStatus(Client::Status status){
             cancel_button->setEnabled(false);
             discard_button->setEnabled(false);
 
+            QString description;
             const Skill *skill = Sanguosha->getSkill(ClientInstance->skill_name);
             if(skill)
-                ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player<br/> <b>Source</b>: %1<br/>").arg(skill->getDescription()));
+                description = skill->getDescription();
+            else
+                description = Sanguosha->translate(ClientInstance->skill_name);
+
+            if(!description.isEmpty() && description != ClientInstance->skill_name)
+                ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player<br/> <b>Source</b>: %1<br/>").arg(description));
             else
                 ClientInstance->getPromptDoc()->setHtml(tr("Please choose a player"));
 
