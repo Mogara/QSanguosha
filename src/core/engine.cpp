@@ -194,7 +194,10 @@ Engine::~Engine(){
 }
 
 QStringList Engine::getScenarioNames() const{
-    return scenarios.keys();
+    QStringList names;
+    foreach(QString name, scenarios.keys())
+        if(!name.contains("_mini_"))names<<name;
+    return names;
 }
 
 void Engine::addScenario(Scenario *scenario){

@@ -23,11 +23,6 @@ public:
         }
     }
 
-    virtual int getPriority()
-    {
-        return 5;
-    }
-
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const
     {
         if(player->getRoom()->getTag("WaitForPlayer").toBool())
@@ -42,6 +37,8 @@ public:
         int i=0;
         foreach(ServerPlayer * sp,players)
         {
+            room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
+
             if(sp->getState()!= "robot")
             {
                 QString general = this->players.at(i)["general"];
@@ -102,7 +99,8 @@ public:
                 if(this->players.at(i)["general2"]!=NULL)room->setPlayerProperty(sp,"general2",this->players.at(i)["general2"]);
             }
 
-            room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
+
+
             room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
 
             QString str = this->players.at(i)["maxhp"];
@@ -265,8 +263,8 @@ MiniScene_08::MiniScene_08()
     MiniSceneRule *arule = new MiniSceneRule(this);
     arule->addNPC("general:select|general2:liubei|general3:gongsunzan|role:rebel");
     arule->addNPC("general:zhangfei|role:rebel|equip:spear");
-    arule->addNPC("general:chengong|general2:diaochan|role:loyalist");
-    arule->addNPC("general:lubu|general2:gaoshun|role:lord|starter:true|equip:halberd,chitu");
+    arule->addNPC("general:chengong|general2:diaochan|maxhp:3|role:loyalist");
+    arule->addNPC("general:lubu|general2:gaoshun|maxhp:5|role:lord|starter:true|equip:halberd,chitu");
     arule->addNPC("general:guanyu|role:rebel|equip:blade");
 
     rule =arule;
@@ -281,9 +279,9 @@ MiniScene_09::MiniScene_09()
 
     MiniSceneRule *arule = new MiniSceneRule(this);
     arule->addNPC("general:select|role:lord|starter:true");
-    arule->addNPC("general:xiahoudun|general2:guzhielai|role:rebel");
+    arule->addNPC("general:xiahoudun|role:rebel");
     arule->addNPC("general:fazheng|general2:caiwenji|role:loyalist");
-    arule->addNPC("general:simayi|maxhp:4|role:rebel");
+    arule->addNPC("general:simayi|general:xunyu|maxhp:3|role:rebel");
 
     rule =arule;
 }
