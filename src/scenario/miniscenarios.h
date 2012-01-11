@@ -93,4 +93,68 @@ public:
     MiniScene_10();
 };
 
+class MiniScene_11 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_11();
+};
+
+class MiniScene_12 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_12();
+};
+
+class MiniScene_13 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_13();
+};
+
+class MiniScene_14 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_14();
+};
+
+class MiniScene_15 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_15();
+};
+
+class MiniScene_16 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_16();
+};
+
+class MiniScene_17 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_17();
+};
+
+class MiniScene_18 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_18();
+};
+
 #endif // MINISCENARIOS_H

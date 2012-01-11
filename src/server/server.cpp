@@ -553,7 +553,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
         mini_scene_combobox = new QComboBox;
         int index = -1;
-        for(int i =1;i<11;i++)
+        for(int i =1;i<19;i++)
         {
             QString name = QString::number(i);
             name = name.rightJustified(2,'0');
@@ -857,7 +857,7 @@ bool ServerDialog::config(){
         return db->loadMembers();
     }
 
-    if(Config.GameMode.contains("_mini_"))Config.setValue("MaxHpScheme",2);
+    if(Config.GameMode.contains("_mini_"))Config.setValue("MaxHpScheme",1);
 
     return true;
 }

@@ -99,21 +99,20 @@ public:
                 if(this->players.at(i)["general2"]!=NULL)room->setPlayerProperty(sp,"general2",this->players.at(i)["general2"]);
             }
 
-
-
             room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
 
             QString str = this->players.at(i)["maxhp"];
             if(str==NULL)str=QString::number(sp->getGeneralMaxHP());
             room->setPlayerProperty(sp,"maxhp",str.toInt());
 
+            str = this->players.at(i)["hpadj"];
+            if(str!=NULL)
+                room->setPlayerProperty(sp,"maxhp",sp->getMaxHP()+str.toInt());
+            str=QString::number(sp->getMaxHP());
+
             QString str2 = this->players.at(i)["hp"];
             if(str2 != NULL)str = str2;
             room->setPlayerProperty(sp,"hp",str.toInt());
-
-            str = this->players.at(i)["draw"];
-            if(str == NULL)str = "4";
-            room->drawCards(sp,str.toInt());
 
             str = this->players.at(i)["equip"];
             QStringList equips = str.split(",");
@@ -121,10 +120,41 @@ public:
             {
                 room->installEquip(sp,equip);
             }
-            room->getThread()->addPlayerSkills(sp);
+
+            str = this->players.at(i)["hand"];
+            if(str !=NULL)
+            {
+                QStringList hands = str.split(",");
+                foreach(QString hand,hands)
+                {
+                    room->obtainCard(sp,hand.toInt());
+                }
+
+            }
+            room->getThread()->addPlayerSkills(sp,true);
 
             if(this->players.at(i)["starter"] != NULL)
                 room->setCurrent(sp);
+
+            i++;
+        }
+        i =0;
+        foreach(ServerPlayer *sp,players)
+        {
+            QString str = this->players.at(i)["draw"];
+            if(str == NULL)str = "4";
+            room->drawCards(sp,str.toInt());
+
+            if(this->players.at(i)["marks"] != NULL)
+            {
+                QStringList marks = this->players.at(i)["marks"].split(",");
+                foreach(QString qs,marks)
+                {
+                    QStringList keys = qs.split("*");
+                    str = keys.at(1);
+                    sp->gainMark(keys.at(0),str.toInt());
+                }
+            }
 
             i++;
         }
@@ -281,7 +311,7 @@ MiniScene_09::MiniScene_09()
     arule->addNPC("general:select|role:lord|starter:true");
     arule->addNPC("general:xiahoudun|role:rebel");
     arule->addNPC("general:fazheng|general2:caiwenji|role:loyalist");
-    arule->addNPC("general:simayi|general:xunyu|maxhp:3|role:rebel");
+    arule->addNPC("general:simayi|general2:xunyu|maxhp:3|role:rebel");
 
     rule =arule;
 }
@@ -303,6 +333,135 @@ MiniScene_10::MiniScene_10()
     rule =arule;
 }
 
+MiniScene_11::MiniScene_11()
+    :MiniScene("_mini_11")
+{
+    lord = "sujiang";
+    loyalists << "sunshangxiang";
+    rebels << "pangde" << "ganning" << "zhangliao";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|general2:select|role:lord|starter:true");
+    arule->addNPC("general:pangde|equip:blade|role:rebel");
+    arule->addNPC("general:ganning|general2:sunjian|maxhp:4|role:rebel|equip:guding_blade");
+    arule->addNPC("general:zhangliao|general2:lukang|equip:ice_sword|role:rebel");
+    arule->addNPC("general:sunshangxiang|general2:lingtong|maxhp:4|role:loyalist");
+
+    rule =arule;
+}
+
+MiniScene_12::MiniScene_12()
+    :MiniScene("_mini_12")
+{
+    lord = "caopi";
+    loyalists << "caoren";
+    rebels << "sujiang" << "xusheng";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|role:rebel|starter:true");
+    arule->addNPC("general:xusheng|role:rebel");
+    arule->addNPC("general:caopi|maxhp:4|role:lord");
+    arule->addNPC("general:caoren|general2:caozhi|role:loyalist");
+
+    rule =arule;
+}
+
+MiniScene_13::MiniScene_13()
+    :MiniScene("_mini_13")
+{
+    lord = "liushan";
+    loyalists << "sujiang" << "xushu";
+    rebels << "jiaxu" << "lumeng" << "shensimayi";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|role:loyalist|equip:dilu");
+    arule->addNPC("general:lumeng|role:rebel");
+    arule->addNPC("general:jiaxu|general2:jiawenhe|maxhp:4|role:rebel|marks:@chaos*2");
+    arule->addNPC("general:shensimayi|role:rebel");
+    arule->addNPC("general:xushu|role:loyalist");
+    arule->addNPC("general:liushan|role:lord|maxhp:3|starter:true");
+
+    rule =arule;
+}
+
+MiniScene_14::MiniScene_14()
+    :MiniScene("_mini_14")
+{
+    lord = "huanggai";
+    rebels << "sujiang";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|general2:yangxiu|general3:zhouyu|role:rebel");
+    arule->addNPC("general:huanggai|general2:huangyueying|maxhp:4|role:lord|equip:crossbow|starter:true");
+
+    rule =arule;
+}
+
+MiniScene_15::MiniScene_15()
+    :MiniScene("_mini_15")
+{
+    lord = "liushan";
+    renegades << "sujiang";
+    rebels << "zhurong";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|general2:select|role:renegade");
+    arule->addNPC("general:liushan|general2:weiyan|maxhp:3|role:lord|starter:true");
+    arule->addNPC("general:menghuo|general2:zhurong|maxhp:5|role:rebel");
+
+    rule =arule;
+}
+
+MiniScene_16::MiniScene_16()
+    :MiniScene("_mini_16")
+{
+    lord = "sujiang";
+    renegades << "shenguanyu";
+    rebels << "taishici" << "shensimayi";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|general2:select|hpadj:1|role:lord");
+    arule->addNPC("general:shensimayi|general2:yuanshu|maxhp:4|role:rebel|starter:true");
+    arule->addNPC("general:taishici|general2:erzhang|maxhp:4|role:rebel");
+    arule->addNPC("general:shenguanyu|general2:shenlumeng|maxhp:5|role:renegade");
+
+    rule =arule;
+}
+
+MiniScene_17::MiniScene_17()
+    :MiniScene("_mini_17")
+{
+    lord = "sujiang";
+    loyalists << "jiangwei";
+    rebels << "zhangjiao" << "simayi";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|general2:wuxingzhuge|general3:wolong|maxhp:4|role:lord");
+    arule->addNPC("general:simayi|general2:guojia|role:rebel|starter:true");
+    arule->addNPC("general:zhangjiao|role:rebel");
+    arule->addNPC("general:jiangwei|role:loyalist");
+
+    rule =arule;
+}
+
+MiniScene_18::MiniScene_18()
+    :MiniScene("_mini_18")
+{
+    lord = "bgm_diaochan";
+    loyalists << "huangzhong";
+    rebels << "liubei" << "sunquan";
+    renegades << "sujiang";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->addNPC("general:select|role:renegade|starter:true");
+    arule->addNPC("general:sunquan|general2:lusu|maxhp:3|role:rebel");
+    arule->addNPC("general:liubei|general2:xunyu|maxhp:3|role:rebel");
+    arule->addNPC("general:huangzhong|general2:zhoutai|maxhp:4|hp:2|role:loyalist");
+    arule->addNPC("general:bgm_diaochan|general2:xiaoqiao|maxhp:3|role:lord");
+
+    rule =arule;
+}
+
 void MiniScene::onTagSet(Room *room, const QString &key) const
 {
 
@@ -320,3 +479,11 @@ ADD_MINISCENARIO(07);
 ADD_MINISCENARIO(08);
 ADD_MINISCENARIO(09);
 ADD_MINISCENARIO(10);
+ADD_MINISCENARIO(11);
+ADD_MINISCENARIO(12);
+ADD_MINISCENARIO(13);
+ADD_MINISCENARIO(14);
+ADD_MINISCENARIO(15);
+ADD_MINISCENARIO(16);
+ADD_MINISCENARIO(17);
+ADD_MINISCENARIO(18);
