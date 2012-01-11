@@ -1025,7 +1025,7 @@ void RoomScene::viewDiscards(){
 
     if(!sender()->inherits("QAction")){
         int width = qMin(400,discarded_queue.length()*93);
-        int start = DiscardedPos.x() - width/2 + 150;
+        int start = DrawPilePos.x() - width/2 + 150;
         int y     = DiscardedPos.y() - 140;
         if(!Config.value("CircularView", false).toBool())
         {
@@ -4016,10 +4016,10 @@ void RoomScene::reLayout(QMatrix matrix)
 
         pos.ry()+=log_box->height();
         alignTo(chat_box_widget,pos,"xmyt");
-
-        chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
-        chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
     }
+
+    chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
+    chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
 
 }
 

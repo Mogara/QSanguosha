@@ -199,7 +199,7 @@ void CardItem::unselect(){
 }
 
 bool CardItem::isPending() const{
-    return home_pos.y() == PendingY;
+    return IsMultilayer() ? frame->isVisible() :home_pos.y() == PendingY;
 }
 
 bool CardItem::isEquipped() const{

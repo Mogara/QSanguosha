@@ -50,6 +50,7 @@ Photo::Photo()
 
     frame_item = new QGraphicsPixmapItem(this);
     frame_item->setPos(-6, -6);
+    frame_item->setZValue(-1.0);
 
     QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(this);
     widget->setWidget(progress_bar);

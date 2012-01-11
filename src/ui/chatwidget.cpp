@@ -230,7 +230,7 @@ QGraphicsProxyWidget *ChatWidget::addWidget(QWidget *widget, int x){
     QGraphicsProxyWidget *proxy_widget = new QGraphicsProxyWidget(this);
     proxy_widget->setWidget(widget);
     proxy_widget->setParentItem(base);
-    proxy_widget->setPos(x-4, 2);
+    proxy_widget->setPos(x, 0);
 
     return proxy_widget;
 }
