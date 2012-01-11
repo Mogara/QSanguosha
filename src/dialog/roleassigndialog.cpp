@@ -46,17 +46,24 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QPushButton *moveUpButton = new QPushButton(tr("Move up"));
     QPushButton *moveDownButton = new QPushButton(tr("Move down"));
     QPushButton *okButton = new QPushButton(tr("OK"));
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+
+    only_for_self = new QCheckBox(tr("Only assign for yourself"));
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(moveUpButton);
     vlayout->addWidget(moveDownButton);
     vlayout->addStretch();
     vlayout->addWidget(okButton);
+    vlayout->addWidget(cancelButton);
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(list);
     layout->addLayout(vlayout);
-    setLayout(layout);
+    QVBoxLayout *mainlayout = new QVBoxLayout();
+    mainlayout->addLayout(layout);
+    mainlayout->addWidget(only_for_self);
+    setLayout(mainlayout);
 
     connect(role_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
@@ -64,6 +71,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
     connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
 void RoleAssignDialog::accept(){
@@ -88,11 +96,14 @@ void RoleAssignDialog::accept(){
     real_list.sort();
 
     if(role_list == real_list){
-        ClientInstance->request("assignRoles " + assignments.join("+"));
+        if(only_for_self->isChecked())
+            ClientInstance->request("assignRoles " + assignments.join("+") + "@self");
+        else
+            ClientInstance->request("assignRoles " + assignments.join("+"));
         QDialog::accept();
     }else{
         QMessageBox::warning(this, tr("Warning"),
-                             tr("The roles that you assigned is not comform the current game mode"));
+                             tr("The roles that you assigned do not comform with the current game mode"));
     }
 }
 

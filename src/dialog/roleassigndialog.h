@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
+#include <QCheckBox>
 #include <QMap>
 
 class RoleAssignDialog: public QDialog{
@@ -19,6 +20,7 @@ protected:
 private:
     QListWidget *list;
     QComboBox *role_combobox;
+    QCheckBox *only_for_self;
     QMap<QString, QString> role_mapping;
 
 private slots:
