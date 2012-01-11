@@ -23,6 +23,23 @@ public:
         }
     }
 
+    QStringList existedGenerals() const
+    {
+        QStringList names;
+        for(int i=0;i<players.length();i++)
+        {
+            QMap<QString,QString> sp =players.at(i);
+            QString name = sp["general"];
+            if(name == "select")name = "sujiang";
+            names << name;
+            name = sp["general2"];
+            if(name == NULL )continue;
+            if(name == "select")name = "sujiang";
+            names << name;
+        }
+        return names;
+    }
+
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const
     {
         if(player->getRoom()->getTag("WaitForPlayer").toBool())
@@ -43,13 +60,15 @@ public:
             {
                 QString general = this->players.at(i)["general"];
                 {
+                    QString original = sp->getGeneralName();
                     if(general == "select")
                     {
                         QStringList available,all,existed;
-                        assign(existed,all);
+                        existed = existedGenerals();
                         all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                         for(int i=0;i<5;i++)
                         {
+                            sp->setGeneral(NULL);
                             QString choice = sp->findReasonable(all);
                             if(existed.contains(choice))
                             {
@@ -62,7 +81,7 @@ public:
                         }
                         general = room->askForGeneral(sp,available);
                     }
-                    QString trans = QString("%1:%2").arg(sp->getGeneralName()).arg(general);
+                    QString trans = QString("%1:%2").arg(original).arg(general);
                     sp->invoke("transfigure",trans);
                     room->setPlayerProperty(sp,"general",general);
                 }
@@ -71,10 +90,11 @@ public:
                     if(general == "select")
                     {
                         QStringList available,all,existed;
-                        assign(existed,all);
+                        existed = existedGenerals();
                         all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
                         for(int i=0;i<5;i++)
                         {
+                            room->setPlayerProperty(sp,"general2",NULL);
                             QString choice = sp->findReasonable(all);
                             if(existed.contains(choice))
                             {
@@ -160,6 +180,7 @@ public:
         }
 
         room->setTag("WaitForPlayer",QVariant(true));
+        room->updateStateItem();
         return true;
     }
 
