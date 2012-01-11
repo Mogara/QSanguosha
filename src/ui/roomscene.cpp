@@ -2413,6 +2413,16 @@ void RoomScene::onGameOver(){
 
     bool victory = Self->property("win").toBool();
 
+    if(victory && ServerInfo.GameMode.contains("_mini_"))
+    {
+        QString id = ServerInfo.GameMode;
+        id.replace("_mini_","");
+        int stage = Config.value("MiniSceneStage",1).toInt();
+        int current = id.toInt();
+        if((stage == current) && stage<19)
+            Config.setValue("MiniSceneStage",current+1);
+    }
+
 #ifdef AUDIO_SUPPORT
     QString win_effect;
     if(victory){

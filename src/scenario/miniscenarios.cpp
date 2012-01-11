@@ -151,7 +151,16 @@ public:
                 }
 
             }
-            room->getThread()->addPlayerSkills(sp,true);
+
+            QVariant v;
+            foreach(const TriggerSkill *skill, sp->getTriggerSkills()){
+                if(!skill->inherits("SPConvertSkill"))
+                    room->getThread()->addTriggerSkill(skill);
+                else continue;
+
+                if(skill->getTriggerEvents().contains(GameStart))
+                    skill->trigger(GameStart, player, v);
+            }
 
             if(this->players.at(i)["starter"] != NULL)
                 room->setCurrent(sp);
@@ -267,7 +276,7 @@ MiniScene_05::MiniScene_05()
     arule->addNPC("general:select|role:rebel|equip:axe|starter:true");
     arule->addNPC("general:machao|role:rebel");
     arule->addNPC("general:dianwei|role:loyalist");
-    arule->addNPC("general:caocao|role:lord|draw:2");
+    arule->addNPC("general:caocao|role:lord|hp:4|draw:2");
     arule->addNPC("general:xuchu|role:loyalist");
 
     rule =arule;

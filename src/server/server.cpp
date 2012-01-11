@@ -553,7 +553,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
         mini_scene_combobox = new QComboBox;
         int index = -1;
-        for(int i =1;i<19;i++)
+        int stage = Config.value("MiniSceneStage",1).toInt();
+        for(int i =1;i<=stage;i++)
         {
             QString name = QString::number(i);
             name = name.rightJustified(2,'0');
