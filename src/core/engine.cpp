@@ -57,6 +57,17 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewZombieScenario();
     Scenario *NewImpasseScenario();
+
+    Scenario *NewMiniScene_01();
+    Scenario *NewMiniScene_02();
+    Scenario *NewMiniScene_03();
+    Scenario *NewMiniScene_04();
+    Scenario *NewMiniScene_05();
+    Scenario *NewMiniScene_06();
+    Scenario *NewMiniScene_07();
+    Scenario *NewMiniScene_08();
+    Scenario *NewMiniScene_09();
+    Scenario *NewMiniScene_10();
 }
 
 extern "C" {
@@ -95,6 +106,17 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewZombieScenario());
     addScenario(NewImpasseScenario());
+
+    addScenario(NewMiniScene_01());
+    addScenario(NewMiniScene_02());
+    addScenario(NewMiniScene_03());
+    addScenario(NewMiniScene_04());
+    addScenario(NewMiniScene_05());
+    addScenario(NewMiniScene_06());
+    addScenario(NewMiniScene_07());
+    addScenario(NewMiniScene_08());
+    addScenario(NewMiniScene_09());
+    addScenario(NewMiniScene_10());
 
     // available game modes
     modes["02p"] = tr("2 players");
