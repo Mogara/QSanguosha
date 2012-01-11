@@ -174,7 +174,7 @@ MiniScene_02::MiniScene_02()
 
     MiniSceneRule *arule = new MiniSceneRule(this);
     arule->addNPC("general:select|role:rebel");
-    arule->addNPC("general:sunce|maxhp:5|hp:1|role:lord|equip:guding_blade,renwang_shield|starter:true");
+    arule->addNPC("general:sunce|maxhp:5|hp:1|role:lord|equip:guding_blade,hualiu|starter:true");
 
     rule =arule;
 }
@@ -250,7 +250,7 @@ MiniScene_07::MiniScene_07()
     arule->addNPC("general:wolong|general2:pangtong|maxhp:4|role:lord|equip:fan");
     arule->addNPC("general:yujin|role:rebel");
     arule->addNPC("general:xiahouyuan|role:rebel|equip:vine");
-    arule->addNPC("general:panglingming|role:rebel|equip:vine");
+    arule->addNPC("general:panglingming|role:rebel|equip:vine,axe");
 
     rule =arule;
 }
