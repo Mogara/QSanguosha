@@ -552,8 +552,37 @@ QGroupBox *ServerDialog::createGameModeBox(){
                 scenario_combobox->setCurrentIndex(index);
             }
         }
+        //mini scenes
+        QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
+        mini_scenes->setObjectName("mini");
+        mode_group->addButton(mini_scenes);
+
+        mini_scene_combobox = new QComboBox;
+        int index = -1;
+        int stage = Config.value("MiniSceneStage",1).toInt();
+        for(int i =1;i<=stage;i++)
+        {
+            QString name = QString::number(i);
+            name = name.rightJustified(2,'0');
+            name = name.prepend("_mini_");
+            QString scenario_name = Sanguosha->translate(name);
+            const Scenario *scenario = Sanguosha->getScenario(name);
+            int count = scenario->getPlayerCount();
+            QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
+            mini_scene_combobox->addItem(text, name);
+
+            if(name == Config.GameMode)index = i-1;
+        }
+
+        if(index>=0)
+        {
+            mini_scene_combobox->setCurrentIndex(index);
+            mini_scenes->setChecked(true);
+        }
+
 
         item_list << HLay(scenario_button, scenario_combobox);
+        item_list << HLay(mini_scenes,mini_scene_combobox);
     }
 
     QRadioButton *button = new QRadioButton(tr("Custom Mode"));
@@ -791,6 +820,8 @@ bool ServerDialog::config(){
     QString objname = mode_group->checkedButton()->objectName();
     if(objname == "scenario")
         Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
+    else if(objname == "mini")
+        Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
     else
         Config.GameMode = objname;
 
@@ -841,6 +872,8 @@ bool ServerDialog::config(){
         ContestDB *db = ContestDB::GetInstance();
         return db->loadMembers();
     }
+
+    if(Config.GameMode.contains("_mini_"))Config.setValue("MaxHpScheme",1);
 
     return true;
 }

@@ -1275,17 +1275,17 @@
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="191"/>
+        <location filename="src/core/engine.cpp" line="213"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="353"/>
+        <location filename="src/core/engine.cpp" line="375"/>
         <source>Chibi</source>
         <translation>赤壁</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="431"/>
+        <location filename="src/core/engine.cpp" line="453"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2491,12 +2491,13 @@
         <location filename="src/ui/roomscene.cpp" line="1151"/>
         <location filename="src/ui/roomscene.cpp" line="1638"/>
         <location filename="src/ui/roomscene.cpp" line="1648"/>
-        <location filename="src/ui/roomscene.cpp" line="2631"/>
-        <location filename="src/ui/roomscene.cpp" line="2641"/>
-        <location filename="src/ui/roomscene.cpp" line="2651"/>
-        <location filename="src/ui/roomscene.cpp" line="2666"/>
-        <location filename="src/ui/roomscene.cpp" line="3559"/>
-        <location filename="src/ui/roomscene.cpp" line="3564"/>
+        <location filename="src/ui/roomscene.cpp" line="2625"/>
+        <location filename="src/ui/roomscene.cpp" line="2635"/>
+        <location filename="src/ui/roomscene.cpp" line="2645"/>
+        <location filename="src/ui/roomscene.cpp" line="2660"/>
+        <location filename="src/ui/roomscene.cpp" line="3553"/>
+        <location filename="src/ui/roomscene.cpp" line="3558"/>
+        <location filename="src/ui/roomscene.cpp" line="3583"/>
         <location filename="src/ui/roomscene.cpp" line="3589"/>
         <location filename="src/ui/roomscene.cpp" line="3595"/>
         <source>Warning</source>
@@ -2847,17 +2848,17 @@
 <context>
     <name>Select3v3GeneralDialog</name>
     <message>
-        <location filename="src/server/server.cpp" line="641"/>
+        <location filename="src/server/server.cpp" line="635"/>
         <source>Select generals in extend 3v3 mode</source>
         <translation>选择在扩展 3v3 模式中启用的武将</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="650"/>
+        <location filename="src/server/server.cpp" line="644"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="709"/>
+        <location filename="src/server/server.cpp" line="703"/>
         <source>Check/Uncheck all</source>
         <translation>全部勾选或取消勾选</translation>
     </message>
@@ -2865,22 +2866,22 @@
 <context>
     <name>Server</name>
     <message>
-        <location filename="src/server/server.cpp" line="875"/>
+        <location filename="src/server/server.cpp" line="867"/>
         <source>Lua scripts error</source>
         <translation>Lua 脚本错误</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="893"/>
+        <location filename="src/server/server.cpp" line="885"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="902"/>
+        <location filename="src/server/server.cpp" line="894"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="918"/>
+        <location filename="src/server/server.cpp" line="910"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -3101,15 +3102,18 @@
         <location filename="src/server/server.cpp" line="451"/>
         <source>Custom Mode</source>
         <translation>自定义模式</translation>
+        <location filename="src/server/server.cpp" line="550"/>
+        <source>Mini Scenes</source>
+        <translation>小型场景</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="618"/>
-        <location filename="src/server/server.cpp" line="633"/>
+        <location filename="src/server/server.cpp" line="612"/>
+        <location filename="src/server/server.cpp" line="627"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="633"/>
+        <location filename="src/server/server.cpp" line="627"/>
         <source>Please fill address when you want to annouce your server&apos;s IP</source>
         <translation>若您想在广域网上公布服务器，请填入地址</translation>
     </message>
@@ -3125,6 +3129,7 @@
     </message>
     <message>
         <location filename="src/server/server.cpp" line="544"/>
+        <location filename="src/server/server.cpp" line="564"/>
         <source>%1 (%2 persons)</source>
         <translation>%1 (%2 人)</translation>
     </message>
@@ -3154,12 +3159,12 @@
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="592"/>
+        <location filename="src/server/server.cpp" line="586"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/server/server.cpp" line="593"/>
+        <location filename="src/server/server.cpp" line="587"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
