@@ -59,6 +59,7 @@ private:
     QGraphicsScene *record_scene;
     QGroupBox *general_box;
     QGroupBox *result_box;
+    QTextEdit *server_log;
     Server *server;
 };
 
