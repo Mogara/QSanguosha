@@ -8,6 +8,8 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QComboBox>
+#include <QCheckBox>
+#include <QSpinBox>
 
 namespace Ui {
     class MainWindow;
@@ -20,6 +22,7 @@ class Server;
 class QTextEdit;
 class QToolButton;
 class QGroupBox;
+class RoomItem;
 
 class BroadcastBox: public QDialog{
     Q_OBJECT
@@ -56,10 +59,16 @@ private:
     void updateResultBox(QString role, int win);
 
     QToolButton *avatar_button;
+    QPushButton *start_button;
+    QCheckBox *loop_checkbox;
     QGraphicsScene *record_scene;
     QGroupBox *general_box;
     QGroupBox *result_box;
+    QTextEdit *server_log;
+    QSpinBox *spinbox;
     Server *server;
+    int room_count;
+    QList<RoomItem*> room_items;
 };
 
 class MainWindow : public QMainWindow {
