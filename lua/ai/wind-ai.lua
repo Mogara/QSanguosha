@@ -9,6 +9,9 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 	self:updatePlayers()
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
+		if sgs.GetConfig("GameMode", "") == "_mini_19" then 
+			return "@LeijiCard=.->"..enemy:objectName()
+		end
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
 			((sgs.ai_anti_lord[enemy:objectName()] or 0)>0 or not self.player:isLord()) then
 			return "@LeijiCard=.->"..enemy:objectName()

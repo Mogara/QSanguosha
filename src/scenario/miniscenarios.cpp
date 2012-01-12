@@ -9,7 +9,7 @@ public:
     MiniSceneRule(Scenario *scenario)
         :ScenarioRule(scenario)
     {
-        events << GameStart;
+        events << GameStart << PhaseChange;
     }
 
     virtual void assign(QStringList &generals, QStringList &roles) const{
@@ -42,14 +42,29 @@ public:
 
     virtual bool trigger(TriggerEvent event, ServerPlayer *player, QVariant &data) const
     {
+        Room* room = player->getRoom();
+
+        if(event == PhaseChange)
+        {
+             if(player->getPhase() != Player::NotActive)return false;
+            if(player->getState() == "robot" || this->players.first()["singleTurn"] == NULL)
+                return false;
+            room->gameOver(this->players.first()["SingleTurn"]);
+        }
         if(player->getRoom()->getTag("WaitForPlayer").toBool())
             return true;
-
-        Room* room = player->getRoom();
 
         QList<ServerPlayer*> players = room->getAllPlayers();
         while(players.first()->getState() == "robot")
             players.append(players.takeFirst());
+
+        QStringList cards= setup.split(",");
+        foreach(QString id,cards)
+        {
+            room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::Special,true);
+            room->moveCardTo(Sanguosha->getCard(id.toInt()),NULL,Player::DrawPile,true);
+            room->broadcastInvoke("addHistory","pushPile");
+        }
 
         int i=0;
         foreach(ServerPlayer * sp,players)
@@ -206,8 +221,14 @@ public:
         players << player;
     }
 
+    void setPile(QString cardList)
+    {
+        setup = cardList;
+    }
+
 private:
     QList< QMap<QString, QString> > players;
+    QString setup;
 };
 
 
@@ -323,7 +344,7 @@ MiniScene_08::MiniScene_08()
     MiniSceneRule *arule = new MiniSceneRule(this);
     arule->addNPC("general:select|general2:liubei|general3:gongsunzan|role:rebel");
     arule->addNPC("general:zhangfei|role:rebel|equip:spear");
-    arule->addNPC("general:chengong|general2:diaochan|maxhp:3|role:loyalist|starter:true");
+    arule->addNPC("general:chengong|general2:diaochan|maxhp:3|role:loyalist|equip:hualiu|starter:true");
     arule->addNPC("general:lubu|general2:gaoshun|maxhp:5|draw:5|role:lord|equip:halberd,chitu");
     arule->addNPC("general:guanyu|role:rebel|equip:blade");
 
@@ -446,14 +467,14 @@ MiniScene_16::MiniScene_16()
     :MiniScene("_mini_16")
 {
     lord = "sujiang";
-    renegades << "shenguanyu";
+    loyalists << "shenguanyu";
     rebels << "taishici" << "shensimayi";
 
     MiniSceneRule *arule = new MiniSceneRule(this);
-    arule->addNPC("general:select|general2:select|hpadj:1|role:lord");
-    arule->addNPC("general:shensimayi|general2:yuanshu|maxhp:4|role:rebel|starter:true");
+    arule->addNPC("general:select|general2:select|hpadj:1|role:lord|equip:zhuahuangfeidian");
+    arule->addNPC("general:shensimayi|general2:yuanshu|maxhp:4|role:rebel");
     arule->addNPC("general:taishici|general2:erzhang|maxhp:4|role:rebel");
-    arule->addNPC("general:shenguanyu|general2:shenlumeng|maxhp:5|role:renegade");
+    arule->addNPC("general:shenguanyu|general2:shenlumeng|maxhp:5|role:renegade|starter:true");
 
     rule =arule;
 }
@@ -466,10 +487,10 @@ MiniScene_17::MiniScene_17()
     rebels << "zhangjiao" << "simayi";
 
     MiniSceneRule *arule = new MiniSceneRule(this);
-    arule->addNPC("general:select|general2:wuxingzhuge|general3:wolong|maxhp:4|role:lord");
-    arule->addNPC("general:simayi|general2:guojia|role:rebel|starter:true");
-    arule->addNPC("general:zhangjiao|role:rebel");
-    arule->addNPC("general:jiangwei|role:loyalist");
+    arule->addNPC("general:select|general2:wuxingzhuge|general3:wolong|hpadj:1|role:lord|starter:true");
+    arule->addNPC("general:simayi|general2:guojia|role:rebel|hand:103");
+    arule->addNPC("general:zhangjiao|role:rebel|equip:eight_diagram");
+    arule->addNPC("general:jiangwei|role:loyalist|equip:silver_lion");
 
     rule =arule;
 }
@@ -490,6 +511,59 @@ MiniScene_18::MiniScene_18()
     arule->addNPC("general:bgm_diaochan|general2:xiaoqiao|maxhp:3|role:lord");
 
     rule =arule;
+}
+
+MiniScene_19::MiniScene_19()
+    :MiniScene("_mini_19")
+{
+    lord = "zhangjiao";
+    loyalists << "luxun";
+    renegades << "sujiang";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    QStringList player;
+    player.append("general:select");
+    player.append("role:renegade");
+    player.append("maxhp:3");
+    player.append("equip:silver_lion");
+    player.append("draw:0");
+    player.append("hand:135,136");
+    player.append("starter:true");
+    player.append("singleTurn:Lord+Loyalist");
+
+    arule->addNPC(player.join("|"));
+
+    player.clear();
+    player.append("general:zhangjiao");
+    player.append("role:lord");
+    player.append("maxhp:4");
+    player.append("hp:2");
+    player.append("equip:eight_diagram");
+    player.append("draw:0");
+    player.append("hand:83,44");
+
+    arule->addNPC(player.join("|"));
+
+    player.clear();
+    player.append("general:luxun");
+    player.append("role:loyalist");
+    player.append("maxhp:3");
+    player.append("hp:2");
+    player.append("equip:vine");
+    player.append("draw:0");
+    player.append("hand:52");
+
+    arule->addNPC(player.join("|"));
+
+    arule->setPile("62,31,101,131,90,2,31,18,103");
+
+    rule =arule;
+}
+
+AI::Relation MiniScene_19::relationTo(const ServerPlayer *a, const ServerPlayer *b) const
+{
+    if(a->getRole() == "renegade" || b->getRole() == "renegade")return AI::Enemy;
+    return AI::GetRelation(a, b);
 }
 
 void MiniScene::onTagSet(Room *room, const QString &key) const
@@ -517,3 +591,4 @@ ADD_MINISCENARIO(15);
 ADD_MINISCENARIO(16);
 ADD_MINISCENARIO(17);
 ADD_MINISCENARIO(18);
+ADD_MINISCENARIO(19);
