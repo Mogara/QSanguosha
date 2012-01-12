@@ -20,8 +20,6 @@
 #include <QMetaEnum>
 #include <QTimerEvent>
 #include <QDateTime>
-#include <QFile>
-#include <QTextStream>
 
 Room::Room(QObject *parent, const QString &mode)
     :QThread(parent), mode(mode), current(NULL), reply_player(NULL), pile1(Sanguosha->getRandomCards()),
@@ -1177,70 +1175,35 @@ void Room::prepareForStart(){
                 player->setRole("rebel");
             broadcastProperty(player, "role");
         }
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString rolest = texts.at(1);
-
-                players.at(i)->setRole(rolest);
-                broadcastProperty(players.at(i), "role");
-                i ++;
-            }
-            file.close();
-        }
     }else if(Config.value("FreeAssign", false).toBool()){
         ServerPlayer *owner = getOwner();
         if(owner && owner->getState() == "online"){
             owner->invoke("askForAssign");
             getResult("assignRolesCommand", owner);
-            bool only_for_self = result.endsWith("@self");
 
             if(result.isEmpty() || result == ".")
                 assignRoles();
-            else if(only_for_self){
-                result.chop(5);
-                QStringList assignments = result.split("+");
-                QString self_role;
-                int self_seat, i;
-                for(self_seat=0; self_seat<assignments.length();self_seat++){
-                    QString assignment = assignments.at(self_seat);
-                    QStringList texts = assignment.split(":");
-                    QString name = texts.value(0);
-                    QString role = texts.value(1);
+            else if(Config.FreeAssignSelf){
+                QStringList texts = result.split(":");
+                QString name = texts.value(0);
+                QString role = texts.value(1);
 
-                    ServerPlayer *player = findChild<ServerPlayer *>(name);
-                    if(!player->isOwner()) continue;
-                    self_role = role;
-                    players.swap(self_seat, players.indexOf(player));
-                    break;
-                }
+                ServerPlayer *player_self = findChild<ServerPlayer *>(name);
+                setPlayerProperty(player_self, "role", role);
 
+                QList<ServerPlayer *> all_players = players;
+                all_players.removeOne(player_self);
+                int n = all_players.count(), i;
                 QStringList roles = Sanguosha->getRoleList(mode);
+                roles.removeOne(role);
                 qShuffle(roles);
 
-                for(i=0; i<assignments.length(); i++)
-                    if(roles[i] == self_role){
-                        roles.swap(i, self_seat);
-                        break;
-                    }
-
-                for(i=0; i<assignments.length(); i++){
-                    ServerPlayer *player = players[i];
+                for(i=0; i<n; i++){
+                    ServerPlayer *player = all_players[i];
                     QString role = roles.at(i);
 
                     player->setRole(role);
-                    if(role == "lord")
-                        broadcastProperty(player, "role", "lord");
-                    else
-                        player->sendProperty("role");
+                    player->sendProperty("role");
                 }
             }
             else{
@@ -1695,28 +1658,6 @@ void Room::run(){
             names.removeOne(name);
         }
 
-        startGame();
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString gen1 = texts.at(2);
-                QString gen2 = texts.at(3);
-
-                setPlayerProperty(players.at(i), "general", gen1);
-                if(!gen2.isEmpty())
-                    setPlayerProperty(players.at(i), "general2", gen2);
-                i ++;
-            }
-            file.close();
-        }
         startGame();
     }else{
         chooseGenerals();

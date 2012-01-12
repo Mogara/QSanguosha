@@ -14,7 +14,7 @@ struct ServerInfoStruct{
     int OperationTimeout;
     QStringList Extensions;
     bool FreeChoose;
-    bool Enable2ndGeneral;   
+    bool Enable2ndGeneral;
     bool EnableScene;
     bool EnableBasara;
     bool EnableHegemony;
