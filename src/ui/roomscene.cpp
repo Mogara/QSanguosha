@@ -1024,8 +1024,14 @@ void RoomScene::viewDiscards(){
     }
 
     if(!sender()->inherits("QAction")){
-        int width = qMin(400,discarded_queue.length()*93);
-        int start = DrawPilePos.x() - width/2 + 150;
+        int width = getPhotoPositions().last().x() - getPhotoPositions().first().x();
+        int mid   = getPhotoPositions().last().x() + getPhotoPositions().first().x();
+
+        width -= photos.first()->boundingRect().width() + 50;
+        mid   += 93;
+        width = qMin(width,discarded_queue.length()*93);
+
+        int start = (mid - width)/2;
         int y     = DiscardedPos.y() - 140;
         if(!Config.value("CircularView", false).toBool())
         {
@@ -2425,7 +2431,7 @@ void RoomScene::onGameOver(){
         id.replace("_mini_","");
         int stage = Config.value("MiniSceneStage",1).toInt();
         int current = id.toInt();
-        if((stage == current) && stage<19)
+        if((stage == current) && stage<18)
             Config.setValue("MiniSceneStage",current+1);
     }
 
