@@ -980,3 +980,9 @@ void Server::gameOver(){
         players.remove(player->objectName());
     }
 }
+
+void Server::gamesOver(){
+    name2objname.clear();
+    players.clear();
+    rooms.clear();
+}
