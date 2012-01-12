@@ -3098,8 +3098,9 @@
         <translation>电脑延迟</translation>
     </message>
     <message>
+        <location filename="src/server/server.cpp" line="451"/>
         <source>Custom Mode</source>
-        <translation type="obsolete">自定义模式</translation>
+        <translation>自定义模式</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="618"/>
