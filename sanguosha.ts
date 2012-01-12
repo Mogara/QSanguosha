@@ -1993,7 +1993,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="704"/>
         <source>Num of rooms</source>
-        <translation>房间数</translation>
+        <translation>测试次数</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="823"/>
@@ -2398,8 +2398,13 @@
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/dialog/roleassigndialog.cpp" line="111"/>
-        <location filename="src/dialog/roleassigndialog.cpp" line="126"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="51"/>
+        <source>Only assign for yourself</source>
+        <translation>仅为自己分配</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/roleassigndialog.cpp" line="87"/>
+        <location filename="src/dialog/roleassigndialog.cpp" line="105"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -3098,6 +3103,13 @@
         <translation>电脑延迟</translation>
     </message>
     <message>
+        <location filename="src/server/server.cpp" line="451"/>
+        <source>Custom Mode</source>
+        <translation>自定义模式</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="612"/>
+        <location filename="src/server/server.cpp" line="627"/>
         <location filename="src/server/server.cpp" line="556"/>
         <source>Mini Scenes</source>
         <translation>小型场景</translation>
