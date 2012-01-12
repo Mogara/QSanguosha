@@ -2139,7 +2139,7 @@ void Room::startGame(){
         }
     }
 
-    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && !Config.EnableBasara){
+    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && mode != "custom" && !Config.EnableBasara){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }
