@@ -645,6 +645,7 @@ MeleeDialog::MeleeDialog(QWidget *parent)
     renegadeWinCount=0;
     rebelCount=0;
     rebelWinCount=0;
+    test_times=0;
 
     setWindowTitle(tr("AI Melee"));
 
@@ -695,10 +696,10 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     spinbox->setValue(10);
     spinbox->setEnabled(false);
 
-    QPushButton *start_button = new QPushButton(tr("Start"));
+    start_button = new QPushButton(tr("Start"));
     connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
 
-    QCheckBox *loop_checkbox = new QCheckBox(tr("LOOP"));
+    loop_checkbox = new QCheckBox(tr("LOOP"));
     loop_checkbox->setObjectName("loop_checkbox");
 
     form_layout->addRow(tr("Test times"), spinbox);
@@ -716,11 +717,10 @@ QGroupBox *MeleeDialog::createGeneralBox(){
 }
 
 void MeleeDialog::startTest(){
-    Server *server = new Server(this);
+    server = new Server(this);
     server->listen();
 
     Config.AIDelay = 0;
-
     Room *room = server->createNewRoom();
     connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
     connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
@@ -797,10 +797,14 @@ void MeleeDialog::onGameOver(const QString &winner){
 
         if(p->getGeneralName() == to_test){
 
-            if(won)
+            if(won){
                 room_item->changePixmap("image/system/frog/good.png");
-            else
+                updateResultBox(p->getRole(),1);
+            }
+            else{
                 room_item->changePixmap("image/system/frog/bad.png");
+                updateResultBox(p->getRole(),0);
+            }
         }
     }
 
@@ -810,6 +814,11 @@ void MeleeDialog::onGameOver(const QString &winner){
                       .arg(room->getTag("SwapPile").toInt());
 
     room_item->setToolTip(tooltip);
+    if(loop_checkbox->isChecked()){
+        delete server;
+        delete room_item;
+        startTest();
+    }
 }
 
 QGroupBox *MeleeDialog::createResultBox(){

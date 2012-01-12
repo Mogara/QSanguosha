@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QComboBox>
+#include <QCheckBox>
 
 namespace Ui {
     class MainWindow;
@@ -56,11 +57,14 @@ private:
     void updateResultBox(QString role, int win);
 
     QToolButton *avatar_button;
+    QPushButton *start_button;
+    QCheckBox *loop_checkbox;
     QGraphicsScene *record_scene;
     QGroupBox *general_box;
     QGroupBox *result_box;
     QTextEdit *server_log;
     Server *server;
+    int test_times;
 };
 
 class MainWindow : public QMainWindow {
