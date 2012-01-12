@@ -1202,7 +1202,7 @@
     <message>
         <location filename="src/core/engine.cpp" line="102"/>
         <source>2 players (KOF style)</source>
-        <translation>2 人局 [KOF 模式]</translation>
+        <translation>2 人局 [KOF模式]</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="103"/>
@@ -3096,6 +3096,11 @@
         <location filename="src/server/server.cpp" line="258"/>
         <source>AI delay</source>
         <translation>电脑延迟</translation>
+    </message>
+    <message>
+        <location filename="src/server/server.cpp" line="451"/>
+        <source>Custom Mode</source>
+        <translation>自定义模式</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="612"/>
