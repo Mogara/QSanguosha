@@ -20,7 +20,6 @@
 #endif
 
 #include <QFile>
-#include <QTextStream>
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
@@ -58,17 +57,6 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewZombieScenario();
     Scenario *NewImpasseScenario();
-
-    Scenario *NewMiniScene_01();
-    Scenario *NewMiniScene_02();
-    Scenario *NewMiniScene_03();
-    Scenario *NewMiniScene_04();
-    Scenario *NewMiniScene_05();
-    Scenario *NewMiniScene_06();
-    Scenario *NewMiniScene_07();
-    Scenario *NewMiniScene_08();
-    Scenario *NewMiniScene_09();
-    Scenario *NewMiniScene_10();
 }
 
 extern "C" {
@@ -107,17 +95,6 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewZombieScenario());
     addScenario(NewImpasseScenario());
-
-    addScenario(NewMiniScene_01());
-    addScenario(NewMiniScene_02());
-    addScenario(NewMiniScene_03());
-    addScenario(NewMiniScene_04());
-    addScenario(NewMiniScene_05());
-    addScenario(NewMiniScene_06());
-    addScenario(NewMiniScene_07());
-    addScenario(NewMiniScene_08());
-    addScenario(NewMiniScene_09());
-    addScenario(NewMiniScene_10());
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -462,20 +439,6 @@ int Engine::getPlayerCount(const QString &mode) const{
         int index = rx.indexIn(mode);
         if(index != -1)
             return rx.capturedTexts().first().toInt();
-    }else if(mode == "custom"){
-        // custom mode
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                if(rx.exactMatch(stream.readLine()))
-                    i ++;
-            }
-            file.close();
-        }
-        return i;
     }else{
         // scenario mode
         const Scenario *scenario = scenarios.value(mode, NULL);
@@ -553,33 +516,6 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             qstrcpy(roles, "ZCCCNFFF");
         else if(n == 6)
             qstrcpy(roles, "ZCCNFF");
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        char *role = new char[getPlayerCount(mode)];
-        if(file.open(QIODevice::ReadOnly)){
-            int i = 0;
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString rolest = texts.at(1);
-                if(rolest == "lord")
-                    strcat(role, "Z");
-                else if(rolest == "loyalist")
-                    strcat(role, "C");
-                else if(rolest == "rebel")
-                    strcat(role, "F");
-                else/* if(rolest == "renegade")*/
-                    strcat(role, "N");
-                i ++;
-            }
-            file.close();
-        }
-        qstrcpy(roles, role);
-        delete role;
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)

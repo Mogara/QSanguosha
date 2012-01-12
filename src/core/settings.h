@@ -32,6 +32,7 @@ public:
     bool FreeChoose;
     bool ForbidSIMC;
     bool DisableChat;
+    bool FreeAssignSelf;
     bool Enable2ndGeneral;
     bool EnableScene;	//changjing
     bool EnableBasara;

@@ -9,6 +9,7 @@
 #include "client.h"
 #include "engine.h"
 #include "roomscene.h"
+#include "settings.h"
 
 RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     :QDialog(parent)
@@ -21,18 +22,30 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
 
-    QList<const ClientPlayer *> players = ClientInstance->getPlayers();
-    for(int i=0; i<players.length(); i++){
-        QString role = role_list.at(i);
-        const ClientPlayer *player = players.at(i);
+    if(Config.FreeAssignSelf){
         QString text = QString("%1[%2]")
-                       .arg(player->screenName())
-                       .arg(Sanguosha->translate(role));
+                       .arg(Self->screenName())
+                       .arg(Sanguosha->translate("lord"));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
-        item->setData(Qt::UserRole, player->objectName());
+        item->setData(Qt::UserRole, Self->objectName());
 
-        role_mapping.insert(player->objectName(), role);
+        role_mapping.insert(Self->objectName(), "lord");
+    }
+    else{
+        QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+        for(int i=0; i<players.length(); i++){
+            QString role = role_list.at(i);
+            const ClientPlayer *player = players.at(i);
+            QString text = QString("%1[%2]")
+                           .arg(player->screenName())
+                           .arg(Sanguosha->translate(role));
+
+            QListWidgetItem *item = new QListWidgetItem(text, list);
+            item->setData(Qt::UserRole, player->objectName());
+
+            role_mapping.insert(player->objectName(), role);
+        }
     }
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -48,7 +61,10 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
 
-    only_for_self = new QCheckBox(tr("Only assign for yourself"));
+    if(Config.FreeAssignSelf){
+        moveUpButton->setEnabled(false);
+        moveDownButton->setEnabled(false);
+    }
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(moveUpButton);
@@ -62,7 +78,6 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     layout->addLayout(vlayout);
     QVBoxLayout *mainlayout = new QVBoxLayout();
     mainlayout->addLayout(layout);
-    mainlayout->addWidget(only_for_self);
     setLayout(mainlayout);
 
     connect(role_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
@@ -77,6 +92,15 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 void RoleAssignDialog::accept(){
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
     QStringList real_list;
+
+    if(Config.FreeAssignSelf){
+        QString name = list->item(0)->data(Qt::UserRole).toString();
+        QString role = role_mapping.value(name);
+
+        ClientInstance->request("assignRoles " + QString("%1:%2").arg(name).arg(role));
+        QDialog::accept();
+        return;
+    }
 
     QStringList assignments;
     for(int i=0; i<list->count(); i++){
@@ -96,10 +120,7 @@ void RoleAssignDialog::accept(){
     real_list.sort();
 
     if(role_list == real_list){
-        if(only_for_self->isChecked())
-            ClientInstance->request("assignRoles " + assignments.join("+") + "@self");
-        else
-            ClientInstance->request("assignRoles " + assignments.join("+"));
+        ClientInstance->request("assignRoles " + assignments.join("+"));
         QDialog::accept();
     }else{
         QMessageBox::warning(this, tr("Warning"),
