@@ -20,6 +20,7 @@
 #endif
 
 #include <QFile>
+#include <QTextStream>
 #include <QStringList>
 #include <QMessageBox>
 #include <QDir>
@@ -439,6 +440,20 @@ int Engine::getPlayerCount(const QString &mode) const{
         int index = rx.indexIn(mode);
         if(index != -1)
             return rx.capturedTexts().first().toInt();
+	}else if(mode == "custom"){
+        // custom mode
+        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
+        QFile file("etc/Custom.txt");
+        int i = 0;
+        if(file.open(QIODevice::ReadOnly)){
+            QTextStream stream(&file);
+            while(!stream.atEnd()){
+                if(rx.exactMatch(stream.readLine()))
+                    i ++;
+            }
+            file.close();
+        }
+        return i;
     }else{
         // scenario mode
         const Scenario *scenario = scenarios.value(mode, NULL);
@@ -516,6 +531,33 @@ void Engine::getRoles(const QString &mode, char *roles) const{
             qstrcpy(roles, "ZCCCNFFF");
         else if(n == 6)
             qstrcpy(roles, "ZCCNFF");
+    }else if(mode == "custom"){
+        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
+        QFile file("etc/Custom.txt");
+        char *role = new char[getPlayerCount(mode)];
+        if(file.open(QIODevice::ReadOnly)){
+            int i = 0;
+            QTextStream stream(&file);
+            while(!stream.atEnd()){
+                QString line = stream.readLine();
+                if(!rx.exactMatch(line))
+                    continue;
+                QStringList texts = rx.capturedTexts();
+                QString rolest = texts.at(1);
+                if(rolest == "lord")
+                    strcat(role, "Z");
+                else if(rolest == "loyalist")
+                    strcat(role, "C");
+                else if(rolest == "rebel")
+                    strcat(role, "F");
+                else/* if(rolest == "renegade")*/
+                    strcat(role, "N");
+                i ++;
+            }
+            file.close();
+        }
+        qstrcpy(roles, role);
+        delete role;
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)
