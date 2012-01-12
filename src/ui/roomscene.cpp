@@ -1013,8 +1013,10 @@ void RoomScene::chooseGeneral(const QStringList &generals){
 void RoomScene::putToDiscard(CardItem *item)
 {
     discarded_queue.enqueue(item);
+    qreal z = item->zValue();
     viewDiscards();
     item->goBack(true,false,false);
+    item->setZValue(z);
 }
 
 void RoomScene::viewDiscards(){
@@ -1044,7 +1046,11 @@ void RoomScene::viewDiscards(){
         for(i=0; i< discarded_queue.length(); i++){
             CardItem *card_item = discarded_queue.at(i);
             card_item->setHomePos(QPointF(start + i*width/discarded_queue.length(), y));
-            card_item->goBack();
+            if(qAbs(card_item->y() - card_item->homePos().y())<10)
+            {
+                card_item->setZValue(card_item->zValue()-0.8);
+                card_item->goBack();
+            }
         }
     }else{
         CardOverview *overview = new CardOverview;
@@ -1054,6 +1060,8 @@ void RoomScene::viewDiscards(){
 }
 
 void RoomScene::hideDiscards(){
+
+    if(discarded_queue.size()<3)return;
 
     CardItem* top = NULL;
     if(piled_discards.size())top = piled_discards.last();
@@ -1066,7 +1074,7 @@ void RoomScene::hideDiscards(){
 
     foreach(CardItem *card_item, discarded_queue){
         card_item->setHomePos(DiscardedPos);
-        card_item->setZValue(card_item->zValue()-0.8);
+        if(card_item->zValue()>=0)card_item->setZValue(card_item->zValue()-0.8);
         card_item->goBack();
         piled_discards.enqueue(card_item);
     }
@@ -3169,7 +3177,7 @@ void RoomScene::onGameStart(){
     game_started = true;
     drawPile = new Pixmap("image/system/card-back.png");
     addItem(drawPile);
-    drawPile->setZValue(-1.0);
+    drawPile->setZValue(-2.0);
     drawPile->setPos(DrawPilePos);
     QGraphicsDropShadowEffect *drp = new QGraphicsDropShadowEffect;
     drp->setOffset(6);
