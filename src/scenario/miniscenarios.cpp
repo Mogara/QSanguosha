@@ -159,7 +159,7 @@ public:
                 else continue;
 
                 if(skill->getTriggerEvents().contains(GameStart))
-                    skill->trigger(GameStart, player, v);
+                    skill->trigger(GameStart, sp, v);
             }
 
             if(this->players.at(i)["starter"] != NULL)
@@ -323,8 +323,8 @@ MiniScene_08::MiniScene_08()
     MiniSceneRule *arule = new MiniSceneRule(this);
     arule->addNPC("general:select|general2:liubei|general3:gongsunzan|role:rebel");
     arule->addNPC("general:zhangfei|role:rebel|equip:spear");
-    arule->addNPC("general:chengong|general2:diaochan|maxhp:3|role:loyalist");
-    arule->addNPC("general:lubu|general2:gaoshun|maxhp:5|role:lord|starter:true|equip:halberd,chitu");
+    arule->addNPC("general:chengong|general2:diaochan|maxhp:3|role:loyalist|starter:true");
+    arule->addNPC("general:lubu|general2:gaoshun|maxhp:5|draw:5|role:lord|equip:halberd,chitu");
     arule->addNPC("general:guanyu|role:rebel|equip:blade");
 
     rule =arule;
