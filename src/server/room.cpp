@@ -1190,6 +1190,8 @@ void Room::prepareForStart(){
 
                 ServerPlayer *player_self = findChild<ServerPlayer *>(name);
                 setPlayerProperty(player_self, "role", role);
+                if(role == "lord")
+                    broadcastProperty(player_self, "role", "lord");
 
                 QList<ServerPlayer *> all_players = players;
                 all_players.removeOne(player_self);
@@ -1203,7 +1205,10 @@ void Room::prepareForStart(){
                     QString role = roles.at(i);
 
                     player->setRole(role);
-                    player->sendProperty("role");
+                    if(role == "lord")
+                        broadcastProperty(player, "role", "lord");
+                    else
+                        player->sendProperty("role");
                 }
             }
             else{
