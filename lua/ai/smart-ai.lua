@@ -283,7 +283,7 @@ end
 
 function SmartAI:objectiveLevel(player)
 	if isRolePredictable() then
-		if self.player:getRole() == "renegade" then
+		if self.player:getRole() == "renegade" or player:getRole() == "renegade" then
 			for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 				if not aplayer:isLord() then sgs.ai_explicit[aplayer:objectName()] = aplayer:getRole() end
 				if aplayer:getRole() == "rebel" then sgs.ai_loyalty[aplayer:objectName()] = -160 else sgs.ai_loyalty[aplayer:objectName()] = 160 end
@@ -324,9 +324,7 @@ function SmartAI:objectiveLevel(player)
 			local comp_func = function(a, b)
 				local aname = a:objectName()
 				local bname = b:objectName()
-				if sgs.ai_loyalty[aname] * sgs.ai_loyalty[bname] < 0 then
-					return sgs.ai_loyalty[aname] < 0
-				elseif (sgs.ai_anti_lord[aname] or 0)~=(sgs.ai_anti_lord[bname] or 0) then
+				if (sgs.ai_anti_lord[aname] or 0)~=(sgs.ai_anti_lord[bname] or 0) then
 					return (sgs.ai_anti_lord[aname] or 0) > (sgs.ai_anti_lord[bname] or 0)
 				else
 					return (sgs.ai_renegade_suspect[aname] or 0) > (sgs.ai_renegade_suspect[bname] or 0)

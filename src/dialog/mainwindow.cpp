@@ -652,6 +652,7 @@ MeleeDialog::MeleeDialog(QWidget *parent)
 //    QGroupBox *result_box = createResultBox();
     general_box = createGeneralBox();
     result_box = createResultBox();
+    server_log = new QTextEdit;
     QGraphicsView *record_view = new QGraphicsView;
     record_view->setMinimumWidth(500);
 
@@ -660,6 +661,11 @@ MeleeDialog::MeleeDialog(QWidget *parent)
 
     general_box->setMaximumWidth(250);
     result_box->setMaximumWidth(250);
+    server_log->setMinimumWidth(400);
+    server_log->setReadOnly(true);
+    server_log->setFrameStyle(QFrame::Box);
+    server_log->setProperty("description", true);
+    server_log->setFont(QFont("Verdana", 12));
 
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->addWidget(general_box);
@@ -668,6 +674,7 @@ MeleeDialog::MeleeDialog(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addLayout(vlayout);
     layout->addWidget(record_view);
+    layout->addWidget(server_log);
     setLayout(layout);
 
     setGeneral(Config.value("MeleeGeneral", "zhangliao").toString());
@@ -717,6 +724,7 @@ void MeleeDialog::startTest(){
     Room *room = server->createNewRoom();
     connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
     connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
+    connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
 
     room->startTest(avatar_button->property("to_test").toString());
 }

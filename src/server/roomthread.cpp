@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "ai.h"
+#include "settings.h"
 
 #include <QTime>
 
@@ -388,7 +389,7 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill){
 }
 
 void RoomThread::delay(unsigned long secs){
-    if(room->property("to_test").toString().isEmpty())
+    if(room->property("to_test").toString().isEmpty()&&Config.value("AIDelay",1000).toInt()>0)
         msleep(secs);
 }
 
