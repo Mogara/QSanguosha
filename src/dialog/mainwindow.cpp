@@ -645,7 +645,7 @@ MeleeDialog::MeleeDialog(QWidget *parent)
     renegadeWinCount=0;
     rebelCount=0;
     rebelWinCount=0;
-    test_times=0;
+    room_count=0;
 
     setWindowTitle(tr("AI Melee"));
 
@@ -691,10 +691,9 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     connect(avatar_button, SIGNAL(clicked()), this, SLOT(selectGeneral()));
 
     QFormLayout *form_layout = new QFormLayout;
-    QSpinBox *spinbox = new QSpinBox;
-    spinbox->setRange(1, 2000);
+    spinbox = new QSpinBox;
+    spinbox->setRange(1, 50);
     spinbox->setValue(10);
-    spinbox->setEnabled(false);
 
     start_button = new QPushButton(tr("Start"));
     connect(start_button, SIGNAL(clicked()), this, SLOT(startTest()));
@@ -702,7 +701,7 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     loop_checkbox = new QCheckBox(tr("LOOP"));
     loop_checkbox->setObjectName("loop_checkbox");
 
-    form_layout->addRow(tr("Test times"), spinbox);
+    form_layout->addRow(tr("Num of rooms"), spinbox);
     form_layout->addRow(loop_checkbox, start_button);
     // form_layout->addWidget(start_button);
     // form_layout->addWidget(loop_checkbox);
@@ -714,19 +713,6 @@ QGroupBox *MeleeDialog::createGeneralBox(){
     box->setLayout(layout);
 
     return box;
-}
-
-void MeleeDialog::startTest(){
-    server = new Server(this);
-    server->listen();
-
-    Config.AIDelay = 0;
-    Room *room = server->createNewRoom();
-    connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
-    connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
-    connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
-
-    room->startTest(avatar_button->property("to_test").toString());
 }
 
 class RoomItem: public Pixmap{
@@ -771,12 +757,38 @@ public:
 typedef RoomItem *RoomItemStar;
 Q_DECLARE_METATYPE(RoomItemStar);
 
+void MeleeDialog::startTest(){
+    foreach(RoomItemStar room_item, room_items){
+        if(room_item) delete room_item;
+    }
+    room_items.clear();
+
+    if(server){
+        server->gamesOver();
+    }else{
+        server = new Server(this);
+        server->listen();
+    }
+    Config.AIDelay = 0;
+    room_count = spinbox->value();
+    for(int i=0;i<room_count;i++){
+        Room *room = server->createNewRoom();
+        connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
+        connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
+        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
+
+        room->startTest(avatar_button->property("to_test").toString());
+    }
+}
+
 void MeleeDialog::onGameStart(){
+    if(room_count>10) return;
     Room *room = qobject_cast<Room *>(sender());
 
     RoomItemStar room_item = new RoomItem(room);
     room->setTag("RoomItem", QVariant::fromValue(room_item));
 
+    room_items << room_item;
     record_scene->addItem(room_item);
 }
 
@@ -798,11 +810,11 @@ void MeleeDialog::onGameOver(const QString &winner){
         if(p->getGeneralName() == to_test){
 
             if(won){
-                room_item->changePixmap("image/system/frog/good.png");
+                if(room_item) room_item->changePixmap("image/system/frog/good.png");
                 updateResultBox(p->getRole(),1);
             }
             else{
-                room_item->changePixmap("image/system/frog/bad.png");
+                if(room_item) room_item->changePixmap("image/system/frog/bad.png");
                 updateResultBox(p->getRole(),0);
             }
         }
@@ -813,11 +825,18 @@ void MeleeDialog::onGameOver(const QString &winner){
                       .arg(losers.join(","))
                       .arg(room->getTag("SwapPile").toInt());
 
-    room_item->setToolTip(tooltip);
+    if(room_item) room_item->setToolTip(tooltip);
     if(loop_checkbox->isChecked()){
-        delete server;
-        delete room_item;
-        startTest();
+        if(room_item){
+            room_items.removeOne(room_item);
+            delete room_item;
+        }
+        Room *room = server->createNewRoom();
+        connect(room, SIGNAL(game_start()), this, SLOT(onGameStart()));
+        connect(room, SIGNAL(game_over(QString)), this, SLOT(onGameOver(QString)));
+        connect(server, SIGNAL(server_message(QString)), server_log,SLOT(append(QString)));
+
+        room->startTest(avatar_button->property("to_test").toString());
     }
 }
 

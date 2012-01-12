@@ -1792,7 +1792,7 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="220"/>
-        <location filename="src/dialog/mainwindow.cpp" line="873"/>
+        <location filename="src/dialog/mainwindow.cpp" line="909"/>
         <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
         <translation>纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
     </message>
@@ -1871,17 +1871,17 @@
         <translation>此功能尚未实现!</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="871"/>
+        <location filename="src/dialog/mainwindow.cpp" line="907"/>
         <source>Please select a replay file</source>
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="904"/>
+        <location filename="src/dialog/mainwindow.cpp" line="940"/>
         <source>Send low level command</source>
         <translation>发送底层命令</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="904"/>
+        <location filename="src/dialog/mainwindow.cpp" line="940"/>
         <source>Please input the raw low level command</source>
         <translation>请输入要发送的底层命令</translation>
     </message>
@@ -1971,62 +1971,62 @@
 <context>
     <name>MeleeDialog</name>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="649"/>
+        <location filename="src/dialog/mainwindow.cpp" line="650"/>
         <source>AI Melee</source>
         <translation>AI 混战</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="677"/>
+        <location filename="src/dialog/mainwindow.cpp" line="685"/>
         <source>General</source>
         <translation>武将</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="691"/>
+        <location filename="src/dialog/mainwindow.cpp" line="698"/>
         <source>Start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="694"/>
+        <location filename="src/dialog/mainwindow.cpp" line="701"/>
         <source>LOOP</source>
         <translation>循环</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="697"/>
-        <source>Test times</source>
-        <translation>测试次数</translation>
+        <location filename="src/dialog/mainwindow.cpp" line="704"/>
+        <source>Num of rooms</source>
+        <translation>房间数目</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="799"/>
+        <location filename="src/dialog/mainwindow.cpp" line="823"/>
         <source>Winner(s): %1 &lt;br/&gt; Losers: %2 &lt;br /&gt; Shuffle times: %3</source>
         <translation>获胜者: %1 &lt;br/&gt; 失败者: %2 &lt;br /&gt; 洗牌次数: %3</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="808"/>
+        <location filename="src/dialog/mainwindow.cpp" line="844"/>
         <source>Winning result</source>
         <translation>胜率</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="830"/>
+        <location filename="src/dialog/mainwindow.cpp" line="866"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="831"/>
+        <location filename="src/dialog/mainwindow.cpp" line="867"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="832"/>
+        <location filename="src/dialog/mainwindow.cpp" line="868"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="833"/>
+        <location filename="src/dialog/mainwindow.cpp" line="869"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="834"/>
+        <location filename="src/dialog/mainwindow.cpp" line="870"/>
         <source>Total</source>
         <translation>总计</translation>
     </message>
