@@ -1,0 +1,4 @@
+general:select  role:lord  starter:true
+    general:xiahoudun  role:rebel
+    general:fazheng  general2:caiwenji  role:loyalist
+    general:simayi  general2:xunyu  maxhp:3  role:rebel

@@ -1,0 +1,7 @@
+general:select role:renegade maxhp:3 equip:silver_lion draw:0  hand:135,136  starter:true  singleTurn:Lord+Loyalist
+
+general:zhangjiao  role:lord    maxhp:4    hp:2    equip:eight_diagram    draw:0    hand:83,44
+
+    general:luxun    role:loyalist    maxhp:3    hp:2    equip:vine    draw:0    hand:52
+	
+	setPile:62,31,101,131,90,2,31,18,103

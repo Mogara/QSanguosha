@@ -1,0 +1,3 @@
+general:select  general2:select  role:renegade
+    general:liushan  general2:weiyan  maxhp:3  role:lord  starter:true
+    general:menghuo  general2:zhurong  maxhp:5  role:rebel

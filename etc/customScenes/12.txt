@@ -1,0 +1,4 @@
+general:select  role:rebel  starter:true
+    general:xusheng  role:rebel
+    general:caopi  maxhp:4  role:lord
+    general:caoren  general2:caozhi  role:loyalist

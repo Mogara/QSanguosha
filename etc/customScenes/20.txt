@@ -1,0 +1,7 @@
+general:select general2:select role:loyalist hp:1 draw:0 hand:86,103 starter:true beforeNext:Rebel
+	
+general:zhangjiao general2:chengong role:rebel maxhp:3 equip:eight_diagram,blade draw:0 hand:143,134,97,37
+	
+general:caocao role:lord maxhp:5 hp:2 equip:vine,guding_blade draw:0
+	
+	setPile:96,51,110,32,126,120

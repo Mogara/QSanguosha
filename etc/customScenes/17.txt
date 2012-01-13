@@ -1,0 +1,4 @@
+general:select  general2:wuxingzhuge  general3:wolong  hpadj:1  role:lord  starter:true
+general:simayi  general2:guojia  role:rebel  hand:103
+general:zhangjiao  role:rebel  equip:eight_diagram
+general:jiangwei  role:loyalist  equip:silver_lion
