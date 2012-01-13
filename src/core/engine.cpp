@@ -58,6 +58,7 @@ extern "C" {
     Scenario *NewCoupleScenario();
     Scenario *NewZombieScenario();
     Scenario *NewImpasseScenario();
+    Scenario *NewCustomScenario();
 
     Scenario *NewMiniScene_01();
     Scenario *NewMiniScene_02();
@@ -117,6 +118,7 @@ Engine::Engine()
     addScenario(NewCoupleScenario());
     addScenario(NewZombieScenario());
     addScenario(NewImpasseScenario());
+    addScenario(NewCustomScenario());
 
     addScenario(NewMiniScene_01());
     addScenario(NewMiniScene_02());
@@ -485,7 +487,7 @@ int Engine::getPlayerCount(const QString &mode) const{
         int index = rx.indexIn(mode);
         if(index != -1)
             return rx.capturedTexts().first().toInt();
-	}else if(mode == "custom"){
+    }else if(mode == "custom"){
         // custom mode
         QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
         QFile file("etc/Custom.txt");
