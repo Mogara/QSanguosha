@@ -6,12 +6,19 @@ sgs.ai_skill_invoke.jushou = true
 
 --leiji
 sgs.ai_skill_use["@@leiji"]=function(self,prompt)
+
+	if sgs.GetConfig("GameMode", "") == "_mini_19" then 
+		local players = self.room:getAllPlayers();
+		for _,aplayer in sgs.qlist(players) do
+			if aplayer:getState() ~= "robot" then
+				return "@LeijiCard=.->"..aplayer:objectName()
+			end
+		end
+	end
+
 	self:updatePlayers()
 	self:sort(self.enemies,"hp")
 	for _,enemy in ipairs(self.enemies) do
-		if sgs.GetConfig("GameMode", "") == "_mini_19" then 
-			return "@LeijiCard=.->"..enemy:objectName()
-		end
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
 			self:objectiveLevel(enemy) > 3 then
 			return "@LeijiCard=.->"..enemy:objectName()
