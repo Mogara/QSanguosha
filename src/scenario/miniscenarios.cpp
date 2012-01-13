@@ -599,7 +599,7 @@ MiniScene_20::MiniScene_20()
     player.append("general2:chengong");
     player.append("role:rebel");
     player.append("maxhp:3");
-    player.append("equip:eight_diagram,guding_blade");
+    player.append("equip:eight_diagram,blade");
     player.append("draw:0");
     player.append("hand:143,134,97,37");
 
@@ -610,12 +610,12 @@ MiniScene_20::MiniScene_20()
     player.append("role:lord");
     player.append("maxhp:5");
     player.append("hp:2");
-    player.append("equip:vine");
+    player.append("equip:vine,guding_blade");
     player.append("draw:0");
 
     arule->addNPC(player.join("|"));
 
-    arule->setPile("96,51,110,32,111,120");
+    arule->setPile("96,51,110,32,126,120");
 
     rule =arule;
 }
