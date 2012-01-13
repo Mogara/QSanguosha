@@ -6,130 +6,180 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>752</width>
-    <height>561</height>
+    <width>771</width>
+    <height>564</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Card Overvew</string>
   </property>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>491</width>
-     <height>521</height>
-    </rect>
-   </property>
-   <property name="editTriggers">
-    <set>QAbstractItemView::NoEditTriggers</set>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::SingleSelection</enum>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-   <property name="sortingEnabled">
-    <bool>true</bool>
-   </property>
-   <column>
-    <property name="text">
-     <string>Name</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Suit</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Point</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Type</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Subtype</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Package</string>
-    </property>
-   </column>
-  </widget>
-  <widget class="QTextEdit" name="cardDescriptionBox">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>320</y>
-     <width>211</width>
-     <height>141</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="cardLabel">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>10</y>
-     <width>211</width>
-     <height>301</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="getCardButton">
-   <property name="geometry">
-    <rect>
-     <x>600</x>
-     <y>510</y>
-     <width>131</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Get this card</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="malePlayButton">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>470</y>
-     <width>91</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Play (male)</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="femalePlayButton">
-   <property name="geometry">
-    <rect>
-     <x>634</x>
-     <y>470</y>
-     <width>91</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Play (female)</string>
-   </property>
-  </widget>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="maximumSize">
+      <size>
+       <width>491</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text">
+       <string>Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Suit</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Point</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Subtype</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Package</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="">
+     <property name="maximumSize">
+      <size>
+       <width>221</width>
+       <height>521</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="cardLabel">
+          <property name="minimumSize">
+           <size>
+            <width>211</width>
+            <height>301</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>217</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="cardDescriptionBox">
+          <property name="maximumSize">
+           <size>
+            <width>217</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="malePlayButton">
+            <property name="minimumSize">
+             <size>
+              <width>101</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>105</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Play (male)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="femalePlayButton">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>104</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Play (female)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="getCardButton">
+          <property name="minimumSize">
+           <size>
+            <width>209</width>
+            <height>23</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>217</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Get this card</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
