@@ -3,6 +3,8 @@
 #include "engine.h"
 #include "room.h"
 
+#include <QFile>
+
 class MiniSceneRule : public ScenarioRule
 {
 public:
@@ -219,10 +221,14 @@ public:
     void addNPC(QString feature)
     {
         QMap<QString, QString> player;
-        QStringList features = feature.split("|");
+        QStringList features;
+        if(feature.contains("|"))features= feature.split("|");
+        else features = feature.split(" ");
         foreach(QString str, features)
         {
             QStringList keys = str.split(":");
+            if(keys.size()<2)continue;
+            if(keys.first().size()<1)continue;
             player.insert(keys.at(0),keys.at(1));
         }
 
@@ -234,11 +240,52 @@ public:
         setup = cardList;
     }
 
+    void loadSetting(QString path)
+    {
+        QFile file(path);
+        if(file.open(QIODevice::ReadOnly)){
+            QTextStream stream(&file);
+            while(!stream.atEnd()){
+                QString aline = stream.readLine();
+                if(aline.startsWith("setPile"))
+                    setPile(aline.split(":").at(1));
+                else
+                    addNPC(aline);
+            }
+            file.close();
+        }
+    }
+
 private:
     QList< QMap<QString, QString> > players;
     QString setup;
 };
 
+void MiniScene::setupCustom(QString name)
+{
+    if(name == NULL)name = "custom_scenario";
+    name.prepend("etc/");
+    name.append(".txt");
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    arule->loadSetting(name);
+
+    QStringList generals,roles;
+    arule->assign(generals,roles);
+    for(int i=0;i<generals.length();i++)
+    {
+        if(roles.at(i) == "lord")
+            lord =generals.at(i);
+        else if(roles.at(i) == "loyalist")
+            loyalists << generals.at(i);
+        else if(roles.at(i) == "rebel")
+            rebels << generals.at(i);
+        else if(roles.at(i) == "renegade")
+            renegades << generals.at(i);
+    }
+
+    rule =arule;
+}
 
 MiniScene_01::MiniScene_01()
     :MiniScene("_mini_01")
@@ -647,3 +694,5 @@ ADD_MINISCENARIO(17);
 ADD_MINISCENARIO(18);
 ADD_MINISCENARIO(19);
 ADD_MINISCENARIO(20);
+
+ADD_SCENARIO(Custom);

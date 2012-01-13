@@ -10,7 +10,19 @@ class MiniScene : public Scenario
 public:
     MiniScene(const QString &name)
         :Scenario(name){};
+    void setupCustom(QString name);
     virtual void onTagSet(Room *room, const QString &key) const;
+};
+
+class CustomScenario : public MiniScene
+{
+    Q_OBJECT
+public:
+    CustomScenario()
+        :MiniScene("custom_scenario")
+    {
+        setupCustom(NULL);
+    }
 };
 
 class MiniScene_01 : public MiniScene
