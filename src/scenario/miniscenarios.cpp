@@ -46,7 +46,15 @@ public:
 
         if(event == PhaseChange)
         {
-             if(player->getPhase() != Player::NotActive)return false;
+            if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
+                    &&player->getState() != "robot")
+            {
+                if(room->getTag("playerHasPlayed").toBool())
+                room->gameOver(this->players.first()["beforeNext"]);
+                else room->setTag("playerHasPlayed",true);
+            }
+
+            if(player->getPhase() != Player::NotActive)return false;
             if(player->getState() == "robot" || this->players.first()["singleTurn"] == NULL)
                 return false;
             room->gameOver(this->players.first()["SingleTurn"]);
@@ -566,6 +574,52 @@ AI::Relation MiniScene_19::relationTo(const ServerPlayer *a, const ServerPlayer 
     return AI::GetRelation(a, b);
 }
 
+MiniScene_20::MiniScene_20()
+    :MiniScene("_mini_20")
+{
+    lord = "caocao";
+    loyalists << "sujiang";
+    rebels << "zhangjiao";
+
+    MiniSceneRule *arule = new MiniSceneRule(this);
+    QStringList player;
+    player.append("general:select");
+    player.append("general2:select");
+    player.append("role:loyalist");
+    player.append("hp:1");
+    player.append("draw:0");
+    player.append("hand:86,103");
+    player.append("starter:true");
+    player.append("beforeNext:Rebel");
+
+    arule->addNPC(player.join("|"));
+
+    player.clear();
+    player.append("general:zhangjiao");
+    player.append("general2:chengong");
+    player.append("role:rebel");
+    player.append("maxhp:3");
+    player.append("equip:eight_diagram,guding_blade");
+    player.append("draw:0");
+    player.append("hand:143,134,97,37");
+
+    arule->addNPC(player.join("|"));
+
+    player.clear();
+    player.append("general:caocao");
+    player.append("role:lord");
+    player.append("maxhp:5");
+    player.append("hp:2");
+    player.append("equip:vine");
+    player.append("draw:0");
+
+    arule->addNPC(player.join("|"));
+
+    arule->setPile("96,51,110,32,111,120");
+
+    rule =arule;
+}
+
 void MiniScene::onTagSet(Room *room, const QString &key) const
 {
 
@@ -592,3 +646,4 @@ ADD_MINISCENARIO(16);
 ADD_MINISCENARIO(17);
 ADD_MINISCENARIO(18);
 ADD_MINISCENARIO(19);
+ADD_MINISCENARIO(20);

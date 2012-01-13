@@ -78,6 +78,7 @@ extern "C" {
     Scenario *NewMiniScene_17();
     Scenario *NewMiniScene_18();
     Scenario *NewMiniScene_19();
+    Scenario *NewMiniScene_20();
 }
 
 extern "C" {
@@ -136,6 +137,7 @@ Engine::Engine()
     addScenario(NewMiniScene_17());
     addScenario(NewMiniScene_18());
     addScenario(NewMiniScene_19());
+    addScenario(NewMiniScene_20());
 
     // available game modes
     modes["02p"] = tr("2 players");

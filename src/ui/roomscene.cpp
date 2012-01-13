@@ -2439,7 +2439,7 @@ void RoomScene::onGameOver(){
         id.replace("_mini_","");
         int stage = Config.value("MiniSceneStage",1).toInt();
         int current = id.toInt();
-        if((stage == current) && stage<19)
+        if((stage == current) && stage<20)
             Config.setValue("MiniSceneStage",current+1);
     }
 

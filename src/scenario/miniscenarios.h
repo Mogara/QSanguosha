@@ -166,4 +166,12 @@ public:
     AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
 };
 
+class MiniScene_20 : public MiniScene
+{
+    Q_OBJECT
+
+public:
+    MiniScene_20();
+};
+
 #endif // MINISCENARIOS_H
