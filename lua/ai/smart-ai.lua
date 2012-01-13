@@ -1225,6 +1225,7 @@ function SmartAI:slashProhibit(card,enemy)
 end
 local function hasExplicitRebel(room)
 	for _, player in sgs.qlist(room:getAllPlayers()) do
+		if isRolePredictable() and player:getRole() == "rebel" then return true end
 		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
 	end
 	return false
@@ -1277,7 +1278,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
 			if not slash_prohibit then
-				if ((self.player:canSlash(enemy, not no_distance)) or
+				if (self.player:canSlash(enemy, not no_distance) or
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy) <= self.predictedRange))) and
 				self:objectiveLevel(enemy) > 3 and
 				self:slashIsEffective(card, enemy) and

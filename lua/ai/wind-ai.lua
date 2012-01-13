@@ -13,7 +13,7 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 			return "@LeijiCard=.->"..enemy:objectName()
 		end
 		if not self:isEquip("SilverLion", enemy) and not enemy:hasSkill("hongyan") and
-			((sgs.ai_anti_lord[enemy:objectName()] or 0)>0 or not self.player:isLord()) then
+			self:objectiveLevel(enemy) > 3 then
 			return "@LeijiCard=.->"..enemy:objectName()
 		end
 	end
