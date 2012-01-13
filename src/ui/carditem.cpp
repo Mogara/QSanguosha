@@ -79,11 +79,11 @@ QPointF CardItem::homePos() const{
     return home_pos;
 }
 
-void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
+QAbstractAnimation* CardItem::goBack(bool kieru,bool fadein,bool fadeout){
     if(home_pos == pos()){
         if(kieru && home_pos != QPointF(-6, 8))
             setOpacity(0.0);
-        return;
+        return NULL;
     }
 
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
@@ -108,10 +108,7 @@ void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
         int length = sqrt(dx*dx+dy*dy);
 
 
-        if(length*3>500)disappear->setStartValue(0.0);
-        else length = 500/3;
-
-        if(length*3>1200)length =400;
+        length = qBound(500/3,length,400);
 
         goback->setDuration(length*3);
         disappear->setDuration(length*3);
@@ -123,10 +120,12 @@ void CardItem::goBack(bool kieru,bool fadein,bool fadeout){
         setEnabled(false);
 
         group->start(QParallelAnimationGroup::DeleteWhenStopped);
+        return group;
     }else
     {
         setOpacity(this->isEnabled() ? 1.0 : 0.7);
         goback->start(QPropertyAnimation::DeleteWhenStopped);
+        return goback;
     }
 }
 
@@ -213,6 +212,16 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id){
     }
 
     return NULL;
+}
+
+void CardItem::reduceZ()
+{
+    if(this->zValue()>0)this->setZValue(this->zValue()-0.8);
+}
+
+void CardItem::promoteZ()
+{
+    if(this->zValue()<0)this->setZValue(this->zValue()+0.8);
 }
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){

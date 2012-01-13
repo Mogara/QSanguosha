@@ -1013,10 +1013,15 @@ void RoomScene::chooseGeneral(const QStringList &generals){
 void RoomScene::putToDiscard(CardItem *item)
 {
     discarded_queue.enqueue(item);
-    qreal z = item->zValue();
     viewDiscards();
-    item->goBack(true,false,false);
-    item->setZValue(z);
+    QAbstractAnimation* gb = item->goBack(true,false,false);
+
+    int dx = item->homePos().x()-item->pos().x();
+    int dy = item->homePos().y()-item->pos().y();
+    int length = sqrt(dx*dx+dy*dy);
+    length =qBound(500,length,1200);
+
+    if(gb)connect(gb,SIGNAL(finished()),item,SLOT(reduceZ()));
 }
 
 void RoomScene::viewDiscards(){
@@ -1032,6 +1037,7 @@ void RoomScene::viewDiscards(){
         width -= photos.first()->boundingRect().width() + 50;
         mid   += 93;
         width = qMin(width,discarded_queue.length()*93);
+        width = qMax(width, 200);
 
         int start = (mid - width)/2;
         int y     = DiscardedPos.y() - 140;
@@ -1045,12 +1051,14 @@ void RoomScene::viewDiscards(){
         int i;
         for(i=0; i< discarded_queue.length(); i++){
             CardItem *card_item = discarded_queue.at(i);
+            card_item->setEnabled(true);
             card_item->setHomePos(QPointF(start + i*width/discarded_queue.length(), y));
-            if(qAbs(card_item->y() - card_item->homePos().y())<10)
-            {
-                card_item->setZValue(card_item->zValue()-0.8);
-                card_item->goBack();
-            }
+            QAbstractAnimation* gb;
+            if(card_item->zValue()>0)
+                gb =card_item->goBack(true,false,false);
+            else gb =card_item->goBack();
+
+            if(gb)connect(gb,SIGNAL(finished()),card_item,SLOT(reduceZ()));
         }
     }else{
         CardOverview *overview = new CardOverview;
@@ -1154,6 +1162,7 @@ CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, in
 
     card_item->disconnect(this);
 
+    card_item->promoteZ();
     return card_item;
 }
 
@@ -1215,7 +1224,8 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
     if(card_item == NULL)
         return;
 
-    card_item->setOpacity(1.0);
+    if(src)
+        card_item->setOpacity(src == Self ? 1.0 : 0.0);
 
     if(card_item->scene() == NULL)
         addItem(card_item);

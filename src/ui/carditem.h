@@ -3,6 +3,7 @@
 
 #include "card.h"
 #include "pixmap.h"
+#include "QAbstractAnimation"
 
 #include <QSize>
 
@@ -23,7 +24,7 @@ public:
     const Card *getCard() const;
     void setHomePos(QPointF home_pos);
     QPointF homePos() const;
-    void goBack(bool kieru = false,bool fadein = true,bool fadeout = true);
+    QAbstractAnimation* goBack(bool kieru = false,bool fadein = true,bool fadeout = true);
     const QPixmap &getSuitPixmap() const;
     const QPixmap &getNumberPixmap() const;
     const QPixmap &getIconPixmap() const;
@@ -44,6 +45,9 @@ public:
     static const int PendingY = NormalY - 40;
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
+public slots:
+    void reduceZ();
+    void promoteZ();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
