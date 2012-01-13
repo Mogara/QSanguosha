@@ -1225,6 +1225,7 @@ function SmartAI:slashProhibit(card,enemy)
 end
 local function hasExplicitRebel(room)
 	for _, player in sgs.qlist(room:getAllPlayers()) do
+		if isRolePredictable() and player:getRole() == "rebel" then return true end
 		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
 	end
 	return false
@@ -1277,7 +1278,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card,enemy)
 			if not slash_prohibit then
-				if ((self.player:canSlash(enemy, not no_distance)) or
+				if (self.player:canSlash(enemy, not no_distance) or
 				(use.isDummy and self.predictedRange and (self.player:distanceTo(enemy) <= self.predictedRange))) and
 				self:objectiveLevel(enemy) > 3 and
 				self:slashIsEffective(card, enemy) and
@@ -1841,6 +1842,7 @@ function SmartAI:useCardCollateral(card, use)
 end
 
 function SmartAI:useCardIronChain(card, use)
+	use.card = card
 	if #self.enemies == 1 and #(self:getChainedFriends()) <= 1 then return end
 	local targets = {}
 	self:sort(self.friends,"defense")
@@ -1857,8 +1859,6 @@ function SmartAI:useCardIronChain(card, use)
 			table.insert(targets, enemy)
 		end
 	end
-
-	use.card = card
 
 	if targets[2] and not self.player:hasSkill("wuyan") then
 		if use.to then use.to:append(targets[1]) end
@@ -2941,7 +2941,7 @@ end
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
 	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
-	if pattern == ".H" or pattern == "..H" and self.player:hasSkill("hongyan") then return "." end
+	if (pattern == ".H" or pattern == "..H") and self.player:hasSkill("hongyan") then return "." end
 
 	local target, target2
 	if not prompt then return end

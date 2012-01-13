@@ -295,7 +295,7 @@ sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	if prompt == "draw2play" then
 		return handcard >= max_card and #(self:getTurnUse())>0
 	elseif prompt == "play2draw" then
-		return handcard < max_card
+		return handcard < max_card or #(self:getTurnUse()) == 0
 	end
 end
 
