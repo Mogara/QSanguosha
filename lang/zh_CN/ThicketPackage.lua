@@ -103,7 +103,8 @@ return {
 	["$fangzhu1"] = "罪不至死，赦死从流",
 	["$fangzhu2"] = "特赦天下，奉旨回京",
 	["$fangzhu3"] = "本自同根生，相煎何太急？",
-	["$songwei1"] = "吾主英明",
+	["$songwei1"] = "吾主英明(男声)",
+	["$songwei2"] = "吾主英明(女声)",
 
 	["$duanliang1"] = "断汝粮草,以绝后路",
 	["$duanliang2"] = "焚其辎重,乱其军心",
@@ -124,7 +125,7 @@ return {
 	["@chaos"] = "乱武",
 
 	-- CV
-	["cv:caopi"] = "迷宫, 殆尘, 烨子",
+	["cv:caopi"] = "迷宫，殆尘，烨子，蒲小猫",
 	["cv:xuhuang"] = "",
 	["cv:menghuo"] = "墨染の飞猫",
 	["cv:zhurong"] = "妙妙",

@@ -123,7 +123,10 @@ public:
             foreach(ServerPlayer *p, players){
                 QVariant who = QVariant::fromValue(p);
                 if(p->hasLordSkill("songwei") && player->askForSkillInvoke("songwei", who)){
-                    room->playSkillEffect(objectName(), 1);
+                    if(player->getGeneral()->isMale())
+                        room->playSkillEffect(objectName(), 1);
+                    else
+                        room->playSkillEffect(objectName(), 2);
                     p->drawCards(1);
                 }
             }
