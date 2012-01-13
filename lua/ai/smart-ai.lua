@@ -1841,6 +1841,7 @@ function SmartAI:useCardCollateral(card, use)
 end
 
 function SmartAI:useCardIronChain(card, use)
+	use.card = card
 	if #self.enemies == 1 and #(self:getChainedFriends()) <= 1 then return end
 	local targets = {}
 	self:sort(self.friends,"defense")
@@ -1857,8 +1858,6 @@ function SmartAI:useCardIronChain(card, use)
 			table.insert(targets, enemy)
 		end
 	end
-
-	use.card = card
 
 	if targets[2] and not self.player:hasSkill("wuyan") then
 		if use.to then use.to:append(targets[1]) end
