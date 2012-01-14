@@ -454,7 +454,7 @@ function SmartAI:objectiveLevel(player)
 			return 5
 		end
 		local ambig_num, loyal_value, rebel_value = getGameProcessValues(self, players)
-		if ambig_num > renegade_num then return 1 end
+		if ambig_num > renegade_num then return -1 end
 		if (math.abs(loyal_value-rebel_value) < sgs.ai_renegade_threshold and loyal_value > 8) or (self:isWeak() and #self.enemies > 1) then return 0 end
 		if loyal_value <= rebel_value then
 			if sgs.ai_loyalty[player:objectName()] < 0 then return 5
