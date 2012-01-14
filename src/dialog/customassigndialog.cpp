@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QRadioButton>
 #include <QPixmap>
+#include <QIcon>
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent), choose_general2(false)
@@ -55,6 +56,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     QPushButton *generalButton = new QPushButton(tr("ChooseGeneral"));
     QPushButton *generalButton2 = new QPushButton(tr("ChooseGeneral2"));
+    QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
+    QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
@@ -65,6 +68,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(generalButton);
     vlayout->addWidget(general_label2);
     vlayout->addWidget(generalButton2);
+    vlayout->addWidget(equipAssign);
+    vlayout->addWidget(handcardAssign);
     vlayout->addStretch();
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
@@ -82,8 +87,36 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
     connect(generalButton, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
     connect(generalButton2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
+    connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
+    connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+void CustomAssignDialog::doEquipCardAssign(){
+    CardAssignDialog *dialog = new CardAssignDialog(this, "equip");
+
+    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getEquipCard(int)));
+    dialog->exec();
+}
+
+void CustomAssignDialog::getEquipCard(int card_id){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_equips[name] << card_id;
+}
+
+void CustomAssignDialog::doHandCardAssign(){
+    CardAssignDialog *dialog = new CardAssignDialog(this);
+
+    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getHandCard(int)));
+    dialog->exec();
+}
+
+void CustomAssignDialog::getHandCard(int card_id){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_handcards[name] << card_id;
 }
 
 void CustomAssignDialog::updateNumber(int num){
@@ -169,6 +202,12 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     else
         general_label2->setPixmap(QPixmap("null"));
 }
+
+void CustomAssignDialog::setCardGotId(int card_id){
+    temp_card_id = card_id;
+}
+
+//extern CustomAssignDialog *CustomInstance;
 
 //---------------------------------------
 
@@ -258,29 +297,77 @@ QWidget *GeneralAssignDialog::createTab(const QList<const General *> &generals){
     return tab;
 }
 
-void GeneralAssignDialog::uncheckExtraButton(QAbstractButton *click_button){
-    QAbstractButton *first = NULL;
-    QList<QAbstractButton *> buttons = group->buttons();
-    foreach(QAbstractButton *button, buttons){
-        if(!button->isChecked())
-            continue;
-
-        if(button == click_button)
-            continue;
-
-        if(first == NULL)
-            first = button;
-        else{
-            first->setChecked(false);
-            break;
-        }
-    }
-}
-
 void GeneralAssignDialog::chooseGeneral(){
     QAbstractButton *button = group->checkedButton();
     if(button){
         emit general_chosen(button->objectName());
     }
+    this->hide();
+}
+
+//------------------------------
+
+CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name) :
+    QDialog(parent)
+{
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    card_list = new QListWidget;
+
+    int i, n = Sanguosha->getCardCount();
+    QList<const Card *> reasonable_cards;
+    if(!card_type.isEmpty() || !class_name.isEmpty()){
+        for(i=0; i<n ;i++){
+            const Card *card = Sanguosha->getCard(i);
+            if(card->getType() == card_type || card->inherits(class_name.toStdString().c_str()))
+                reasonable_cards << card;
+        }
+    }
+    else{
+        for(i=0; i<n ;i++){
+            const Card *card = Sanguosha->getCard(i);
+            reasonable_cards << card;
+        }
+    }
+
+    for(i = 0; i < reasonable_cards.length(); i++)
+        addCard(reasonable_cards.at(i));
+
+    if(n>0)
+        card_list->setCurrentRow(0);
+
+    QPushButton *getCardButton = new QPushButton(tr("Get card"));
+    QPushButton *back = new QPushButton(tr("Back"));
+
+    vlayout->addWidget(getCardButton);
+    vlayout->addWidget(back);
+
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(card_list);
+    layout->addLayout(vlayout);
+    QVBoxLayout *mainlayout = new QVBoxLayout();
+    mainlayout->addLayout(layout);
+    setLayout(mainlayout);
+
+    connect(back, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
+}
+
+void CardAssignDialog::addCard(const Card *card){
+    QString name = Sanguosha->translate(card->objectName());
+    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+    QString point = card->getNumberString();
+
+    QString card_info = point + "  " + name;
+    QListWidgetItem *name_item = new QListWidgetItem(card_info, card_list);
+    name_item->setIcon(suit_icon);
+    name_item->setData(Qt::UserRole, card->getId());
+}
+
+void CardAssignDialog::askCard(){
+    QListWidgetItem *card_item = card_list->currentItem();
+    int card_id = card_item->data(Qt::UserRole).toInt();
+   // CustomInstance->setCardGotId(card_id);
+    emit card_chosen(card_id);
     this->hide();
 }
