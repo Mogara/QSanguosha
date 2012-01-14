@@ -105,6 +105,7 @@ return {
 	["#LoseHp"] = "%from 流失了 %arg 点体力",
 	["#ChangeKingdom"] = "%from 把 %to 的国籍由原来的 %arg 改成了 %arg2",
 	["@askforslash"] = "你可以对你攻击范围内的一名角色使用一张【杀】",
+	["#AnalepticBuff"] = "%from 喝了【酒】，对 %to 造成的杀伤害 +1",
 
 	["3v3:cw"] = "顺时针",
 	["3v3:ccw"] = "逆时针",

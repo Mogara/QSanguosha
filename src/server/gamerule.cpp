@@ -398,8 +398,15 @@ bool GameRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &data)
             damage.card = effect.slash;
 
             damage.damage = 1;
-            if(effect.drank)
+            if(effect.drank){
+                LogMessage log;
+                log.type = "#AnalepticBuff";
+                log.from = effect.from;
+                log.to << effect.to;
+                room->sendLog(log);
+
                 damage.damage ++;
+            }
 
             if(effect.to->hasSkill("jueqing") || effect.to->getGeneralName() == "zhangchunhua")
                 damage.damage ++;
