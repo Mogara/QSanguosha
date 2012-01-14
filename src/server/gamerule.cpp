@@ -667,6 +667,7 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     setObjectName("hulaopass_mode");
 
     events << HpChanged;
+    default_choice = "recover";
 }
 
 static int Transfiguration = 1;
@@ -702,6 +703,7 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     case CardUsed:{
             CardUseStruct use = data.value<CardUseStruct>();
             if(use.card->inherits("Weapon") && player->askForSkillInvoke("weapon_recast", data)){
+                room->playCardEffect("@recast", player->getGeneral()->isMale());
                 room->throwCard(use.card);
                 player->drawCards(1, false);
                 return false;
@@ -759,6 +761,10 @@ bool HulaoPassMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                         room->revivePlayer(player);
                     }else if(player->isWounded()){
                         if(player->getHp() > 0 && (room->askForChoice(player, "Hulaopass", "recover+draw") == "draw")){
+                            LogMessage log;
+                            log.type = "#ReformingDraw";
+                            log.from = player;
+                            room->sendLog(log);
                             player->drawCards(1, false);
                             return false;
                         }

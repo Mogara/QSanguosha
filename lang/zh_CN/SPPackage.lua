@@ -86,9 +86,12 @@ return {
 
 	["#Reforming"] = "%from 进入重整状态",
 	["#ReformingRecover"] = "%from 在重整状态中回复了1点体力",
+	["#ReformingDraw"] = "%from 在重整状态中摸了1张牌",
 	["#ReformingRevive"] = "%from 从重整状态中复活!",
 	["draw_1v3"] = "重整摸牌",
 	["weapon_recast"] = "武器重铸",
+	["Hulaopass:recover"] = "恢复1点体力",
+	["Hulaopass:draw"] = "摸1张牌",
 	
 --sp_card
 	["sp_cards"] = "SP卡牌包",
