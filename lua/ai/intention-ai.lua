@@ -299,6 +299,14 @@ function SmartAI:refreshLoyalty(player,intention)
 	if player:isLord() or self ~= sgs.recorder then return end
 	local name=player:objectName()
 
+	if isRolePredictable() then
+		if player:getRole() == "loyalist" and intention > 0 then sgs.ai_explicit[name] = "loyalist"
+		elseif player:getRole() == "rebel" and intention < 0 then sgs.ai_explicit[name] = "rebel"
+		elseif player:getRole() == "renegade" and intention > 0 then sgs.ai_explicit[name] = "loyalist"
+		elseif player:getRole() == "renegade" and intention < 0 then sgs.ai_explicit[name] = "rebel" end
+		return
+	end
+	
 	local has_rebel = false
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 		if aplayer:getRole() == "rebel" then has_rebel = true break end
