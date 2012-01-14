@@ -268,6 +268,7 @@ signals:
     void role_state_changed(const QString & state_str);
 
     void assign_asked();
+    void start_in_xs();
 };
 
 extern Client *ClientInstance;

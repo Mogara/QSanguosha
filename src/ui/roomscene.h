@@ -162,6 +162,7 @@ protected:
     virtual void timerEvent(QTimerEvent *event);
 
 private:
+    Button* add_robot, *fill_robots;
     QList<Photo*> photos;
     QMap<QString, Photo*> name2photo;
     Photo *focused;
@@ -290,6 +291,7 @@ private slots:
     void doCancelButton();
     void doDiscardButton();
     void doTimeout();
+    void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature);
     void moveFocus(const QString &who);

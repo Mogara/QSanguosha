@@ -384,6 +384,7 @@ void Client::startInXs(const QString &left_seconds){
     int seconds = left_seconds.toInt();
     lines_doc->setHtml(tr("Game will start in <b>%1</b> seconds").arg(left_seconds));
 
+    emit start_in_xs();
     if(seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL){
         emit avatars_hiden();
     }

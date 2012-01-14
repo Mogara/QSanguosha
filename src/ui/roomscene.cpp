@@ -179,6 +179,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
     connect(ClientInstance, SIGNAL(card_used()), this, SLOT(hideDiscards()));
+    connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
     {
         guanxing_box = new GuanxingBox;
@@ -2347,6 +2348,11 @@ void RoomScene::hideAvatars(){
     dashboard->hideAvatar();
 }
 
+void RoomScene::startInXs(){
+    if(add_robot) add_robot->hide();
+    if(fill_robots) fill_robots->hide();
+}
+
 void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature){
     // update
     Photo *photo = name2photo.value(who, NULL);
@@ -2930,6 +2936,8 @@ void RoomScene::createStateItem(){
     if(circular)
         state_item->setPos(367, -320);
 
+    add_robot = NULL;
+    fill_robots = NULL;
     if(ServerInfo.EnableAI){
         QRectF state_rect = state_item->boundingRect();
         control_panel = addRect(0, 0, state_rect.width(), 150, Qt::NoPen);
@@ -2937,11 +2945,11 @@ void RoomScene::createStateItem(){
         control_panel->setY(state_item->y() + state_rect.height() + 10);
         control_panel->hide();
 
-        Button *add_robot = new Button(tr("Add a robot"));
+        add_robot = new Button(tr("Add a robot"));
         add_robot->setParentItem(control_panel);
         add_robot->setPos(15, 5);
 
-        Button *fill_robots = new Button(tr("Fill robots"));
+        fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
         fill_robots->setPos(15, 60);
 
