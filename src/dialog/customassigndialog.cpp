@@ -47,35 +47,56 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     }
     list->setCurrentItem(item_map[0]);
 
-    general_label = new QLabel;
+    general_label = new LabelButton;
     general_label->setPixmap(QPixmap(Sanguosha->getGeneral("caocao")->getPixmapPath("tiny")));
     general_label->setFixedSize(42, 36);
 
-    general_label2 = new QLabel;
+    general_label2 = new LabelButton;
+    general_label2->setPixmap(QPixmap(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny")));
     general_label2->setFixedSize(42, 36);
 
-    QPushButton *generalButton = new QPushButton(tr("ChooseGeneral"));
-    QPushButton *generalButton2 = new QPushButton(tr("ChooseGeneral2"));
     QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
     QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
+
+    max_hp_prompt = new QCheckBox("Max Hp");
+    max_hp_spin = new QSpinBox();
+    max_hp_spin->setRange(2,10);
+    max_hp_spin->setValue(4);
+    max_hp_spin->setEnabled(false);
+    connect(max_hp_prompt,SIGNAL(toggled(bool)),max_hp_spin,SLOT(setEnabled(bool)));
+
+    hp_prompt = new QCheckBox("Hp");
+    hp_spin = new QSpinBox();
+    hp_spin->setRange(1,max_hp_spin->value());
+    hp_spin->setValue(4);
+    hp_spin->setEnabled(false);
+    connect(hp_prompt,SIGNAL(toggled(bool)),hp_spin,SLOT(setEnabled(bool)));
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(num_combobox);
-    vlayout->addWidget(general_label);
-    vlayout->addWidget(generalButton);
-    vlayout->addWidget(general_label2);
-    vlayout->addWidget(generalButton2);
+    QHBoxLayout *label_lay = new QHBoxLayout;
+    label_lay->addWidget(general_label);
+    label_lay->addWidget(general_label2);
+    vlayout->addLayout(label_lay);
     vlayout->addWidget(equipAssign);
     vlayout->addWidget(handcardAssign);
+    vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
+    vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addStretch();
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
 
+    equip_list = new QListWidget;
+    hand_list = new QListWidget;
+    QVBoxLayout *info_lay = new QVBoxLayout();
+    info_lay->addWidget(list);
+    info_lay->addLayout(HLay(equip_list,hand_list));
+
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(list);
+    layout->addLayout(info_lay);
     layout->addLayout(vlayout);
     QVBoxLayout *mainlayout = new QVBoxLayout();
     mainlayout->addLayout(layout);
@@ -85,8 +106,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(on_list_itemSelectionChanged(QListWidgetItem*)));
     connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
-    connect(generalButton, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
-    connect(generalButton2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
+    connect(general_label, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
+    connect(general_label2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
     connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -104,6 +125,7 @@ void CustomAssignDialog::doEquipCardAssign(){
 void CustomAssignDialog::getEquipCard(int card_id){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     player_equips[name] << card_id;
+    updatePlayerInfo(name);
 }
 
 void CustomAssignDialog::doHandCardAssign(){
@@ -117,6 +139,7 @@ void CustomAssignDialog::doHandCardAssign(){
 void CustomAssignDialog::getHandCard(int card_id){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     player_handcards[name] << card_id;
+    updatePlayerInfo(name);
 }
 
 void CustomAssignDialog::updateNumber(int num){
@@ -141,6 +164,53 @@ void CustomAssignDialog::updateNumber(int num){
         }
     }
 }
+
+void CustomAssignDialog::updatePlayerInfo(QString name)
+{
+    for(int i=0;i<equip_list->count();i++)
+        equip_list->takeItem(i);
+    for(int i=0;i<hand_list->count();i++)
+        hand_list->takeItem(i);
+
+    foreach(int equip_id, player_equips[name])
+    {
+        const Card* card = Sanguosha->getCard(equip_id);
+        QString card_name = Sanguosha->translate(card->objectName());
+        QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+        QString point = card->getNumberString();
+
+        QString card_info = point + "  " + card_name;
+        QListWidgetItem *name_item = new QListWidgetItem(card_info, equip_list);
+        name_item->setIcon(suit_icon);
+        name_item->setData(Qt::UserRole, card->getId());
+    }
+
+    foreach(int hand_id, player_handcards[name])
+    {
+        const Card* card = Sanguosha->getCard(hand_id);
+        QString card_name = Sanguosha->translate(card->objectName());
+        QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+        QString point = card->getNumberString();
+
+        QString card_info = point + "  " + card_name;
+        QListWidgetItem *name_item = new QListWidgetItem(card_info, hand_list);
+        name_item->setIcon(suit_icon);
+        name_item->setData(Qt::UserRole, card->getId());
+    }
+}
+
+void CustomAssignDialog::doSetHp()
+{
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(hp_prompt->isChecked())
+    {
+        player_hp[name] = hp_spin->value();
+    }else
+    {
+        player_hp.remove(name);
+    }
+}
+
 void CustomAssignDialog::updateRole(int index){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_combobox->itemData(index).toString();
@@ -200,7 +270,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
         general_label2->setPixmap(QPixmap
                                   (QString(Sanguosha->getGeneral(general2_mapping.value(player_name))->getPixmapPath("tiny"))));
     else
-        general_label2->setPixmap(QPixmap("null"));
+        general_label2->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
+
+    updatePlayerInfo(player_name);
 }
 
 void CustomAssignDialog::setCardGotId(int card_id){

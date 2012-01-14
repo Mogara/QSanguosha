@@ -4,6 +4,7 @@
 #include "engine.h"
 
 #include <QHBoxLayout>
+#include <QSpinBox>
 #include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
@@ -12,6 +13,34 @@
 #include <QButtonGroup>
 #include <QLabel>
 #include <QtGui/QTableWidget>
+
+static QLayout *HLay(QWidget *left, QWidget *right){
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(left);
+    layout->addWidget(right);
+
+    return layout;
+}
+
+class LabelButton : public QLabel {
+    Q_OBJECT
+public:
+    LabelButton()
+        :QLabel(){};
+
+    void mouseDoubleClickEvent(QMouseEvent *)
+    {
+        emit double_clicked();
+    }
+
+    void mousePressEvent(QMouseEvent *ev)
+    {
+        emit clicked();
+    }
+signals:
+    void double_clicked();
+    void clicked();
+};
 
 class CustomAssignDialog: public QDialog{
     Q_OBJECT
@@ -26,15 +55,18 @@ protected:
     virtual void reject();
 
 private:
-    QListWidget *list;
+    QListWidget *list,*equip_list,*hand_list;
     QComboBox *role_combobox, *num_combobox;
-    QLabel *general_label, *general_label2;
+    LabelButton *general_label, *general_label2;
+    QCheckBox *max_hp_prompt,*hp_prompt;
+    QSpinBox *max_hp_spin,*hp_spin;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
     QMap<int, QListWidgetItem *> item_map;
 
     QMap<QString, QList<int> > player_equips, player_handcards, player_judges;
+    QMap<QString, int> player_maxhp,player_hp;
     QList<int> set_pile;
 
     QString general_name, general_name2;
@@ -44,6 +76,8 @@ private:
 private slots:
     void updateRole(int index);
     void updateNumber(int num);
+    void updatePlayerInfo(QString name);
+    void doSetHp();
     void doGeneralAssign();
     void doGeneralAssign2();
     void doEquipCardAssign();
@@ -94,5 +128,6 @@ private slots:
 signals:
     void card_chosen(int card_id);
 };
+
 
 #endif // CUSTOMASSIGNDIALOG_H
