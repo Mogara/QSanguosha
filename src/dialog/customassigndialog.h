@@ -61,7 +61,8 @@ private:
     QCheckBox *max_hp_prompt,*hp_prompt;
     QSpinBox *max_hp_spin,*hp_spin;
     QCheckBox *self_select_general, *self_select_general2;
-    QPushButton *removeEquipButton, *removeHandButton;
+    QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
+    QCheckBox *set_turned, *set_chained;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
@@ -69,6 +70,7 @@ private:
 
     QMap<QString, QList<int> > player_equips, player_handcards, player_judges;
     QMap<QString, int> player_maxhp, player_hp;
+    QMap<QString, bool> player_turned, player_chained;
     QList<int> set_pile;
 
     QString general_name, general_name2;
@@ -78,11 +80,14 @@ private:
 private slots:
     void updateRole(int index);
     void updateNumber(int num);
+    void updatePileInfo();
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
 
     void freeChoose(bool toggled);
     void freeChoose2(bool toggled);
+    void doPlayerTurns(bool toggled);
+    void doPlayerChains(bool toggled);
 
     void setPlayerHpEnabled(bool toggled);
     void setPlayerMaxHpEnabled(bool toggled);
@@ -91,11 +96,15 @@ private slots:
 
     void removeEquipCard();
     void removeHandCard();
+    void removeJudgeCard();
+    void removePileCard();
 
     void doGeneralAssign();
     void doGeneralAssign2();
     void doEquipCardAssign();
     void doHandCardAssign();
+    void doJudgeCardAssign();
+    void doPileCardAssign();
 
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
@@ -103,6 +112,8 @@ public slots:
     void getChosenGeneral(QString general_name);
     void getEquipCard(int card_id);
     void getHandCard(int card_id);
+    void getJudgeCard(int card_id);
+    void getPileCard(int card_id);
 };
 
 

@@ -63,6 +63,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
     QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
+    QPushButton *judgeAssign = new QPushButton(tr("JudgeAssign"));
+    QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(true);
@@ -81,6 +83,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     self_select_general = new QCheckBox(tr("General Self Select"));
     self_select_general2 = new QCheckBox(tr("General2 Self Select"));
 
+    set_turned = new QCheckBox(tr("Player Turned"));
+    set_chained = new QCheckBox(tr("Player Chained"));
+
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
 
@@ -94,30 +99,51 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(self_select_general2);
     vlayout->addWidget(equipAssign);
     vlayout->addWidget(handcardAssign);
+    vlayout->addWidget(judgeAssign);
+    vlayout->addWidget(pileAssign);
     vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
+    vlayout->addWidget(set_turned);
+    vlayout->addWidget(set_chained);
     vlayout->addStretch();
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
 
     equip_list = new QListWidget;
     hand_list = new QListWidget;
-    QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout();
+    judge_list = new QListWidget;
+    pile_list = new QListWidget;
+    QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout()
+            , *judge_lay = new QVBoxLayout(), *pile_lay = new QVBoxLayout();
     info_lay->addWidget(list);
     QGroupBox *equip_group = new QGroupBox(tr("Equips"));
     QGroupBox *hands_group = new QGroupBox(tr("Handcards"));
+    QGroupBox *judge_group = new QGroupBox(tr("Judges"));
+    QGroupBox *pile_group = new QGroupBox(tr("DrawPile"));
     equip_group->setLayout(equip_lay);
     hands_group->setLayout(hand_lay);
+    judge_group->setLayout(judge_lay);
+    pile_group->setLayout(pile_lay);
 
     removeEquipButton = new QPushButton(tr("Remove Equip"));
     removeHandButton = new QPushButton(tr("Remove Handcard"));
+    removeJudgeButton = new QPushButton(tr("Remove Judge"));
+    removePileButton = new QPushButton(tr("Remove Pilecard"));
+
     removeEquipButton->setEnabled(false);
     removeHandButton->setEnabled(false);
+    removeJudgeButton->setEnabled(false);
+    removePileButton->setEnabled(false);
     equip_lay->addWidget(equip_list);
     equip_lay->addWidget(removeEquipButton);
     hand_lay->addWidget(hand_list);
     hand_lay->addWidget(removeHandButton);
     info_lay->addLayout(HLay(equip_group, hands_group));
+    judge_lay->addWidget(judge_list);
+    judge_lay->addWidget(removeJudgeButton);
+    pile_lay->addWidget(pile_list);
+    pile_lay->addWidget(removePileButton);
+    info_lay->addLayout(HLay(judge_group, pile_group));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addLayout(info_lay);
@@ -140,12 +166,18 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), this, SLOT(freeChoose2(bool)));
     connect(self_select_general, SIGNAL(toggled(bool)), general_label, SLOT(setDisabled(bool)));
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
+    connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
+    connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
     connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
     connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
+    connect(removeJudgeButton, SIGNAL(clicked()), this, SLOT(removeJudgeCard()));
+    connect(removePileButton, SIGNAL(clicked()), this, SLOT(removePileCard()));
     connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
+    connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
+    connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
@@ -193,6 +225,48 @@ void CustomAssignDialog::getHandCard(int card_id){
     removeHandButton->setEnabled(true);
 }
 
+void CustomAssignDialog::doJudgeCardAssign(){
+    CardAssignDialog *dialog = new CardAssignDialog(this, "", "DelayedTrick");
+
+    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getJudgeCard(int)));
+    dialog->exec();
+}
+
+void CustomAssignDialog::getJudgeCard(int card_id){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    QString card_name = Sanguosha->getCard(card_id)->objectName();
+    foreach(int id, player_judges[name]){
+        if(Sanguosha->getCard(id)->objectName() == card_name){
+            player_judges[name].removeOne(id);
+            break;
+        }
+    }
+
+    player_judges[name] << card_id;
+    updatePlayerInfo(name);
+    judge_list->setCurrentRow(0);
+    removeJudgeButton->setEnabled(true);
+}
+
+void CustomAssignDialog::doPileCardAssign(){
+    CardAssignDialog *dialog = new CardAssignDialog(this);
+
+    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getPileCard(int)));
+    dialog->exec();
+}
+
+void CustomAssignDialog::getPileCard(int card_id){
+    if(set_pile.contains(card_id))
+        return;
+
+    set_pile << card_id;
+    updatePileInfo();
+    pile_list->setCurrentRow(0);
+    removePileButton->setEnabled(true);
+}
+
 void CustomAssignDialog::updateNumber(int num){
     int count = num_combobox->itemData(num).toInt();
     if(count < list->count()){
@@ -211,9 +285,22 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
 {
     equip_list->clear();
     hand_list->clear();
+    judge_list->clear();
 
-    foreach(int equip_id, player_equips[name])
-	{
+    if(player_equips[name].isEmpty())
+        removeEquipButton->setEnabled(false);
+    else
+        removeEquipButton->setEnabled(true);
+    if(player_handcards[name].isEmpty())
+        removeHandButton->setEnabled(false);
+    else
+        removeHandButton->setEnabled(true);
+    if(player_judges[name].isEmpty())
+        removeJudgeButton->setEnabled(false);
+    else
+        removeJudgeButton->setEnabled(true);
+
+    foreach(int equip_id, player_equips[name]){
         const Card* card = Sanguosha->getCard(equip_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
@@ -225,8 +312,7 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
         name_item->setData(Qt::UserRole, card->getId());
     }
 
-    foreach(int hand_id, player_handcards[name])
-	{
+    foreach(int hand_id, player_handcards[name]){
         const Card* card = Sanguosha->getCard(hand_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
@@ -234,6 +320,37 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
 
         QString card_info = point + "  " + card_name + "\t\t" + Sanguosha->translate(card->getSubtype());
         QListWidgetItem *name_item = new QListWidgetItem(card_info, hand_list);
+        name_item->setIcon(suit_icon);
+        name_item->setData(Qt::UserRole, card->getId());
+    }
+
+    foreach(int judge_id, player_judges[name]){
+        const Card* card = Sanguosha->getCard(judge_id);
+        QString card_name = Sanguosha->translate(card->objectName());
+        QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+        QString point = card->getNumberString();
+
+        QString card_info = point + "  " + card_name + "\t\t" + Sanguosha->translate(card->getSubtype());
+        QListWidgetItem *name_item = new QListWidgetItem(card_info, judge_list);
+        name_item->setIcon(suit_icon);
+        name_item->setData(Qt::UserRole, card->getId());
+    }
+}
+
+void CustomAssignDialog::updatePileInfo(){
+    pile_list->clear();
+
+    if(set_pile.isEmpty())
+        removePileButton->setEnabled(false);
+
+    foreach(int card_id, set_pile){
+        const Card* card = Sanguosha->getCard(card_id);
+        QString card_name = Sanguosha->translate(card->objectName());
+        QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
+        QString point = card->getNumberString();
+
+        QString card_info = point + "  " + card_name + "\t\t" + Sanguosha->translate(card->getSubtype());
+        QListWidgetItem *name_item = new QListWidgetItem(card_info, pile_list);
         name_item->setIcon(suit_icon);
         name_item->setData(Qt::UserRole, card->getId());
     }
@@ -324,6 +441,31 @@ void CustomAssignDialog::removeHandCard(){
     }
 }
 
+void CustomAssignDialog::removeJudgeCard(){
+    int card_id = judge_list->currentItem()->data(Qt::UserRole).toInt();
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(player_judges[name].contains(card_id)){
+        player_judges[name].removeOne(card_id);
+        judge_list->takeItem(judge_list->currentRow());
+        if(judge_list->count() > 0)
+            judge_list->setCurrentRow(0);
+        else
+            removeJudgeButton->setEnabled(false);
+    }
+}
+
+void CustomAssignDialog::removePileCard(){
+    int card_id = pile_list->currentItem()->data(Qt::UserRole).toInt();
+    if(set_pile.contains(card_id)){
+        set_pile.removeOne(card_id);
+        pile_list->takeItem(pile_list->currentRow());
+        if(pile_list->count() > 0)
+            pile_list->setCurrentRow(0);
+        else
+            removePileButton->setEnabled(false);
+    }
+}
+
 void CustomAssignDialog::doGeneralAssign(){
     choose_general2 = false;
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
@@ -381,6 +523,16 @@ void CustomAssignDialog::freeChoose2(bool toggled){
         free_choose_general2 = false;
 }
 
+void CustomAssignDialog::doPlayerChains(bool toggled){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_chained[name] = toggled;
+}
+
+void CustomAssignDialog::doPlayerTurns(bool toggled){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_turned[name] = toggled;
+}
+
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     QString player_name = current->data(Qt::UserRole).toString();
     if(!general_mapping.value(player_name, "").isEmpty()){
@@ -409,6 +561,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
         self_select_general->setChecked(free_choose_general);
         self_select_general2->setChecked(free_choose_general2);
     }
+
+    set_turned->setChecked(player_turned.value(player_name, false));
+    set_chained->setChecked(player_chained.value(player_name, false));
 
     updatePlayerInfo(player_name);
     updatePlayerHpInfo(player_name);
