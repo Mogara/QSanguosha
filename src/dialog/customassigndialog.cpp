@@ -7,7 +7,8 @@
 #include <QIcon>
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
-    :QDialog(parent), choose_general2(false)
+    :QDialog(parent),
+      choose_general2(false), free_choose_general(false), free_choose_general2(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -44,6 +45,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, player);
         item_map[i] = item;
+        player_maxhp[player] = 4;
+        player_hp[player] = 4;
     }
     list->setCurrentItem(item_map[0]);
 
@@ -58,19 +61,22 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
     QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
 
-    max_hp_prompt = new QCheckBox("Max Hp");
+    max_hp_prompt = new QCheckBox(tr("Max Hp"));
+    max_hp_prompt->setChecked(true);
     max_hp_spin = new QSpinBox();
     max_hp_spin->setRange(2,10);
     max_hp_spin->setValue(4);
-    max_hp_spin->setEnabled(false);
-    connect(max_hp_prompt,SIGNAL(toggled(bool)),max_hp_spin,SLOT(setEnabled(bool)));
+    max_hp_spin->setEnabled(true);
 
-    hp_prompt = new QCheckBox("Hp");
+    hp_prompt = new QCheckBox(tr("Hp"));
+    hp_prompt->setChecked(true);
     hp_spin = new QSpinBox();
     hp_spin->setRange(1,max_hp_spin->value());
     hp_spin->setValue(4);
-    hp_spin->setEnabled(false);
-    connect(hp_prompt,SIGNAL(toggled(bool)),hp_spin,SLOT(setEnabled(bool)));
+    hp_spin->setEnabled(true);
+
+    self_select_general = new QCheckBox(tr("General Self Select"));
+    self_select_general2 = new QCheckBox(tr("General2 Self Select"));
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
@@ -81,6 +87,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     label_lay->addWidget(general_label);
     label_lay->addWidget(general_label2);
     vlayout->addLayout(label_lay);
+    vlayout->addWidget(self_select_general);
+    vlayout->addWidget(self_select_general2);
     vlayout->addWidget(equipAssign);
     vlayout->addWidget(handcardAssign);
     vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
@@ -108,6 +116,16 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(num_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
     connect(general_label, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
     connect(general_label2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
+    connect(max_hp_prompt,SIGNAL(toggled(bool)),max_hp_spin,SLOT(setEnabled(bool)));
+    connect(hp_prompt,SIGNAL(toggled(bool)),hp_spin,SLOT(setEnabled(bool)));
+    connect(hp_prompt,SIGNAL(toggled(bool)), this, SLOT(setPlayerHpEnabled(bool)));
+    connect(max_hp_prompt,SIGNAL(toggled(bool)), this, SLOT(setPlayerMaxHpEnabled(bool)));
+    connect(self_select_general, SIGNAL(toggled(bool)), this, SLOT(freeChoose(bool)));
+    connect(self_select_general2, SIGNAL(toggled(bool)), this, SLOT(freeChoose2(bool)));
+    connect(self_select_general, SIGNAL(toggled(bool)), general_label, SLOT(setDisabled(bool)));
+    connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
+    connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
+    connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
     connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -199,15 +217,54 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
     }
 }
 
-void CustomAssignDialog::doSetHp()
+void CustomAssignDialog::updatePlayerHpInfo(QString name){
+    if(player_hp.value(name, 0) != 0){
+        hp_spin->setValue(player_hp[name]);
+        hp_prompt->setChecked(true);
+    }
+    else{
+        hp_spin->setValue(4);
+        hp_prompt->setChecked(false);
+    }
+
+    if(player_maxhp.value(name, 0) != 0){
+        max_hp_spin->setValue(player_maxhp[name]);
+        max_hp_prompt->setChecked(true);
+    }
+    else{
+        max_hp_spin->setValue(4);
+        max_hp_prompt->setChecked(false);
+    }
+}
+
+void CustomAssignDialog::getPlayerHp(int hp)
 {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    if(hp_prompt->isChecked())
-    {
-        player_hp[name] = hp_spin->value();
-    }else
-    {
+    player_hp[name] = hp;
+}
+
+void CustomAssignDialog::getPlayerMaxHp(int maxhp){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_maxhp[name] = maxhp;
+}
+
+void CustomAssignDialog::setPlayerHpEnabled(bool toggled){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(!toggled){
         player_hp.remove(name);
+    }
+    else{
+        player_hp[name] = hp_spin->value();
+    }
+}
+
+void CustomAssignDialog::setPlayerMaxHpEnabled(bool toggled){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(!toggled){
+        player_maxhp.remove(name);
+    }
+    else{
+        player_maxhp[name] = max_hp_spin->value();
     }
 }
 
@@ -256,6 +313,26 @@ void CustomAssignDialog::getChosenGeneral(QString name){
     }
 }
 
+void CustomAssignDialog::freeChoose(bool toggled){
+    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+        return;
+
+    if(toggled)
+        free_choose_general = true;
+    else
+        free_choose_general = false;
+}
+
+void CustomAssignDialog::freeChoose2(bool toggled){
+    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+        return;
+
+    if(toggled)
+        free_choose_general2 = true;
+    else
+        free_choose_general2 = false;
+}
+
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     QString player_name = current->data(Qt::UserRole).toString();
     if(!general_mapping.value(player_name, "").isEmpty()){
@@ -272,11 +349,21 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     else
         general_label2->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
 
-    updatePlayerInfo(player_name);
-}
+    if(!player_name.contains("player")){
+        self_select_general->setEnabled(false);
+        self_select_general2->setEnabled(false);
+        self_select_general->setChecked(false);
+        self_select_general2->setChecked(false);
+    }
+    else{
+        self_select_general->setEnabled(true);
+        self_select_general2->setEnabled(true);
+        self_select_general->setChecked(free_choose_general);
+        self_select_general2->setChecked(free_choose_general2);
+    }
 
-void CustomAssignDialog::setCardGotId(int card_id){
-    temp_card_id = card_id;
+    updatePlayerInfo(player_name);
+    updatePlayerHpInfo(player_name);
 }
 
 //extern CustomAssignDialog *CustomInstance;
@@ -439,7 +526,6 @@ void CardAssignDialog::addCard(const Card *card){
 void CardAssignDialog::askCard(){
     QListWidgetItem *card_item = card_list->currentItem();
     int card_id = card_item->data(Qt::UserRole).toInt();
-   // CustomInstance->setCardGotId(card_id);
     emit card_chosen(card_id);
     this->hide();
 }

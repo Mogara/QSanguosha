@@ -26,14 +26,14 @@ class LabelButton : public QLabel {
     Q_OBJECT
 public:
     LabelButton()
-        :QLabel(){};
+        :QLabel(){}
 
     void mouseDoubleClickEvent(QMouseEvent *)
     {
         emit double_clicked();
     }
 
-    void mousePressEvent(QMouseEvent *ev)
+    void mousePressEvent(QMouseEvent *)
     {
         emit clicked();
     }
@@ -48,8 +48,6 @@ class CustomAssignDialog: public QDialog{
 public:
     CustomAssignDialog(QWidget *parent);
 
-    void setCardGotId(int card_id);
-
 protected:
   //  virtual void accept();
     virtual void reject();
@@ -60,24 +58,34 @@ private:
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;
     QSpinBox *max_hp_spin,*hp_spin;
+    QCheckBox *self_select_general, *self_select_general2;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
     QMap<int, QListWidgetItem *> item_map;
 
     QMap<QString, QList<int> > player_equips, player_handcards, player_judges;
-    QMap<QString, int> player_maxhp,player_hp;
+    QMap<QString, int> player_maxhp, player_hp;
     QList<int> set_pile;
 
     QString general_name, general_name2;
     bool choose_general2;
-    int temp_card_id;
+    bool free_choose_general, free_choose_general2;
 
 private slots:
     void updateRole(int index);
     void updateNumber(int num);
     void updatePlayerInfo(QString name);
-    void doSetHp();
+    void updatePlayerHpInfo(QString name);
+
+    void freeChoose(bool toggled);
+    void freeChoose2(bool toggled);
+
+    void setPlayerHpEnabled(bool toggled);
+    void setPlayerMaxHpEnabled(bool toggled);
+    void getPlayerHp(int hp);
+    void getPlayerMaxHp(int maxhp);
+
     void doGeneralAssign();
     void doGeneralAssign2();
     void doEquipCardAssign();
@@ -114,9 +122,6 @@ class CardAssignDialog : public QDialog {
 public:
 
     CardAssignDialog(QWidget *parent = 0, QString card_type = QString(), QString class_name = QString());
-    void loadFromAll();
-    void loadFromList(const QList<const Card*> &list);
-
 private:
     void addCard(const Card *card);
 
