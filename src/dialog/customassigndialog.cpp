@@ -212,12 +212,8 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
     equip_list->clear();
     hand_list->clear();
 
-    if(player_equips.isEmpty())
-        removeEquipButton->setEnabled(false);
-    if(player_handcards.isEmpty())
-        removeHandButton->setEnabled(false);
-
-    foreach(int equip_id, player_equips[name]){
+    foreach(int equip_id, player_equips[name])
+	{
         const Card* card = Sanguosha->getCard(equip_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
@@ -229,7 +225,8 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
         name_item->setData(Qt::UserRole, card->getId());
     }
 
-    foreach(int hand_id, player_handcards[name]){
+    foreach(int hand_id, player_handcards[name])
+	{
         const Card* card = Sanguosha->getCard(hand_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
