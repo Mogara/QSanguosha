@@ -178,10 +178,8 @@ void CustomAssignDialog::updateNumber(int num){
 
 void CustomAssignDialog::updatePlayerInfo(QString name)
 {
-    for(int i=0;i<equip_list->count();i++)
-        equip_list->takeItem(i);
-    for(int i=0;i<hand_list->count();i++)
-        hand_list->takeItem(i);
+    equip_list->clear();
+    hand_list->clear();
 
     foreach(int equip_id, player_equips[name])
     {
