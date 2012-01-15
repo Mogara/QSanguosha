@@ -663,6 +663,14 @@ function SmartAI:filterEvent(event, player, data)
 					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
 				end
 			end
+		elseif card:inherits("DimengCard") then
+			self:sort(to, "handcard")
+			if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
+				self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[2], (to[1]:getHandcardNum()-to[2]:getHandcardNum())*20-40))
+				if to[1]:isLord() then
+					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
+				end
+			end
 		else
 			for _, eachTo in ipairs(to) do
 				local use_intention = sgs.ai_card_intention[card:className()]
@@ -1228,15 +1236,22 @@ function SmartAI:slashProhibit(card,enemy)
 
 		if enemy:hasSkill("wuhun") and self:isWeak(enemy) and not (enemy:isLord() and self.player:getRole() == "rebel") then
 			local mark = 0
+			local marks = {}
 			for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-				if player:getMark("@nightmare") > mark then mark = player:getMark("@nightmare") end
+				local mymark = player:getMark("@nightmare")
+				if player:objectName() == self.player:objectName() then
+					mymark = mymark + 1
+					if self.player:hasFlag("drank") then mymark = mymark + 1 end
+				end
+				if mymark > mark then mark = mymark end
+				marks[player:objectName()] = mymark
 			end
 			if mark > 0 then
 				for _,friend in ipairs(self.friends) do
-					if friend:getMark("@nightmare") == mark and (not self:isWeak(friend) or friend:isLord()) and
+					if marks[friend:objectName()] == mark and (not self:isWeak(friend) or friend:isLord()) and
 						not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 				end
-				if self.player:getRole()~="rebel" and self.room:getLord():getMark("@nightmare") == mark and
+				if self.player:getRole()~="rebel" and marks[self.room:getLord():objectName()] == mark and
 					not (#self.enemies==1 and #self.friends + #self.enemies == self.room:alivePlayerCount()) then return true end
 			end
 		end

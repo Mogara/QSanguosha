@@ -117,12 +117,18 @@ sgs.ai_card_intention["IronChain"]=function(card,from,to,source)
 end
 
 sgs.ai_card_intention["Dismantlement"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,40)
+	if to:getCards("j"):isEmpty() and
+		not (to:getArmor() and (to:getArmor():inherits("GaleShell") or to:getArmor():inherits("SilverLion"))) then
+		return sgs.ai_card_intention.general(to,80)
+	end
+	return 0
 end
 
-sgs.ai_card_intention["Snatch"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,40)
-end
+sgs.ai_card_intention["Snatch"]=sgs.ai_card_intention["Dismantlement"]
+
+sgs.ai_card_intention["QixiCard"]=sgs.ai_card_intention["Dismantlement"]
+
+sgs.ai_card_intention["JixiCard"]=sgs.ai_card_intention["Snatch"]
 
 sgs.ai_card_intention["TuxiCard"]=function(card,from,to,source)
 	return sgs.ai_card_intention.general(to,80)
@@ -149,12 +155,6 @@ sgs.ai_card_intention["QiangxiCard"]=function(card,from,to,source)
 	return sgs.ai_card_intention.general(to,80)
 end
 
-sgs.ai_card_intention["LijianCard"]=function(card,from,to,source, different)
-	local intention_value = -70
-	if different then intention_value = 70 end
-	return sgs.ai_card_intention.general(to, intention_value)
-end
-
 sgs.ai_card_intention["JieyinCard"]=function(card,from,to,source)
 	return sgs.ai_card_intention.general(to,-80)
 end
@@ -170,12 +170,6 @@ end
 
 sgs.ai_card_intention["HaoshiCard"]=function(card,from,to,source)
 	return sgs.ai_card_intention.general(to,-80)
-end
-
-sgs.ai_card_intention["DimengCard"]=function(card,from,to,source, different)
-	local intention_value = -70
-	if different then intention_value = 70 end
-	return sgs.ai_card_intention.general(to,intention_value)
 end
 
 sgs.ai_card_intention["FanjianCard"]=function(card,from,to,source)
@@ -215,12 +209,6 @@ end
 
 sgs.ai_card_intention["ZhijianCard"]=function(card,from,to,source)
 	return sgs.ai_card_intention.general(to,-80)
-end
-
-sgs.ai_card_intention["JixiCard"]=function(card,from,to,source, different)
-	local intention_value = -80
-	if different then intention_value = 80 end
-	return sgs.ai_card_intention.general(to, intention_value)
 end
 
 sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
@@ -329,6 +317,7 @@ function SmartAI:refreshLoyalty(player,intention)
 		if intention>0 then intention=intention/5 end
 	end
 	sgs.ai_loyalty[name]=sgs.ai_loyalty[name]+intention
+
 	
 	if sgs.ai_explicit[name]=="loyalish" then
 		sgs.ai_assumed["loyalist"]=sgs.ai_assumed["loyalist"]+1
@@ -339,7 +328,13 @@ function SmartAI:refreshLoyalty(player,intention)
 	elseif sgs.ai_explicit[name]=="rebel" then
 		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]+1
 	end
-		
+
+	if (sgs.ai_renegade_suspect[name] or 0) > 1 then
+		if intention >0 then sgs.ai_explicit[name] = "loyalish" sgs.ai_assumed["loyalist"] = sgs.ai_assumed["loyalist"] - 1
+		elseif intention < 0 then sgs.ai_explicit[name] = "rebelish" sgs.ai_assumed["rebel"] = sgs.ai_assumed["rebel"] -1 end
+		return
+	end
+	
 	if sgs.ai_loyalty[name]<=-160 then
 		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]-1
 		sgs.ai_explicit[name]="rebel"
