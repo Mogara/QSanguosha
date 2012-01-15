@@ -33,6 +33,7 @@ public:
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(ServerPlayer *player, const Card *card) const;
+    virtual bool useCardSoundEffect() const;
     virtual QDialog *getDialog() const;
 
     void initMediaSource();

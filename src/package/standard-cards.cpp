@@ -297,6 +297,10 @@ public:
 
         return slash;
     }
+
+    virtual bool useCardSoundEffect() const{
+        return true;
+    }
 };
 
 Spear::Spear(Suit suit, int number)

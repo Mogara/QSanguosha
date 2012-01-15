@@ -26,9 +26,13 @@ void ServerPlayer::playCardEffect(const Card *card){
         QString skill_name = card->getSkillName();
         const Skill *skill = Sanguosha->getSkill(skill_name);
         int index = -1;
-        if(skill)
+        if(skill){
+            if(skill->useCardSoundEffect()){
+                room->playCardEffect(card->objectName(), getGeneral()->isMale());
+                return;
+            }
             index = skill->getEffectIndex(this, card);
-
+        }
         room->playSkillEffect(skill_name, index);
     }else
         room->playCardEffect(card->objectName(), getGeneral()->isMale());

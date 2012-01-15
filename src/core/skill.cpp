@@ -99,6 +99,10 @@ void Skill::playEffect(int index) const{
     }
 }
 
+bool Skill::useCardSoundEffect() const{
+    return false;
+}
+
 void Skill::setFlag(ServerPlayer *player) const{
     player->getRoom()->setPlayerFlag(player, objectName());
 }
