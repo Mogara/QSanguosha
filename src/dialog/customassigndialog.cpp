@@ -20,16 +20,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     num_combobox = new QComboBox;
 
-    for(int i = 2; i <= 10; i++)
-        num_combobox->addItem(tr("%1 persons").arg(QString::number(i)), i);
-
-    role_combobox = new QComboBox;
-    role_combobox->addItem(tr("Lord"), "lord");
-    role_combobox->addItem(tr("Loyalist"), "loyalist");
-    role_combobox->addItem(tr("Renegade"), "renegade");
-    role_combobox->addItem(tr("Rebel"), "rebel");
-
-    for(int i=0; i<= num_combobox->currentIndex()+1; i++){
+    for(int i = 0; i <= 8; i++){
+        num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
         QString player = (i == 0 ? "player" : "ai");
         QString text = i == 0 ?
                     QString("%1[%2]").arg(Sanguosha->translate(player)).arg(Sanguosha->translate("unknown"))
@@ -42,11 +34,21 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         player_mapping[i] = player;
         role_mapping[player] = "unknown";
 
-        QListWidgetItem *item = new QListWidgetItem(text, list);
+        QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, player);
         item_map[i] = item;
         player_maxhp[player] = 4;
         player_hp[player] = 4;
+    }
+
+    role_combobox = new QComboBox;
+    role_combobox->addItem(tr("Lord"), "lord");
+    role_combobox->addItem(tr("Loyalist"), "loyalist");
+    role_combobox->addItem(tr("Renegade"), "renegade");
+    role_combobox->addItem(tr("Rebel"), "rebel");
+
+    for(int i=0; i<= num_combobox->currentIndex()+1; i++){
+        list->addItem(item_map[i]);
     }
     list->setCurrentItem(item_map[0]);
 
@@ -161,24 +163,15 @@ void CustomAssignDialog::getHandCard(int card_id){
 }
 
 void CustomAssignDialog::updateNumber(int num){
-    if(num+1 < list->count()){
-        for(int i = list->count() - 1; i > num+1; i--){
+    int count = num_combobox->itemData(num).toInt();
+    if(count < list->count()){
+        for(int i = list->count() - 1; i >= count; i--){
             list->takeItem(i);
-            player_mapping[i] = "";
         }
     }
     else{
-        for(int i= list->count() - 1; i<= num; i++){
-            QString text = QString("ai%1[%2]")
-                        .arg(QString::number(i+1))
-                        .arg(Sanguosha->translate("unknown"));
-            QString player = "ai" + (QString::number(i+1));
-            player_mapping[i] = player;
-            role_mapping[player] = "unknown";
-
-            QListWidgetItem *item = new QListWidgetItem(text, list);
-            item->setData(Qt::UserRole, player);
-            item_map[i] = item;
+        for(int i= list->count() - 1; i< count; i++){
+            list->addItem(item_map[i]);
         }
     }
 }
