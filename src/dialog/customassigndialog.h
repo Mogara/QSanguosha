@@ -12,7 +12,6 @@
 #include <QMap>
 #include <QButtonGroup>
 #include <QLabel>
-#include <QtGui/QTableWidget>
 
 #ifndef SERVER_H
 static QLayout *HLay(QWidget *left, QWidget *right){
@@ -105,6 +104,7 @@ private slots:
     void doHandCardAssign();
     void doJudgeCardAssign();
     void doPileCardAssign();
+    void clearGeneral2();
 
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
@@ -121,7 +121,7 @@ class GeneralAssignDialog: public QDialog{
     Q_OBJECT
 
 public:
-    explicit GeneralAssignDialog(QWidget *parent);
+    explicit GeneralAssignDialog(QWidget *parent, bool can_ban = false);
 
 private:
     QButtonGroup *group;
@@ -129,9 +129,11 @@ private:
 
 private slots:
     void chooseGeneral();
+    void clearGeneral();
 
 signals:
     void general_chosen(const QString &name);
+    void general_cleared();
 };
 
 class CardAssignDialog : public QDialog {

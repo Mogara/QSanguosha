@@ -54,12 +54,21 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     list->setCurrentItem(item_map[0]);
 
     general_label = new LabelButton;
-    general_label->setPixmap(QPixmap(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny")));
+    general_label->setPixmap(QPixmap("image/system/disabled.png"));
     general_label->setFixedSize(42, 36);
+    QGroupBox *general_box = new QGroupBox(tr("General"));
+    QVBoxLayout *general_lay = new QVBoxLayout();
+    general_box->setLayout(general_lay);
+    general_lay->addWidget(general_label);
 
     general_label2 = new LabelButton;
-    general_label2->setPixmap(QPixmap(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny")));
+    general_label2->setPixmap(QPixmap("image/system/disabled.png"));
     general_label2->setFixedSize(42, 36);
+    QGroupBox *general_box2 = new QGroupBox(tr("General2"));
+    QVBoxLayout *general_lay2 = new QVBoxLayout();
+    general_box2->setLayout(general_lay2);
+    general_lay2->addWidget(general_label2);
+
 
     QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
     QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
@@ -92,8 +101,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(num_combobox);
     QHBoxLayout *label_lay = new QHBoxLayout;
-    label_lay->addWidget(general_label);
-    label_lay->addWidget(general_label2);
+    label_lay->addWidget(general_box);
+    label_lay->addWidget(general_box2);
     vlayout->addLayout(label_lay);
     vlayout->addWidget(self_select_general);
     vlayout->addWidget(self_select_general2);
@@ -479,15 +488,23 @@ void CustomAssignDialog::doGeneralAssign(){
 
 void CustomAssignDialog::doGeneralAssign2(){
     choose_general2 = true;
-    GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
+    GeneralAssignDialog *dialog = new GeneralAssignDialog(this, true);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
     connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(getChosenGeneral(QString)));
+    connect(dialog, SIGNAL(general_cleared()), this, SLOT(clearGeneral2()));
     dialog->exec();
 }
 
 void CustomAssignDialog::reject(){
     QDialog::reject();
+}
+
+void CustomAssignDialog::clearGeneral2(){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    general2_mapping[name].clear();
+
+    general_label2->setPixmap(QPixmap("image/system/disabled.png"));
 }
 
 void CustomAssignDialog::getChosenGeneral(QString name){
@@ -542,14 +559,14 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
                                  (QString(Sanguosha->getGeneral(general_mapping.value(player_name))->getPixmapPath("tiny"))));
     }
     else
-        general_label->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
+        general_label->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
 
     if(!general2_mapping.value(player_name, "").isEmpty())
         general_label2->setPixmap(QPixmap
                                   (QString(Sanguosha->getGeneral(general2_mapping.value(player_name))->getPixmapPath("tiny"))));
     else
-        general_label2->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
+        general_label2->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
     if(!role_mapping[player_name].isEmpty() &&
             role_mapping[player_name] != role_combobox->itemData(role_combobox->currentIndex()).toString()){
@@ -585,7 +602,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 
 //---------------------------------------
 
-GeneralAssignDialog::GeneralAssignDialog(QWidget *parent)
+GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban)
     :QDialog(parent)
 {
     setWindowTitle(tr("Mini choose generals"));
@@ -621,6 +638,13 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent)
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
     QHBoxLayout *button_layout = new QHBoxLayout;
+    if(can_ban){
+        QPushButton *clear_button = new QPushButton(tr("Clear General"));
+        connect(clear_button, SIGNAL(clicked()), this, SLOT(clearGeneral()));
+
+        button_layout->addWidget(clear_button);
+    }
+
     button_layout->addStretch();
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
@@ -676,7 +700,12 @@ void GeneralAssignDialog::chooseGeneral(){
     if(button){
         emit general_chosen(button->objectName());
     }
-    this->hide();
+    this->reject();
+}
+
+void GeneralAssignDialog::clearGeneral(){
+    emit general_cleared();
+    this->reject();
 }
 
 //------------------------------
