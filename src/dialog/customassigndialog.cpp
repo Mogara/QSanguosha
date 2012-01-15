@@ -97,10 +97,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(label_lay);
     vlayout->addWidget(self_select_general);
     vlayout->addWidget(self_select_general2);
-    vlayout->addWidget(equipAssign);
-    vlayout->addWidget(handcardAssign);
-    vlayout->addWidget(judgeAssign);
-    vlayout->addWidget(pileAssign);
     vlayout->addLayout(HLay(max_hp_prompt,max_hp_spin));
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addWidget(set_turned);
@@ -135,14 +131,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     removeJudgeButton->setEnabled(false);
     removePileButton->setEnabled(false);
     equip_lay->addWidget(equip_list);
-    equip_lay->addWidget(removeEquipButton);
+    equip_lay->addLayout(HLay(equipAssign, removeEquipButton));
     hand_lay->addWidget(hand_list);
-    hand_lay->addWidget(removeHandButton);
+    hand_lay->addLayout(HLay(handcardAssign, removeHandButton));
     info_lay->addLayout(HLay(equip_group, hands_group));
     judge_lay->addWidget(judge_list);
-    judge_lay->addWidget(removeJudgeButton);
+    judge_lay->addLayout(HLay(judgeAssign, removeJudgeButton));
     pile_lay->addWidget(pile_list);
-    pile_lay->addWidget(removePileButton);
+    pile_lay->addLayout(HLay(pileAssign, removePileButton));
     info_lay->addLayout(HLay(judge_group, pile_group));
 
     QHBoxLayout *layout = new QHBoxLayout();
@@ -335,6 +331,10 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
         name_item->setIcon(suit_icon);
         name_item->setData(Qt::UserRole, card->getId());
     }
+
+    equip_list->setCurrentRow(0);
+    hand_list->setCurrentRow(0);
+    judge_list->setCurrentRow(0);
 }
 
 void CustomAssignDialog::updatePileInfo(){
@@ -354,6 +354,8 @@ void CustomAssignDialog::updatePileInfo(){
         name_item->setIcon(suit_icon);
         name_item->setData(Qt::UserRole, card->getId());
     }
+
+    pile_list->setCurrentRow(0);
 }
 
 void CustomAssignDialog::updatePlayerHpInfo(QString name){
@@ -548,6 +550,16 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
                                   (QString(Sanguosha->getGeneral(general2_mapping.value(player_name))->getPixmapPath("tiny"))));
     else
         general_label2->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
+
+    if(!role_mapping[player_name].isEmpty() &&
+            role_mapping[player_name] != role_combobox->itemData(role_combobox->currentIndex()).toString()){
+        for(int i = 0; i < role_combobox->count(); i++){
+            if(role_mapping[player_name] == role_combobox->itemData(i).toString()){
+                role_combobox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
 
     if(!player_name.contains("player")){
         self_select_general->setEnabled(false);
