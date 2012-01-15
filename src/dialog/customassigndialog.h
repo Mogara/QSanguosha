@@ -55,7 +55,7 @@ protected:
 
 private:
     QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
-    QComboBox *role_combobox, *num_combobox;
+    QComboBox *role_combobox, *num_combobox, *starter_box;
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;
     QSpinBox *max_hp_spin,*hp_spin;
@@ -75,6 +75,7 @@ private:
     QString general_name, general_name2;
     bool choose_general2;
     bool free_choose_general, free_choose_general2;
+    QString starter;
 
 private slots:
     void updateRole(int index);

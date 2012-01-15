@@ -20,9 +20,11 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     num_combobox = new QComboBox;
+    starter_box = new QComboBox;
 
     for(int i = 0; i <= 8; i++){
         num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
+
         QString player = (i == 0 ? "player" : "ai");
         QString text = i == 0 ?
                     QString("%1[%2]").arg(Sanguosha->translate(player)).arg(Sanguosha->translate("unknown"))
@@ -48,10 +50,17 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     role_combobox->addItem(tr("Renegade"), "renegade");
     role_combobox->addItem(tr("Rebel"), "rebel");
 
-    for(int i=0; i<= num_combobox->currentIndex()+1; i++){
+    for(int i=0; i< num_combobox->currentIndex()+2; i++){
         list->addItem(item_map[i]);
+        QString name = player_mapping[i];
+        starter_box->addItem(tr("%1").arg(name), name);
     }
     list->setCurrentItem(item_map[0]);
+
+    QGroupBox *starter_group = new QGroupBox(tr("Starter"));
+    QVBoxLayout *starter_lay = new QVBoxLayout();
+    starter_group->setLayout(starter_lay);
+    starter_lay->addWidget(starter_box);
 
     general_label = new LabelButton;
     general_label->setPixmap(QPixmap("image/system/disabled.png"));
@@ -110,6 +119,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addWidget(set_turned);
     vlayout->addWidget(set_chained);
+    vlayout->addWidget(starter_group);
     vlayout->addStretch();
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
@@ -277,11 +287,14 @@ void CustomAssignDialog::updateNumber(int num){
     if(count < list->count()){
         for(int i = list->count() - 1; i >= count; i--){
             list->takeItem(i);
+            starter_box->removeItem(i);
         }
     }
     else{
-        for(int i= list->count() - 1; i< count; i++){
+        for(int i= list->count(); i< count; i++){
             list->addItem(item_map[i]);
+            QString name = player_mapping[i];
+            starter_box->addItem(tr("%1").arg(name), name);
         }
     }
 }
