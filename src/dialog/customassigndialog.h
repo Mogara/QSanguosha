@@ -55,12 +55,13 @@ protected:
     virtual void reject();
 
 private:
-    QListWidget *list,*equip_list,*hand_list;
+    QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
     QComboBox *role_combobox, *num_combobox;
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;
     QSpinBox *max_hp_spin,*hp_spin;
     QCheckBox *self_select_general, *self_select_general2;
+    QPushButton *removeEquipButton, *removeHandButton;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
@@ -87,6 +88,9 @@ private slots:
     void setPlayerMaxHpEnabled(bool toggled);
     void getPlayerHp(int hp);
     void getPlayerMaxHp(int maxhp);
+
+    void removeEquipCard();
+    void removeHandCard();
 
     void doGeneralAssign();
     void doGeneralAssign2();

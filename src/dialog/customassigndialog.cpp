@@ -5,6 +5,7 @@
 #include <QRadioButton>
 #include <QPixmap>
 #include <QIcon>
+#include <QGroupBox>
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
@@ -53,7 +54,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     list->setCurrentItem(item_map[0]);
 
     general_label = new LabelButton;
-    general_label->setPixmap(QPixmap(Sanguosha->getGeneral("caocao")->getPixmapPath("tiny")));
+    general_label->setPixmap(QPixmap(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny")));
     general_label->setFixedSize(42, 36);
 
     general_label2 = new LabelButton;
@@ -101,9 +102,22 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     equip_list = new QListWidget;
     hand_list = new QListWidget;
-    QVBoxLayout *info_lay = new QVBoxLayout();
+    QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout();
     info_lay->addWidget(list);
-    info_lay->addLayout(HLay(equip_list,hand_list));
+    QGroupBox *equip_group = new QGroupBox(tr("Equips"));
+    QGroupBox *hands_group = new QGroupBox(tr("Handcards"));
+    equip_group->setLayout(equip_lay);
+    hands_group->setLayout(hand_lay);
+
+    removeEquipButton = new QPushButton(tr("Remove Equip"));
+    removeHandButton = new QPushButton(tr("Remove Handcard"));
+    removeEquipButton->setEnabled(false);
+    removeHandButton->setEnabled(false);
+    equip_lay->addWidget(equip_list);
+    equip_lay->addWidget(removeEquipButton);
+    hand_lay->addWidget(hand_list);
+    hand_lay->addWidget(removeHandButton);
+    info_lay->addLayout(HLay(equip_group, hands_group));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addLayout(info_lay);
@@ -128,6 +142,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
+    connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
+    connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
     connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -144,8 +160,18 @@ void CustomAssignDialog::doEquipCardAssign(){
 
 void CustomAssignDialog::getEquipCard(int card_id){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
+    QString card_type = Sanguosha->getCard(card_id)->getSubtype();
+    foreach(int id, player_equips[name]){
+        if(card_type == Sanguosha->getCard(id)->getSubtype()){
+            player_equips[name].removeOne(id);
+            break;
+        }
+    }
+
     player_equips[name] << card_id;
     updatePlayerInfo(name);
+    equip_list->setCurrentRow(0);
+    removeEquipButton->setEnabled(true);
 }
 
 void CustomAssignDialog::doHandCardAssign(){
@@ -158,8 +184,13 @@ void CustomAssignDialog::doHandCardAssign(){
 
 void CustomAssignDialog::getHandCard(int card_id){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(player_handcards[name].contains(card_id))
+        return;
+
     player_handcards[name] << card_id;
     updatePlayerInfo(name);
+    hand_list->setCurrentRow(0);
+    removeHandButton->setEnabled(true);
 }
 
 void CustomAssignDialog::updateNumber(int num){
@@ -178,32 +209,33 @@ void CustomAssignDialog::updateNumber(int num){
 
 void CustomAssignDialog::updatePlayerInfo(QString name)
 {
-    for(int i=0;i<equip_list->count();i++)
-        equip_list->takeItem(i);
-    for(int i=0;i<hand_list->count();i++)
-        hand_list->takeItem(i);
+    equip_list->clear();
+    hand_list->clear();
 
-    foreach(int equip_id, player_equips[name])
-    {
+    if(player_equips.isEmpty())
+        removeEquipButton->setEnabled(false);
+    if(player_handcards.isEmpty())
+        removeHandButton->setEnabled(false);
+
+    foreach(int equip_id, player_equips[name]){
         const Card* card = Sanguosha->getCard(equip_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
         QString point = card->getNumberString();
 
-        QString card_info = point + "  " + card_name;
+        QString card_info = point + "  " + card_name + "\t\t" + Sanguosha->translate(card->getSubtype());
         QListWidgetItem *name_item = new QListWidgetItem(card_info, equip_list);
         name_item->setIcon(suit_icon);
         name_item->setData(Qt::UserRole, card->getId());
     }
 
-    foreach(int hand_id, player_handcards[name])
-    {
+    foreach(int hand_id, player_handcards[name]){
         const Card* card = Sanguosha->getCard(hand_id);
         QString card_name = Sanguosha->translate(card->objectName());
         QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
         QString point = card->getNumberString();
 
-        QString card_info = point + "  " + card_name;
+        QString card_info = point + "  " + card_name + "\t\t" + Sanguosha->translate(card->getSubtype());
         QListWidgetItem *name_item = new QListWidgetItem(card_info, hand_list);
         name_item->setIcon(suit_icon);
         name_item->setData(Qt::UserRole, card->getId());
@@ -267,6 +299,32 @@ void CustomAssignDialog::updateRole(int index){
     QString text = QString("%1[%2]").arg(name).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;
+}
+
+void CustomAssignDialog::removeEquipCard(){
+    int card_id = equip_list->currentItem()->data(Qt::UserRole).toInt();
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(player_equips[name].contains(card_id)){
+        player_equips[name].removeOne(card_id);
+        equip_list->takeItem(equip_list->currentRow());
+        if(equip_list->count() > 0)
+            equip_list->setCurrentRow(0);
+        else
+            removeEquipButton->setEnabled(false);
+    }
+}
+
+void CustomAssignDialog::removeHandCard(){
+    int card_id = hand_list->currentItem()->data(Qt::UserRole).toInt();
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    if(player_handcards[name].contains(card_id)){
+        player_handcards[name].removeOne(card_id);
+        hand_list->takeItem(hand_list->currentRow());
+        if(hand_list->count() > 0)
+            hand_list->setCurrentRow(0);
+        else
+            removeHandButton->setEnabled(false);
+    }
 }
 
 void CustomAssignDialog::doGeneralAssign(){
@@ -333,7 +391,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
                                  (QString(Sanguosha->getGeneral(general_mapping.value(player_name))->getPixmapPath("tiny"))));
     }
     else
-        general_label->setPixmap(QPixmap(QString(Sanguosha->getGeneral("caocao")->getPixmapPath("tiny"))));
+        general_label->setPixmap(QPixmap(QString(Sanguosha->getGeneral("anjiang")->getPixmapPath("tiny"))));
 
 
     if(!general2_mapping.value(player_name, "").isEmpty())
@@ -463,6 +521,7 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
     QDialog(parent)
 {
 
+    setWindowTitle(tr("Custom Card Chosen"));
     QVBoxLayout *vlayout = new QVBoxLayout;
     card_list = new QListWidget;
 
@@ -510,7 +569,7 @@ void CardAssignDialog::addCard(const Card *card){
     QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
     QString point = card->getNumberString();
 
-    QString card_info = point + "  " + name;
+    QString card_info = point + "  " + name + "\t\t" + Sanguosha->translate(card->getSubtype());
     QListWidgetItem *name_item = new QListWidgetItem(card_info, card_list);
     name_item->setIcon(suit_icon);
     name_item->setData(Qt::UserRole, card->getId());
@@ -520,5 +579,4 @@ void CardAssignDialog::askCard(){
     QListWidgetItem *card_item = card_list->currentItem();
     int card_id = card_item->data(Qt::UserRole).toInt();
     emit card_chosen(card_id);
-    this->hide();
 }
