@@ -121,6 +121,8 @@ private slots:
     void onHttpDone(bool error);
     void select3v3Generals();
     void edit1v1Banlist();
+
+    void doCustomAssign();
 };
 
 class Scenario;
