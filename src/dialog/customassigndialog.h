@@ -13,14 +13,6 @@
 #include <QButtonGroup>
 #include <QLabel>
 
-static QLayout *HLay(QWidget *left, QWidget *right){
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(left);
-    layout->addWidget(right);
-
-    return layout;
-}
-
 class LabelButton : public QLabel {
     Q_OBJECT
 public:
@@ -143,14 +135,17 @@ class CardAssignDialog : public QDialog {
     Q_OBJECT
 public:
 
-    CardAssignDialog(QWidget *parent = 0, QString card_type = QString(), QString class_name = QString());
+    CardAssignDialog(QWidget *parent = 0, QString card_type = QString(), QString class_name = QString(), QList<int> excluded = QList<int>());
 private:
     void addCard(const Card *card);
 
     QListWidget *card_list;
+    QString card_type, class_name;
+    QList<int> excluded_card;
 
 private slots:
     void askCard();
+    void updateCardList();
 
 signals:
     void card_chosen(int card_id);
