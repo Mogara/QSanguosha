@@ -23,6 +23,14 @@
 #include <QHttp>
 #include <QAction>
 
+static QLayout *HLay(QWidget *left, QWidget *right){
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(left);
+    layout->addWidget(right);
+
+    return layout;
+}
+
 ServerDialog::ServerDialog(QWidget *parent)
     :QDialog(parent)
 {
