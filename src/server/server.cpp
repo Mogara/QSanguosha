@@ -586,8 +586,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
         connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
         item_list << HLay(scenario_button, scenario_combobox);
- //       item_list << HLay(mini_scenes, mini_scene_combobox);
-        item_list << HLay(mini_scenes, mini_scene_button);
+        item_list << HLay(scenario_button, mini_scene_button);
+        item_list << HLay(mini_scenes, mini_scene_combobox);
     }
 
     QRadioButton *button = new QRadioButton(tr("Custom Mode"));

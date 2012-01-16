@@ -163,7 +163,17 @@ public:
             QStringList equips = str.split(",");
             foreach(QString equip,equips)
             {
-                room->installEquip(sp,equip);
+                bool ok;
+                equip.toInt(&ok);
+                if(!ok)room->installEquip(sp,equip);
+                else room->moveCardTo(Sanguosha->getCard(equip.toInt()),sp,Player::Equip);
+            }
+
+            str = this->players.at(i)["judge"];
+            QStringList judges = str.split(",");
+            foreach(QString judge,judges)
+            {
+                 room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging);
             }
 
             str = this->players.at(i)["hand"];
@@ -187,6 +197,10 @@ public:
                     skill->trigger(GameStart, sp, v);
             }
 
+            if(this->players.at(i)["chained"] != NULL)
+                sp->setChained(true);
+            if(this->players.at(i)["turned"] == "true")
+                sp->setFaceUp(false);
             if(this->players.at(i)["starter"] != NULL)
                 room->setCurrent(sp);
 

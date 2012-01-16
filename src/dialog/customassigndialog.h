@@ -103,6 +103,9 @@ private slots:
 
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
+    void load();
+    void save();
+
 public slots:
     void getChosenGeneral(QString general_name);
     void getEquipCard(int card_id);

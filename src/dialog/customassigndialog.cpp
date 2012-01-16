@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QGroupBox>
 #include <QFrame>
+#include <QFile>
 
 static QLayout *HLay(QWidget *left, QWidget *right){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -49,9 +50,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, player);
         item_map[i] = item;
-        player_maxhp[player] = 4;
-        player_hp[player] = 4;
-        player_start_draw[player] = 2;
+        //player_maxhp[player] = 4;
+        //player_hp[player] = 4;
+        //player_start_draw[player] = 2;
     }
 
     role_combobox = new QComboBox;
@@ -69,7 +70,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     player_draw = new QSpinBox();
     player_draw->setRange(0, Sanguosha->getCardCount());
-    player_draw->setValue(2);
+    player_draw->setValue(4);
     player_draw->setEnabled(true);
 
     QGroupBox *starter_group = new QGroupBox(tr("Start Info"));
@@ -102,18 +103,18 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *pileAssign = new QPushButton(tr("PileCardAssign"));
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
-    max_hp_prompt->setChecked(true);
+    max_hp_prompt->setChecked(false);
     max_hp_spin = new QSpinBox();
     max_hp_spin->setRange(2,10);
     max_hp_spin->setValue(4);
-    max_hp_spin->setEnabled(true);
+    max_hp_spin->setEnabled(false);
 
     hp_prompt = new QCheckBox(tr("Hp"));
-    hp_prompt->setChecked(true);
+    hp_prompt->setChecked(false);
     hp_spin = new QSpinBox();
     hp_spin->setRange(1,max_hp_spin->value());
     hp_spin->setValue(4);
-    hp_spin->setEnabled(true);
+    hp_spin->setEnabled(false);
 
     self_select_general = new QCheckBox(tr("General Self Select"));
     self_select_general2 = new QCheckBox(tr("General2 Self Select"));
@@ -123,6 +124,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    QPushButton *loadButton = new QPushButton(tr("load"));
+    QPushButton *saveButton = new QPushButton(tr("save"));
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(num_combobox);
@@ -138,8 +141,11 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(set_chained);
     vlayout->addWidget(starter_group);
     vlayout->addStretch();
+    vlayout->addWidget(loadButton);
+    vlayout->addWidget(saveButton);
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
+
 
     equip_list = new QListWidget;
     hand_list = new QListWidget;
@@ -213,6 +219,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
     connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
     //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(loadButton,SIGNAL(clicked()),this,SLOT(load()));
+    connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
@@ -435,7 +443,7 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
         hp_prompt->setChecked(true);
     }
     else{
-        hp_spin->setValue(4);
+        //hp_spin->setValue(4);
         hp_prompt->setChecked(false);
     }
 
@@ -444,7 +452,7 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
         max_hp_prompt->setChecked(true);
     }
     else{
-        max_hp_spin->setValue(4);
+        //max_hp_spin->setValue(4);
         max_hp_prompt->setChecked(false);
     }
 }
@@ -487,7 +495,9 @@ void CustomAssignDialog::setPlayerStartDraw(int draw_num){
 
 void CustomAssignDialog::setPlayerDrawNum(int index){
     QString name = starter_box->itemData(index).toString();
-    player_draw->setValue(player_start_draw[name]);
+    int val = 4;
+    if(player_start_draw.contains(name))val = player_start_draw[name];
+    player_draw->setValue(val);
 }
 
 void CustomAssignDialog::updateRole(int index){
@@ -668,6 +678,187 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 
     updatePlayerInfo(player_name);
     updatePlayerHpInfo(player_name);
+    //for(int i=0;i<list->count();i++)updateRole(i);
+    //wtf ?
+}
+
+void CustomAssignDialog::load()
+{
+    QFile file("etc/custom_scenario.txt");
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    role_mapping.clear();
+    general_mapping.clear();
+    general2_mapping.clear();
+    player_maxhp.clear();
+    player_hp.clear();
+    player_start_draw.clear();
+    player_chained.clear();
+    player_turned.clear();
+
+    player_handcards.clear();
+    player_equips.clear();
+    player_judges.clear();
+
+    QTextStream in(&file);
+    int numPlayer = 0;
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        line = line.trimmed();
+
+        if(line.startsWith("setPile:"))
+        {
+            set_pile.clear();
+            QStringList list = line.replace("setPile","").split(",");
+            foreach(QString id,list)
+            {
+                set_pile.prepend(id.toInt());
+            }
+            continue;
+        }
+
+        QString name = numPlayer == 0 ? "player" : QString("ai%1").arg(numPlayer);
+
+        QMap<QString, QString> player;
+        QStringList features;
+        if(line.contains("|"))features= line.split("|");
+        else features = line.split(" ");
+        foreach(QString str, features)
+        {
+            QStringList keys = str.split(":");
+            if(keys.size()<2)continue;
+            if(keys.first().size()<1)continue;
+            player.insert(keys.at(0),keys.at(1));
+        }
+
+        if(player["role"]!= NULL)role_mapping[name] = player["role"];
+
+        if(player["general"]=="select")free_choose_general = true;
+        else if(player["general"]!=NULL)general_mapping[name]=player["general"];
+
+        if(player["general2"]=="select")free_choose_general2 = true;
+        else if(player["general2"]!=NULL)general2_mapping[name]=player["general2"];
+
+        if(player["maxhp"]!=NULL)player_maxhp[name]=player["maxhp"].toInt();
+        if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
+        if(player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
+        if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
+
+        if(player["starter"]!=NULL)starter = name;
+        if(player["chained"]!=NULL)player_chained[name]=true;
+        if(player["turned"]!=NULL)player_turned[name]=true;
+
+        if(player["hand"]!=NULL)
+        {
+            foreach(QString id,player["hand"].split(","))
+            {
+                player_handcards[name].prepend(id.toInt());
+            }
+        }
+
+        if(player["equip"]!=NULL)
+        {
+            foreach(QString id,player["equip"].split(","))
+            {
+                player_equips[name].prepend(id.toInt());
+            }
+        }
+
+        if(player["judge"]!=NULL)
+        {
+            foreach(QString id,player["judge"].split(","))
+            {
+                player_judges[name].prepend(id.toInt());
+            }
+        }
+        numPlayer++;
+    }
+
+    updateNumber(numPlayer-2);
+    for(int i=list->count()-1;i>=0;i--)
+    {
+        list->setCurrentItem(list->item(i));
+
+    }
+
+    player_draw->setValue(player_start_draw[starter_box->currentText()]);
+    //updatePlayerInfo("player");
+    //updatePileInfo();
+    //updatePlayerHpInfo("player");
+    file.close();
+}
+
+void CustomAssignDialog::save()
+{
+    QFile file("etc/custom_scenario.txt");
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    if(set_pile.length())
+    {
+        QString line ;
+        foreach(int id,set_pile)
+        {
+            line.prepend(QString::number(id));
+            line.prepend(",");
+        }
+        line.remove(0,1);
+        line.prepend("setPile:");
+        out << line <<"\n";
+    }
+
+    QString line;
+    if(free_choose_general)line.append("general:select ");
+    else line.append(QString("general:%1 ").arg(general_mapping["player"]));
+
+    if(free_choose_general2)line.append("general2:select ");
+    else line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
+
+    for(int i=0;i<list->count();i++)
+    {
+        QString name = i==0 ? "player" : QString("ai%1").arg(i);
+        line.append(QString("role:%1 ").arg(role_mapping[name]));
+        if(starter == name)line.append("starter:true ");
+        if(player_maxhp[name]>0)line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
+        if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));
+        if(player_turned[name])line.append("turned:true ");
+        if(player_chained[name])line.append("chained:true ");
+        if(player_start_draw.contains(name))line.append(QString("draw:%1 ").arg(player_start_draw[name]));
+
+        if(player_equips[name].length())
+        {
+            line.append("equip:");
+            foreach(int equip,player_equips[name])line.append(QString("%1,").arg(equip));
+            line.chop(1);
+            line.append(" ");
+        }
+
+        if(player_handcards[name].length())
+        {
+            line.append("hand:");
+            foreach(int hand,player_handcards[name])line.append(QString("%1,").arg(hand));
+            line.chop(1);
+            line.append(" ");
+        }
+
+        if(player_judges[name].length())
+        {
+            line.append("judge:");
+            foreach(int judge,player_judges[name])line.append(QString("%1,").arg(judge));
+            line.chop(1);
+            line.append(" ");
+        }
+
+        out << line << '\n';
+        line.clear();
+    }
+
+
+    file.close();
 }
 
 //extern CustomAssignDialog *CustomInstance;
