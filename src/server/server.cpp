@@ -7,6 +7,7 @@
 #include "scenario.h"
 #include "contestdb.h"
 #include "choosegeneraldialog.h"
+#include "customassigndialog.h"
 
 #include <QInputDialog>
 #include <QMessageBox>
@@ -581,8 +582,12 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
 
 
+  //      QPushButton *mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
+  //      connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
+
         item_list << HLay(scenario_button, scenario_combobox);
-        item_list << HLay(mini_scenes,mini_scene_combobox);
+        item_list << HLay(mini_scenes, mini_scene_combobox);
+ //       item_list << HLay(mini_scenes, mini_scene_button);
     }
 
     QRadioButton *button = new QRadioButton(tr("Custom Mode"));
@@ -748,6 +753,11 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
     list->setResizeMode(QListView::Adjust);
 
     connect(action, SIGNAL(triggered()), this, SLOT(toggleCheck()));
+}
+
+void ServerDialog::doCustomAssign(){
+    CustomAssignDialog *dialog = new CustomAssignDialog(this);
+    dialog->exec();
 }
 
 void Select3v3GeneralDialog::toggleCheck(){
