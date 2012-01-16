@@ -23,14 +23,6 @@
 #include <QHttp>
 #include <QAction>
 
-static QLayout *HLay(QWidget *left, QWidget *right){
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(left);
-    layout->addWidget(right);
-
-    return layout;
-}
-
 ServerDialog::ServerDialog(QWidget *parent)
     :QDialog(parent)
 {
@@ -587,7 +579,7 @@ QGroupBox *ServerDialog::createGameModeBox(){
 
         item_list << HLay(scenario_button, scenario_combobox);
         item_list << HLay(mini_scenes, mini_scene_combobox);
- //       item_list << HLay(mini_scenes, mini_scene_button);
+  //      item_list << HLay(mini_scenes, mini_scene_button);
     }
 
     QRadioButton *button = new QRadioButton(tr("Custom Mode"));
