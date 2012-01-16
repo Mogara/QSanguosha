@@ -3087,6 +3087,7 @@ void Room::takeAG(ServerPlayer *player, int card_id){
         move.from_place = Player::DrawPile;
         move.to = player;
         move.to_place = Player::Hand;
+        move.card_id = card_id;
         CardMoveStar move_star = &move;
         QVariant data = QVariant::fromValue(move_star);
         thread->trigger(CardGot, player, data);
