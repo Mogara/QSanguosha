@@ -61,7 +61,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
-    <addaction name="actionAbout_irrKlang"/>
+    <addaction name="actionAbout_fmod"/>
     <addaction name="actionAcknowledgement"/>
     <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
@@ -262,11 +262,6 @@
     <string>Scenario overview</string>
    </property>
   </action>
-  <action name="actionAbout_irrKlang">
-   <property name="text">
-    <string>About irrKlang</string>
-   </property>
-  </action>
   <action name="actionScript_editor">
    <property name="enabled">
     <bool>true</bool>
@@ -361,6 +356,11 @@
   <action name="actionView_ban_list">
    <property name="text">
     <string>View ban list</string>
+   </property>
+  </action>
+  <action name="actionAbout_fmod">
+   <property name="text">
+    <string>About fmod</string>
    </property>
   </action>
  </widget>

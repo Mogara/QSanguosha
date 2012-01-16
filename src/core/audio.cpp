@@ -113,3 +113,7 @@ void Audio::stopBGM(){
     if(BGMChannel)
         FMOD_Channel_Stop(BGMChannel);
 }
+
+QString Audio::getVersion(){
+    return "4.38.06";
+}

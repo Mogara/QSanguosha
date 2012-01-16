@@ -436,28 +436,6 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
     menu_bar->setVisible(! menu_bar->isVisible());
 }
 
-void MainWindow::on_actionAbout_irrKlang_triggered()
-{
-    QString content = tr("irrKlang is a cross platform sound library for C++, C# and all .NET languages. <br />");
-    content.append("<p align='center'> <img src='image/system/irrklang.png' /> </p> <br/>");
-
-    QString address = "http://www.ambiera.com/irrklang/";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
-
-#ifdef AUDIO_SUPPORT
-    // content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
-#endif
-
-    Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
-    scene->addItem(window);
-
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
-
-    window->appear();
-}
-
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if(systray == NULL){
@@ -985,4 +963,28 @@ void MainWindow::on_actionView_ban_list_triggered()
 {
     BanlistDialog *dialog = new BanlistDialog(this, true);
     dialog->exec();
+}
+
+#include "audio.h"
+
+void MainWindow::on_actionAbout_fmod_triggered()
+{
+    QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
+    content.append("<p align='center'> <img src='image/system/fmod.png' /> </p> <br/>");
+
+    QString address = "http://www.fmod.org";
+    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+
+#ifdef AUDIO_SUPPORT
+    content.append(tr("Current versionn %1 <br/>").arg(Audio::getVersion()));
+#endif
+
+    Window *window = new Window(tr("About fmod"), QSize(500, 259));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
 }
