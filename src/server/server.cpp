@@ -582,12 +582,12 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
 
 
-  //      QPushButton *mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
-  //      connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
+        QPushButton *mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
+        connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
         item_list << HLay(scenario_button, scenario_combobox);
-        item_list << HLay(mini_scenes, mini_scene_combobox);
-  //      item_list << HLay(mini_scenes, mini_scene_button);
+ //       item_list << HLay(mini_scenes, mini_scene_combobox);
+        item_list << HLay(mini_scenes, mini_scene_button);
     }
 
     QRadioButton *button = new QRadioButton(tr("Custom Mode"));

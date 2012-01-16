@@ -217,7 +217,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 }
 
 void CustomAssignDialog::doEquipCardAssign(){
-    CardAssignDialog *dialog = new CardAssignDialog(this, "equip");
+    QList<int> excluded;
+    for(int i = 0; i < list->count(); i++){
+        excluded.append(player_equips[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_handcards[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(set_pile);
+    }
+
+    CardAssignDialog *dialog = new CardAssignDialog(this, "equip", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
     connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getEquipCard(int)));
@@ -241,7 +248,15 @@ void CustomAssignDialog::getEquipCard(int card_id){
 }
 
 void CustomAssignDialog::doHandCardAssign(){
-    CardAssignDialog *dialog = new CardAssignDialog(this);
+    QList<int> excluded;
+    for(int i = 0; i < list->count(); i++){
+        excluded.append(player_handcards[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_equips[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_judges[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(set_pile);
+    }
+
+    CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
     connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getHandCard(int)));
@@ -260,7 +275,14 @@ void CustomAssignDialog::getHandCard(int card_id){
 }
 
 void CustomAssignDialog::doJudgeCardAssign(){
-    CardAssignDialog *dialog = new CardAssignDialog(this, "", "DelayedTrick");
+    QList<int> excluded;
+    for(int i = 0; i < list->count(); i++){
+        excluded.append(player_judges[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_handcards[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(set_pile);
+    }
+
+    CardAssignDialog *dialog = new CardAssignDialog(this, "", "DelayedTrick", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
     connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getJudgeCard(int)));
@@ -284,7 +306,15 @@ void CustomAssignDialog::getJudgeCard(int card_id){
 }
 
 void CustomAssignDialog::doPileCardAssign(){
-    CardAssignDialog *dialog = new CardAssignDialog(this);
+    QList<int> excluded;
+    for(int i = 0; i < list->count(); i++){
+        excluded.append(player_handcards[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_equips[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(player_judges[list->item(i)->data(Qt::UserRole).toString()]);
+        excluded.append(set_pile);
+    }
+
+    CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
     connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getPileCard(int)));
@@ -752,35 +782,16 @@ void GeneralAssignDialog::clearGeneral(){
 
 //------------------------------
 
-CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name) :
-    QDialog(parent)
+CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name, QList<int> excluded) :
+    QDialog(parent), card_type(card_type), class_name(class_name),
+    excluded_card(excluded)
 {
 
     setWindowTitle(tr("Custom Card Chosen"));
     QVBoxLayout *vlayout = new QVBoxLayout;
     card_list = new QListWidget;
 
-    int i, n = Sanguosha->getCardCount();
-    QList<const Card *> reasonable_cards;
-    if(!card_type.isEmpty() || !class_name.isEmpty()){
-        for(i=0; i<n ;i++){
-            const Card *card = Sanguosha->getCard(i);
-            if(card->getType() == card_type || card->inherits(class_name.toStdString().c_str()))
-                reasonable_cards << card;
-        }
-    }
-    else{
-        for(i=0; i<n ;i++){
-            const Card *card = Sanguosha->getCard(i);
-            reasonable_cards << card;
-        }
-    }
-
-    for(i = 0; i < reasonable_cards.length(); i++)
-        addCard(reasonable_cards.at(i));
-
-    if(n>0)
-        card_list->setCurrentRow(0);
+    updateCardList();
 
     QPushButton *getCardButton = new QPushButton(tr("Get card"));
     QPushButton *back = new QPushButton(tr("Back"));
@@ -797,6 +808,7 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
 
     connect(back, SIGNAL(clicked()), this, SLOT(reject()));
     connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
+    connect(parent, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
 }
 
 void CardAssignDialog::addCard(const Card *card){
@@ -814,4 +826,41 @@ void CardAssignDialog::askCard(){
     QListWidgetItem *card_item = card_list->currentItem();
     int card_id = card_item->data(Qt::UserRole).toInt();
     emit card_chosen(card_id);
+
+    int row = card_list->currentRow();
+    card_list->takeItem(row);
+    card_list->setCurrentRow(row >= card_list->count() ? row-1 : row);
+   // updateCardList();
+}
+
+void CardAssignDialog::updateCardList(){
+    card_list->clear();
+
+    int i, n = Sanguosha->getCardCount();
+    QList<const Card *> reasonable_cards;
+    if(!card_type.isEmpty() || !class_name.isEmpty()){
+        for(i=0; i<n ;i++){
+            if(excluded_card.contains(i))
+                continue;
+
+            const Card *card = Sanguosha->getCard(i);
+            if(card->getType() == card_type || card->inherits(class_name.toStdString().c_str()))
+                reasonable_cards << card;
+        }
+    }
+    else{
+        for(i=0; i<n ;i++){
+            if(excluded_card.contains(i))
+                continue;
+
+            const Card *card = Sanguosha->getCard(i);
+            reasonable_cards << card;
+        }
+    }
+
+    for(i = 0; i < reasonable_cards.length(); i++)
+        addCard(reasonable_cards.at(i));
+
+    if(n>0)
+        card_list->setCurrentRow(0);
 }
