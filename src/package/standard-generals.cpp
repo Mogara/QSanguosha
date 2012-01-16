@@ -115,7 +115,7 @@ class Tiandu:public TriggerSkill{
 public:
     Tiandu():TriggerSkill("tiandu"){
         frequency = Frequent;
-
+        default_choice = "no";
         events << FinishJudge;
     }
 

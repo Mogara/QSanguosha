@@ -45,6 +45,7 @@ public:
     Luoying():TriggerSkill("luoying"){
         events << CardDiscarded << CardUsed << FinishJudge;
         frequency = Frequent;
+        default_choice = "no";
     }
 
     virtual int getPriority() const{
@@ -96,6 +97,11 @@ public:
                && judge->card->getSuit() == Card::Club)
                clubs << judge->card;
         }
+
+        foreach(const Card* card, clubs)
+            if(card->objectName() == "shit")
+                if(room->askForChoice(player, objectName(), "yes+no") == "no")
+                    clubs.removeOne(card);
 
         if(clubs.isEmpty())
             return false;
