@@ -8,6 +8,14 @@
 #include <QGroupBox>
 #include <QFrame>
 
+static QLayout *HLay(QWidget *left, QWidget *right){
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(left);
+    layout->addWidget(right);
+
+    return layout;
+}
+
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false), free_choose_general(false), free_choose_general2(false)

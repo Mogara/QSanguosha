@@ -13,14 +13,6 @@
 #include <QButtonGroup>
 #include <QLabel>
 
-static QLayout *HLay(QWidget *left, QWidget *right){
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(left);
-    layout->addWidget(right);
-
-    return layout;
-}
-
 class LabelButton : public QLabel {
     Q_OBJECT
 public:
