@@ -174,7 +174,8 @@ HEADERS += src/client/aux-skills.h \
     src/core/banpair.h \
     src/ui/chatwidget.h \
     src/scenario/miniscenarios.h \
-    src/dialog/customassigndialog.h
+    src/dialog/customassigndialog.h \
+	src/core/audio.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -225,19 +226,3 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
