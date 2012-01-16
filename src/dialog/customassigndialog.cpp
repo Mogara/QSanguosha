@@ -63,7 +63,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     for(int i=0; i< num_combobox->currentIndex()+2; i++){
         list->addItem(item_map[i]);
         QString name = player_mapping[i];
-        starter_box->addItem(tr("%1").arg(name), name);
+        starter_box->addItem(Sanguosha->translate(name), name);
     }
     list->setCurrentItem(item_map[0]);
 
@@ -343,7 +343,7 @@ void CustomAssignDialog::updateNumber(int num){
         for(int i= list->count(); i< count; i++){
             list->addItem(item_map[i]);
             QString name = player_mapping[i];
-            starter_box->addItem(tr("%1").arg(name), name);
+            starter_box->addItem(Sanguosha->translate(name), name);
         }
     }
 }
