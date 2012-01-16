@@ -10,6 +10,7 @@
 #include "cardcontainer.h"
 #include "recorder.h"
 #include "indicatoritem.h"
+#include "pixmapanimation.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -396,9 +397,20 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     createStateItem();
 
-    //adjustItems();
-
+    //load the pixmaps at start to save time when displaying the animations on the fly
     animations = new EffectAnimation();
+    PixmapAnimation::LoadEmotion("peach");
+    PixmapAnimation::LoadEmotion("analeptic");
+    PixmapAnimation::LoadEmotion("chain");
+    PixmapAnimation::LoadEmotion("damage");
+    PixmapAnimation::LoadEmotion("fire_slash");
+    PixmapAnimation::LoadEmotion("thunder_slash");
+    PixmapAnimation::LoadEmotion("killer");
+    PixmapAnimation::LoadEmotion("jink");
+    PixmapAnimation::LoadEmotion("no-success");
+    PixmapAnimation::LoadEmotion("slash_black");
+    PixmapAnimation::LoadEmotion("slash_red");
+    PixmapAnimation::LoadEmotion("success");
     drawPile = NULL;
     view_transform = QMatrix();
 }
@@ -3257,8 +3269,14 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion ,bool perm
     Photo *photo = name2photo[who];
     if(photo){
         photo->setEmotion(emotion,permanent);
+        return;
     }
-        //doAppearingAnimation(emotion,QStringList(who));
+    PixmapAnimation * pma = PixmapAnimation::GetPixmapAnimation(dashboard,emotion);
+    if(pma)
+    {
+        pma->moveBy(0,- dashboard->boundingRect().height()/2);
+        pma->setZValue(8.0);
+    }
 }
 
 void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name){
@@ -3447,6 +3465,12 @@ void RoomScene::animatePopup(const QString &name, const QStringList &args)
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
 
+    if(name == "analeptic"
+            || name == "peach")
+    {
+        setEmotion(args.at(0),name);
+        return;
+    }
     Pixmap *item = new Pixmap(QString("image/system/animation/%1.png").arg(name));
     addItem(item);
 
@@ -3552,7 +3576,7 @@ void RoomScene::doIndicate(const QString &name, const QStringList &args){
 void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
-        map["peach"] = &RoomScene::animatePopup;
+        map["peach"] = &RoomScene::doAppearingAnimation;
         map["jink"] = &RoomScene::animatePopup;
         map["nullification"] = &RoomScene::doMovingAnimation;
 

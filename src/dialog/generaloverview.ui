@@ -61,7 +61,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QFrame" name="">
+      <widget class="QFrame" name="frame">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="generalPhoto">
@@ -91,7 +91,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QFrame" name="">
+      <widget class="QFrame" name="frame2">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QFrame" name="frame">
@@ -161,8 +161,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>189</width>
-             <height>535</height>
+             <width>205</width>
+             <height>506</height>
             </rect>
            </property>
           </widget>

@@ -169,15 +169,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent){
     if(!permanent)
         QTimer::singleShot(2000, this, SLOT(hideEmotion()));
 
-    PixmapAnimation *pma = new PixmapAnimation();
-    pma->setPath(QString("image/system/emotion/%1/").arg(emotion));
-    if(pma->valid())
-    {
-        pma->setParentItem(this);
-        pma->startTimer(50);
-        connect(pma,SIGNAL(finished()),pma,SLOT(deleteLater()));
-    }
-    else delete pma;
+    PixmapAnimation::GetPixmapAnimation(this,emotion);
 }
 
 void Photo::tremble(){
