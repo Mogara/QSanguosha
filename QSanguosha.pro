@@ -208,9 +208,9 @@ macx {
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
-    INCLUDEPATH += include/irrKlang
-    win32: LIBS += irrKlang.lib
-    unix: QT += phonon
+    INCLUDEPATH += include/fmod
+    LIBS += -lfmodex
+    SOURCES += src/core/audio.cpp
 }
 
 CONFIG(joystick){
