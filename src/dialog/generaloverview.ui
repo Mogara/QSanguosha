@@ -94,7 +94,7 @@
       <widget class="QFrame" name="frame2">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QFrame" name="frame">
+         <widget class="QFrame" name="frame1">
           <property name="maximumSize">
            <size>
             <width>221</width>
