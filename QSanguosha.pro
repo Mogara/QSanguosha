@@ -172,7 +172,8 @@ HEADERS += src/client/aux-skills.h \
     src/ui/sprite.h \
     src/core/banpair.h \
     src/ui/chatwidget.h \
-    src/scenario/miniscenarios.h
+    src/scenario/miniscenarios.h \
+    src/core/audio.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -206,9 +207,9 @@ macx {
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
-    INCLUDEPATH += include/irrKlang
-    win32: LIBS += irrKlang.lib
-    unix: QT += phonon
+    INCLUDEPATH += include/fmod
+    LIBS += -lfmodex
+    SOURCES += src/core/audio.cpp
 }
 
 CONFIG(joystick){
@@ -223,17 +224,3 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss
-
-
-
-
-
-
-
-
-
-
-
-
-
-

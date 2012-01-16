@@ -7,10 +7,6 @@
 #include "package.h"
 #include "exppattern.h"
 
-#ifdef AUDIO_SUPPORT
-#include "irrKlang.h"
-#endif
-
 #include <QHash>
 #include <QStringList>
 #include <QMetaObject>

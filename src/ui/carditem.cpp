@@ -4,6 +4,7 @@
 #include "clientplayer.h"
 #include "settings.h"
 
+#include <cmath>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
