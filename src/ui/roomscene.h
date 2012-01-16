@@ -183,7 +183,6 @@ private:
     QMap<QGraphicsItem *, const ClientPlayer *> item2player;
     QComboBox *sort_combobox;
 
-
     QProgressBar *progress_bar;
     int timer_id;
     int tick;
@@ -270,7 +269,6 @@ private:
     EffectAnimation *animations;
     Pixmap *drawPile;
 
-
     //re-layout attempts
     bool game_started;
     QMatrix view_transform;
@@ -326,12 +324,6 @@ private slots:
     //animations
     void onSelectChange();
     void onEnabledChange();
-
-#ifdef AUDIO_SUPPORT
-#ifndef  Q_OS_WIN32
-    void onMusicFinish();
-#endif
-#endif
 
 #ifdef JOYSTICK_SUPPORT
     void onJoyButtonClicked(int bit);

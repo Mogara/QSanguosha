@@ -445,7 +445,7 @@ void MainWindow::on_actionAbout_irrKlang_triggered()
     content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
 
 #ifdef AUDIO_SUPPORT
-    content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
+    // content.append(tr("Current versionn %1 <br/>").arg(IRR_KLANG_VERSION));
 #endif
 
     Window *window = new Window(tr("About irrKlang"), QSize(500, 259));
