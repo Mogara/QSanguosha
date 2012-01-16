@@ -6,6 +6,15 @@
 #include <QPixmap>
 #include <QIcon>
 #include <QGroupBox>
+#include <QFrame>
+
+static QLayout *HLay(QWidget *left, QWidget *right){
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(left);
+    layout->addWidget(right);
+
+    return layout;
+}
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
@@ -42,6 +51,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         item_map[i] = item;
         player_maxhp[player] = 4;
         player_hp[player] = 4;
+        player_start_draw[player] = 2;
     }
 
     role_combobox = new QComboBox;
@@ -57,10 +67,18 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     }
     list->setCurrentItem(item_map[0]);
 
-    QGroupBox *starter_group = new QGroupBox(tr("Starter"));
+    player_draw = new QSpinBox();
+    player_draw->setRange(0, Sanguosha->getCardCount());
+    player_draw->setValue(2);
+    player_draw->setEnabled(true);
+
+    QGroupBox *starter_group = new QGroupBox(tr("Start Info"));
+    QLabel *start_text = new QLabel(tr("Starter"));
+    QLabel *draw_text = new QLabel(tr("Start Draw"));
     QVBoxLayout *starter_lay = new QVBoxLayout();
     starter_group->setLayout(starter_lay);
-    starter_lay->addWidget(starter_box);
+    starter_lay->addLayout(HLay(start_text, draw_text));
+    starter_lay->addLayout(HLay(starter_box, player_draw));
 
     general_label = new LabelButton;
     general_label->setPixmap(QPixmap("image/system/disabled.png"));
@@ -77,7 +95,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QVBoxLayout *general_lay2 = new QVBoxLayout();
     general_box2->setLayout(general_lay2);
     general_lay2->addWidget(general_label2);
-
 
     QPushButton *equipAssign = new QPushButton(tr("EquipAssign"));
     QPushButton *handcardAssign = new QPushButton(tr("HandcardAssign"));
@@ -185,6 +202,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
+    connect(player_draw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
+    connect(starter_box, SIGNAL(currentIndexChanged(int)), this, SLOT(setPlayerDrawNum(int)));
     connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
     connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
     connect(removeJudgeButton, SIGNAL(clicked()), this, SLOT(removeJudgeCard()));
@@ -429,6 +448,16 @@ void CustomAssignDialog::setPlayerMaxHpEnabled(bool toggled){
     else{
         player_maxhp[name] = max_hp_spin->value();
     }
+}
+
+void CustomAssignDialog::setPlayerStartDraw(int draw_num){
+    QString name = starter_box->itemData(starter_box->currentIndex()).toString();
+    player_start_draw[name] = draw_num;
+}
+
+void CustomAssignDialog::setPlayerDrawNum(int index){
+    QString name = starter_box->itemData(index).toString();
+    player_draw->setValue(player_start_draw[name]);
 }
 
 void CustomAssignDialog::updateRole(int index){

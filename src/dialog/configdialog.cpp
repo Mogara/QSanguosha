@@ -2,16 +2,6 @@
 #include "ui_configdialog.h"
 #include "settings.h"
 
-#ifdef AUDIO_SUPPORT
-#ifdef  Q_OS_WIN32
-    #include "irrKlang.h"
-    extern irrklang::ISoundEngine *SoundEngine;
-#else
-    #include <phonon/AudioOutput>
-    extern Phonon::AudioOutput *SoundOutput;
-#endif
-#endif
-
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QFontDialog>
@@ -116,16 +106,6 @@ void ConfigDialog::saveConfig()
     volume = ui->effectVolumeSlider->value() / 100.0;
     Config.EffectVolume = volume;
     Config.setValue("EffectVolume", volume);
-
-#ifdef AUDIO_SUPPORT
-#ifdef  Q_OS_WIN32
-    if(SoundEngine)
-        SoundEngine->setSoundVolume(Config.EffectVolume);
-#else
-    if(SoundOutput)
-        SoundOutput->setVolume(Config.EffectVolume);
-#endif
-#endif
 
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;

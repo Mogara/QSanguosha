@@ -13,16 +13,6 @@
 #include <QButtonGroup>
 #include <QLabel>
 
-#ifndef SERVER_H
-static QLayout *HLay(QWidget *left, QWidget *right){
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(left);
-    layout->addWidget(right);
-
-    return layout;
-}
-#endif
-
 class LabelButton : public QLabel {
     Q_OBJECT
 public:
@@ -59,6 +49,7 @@ private:
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt,*hp_prompt;
     QSpinBox *max_hp_spin,*hp_spin;
+    QSpinBox *player_draw;
     QCheckBox *self_select_general, *self_select_general2;
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
@@ -71,6 +62,7 @@ private:
     QMap<QString, int> player_maxhp, player_hp;
     QMap<QString, bool> player_turned, player_chained;
     QList<int> set_pile;
+    QMap<QString, int> player_start_draw;
 
     QString general_name, general_name2;
     bool choose_general2;
@@ -93,6 +85,8 @@ private slots:
     void setPlayerMaxHpEnabled(bool toggled);
     void getPlayerHp(int hp);
     void getPlayerMaxHp(int maxhp);
+    void setPlayerStartDraw(int draw_num);
+    void setPlayerDrawNum(int index);
 
     void removeEquipCard();
     void removeHandCard();
