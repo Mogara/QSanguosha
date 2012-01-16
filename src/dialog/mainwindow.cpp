@@ -376,7 +376,7 @@ void MainWindow::on_actionAbout_triggered()
     content.append(tr("Project home: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.com";
-    content.append(tr("Forum: <a href='%1' style = \"color:white; \">%1</a> <br/>").arg(forum_url));
+    content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
     Window *window = new Window(tr("About QSanguosha"), QSize(365, 450));
     scene->addItem(window);
