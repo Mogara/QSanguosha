@@ -4,11 +4,11 @@
 TARGET = QSanguosha
 QT += network sql
 TEMPLATE = app
-CONFIG += warn_on audio joystick qaxcontainer
+CONFIG += warn_on audio qaxcontainer
 
-macx {
-    CONFIG -= joystick # in Mac, we do not support joystick currently
-}
+# If you want to enable joystick support, please uncomment the following line:
+# CONFIG += joystick
+# However, joystick is not supported under Mac OS X temporarily
 
 SOURCES += src/main.cpp \
 	src/client/aux-skills.cpp \
