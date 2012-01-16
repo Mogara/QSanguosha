@@ -67,6 +67,7 @@ sgs.ai_skill_use["@lianli"] = function(self, prompt)
 	return "."	
 end
 
+table.insert(sgs.ai_global_flags, "lianlisource")
 sgs.ai_skill_invoke.lianli_slash = function(self, data)
 	return self:getCardsNum("Slash")==0
 end
@@ -78,6 +79,19 @@ sgs.ai_skill_invoke.lianli_jink = function(self, data)
 	end
 	if self:isEquip("EightDiagram", tied) then return true end
 	return self:getCardsNum("Jink")==0
+end
+
+sgs.ai_choicemade_filter.skillInvoke["lianli-jink"] = function(player, promptlist)
+	if promptlist[#promptlist] == "yes" then
+		sgs.lianlisource = player
+	end
+end
+
+sgs.ai_choicemade_filter.cardResponsed["@lianli-jink"] = function(player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		updateIntention(player, sgs.lianlisource, -80)
+		sgs.lianlisource = nil
+	end
 end
 
 local lianli_slash_skill={name="lianli-slash"}
@@ -92,6 +106,18 @@ sgs.ai_skill_use_func["LianliSlashCard"] = function(card, use, self)
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	self:useBasicCard(slash, use)
 	if use.card then use.card = card end
+end
+
+sgs.ai_choicemade_filter.cardUsed.LianliSlashCard = function(player, carduse)
+	if carduse.card:inherits("LianliSlashCard") then
+		sgs.lianlislash = false
+	end
+end
+
+sgs.ai_choicemade_filter.cardResponsed["@lianli-slash"] = function(player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		sgs.lianlislash = true
+	end
 end
 
 -- tongxin
@@ -322,6 +348,15 @@ sgs.ai_skill_use_func["YisheCard"]=function(card,use,self)
 		end
 	else
 		if not self.player:hasUsed("YisheCard") then use.card=card return end
+	end
+end
+
+table.insert(sgs.ai_global_flags, "yisheasksource")
+sgs.ai_choicemade_filter.cardUsed.YisheAskCard = function(player, carduse)
+	if carduse.card:inherits("YisheAskCard") then
+		sgs.yisheasksource = player
+	else
+		sgs.yisheasksource = nil
 	end
 end
 

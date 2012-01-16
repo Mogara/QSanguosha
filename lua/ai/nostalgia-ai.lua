@@ -113,6 +113,15 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	return "."
 end
 
+table.insert(sgs.ai_global_flags, "questioner")
+
+sgs.ai_choicemade_filter.cardUsed.GuhuoCard = function(player, carduse)
+	if carduse.card:inherits("GuhuoCard") then
+		sgs.questioner = nil
+		sgs.guhuotype = carduse.card:toString():split(":")[2]
+	end
+end
+
 sgs.ai_skill_choice["guhuo"] = function(self, choices)
 	if sgs.guhuotype and (sgs.guhuotype == "shit" or sgs.guhuotype == "amazing_grace") then return "noquestion" end
 	local players = self.room:getOtherPlayers(self.player)
@@ -130,6 +139,12 @@ sgs.ai_skill_choice["guhuo"] = function(self, choices)
 	end
 	local r=math.random(0,self.player:getHp()-1)
 	if r==0 then return "noquestion" else return "question" end
+end
+
+sgs.ai_choicemade_filter.skillChoice.guhuo = function(self, promptlist)
+	if promptlist[#promptlist] == "yes" then
+		sgs.questioner = player
+	end
 end
 
 local guhuo_skill={}

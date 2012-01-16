@@ -895,3 +895,18 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 	end
 end
 
+sgs.ai_choicemade_filter.cardUsed.LijianCard = function(player, carduse)
+	if carduse.card:inherits("LijianCard") then
+		sgs.ai_lijian_effect = true
+	end
+end
+
+sgs.ai_carduse_intention.LijianCard = function(card, from, to, source)
+	if self:isFriend(to[1], to[2]) then
+		self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[1], 80))
+		--self.room:writeToConsole("LijianCard:diaochan->" .. to[1]:getGeneralName() .. "+" .. to[2]:getGeneralName())
+		if to[1]:isLord() or to[2]:isLord() then
+			sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
+		end
+	end
+end

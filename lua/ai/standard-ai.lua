@@ -3,6 +3,15 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 		return not sgs.Shit_HasShit(data:toCard())
 end
 
+table.insert(sgs.ai_global_flags, "jijiangsource")
+sgs.ai_choicemade_filter.cardUsed.JijiangCard = function(player, carduse)
+	if carduse.card:inherits("JijiangCard") then
+		sgs.jijiangsource = player
+	else
+		sgs.jijiangsource = nil
+	end
+end
+
 sgs.ai_skill_invoke.jijiang = function(self, data)
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
@@ -11,6 +20,19 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 		end
 	end
 	if sgs.jijiangsource then return false else return true end
+end
+
+sgs.ai_choicemade_filter.skillInvoke.jijiang = function(player, promptlist)
+	if promptlist[#promptlist] == "yes" then
+		sgs.jijiangsource = player
+	end
+end
+
+sgs.ai_choicemade_filter.cardResponsed["@jijiang-slash"] = function(player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		updateIntention(player, sgs.jijiangsource, -40)
+		sgs.jijiangsource = nil
+	end
 end
 
 sgs.ai_skill_choice.jijiang = function(self , choices)
@@ -31,6 +53,7 @@ sgs.ai_skill_choice.jijiang = function(self , choices)
 	return "ignore"
 end
 
+table.insert(sgs.ai_global_flags, "hujiasource")
 sgs.ai_skill_choice.hujia = function(self , choices)
 	if not self.player:hasLordSkill("hujia") then
 		if self:getCardsNum("Jink") <= 0 then return "ignore" end
@@ -61,6 +84,19 @@ sgs.ai_skill_invoke.hujia = function(self, data)
 		end
 	end
 	return true
+end
+
+sgs.ai_choicemade_filter.skillInvoke.hujia = function(player, promptlist)
+	if promptlist[#promptlist] = "yes" then
+		sgs.hujiasource = player
+	end
+end
+
+sgs.ai_choicemade_filter.cardResponsed["@hujia-jink"] = function(player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		updateIntention(player, sgs.hujiasource, -80)
+		sgs.hujiasource = nil
+	end
 end
 
 -- tuxi

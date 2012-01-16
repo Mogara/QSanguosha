@@ -14,6 +14,12 @@ sgs.ai_skill_invoke.pojun = function(self, data)
 	end
 end
 
+sgs.ai_choicemade_filter.skillInvoke.pojun = function(player, promptlist)
+	if promptlist[#promptlist] == "yes" then
+		sgs.ai_pojun_effect = true
+	end
+end
+
 --jiushi
 sgs.ai_skill_invoke.jiushi= true
 

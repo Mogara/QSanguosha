@@ -197,6 +197,7 @@ function useDefaultStrategy()
 end
 
 -- this function create 2 tables contains the friends and enemies, respectively
+sgs.ai_global_flags = {}
 function SmartAI:updatePlayers(inclusive)
 	self.friends = sgs.QList2Table(self.lua_ai:getFriends())
 	table.insert(self.friends, self.player)
@@ -204,10 +205,9 @@ function SmartAI:updatePlayers(inclusive)
 	self.friends_noself = sgs.QList2Table(self.lua_ai:getFriends())
 	self.enemies = sgs.QList2Table(self.lua_ai:getEnemies())
 
-	sgs.jijiangsource = nil
-	sgs.hujiasource = nil
-	sgs.lianlisource = nil
-	sgs.questioner = nil
+	for _, aflag in ipairs(sgs.ai_global_flags) do
+		sgs[aflag] = nil
+	end
 
 	-- if self.player:isLord() then self:printFEList() end
 	if isRolePredictable() then
@@ -511,64 +511,38 @@ function SmartAI:sort(players, key)
 	table.sort(players, func)
 end
 
+sgs.ai_choicemade_filter = {
+	cardUsed = {},
+	cardResponsed = {},
+	skillInvoke = {},
+	skillChoice = {}
+}
+
+dofile "lua/ai/intention-ai.lua"
+
 function SmartAI:filterEvent(event, player, data)
 	sgs.lastevent = event
-	if event==sgs.ChoiceMade then
-		local carduse=data:toCardUse()
+	if event == sgs.ChoiceMade then
+		local carduse = data:toCardUse()
 		if carduse and carduse:isValid() then
-			if carduse.card:inherits("JijiangCard") then
-				sgs.jijiangsource = player
-			else
-				sgs.jijiangsource = nil
+			for _, aflag in ipairs(sgs.ai_global_flags) do
+				sgs[aflag] = nil
 			end
-			if carduse.card:inherits("YisheAskCard") then
-				sgs.yisheasksource = player
-			else
-				sgs.yisheasksource = nil
-			end
-			if carduse.card:inherits("GuhuoCard") then
-				sgs.questioner = nil
-				sgs.guhuotype = carduse.card:toString():split(":")[2]
-			end
-			if carduse.card:inherits("LianliSlashCard") then
-				sgs.lianlislash = false
-			end
-			if carduse.card:inherits("LijianCard") then
-				sgs.ai_lijian_effect = true
-			end
-			if carduse.card:inherits("QuhuCard") then
-				sgs.ai_quhu_effect = true
+			for _, callback in ipairs(sgs.ai_choicemade_filter.cardUsed) do
+				if callback and type(callback) == "function" then
+					callback(player, carduse)
+				end
 			end
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
-			if promptlist[1] == "cardResponsed" then
-				if promptlist[3] == "@hujia-jink" and promptlist[5] ~= "_nil_" then
-					local intention = sgs.ai_card_intention["general"](sgs.hujiasource, -80)
-					self:refreshLoyalty(player, intention)
-					sgs.hujiasource = nil
-				elseif promptlist[3] == "@jijiang-slash" and promptlist[5] ~= "_nil_" then
-					local intention = sgs.ai_card_intention["general"](sgs.jijiangsource, -40)
-					self:refreshLoyalty(player, intention)
-					sgs.jijiangsource = nil
-				elseif promptlist[3] == "@lianli-jink" and promptlist[4] ~= "_nil_" then
-					local intention = sgs.ai_card_intention["general"](sgs.lianlisource, -80)
-					self:refreshLoyalty(player, intention)
-					sgs.lianlisource = nil
-				elseif promptlist[3] == "@lianli-slash" and promptlist[4] ~= "_nil_" then
-					sgs.lianlislash=true
+			local callbacktable = sgs.ai_choicemade_filter[promptlist[1]]
+			if callbacktable and type(callbacktable) == "table" then
+				local index = 2
+				if promptlist[1] == "cardResponsed" then index = 3 end
+				local callback = callbacktable[promptlist[index]]
+				if callback and type(callback) == "function" then
+					callback(player, promptlist)
 				end
-			elseif promptlist[1] == "skillInvoke" and promptlist[3] == "yes" then
-				if promptlist[2] == "hujia" then
-					sgs.hujiasource = player
-				elseif promptlist[2] == "jijiang" then
-					sgs.jijiangsource = player
-				elseif promptlist[2] == "lianli-jink" then
-					sgs.lianlisource = player
-				elseif promptlist[2] == "pojun" then
-					sgs.ai_pojun_effect = true
-				end
-			elseif data:toString() == "skillChoice:guhuo:question" then
-				sgs.questioner = player
 			end
 		end
 	elseif event == sgs.CardUsed then
@@ -655,37 +629,12 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local source =  self.room:getCurrent()
 
-		if card:inherits("LijianCard") then
-			if self:isFriend(to[1], to[2]) then
-				self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[1], 80))
-				--self.room:writeToConsole("LijianCard:diaochan->" .. to[1]:getGeneralName() .. "+" .. to[2]:getGeneralName())
-				if to[1]:isLord() or to[2]:isLord() then
-					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
-				end
-			end
-		elseif card:inherits("DimengCard") then
-			self:sort(to, "handcard")
-			if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
-				self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[2], (to[1]:getHandcardNum()-to[2]:getHandcardNum())*20-40))
-				if to[1]:isLord() then
-					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
-				end
-			end
-		else
-			for _, eachTo in ipairs(to) do
-				local use_intention = sgs.ai_card_intention[card:className()]
-				if use_intention and from:objectName()~=eachTo:objectName() then
-					local different = true
-					if self:isFriend(from, eachTo) then different = false end
-					local intention = use_intention(card,from,eachTo,source,different) or use_intention(card,from,eachTo,source)
-					--self.room:writeToConsole(card:className() .. ":" .. from:getGeneralName() .. "->" .. eachTo:getGeneralName())
-					self:refreshLoyalty(from,intention)
-
-					if eachTo:isLord() and intention < 0 then
-						sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
-					end
-				end
-				self.room:output(eachTo:objectName())
+		local callback = sgs.ai_carduse_intention[card:className()]
+		if callback then
+			if type(callback) == "function" then
+				callback(card, from, to, source)
+			elseif type(callback) == "number" then
+				updateIntentions(from, to, callback)
 			end
 		end
 	elseif event == sgs.CardLost then
@@ -3923,7 +3872,6 @@ dofile "lua/ai/joy-ai.lua"
 dofile "lua/ai/bgm-ai.lua"
 
 dofile "lua/ai/general_config.lua"
-dofile "lua/ai/intention-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/value_config.lua"
 
