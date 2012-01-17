@@ -530,7 +530,7 @@ void CustomAssignDialog::setPlayerDrawNum(int index){
 void CustomAssignDialog::updateRole(int index){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_combobox->itemData(index).toString();
-    QString text = QString("%1[%2]").arg(name).arg(Sanguosha->translate(role));
+    QString text = QString("%1[%2]").arg(Sanguosha->translate(name)).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;
 }
@@ -834,7 +834,7 @@ void CustomAssignDialog::load()
 
         if(player["maxhp"]!=NULL)player_maxhp[name]=player["maxhp"].toInt();
         if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
-        if(player_maxhp[name] && player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
+        if(player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
         if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
 
         if(player["starter"]!=NULL)starter = name;
@@ -914,8 +914,12 @@ bool CustomAssignDialog::save(QString path)
             }
         }
 
-        if(!has_lord){
-            if(role_mapping[name] == "lord")
+        if(role_mapping[name] == "lord"){
+            if(has_lord){
+                QMessageBox::warning(this, tr("Warning"), tr("Two many lords in the game"));
+                return false;
+            }
+            else
                 has_lord = true;
         }
     }
