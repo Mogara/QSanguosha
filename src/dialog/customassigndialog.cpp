@@ -20,6 +20,8 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL){
     return layout;
 }
 
+CustomAssignDialog *CustomInstance = NULL;
+
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false), free_choose_general(false), free_choose_general2(false),
@@ -27,11 +29,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 {
     setWindowTitle(tr("Custom mini scene"));
 
+    CustomInstance = this;
+
     list = new QListWidget;
     list->setFlow(QListView::TopToBottom);
     list->setMovement(QListView::Static);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
+
 
     num_combobox = new QComboBox;
     starter_box = new QComboBox;
@@ -274,6 +279,7 @@ void CustomAssignDialog::getEquipCard(int card_id){
     QString card_type = Sanguosha->getCard(card_id)->getSubtype();
     foreach(int id, player_equips[name]){
         if(card_type == Sanguosha->getCard(id)->getSubtype()){
+            emit card_addin(id);
             player_equips[name].removeOne(id);
             break;
         }
@@ -332,6 +338,7 @@ void CustomAssignDialog::getJudgeCard(int card_id){
     QString card_name = Sanguosha->getCard(card_id)->objectName();
     foreach(int id, player_judges[name]){
         if(Sanguosha->getCard(id)->objectName() == card_name){
+            emit card_addin(id);
             player_judges[name].removeOne(id);
             break;
         }
@@ -1203,7 +1210,7 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
 
     connect(back, SIGNAL(clicked()), this, SLOT(reject()));
     connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    connect(parent, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
+    connect(CustomInstance, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
 }
 
 void CardAssignDialog::addCard(const Card *card){
@@ -1223,9 +1230,14 @@ void CardAssignDialog::askCard(){
     emit card_chosen(card_id);
 
     int row = card_list->currentRow();
-    card_list->takeItem(row);
+    int id = card_list->item(row)->data(Qt::UserRole).toInt();
+    excluded_card << id;
+    updateCardList();
     card_list->setCurrentRow(row >= card_list->count() ? row-1 : row);
-   // updateCardList();
+}
+
+void CardAssignDialog::updateExcluded(int card_id){
+    excluded_card.removeOne(card_id);
 }
 
 void CardAssignDialog::updateCardList(){

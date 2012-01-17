@@ -119,6 +119,9 @@ public slots:
     void getHandCard(int card_id);
     void getJudgeCard(int card_id);
     void getPileCard(int card_id);
+
+signals:
+    void card_addin(int card_id);
 };
 
 
@@ -156,6 +159,7 @@ private:
 private slots:
     void askCard();
     void updateCardList();
+    void updateExcluded(int card_id);
 
 signals:
     void card_chosen(int card_id);
