@@ -9,6 +9,7 @@
 #include "scenario-overview.h"
 #include "window.h"
 #include "halldialog.h"
+#include "pixmapanimation.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -134,6 +135,32 @@ void MainWindow::gotoScene(QGraphicsScene *scene){
     changeBackground();
 }
 
+void MainWindow::updateLoadingProgress(int progress)
+{
+    QGraphicsScene *scene = view->scene();
+
+    static QGraphicsTextItem *text;
+    if(text==NULL)
+    {
+        text = scene->addText(QString("Loaded %1/100").arg(progress),Config.BigFont);
+        QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
+        drop->setBlurRadius(5);
+        drop->setOffset(0);
+        drop->setColor(Qt::yellow);
+        text->setGraphicsEffect(drop);
+        text->moveBy(-text->boundingRect().width()/2,
+                     -text->boundingRect().height()/2);
+    }else text->setPlainText(QString("Loaded %1/100").arg(progress));
+
+    if(progress == 100)
+    {
+        view->setScene(this->scene);
+        RoomScene * scene = qobject_cast<RoomScene*>(this->scene);
+        scene->adjustItems();
+        changeBackground();
+    }
+}
+
 void MainWindow::on_actionExit_triggered()
 {
     QMessageBox::StandardButton result;
@@ -238,6 +265,43 @@ void MainWindow::networkError(const QString &error_msg){
         QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
+
+BackLoader::BackLoader(QObject * parent)
+    :QThread(parent)
+{
+}
+
+void BackLoader::run()
+{
+    PixmapAnimation::LoadEmotion("peach");
+    emit completed(8);
+    PixmapAnimation::LoadEmotion("analeptic");
+    emit completed(16);
+    PixmapAnimation::LoadEmotion("chain");
+    emit completed(25);
+    PixmapAnimation::LoadEmotion("damage");
+    emit completed(33);
+    PixmapAnimation::LoadEmotion("fire_slash");
+    emit completed(41);
+    PixmapAnimation::LoadEmotion("thunder_slash");
+    emit completed(49);
+    PixmapAnimation::LoadEmotion("killer");
+    emit completed(58);
+    PixmapAnimation::LoadEmotion("jink");
+    emit completed(66);
+    PixmapAnimation::LoadEmotion("no-success");
+    emit completed(74);
+    PixmapAnimation::LoadEmotion("slash_black");
+    emit completed(82);
+    PixmapAnimation::LoadEmotion("slash_red");
+    emit completed(91);
+    PixmapAnimation::LoadEmotion("success");
+    emit completed(100);
+
+    emit finished();
+}
+
+
 void MainWindow::enterRoom(){
     // add current ip to history
     if(!Config.HistoryIPs.contains(Config.HostAddress)){
@@ -245,6 +309,14 @@ void MainWindow::enterRoom(){
         Config.HistoryIPs.sort();
         Config.setValue("HistoryIPs", Config.HistoryIPs);
     }
+
+    QGraphicsScene *loading_scene = new QGraphicsScene;
+    gotoScene(loading_scene);
+
+    BackLoader *loader = new BackLoader(this);
+    loader->start();
+
+    connect(loader,SIGNAL(completed(int)),this,SLOT(updateLoadingProgress(int)));
 
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
@@ -277,8 +349,7 @@ void MainWindow::enterRoom(){
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
-
-    gotoScene(room_scene);
+    this->scene = room_scene;
 }
 
 void MainWindow::gotoStartScene(){

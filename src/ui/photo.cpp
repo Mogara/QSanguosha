@@ -114,6 +114,7 @@ void Photo::setOrder(int order){
 void Photo::revivePlayer(){
     updateAvatar();
     updateSmallAvatar();
+    this->setOpacity(1.0);
 
     role_combobox->show();
 }

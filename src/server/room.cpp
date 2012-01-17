@@ -233,11 +233,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
     }
 
     victim->setAlive(false);
-    broadcastProperty(victim, "alive");
-
-    broadcastProperty(victim, "role");
-
-
 
     int index = alive_players.indexOf(victim);
     int i;
@@ -269,6 +264,11 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
+
+    broadcastProperty(victim, "alive");
+    broadcastInvoke("killPlayer", victim->objectName());
+    broadcastProperty(victim, "role");
+
     thread->trigger(Death, victim, data);
     victim->loseAllSkills();
 
@@ -296,7 +296,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
         }
     }
 
-    broadcastInvoke("killPlayer", victim->objectName());
+
 }
 
 void Room::judge(JudgeStruct &judge_struct){

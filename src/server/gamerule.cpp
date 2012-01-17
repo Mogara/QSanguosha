@@ -962,8 +962,7 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
         playerShowed(player);
         break;
     }
-
-    case Death:{
+    case GameOverJudge:{
         if(Config.EnableHegemony){
             if(player->getGeneralName() == "anjiang"){
                 QStringList generals = room->getTag(player->objectName()).toStringList();
@@ -972,6 +971,12 @@ bool BasaraMode::trigger(TriggerEvent event, ServerPlayer *player, QVariant &dat
                 room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
                 room->setPlayerProperty(player, "role", getMappedRole(player->getKingdom()));
             }
+        }
+        break;
+    }
+
+    case Death:{
+        if(Config.EnableHegemony){
 
             DamageStar damage = data.value<DamageStar>();
             ServerPlayer *killer = damage ? damage->from : NULL;

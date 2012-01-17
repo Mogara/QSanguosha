@@ -599,6 +599,11 @@ void Client::setPromptList(const QStringList &texts){
         prompt.replace("%arg", arg);
     }
 
+    if(texts.length() >= 5){
+        QString arg2 = Sanguosha->translate(texts.at(4));
+        prompt.replace("%2arg", arg2);
+    }
+
     prompt_doc->setHtml(prompt);
 }
 
