@@ -20,6 +20,8 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL){
     return layout;
 }
 
+CustomAssignDialog *CustomInstance = NULL;
+
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
       choose_general2(false), free_choose_general(false), free_choose_general2(false),
@@ -27,11 +29,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 {
     setWindowTitle(tr("Custom mini scene"));
 
+    CustomInstance = this;
+
     list = new QListWidget;
     list->setFlow(QListView::TopToBottom);
     list->setMovement(QListView::Static);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
+
 
     num_combobox = new QComboBox;
     starter_box = new QComboBox;
@@ -274,6 +279,7 @@ void CustomAssignDialog::getEquipCard(int card_id){
     QString card_type = Sanguosha->getCard(card_id)->getSubtype();
     foreach(int id, player_equips[name]){
         if(card_type == Sanguosha->getCard(id)->getSubtype()){
+            emit card_addin(id);
             player_equips[name].removeOne(id);
             break;
         }
@@ -332,6 +338,7 @@ void CustomAssignDialog::getJudgeCard(int card_id){
     QString card_name = Sanguosha->getCard(card_id)->objectName();
     foreach(int id, player_judges[name]){
         if(Sanguosha->getCard(id)->objectName() == card_name){
+            emit card_addin(id);
             player_judges[name].removeOne(id);
             break;
         }
@@ -451,6 +458,8 @@ void CustomAssignDialog::updatePileInfo(){
 
     if(set_pile.isEmpty())
         removePileButton->setEnabled(false);
+    else
+        removePileButton->setEnabled(true);
 
     foreach(int card_id, set_pile){
         const Card* card = Sanguosha->getCard(card_id);
@@ -541,9 +550,10 @@ void CustomAssignDialog::removeEquipCard(){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     if(player_equips[name].contains(card_id)){
         player_equips[name].removeOne(card_id);
-        equip_list->takeItem(equip_list->currentRow());
+        int row = equip_list->currentRow();
+        equip_list->takeItem(row);
         if(equip_list->count() > 0)
-            equip_list->setCurrentRow(0);
+            equip_list->setCurrentRow(row >= equip_list->count() ? row-1 : row);
         else
             removeEquipButton->setEnabled(false);
     }
@@ -554,9 +564,10 @@ void CustomAssignDialog::removeHandCard(){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     if(player_handcards[name].contains(card_id)){
         player_handcards[name].removeOne(card_id);
-        hand_list->takeItem(hand_list->currentRow());
+        int row = hand_list->currentRow();
+        hand_list->takeItem(row);
         if(hand_list->count() > 0)
-            hand_list->setCurrentRow(0);
+            hand_list->setCurrentRow(row >= hand_list->count() ? row-1 : row);
         else
             removeHandButton->setEnabled(false);
     }
@@ -567,9 +578,10 @@ void CustomAssignDialog::removeJudgeCard(){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     if(player_judges[name].contains(card_id)){
         player_judges[name].removeOne(card_id);
-        judge_list->takeItem(judge_list->currentRow());
+        int row = judge_list->currentRow();
+        judge_list->takeItem(row);
         if(judge_list->count() > 0)
-            judge_list->setCurrentRow(0);
+            judge_list->setCurrentRow(row >= judge_list->count() ? row-1 : row);
         else
             removeJudgeButton->setEnabled(false);
     }
@@ -579,9 +591,10 @@ void CustomAssignDialog::removePileCard(){
     int card_id = pile_list->currentItem()->data(Qt::UserRole).toInt();
     if(set_pile.contains(card_id)){
         set_pile.removeOne(card_id);
-        pile_list->takeItem(pile_list->currentRow());
+        int row = pile_list->currentRow();
+        pile_list->takeItem(row);
         if(pile_list->count() > 0)
-            pile_list->setCurrentRow(0);
+            pile_list->setCurrentRow(row >= pile_list->count() ? row-1 : row);
         else
             removePileButton->setEnabled(false);
     }
@@ -854,7 +867,15 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["hand"].split(","))
             {
-                player_handcards[name].prepend(id.toInt());
+                if(!id.toInt()){
+                    for(int i = 0; i < Sanguosha->getCardCount(); i++){
+                        if(Sanguosha->getCard(i)->objectName() == id){
+                            player_equips[name].prepend(i);
+                            break;
+                        }
+                    }
+                }else
+                    player_handcards[name].prepend(id.toInt());
             }
         }
 
@@ -862,7 +883,15 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["equip"].split(","))
             {
-                player_equips[name].prepend(id.toInt());
+                if(!id.toInt()){
+                    for(int i = 0; i < Sanguosha->getCardCount(); i++){
+                        if(Sanguosha->getCard(i)->objectName() == id){
+                            player_equips[name].prepend(i);
+                            break;
+                        }
+                    }
+                }else
+                    player_equips[name].prepend(id.toInt());
             }
         }
 
@@ -870,7 +899,15 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["judge"].split(","))
             {
-                player_judges[name].prepend(id.toInt());
+                if(!id.toInt()){
+                    for(int i = 0; i < Sanguosha->getCardCount(); i++){
+                        if(Sanguosha->getCard(i)->objectName() == id){
+                            player_equips[name].prepend(i);
+                            break;
+                        }
+                    }
+                }else
+                    player_judges[name].prepend(id.toInt());
             }
         }
         numPlayer++;
@@ -937,7 +974,6 @@ bool CustomAssignDialog::save(QString path)
     QString line;
     if(set_pile.length())
     {
-        QString line ;
         foreach(int id, set_pile)
         {
             line.prepend(QString::number(id));
@@ -1174,7 +1210,7 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
 
     connect(back, SIGNAL(clicked()), this, SLOT(reject()));
     connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    connect(parent, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
+    connect(CustomInstance, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
 }
 
 void CardAssignDialog::addCard(const Card *card){
@@ -1194,9 +1230,14 @@ void CardAssignDialog::askCard(){
     emit card_chosen(card_id);
 
     int row = card_list->currentRow();
-    card_list->takeItem(row);
+    int id = card_list->item(row)->data(Qt::UserRole).toInt();
+    excluded_card << id;
+    updateCardList();
     card_list->setCurrentRow(row >= card_list->count() ? row-1 : row);
-   // updateCardList();
+}
+
+void CardAssignDialog::updateExcluded(int card_id){
+    excluded_card.removeOne(card_id);
 }
 
 void CardAssignDialog::updateCardList(){
