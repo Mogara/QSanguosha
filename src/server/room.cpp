@@ -262,10 +262,12 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     sendLog(log);
 
+    broadcastProperty(victim, "alive");
+
     QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
 
-    broadcastProperty(victim, "alive");
+
     broadcastInvoke("killPlayer", victim->objectName());
     broadcastProperty(victim, "role");
 

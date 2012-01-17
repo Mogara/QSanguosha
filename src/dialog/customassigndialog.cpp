@@ -1,4 +1,5 @@
 #include "customassigndialog.h"
+#include "miniscenarios.h"
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -621,7 +622,14 @@ void CustomAssignDialog::doGeneralAssign2(){
 
 void CustomAssignDialog::accept(){
     if(save("etc/customScene/custom_scenario.txt"))
+    {
+        const Scenario * scene = Sanguosha->getScenario("custom_scenario");
+        MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(scene->getRule());
+
+        rule->loadSetting("etc/customScene/custom_scenario.txt");
+
         QDialog::accept();
+    }
 }
 
 void CustomAssignDialog::reject(){
