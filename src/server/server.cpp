@@ -894,6 +894,9 @@ Server::Server(QObject *parent)
     server = new NativeServerSocket;
     server->setParent(this);
 
+    //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
+    ServerInfo.parse(Sanguosha->getSetupString());
+
     createNewRoom();
 
     connect(server, SIGNAL(new_connection(ClientSocket*)), this, SLOT(processNewConnection(ClientSocket*)));

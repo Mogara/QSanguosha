@@ -8,6 +8,7 @@ class QRadioButton;
 
 #include "socket.h"
 #include "detector.h"
+#include "clientstruct.h"
 
 #include <QDialog>
 #include <QLineEdit>
