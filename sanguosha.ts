@@ -785,7 +785,6 @@
     <message>
         <location filename="src/dialog/configdialog.ui" line="159"/>
         <source>BGM    Volume</source>
-        <oldsource>Volume</oldsource>
         <translation>背景音乐音量</translation>
     </message>
     <message>
@@ -1071,6 +1070,12 @@
         <translation>%1 人</translation>
     </message>
     <message>
+        <location filename="src/dialog/customassigndialog.cpp" line="50"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="54"/>
+        <source>unknown</source>
+        <translation>未分配</translation>
+    </message>
+    <message>
         <location filename="src/dialog/customassigndialog.cpp" line="66"/>
         <location filename="src/dialog/customassigndialog.cpp" line="136"/>
         <location filename="src/dialog/customassigndialog.cpp" line="144"/>
@@ -1261,7 +1266,7 @@
         <location filename="src/dialog/customassigndialog.cpp" line="773"/>
         <location filename="src/dialog/customassigndialog.cpp" line="1063"/>
         <source>Save mini scenario settings</source>
-        <translation>迷你场景保存设置</translation>
+        <translation>小型场景保存设置</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="775"/>
@@ -1585,7 +1590,7 @@
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="1082"/>
         <source>Mini choose generals</source>
-        <translation>迷你场景选将</translation>
+        <translation>小型场景选将</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="1108"/>
@@ -2024,7 +2029,7 @@
         <location filename="src/dialog/mainwindow.ui" line="369"/>
         <location filename="src/dialog/mainwindow.cpp" line="1076"/>
         <source>About Lua</source>
-        <translation></translation>
+        <translation>关于 Lua</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="237"/>
@@ -2152,7 +2157,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1067"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
-        <translation>Lua 是一个强大的，快速的，轻量级的嵌入式脚本语言.</translation>
+        <translation>Lua 是一个强大额，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="620"/>
@@ -2217,7 +2222,6 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="450"/>
         <source>Forum: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <oldsource>Forum: &lt;a href=&apos;%1&apos; style = &quot;color:white; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</oldsource>
         <translation>论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
@@ -3410,7 +3414,7 @@
     <message>
         <location filename="src/server/server.cpp" line="585"/>
         <source>Custom Mini Scene</source>
-        <translation>自定义迷你场景</translation>
+        <translation>自定义小型场景</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="593"/>
