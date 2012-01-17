@@ -170,10 +170,13 @@ public:
             }
 
             str = this->players.at(i)["judge"];
-            QStringList judges = str.split(",");
-            foreach(QString judge,judges)
+            if(str != NULL)
             {
-                 room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging);
+                QStringList judges = str.split(",");
+                foreach(QString judge,judges)
+                {
+                    room->moveCardTo(Sanguosha->getCard(judge.toInt()),sp,Player::Judging);
+                }
             }
 
             str = this->players.at(i)["hand"];

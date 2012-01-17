@@ -383,21 +383,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     createStateItem();
 
-
-    //load the pixmaps at start to save time when displaying the animations on the fly
     animations = new EffectAnimation();
-    PixmapAnimation::LoadEmotion("peach");
-    PixmapAnimation::LoadEmotion("analeptic");
-    PixmapAnimation::LoadEmotion("chain");
-    PixmapAnimation::LoadEmotion("damage");
-    PixmapAnimation::LoadEmotion("fire_slash");
-    PixmapAnimation::LoadEmotion("thunder_slash");
-    PixmapAnimation::LoadEmotion("killer");
-    PixmapAnimation::LoadEmotion("jink");
-    PixmapAnimation::LoadEmotion("no-success");
-    PixmapAnimation::LoadEmotion("slash_black");
-    PixmapAnimation::LoadEmotion("slash_red");
-    PixmapAnimation::LoadEmotion("success");
     drawPile = NULL;
     view_transform = QMatrix();
 }

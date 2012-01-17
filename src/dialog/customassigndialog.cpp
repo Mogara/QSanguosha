@@ -840,7 +840,7 @@ void CustomAssignDialog::save(QString path)
     else line.append(QString("general:%1 ").arg(general_mapping["player"]));
 
     if(free_choose_general2)line.append("general2:select ");
-    else line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
+    else if(general2_mapping["player"]!=NULL)line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
 
     for(int i=0;i<list->count();i++)
     {
