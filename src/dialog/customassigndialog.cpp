@@ -40,13 +40,13 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         if(i < 9)
             num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
 
-        QString player = (i == 0 ? "player" : "ai");
+        QString player = (i == 0 ? "Player" : "AI");
         QString text = i == 0 ?
-                    QString("%1[%2]").arg(Sanguosha->translate(player)).arg(Sanguosha->translate("unknown"))
+                    QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("unknown"))
                     : QString("%1%2[%3]")
                     .arg(Sanguosha->translate(player))
                     .arg(QString::number(i))
-                    .arg(Sanguosha->translate("unknown"));
+                    .arg(tr("unknown"));
         if(i != 0)
             player.append(QString::number(i));
         player_mapping[i] = player;
