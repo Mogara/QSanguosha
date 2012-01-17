@@ -36,8 +36,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     num_combobox = new QComboBox;
     starter_box = new QComboBox;
 
-    for(int i = 0; i <= 8; i++){
-        num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
+    for(int i = 0; i <= 9; i++){
+        if(i < 9)
+            num_combobox->addItem(tr("%1 persons").arg(QString::number(i+2)), i+2);
 
         QString player = (i == 0 ? "player" : "ai");
         QString text = i == 0 ?
