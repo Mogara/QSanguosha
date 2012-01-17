@@ -387,6 +387,40 @@ void Room::gameOver(const QString &winner){
 
     emit game_over(winner);
 
+    if(mode.contains("_mini_"))
+    {
+        ServerPlayer * playerWinner = NULL;
+        QStringList winners =winner.split("+");
+        foreach(ServerPlayer * sp, players)
+        {
+            if(sp->getState() != "robot" &&
+                    (winners.contains(sp->getRole()) ||
+                     winners.contains(sp->objectName()))
+                    )
+            {
+                playerWinner = sp;
+                break;
+            }
+        }
+
+        if(playerWinner)
+        {
+
+            QString id = Config.GameMode;
+            id.replace("_mini_","");
+            int stage = Config.value("MiniSceneStage",1).toInt();
+            int current = id.toInt();
+            if((stage == current) && stage<20)
+            {
+                Config.setValue("MiniSceneStage",current+1);
+                id = QString::number(stage+1).rightJustified(2,'0');
+                id.prepend("_mini_");
+                Config.setValue("GameMode",id);
+            }
+        }
+    }
+
+
     if(QThread::currentThread() == thread)
         thread->end();
     else

@@ -11,7 +11,7 @@ class MiniSceneRule : public ScenarioRule
 public:
     MiniSceneRule(Scenario *scenario);
 
-    virtual void assign(QStringList &generals, QStringList &roles) const;
+    void assign(QStringList &generals, QStringList &roles) const;
 
     QStringList existedGenerals() const;
 
@@ -36,6 +36,17 @@ public:
     MiniScene(const QString &name);
     void setupCustom(QString name) const;
     virtual void onTagSet(Room *room, const QString &key) const;
+    virtual void assign(QStringList &generals, QStringList &roles) const
+    {
+        MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(getRule());
+        rule->assign(generals,roles);
+    }
+    virtual int getPlayerCount() const
+    {
+        QStringList generals,roles;
+        assign(generals,roles);
+        return roles.length();
+    }
 };
 
 class CustomScenario : public MiniScene
@@ -56,7 +67,7 @@ public:
     LoadedScenario(const QString &name)
         :MiniScene(QString("_mini_%1").arg(name))
     {
-        setupCustom(QString("customScenes/%1").arg(name));
+        setupCustom(QString("%1").arg(name));
     }
 };
 

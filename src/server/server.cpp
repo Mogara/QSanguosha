@@ -883,8 +883,6 @@ bool ServerDialog::config(){
         return db->loadMembers();
     }
 
-    if(Config.GameMode.contains("_mini_"))Config.setValue("MaxHpScheme",1);
-
     return true;
 }
 

@@ -255,6 +255,9 @@ void MiniSceneRule::loadSetting(QString path)
 {
     QFile file(path);
     if(file.open(QIODevice::ReadOnly)){
+        players.clear();
+        setup.clear();
+
         QTextStream stream(&file);
         while(!stream.atEnd()){
             QString aline = stream.readLine();
@@ -275,11 +278,11 @@ MiniScene::MiniScene(const QString &name)
 void MiniScene::setupCustom(QString name) const
 {
     if(name == NULL)name = "custom_scenario";
-    name.prepend("etc/");
+    name.prepend("etc/customScenes/");
     name.append(".txt");
 
-    qobject_cast<MiniSceneRule*>(this->getRule());
-    //arule->loadSetting(name);
+    MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
+    arule->loadSetting(name);
 
 }
 

@@ -621,12 +621,12 @@ void CustomAssignDialog::doGeneralAssign2(){
 }
 
 void CustomAssignDialog::accept(){
-    if(save("etc/customScene/custom_scenario.txt"))
+    if(save("etc/customScenes/custom_scenario.txt"))
     {
         const Scenario * scene = Sanguosha->getScenario("custom_scenario");
         MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(scene->getRule());
 
-        rule->loadSetting("etc/customScene/custom_scenario.txt");
+        rule->loadSetting("etc/customScenes/custom_scenario.txt");
 
         QDialog::accept();
     }
@@ -659,7 +659,7 @@ void CustomAssignDialog::getChosenGeneral(QString name){
 }
 
 void CustomAssignDialog::freeChoose(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
         return;
 
     if(toggled)
@@ -669,7 +669,7 @@ void CustomAssignDialog::freeChoose(bool toggled){
 }
 
 void CustomAssignDialog::freeChoose2(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
         return;
 
     if(toggled)
@@ -714,7 +714,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
         }
     }
 
-    if(!player_name.contains("player")){
+    if(!player_name.contains("Player")){
         self_select_general->setEnabled(false);
         self_select_general2->setEnabled(false);
         self_select_general->setChecked(false);
@@ -778,8 +778,8 @@ void CustomAssignDialog::checkSingleTurnBox(bool toggled){
 void CustomAssignDialog::load()
 {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Save mini scenario settings"),
-                                                    "etc/",
+                                                    tr("Open mini scenario settings"),
+                                                    "etc/customScenes",
                                                     tr("Pure text replay file (*.txt)"));
 
 
@@ -832,7 +832,7 @@ void CustomAssignDialog::load()
             continue;
         }
 
-        QString name = numPlayer == 0 ? "player" : QString("ai%1").arg(numPlayer);
+        QString name = numPlayer == 0 ? "Player" : QString("AI%1").arg(numPlayer);
 
         QMap<QString, QString> player;
         QStringList features;
@@ -875,15 +875,17 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["hand"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
-                            player_equips[name].prepend(i);
+                            player_handcards[name].prepend(i);
                             break;
                         }
                     }
                 }else
-                    player_handcards[name].prepend(id.toInt());
+                    player_handcards[name].prepend(num);
             }
         }
 
@@ -891,7 +893,9 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["equip"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
                             player_equips[name].prepend(i);
@@ -899,7 +903,7 @@ void CustomAssignDialog::load()
                         }
                     }
                 }else
-                    player_equips[name].prepend(id.toInt());
+                    player_equips[name].prepend(num);
             }
         }
 
@@ -907,15 +911,17 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["judge"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
-                            player_equips[name].prepend(i);
+                            player_judges[name].prepend(i);
                             break;
                         }
                     }
                 }else
-                    player_judges[name].prepend(id.toInt());
+                    player_judges[name].prepend(num);
             }
         }
         numPlayer++;
@@ -993,19 +999,19 @@ bool CustomAssignDialog::save(QString path)
     }
 
     if(free_choose_general)line.append("general:select ");
-    else if(general_mapping["player"].isEmpty()){
-        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("player")));
+    else if(general_mapping["Player"].isEmpty()){
+        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("Player")));
         return false;
     }
     else
-        line.append(QString("general:%1 ").arg(general_mapping["player"]));
+        line.append(QString("general:%1 ").arg(general_mapping["Player"]));
 
     if(free_choose_general2)line.append("general2:select ");
-    else if(!general2_mapping["player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
+    else if(!general2_mapping["Player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["Player"]));
 
     for(int i=0;i<list->count();i++)
     {
-        QString name = i==0 ? "player" : QString("ai%1").arg(i);
+        QString name = i==0 ? "Player" : QString("AI%1").arg(i);
 
         if(general_mapping[name].isEmpty() && !line.split('\n').last().contains("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate(name)));
@@ -1069,7 +1075,7 @@ bool CustomAssignDialog::save(QString path)
     QString filename = path;
     if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
                                                     tr("Save mini scenario settings"),
-                                                    "etc/customScene/",
+                                                    "etc/customScenes/",
                                                     tr("Pure text replay file (*.txt)"));
 
     QFile file(filename);
