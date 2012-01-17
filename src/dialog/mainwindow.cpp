@@ -1059,3 +1059,26 @@ void MainWindow::on_actionAbout_fmod_triggered()
 
     window->appear();
 }
+
+#include "lua.hpp"
+
+void MainWindow::on_actionAbout_Lua_triggered()
+{
+    QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
+    content.append("<p align='center'> <img src='image/system/lua.png' /> </p> <br/>");
+
+    QString address = "http://www.lua.org";
+    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+
+    content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
+    content.append(LUA_COPYRIGHT);
+
+    Window *window = new Window(tr("About Lua"), QSize(500, 450));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
+}

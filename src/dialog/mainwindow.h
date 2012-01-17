@@ -102,6 +102,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
     void on_actionSend_lowlevel_command_triggered();
     void on_actionReplay_file_convert_triggered();
