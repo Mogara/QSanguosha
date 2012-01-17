@@ -142,7 +142,7 @@ void MainWindow::updateLoadingProgress(int progress)
     static QGraphicsTextItem *text;
     if(text==NULL)
     {
-        text = scene->addText(QString("Loaded %1/100").arg(progress),Config.BigFont);
+        text = scene->addText(tr("Loaded %1/100").arg(progress),Config.BigFont);
         QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
         drop->setBlurRadius(5);
         drop->setOffset(0);
@@ -150,7 +150,7 @@ void MainWindow::updateLoadingProgress(int progress)
         text->setGraphicsEffect(drop);
         text->moveBy(-text->boundingRect().width()/2,
                      -text->boundingRect().height()/2);
-    }else text->setPlainText(QString("Loaded %1/100").arg(progress));
+    }else text->setPlainText(tr("Loaded %1/100").arg(progress));
 
     if(progress == 100)
     {

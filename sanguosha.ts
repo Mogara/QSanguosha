@@ -2165,6 +2165,12 @@
         <translation>服务器尚未启动!</translation>
     </message>
     <message>
+        <location filename="src/dialog/mainwindow.cpp" line="145"/>
+        <location filename="src/dialog/mainwindow.cpp" line="153"/>
+        <source>Loaded %1/100</source>
+        <translation>载入 %1/100</translation>
+    </message>
+    <message>
         <location filename="src/dialog/mainwindow.cpp" line="632"/>
         <source>QSanguosha staff:</source>
         <translation>三国杀开发组成员:</translation>
