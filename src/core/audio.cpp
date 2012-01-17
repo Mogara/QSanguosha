@@ -9,7 +9,7 @@
 class Sound;
 
 static FMOD_SYSTEM *System;
-static QCache<QString, Sound> SoundCache(1000);
+static QCache<QString, Sound> SoundCache;
 static FMOD_SOUND *BGM;
 static FMOD_CHANNEL *BGMChannel;
 

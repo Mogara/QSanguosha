@@ -2157,12 +2157,18 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1067"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
-        <translation>Lua 是一个强大额，快速的，轻量级，可嵌入的脚本语言.</translation>
+        <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="620"/>
         <source>Server is not started yet!</source>
         <translation>服务器尚未启动!</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="145"/>
+        <location filename="src/dialog/mainwindow.cpp" line="153"/>
+        <source>Loaded %1/100</source>
+        <translation>载入 %1/100</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="632"/>
