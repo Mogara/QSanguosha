@@ -3350,7 +3350,7 @@ function SmartAI:askForPindian(requestor, reason)
 	for _, card in ipairs(sgs.reverse(cards)) do
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
-	if reason == "zhiba" and self.player:hasLordSkill("sunce_zhiba") then return maxcard end
+	if reason == "zhiba" and self.player:hasLordSkill("sunce_zhiba") then return (maxcard or cards[#cards]) end
 	self:sortByUseValue(cards, true)
 	minusecard = cards[1]
 	maxcard = maxcard or minusecard

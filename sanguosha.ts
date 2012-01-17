@@ -2157,7 +2157,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="1067"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
-        <translation>Lua 是一个强大额，快速的，轻量级，可嵌入的脚本语言.</translation>
+        <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="620"/>
