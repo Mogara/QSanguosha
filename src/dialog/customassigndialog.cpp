@@ -10,9 +10,11 @@
 #include <QFile>
 #include <QFileDialog>
 
-static QLayout *HLay(QWidget *left, QWidget *right){
+static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL){
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(left);
+    if(mid)
+        layout->addWidget(mid);
     layout->addWidget(right);
 
     return layout;
@@ -20,7 +22,8 @@ static QLayout *HLay(QWidget *left, QWidget *right){
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
-      choose_general2(false), free_choose_general(false), free_choose_general2(false)
+      choose_general2(false), free_choose_general(false), free_choose_general2(false),
+      is_single_turn(false), is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -51,9 +54,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, player);
         item_map[i] = item;
-        //player_maxhp[player] = 4;
-        //player_hp[player] = 4;
-        //player_start_draw[player] = 2;
     }
 
     role_combobox = new QComboBox;
@@ -123,6 +123,22 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     set_turned = new QCheckBox(tr("Player Turned"));
     set_chained = new QCheckBox(tr("Player Chained"));
 
+    single_turn_text = new QLabel(tr("After this turn "));
+    single_turn_text2 = new QLabel(tr("win"));
+    single_turn_box = new QComboBox();
+    single_turn = new QCheckBox(tr("After this turn you lose"));
+    single_turn_box->addItem(tr("Lord"), "Lord+Loyalist");
+    single_turn_box->addItem(tr("Renegade"), "Renegade");
+    single_turn_box->addItem(tr("Rebel"), "Rebel");
+
+    before_next_text = new QLabel(tr("Before next turn "));
+    before_next_text2 = new QLabel(tr("win"));
+    before_next_box = new QComboBox();
+    before_next = new QCheckBox(tr("Before next turn begin player lose"));
+    before_next_box->addItem(tr("Lord"), "Lord+Loyalist");
+    before_next_box->addItem(tr("Renegade"), "Renegade");
+    before_next_box->addItem(tr("Rebel"), "Rebel");
+
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QPushButton *loadButton = new QPushButton(tr("load"));
@@ -141,12 +157,22 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(set_turned);
     vlayout->addWidget(set_chained);
     vlayout->addWidget(starter_group);
+    vlayout->addWidget(single_turn);
+    vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
+    vlayout->addWidget(before_next);
+    vlayout->addLayout(HLay(before_next_text, before_next_text2, before_next_box));
     vlayout->addStretch();
     vlayout->addWidget(loadButton);
     vlayout->addWidget(saveButton);
     vlayout->addWidget(okButton);
     vlayout->addWidget(cancelButton);
 
+    single_turn_text->hide();
+    single_turn_text2->hide();
+    single_turn_box->hide();
+    before_next_text->hide();
+    before_next_text2->hide();
+    before_next_box->hide();
 
     equip_list = new QListWidget;
     hand_list = new QListWidget;
@@ -219,6 +245,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
     connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
+    connect(single_turn, SIGNAL(toggled(bool)), this, SLOT(checkBeforeNextBox(bool)));
+    connect(before_next, SIGNAL(toggled(bool)), this, SLOT(checkSingleTurnBox(bool)));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(loadButton,SIGNAL(clicked()),this,SLOT(load()));
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
@@ -444,7 +472,6 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
         hp_prompt->setChecked(true);
     }
     else{
-        //hp_spin->setValue(4);
         hp_prompt->setChecked(false);
     }
 
@@ -453,7 +480,6 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name){
         max_hp_prompt->setChecked(true);
     }
     else{
-        //max_hp_spin->setValue(4);
         max_hp_prompt->setChecked(false);
     }
 }
@@ -580,7 +606,7 @@ void CustomAssignDialog::doGeneralAssign2(){
 }
 
 void CustomAssignDialog::accept(){
-    if(save("etc/custom_scenario.txt"))
+    if(save("etc/customScene/custom_scenario.txt"))
         QDialog::accept();
 }
 
@@ -682,10 +708,49 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     set_turned->setChecked(player_turned.value(player_name, false));
     set_chained->setChecked(player_chained.value(player_name, false));
 
+    single_turn->setChecked(is_single_turn);
+    before_next->setChecked(is_before_next);
+
     updatePlayerInfo(player_name);
     updatePlayerHpInfo(player_name);
-    //for(int i=0;i<list->count();i++)updateRole(i);
-    //wtf ?
+}
+
+void CustomAssignDialog::checkBeforeNextBox(bool toggled){
+    if(toggled){
+        before_next->setChecked(false);
+        is_before_next = false;
+        is_single_turn = true;
+
+        single_turn_text->show();
+        single_turn_text2->show();
+        single_turn_box->show();
+    }
+    else{
+        is_single_turn = false;
+
+        single_turn_text->hide();
+        single_turn_text2->hide();
+        single_turn_box->hide();
+    }
+}
+
+void CustomAssignDialog::checkSingleTurnBox(bool toggled){
+    if(toggled){
+        single_turn->setChecked(false);
+        is_before_next = true;
+        is_single_turn = false;
+
+        before_next_text->show();
+        before_next_text2->show();
+        before_next_box->show();
+    }
+    else{
+        is_before_next = false;
+
+        before_next_text->hide();
+        before_next_text2->hide();
+        before_next_box->hide();
+    }
 }
 
 void CustomAssignDialog::load()
@@ -719,6 +784,11 @@ void CustomAssignDialog::load()
 
     QTextStream in(&file);
     int numPlayer = 0;
+    QMap<QString, int> role_index;
+    role_index["Lord+Loyalist"] = 0;
+    role_index["Renegade"] = 1;
+    role_index["Rebel"] = 2;
+
     while (!in.atEnd()) {
         QString line = in.readLine();
         line = line.trimmed();
@@ -770,6 +840,14 @@ void CustomAssignDialog::load()
         if(player["starter"]!=NULL)starter = name;
         if(player["chained"]!=NULL)player_chained[name]=true;
         if(player["turned"]!=NULL)player_turned[name]=true;
+        if(player["singleTurn"] != NULL){
+            single_turn_box->setCurrentIndex(role_index.value(player["singleTurn"], 0));
+            is_single_turn = true;
+        }
+        if(player["beforeNext"] != NULL){
+            before_next_box->setCurrentIndex(role_index.value(player["beforeNext"], 0));
+            is_before_next = true;
+        }
 
         if(player["hand"]!=NULL)
         {
@@ -807,9 +885,7 @@ void CustomAssignDialog::load()
 
     player_draw->setValue(player_start_draw[starter_box->currentText()]);
 
-    //updatePlayerInfo("player");
     updatePileInfo();
-    //updatePlayerHpInfo("player");
     file.close();
 }
 
@@ -902,6 +978,16 @@ bool CustomAssignDialog::save(QString path)
         if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));
         if(player_turned[name])line.append("turned:true ");
         if(player_chained[name])line.append("chained:true ");
+        if(i == 0){
+            if(is_single_turn){
+                QString winner = single_turn_box->itemData(single_turn_box->currentIndex()).toString();
+                line.append(QString("singleTurn:%1 ").arg(winner));
+            }
+            else if(is_before_next){
+                QString winner = before_next_box->itemData(before_next_box->currentIndex()).toString();
+                line.append(QString("beforeNext:%1 ").arg(winner));
+            }
+        }
         if(player_start_draw.contains(name))line.append(QString("draw:%1 ").arg(player_start_draw[name]));
 
         if(player_equips[name].length())
@@ -934,12 +1020,13 @@ bool CustomAssignDialog::save(QString path)
     QString filename = path;
     if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
                                                     tr("Save mini scenario settings"),
-                                                    "etc/",
+                                                    "etc/customScene/",
                                                     tr("Pure text replay file (*.txt)"));
 
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return false;
+
 
     QTextStream out(&file);
     out << line;

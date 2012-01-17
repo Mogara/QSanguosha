@@ -53,6 +53,9 @@ private:
     QCheckBox *self_select_general, *self_select_general2;
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
+    QComboBox *single_turn_box, *before_next_box;
+    QCheckBox *single_turn, *before_next;
+    QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
@@ -68,6 +71,7 @@ private:
     bool choose_general2;
     bool free_choose_general, free_choose_general2;
     QString starter;
+    bool is_single_turn, is_before_next;
 
 private slots:
     void updateRole(int index);
@@ -100,6 +104,9 @@ private slots:
     void doJudgeCardAssign();
     void doPileCardAssign();
     void clearGeneral2();
+
+    void checkSingleTurnBox(bool toggled);
+    void checkBeforeNextBox(bool toggled);
 
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
