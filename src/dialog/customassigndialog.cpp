@@ -580,8 +580,8 @@ void CustomAssignDialog::doGeneralAssign2(){
 }
 
 void CustomAssignDialog::accept(){
-    save("etc/custom_scenario.txt");
-    QDialog::accept();
+    if(save("etc/custom_scenario.txt"))
+        QDialog::accept();
 }
 
 void CustomAssignDialog::reject(){
@@ -723,6 +723,12 @@ void CustomAssignDialog::load()
         QString line = in.readLine();
         line = line.trimmed();
 
+        if(!line.startsWith("general") && !line.startsWith("setPile")){
+            QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
+            file.close();
+            return;
+        }
+
         if(line.startsWith("setPile:"))
         {
             set_pile.clear();
@@ -807,49 +813,88 @@ void CustomAssignDialog::load()
     file.close();
 }
 
-void CustomAssignDialog::save(QString path)
+bool CustomAssignDialog::save(QString path)
 {
-    QString filename = path;
-    if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
-                                                    tr("Save mini scenario settings"),
-                                                    "etc/",
-                                                    tr("Pure text replay file (*.txt)"));
+    starter = starter_box->itemData(starter_box->currentIndex()).toString();
+    QMap<QString, int> role_index;
+    role_index["loyalist"] = 0;
+    role_index["lord"] = 0;
+    role_index["rebel"] = 1;
+    role_index["renegade"] = 2;
 
+    int role_index_check = -1;
+    bool has_lord = false, has_diff_roles = false;
+    for(int index = 0; index < list->count(); index++){
+        QString name = list->item(index)->data(Qt::UserRole).toString();
+        if(!has_diff_roles){
+            int role_int = role_index.value(role_mapping[name], 3);
+            if(role_int != 3){
+                if(role_index_check != -1 && role_int != role_index_check){
+                    has_diff_roles = true;
+                }
+                else if(role_index_check == -1){
+                    role_index_check = role_int;
+                }
+            }
+        }
 
-    QFile file(filename);
+        if(!has_lord){
+            if(role_mapping[name] == "lord")
+                has_lord = true;
+        }
+    }
 
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
+    if(!has_lord){
+        QMessageBox::warning(this, tr("Warning"), tr("No lord in the game"));
+        return false;
+    }
+    if(!has_diff_roles){
+        QMessageBox::warning(this, tr("Warning"), tr("No different camps in the game"));
+        return false;
+    }
 
-    QTextStream out(&file);
+    QString line;
     if(set_pile.length())
     {
         QString line ;
-        foreach(int id,set_pile)
+        foreach(int id, set_pile)
         {
             line.prepend(QString::number(id));
             line.prepend(",");
         }
         line.remove(0,1);
         line.prepend("setPile:");
-        out << line <<"\n";
+        line.append("\n");
     }
 
-    QString line;
     if(free_choose_general)line.append("general:select ");
-    else line.append(QString("general:%1 ").arg(general_mapping["player"]));
+    else if(general_mapping["player"].isEmpty()){
+        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("player")));
+        return false;
+    }
+    else
+        line.append(QString("general:%1 ").arg(general_mapping["player"]));
 
     if(free_choose_general2)line.append("general2:select ");
-    else if(general2_mapping["player"]!=NULL)line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
+    else if(!general2_mapping["player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
 
     for(int i=0;i<list->count();i++)
     {
         QString name = i==0 ? "player" : QString("ai%1").arg(i);
 
-        if(line.isEmpty())
-        {
-            if(general_mapping[name]!=NULL)line.append(QString("general:%1 ").arg(general_mapping[name]));
-            if(general2_mapping[name]!=NULL)line.append(QString("general2:%1 ").arg(general2_mapping[name]));
+        if(general_mapping[name].isEmpty() && !line.split('\n').last().contains("general:")){
+            QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate(name)));
+            return false;
+        }
+        else if(!line.split('\n').last().contains(QString("general:")))
+            line.append(QString("general:%1 ").arg(general_mapping[name]));
+
+        if(!general2_mapping[name].isEmpty() && !line.split('\n').last().contains(QString("general2:")))
+            line.append(QString("general2:%1 ").arg(general2_mapping[name]));
+
+        if(role_mapping[name] == "unknown"){
+            QMessageBox::warning(this, tr("Warning"), tr("%1's role cannot be unknown").arg(Sanguosha->translate(name)));
+            return false;
         }
         line.append(QString("role:%1 ").arg(role_mapping[name]));
         if(starter == name)line.append("starter:true ");
@@ -883,16 +928,24 @@ void CustomAssignDialog::save(QString path)
             line.append(" ");
         }
 
-        out << line << '\n';
-        line.clear();
+        line.append("\n");
     }
 
+    QString filename = path;
+    if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
+                                                    tr("Save mini scenario settings"),
+                                                    "etc/",
+                                                    tr("Pure text replay file (*.txt)"));
 
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return false;
+
+    QTextStream out(&file);
+    out << line;
     file.close();
+    return true;
 }
-
-//extern CustomAssignDialog *CustomInstance;
-
 //---------------------------------------
 
 GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban)
