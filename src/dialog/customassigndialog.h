@@ -40,7 +40,7 @@ public:
     CustomAssignDialog(QWidget *parent);
 
 protected:
-  //  virtual void accept();
+    virtual void accept();
     virtual void reject();
 
 private:
@@ -104,7 +104,7 @@ private slots:
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
     void load();
-    void save();
+    void save(QString path = QString());
 
 public slots:
     void getChosenGeneral(QString general_name);

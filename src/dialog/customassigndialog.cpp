@@ -8,6 +8,7 @@
 #include <QGroupBox>
 #include <QFrame>
 #include <QFile>
+#include <QFileDialog>
 
 static QLayout *HLay(QWidget *left, QWidget *right){
     QHBoxLayout *layout = new QHBoxLayout;
@@ -218,7 +219,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
     connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
     connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
-    //   connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(loadButton,SIGNAL(clicked()),this,SLOT(load()));
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
@@ -578,6 +579,11 @@ void CustomAssignDialog::doGeneralAssign2(){
     dialog->exec();
 }
 
+void CustomAssignDialog::accept(){
+    save("etc/custom_scenario.txt");
+    QDialog::accept();
+}
+
 void CustomAssignDialog::reject(){
     QDialog::reject();
 }
@@ -650,11 +656,11 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     else
         general_label2->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
-    if(!role_mapping[player_name].isEmpty() &&
-            role_mapping[player_name] != role_combobox->itemData(role_combobox->currentIndex()).toString()){
+    if(!role_mapping[player_name].isEmpty()){
         for(int i = 0; i < role_combobox->count(); i++){
             if(role_mapping[player_name] == role_combobox->itemData(i).toString()){
                 role_combobox->setCurrentIndex(i);
+                updateRole(i);
                 break;
             }
         }
@@ -684,7 +690,13 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
 
 void CustomAssignDialog::load()
 {
-    QFile file("etc/custom_scenario.txt");
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Save mini scenario settings"),
+                                                    "etc/",
+                                                    tr("Pure text replay file (*.txt)"));
+
+
+    QFile file(filename);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -702,6 +714,9 @@ void CustomAssignDialog::load()
     player_equips.clear();
     player_judges.clear();
 
+    free_choose_general = false;
+    free_choose_general2= false;
+
     QTextStream in(&file);
     int numPlayer = 0;
     while (!in.atEnd()) {
@@ -711,7 +726,7 @@ void CustomAssignDialog::load()
         if(line.startsWith("setPile:"))
         {
             set_pile.clear();
-            QStringList list = line.replace("setPile","").split(",");
+            QStringList list = line.replace("setPile:","").split(",");
             foreach(QString id,list)
             {
                 set_pile.prepend(id.toInt());
@@ -777,6 +792,7 @@ void CustomAssignDialog::load()
     }
 
     updateNumber(numPlayer-2);
+    list->setCurrentRow(0);
     for(int i=list->count()-1;i>=0;i--)
     {
         list->setCurrentItem(list->item(i));
@@ -784,15 +800,23 @@ void CustomAssignDialog::load()
     }
 
     player_draw->setValue(player_start_draw[starter_box->currentText()]);
+
     //updatePlayerInfo("player");
-    //updatePileInfo();
+    updatePileInfo();
     //updatePlayerHpInfo("player");
     file.close();
 }
 
-void CustomAssignDialog::save()
+void CustomAssignDialog::save(QString path)
 {
-    QFile file("etc/custom_scenario.txt");
+    QString filename = path;
+    if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
+                                                    tr("Save mini scenario settings"),
+                                                    "etc/",
+                                                    tr("Pure text replay file (*.txt)"));
+
+
+    QFile file(filename);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
@@ -821,6 +845,12 @@ void CustomAssignDialog::save()
     for(int i=0;i<list->count();i++)
     {
         QString name = i==0 ? "player" : QString("ai%1").arg(i);
+
+        if(line.isEmpty())
+        {
+            if(general_mapping[name]!=NULL)line.append(QString("general:%1 ").arg(general_mapping[name]));
+            if(general2_mapping[name]!=NULL)line.append(QString("general2:%1 ").arg(general2_mapping[name]));
+        }
         line.append(QString("role:%1 ").arg(role_mapping[name]));
         if(starter == name)line.append("starter:true ");
         if(player_maxhp[name]>0)line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
