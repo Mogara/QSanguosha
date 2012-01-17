@@ -937,7 +937,6 @@ bool CustomAssignDialog::save(QString path)
     QString line;
     if(set_pile.length())
     {
-        QString line ;
         foreach(int id, set_pile)
         {
             line.prepend(QString::number(id));
