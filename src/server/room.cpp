@@ -416,6 +416,7 @@ void Room::gameOver(const QString &winner){
                 id = QString::number(stage+1).rightJustified(2,'0');
                 id.prepend("_mini_");
                 Config.setValue("GameMode",id);
+                Config.GameMode = id;
             }
         }
     }
