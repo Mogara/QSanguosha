@@ -104,7 +104,7 @@ private slots:
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
     void load();
-    void save(QString path = QString());
+    bool save(QString path = QString());
 
 public slots:
     void getChosenGeneral(QString general_name);
