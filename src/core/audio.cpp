@@ -3,11 +3,13 @@
 #include "settings.h"
 
 #include <QCache>
+#include <QtDebug>
+
 
 class Sound;
 
 static FMOD_SYSTEM *System;
-static QCache<QString, Sound> SoundCache;
+static QCache<QString, Sound> SoundCache(1000);
 static FMOD_SOUND *BGM;
 static FMOD_CHANNEL *BGMChannel;
 
@@ -26,8 +28,12 @@ public:
 
     void play(){
         if(sound){
-            FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, sound, false, &channel);
-            FMOD_Channel_SetVolume(channel, Config.EffectVolume);
+            FMOD_RESULT result = FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, sound, false, &channel);
+
+            if(result == FMOD_OK){
+                FMOD_Channel_SetVolume(channel, Config.EffectVolume);
+                FMOD_System_Update(System);
+            }
         }
     }
 
@@ -61,6 +67,8 @@ void Audio::quit(){
         System = NULL;
     }
 }
+
+
 
 void Audio::play(const QString &filename){
     Sound *sound = SoundCache[filename];
