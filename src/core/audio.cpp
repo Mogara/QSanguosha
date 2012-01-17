@@ -101,6 +101,8 @@ void Audio::stop(){
     }
 
     stopBGM();
+
+    FMOD_System_Update(System);
 }
 
 void Audio::playBGM(const QString &filename){
@@ -109,6 +111,8 @@ void Audio::playBGM(const QString &filename){
     if(result == FMOD_OK){
         FMOD_Sound_SetLoopCount(BGM, -1);
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, BGM, false, &BGMChannel);
+
+        FMOD_System_Update(System);
     }
 }
 
