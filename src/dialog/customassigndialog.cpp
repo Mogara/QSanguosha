@@ -804,6 +804,9 @@ void CustomAssignDialog::load()
     free_choose_general = false;
     free_choose_general2= false;
 
+    is_single_turn = false;
+    is_before_next = false;
+
     QTextStream in(&file);
     int numPlayer = 0;
     QMap<QString, int> role_index;
@@ -933,10 +936,11 @@ void CustomAssignDialog::load()
     for(int i=list->count()-1;i>=0;i--)
     {
         list->setCurrentItem(list->item(i));
-
+        if(list->item(i)->data(Qt::UserRole).toString() == starter)
+            starter_box->setCurrentIndex(i);
     }
 
-    player_draw->setValue(player_start_draw[starter_box->currentText()]);
+    player_draw->setValue(player_start_draw[starter_box->itemData(starter_box->currentIndex()).toString()]);
     num_combobox->setCurrentIndex(list->count()-2);
 
     updatePileInfo();
