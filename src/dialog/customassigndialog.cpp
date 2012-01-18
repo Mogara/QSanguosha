@@ -534,7 +534,7 @@ void CustomAssignDialog::setPlayerStartDraw(int draw_num){
 void CustomAssignDialog::setPlayerDrawNum(int index){
     QString name = starter_box->itemData(index).toString();
     int val = 4;
-    if(player_start_draw.contains(name))val = player_start_draw[name];
+    if(player_start_draw.keys().contains(name)) val = player_start_draw[name];
     player_draw->setValue(val);
 }
 
@@ -858,6 +858,7 @@ void CustomAssignDialog::load()
         if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
         if(player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
         if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
+        else player_start_draw[name] = 4;
 
         if(player["starter"]!=NULL)starter = name;
         if(player["chained"]!=NULL)player_chained[name]=true;
