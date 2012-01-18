@@ -82,6 +82,12 @@
         </item>
         <item>
          <widget class="QTextEdit" name="skillTextEdit">
+          <property name="maximumSize">
+           <size>
+            <width>211</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
