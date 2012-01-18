@@ -98,15 +98,15 @@ public:
                clubs << judge->card;
         }
 
+        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         foreach(const Card* card, clubs)
             if(card->objectName() == "shit")
-                if(room->askForChoice(player, objectName(), "yes+no") == "no")
+                if(caozhi && room->askForChoice(caozhi, objectName(), "yes+no") == "no")
                     clubs.removeOne(card);
 
         if(clubs.isEmpty())
             return false;
 
-        ServerPlayer *caozhi = room->findPlayerBySkillName(objectName());
         if(caozhi && caozhi->askForSkillInvoke(objectName(), data)){
             if(player->getGeneralName() == "zhenji")
                 room->playSkillEffect("luoying", 2);
