@@ -443,6 +443,7 @@ void Room::slashEffect(const SlashEffectStruct &effect){
     else setEmotion(effect.from, "killer");
     setEmotion(effect.to, "victim");
 
+    setTag("LastSlashEffect", data);
     bool broken = thread->trigger(SlashEffect, effect.from, data);
     if(!broken)
         thread->trigger(SlashEffected, effect.to, data);

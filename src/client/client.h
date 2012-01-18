@@ -214,7 +214,7 @@ private slots:
     void selectRole();
 
 signals:
-    void version_checked(const QString &server_version);
+    void version_checked(const QString &version_number, const QString &mod_name);
     void server_connected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);

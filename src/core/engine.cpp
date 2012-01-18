@@ -376,12 +376,25 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return NULL;
 }
 
+QString Engine::getVersionNumber() const{
+    return "20120122";
+}
+
 QString Engine::getVersion() const{
-    return "20111113";
+    QString version_number = getVersionNumber();
+    QString mod_name = getMODName();
+    if(mod_name == "official")
+        return version_number;
+    else
+        return QString("%1:%2").arg(version_number).arg(mod_name);
 }
 
 QString Engine::getVersionName() const{
     return tr("Chibi");
+}
+
+QString Engine::getMODName() const{
+    return "official";
 }
 
 QStringList Engine::getExtensions() const{
