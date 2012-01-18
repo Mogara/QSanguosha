@@ -122,6 +122,7 @@ public slots:
 
 signals:
     void card_addin(int card_id);
+    void scenario_changed();
 };
 
 

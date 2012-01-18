@@ -202,7 +202,7 @@ Engine::~Engine(){
 QStringList Engine::getScenarioNames() const{
     QStringList names;
     foreach(QString name, scenarios.keys())
-        if(!name.contains("_mini_"))names<<name;
+        if(!name.contains("_mini_") && !name.contains("custom_scenario")) names << name;
     return names;
 }
 

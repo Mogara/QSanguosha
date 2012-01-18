@@ -291,6 +291,12 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
     {
         basara_checkbox->setEnabled(true);
     }
+
+    if(button->objectName().contains("mini")){
+        mini_scene_button->setEnabled(true);
+    }
+    else
+        mini_scene_button->setEnabled(false);
 }
 
 void BanlistDialog::switchTo(int item)
@@ -601,20 +607,18 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
 
 
-        QPushButton *mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
+
+        mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
         connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
-        item_list << HLay(scenario_button, scenario_combobox);
-        item_list << HLay(scenario_button, mini_scene_button);
-        item_list << HLay(mini_scenes, mini_scene_combobox);
-    }
+        mini_scene_button->setEnabled(mode_group->checkedButton() ?
+                                          mode_group->checkedButton()->objectName() == "mini" :
+                                          false);
 
-    QRadioButton *button = new QRadioButton(tr("Custom Mode"));
-    button->setObjectName("custom");
-    mode_group->addButton(button);
-    item_list << button;
-    if(button->objectName() == Config.GameMode)
-        button->setChecked(true);
+        item_list << HLay(scenario_button, scenario_combobox);
+        item_list << HLay(mini_scenes, mini_scene_combobox);
+        item_list << HLay(mini_scenes, mini_scene_button);
+    }
 
     QVBoxLayout *left = new QVBoxLayout;
     QVBoxLayout *right = new QVBoxLayout;
@@ -776,7 +780,13 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
 void ServerDialog::doCustomAssign(){
     CustomAssignDialog *dialog = new CustomAssignDialog(this);
+
+    connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
     dialog->exec();
+}
+
+void ServerDialog::setMiniCheckBox(){
+    mini_scene_combobox->setEnabled(false);
 }
 
 void Select3v3GeneralDialog::toggleCheck(){
@@ -849,8 +859,12 @@ bool ServerDialog::config(){
     QString objname = mode_group->checkedButton()->objectName();
     if(objname == "scenario")
         Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
-    else if(objname == "mini")
-        Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
+    else if(objname == "mini"){
+        if(mini_scene_combobox->isEnabled())
+            Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
+        else
+            Config.GameMode = "custom_scenario";
+    }
     else
         Config.GameMode = objname;
 
