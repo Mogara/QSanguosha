@@ -627,7 +627,7 @@ void CustomAssignDialog::accept(){
         MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(scene->getRule());
 
         rule->loadSetting("etc/customScenes/custom_scenario.txt");
-
+        emit scenario_changed();
         QDialog::accept();
     }
 }
