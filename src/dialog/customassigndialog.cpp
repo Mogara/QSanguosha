@@ -804,6 +804,9 @@ void CustomAssignDialog::load()
     free_choose_general = false;
     free_choose_general2= false;
 
+    is_single_turn = false;
+    is_before_next = false;
+
     QTextStream in(&file);
     int numPlayer = 0;
     QMap<QString, int> role_index;
