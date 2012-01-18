@@ -1083,7 +1083,7 @@ void MainWindow::on_actionAbout_Lua_triggered()
     content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);
 
-    Window *window = new Window(tr("About Lua"), QSize(500, 450));
+    Window *window = new Window(tr("About Lua"), QSize(500, 500));
     scene->addItem(window);
 
     window->addContent(content);

@@ -95,11 +95,13 @@ void Window::addContent(const QString &content){
 void Window::addCloseButton(const QString &label)
 {
     Button *ok_button = new Button(label, 0.6);
-    ok_button->setFont(Config.TinyFont);
+    QFont font = Config.TinyFont;
+    font.setBold(true);
+    ok_button->setFont(font);
     ok_button->setParentItem(this);
 
-    qreal x = size.width() - ok_button->boundingRect().width() - 15;
-    qreal y = size.height() - ok_button->boundingRect().height() - 15;
+    qreal x = size.width() - ok_button->boundingRect().width() - 25;
+    qreal y = size.height() - ok_button->boundingRect().height() - 25;
     ok_button->setPos(x, y);
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));

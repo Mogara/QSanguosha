@@ -33,6 +33,7 @@ private:
     QFont font;
     QImage *outimg;
     QPixmap *title;
+    QGraphicsPixmapItem *title_item;
     int glow;
     int timer_id;
 
