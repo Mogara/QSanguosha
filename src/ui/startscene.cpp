@@ -7,6 +7,8 @@
 #include <QNetworkInterface>
 #include <QGraphicsDropShadowEffect>
 
+#include <QGraphicsColorizeEffect>
+
 StartScene::StartScene()
 {
     // game logo
@@ -14,6 +16,32 @@ StartScene::StartScene()
     logo->shift();
     logo->moveBy(0, -Config.Rect.height()/4);
     addItem(logo);
+
+    //version number
+    QFont version_font(Config.SmallFont);
+    version_font.setPointSize(80);
+    QGraphicsSimpleTextItem *version_text = addSimpleText(Sanguosha->getVersionNum(), version_font);
+
+    Pixmap *circle;
+    circle = new Pixmap("image/system/circle.png");
+    circle->shift();
+    circle->moveBy(Config.Rect.width()/4 + version_text->boundingRect().width()/2,
+                   -Config.Rect.height()/4 + version_text->boundingRect().height()/2);
+    addItem(circle);
+
+    QGraphicsColorizeEffect *circle_colored = new QGraphicsColorizeEffect(circle);
+    circle_colored->setColor(Sanguosha->getVersionColor());
+    circle->setGraphicsEffect(circle_colored);
+
+    QGraphicsSimpleTextItem *version_text2 = addSimpleText(Sanguosha->getVersionNum(), version_font);
+    version_text2->setBrush(Sanguosha->getVersionNameColor());
+    version_text2->setPos(Config.Rect.width()/4, -Config.Rect.height()/4);
+
+    QFont version3_font(Config.SmallFont);
+    version3_font.setStyle(QFont::StyleItalic);
+    QGraphicsSimpleTextItem *version3_text = addSimpleText(Sanguosha->getVersion()+"\n"+Sanguosha->getVersionName(), version3_font);
+    version3_text->setBrush(Sanguosha->getVersionNameColor());
+    version3_text->setPos(Config.Rect.width()/4 + 90, -Config.Rect.height()/4);
 
     //the website URL
     QFont website_font(Config.SmallFont);

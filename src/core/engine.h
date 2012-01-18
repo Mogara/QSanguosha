@@ -37,6 +37,9 @@ public:
     SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersion() const;
     QString getVersionName() const;
+    QString getVersionNum() const;
+    QColor getVersionColor() const;
+    QColor getVersionNameColor() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QColor getKingdomColor(const QString &kingdom) const;
