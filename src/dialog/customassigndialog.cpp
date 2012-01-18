@@ -937,6 +937,7 @@ void CustomAssignDialog::load()
     }
 
     player_draw->setValue(player_start_draw[starter_box->currentText()]);
+    num_combobox->setCurrentIndex(list->count()-2);
 
     updatePileInfo();
     file.close();
@@ -1044,7 +1045,8 @@ bool CustomAssignDialog::save(QString path)
                 line.append(QString("beforeNext:%1 ").arg(winner));
             }
         }
-        if(player_start_draw.contains(name))line.append(QString("draw:%1 ").arg(player_start_draw[name]));
+        if(player_start_draw.contains(name) && player_start_draw[name] != 4)
+            line.append(QString("draw:%1 ").arg(player_start_draw[name]));
 
         if(player_equips[name].length())
         {
