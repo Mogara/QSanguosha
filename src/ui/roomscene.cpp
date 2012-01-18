@@ -1076,12 +1076,9 @@ void RoomScene::hideDiscards(){
 }
 
 void RoomScene::toggleDiscards(){
-    viewing_discards = ! viewing_discards;
-
-    if(viewing_discards)
-        viewDiscards();
-    else
-        hideDiscards();
+    CardOverview *overview = new CardOverview;
+    overview->loadFromList(ClientInstance->discarded_list);
+    overview->show();
 }
 
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
@@ -1224,7 +1221,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         putCardItem(dest, dest_place, card_item, from_general);
     }
     else{
-        if(src_place == Player::DiscardedPile && dest_place == Player::Hand){
+        if(src_place == Player::DiscardedPile || dest_place == Player::Hand){
             card_item->deleteCardDesc();
         }
         putCardItem(dest, dest_place, card_item);
@@ -1287,7 +1284,7 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
 //                delete first;
 //            }
 
-            //connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
+            connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
             card_item->setHomePos(DrawPilePos);
@@ -2511,9 +2508,7 @@ void RoomScene::addRestartButton(QDialog *dialog){
     }
 
     QPushButton *restart_button;
-      restart_button = goto_next ?
-              new QPushButton(tr("Next Stage"))
-            : new QPushButton(tr("Restart Game"));
+      restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
     QPushButton *return_button = new QPushButton(tr("Return to main menu"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -2960,6 +2955,9 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
 
         special_card->showAvatar(player->getGeneral());
+        QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
+        special_card->writeCardDesc(desc);
+
         special_card->setFrame(result);
     }
 }
@@ -3108,6 +3106,7 @@ void RoomScene::onGameStart(){
         connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
 
         skill_buttons << free_discard;
+        reLayout();
     }
 
     trust_button->setEnabled(true);
