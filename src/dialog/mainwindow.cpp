@@ -431,7 +431,7 @@ void MainWindow::on_actionAbout_triggered()
     QString email = "moligaloo@gmail.com";
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
                       "totally written in C++ Qt GUI framework <br />"
-                      "My Email: <a href='mailto:%1'>%1</a> <br/>"
+                      "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
                       "My QQ: 365840793 <br/>"
                       ).arg(email));
 
@@ -1054,7 +1054,7 @@ void MainWindow::on_actionAbout_fmod_triggered()
     content.append("<p align='center'> <img src='image/system/fmod.png' /> </p> <br/>");
 
     QString address = "http://www.fmod.org";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
 #ifdef AUDIO_SUPPORT
     content.append(tr("Current versionn %1 <br/>").arg(Audio::getVersion()));
@@ -1078,7 +1078,7 @@ void MainWindow::on_actionAbout_Lua_triggered()
     content.append("<p align='center'> <img src='image/system/lua.png' /> </p> <br/>");
 
     QString address = "http://www.lua.org";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
     content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);
