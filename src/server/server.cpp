@@ -294,9 +294,14 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 
     if(button->objectName().contains("mini")){
         mini_scene_button->setEnabled(true);
+        second_general_checkbox->setChecked(false);
+        second_general_checkbox->setEnabled(false);
     }
     else
+    {
+        second_general_checkbox->setEnabled(true);
         mini_scene_button->setEnabled(false);
+    }
 }
 
 void BanlistDialog::switchTo(int item)
@@ -313,7 +318,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setWindowTitle(tr("Select generals that are excluded"));
 
     if(ban_list.isEmpty())
-        ban_list << "1v1" << "Basara" << "Hegemony" << "Pairs";
+        ban_list << "Roles" << "1v1" << "Basara" << "Hegemony" << "Pairs";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;

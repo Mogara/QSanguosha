@@ -228,8 +228,6 @@ void CardItem::promoteZ()
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *){
     if(hasFocus())
         emit clicked();
-    else
-        emit toggle_discards();
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
@@ -258,6 +256,7 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
         event->accept();
         emit double_clicked();
     }
+    else emit toggle_discards();
 }
 
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

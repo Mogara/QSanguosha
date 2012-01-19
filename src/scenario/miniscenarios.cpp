@@ -85,6 +85,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                     QStringList available,all,existed;
                     existed = existedGenerals();
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+                    qShuffle(all);
                     for(int i=0;i<5;i++)
                     {
                         sp->setGeneral(NULL);
@@ -111,6 +112,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                     QStringList available,all,existed;
                     existed = existedGenerals();
                     all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+                    qShuffle(all);
                     for(int i=0;i<5;i++)
                     {
                         room->setPlayerProperty(sp,"general2",NULL);
