@@ -3152,7 +3152,7 @@ void RoomScene::onGameStart(){
         return;
 
     // start playing background music
-    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
+    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
 
     Audio::playBGM(bgmusic_path);
     Audio::setBGMVolume(Config.BGMVolume);
