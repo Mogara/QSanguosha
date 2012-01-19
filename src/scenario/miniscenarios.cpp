@@ -43,11 +43,11 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     if(event == PhaseChange)
     {
         if(player->getPhase()==Player::Start && this->players.first()["beforeNext"] != NULL
-                &&player->getState() != "robot")
+                )
         {
-            if(room->getTag("playerHasPlayed").toBool())
+            if(player->tag["playerHasPlayed"].toBool())
                 room->gameOver(this->players.first()["beforeNext"]);
-            else room->setTag("playerHasPlayed",true);
+            else player->tag["playerHasPlayed"] = true;
         }
 
         if(player->getPhase() != Player::NotActive)return false;
