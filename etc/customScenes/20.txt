@@ -1,4 +1,4 @@
 setPile:96,51,110,32,126,120
-general:select general2:select role:loyalist starter:true beforeNext:Rebel draw:0 hand:103,86 hp:1
-general:zhangjiao general2:chengong role:rebel maxhp:3 draw:0 equip:57,62 hand:37,97,134,143 
-general:caocao role:lord maxhp:5 hp:2 draw:0 equip:108,109 
+general:select general2:select role:loyalist starter:true hp:1 beforeNext:Rebel draw:0 hand:86,106 
+general:zhangjiao general2:chengong role:rebel maxhp:3 draw:0 equip:62,57 hand:143,134,97,37 
+general:caocao role:lord maxhp:5 hp:2 draw:0 equip:109,108 
