@@ -101,9 +101,15 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QFrame" name="frame1">
+          <property name="minimumSize">
+           <size>
+            <width>241</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>221</width>
+            <width>271</width>
             <height>61</height>
            </size>
           </property>
@@ -152,7 +158,7 @@
          <widget class="QScrollArea" name="scrollArea">
           <property name="maximumSize">
            <size>
-            <width>221</width>
+            <width>271</width>
             <height>16777215</height>
            </size>
           </property>
@@ -167,7 +173,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>205</width>
+             <width>241</width>
              <height>506</height>
             </rect>
            </property>
