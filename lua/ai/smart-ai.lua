@@ -1372,7 +1372,7 @@ function SmartAI:useBasicCard(card, use, no_distance)
 								end
 							elseif not card:inherits("NatureSlash") then
 								local slash = self:getCard("NatureSlash")
-								if slash then usecard = slash end
+								if slash and self:slashIsEffective(slash, enemy) and not self:slashProhibit(slash, enemy) then usecard = slash end
 							end
 						end
 					end
