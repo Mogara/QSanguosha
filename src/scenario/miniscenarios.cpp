@@ -196,10 +196,15 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                 skill->trigger(GameStart, sp, v);
         }
 
-        if(this->players.at(i)["chained"] != NULL)
+        if(this->players.at(i)["chained"] != NULL){
             sp->setChained(true);
-        if(this->players.at(i)["turned"] == "true")
-            sp->setFaceUp(false);
+            room->broadcastProperty(sp, "chained");
+            room->setEmotion(sp, "chain");
+        }
+        if(this->players.at(i)["turned"] == "true"){
+            if(sp->faceUp())
+                sp->turnOver();
+        }
         if(this->players.at(i)["starter"] != NULL)
             room->setCurrent(sp);
 
