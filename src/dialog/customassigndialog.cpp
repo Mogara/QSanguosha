@@ -134,9 +134,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     single_turn_text2 = new QLabel(tr("win"));
     single_turn_box = new QComboBox();
     single_turn = new QCheckBox(tr("After this turn you lose"));
-    single_turn_box->addItem(tr("Lord"), "Lord+Loyalist");
-    single_turn_box->addItem(tr("Renegade"), "Renegade");
-    single_turn_box->addItem(tr("Rebel"), "Rebel");
+    single_turn_box->addItem(tr("Lord"), "lord+loyalist");
+    single_turn_box->addItem(tr("Renegade"), "renegade");
+    single_turn_box->addItem(tr("Rebel"), "rebel");
 
     before_next_text = new QLabel(tr("Before next turn "));
     before_next_text2 = new QLabel(tr("win"));
@@ -810,9 +810,9 @@ void CustomAssignDialog::load()
     QTextStream in(&file);
     int numPlayer = 0;
     QMap<QString, int> role_index;
-    role_index["Lord+Loyalist"] = 0;
-    role_index["Renegade"] = 1;
-    role_index["Rebel"] = 2;
+    role_index["lord+loyalist"] = 0;
+    role_index["renegade"] = 1;
+    role_index["rebel"] = 2;
 
     while (!in.atEnd()) {
         QString line = in.readLine();

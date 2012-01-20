@@ -53,7 +53,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
         if(player->getPhase() != Player::NotActive)return false;
         if(player->getState() == "robot" || this->players.first()["singleTurn"] == NULL)
             return false;
-        room->gameOver(this->players.first()["SingleTurn"]);
+        room->gameOver(this->players.first()["singleTurn"]);
     }
     if(player->getRoom()->getTag("WaitForPlayer").toBool())
         return true;
