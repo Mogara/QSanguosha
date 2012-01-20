@@ -7,6 +7,7 @@
 #include "nativesocket.h"
 #include "recorder.h"
 
+#include <QApplication>
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include <QCheckBox>
@@ -1297,6 +1298,7 @@ void Client::clearTurnTag(){
     switch(Self->getPhase()){
     case Player::Start:{
             Sanguosha->playAudio("your-turn");
+            QApplication::alert(QApplication::focusWidget());
             break;
     }
 
