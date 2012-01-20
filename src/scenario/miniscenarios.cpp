@@ -115,7 +115,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
                     qShuffle(all);
                     for(int i=0;i<5;i++)
                     {
-                        room->setPlayerProperty(sp,"general2",NULL);
+                        room->setPlayerProperty(sp,"general2",QVariant());
                         QString choice = sp->findReasonable(all);
                         if(existed.contains(choice))
                         {
