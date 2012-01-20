@@ -949,7 +949,8 @@
     </message>
     <message>
         <location filename="src/dialog/configdialog.cpp" line="145"/>
-        <source>Audio files (*.wav *.mp3)</source>
+        <source>Audio files (*.wav *.mp3 *.ogg)</source>
+        <oldsource>Audio files (*.wav *.mp3)</oldsource>
         <translation>音频文件 (*.wav *.mp3)</translation>
     </message>
 </context>
