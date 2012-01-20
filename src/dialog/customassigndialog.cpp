@@ -857,9 +857,11 @@ void CustomAssignDialog::load()
         if(player["general2"]=="select")free_choose_general2 = true;
         else if(player["general2"]!=NULL)general2_mapping[name]=player["general2"];
 
-        if(player["maxhp"]!=NULL)player_maxhp[name]=player["maxhp"].toInt();
+        if(player["maxhp"]!=NULL){
+            player_maxhp[name] = player["maxhp"].toInt();
+            if(player_hp[name]>player_maxhp[name]) player_hp[name] = player_maxhp[name];
+        }
         if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
-        if(player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
         if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
         else player_start_draw[name] = 4;
 
