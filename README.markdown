@@ -21,7 +21,7 @@ Features
 
 1. Framework
     * Open source with Qt graphics view framework
-    * Use irrKlang as sound engine
+    * Use FMOD as sound engine
     * Use plib as joystick backend 
     * Use Lua as AI script
 
