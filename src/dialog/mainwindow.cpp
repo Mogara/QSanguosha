@@ -638,28 +638,9 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    QStringList contents;
-    contents.append(tr("QSanguosha staff:"));
-
-    contents.append(tr("AI Maintainance: William915, donle"));
-    contents.append(tr("Game Design: Moligaloo, Ubun Tenkei"));
-    contents.append(tr("Miscellaneous: Hypercross"));
-    contents.append(tr("Founder: Moligaloo"));
-
-    QString content;
-    foreach(QString string, contents)
-    {
-        content.append(QString("<p align='right'><i>%1</i></p>").arg(string));
-    }
-
-    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
-    scene->addItem(window);
-
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
-
-    window->appear();
+    AcknowledgementScene* ack = new AcknowledgementScene;
+    connect(ack,SIGNAL(go_back()),this,SLOT(gotoStartScene()));
+    gotoScene(ack);
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
@@ -951,6 +932,21 @@ void MeleeDialog::setGeneral(const QString &general_name){
         avatar_button->setProperty("to_test", general_name);
     }
 }
+
+AcknowledgementScene::AcknowledgementScene(QObject *parent) :
+    QGraphicsScene(parent)
+{
+    view = new QDeclarativeView;
+    view->setSource(QUrl::fromLocalFile("acknowledgement/main.qml"));
+    addWidget(view);
+    view->move( - width()/2, - height()/2);
+    view->setStyleSheet(QString("background: transparent"));
+
+    QObject *item = view->rootObject();
+
+    connect(item,SIGNAL(go_back()),this,SIGNAL(go_back()));
+}
+
 
 void MainWindow::on_actionAI_Melee_triggered()
 {

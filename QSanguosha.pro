@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql
+QT += network sql declarative
 TEMPLATE = app
 CONFIG += warn_on audio qaxcontainer
 
@@ -225,4 +225,6 @@ CONFIG(joystick){
 TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
-    sanguosha.qss
+    sanguosha.qss \
+    scenarios/acknowledgement/main.qml
+
