@@ -1038,6 +1038,7 @@ void MeleeDialog::updateResultBox(QString role, int win){
     totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
     totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
     total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
+    server_log->append(tr("End of game %1").arg(QString::number(totalCount)));
 }
 
 void MainWindow::on_actionView_ban_list_triggered()

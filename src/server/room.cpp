@@ -646,7 +646,7 @@ trust:
             broadcastInvoke("animate", QString("nullification:%1:%2")
                             .arg(player->objectName()).arg(to->objectName()));
 
-            QVariant decisionData = QVariant::fromValue("Nullification:"+trick->objectName()+":"+to->objectName()+":"+(positive?"true":"false"));
+            QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
             thread->trigger(ChoiceMade, player, decisionData);
             setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
 

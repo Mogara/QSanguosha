@@ -31,8 +31,16 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	local point=tonumber(prompts[4])
 	local targets=self.friends
 	if not targets then return end
-	self:sort(targets,"hp")
-	if not targets[1]:isWounded() then return end
+	local compare_func = function(a, b)
+		if a:isWounded() ~= b:isWounded() then
+			return a:isWounded()
+		elseif a:isWounded() then
+			return a:getHp() < b:getHp()
+		else
+			return a:getHandcardNum() < b:getHandcardNum()
+		end
+	end
+	table.sort(targets, compare_func)
 	local cards=self.player:getCards("he")
 	cards=sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
@@ -43,7 +51,7 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 		for __,card2 in ipairs(cards) do
 			if card1:getId()==card2:getId() then
 			elseif card1:getNumber()+card2:getNumber()==point then
-				if targets[2] and targets[2]:isWounded() then
+				if #targets >= 2 and targets[2]:isWounded() then
 					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName() .. "+" .. targets[2]:objectName()
 				elseif targets[1]:getHp()==1 or self:getUseValue(card1)+self:getUseValue(card2)<=6 then
 					return "@ChengxiangCard=" .. card1:getId() .. "+" .. card2:getId() .. "->" .. targets[1]:objectName()

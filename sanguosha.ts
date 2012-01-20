@@ -950,8 +950,7 @@
     <message>
         <location filename="src/dialog/configdialog.cpp" line="145"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
-        <oldsource>Audio files (*.wav *.mp3)</oldsource>
-        <translation>音频文件 (*.wav *.mp3)</translation>
+        <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
 </context>
 <context>
@@ -2026,13 +2025,13 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="364"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1063"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1064"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="369"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1086"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1087"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2137,7 +2136,6 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="432"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: &lt;a href=&apos;mailto:%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;My QQ: 365840793 &lt;br/&gt;</source>
-        <oldsource>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;My Email: &lt;a href=&apos;mailto:%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;My QQ: 365840793 &lt;br/&gt;</oldsource>
         <translation>这是风靡中国的桌面游戏 &lt;b&gt;三国杀&lt;/b&gt; 的开源PC版克隆，使用 Qt C++ 框架 &lt;br/&gt; 我的 Email:&lt;a href=&apos;mailto:%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt; 我的 QQ: 365840793 &lt;br/&gt;</translation>
     </message>
     <message>
@@ -2155,25 +2153,24 @@
         <location filename="src/dialog/mainwindow.cpp" line="467"/>
         <location filename="src/dialog/mainwindow.cpp" line="585"/>
         <location filename="src/dialog/mainwindow.cpp" line="659"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1067"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1090"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1068"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1091"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1053"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1054"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1057"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1081"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1058"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1082"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
-        <oldsource>Official site: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</oldsource>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1077"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1078"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2249,8 +2246,8 @@
         <translation>论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1060"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1083"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1061"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1084"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
@@ -2326,7 +2323,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="763"/>
         <source>Num of rooms</source>
-        <translation>测试次数</translation>
+        <translation>房间数目</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="882"/>
@@ -2362,6 +2359,11 @@
         <location filename="src/dialog/mainwindow.cpp" line="929"/>
         <source>Total</source>
         <translation>总计</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1041"/>
+        <source>End of game %1</source>
+        <translation type="unfinished">第 %1 局结束</translation>
     </message>
 </context>
 <context>
@@ -2514,7 +2516,6 @@
     <message>
         <location filename="src/dialog/packagingeditor.cpp" line="84"/>
         <source>Package format is 7z, see its offcial site :&lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt;</source>
-        <oldsource>Package format is 7z, see its offcial site :&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</oldsource>
         <translation>打包格式为 7z, 官方网站 :&lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt;</translation>
     </message>
     <message>
