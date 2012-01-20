@@ -5,7 +5,6 @@
 #include <QCache>
 #include <QtDebug>
 
-
 class Sound;
 
 static FMOD_SYSTEM *System;
@@ -37,7 +36,7 @@ public:
         }
     }
 
-    bool isPlaying(){
+    bool isPlaying() const{
         if(channel == NULL)
             return false;
 
@@ -67,8 +66,6 @@ void Audio::quit(){
         System = NULL;
     }
 }
-
-
 
 void Audio::play(const QString &filename){
     Sound *sound = SoundCache[filename];
