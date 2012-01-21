@@ -85,10 +85,10 @@ function sgs.refreshLoyalty(player,intention)
 	--self:checkMisjudge(player)
 end
 
-function sgs.updateIntention(from, to, intention)
+function sgs.updateIntention(from, to, intention, card)
 	intention = sgs.ai_card_intention.general(to, intention)
 	if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
-		from:getRoom():writeToConsole(from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName())
+		from:getRoom():writeToConsole(from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName() .. "#" .. card:className())
 	end
     sgs.refreshLoyalty(from, intention)
 	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end

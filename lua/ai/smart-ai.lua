@@ -616,7 +616,7 @@ function SmartAI:filterEvent(event, player, data)
 			if type(callback) == "function" then
 				callback(card, from, to, source)
 			elseif type(callback) == "number" then
-				sgs.updateIntentions(from, to, callback)
+				sgs.updateIntentions(from, to, callback, card)
 			end
 		end
 	elseif event == sgs.CardLost then

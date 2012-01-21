@@ -40,7 +40,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	local hasJud = self.player:getJudgingArea()
 	
 	for _,enemy in ipairs(self.enemies) do
-		local def=getDefense(enemy)
+		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
 			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
@@ -56,7 +56,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	end
 	
 	for _,enemy in ipairs(self.enemies) do
-		local def=getDefense(enemy)
+		local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
 			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
@@ -82,7 +82,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	self:sort(self.enemies,"defense")
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
-	local selfDef = getDefense(self.player)
+        local selfDef = sgs.getDefense(self.player)
 	
 	local cards = self.player:getCards("he")
 	
@@ -112,7 +112,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	local effectslash, best_target, target
 	local defense = 6
 	for _,enemy in ipairs(self.enemies) do
-		local def=getDefense(enemy)
+                local def=sgs.getDefense(enemy)
 		local amr=enemy:getArmor()
 		local eff=(not amr) or self.player:hasWeapon("qinggang_sword") or not
 			((amr:inherits("Vine") and not self.player:hasWeapon("fan"))
