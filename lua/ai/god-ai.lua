@@ -226,7 +226,7 @@ smallyeyan_skill.getTurnUseCard=function(self)
 		local spade, club, heart, diamond
 		for _, card in sgs.qlist(self.player:getHandcards()) do
 			if card:getSuit() == sgs.Card_Spade then spade = true
-			elseif card:getSuit() == sgs.Card_Clue then club = true
+			elseif card:getSuit() == sgs.Card_Club then club = true
 			elseif card:getSuit() == sgs.Card_Heart then heart = true
 			elseif card:getSuit() == sgs.Card_Diamond then diamond = true
 			end
@@ -311,7 +311,7 @@ sgs.ai_skill_use_func["MediumYeyanCard"]=function(card,use,self)
 	local spade, club, heart, diamond
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Clue and not club then club = true table.insert(need_cards, card)
+		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card)
 		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card)
 		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card)
 		end
@@ -342,7 +342,7 @@ sgs.ai_skill_use_func["GreatYeyanCard"]=function(card,use,self)
 	local spade, club, heart, diamond
 	for _, card in ipairs(cards) do
 		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Clue and not club then club = true table.insert(need_cards, card)
+		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card)
 		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card)
 		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card)
 		end

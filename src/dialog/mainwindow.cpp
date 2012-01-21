@@ -279,30 +279,39 @@ BackLoader::BackLoader(QObject * parent)
 
 void BackLoader::run()
 {
-    PixmapAnimation::LoadEmotion("peach");
-    emit completed(8);
-    PixmapAnimation::LoadEmotion("analeptic");
-    emit completed(16);
-    PixmapAnimation::LoadEmotion("chain");
-    emit completed(25);
-    PixmapAnimation::LoadEmotion("damage");
-    emit completed(33);
-    PixmapAnimation::LoadEmotion("fire_slash");
-    emit completed(41);
-    PixmapAnimation::LoadEmotion("thunder_slash");
-    emit completed(49);
-    PixmapAnimation::LoadEmotion("killer");
-    emit completed(58);
-    PixmapAnimation::LoadEmotion("jink");
-    emit completed(66);
-    PixmapAnimation::LoadEmotion("no-success");
-    emit completed(74);
-    PixmapAnimation::LoadEmotion("slash_black");
-    emit completed(82);
-    PixmapAnimation::LoadEmotion("slash_red");
-    emit completed(91);
-    PixmapAnimation::LoadEmotion("success");
-    emit completed(100);
+    QStringList emotions;
+    emotions << "peach"
+            << "analeptic"
+            << "chain"
+            << "damage"
+            << "fire_slash"
+            << "thunder_slash"
+            << "killer"
+            << "jink"
+            << "no-success"
+            << "slash_black"
+            << "slash_red"
+            << "success";
+
+    double total = 0;
+    foreach(QString emotion, emotions){
+        int n = PixmapAnimation::GetFrameCount(emotion);
+        total += n;
+    }
+
+    int loaded = 0;
+    foreach(QString emotion, emotions){
+        int n = PixmapAnimation::GetFrameCount(emotion);
+        for(int i=0; i<n; i++){
+            QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(i);
+            PixmapAnimation::GetFrameFromCache(filename);
+
+            loaded ++;
+
+            double process = (loaded / total) * 100;
+            emit completed(static_cast<int>(process));
+        }
+    }
 
     emit finished();
 }
@@ -676,15 +685,7 @@ void MainWindow::on_actionScript_editor_triggered()
 MeleeDialog::MeleeDialog(QWidget *parent)
     :QDialog(parent)
 {
-    server=NULL;
-    lordCount=0;
-    lordWinCount=0;
-    loyalistCount=0;
-    loyalistWinCount=0;
-    renegadeCount=0;
-    renegadeWinCount=0;
-    rebelCount=0;
-    rebelWinCount=0;
+    server=NULL;    
     room_count=0;
 
     setWindowTitle(tr("AI Melee"));
@@ -996,45 +997,25 @@ void MainWindow::on_actionSend_lowlevel_command_triggered()
     if(!command.isEmpty())
         ClientInstance->request(command);
 }
-void MeleeDialog::updateResultBox(QString role, int win){
-    // role types << "lord" << "loyalist" << "renegade" << "rebel";
-    // int lordCount,lordWinCount,loyalistCount,loyalistWinCount,renegadeCount,renegadeWinCount,rebelCount,rebelWinCount;
-    QLineEdit *lord_edit = new QLineEdit;
-    QLineEdit *loyalist_edit = new QLineEdit;
-    QLineEdit *rebel_edit = new QLineEdit;
-    QLineEdit *renegade_edit = new QLineEdit;
-    QLineEdit *total_edit = new QLineEdit;
-    lord_edit=result_box->findChild<QLineEdit *>("lord_edit");
-    loyalist_edit=result_box->findChild<QLineEdit *>("loyalist_edit");
-    rebel_edit=result_box->findChild<QLineEdit *>("rebel_edit");
-    renegade_edit=result_box->findChild<QLineEdit *>("renegade_edit");
-    total_edit=result_box->findChild<QLineEdit *>("total_edit");
-    int totalCount,totalWinCount;
+void MeleeDialog::updateResultBox(QString role, int win){    
+    QLineEdit *edit = result_box->findChild<QLineEdit *>(role + "_edit");
+    double roleCount = (this->roleCount[role] += win);
+    double winCount = (this->winCount[role] += win);
+    double rate = roleCount / winCount;
+    edit->setText(QString("%1 / %2 = %3%%").arg(winCount).arg(roleCount).arg(rate));
 
-    if(role=="lord"){
-        lordCount++;
-        lordWinCount+=win;
-        lord_edit->setText(QString::number(lordWinCount) +" / "+QString::number(lordCount) + " = " + QString::number(100.0*(double)lordWinCount/lordCount,'f',2) + "%");
-    }
-    else if(role=="loyalist"){
-        loyalistCount++;
-        loyalistWinCount+=win;
-        loyalist_edit->setText(QString::number(loyalistWinCount) +" / "+QString::number(loyalistCount) + " = " + QString::number(100.0*(double)loyalistWinCount/loyalistCount,'f',2) + "%");
-    }
-    else if(role=="renegade"){
-        renegadeCount++;
-        renegadeWinCount+=win;
-        renegade_edit->setText(QString::number(renegadeWinCount) +" / "+QString::number(renegadeCount) + " = " + QString::number(100.0*(double)renegadeWinCount/renegadeCount,'f',2) + "%");
-    }
-    else if(role=="rebel"){
-        rebelCount++;
-        rebelWinCount+=win;
-        rebel_edit->setText(QString::number(rebelWinCount) +" / "+QString::number(rebelCount) + " = " + QString::number(100.0*(double)rebelWinCount/rebelCount,'f',2) + "%");
-    }
-    totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
-    totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
-    total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
-    server_log->append(tr("End of game %1").arg(QString::number(totalCount)));
+    double totalCount = 0, totalWinCount = 0;
+
+    foreach(int count, this->roleCount.values())
+        totalCount += count;
+
+    foreach(int count, this->winCount.values())
+        totalWinCount += count;
+
+    QLineEdit *total_edit = result_box->findChild<QLineEdit *>("total_edit");
+    total_edit->setText(QString("%1 / %2 = %3%%").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount));
+
+    server_log->append(tr("End of game %1").arg(totalCount));
 }
 
 void MainWindow::on_actionView_ban_list_triggered()
