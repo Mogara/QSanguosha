@@ -7,6 +7,7 @@
 #include "nativesocket.h"
 #include "recorder.h"
 
+#include <QApplication>
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include <QCheckBox>
@@ -182,7 +183,17 @@ void Client::request(const QString &message){
 }
 
 void Client::checkVersion(const QString &server_version){
-    emit version_checked(server_version);
+    QString version_number, mod_name;
+    if(server_version.contains(QChar(':'))){
+        QStringList texts = server_version.split(QChar(':'));
+        version_number = texts.value(0);
+        mod_name = texts.value(1);
+    }else{
+        version_number = server_version;
+        mod_name = "official";
+    }
+
+    emit version_checked(version_number, mod_name);
 }
 
 void Client::setup(const QString &setup_str){
@@ -1287,6 +1298,7 @@ void Client::clearTurnTag(){
     switch(Self->getPhase()){
     case Player::Start:{
             Sanguosha->playAudio("your-turn");
+            QApplication::alert(QApplication::focusWidget());
             break;
     }
 

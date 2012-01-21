@@ -61,6 +61,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
+    <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
     <addaction name="actionAcknowledgement"/>
     <addaction name="separator"/>
@@ -361,6 +362,11 @@
   <action name="actionAbout_fmod">
    <property name="text">
     <string>About fmod</string>
+   </property>
+  </action>
+  <action name="actionAbout_Lua">
+   <property name="text">
+    <string>About Lua</string>
    </property>
   </action>
  </widget>

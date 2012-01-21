@@ -38,16 +38,16 @@ void Button::init()
     pt.setRenderHint(QPainter::TextAntialiasing);
     pt.drawText(boundingRect(), Qt::AlignCenter, label);
 
-    QGraphicsPixmapItem *qp = new QGraphicsPixmapItem(this);
-    qp->setPixmap(*title);
-    qp->show();
+    title_item = new QGraphicsPixmapItem(this);
+    title_item->setPixmap(*title);
+    title_item->show();
 
     QGraphicsDropShadowEffect *de = new QGraphicsDropShadowEffect;
     de->setOffset(0);
     de->setBlurRadius(12);
     de->setColor(QColor(255,165,0));
 
-    qp->setGraphicsEffect(de);
+    title_item->setGraphicsEffect(de);
 
     QImage bgimg("image/system/button/button.png");
     outimg = new QImage(size.toSize(),QImage::Format_ARGB32);
@@ -97,6 +97,14 @@ void Button::setMute(bool mute){
 
 void Button::setFont(const QFont &font){
     this->font = font;
+    title->fill(QColor(0,0,0,0));
+    QPainter pt(title);
+    pt.setFont(font);
+    pt.setPen(Config.TextEditColor);
+    pt.setRenderHint(QPainter::TextAntialiasing);
+    pt.drawText(boundingRect(), Qt::AlignCenter, label);
+
+    title_item->setPixmap(*title);
 }
 
 #include "engine.h"

@@ -5,11 +5,10 @@
 #include <QCache>
 #include <QtDebug>
 
-
 class Sound;
 
 static FMOD_SYSTEM *System;
-static QCache<QString, Sound> SoundCache(1000);
+static QCache<QString, Sound> SoundCache;
 static FMOD_SOUND *BGM;
 static FMOD_CHANNEL *BGMChannel;
 
@@ -37,7 +36,7 @@ public:
         }
     }
 
-    bool isPlaying(){
+    bool isPlaying() const{
         if(channel == NULL)
             return false;
 
@@ -67,8 +66,6 @@ void Audio::quit(){
         System = NULL;
     }
 }
-
-
 
 void Audio::play(const QString &filename){
     Sound *sound = SoundCache[filename];
@@ -101,14 +98,18 @@ void Audio::stop(){
     }
 
     stopBGM();
+
+    FMOD_System_Update(System);
 }
 
 void Audio::playBGM(const QString &filename){
-    FMOD_RESULT result = FMOD_System_CreateStream(System, filename.toAscii(), FMOD_DEFAULT, NULL, &BGM);
+    FMOD_RESULT result = FMOD_System_CreateStream(System, filename.toAscii(), FMOD_LOOP_NORMAL, NULL, &BGM);
 
     if(result == FMOD_OK){
         FMOD_Sound_SetLoopCount(BGM, -1);
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, BGM, false, &BGMChannel);
+
+        FMOD_System_Update(System);
     }
 }
 

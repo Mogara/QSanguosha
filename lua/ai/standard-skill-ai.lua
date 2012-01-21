@@ -847,21 +847,27 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 		local males = {}
 		local first, second
 		local zhugeliang_kongcheng
+		local duel = sgs.Sanguosha:cloneCard("duel", sgs.Card_NoSuit, 0)
 		for _, enemy in ipairs(self.enemies) do
-			if zhugeliang_kongcheng and #males==1 then table.insert(males, zhugeliang_kongcheng) end
+			if zhugeliang_kongcheng and #males==1 and self:damageIsEffective(zhugeliang_kongcheng, sgs.DamageStruct_Normal, males[1]) 
+				then table.insert(males, zhugeliang_kongcheng) end
 			if enemy:getGeneral():isMale() and not enemy:hasSkill("wuyan") then
 				if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then	zhugeliang_kongcheng=enemy
-				else table.insert(males, enemy)	end
+				else
+					if #males == 0 and self:hasTrickEffective(duel, enemy) then table.insert(males, enemy)
+					elseif #males == 1 and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, males[1]) then table.insert(males, enemy) end
+				end
 				if #males >= 2 then	break end
 			end
 		end
 		if (#males==1) and #self.friends_noself>0 then
 			self:log("Only 1")
 			first = males[1]
-			if zhugeliang_kongcheng then table.insert(males, zhugeliang_kongcheng)
+			if zhugeliang_kongcheng and self:damageIsEffective(zhugeliang_kongcheng, sgs.DamageStruct_Normal, males[1]) then
+				table.insert(males, zhugeliang_kongcheng)
 			else
 				local friend_maxSlash = findFriend_maxSlash(self,first)
-				if friend_maxSlash then table.insert(males, friend_maxSlash) end
+				if friend_maxSlash and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, males[1]) then table.insert(males, friend_maxSlash) end
 			end
 		end
 		if (#males >= 2) then
@@ -873,7 +879,7 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 					local friend_maxSlash = findFriend_maxSlash(self,first)
 					if friend_maxSlash then second=friend_maxSlash end
 				elseif (lord:getGeneral():isMale()) and (not lord:hasSkill("wuyan")) then 
-					if (self.role=="rebel") and (not first:isLord()) then
+					if (self.role=="rebel") and (not first:isLord()) and self:damageIsEffective(lord, sgs.DamageStruct_Normal, first) then
 						second = lord
 					else
 						if ((self.role=="loyalist" or (self.role=="renegade") and not (first:hasSkill("ganglie") and first:hasSkill("enyuan"))))

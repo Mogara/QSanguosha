@@ -94,6 +94,9 @@ public:
 
     virtual bool trigger(TriggerEvent , ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if(!effect.slash->getSkillName().isEmpty() && effect.slash->getSubcards().length() > 0)
+            return false;
+
         if(effect.nature == DamageStruct::Normal){
             if(player->getRoom()->askForSkillInvoke(player, objectName(), data)){
                 effect.nature = DamageStruct::Fire;

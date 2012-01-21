@@ -11,6 +11,9 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
+#include <QtDeclarative/QDeclarativeView>
+#include <QtDeclarative/QDeclarativeContext>
+
 namespace Ui {
     class MainWindow;
 }
@@ -82,6 +85,19 @@ protected:
     virtual void run();
 };
 
+class AcknowledgementScene : public QGraphicsScene
+{
+    Q_OBJECT
+public:
+    explicit AcknowledgementScene(QObject *parent = 0);
+signals:
+    void go_back();
+private:
+    QDeclarativeView *view;
+    QDeclarativeContext *ctxt;
+    QList<QObject*> tokens,equipped,loaded;
+};
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -102,6 +118,7 @@ private:
     void restoreFromConfig();
 
 private slots:
+    void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
     void on_actionSend_lowlevel_command_triggered();
     void on_actionReplay_file_convert_triggered();
@@ -125,7 +142,7 @@ private slots:
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
 
-    void checkVersion(const QString &server_version);
+    void checkVersion(const QString &server_version, const QString &server_mod);
     void startConnection();
     void networkError(const QString &error_msg);
     void enterRoom();

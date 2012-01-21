@@ -265,7 +265,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         chat_widget = new ChatWidget();
         chat_widget->setX(chat_box_widget->x()+chat_edit->width() - 77);
         chat_widget->setY(chat_box_widget->y()+chat_box->height() + 9);
-        chat_widget->setZValue(-1.0);
+        chat_widget->setZValue(-0.2);
         addItem(chat_widget);
         connect(chat_widget,SIGNAL(return_button_click()),this, SLOT(speak()));
         connect(chat_widget,SIGNAL(chat_widget_msg(QString)),this, SLOT(appendChatEdit(QString)));
@@ -999,15 +999,12 @@ void RoomScene::chooseGeneral(const QStringList &generals){
 void RoomScene::putToDiscard(CardItem *item)
 {
     discarded_queue.enqueue(item);
+    item->setEnabled(true);
+    item->setFlag(QGraphicsItem::ItemIsFocusable, false);
+    item->setOpacity(1.0);
+    item->setZValue(0.0001*ClientInstance->discarded_list.length());
+
     viewDiscards();
-    QAbstractAnimation* gb = item->goBack(true,false,false);
-
-    int dx = item->homePos().x()-item->pos().x();
-    int dy = item->homePos().y()-item->pos().y();
-    int length = sqrt(dx*dx+dy*dy);
-    length =qBound(500,length,1200);
-
-    if(gb)connect(gb,SIGNAL(finished()),item,SLOT(reduceZ()));
 }
 
 void RoomScene::viewDiscards(){
@@ -1038,6 +1035,7 @@ void RoomScene::viewDiscards(){
         for(i=0; i< discarded_queue.length(); i++){
             CardItem *card_item = discarded_queue.at(i);
             card_item->setEnabled(true);
+            card_item->setOpacity(1.0);
             card_item->setHomePos(QPointF(start + i*width/discarded_queue.length(), y));
             QAbstractAnimation* gb;
             if(card_item->zValue()>0)
@@ -1064,24 +1062,27 @@ void RoomScene::hideDiscards(){
 
     piled_discards.clear();
     if(top)
+    {
         piled_discards.append(top);
+        top->setZValue(-0.9);
+    }
 
+    int i = 1;
     foreach(CardItem *card_item, discarded_queue){
+        card_item->setZValue(0.0001 * i++ - 0.8);
         card_item->setHomePos(DiscardedPos);
-        if(card_item->zValue()>=0)card_item->setZValue(card_item->zValue()-0.8);
         card_item->goBack();
+        card_item->setEnabled(true);
+        card_item->setOpacity(1.0);
         piled_discards.enqueue(card_item);
     }
     discarded_queue.clear();
 }
 
 void RoomScene::toggleDiscards(){
-    viewing_discards = ! viewing_discards;
-
-    if(viewing_discards)
-        viewDiscards();
-    else
-        hideDiscards();
+    CardOverview *overview = new CardOverview;
+    overview->loadFromList(ClientInstance->discarded_list);
+    overview->show();
 }
 
 CardItem *RoomScene::takeCardItem(ClientPlayer *src, Player::Place src_place, int card_id){
@@ -1224,7 +1225,7 @@ void RoomScene::moveCard(const CardMoveStructForClient &move){
         putCardItem(dest, dest_place, card_item, from_general);
     }
     else{
-        if(src_place == Player::DiscardedPile && dest_place == Player::Hand){
+        if(src_place == Player::DiscardedPile || dest_place == Player::Hand){
             card_item->deleteCardDesc();
         }
         putCardItem(dest, dest_place, card_item);
@@ -1276,18 +1277,12 @@ void RoomScene::putCardItem(const ClientPlayer *dest, Player::Place dest_place, 
                 card_item->writeCardDesc(show_name);
 
             putToDiscard(card_item);
-            card_item->setEnabled(true);
-
-            card_item->setFlag(QGraphicsItem::ItemIsFocusable, false);
-
-            card_item->setZValue(0.0001*ClientInstance->discarded_list.length());
-
-//            if(discarded_queue.length() > 8){
+//              if(discarded_queue.length() > 8){
 //                CardItem *first = discarded_queue.dequeue();
 //                delete first;
 //            }
 
-            //connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
+            connect(card_item, SIGNAL(toggle_discards()), this, SLOT(toggleDiscards()));
 
         }else if(dest_place == Player::DrawPile){
             card_item->setHomePos(DrawPilePos);
@@ -2434,16 +2429,6 @@ void RoomScene::onGameOver(){
 
     bool victory = Self->property("win").toBool();
 
-    if(victory && ServerInfo.GameMode.contains("_mini_"))
-    {
-        QString id = ServerInfo.GameMode;
-        id.replace("_mini_","");
-        int stage = Config.value("MiniSceneStage",1).toInt();
-        int current = id.toInt();
-        if((stage == current) && stage<20)
-            Config.setValue("MiniSceneStage",current+1);
-    }
-
 #ifdef AUDIO_SUPPORT
     QString win_effect;
     if(victory){
@@ -2509,7 +2494,19 @@ void RoomScene::onGameOver(){
 void RoomScene::addRestartButton(QDialog *dialog){
     dialog->resize(main_window->width()/2, dialog->height());
 
-    QPushButton *restart_button = new QPushButton(tr("Restart Game"));
+    bool goto_next =false;
+    if(Config.GameMode.contains("_mini_") && Self->property("win").toBool())
+    {
+        QString id = Config.GameMode;
+        id.replace("_mini_","");
+        int stage = Config.value("MiniSceneStage",1).toInt();
+        int current = id.toInt();
+        if((stage == current) && stage<20)
+            goto_next = true;
+    }
+
+    QPushButton *restart_button;
+      restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
     QPushButton *return_button = new QPushButton(tr("Return to main menu"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -2956,6 +2953,9 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
 
         special_card->showAvatar(player->getGeneral());
+        QString desc = QString(tr("%1's judge")).arg(Sanguosha->translate(player->getGeneralName()));
+        special_card->writeCardDesc(desc);
+
         special_card->setFrame(result);
     }
 }
@@ -3104,6 +3104,7 @@ void RoomScene::onGameStart(){
         connect(free_discard, SIGNAL(clicked()), this, SLOT(doSkillButton()));
 
         skill_buttons << free_discard;
+        reLayout();
     }
 
     trust_button->setEnabled(true);
@@ -3149,7 +3150,7 @@ void RoomScene::onGameStart(){
         return;
 
     // start playing background music
-    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.mp3").toString();
+    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
 
     Audio::playBGM(bgmusic_path);
     Audio::setBGMVolume(Config.BGMVolume);

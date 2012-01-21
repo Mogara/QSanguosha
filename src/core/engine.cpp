@@ -202,7 +202,7 @@ Engine::~Engine(){
 QStringList Engine::getScenarioNames() const{
     QStringList names;
     foreach(QString name, scenarios.keys())
-        if(!name.contains("_mini_"))names<<name;
+        if(!name.contains("_mini_") && !name.contains("custom_scenario")) names << name;
     return names;
 }
 
@@ -334,6 +334,11 @@ int Engine::getGeneralCount(bool include_banned) const{
         if(ban_package.contains(general->getPackage()))
             total--;
 
+        else if( (ServerInfo.GameMode.endsWith("p") ||
+                  ServerInfo.GameMode.endsWith("pd"))
+                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
+            total--;
+
         else if(ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
 
@@ -376,12 +381,25 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
         return NULL;
 }
 
+QString Engine::getVersionNumber() const{
+    return "20120122";
+}
+
 QString Engine::getVersion() const{
-    return "20111113";
+    QString version_number = getVersionNumber();
+    QString mod_name = getMODName();
+    if(mod_name == "official")
+        return version_number;
+    else
+        return QString("%1:%2").arg(version_number).arg(mod_name);
 }
 
 QString Engine::getVersionName() const{
     return tr("Chibi");
+}
+
+QString Engine::getMODName() const{
+    return "official";
 }
 
 QStringList Engine::getExtensions() const{
@@ -470,20 +488,6 @@ int Engine::getPlayerCount(const QString &mode) const{
         int index = rx.indexIn(mode);
         if(index != -1)
             return rx.capturedTexts().first().toInt();
-    }else if(mode == "custom"){
-        // custom mode
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                if(rx.exactMatch(stream.readLine()))
-                    i ++;
-            }
-            file.close();
-        }
-        return i;
     }else{
         // scenario mode
         const Scenario *scenario = scenarios.value(mode, NULL);
@@ -562,33 +566,6 @@ void Engine::getRoles(const QString &mode, char *roles) const{
         else if(n == 6)
             qstrcpy(roles, "ZCCNFF");
 
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        char *role = new char[getPlayerCount(mode)];
-        if(file.open(QIODevice::ReadOnly)){
-            int i = 0;
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString rolest = texts.at(1);
-                if(rolest == "lord")
-                    strcat(role, "Z");
-                else if(rolest == "loyalist")
-                    strcat(role, "C");
-                else if(rolest == "rebel")
-                    strcat(role, "F");
-                else/* if(rolest == "renegade")*/
-                    strcat(role, "N");
-                i ++;
-            }
-            file.close();
-        }
-        qstrcpy(roles, role);
-        delete role;
     }else{
         const Scenario *scenario = getScenario(mode);
         if(scenario)
@@ -642,6 +619,9 @@ QStringList Engine::getRandomLords() const{
 
     if(Config.GameMode == "zombie_mode")
         banlist_ban.append(Config.value("Banlist/zombie").toStringList());
+    else if((Config.GameMode.endsWith("p") ||
+             Config.GameMode.endsWith("pd")))
+        banlist_ban.append(Config.value("Banlist/Roles").toStringList());
 
     QStringList lords;
 
@@ -700,6 +680,10 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
             general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
     if(Config.EnableHegemony) general_set =
             general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+
+    if(ServerInfo.GameMode.endsWith("p") ||
+                      ServerInfo.GameMode.endsWith("pd"))
+        general_set.subtract(Config.value("Banlist/Roles","").toStringList().toSet());
 
     all_generals = general_set.subtract(ban_set).toList();
 

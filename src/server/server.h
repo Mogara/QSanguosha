@@ -103,6 +103,7 @@ private:
     QCheckBox *announce_ip_checkbox;
     QComboBox *scenario_combobox;
     QComboBox *mini_scene_combobox;
+    QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QCheckBox *ai_enable_checkbox;
@@ -122,8 +123,10 @@ private slots:
     void onHttpDone(bool error);
     void select3v3Generals();
     void edit1v1Banlist();
+    void updateButtonEnablility(QAbstractButton* button);
 
     void doCustomAssign();
+    void setMiniCheckBox();
 };
 
 class Scenario;

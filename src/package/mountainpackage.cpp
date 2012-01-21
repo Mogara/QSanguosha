@@ -245,7 +245,7 @@ public:
 
             QList<const Skill *> skills = damage->from->getVisibleSkillList();
             foreach(const Skill *skill, skills){
-                if(skill->parent())
+                if(skill->getLocation() == Skill::Right)
                     room->detachSkillFromPlayer(damage->from, skill->objectName());
             }
 
@@ -424,6 +424,10 @@ public:
 
     virtual const Card *viewAs() const{
         return new JixiCard;
+    }
+
+    virtual Location getLocation() const{
+        return Right;
     }
 };
 

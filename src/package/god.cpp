@@ -1079,6 +1079,10 @@ public:
 
         return false;
     }
+
+    virtual Location getLocation() const{
+        return Right;
+    }
 };
 
 class JilveClear: public PhaseChangeSkill{

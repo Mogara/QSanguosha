@@ -1,4 +1,5 @@
 #include "customassigndialog.h"
+#include "miniscenarios.h"
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -133,9 +134,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     single_turn_text2 = new QLabel(tr("win"));
     single_turn_box = new QComboBox();
     single_turn = new QCheckBox(tr("After this turn you lose"));
-    single_turn_box->addItem(tr("Lord"), "Lord+Loyalist");
-    single_turn_box->addItem(tr("Renegade"), "Renegade");
-    single_turn_box->addItem(tr("Rebel"), "Rebel");
+    single_turn_box->addItem(tr("Lord"), "lord+loyalist");
+    single_turn_box->addItem(tr("Renegade"), "renegade");
+    single_turn_box->addItem(tr("Rebel"), "rebel");
 
     before_next_text = new QLabel(tr("Before next turn "));
     before_next_text2 = new QLabel(tr("win"));
@@ -533,7 +534,7 @@ void CustomAssignDialog::setPlayerStartDraw(int draw_num){
 void CustomAssignDialog::setPlayerDrawNum(int index){
     QString name = starter_box->itemData(index).toString();
     int val = 4;
-    if(player_start_draw.contains(name))val = player_start_draw[name];
+    if(player_start_draw.keys().contains(name)) val = player_start_draw[name];
     player_draw->setValue(val);
 }
 
@@ -620,8 +621,15 @@ void CustomAssignDialog::doGeneralAssign2(){
 }
 
 void CustomAssignDialog::accept(){
-    if(save("etc/customScene/custom_scenario.txt"))
+    if(save("etc/customScenes/custom_scenario.txt"))
+    {
+        const Scenario * scene = Sanguosha->getScenario("custom_scenario");
+        MiniSceneRule *rule = qobject_cast<MiniSceneRule*>(scene->getRule());
+
+        rule->loadSetting("etc/customScenes/custom_scenario.txt");
+        emit scenario_changed();
         QDialog::accept();
+    }
 }
 
 void CustomAssignDialog::reject(){
@@ -651,7 +659,7 @@ void CustomAssignDialog::getChosenGeneral(QString name){
 }
 
 void CustomAssignDialog::freeChoose(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
         return;
 
     if(toggled)
@@ -661,7 +669,7 @@ void CustomAssignDialog::freeChoose(bool toggled){
 }
 
 void CustomAssignDialog::freeChoose2(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "player")
+    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
         return;
 
     if(toggled)
@@ -706,7 +714,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
         }
     }
 
-    if(!player_name.contains("player")){
+    if(!player_name.contains("Player")){
         self_select_general->setEnabled(false);
         self_select_general2->setEnabled(false);
         self_select_general->setChecked(false);
@@ -770,8 +778,8 @@ void CustomAssignDialog::checkSingleTurnBox(bool toggled){
 void CustomAssignDialog::load()
 {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Save mini scenario settings"),
-                                                    "etc/",
+                                                    tr("Open mini scenario settings"),
+                                                    "etc/customScenes",
                                                     tr("Pure text replay file (*.txt)"));
 
 
@@ -796,12 +804,15 @@ void CustomAssignDialog::load()
     free_choose_general = false;
     free_choose_general2= false;
 
+    is_single_turn = false;
+    is_before_next = false;
+
     QTextStream in(&file);
     int numPlayer = 0;
     QMap<QString, int> role_index;
-    role_index["Lord+Loyalist"] = 0;
-    role_index["Renegade"] = 1;
-    role_index["Rebel"] = 2;
+    role_index["lord+loyalist"] = 0;
+    role_index["renegade"] = 1;
+    role_index["rebel"] = 2;
 
     while (!in.atEnd()) {
         QString line = in.readLine();
@@ -824,7 +835,7 @@ void CustomAssignDialog::load()
             continue;
         }
 
-        QString name = numPlayer == 0 ? "player" : QString("ai%1").arg(numPlayer);
+        QString name = numPlayer == 0 ? "Player" : QString("AI%1").arg(numPlayer);
 
         QMap<QString, QString> player;
         QStringList features;
@@ -846,10 +857,13 @@ void CustomAssignDialog::load()
         if(player["general2"]=="select")free_choose_general2 = true;
         else if(player["general2"]!=NULL)general2_mapping[name]=player["general2"];
 
-        if(player["maxhp"]!=NULL)player_maxhp[name]=player["maxhp"].toInt();
+        if(player["maxhp"]!=NULL){
+            player_maxhp[name] = player["maxhp"].toInt();
+            if(player_hp[name]>player_maxhp[name]) player_hp[name] = player_maxhp[name];
+        }
         if(player["hp"]!=NULL)player_hp[name]=player["hp"].toInt();
-        if(player_hp[name]>player_maxhp[name])player_hp[name]=player_maxhp[name];
         if(player["draw"]!=NULL)player_start_draw[name]=player["draw"].toInt();
+        else player_start_draw[name] = 4;
 
         if(player["starter"]!=NULL)starter = name;
         if(player["chained"]!=NULL)player_chained[name]=true;
@@ -867,15 +881,17 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["hand"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
-                            player_equips[name].prepend(i);
+                            player_handcards[name].prepend(i);
                             break;
                         }
                     }
                 }else
-                    player_handcards[name].prepend(id.toInt());
+                    player_handcards[name].prepend(num);
             }
         }
 
@@ -883,7 +899,9 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["equip"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
                             player_equips[name].prepend(i);
@@ -891,7 +909,7 @@ void CustomAssignDialog::load()
                         }
                     }
                 }else
-                    player_equips[name].prepend(id.toInt());
+                    player_equips[name].prepend(num);
             }
         }
 
@@ -899,15 +917,17 @@ void CustomAssignDialog::load()
         {
             foreach(QString id,player["judge"].split(","))
             {
-                if(!id.toInt()){
+                bool ok;
+                int num = id.toInt(&ok);
+                if(!ok){
                     for(int i = 0; i < Sanguosha->getCardCount(); i++){
                         if(Sanguosha->getCard(i)->objectName() == id){
-                            player_equips[name].prepend(i);
+                            player_judges[name].prepend(i);
                             break;
                         }
                     }
                 }else
-                    player_judges[name].prepend(id.toInt());
+                    player_judges[name].prepend(num);
             }
         }
         numPlayer++;
@@ -918,10 +938,12 @@ void CustomAssignDialog::load()
     for(int i=list->count()-1;i>=0;i--)
     {
         list->setCurrentItem(list->item(i));
-
+        if(list->item(i)->data(Qt::UserRole).toString() == starter)
+            starter_box->setCurrentIndex(i);
     }
 
-    player_draw->setValue(player_start_draw[starter_box->currentText()]);
+    player_draw->setValue(player_start_draw[starter_box->itemData(starter_box->currentIndex()).toString()]);
+    num_combobox->setCurrentIndex(list->count()-2);
 
     updatePileInfo();
     file.close();
@@ -985,19 +1007,19 @@ bool CustomAssignDialog::save(QString path)
     }
 
     if(free_choose_general)line.append("general:select ");
-    else if(general_mapping["player"].isEmpty()){
-        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("player")));
+    else if(general_mapping["Player"].isEmpty()){
+        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("Player")));
         return false;
     }
     else
-        line.append(QString("general:%1 ").arg(general_mapping["player"]));
+        line.append(QString("general:%1 ").arg(general_mapping["Player"]));
 
     if(free_choose_general2)line.append("general2:select ");
-    else if(!general2_mapping["player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["player"]));
+    else if(!general2_mapping["Player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["Player"]));
 
     for(int i=0;i<list->count();i++)
     {
-        QString name = i==0 ? "player" : QString("ai%1").arg(i);
+        QString name = i==0 ? "Player" : QString("AI%1").arg(i);
 
         if(general_mapping[name].isEmpty() && !line.split('\n').last().contains("general:")){
             QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate(name)));
@@ -1029,7 +1051,8 @@ bool CustomAssignDialog::save(QString path)
                 line.append(QString("beforeNext:%1 ").arg(winner));
             }
         }
-        if(player_start_draw.contains(name))line.append(QString("draw:%1 ").arg(player_start_draw[name]));
+        if(player_start_draw.contains(name) && player_start_draw[name] != 4)
+            line.append(QString("draw:%1 ").arg(player_start_draw[name]));
 
         if(player_equips[name].length())
         {
@@ -1061,7 +1084,7 @@ bool CustomAssignDialog::save(QString path)
     QString filename = path;
     if(path.size()<1)filename = QFileDialog::getSaveFileName(this,
                                                     tr("Save mini scenario settings"),
-                                                    "etc/customScene/",
+                                                    "etc/customScenes/",
                                                     tr("Pure text replay file (*.txt)"));
 
     QFile file(filename);

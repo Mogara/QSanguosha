@@ -1,0 +1,3 @@
+general:select role:rebel starter:true draw:0 
+general:zhanghe role:rebel draw:2 
+general:shenzhaoyun general2:luxun role:lord maxhp:3 hp:1 equip:159,68,56,121 

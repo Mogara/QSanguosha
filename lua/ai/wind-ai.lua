@@ -6,8 +6,8 @@ sgs.ai_skill_invoke.jushou = true
 
 --leiji
 sgs.ai_skill_use["@@leiji"]=function(self,prompt)
-
-	if sgs.GetConfig("GameMode", "") == "_mini_19" then 
+	local mode = sgs.GetConfig("GameMode", "")
+	if mode:find("mini") or mode:find("custom_scenario") then 
 		local players = self.room:getAllPlayers();
 		for _,aplayer in sgs.qlist(players) do
 			if aplayer:getState() ~= "robot" then

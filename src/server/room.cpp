@@ -262,10 +262,12 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason){
 
     sendLog(log);
 
+    broadcastProperty(victim, "alive");
+
     QVariant data = QVariant::fromValue(reason);
     thread->trigger(GameOverJudge, victim, data);
 
-    broadcastProperty(victim, "alive");
+
     broadcastInvoke("killPlayer", victim->objectName());
     broadcastProperty(victim, "role");
 
@@ -385,6 +387,41 @@ void Room::gameOver(const QString &winner){
 
     emit game_over(winner);
 
+    if(mode.contains("_mini_"))
+    {
+        ServerPlayer * playerWinner = NULL;
+        QStringList winners =winner.split("+");
+        foreach(ServerPlayer * sp, players)
+        {
+            if(sp->getState() != "robot" &&
+                    (winners.contains(sp->getRole()) ||
+                     winners.contains(sp->objectName()))
+                    )
+            {
+                playerWinner = sp;
+                break;
+            }
+        }
+
+        if(playerWinner)
+        {
+
+            QString id = Config.GameMode;
+            id.replace("_mini_","");
+            int stage = Config.value("MiniSceneStage",1).toInt();
+            int current = id.toInt();
+            if((stage == current) && stage<20)
+            {
+                Config.setValue("MiniSceneStage",current+1);
+                id = QString::number(stage+1).rightJustified(2,'0');
+                id.prepend("_mini_");
+                Config.setValue("GameMode",id);
+                Config.GameMode = id;
+            }
+        }
+    }
+
+
     if(QThread::currentThread() == thread)
         thread->end();
     else
@@ -406,6 +443,7 @@ void Room::slashEffect(const SlashEffectStruct &effect){
     else setEmotion(effect.from, "killer");
     setEmotion(effect.to, "victim");
 
+    setTag("LastSlashEffect", data);
     bool broken = thread->trigger(SlashEffect, effect.from, data);
     if(!broken)
         thread->trigger(SlashEffected, effect.to, data);
@@ -608,7 +646,7 @@ trust:
             broadcastInvoke("animate", QString("nullification:%1:%2")
                             .arg(player->objectName()).arg(to->objectName()));
 
-            QVariant decisionData = QVariant::fromValue("Nullification:"+trick->objectName()+":"+to->objectName()+":"+(positive?"true":"false"));
+            QVariant decisionData = QVariant::fromValue("Nullification:"+QString(trick->metaObject()->className())+":"+to->objectName()+":"+(positive?"true":"false"));
             thread->trigger(ChoiceMade, player, decisionData);
             setTag("NullifyingTimes",getTag("NullifyingTimes").toInt()+1);
 
@@ -1180,25 +1218,6 @@ void Room::prepareForStart(){
                 player->setRole("rebel");
             broadcastProperty(player, "role");
         }
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString rolest = texts.at(1);
-
-                players.at(i)->setRole(rolest);
-                broadcastProperty(players.at(i), "role");
-                i ++;
-            }
-            file.close();
-        }
     }else if(Config.value("FreeAssign", false).toBool()){
         ServerPlayer *owner = getOwner();
         if(owner && owner->getState() == "online"){
@@ -1688,28 +1707,6 @@ void Room::run(){
         }
 
         startGame();
-    }else if(mode == "custom"){
-        QRegExp rx("(\\w+)\\s+(\\w+)\\s*(\\w+)?");
-        QFile file("etc/Custom.txt");
-        int i = 0;
-        if(file.open(QIODevice::ReadOnly)){
-            QTextStream stream(&file);
-            while(!stream.atEnd()){
-                QString line = stream.readLine();
-                if(!rx.exactMatch(line))
-                    continue;
-                QStringList texts = rx.capturedTexts();
-                QString gen1 = texts.at(2);
-                QString gen2 = texts.at(3);
-
-                setPlayerProperty(players.at(i), "general", gen1);
-                if(!gen2.isEmpty())
-                    setPlayerProperty(players.at(i), "general2", gen2);
-                i ++;
-            }
-            file.close();
-        }
-        startGame();
     }else{
         chooseGenerals();
         startGame();
@@ -2142,7 +2139,7 @@ void Room::startGame(){
         }
     }
 
-    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && mode != "custom" && !Config.EnableBasara){
+    if((Config.Enable2ndGeneral) && mode != "02_1v1" && mode != "06_3v3" && mode != "04_1v3" && !Config.EnableBasara){
         foreach(ServerPlayer *player, players)
             broadcastProperty(player, "general2");
     }

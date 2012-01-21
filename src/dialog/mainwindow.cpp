@@ -142,7 +142,7 @@ void MainWindow::updateLoadingProgress(int progress)
     static QGraphicsTextItem *text;
     if(text==NULL)
     {
-        text = scene->addText(QString("Loaded %1/100").arg(progress),Config.BigFont);
+        text = scene->addText(tr("Loaded %1/100").arg(progress),Config.BigFont);
         QGraphicsDropShadowEffect *drop = new QGraphicsDropShadowEffect;
         drop->setBlurRadius(5);
         drop->setOffset(0);
@@ -150,7 +150,7 @@ void MainWindow::updateLoadingProgress(int progress)
         text->setGraphicsEffect(drop);
         text->moveBy(-text->boundingRect().width()/2,
                      -text->boundingRect().height()/2);
-    }else text->setPlainText(QString("Loaded %1/100").arg(progress));
+    }else text->setPlainText(tr("Loaded %1/100").arg(progress));
 
     if(progress == 100)
     {
@@ -198,9 +198,15 @@ void MainWindow::on_actionStart_Server_triggered()
     }
 }
 
-void MainWindow::checkVersion(const QString &server_version){
+void MainWindow::checkVersion(const QString &server_version, const QString &server_mod){
+    QString client_mod = Sanguosha->getMODName();
+    if(client_mod != server_mod){
+        QMessageBox::warning(this, tr("Warning"), tr("Client MOD name is not same as the server!"));
+        return;
+    }
+
     Client *client = qobject_cast<Client *>(sender());
-    QString client_version = Sanguosha->getVersion();
+    QString client_version = Sanguosha->getVersionNumber();
 
     if(server_version == client_version){
         client->signup();
@@ -230,7 +236,7 @@ void MainWindow::checkVersion(const QString &server_version){
 void MainWindow::startConnection(){
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(version_checked(QString)), SLOT(checkVersion(QString)));
+    connect(client, SIGNAL(version_checked(QString,QString)), SLOT(checkVersion(QString,QString)));
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
 }
 
@@ -422,9 +428,12 @@ void MainWindow::on_actionAbout_triggered()
     QString signature = tr("\"A Short Song\" by Cao Cao");
     content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
 
+    QString email = "moligaloo@gmail.com";
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
                       "totally written in C++ Qt GUI framework <br />"
-                      "My Email: moligaloo@gmail.com <br/>"));
+                      "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
+                      "My QQ: 365840793 <br/>"
+                      ).arg(email));
 
     QString config;
 
@@ -449,7 +458,8 @@ void MainWindow::on_actionAbout_triggered()
     QString forum_url = "http://qsanguosha.com";
     content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
-    Window *window = new Window(tr("About QSanguosha"), QSize(365, 450));
+
+    Window *window = new Window(tr("About QSanguosha"), QSize(420, 450));
     scene->addItem(window);
     window->setZValue(9.0);
 
@@ -628,28 +638,9 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    QStringList contents;
-    contents.append(tr("QSanguosha staff:"));
-
-    contents.append(tr("AI Maintainance: William915, donle"));
-    contents.append(tr("Game Design: Moligaloo, Ubun Tenkei"));
-    contents.append(tr("Miscellaneous: Hypercross"));
-    contents.append(tr("Founder: Moligaloo"));
-
-    QString content;
-    foreach(QString string, contents)
-    {
-        content.append(QString("<p align='right'><i>%1</i></p>").arg(string));
-    }
-
-    Window *window = new Window(tr("About QSanguosha"), QSize(365, 411));
-    scene->addItem(window);
-
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
-
-    window->appear();
+    AcknowledgementScene* ack = new AcknowledgementScene;
+    connect(ack,SIGNAL(go_back()),this,SLOT(gotoStartScene()));
+    gotoScene(ack);
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered()
@@ -942,6 +933,21 @@ void MeleeDialog::setGeneral(const QString &general_name){
     }
 }
 
+AcknowledgementScene::AcknowledgementScene(QObject *parent) :
+    QGraphicsScene(parent)
+{
+    view = new QDeclarativeView;
+    view->setSource(QUrl::fromLocalFile("acknowledgement/main.qml"));
+    addWidget(view);
+    view->move( - width()/2, - height()/2);
+    view->setStyleSheet(QString("background: transparent"));
+
+    QObject *item = view->rootObject();
+
+    connect(item,SIGNAL(go_back()),this,SIGNAL(go_back()));
+}
+
+
 void MainWindow::on_actionAI_Melee_triggered()
 {
     MeleeDialog *dialog = new MeleeDialog(this);
@@ -1028,6 +1034,7 @@ void MeleeDialog::updateResultBox(QString role, int win){
     totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
     totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
     total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
+    server_log->append(tr("End of game %1").arg(QString::number(totalCount)));
 }
 
 void MainWindow::on_actionView_ban_list_triggered()
@@ -1044,13 +1051,36 @@ void MainWindow::on_actionAbout_fmod_triggered()
     content.append("<p align='center'> <img src='image/system/fmod.png' /> </p> <br/>");
 
     QString address = "http://www.fmod.org";
-    content.append(tr("Official site: <a href='%1'>%1</a> <br/>").arg(address));
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
 #ifdef AUDIO_SUPPORT
     content.append(tr("Current versionn %1 <br/>").arg(Audio::getVersion()));
 #endif
 
     Window *window = new Window(tr("About fmod"), QSize(500, 259));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->shift();
+
+    window->appear();
+}
+
+#include "lua.hpp"
+
+void MainWindow::on_actionAbout_Lua_triggered()
+{
+    QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
+    content.append("<p align='center'> <img src='image/system/lua.png' /> </p> <br/>");
+
+    QString address = "http://www.lua.org";
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
+
+    content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
+    content.append(LUA_COPYRIGHT);
+
+    Window *window = new Window(tr("About Lua"), QSize(500, 500));
     scene->addItem(window);
 
     window->addContent(content);

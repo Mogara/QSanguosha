@@ -191,6 +191,8 @@ QWidget *ServerDialog::createAdvancedTab(){
 
     basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
+    updateButtonEnablility(mode_group->checkedButton());
+    connect(mode_group,SIGNAL(buttonClicked(QAbstractButton*)),this,SLOT(updateButtonEnablility(QAbstractButton*)));
 
     hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
     hegemony_checkbox->setChecked(Config.EnableHegemony);
@@ -274,6 +276,34 @@ void ServerDialog::ensureEnableAI(){
     ai_enable_checkbox->setChecked(true);
 }
 
+void ServerDialog::updateButtonEnablility(QAbstractButton *button)
+{
+    if(!button)return;
+    if(button->objectName().contains("scenario")
+            || button->objectName().contains("mini")
+            || button->objectName().contains("1v1")
+            || button->objectName().contains("1v3"))
+    {
+        basara_checkbox->setChecked(false);
+        basara_checkbox->setEnabled(false);
+    }
+    else
+    {
+        basara_checkbox->setEnabled(true);
+    }
+
+    if(button->objectName().contains("mini")){
+        mini_scene_button->setEnabled(true);
+        second_general_checkbox->setChecked(false);
+        second_general_checkbox->setEnabled(false);
+    }
+    else
+    {
+        second_general_checkbox->setEnabled(true);
+        mini_scene_button->setEnabled(false);
+    }
+}
+
 void BanlistDialog::switchTo(int item)
 {
     this->item = item;
@@ -288,7 +318,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setWindowTitle(tr("Select generals that are excluded"));
 
     if(ban_list.isEmpty())
-        ban_list << "1v1" << "Basara" << "Hegemony" << "Pairs";
+        ban_list << "Roles" << "1v1" << "Basara" << "Hegemony" << "Pairs";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
@@ -582,20 +612,18 @@ QGroupBox *ServerDialog::createGameModeBox(){
         }
 
 
-        QPushButton *mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
+
+        mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
         connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
-        item_list << HLay(scenario_button, scenario_combobox);
-        item_list << HLay(scenario_button, mini_scene_button);
-        item_list << HLay(mini_scenes, mini_scene_combobox);
-    }
+        mini_scene_button->setEnabled(mode_group->checkedButton() ?
+                                          mode_group->checkedButton()->objectName() == "mini" :
+                                          false);
 
-    QRadioButton *button = new QRadioButton(tr("Custom Mode"));
-    button->setObjectName("custom");
-    mode_group->addButton(button);
-    item_list << button;
-    if(button->objectName() == Config.GameMode)
-        button->setChecked(true);
+        item_list << HLay(scenario_button, scenario_combobox);
+        item_list << HLay(mini_scenes, mini_scene_combobox);
+        item_list << HLay(mini_scenes, mini_scene_button);
+    }
 
     QVBoxLayout *left = new QVBoxLayout;
     QVBoxLayout *right = new QVBoxLayout;
@@ -757,7 +785,13 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
 void ServerDialog::doCustomAssign(){
     CustomAssignDialog *dialog = new CustomAssignDialog(this);
+
+    connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
     dialog->exec();
+}
+
+void ServerDialog::setMiniCheckBox(){
+    mini_scene_combobox->setEnabled(false);
 }
 
 void Select3v3GeneralDialog::toggleCheck(){
@@ -830,8 +864,12 @@ bool ServerDialog::config(){
     QString objname = mode_group->checkedButton()->objectName();
     if(objname == "scenario")
         Config.GameMode = scenario_combobox->itemData(scenario_combobox->currentIndex()).toString();
-    else if(objname == "mini")
-        Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
+    else if(objname == "mini"){
+        if(mini_scene_combobox->isEnabled())
+            Config.GameMode = mini_scene_combobox->itemData(mini_scene_combobox->currentIndex()).toString();
+        else
+            Config.GameMode = "custom_scenario";
+    }
     else
         Config.GameMode = objname;
 
@@ -882,8 +920,6 @@ bool ServerDialog::config(){
         ContestDB *db = ContestDB::GetInstance();
         return db->loadMembers();
     }
-
-    if(Config.GameMode.contains("_mini_"))Config.setValue("MaxHpScheme",1);
 
     return true;
 }

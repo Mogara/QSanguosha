@@ -79,6 +79,10 @@ void Skill::initMediaSource(){
     }
 }
 
+Skill::Location Skill::getLocation() const{
+    return parent() ? Right : Left;
+}
+
 void Skill::playEffect(int index) const{
     if(!sources.isEmpty()){
         if(index == -1)
