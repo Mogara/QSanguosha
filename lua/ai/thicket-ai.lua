@@ -108,6 +108,17 @@ end
 -- baonue
 sgs.ai_skill_invoke.baonue = sgs.ai_skill_invoke.songwei
 
+sgs.ai_view_as["jiuchi"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place ~= sgs.Player_Equip then
+		if card:getSuit() == sgs.Card_Spade then
+			return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
+		end
+	end
+end
+
 local function getLowerBoundOfHandcard(self)
 	local least = math.huge
 	local players = self.room:getOtherPlayers(self.player)

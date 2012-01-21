@@ -53,6 +53,13 @@ jiejiu_skill.getTurnUseCard=function(self)
 	end
 end
 
+sgs.ai_filterskill_filter["jiejiu"] = function(card, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:inherits("Analeptic") then return ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id) end
+end
+
 -- buyi
 sgs.ai_skill_invoke.buyi = function(self, data)
 	local dying = data:toDying()

@@ -954,10 +954,6 @@ local function prohibitUseDirectly(card, player)
 		if callback and type(callback) == "function" and callback(card) then return true
 	end
 	return false
-	if player:hasSkill("jiejiu") then return card:inherits("Analeptic")
-	elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
-	elseif player:hasSkill("ganran") then return card:getTypeId() == sgs.Card_Equip
-	end
 end
 
 local function zeroCardView(class_name, player)
@@ -976,14 +972,6 @@ local function isCompulsoryView(card, class_name, player, card_place)
 			return callback(card, card_place)
 		end
 	end
-	
-	local suit = card:getSuitString()
-	local number = card:getNumberString()
-	local card_id = card:getEffectiveId()
-	if class_name == "Slash" and card_place ~= sgs.Player_Equip then
-		if player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id) end
-		if player:hasSkill("jiejiu") and card:inherits("Analeptic") then return ("slash:jiejiu[%s:%s]=%d"):format(suit, number, card_id) end
-	end
 end
 
 sgs.ai_view_as = {}
@@ -991,67 +979,8 @@ local function getSkillViewCard(card, class_name, player, card_place)
 	local _, vlist = sgs.getSkillLists(player)
 	for _, askill in ipairs(vlist) do
 		local callback = sgs.ai_view_as[askill]
-		if callback and type(callback) == "function" and callback(card, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
-			return callback(card, card_place)
-		end
-	end
-	
-	local suit = card:getSuitString()
-	local number = card:getNumberString()
-	local card_id = card:getEffectiveId()
-
-	if class_name == "Slash" then
-		if player:hasSkill("longhun") and player:getHp() <= 1 then
-			if card:getSuit() == sgs.Card_Diamond then
-				return ("fire_slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-		if player:hasSkill("wusheng") then
-			if card:isRed() and not card:inherits("Peach") then
-				return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-		if card_place ~= sgs.Player_Equip then
-			if player:hasSkill("longdan") and card:inherits("Jink") then
-				return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-	elseif class_name == "Jink" then
-		if player:hasSkill("longhun") and player:getHp() <= 1 then
-			if card:getSuit() == sgs.Card_Club then
-				return ("jink:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-		if card_place ~= sgs.Player_Equip then
-			if player:hasSkill("longdan") and card:inherits("Slash") then
-				return ("jink:longdan[%s:%s]=%d"):format(suit, number, card_id)
-			elseif player:hasSkill("qingguo") and card:isBlack() then
-				return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-	elseif class_name == "Peach" then
-		if player:hasSkill("longhun") and player:getHp() <= 1 then
-			if card:getSuit() == sgs.Card_Heart then
-				return ("peach:longhun[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-		if player:hasSkill("jijiu") and card:isRed() and player:getPhase()==sgs.Player_NotActive then
-			return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
-		end
-	elseif class_name == "Analeptic" then
-		if card_place ~= sgs.Player_Equip then
-			if player:hasSkill("jiuchi") and card:getSuit() == sgs.Card_Spade then
-				return ("analeptic:jiuchi[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-	elseif class_name == "Nullification" then
-		if card_place ~= sgs.Player_Equip then
-			if card:isBlack() and player:hasSkill("kanpo") then
-				return ("nullification:kanpo[%s:%s]=%d"):format(suit, number, card_id)
-			end
-		end
-		if card:getSuit() == sgs.Card_Spade and player:getHp() == 1 and player:hasSkill("longhun") then
-			return ("nullification:longhun[%s:%s]=%d"):format(suit, number, card_id)
+		if callback and type(callback) == "function" and callback(card, player, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
+			return callback(card, player, card_place)
 		end
 	end
 end

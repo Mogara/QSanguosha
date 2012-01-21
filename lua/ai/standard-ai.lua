@@ -225,3 +225,30 @@ sgs.ai_skill_invoke["@guicai"]=function(self,prompt)
 
 	return "."
 end
+
+sgs.ai_view_as["wusheng"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:isRed() and not card:inherits("Peach") then
+		return ("slash:wusheng[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+sgs.ai_view_as["qingguo"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:isBlack() then
+		return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+sgs.ai_view_as["jijiu"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:isRed() and player:getPhase()==sgs.Player_NotActive then
+		return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end

@@ -199,6 +199,18 @@ longdan_skill.getTurnUseCard=function(self)
 		
 end
 
+sgs.ai_view_as["longdan"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place ~= sgs.Player_Equip then
+		if card:inherits("Jink") then
+			return ("slash:longdan[%s:%s]=%d"):format(suit, number, card_id)
+		elseif card:inherits("Slash") then
+			return ("jink:longdan[%s:%s]=%d"):format(suit, number, card_id)
+		end
+	end
+end
 
 local fanjian_skill={}
 fanjian_skill.name="fanjian"

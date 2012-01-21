@@ -1,4 +1,4 @@
-	-- this script file contains the AI classes for gods
+-- this script file contains the AI classes for gods
 
 -- guixin
 sgs.ai_skill_invoke.guixin = function(self,data)
@@ -65,6 +65,13 @@ wushen_skill.getTurnUseCard=function(self)
 
 		return slash
 	end
+end
+
+sgs.ai_filterskill_filter["wushen"] = function(card, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:getSuit() == sgs.Card_Heart then return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id) end
 end
 
 --qixing
@@ -420,5 +427,21 @@ longhun_skill.getTurnUseCard = function(self)
 		if card:getSuit() == sgs.Card_Diamond then
 			return sgs.Card_Parse(("fire_slash:longhun[%s:%s]=%d"):format(card:getSuitString(),card:getNumberString(),card:getId()))
 		end
+	end
+end
+
+sgs.ai_view_as["longhun"] = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if player:getHp() > 1 then return end
+	if card:getSuit() == sgs.Card_Diamond then
+		return ("fire_slash:longhun[%s:%s]=%d"):format(suit, number, card_id)
+	elseif card:getSuit() == sgs.Card_Club then
+		return ("jink:longhun[%s:%s]=%d"):format(suit, number, card_id)
+	elseif card:getSuit() == sgs.Card_Heart then
+		return ("peach:longhun[%s:%s]=%d"):format(suit, number, card_id)
+	elseif card:getSuit() == sgs.Card_Spade then
+		return ("nullification:longhun[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
