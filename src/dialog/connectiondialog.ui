@@ -19,7 +19,7 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>10</y>
      <width>271</width>
      <height>271</height>
@@ -28,34 +28,11 @@
    <property name="title">
     <string>Connection setup</string>
    </property>
-   <widget class="QLabel" name="portLabel">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>24</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Port</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="portLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>120</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="avatarLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
+      <y>100</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -67,8 +44,8 @@
    <widget class="QLabel" name="avatarPixmap">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>160</y>
+      <x>20</x>
+      <y>140</y>
       <width>100</width>
       <height>100</height>
      </rect>
@@ -89,9 +66,9 @@
    <widget class="QPushButton" name="changeAvatarButton">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>150</y>
-      <width>86</width>
+      <x>150</x>
+      <y>230</y>
+      <width>111</width>
       <height>23</height>
      </rect>
     </property>
@@ -103,7 +80,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>120</y>
+      <y>100</y>
       <width>121</width>
       <height>23</height>
      </rect>
@@ -115,9 +92,9 @@
    <widget class="QPushButton" name="clearHistoryButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>90</y>
-      <width>101</width>
+      <x>140</x>
+      <y>130</y>
+      <width>121</width>
       <height>23</height>
      </rect>
     </property>
