@@ -54,9 +54,9 @@ private slots:
     void onGameStart();
     void onGameOver(const QString &winner);
 
-private:
-    // role types << "lord" << "loyalist" << "renegade" << "rebel";
-    int lordCount,lordWinCount,loyalistCount,loyalistWinCount,renegadeCount,renegadeWinCount,rebelCount,rebelWinCount;
+private:    
+    QMap<QString, int> roleCount, winCount;
+
     QGroupBox *createGeneralBox();
     QGroupBox *createResultBox();
     void updateResultBox(QString role, int win);

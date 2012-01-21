@@ -676,15 +676,7 @@ void MainWindow::on_actionScript_editor_triggered()
 MeleeDialog::MeleeDialog(QWidget *parent)
     :QDialog(parent)
 {
-    server=NULL;
-    lordCount=0;
-    lordWinCount=0;
-    loyalistCount=0;
-    loyalistWinCount=0;
-    renegadeCount=0;
-    renegadeWinCount=0;
-    rebelCount=0;
-    rebelWinCount=0;
+    server=NULL;    
     room_count=0;
 
     setWindowTitle(tr("AI Melee"));
@@ -996,44 +988,24 @@ void MainWindow::on_actionSend_lowlevel_command_triggered()
     if(!command.isEmpty())
         ClientInstance->request(command);
 }
-void MeleeDialog::updateResultBox(QString role, int win){
-    // role types << "lord" << "loyalist" << "renegade" << "rebel";
-    // int lordCount,lordWinCount,loyalistCount,loyalistWinCount,renegadeCount,renegadeWinCount,rebelCount,rebelWinCount;
-    QLineEdit *lord_edit = new QLineEdit;
-    QLineEdit *loyalist_edit = new QLineEdit;
-    QLineEdit *rebel_edit = new QLineEdit;
-    QLineEdit *renegade_edit = new QLineEdit;
-    QLineEdit *total_edit = new QLineEdit;
-    lord_edit=result_box->findChild<QLineEdit *>("lord_edit");
-    loyalist_edit=result_box->findChild<QLineEdit *>("loyalist_edit");
-    rebel_edit=result_box->findChild<QLineEdit *>("rebel_edit");
-    renegade_edit=result_box->findChild<QLineEdit *>("renegade_edit");
-    total_edit=result_box->findChild<QLineEdit *>("total_edit");
-    int totalCount,totalWinCount;
+void MeleeDialog::updateResultBox(QString role, int win){    
+    QLineEdit *edit = result_box->findChild<QLineEdit *>(role + "_edit");
+    double roleCount = (this->roleCount[role] += win);
+    double winCount = (this->winCount[role] += win);
+    double rate = roleCount / winCount;
+    edit->setText(QString("%1 / %2 = %3%%").arg(winCount).arg(roleCount).arg(rate));
 
-    if(role=="lord"){
-        lordCount++;
-        lordWinCount+=win;
-        lord_edit->setText(QString::number(lordWinCount) +" / "+QString::number(lordCount) + " = " + QString::number(100.0*(double)lordWinCount/lordCount,'f',2) + "%");
-    }
-    else if(role=="loyalist"){
-        loyalistCount++;
-        loyalistWinCount+=win;
-        loyalist_edit->setText(QString::number(loyalistWinCount) +" / "+QString::number(loyalistCount) + " = " + QString::number(100.0*(double)loyalistWinCount/loyalistCount,'f',2) + "%");
-    }
-    else if(role=="renegade"){
-        renegadeCount++;
-        renegadeWinCount+=win;
-        renegade_edit->setText(QString::number(renegadeWinCount) +" / "+QString::number(renegadeCount) + " = " + QString::number(100.0*(double)renegadeWinCount/renegadeCount,'f',2) + "%");
-    }
-    else if(role=="rebel"){
-        rebelCount++;
-        rebelWinCount+=win;
-        rebel_edit->setText(QString::number(rebelWinCount) +" / "+QString::number(rebelCount) + " = " + QString::number(100.0*(double)rebelWinCount/rebelCount,'f',2) + "%");
-    }
-    totalCount=lordCount+loyalistCount+renegadeCount+rebelCount;
-    totalWinCount=lordWinCount+loyalistWinCount+renegadeWinCount+rebelWinCount;
-    total_edit->setText(QString::number(totalWinCount) +" / "+QString::number(totalCount) + " = " + QString::number(100.0*(double)totalWinCount/(double)totalCount,'f',2) + "%");
+    double totalCount = 0, totalWinCount = 0;
+
+    foreach(int count, this->roleCount.values())
+        totalCount += count;
+
+    foreach(int count, this->winCount.values())
+        totalWinCount += count;
+
+    QLineEdit *total_edit = result_box->findChild<QLineEdit *>("total_edit");
+    total_edit->setText(QString("%1 / %2 = %3%%").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount));
+
     server_log->append(tr("End of game %1").arg(QString::number(totalCount)));
 }
 
