@@ -7,6 +7,7 @@ sgs.ai_lord_tolerance={}
 sgs.ai_card_intention["general"]=function(to,level)
 	if not to then return 0 end
 	local has_rebel = false
+	if not to.getRoom then global_room:writeToConsole(debug.traceback()) end
 	for _, aplayer in sgs.qlist(to:getRoom():getAlivePlayers()) do
 		if aplayer:getRole() == "rebel" then has_rebel = true break end
 	end
@@ -85,8 +86,12 @@ function sgs.refreshLoyalty(player,intention)
 end
 
 function sgs.updateIntention(from, to, intention)
-    sgs.refreshLoyalty(from, sgs.ai_card_intention.general(to, intention))
-	if to:isLord() then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
+	intention = sgs.ai_card_intention.general(to, intention)
+	if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
+		from:getRoom():writeToConsole(from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName())
+	end
+    sgs.refreshLoyalty(from, intention)
+	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
 end
 
 function sgs.updateIntentions(from, tos, intention)
@@ -105,24 +110,24 @@ sgs.ai_card_intention["Slash"]=function(card,from,tos,source)
 	for _, to in ipairs(tos) do
 		if sgs.ai_liuli_effect then
 			sgs.ai_liuli_effect=false
-			return 0
+			return
 		end
 		local modifier=0
 		if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
-		local value=sgs.ai_card_intention.general(to,80+modifier)
+		local value=80+modifier
 
 		if sgs.ai_leiji_effect then
-			if from and from:hasSkill("liegong") then return 0 end
+			if from and from:hasSkill("liegong") then return end
 			sgs.ai_leiji_effect = false
-			return -value/1.5
+			if sgs.ai_pojun_effect then value = value/1.5 else value = -value/1.5 end
 		end
 		if sgs.ai_pojun_effect then
 			sgs.ai_pojun_effect=false
-			if to:getHandcardNum()>5 then return -value end
+			if to:getHandcardNum()>5 then value = -value end
 		end
 		speakTrigger(card,from,to)
 		if to:hasSkill("yiji") then 
-			return value*(2-to:getHp())/1.1
+			value = value*(2-to:getHp())/1.1
 		end
 		sgs.updateIntention(from, to, value)
 	end
@@ -218,7 +223,7 @@ sgs.ai_card_intention["ZhijianCard"]=-80
 
 sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
 	if from:getPhase() == sgs.Player_Draw then
-		sgs.ai_card_intention["TuxiCard"](card, from, to, source)
+		updateIntention(from, to, sgs.ai_card_intention["TuxiCard"])
 	end
 	return 0
 end

@@ -155,6 +155,7 @@ function SmartAI:initialize(player)
 	self.keepValue = {}
 	self.kept = {}
 	self.skills, self.view_as_skills, self.filter_skills = sgs.getSkillLists(self.player)
+	global_room = self.room
 end
 
 function sgs.getSkillLists(player)

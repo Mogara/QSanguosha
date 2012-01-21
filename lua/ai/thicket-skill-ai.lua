@@ -98,7 +98,10 @@ sgs.ai_skill_use_func["DimengCard"]=function(card,use,self)
 end
 
 sgs.ai_card_intention.DimengCard = function(card, from, to, source)
-	self:sort(to, "handcard")
+	local compare_func = function(a, b)
+		return a:getHandcardNum() < b:getHandcardNum()
+	end
+	table.sort(to, compare_func)
 	if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
          sgs.refreshLoyalty(from, sgs.ai_card_intention["general"](to[2], (to[1]:getHandcardNum()-to[2]:getHandcardNum())*20-40))
 		if to[1]:isLord() then

@@ -36,7 +36,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies,true) then return false end
 	
 	local selfSub = self.player:getHp()-self.player:getHandcardNum()
-	local selfDef = getDefense(self.player)
+	local selfDef = sgs.getDefense(self.player)
 	local hasJud = self.player:getJudgingArea()
 	
 	for _,enemy in ipairs(self.enemies) do
