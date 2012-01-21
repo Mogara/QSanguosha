@@ -91,7 +91,37 @@ SOURCES += src/main.cpp \
     src/core/banpair.cpp \
     src/ui/chatwidget.cpp \
     src/scenario/miniscenarios.cpp \
-    src/dialog/customassigndialog.cpp
+    src/dialog/customassigndialog.cpp \
+    src/lua/print.c \
+    src/lua/lzio.c \
+    src/lua/lvm.c \
+    src/lua/lundump.c \
+    src/lua/ltm.c \
+    src/lua/ltablib.c \
+    src/lua/ltable.c \
+    src/lua/lstrlib.c \
+    src/lua/lstring.c \
+    src/lua/lstate.c \
+    src/lua/lparser.c \
+    src/lua/loslib.c \
+    src/lua/lopcodes.c \
+    src/lua/lobject.c \
+    src/lua/loadlib.c \
+    src/lua/lmem.c \
+    src/lua/lmathlib.c \
+    src/lua/llex.c \
+    src/lua/liolib.c \
+    src/lua/linit.c \
+    src/lua/lgc.c \
+    src/lua/lfunc.c \
+    src/lua/ldump.c \
+    src/lua/ldo.c \
+    src/lua/ldebug.c \
+    src/lua/ldblib.c \
+    src/lua/lcode.c \
+    src/lua/lbaselib.c \
+    src/lua/lauxlib.c \
+    src/lua/lapi.c
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
@@ -175,7 +205,31 @@ HEADERS += src/client/aux-skills.h \
     src/ui/chatwidget.h \
     src/scenario/miniscenarios.h \
     src/dialog/customassigndialog.h \
-	src/core/audio.h
+	src/core/audio.h \
+    src/lua/lzio.h \
+    src/lua/lvm.h \
+    src/lua/lundump.h \
+    src/lua/lualib.h \
+    src/lua/luaconf.h \
+    src/lua/lua.hpp \
+    src/lua/lua.h \
+    src/lua/ltm.h \
+    src/lua/ltable.h \
+    src/lua/lstring.h \
+    src/lua/lstate.h \
+    src/lua/lparser.h \
+    src/lua/lopcodes.h \
+    src/lua/lobject.h \
+    src/lua/lmem.h \
+    src/lua/llimits.h \
+    src/lua/llex.h \
+    src/lua/lgc.h \
+    src/lua/lfunc.h \
+    src/lua/ldo.h \
+    src/lua/ldebug.h \
+    src/lua/lcode.h \
+    src/lua/lauxlib.h \
+    src/lua/lapi.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -183,7 +237,6 @@ FORMS += src/dialog/cardoverview.ui \
 	src/dialog/generaloverview.ui \
 	src/dialog/mainwindow.ui 
 	
-INCLUDEPATH += include/lua
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
@@ -193,19 +246,13 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
+INCLUDEPATH += src/lua
 
 win32{
     RC_FILE += resource/icon.rc
-    LIBS += -L. -llua -lm
 }
 
-unix:!macx {
-    LIBS += -lm -llua
-}
-
-macx {
-    LIBS += -L. -lm -llua5.1
-}
+LIBS += -L. -lm
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
@@ -226,5 +273,6 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss \
-    acknowledgement/main.qml
-
+    acknowledgement/main.qml \
+    acknowledgement/list.png \
+    acknowledgement/back.png
