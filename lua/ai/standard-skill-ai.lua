@@ -875,7 +875,7 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 			second = males[2]
 			local lord = self.room:getLord()
 			if (first:getHp()<=1) then
-				if self.player:isLord() or isRolePredictable() then 
+				if self.player:isLord() or sgs.isRolePredictable() then 
 					local friend_maxSlash = findFriend_maxSlash(self,first)
 					if friend_maxSlash then second=friend_maxSlash end
 				elseif (lord:getGeneral():isMale()) and (not lord:hasSkill("wuyan")) then 

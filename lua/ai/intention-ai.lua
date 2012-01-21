@@ -49,7 +49,7 @@ function refreshLoyalty(player,intention)
 	if player:isLord() then return end
 	local name=player:objectName()
 
-	if isRolePredictable() then
+	if sgs.isRolePredictable() then
 		if player:getRole() == "loyalist" and intention > 0 then sgs.ai_explicit[name] = "loyalist"
 		elseif player:getRole() == "rebel" and intention < 0 then sgs.ai_explicit[name] = "rebel"
 		elseif player:getRole() == "renegade" and intention > 0 then sgs.ai_explicit[name] = "loyalist"
@@ -242,21 +242,15 @@ sgs.ai_card_intention["LiuliCard"]=function(card,from,to,source)
 	sgs.ai_liuli_effect=true
 end
 
-sgs.ai_card_intention["JujianCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["JujianCard"]=-80
 
-sgs.ai_card_intention["TiaoxinCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,80)
-end
+sgs.ai_card_intention["TiaoxinCard"]=80
 
-sgs.ai_card_intention["ZhijianCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["ZhijianCard"]=-80
 
 sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
 	if from:getPhase() == sgs.Player_Draw then
-		return sgs.ai_card_intention["TuxiCard"](card, from, to, source)
+		sgs.ai_card_intention["TuxiCard"](card, from, to, source)
 	end
 	return 0
 end
@@ -265,13 +259,9 @@ sgs.ai_card_intention["ChengxiangCard"]=sgs.ai_card_intention["QingnangCard"]
 
 sgs.ai_card_intention["JuejiCard"]=sgs.ai_card_intention["TianyiCard"]
 
-sgs.ai_card_intention["LianliCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["LianliCard"]=-80
 
-sgs.ai_card_intention["QiaocaiCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-70)
-end
+sgs.ai_card_intention["QiaocaiCard"]=-70
 
 sgs.ai_card_intention["ShouyeCard"]=sgs.ai_card_intention["JujianCard"]
 
@@ -285,28 +275,22 @@ sgs.ai_card_intention["GongxinCard"]=sgs.ai_card_intention["TianyiCard"]
 
 sgs.ai_card_intention["SmallYeyanCard"]=sgs.ai_card_intention["QiangxiCard"]
 
-sgs.ai_card_intention["MediumYeyanCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to, 200)
-end
+sgs.ai_card_intention["MediumYeyanCard"]=200
 
 sgs.ai_card_intention["GreatYeyanCard"]=sgs.ai_card_intention["SmallYeyanCard"]
 
 sgs.ai_card_intention["WuqianCard"]=sgs.ai_card_intention["XianzhenCard"]
 
-sgs.ai_card_intention["KuangfengCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to, 80)
-end
+sgs.ai_card_intention["KuangfengCard"]=80
 
-sgs.ai_card_intention["DawuCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to, -70)
-end
+sgs.ai_card_intention["DawuCard"]=-70
 
 sgs.ai_card_intention["GaleShell"]=sgs.ai_card_intention["KuangfengCard"]
 
 sgs.ai_explicit={}
 sgs.ai_loyalty={}
 
-function SmartAI:printAll(player, intention)
+--[[function SmartAI:printAll(player, intention)
 	local name = player:objectName()
 	self.room:writeToConsole(player:getGeneralName() .. math.floor(intention*10)/10 .. " Z" .. sgs.ai_assumed["loyalist"] .. " F" .. 
 	sgs.ai_assumed["rebel"]	.. " N" .. sgs.ai_assumed["renegade"] .. " S" .. (self:singleRole() or "nil") .. " L" 
@@ -372,3 +356,4 @@ function SmartAI:printCards(cards)
 	end
 	self.room:output(string)
 end
+]]

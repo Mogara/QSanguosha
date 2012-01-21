@@ -28,7 +28,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			end
 		end
 		
-		if SmartAI.GetValue(self.player) < 6 then return "no" end
+                if sgs.getValue(self.player) < 6 then return "no" end
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if self:isFriend(player) then return "yes" end
 		end
@@ -56,7 +56,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 		end
 	end
 	
-	useDefaultStrategy = function()
+	sgs.isRolePredictable = function()
 		return false
 	end
 
