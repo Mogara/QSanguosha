@@ -913,11 +913,13 @@ sgs.ai_skill_use_func["LijianCard"]=function(card,use,self)
 	end
 end
 
-sgs.ai_choicemade_filter.cardUsed.LijianCard = function(player, carduse)
+lijian_filter = function(player, carduse)
 	if carduse.card:inherits("LijianCard") then
 		sgs.ai_lijian_effect = true
 	end
 end
+
+table.insert(sgs.ai_choicemade_filter.cardUsed, lijian_filter)
 
 sgs.ai_card_intention.LijianCard = function(card, from, to, source)
 	if (sgs.ai_loyalty[to[1]:objectName()] or 0) * (sgs.ai_loyalty[to[2]:objectName()] or 0) > 0 then

@@ -4,13 +4,15 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 table.insert(sgs.ai_global_flags, "jijiangsource")
-sgs.ai_choicemade_filter.cardUsed.JijiangCard = function(player, carduse)
+local jijiang_filter = function(player, carduse)
 	if carduse.card:inherits("JijiangCard") then
 		sgs.jijiangsource = player
 	else
 		sgs.jijiangsource = nil
 	end
 end
+
+table.insert(sgs.ai_choicemade_filter.cardUsed, jijiang_filter)
 
 sgs.ai_skill_invoke.jijiang = function(self, data)
 	local cards = self.player:getHandcards()

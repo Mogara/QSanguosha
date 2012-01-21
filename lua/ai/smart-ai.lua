@@ -979,7 +979,8 @@ local function getSkillViewCard(card, class_name, player, card_place)
 	local _, vlist = sgs.getSkillLists(player)
 	for _, askill in ipairs(vlist) do
 		local callback = sgs.ai_view_as[askill]
-		if callback and type(callback) == "function" and callback(card, player, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
+		if callback and type(callback) == "function" and callback(card, player, card_place)
+			and sgs.Card_Parse(callback(card, player, card_place)):inherits(class_name) then
 			return callback(card, player, card_place)
 		end
 	end
