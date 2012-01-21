@@ -122,25 +122,25 @@ void Settings::init(){
     }
 
     pairs_ban << "shencaocao" << "dongzhuo" << "zuoci" << "zhoutai" << "+luboyan"
-                << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji"
+              << "caocao+caochong" << "xushu+zhugeliang" << "simayi+caizhaoji" << "wisjiangwei+zhanggongqi"
                 << "zhenji+zhangjiao" << "zhenji+simayi" << "huanggai+yuanshao"
-                << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu"
-                << "luxun+liubei" << "luxun+wolong" << "luxun+yuji"
+                << "huanggai+wuguotai" << "dengshizai+caoren" << "dengshizai+shenlubu" << "dengshizai+bgm_diaochan"
+                << "luxun+liubei" << "luxun+wolong" << "luxun+yuji" << "luxun+daqiao"
                 << "huangyueying+wolong" << "huangyueying+yuanshao" << "huangyueying+ganning"
                 << "shuangxiong+sunce" << "shuangxiong+huanggai" << "shuangxiong+huangyueying"
                 << "dengai+guojia" << "dengai+simayi" << "dengai+zhangjiao"
                 << "dengai+shenzhugeliang" << "dengai+shensimayi"
                 << "jiangboyue+huangyueying" << "jiangboyue+wolong" << "jiangboyue+yuanshao"
-                << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun"
+                << "jiangboyue+shuangxiong" << "jiangboyue+ganning" << "jiangboyue+luxun" << "jiangboyue+zhanggongqi"
                 << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu"
                 << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
-                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe"
+                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlubu"
                 << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia"
                 << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi"
                 << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang"
                 << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu"
-                << "bgm_diaochan+caizhaoji";
+                << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi";
 
     QStringList banlist = value("Banlist/1v1").toStringList();
     foreach(QString ban_general, kof_ban){
