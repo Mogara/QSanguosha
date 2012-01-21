@@ -139,7 +139,7 @@ sgs.ai_card_intention["Duel"]=function(card,from,tos,source)
 		sgs.ai_lijian_effect = false
 		return
 	end
-        sgs.updateIntentions(from, tos, 80)
+    sgs.updateIntentions(from, tos, 80)
 end
 
 sgs.ai_card_intention.Collateral = 80
@@ -149,9 +149,9 @@ sgs.ai_card_intention.FireAttack = 80
 sgs.ai_card_intention["IronChain"]=function(card,from,tos,source)
 	for _, to in ipairs(tos) do
 		if to:isChained() then
-                        sgs.updateIntention(from, to, 80)
+			sgs.updateIntention(from, to, 80)
 		else 
-                        sgs.updateIntention(from, to, -80)
+			sgs.updateIntention(from, to, -80)
 		end
 	end
 end

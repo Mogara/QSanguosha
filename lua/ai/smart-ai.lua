@@ -2537,16 +2537,19 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local flag = "h"
 	if include_equip and (self.player:getEquips():isEmpty() or not self.player:isJilei(self.player:getEquips():first())) then flag = flag .. "e" end
 	local cards = self.player:getCards(flag)
+	local to_discard = {}
 	cards = sgs.QList2Table(cards)
 	local aux_func = function(card)
-		local key = {2,4,3,1}
 		local place = self.room:getCardPlace(card:getEffectiveId())
 		if place == sgs.Player_Equip then
 			if card:inherits("GaleShell") then return -2
 			elseif card:inherits("SilverLion") and self.player:isWounded() then return -2
 			elseif card:inherits("YitianSword") then return -1
-			else return key[card:getLocation()+1] end
-		elseif self:hasSkills(sgs.lose_equip_skills) then return 5
+			elseif card:inherits("OffensiveHorse") then return 1
+			elseif card:inherits("Weapon") then return 2
+			elseif card:inherits("DefensiveHorse") then return 3
+			elseif card:inherits("Armor") then return 4 end
+		elseif self:hasSkills(sgs.lose_equip_skill) then return 5
 		else return 0 end
 	end
 	local compare_func = function(a, b)

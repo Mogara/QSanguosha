@@ -379,7 +379,6 @@ sgs.ai_skill_use_func["YisheCard"]=function(card,use,self)
 	end
 end
 
-table.insert(sgs.ai_global_flags, "yisheasksource")
 sgs.ai_choicemade_filter.cardUsed.YisheAskCard = function(player, carduse)
 	if carduse.card:inherits("YisheAskCard") then
 		sgs.yisheasksource = player
