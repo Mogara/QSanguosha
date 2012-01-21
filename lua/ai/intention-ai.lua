@@ -86,7 +86,7 @@ end
 
 function sgs.updateIntention(from, to, intention)
     sgs.refreshLoyalty(from, sgs.ai_card_intention.general(to, intention))
-	if to:isLord() then sgs.ai_anti_lord[from:objectName()] = sgs.ai_anti_lord[from:objectName()] + 1 end
+	if to:isLord() then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
 end
 
 function sgs.updateIntentions(from, tos, intention)

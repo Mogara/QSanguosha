@@ -387,10 +387,10 @@ sgs.ai_skill_choice["zhiji"] = function(self, choice)
 end
 
 --zhiba
-local zhiba_skill={}
-zhiba_skill.name="zhiba_pindian"
-table.insert(sgs.ai_skills, zhiba_skill)
-zhiba_skill.getTurnUseCard = function(self)
+local zhiba_pindian_skill={}
+zhiba_pindian_skill.name="zhiba_pindian"
+table.insert(sgs.ai_skills, zhiba_pindian_skill)
+zhiba_pindian_skill.getTurnUseCard = function(self)
 	if self.player:isKongcheng() or self.player:getHandcardNum() < self.player:getHp() or self.player:getKingdom() ~= "wu"
 		or self.player:hasUsed("ZhibaCard") then return end
 	return sgs.Card_Parse("@ZhibaCard=.")

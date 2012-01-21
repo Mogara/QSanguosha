@@ -154,7 +154,7 @@ function SmartAI:initialize(player)
 
 	self.keepValue = {}
 	self.kept = {}
-	self.skills, self.view_as_skills, self.filter_skills = self:getSkillLists(self.player)
+	self.skills, self.view_as_skills, self.filter_skills = sgs.getSkillLists(self.player)
 end
 
 function sgs.getSkillLists(player)
@@ -292,13 +292,13 @@ local function getGameProcessValues(self, players)
 	end
 	local ambig_num, loyal_value, rebel_value = 0, 0, 0
 	for _, aplayer in ipairs(players) do
-                if (not sgs.isRolePredictable() and (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel"))
-                        or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
+		if (not sgs.isRolePredictable() and (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel"))
+				or (sgs.isRolePredictable() and aplayer:getRole() == "rebel") then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
 			if aplayer:getMaxHP() == 3 then rebel_value = rebel_value + 0.5 end
-			rebel_value = rebel_value + rebel_hp + math.max(self.GetDefense(aplayer) - rebel_hp * 2, 0) * 0.7
+			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer) - rebel_hp * 2, 0) * 0.7
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				rebel_value = rebel_value + math.min(1.5, math.min(sgs.weapon_range[aplayer:getWeapon():className()],self.room:alivePlayerCount()/2)/2) * 0.4
 			end
@@ -308,8 +308,8 @@ local function getGameProcessValues(self, players)
 					rebel_value = rebel_value + 0.4
 				end
 			end
-                elseif (not sgs.isRolePredictable() and (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal"))
-                        or (sgs.isRolePredictable() and aplayer:getRole() == "loyalist") or aplayer:isLord() then
+		elseif (not sgs.isRolePredictable() and (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal"))
+				or (sgs.isRolePredictable() and aplayer:getRole() == "loyalist") or aplayer:isLord() then
 			local loyal_hp
 			local modifier = 1
 			if aplayer:isLord() then
@@ -951,7 +951,7 @@ local function prohibitUseDirectly(card, player)
 	local _, __, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
-		if callback and type(callback) == "function" and callback(card) then return true
+		if callback and type(callback) == "function" and callback(card) then return true end
 	end
 	return false
 end
@@ -2863,9 +2863,10 @@ function SmartAI:askForCardChosen(who, flags, reason)
 	return self:getCardRandomly(who, new_flag) or who:getCards(flags):first():getEffectiveId()
 end
 
+sgs.ai_skill_cardask = {}
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
-	if sgs.ai_skill_invoke[pattern] then return sgs.ai_skill_invoke[pattern](self, prompt) end
+	if sgs.ai_skill_cardask[pattern] then return sgs.ai_skill_cardask[pattern](self, prompt) end
 	if (pattern == ".H" or pattern == "..H") and self.player:hasSkill("hongyan") then return "." end
 
 	local target, target2
