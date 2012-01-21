@@ -310,10 +310,10 @@ sgs.ai_skill_use_func["MediumYeyanCard"]=function(card,use,self)
 	local need_cards = {}
 	local spade, club, heart, diamond
 	for _, card in ipairs(cards) do
-		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card)
+		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card:getId())
 		end
 	end
 	if #need_cards < 4 then return end
@@ -341,10 +341,10 @@ sgs.ai_skill_use_func["GreatYeyanCard"]=function(card,use,self)
 	local need_cards = {}
 	local spade, club, heart, diamond
 	for _, card in ipairs(cards) do
-		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card)
-		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card)
+		if card:getSuit() == sgs.Card_Spade and not spade then spade = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Club and not club then club = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Heart and not heart then heart = true table.insert(need_cards, card:getId())
+		elseif card:getSuit() == sgs.Card_Diamond and not diamond then diamond = true table.insert(need_cards, card:getId())
 		end
 	end
 	if #need_cards < 4 then return end
