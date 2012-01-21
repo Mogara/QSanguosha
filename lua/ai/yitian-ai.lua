@@ -97,7 +97,7 @@ end
 
 sgs.ai_choicemade_filter.cardResponsed["@lianli-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
-		updateIntention(player, sgs.lianlisource, -80)
+		sgs.updateIntention(player, sgs.lianlisource, -80)
 		sgs.lianlisource = nil
 	end
 end

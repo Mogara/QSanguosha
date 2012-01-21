@@ -100,7 +100,7 @@ end
 sgs.ai_card_intention.DimengCard = function(card, from, to, source)
 	self:sort(to, "handcard")
 	if to[1]:getHandcardNum() < to[2]:getHandcardNum() then
-		self:refreshLoyalty(from, sgs.ai_card_intention["general"](to[2], (to[1]:getHandcardNum()-to[2]:getHandcardNum())*20-40))
+                sgs.refreshLoyalty(from, sgs.ai_card_intention["general"](to[2], (to[1]:getHandcardNum()-to[2]:getHandcardNum())*20-40))
 		if to[1]:isLord() then
 			sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1
 		end

@@ -30,7 +30,7 @@ end
 
 sgs.ai_choicemade_filter.cardResponsed["@jijiang-slash"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
-		updateIntention(player, sgs.jijiangsource, -40)
+		sgs.updateIntention(player, sgs.jijiangsource, -40)
 		sgs.jijiangsource = nil
 	end
 end
@@ -87,14 +87,14 @@ sgs.ai_skill_invoke.hujia = function(self, data)
 end
 
 sgs.ai_choicemade_filter.skillInvoke.hujia = function(player, promptlist)
-	if promptlist[#promptlist] = "yes" then
+	if promptlist[#promptlist] == "yes" then
 		sgs.hujiasource = player
 	end
 end
 
 sgs.ai_choicemade_filter.cardResponsed["@hujia-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
-		updateIntention(player, sgs.hujiasource, -80)
+		sgs.updateIntention(player, sgs.hujiasource, -80)
 		sgs.hujiasource = nil
 	end
 end

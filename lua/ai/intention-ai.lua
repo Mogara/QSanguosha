@@ -28,7 +28,7 @@ sgs.ai_card_intention["general"]=function(to,level)
 	end
 end
 
-function refreshLoyalty(player,intention)
+function sgs.refreshLoyalty(player,intention)
 	if player:isLord() then return end
 	local name=player:objectName()
 
@@ -41,7 +41,7 @@ function refreshLoyalty(player,intention)
 	end
 	
 	local has_rebel = false
-	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+	for _, aplayer in sgs.qlist(player:getRoom():getAlivePlayers()) do
 		if aplayer:getRole() == "rebel" then has_rebel = true break end
 	end
 	if not has_rebel then
@@ -53,7 +53,7 @@ function refreshLoyalty(player,intention)
 	if math.abs(intention)>70 and math.abs(sgs.ai_loyalty[name] or 0) > 70 then
 		if sgs.ai_loyalty[name]*intention<0 then
 			sgs.ai_loyalty[name]=sgs.ai_loyalty[name]/2
-			self:refreshLoyalty(player,0)
+                        sgs.refreshLoyalty(player,0)
 			sgs.ai_renegade_suspect[name]=(sgs.ai_renegade_suspect[name] or 0)+1
 		end
 	end
@@ -65,8 +65,8 @@ function refreshLoyalty(player,intention)
 
 
 	if (sgs.ai_renegade_suspect[name] or 0) > 1 then
-		if intention >0 then sgs.ai_explicit[name] = "loyalish" sgs.ai_assumed["loyalist"] = sgs.ai_assumed["loyalist"] - 1
-		elseif intention < 0 then sgs.ai_explicit[name] = "rebelish" sgs.ai_assumed["rebel"] = sgs.ai_assumed["rebel"] -1 end
+		if intention >0 then sgs.ai_explicit[name] = "loyalish"
+		elseif intention < 0 then sgs.ai_explicit[name] = "rebelish" end
 		return
 	end
 	
@@ -84,15 +84,15 @@ function refreshLoyalty(player,intention)
 	--self:checkMisjudge(player)
 end
 
-function updateIntention(from, to, intention)
-	updateLoyalty(from, sgs.ai_card_intention.general(to, intention))
+function sgs.updateIntention(from, to, intention)
+    sgs.refreshLoyalty(from, sgs.ai_card_intention.general(to, intention))
 	if to:isLord() then sgs.ai_anti_lord[from:objectName()] = sgs.ai_anti_lord[from:objectName()] + 1 end
 end
 
-function updateIntentions(from, tos, intention)
+function sgs.updateIntentions(from, tos, intention)
 	for _, to in ipairs(tos) do
 		if from:objectName() ~= to:objectName() then
-			updateIntention(from, to, intention)
+			sgs.updateIntention(from, to, intention)
 		end
 	end
 end
@@ -124,7 +124,7 @@ sgs.ai_card_intention["Slash"]=function(card,from,tos,source)
 		if to:hasSkill("yiji") then 
 			return value*(2-to:getHp())/1.1
 		end
-		updateIntention(from, to, value)
+		sgs.updateIntention(from, to, value)
 	end
 end
 
@@ -139,7 +139,7 @@ sgs.ai_card_intention["Duel"]=function(card,from,tos,source)
 		sgs.ai_lijian_effect = false
 		return
 	end
-	updateIntentions(from, tos, 80)
+        sgs.updateIntentions(from, tos, 80)
 end
 
 sgs.ai_card_intention.Collateral = 80
@@ -149,9 +149,9 @@ sgs.ai_card_intention.FireAttack = 80
 sgs.ai_card_intention["IronChain"]=function(card,from,tos,source)
 	for _, to in ipairs(tos) do
 		if to:isChained() then
-			updateIntention(from, to, 80)
+                        sgs.updateIntention(from, to, 80)
 		else 
-			updateIntention(from, to, -80)
+                        sgs.updateIntention(from, to, -80)
 		end
 	end
 end
@@ -160,7 +160,7 @@ sgs.ai_card_intention["Dismantlement"]=function(card,from,tos,source)
 	for _, to in ipairs(tos) do
 		if to:getCards("j"):isEmpty() and
 			not (to:getArmor() and (to:getArmor():inherits("GaleShell") or to:getArmor():inherits("SilverLion"))) then
-			updateIntention(from, to, 80)
+			sgs.updateIntention(from, to, 80)
 		end
 	end
 end
@@ -187,7 +187,7 @@ sgs.ai_card_intention["JieyinCard"]=-80
 
 sgs.ai_card_intention["HuangtianCard"]=function(card,from,to,source)
 	sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1
-	updateIntention(from, to, -80)
+	sgs.updateIntention(from, to, -80)
 end
 
 sgs.ai_card_intention["JiemingCard"]=-80

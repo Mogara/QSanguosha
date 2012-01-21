@@ -194,8 +194,8 @@ function SmartAI:updatePlayers(inclusive)
 
 	-- if self.player:isLord() then self:printFEList() end
         if sgs.isRolePredictable() then
-		if (self.role == "lord") or (self.role == "loyalist") then self:refreshLoyalty(self.player,300)
-		elseif (self.role == "rebel") then self:refreshLoyalty(self.player,-300)
+		if (self.role == "lord") or (self.role == "loyalist") then sgs.refreshLoyalty(self.player,300)
+		elseif (self.role == "rebel") then sgs.refreshLoyalty(self.player,-300)
 		end
 
 		self.retain = 2
@@ -304,7 +304,7 @@ local function getGameProcessValues(self, players)
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 			else loyal_hp = aplayer:getHp() end
 			if aplayer:getMaxHP() == 3 then loyal_value = loyal_value + 0.5 end
-			loyal_value = loyal_value + (loyal_hp + math.max(self.GetDefense(aplayer) - loyal_hp * 2, 0) * 0.7)/modifier
+			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer) - loyal_hp * 2, 0) * 0.7)/modifier
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				loyal_value = loyal_value + math.min(1.5, sgs.weapon_range[aplayer:getWeapon():className()]/2) * 0.4/modifier
 			end
@@ -398,7 +398,7 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_explicit[player:objectName()] == "loyalist" then return -2
 		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return -1
 		-- elseif (self:singleRole()) == "rebel" then return 4.6-modifier
-		elseif (self:singleRole()) == "loyalist" then return -1
+		-- elseif (self:singleRole()) == "loyalist" then return -1
 		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3
@@ -598,7 +598,7 @@ function SmartAI:filterEvent(event, player, data)
 			
 			if from then
 				if from:objectName() == to:objectName() then intention = 0 end
-				self:refreshLoyalty(from, intention)
+				sgs.refreshLoyalty(from, intention)
 				if to:isLord() and intention < 0 then
 					sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0)+1
 				end
@@ -612,12 +612,12 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local source =  self.room:getCurrent()
 
-		local callback = sgs.ai_carduse_intention[card:className()]
+		local callback = sgs.ai_card_intention[card:className()]
 		if callback then
 			if type(callback) == "function" then
 				callback(card, from, to, source)
 			elseif type(callback) == "number" then
-				updateIntentions(from, to, callback)
+				sgs.updateIntentions(from, to, callback)
 			end
 		end
 	elseif event == sgs.CardLost then
@@ -638,7 +638,7 @@ function SmartAI:filterEvent(event, player, data)
 			if from:isLord() and intention < 0 then
 				sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] = (sgs.ai_anti_lord[sgs.ai_snat_dism_from:objectName()] or 0)+1
 			end
-			self:refreshLoyalty(sgs.ai_snat_dism_from,intention)
+			sgs.refreshLoyalty(sgs.ai_snat_dism_from,intention)
 		end
 	elseif event == sgs.StartJudge then
 		local judge = data:toJudge()
@@ -647,7 +647,7 @@ function SmartAI:filterEvent(event, player, data)
 			local caiwenji = self.room:findPlayerBySkillName("beige")
 			local intention = sgs.ai_card_intention.general(player, -60)
 			if player:objectName() == caiwenji:objectName() then intention = 0 end
-			self:refreshLoyalty(caiwenji, intention)
+			sgs.refreshLoyalty(caiwenji, intention)
 		end
 	end
 end
@@ -2213,9 +2213,7 @@ end
 function SmartAI:activate(use)
 	self:updatePlayers()
 	self:assignKeep(self.player:getHp(),true)
-	self:printCards(self.kept)
 	self.toUse  = self:getTurnUse()
-	self:printCards(self.toUse)
 
 --	self:sortByUsePriority(self.toUse)
 	self:sortByDynamicUsePriority(self.toUse)
