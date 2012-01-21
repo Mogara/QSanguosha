@@ -226,5 +226,5 @@ TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss \
-    scenarios/acknowledgement/main.qml
+    acknowledgement/main.qml
 

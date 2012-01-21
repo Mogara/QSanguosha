@@ -135,12 +135,12 @@ void Settings::init(){
                 << "weiyan+huanggai" << "jiangwei+zhangjiao" << "caoren+shenlubu"
                 << "fazheng+xiahoudun" << "luxun+zhanggongqi" << "sunquan+lingtong"
                 << "sunquan+sunshangxiang" << "wuguotai+guojia" << "wuguotai+xunyu"
-                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlvbu"
+                << "caizhaoji+caoren" << "caizhaoji+dengshizai" << "yuanshu+zhanghe" << "caizhaoji+caozhi" << "caizhaoji+shenlubu"
                 << "yuanshu+lumeng" << "yuanshu+caochong" << "huatuo+guojia"
                 << "huatuo+xunyu" << "huatuo+xiahoujuan" << "huatuo+zhanggongqi"
                 << "lukang+liubei" << "lukang+wolong" << "lukang+yuji" << "jiangboyue+lukang"
                 << "lukang+zhanggongqi" << "bgm_diaochan+caoren" << "bgm_diaochan+shenlubu"
-                << "bgm_diaochan+caizhaoji" << "caozhi+shenlvbu" << "caoren+caozhi";
+                << "bgm_diaochan+caizhaoji" << "caozhi+shenlubu" << "caoren+caozhi";
 
     QStringList banlist = value("Banlist/1v1").toStringList();
     foreach(QString ban_general, kof_ban){
