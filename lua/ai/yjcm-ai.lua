@@ -386,3 +386,13 @@ sgs.ai_skill_choice.mingce = function(self, choices)
 end
 
 sgs.ai_skill_playerchosen.mingce = sgs.ai_skill_playerchosen.zero_card_as_slash
+
+sgs.ai_skill_cardask["@enyuan"] = function(self)
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihilo")) then
+			return card:getEffectiveId()
+		end
+	end
+	return "."
+end

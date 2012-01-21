@@ -35,6 +35,11 @@ sgs.ai_choicemade_filter.cardResponsed["@jijiang-slash"] = function(player, prom
 	end
 end
 
+sgs.ai_skill_cardask["@jijiang-slash"] = function(self)
+	if not self:isFriend(sgs.jijiangsource) then return "." end
+	return self:getCardId("Slash") or "."
+end
+
 sgs.ai_skill_choice.jijiang = function(self , choices)
 	if not self.player:hasLordSkill("jijiang") then
 		if self:getCardsNum("Slash") <= 0 then return "ignore" end
@@ -97,6 +102,11 @@ sgs.ai_choicemade_filter.cardResponsed["@hujia-jink"] = function(player, promptl
 		sgs.updateIntention(player, sgs.hujiasource, -80)
 		sgs.hujiasource = nil
 	end
+end
+
+sgs.ai_skill_cardask["@hujia-jink"] = function(self)
+	if not self:isFriend(sgs.hujiasource) then return "." end
+	return self:getCardId("Jink") or "."
 end
 
 -- tuxi
@@ -212,7 +222,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_skill_cardask["@guicai"]=function(self,prompt)
+sgs.ai_skill_cardask["@guicai"]=function(self)
 	local judge = self.player:getTag("Judge"):toJudge()
 
 	if self:needRetrial(judge) then

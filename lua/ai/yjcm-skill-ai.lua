@@ -75,6 +75,22 @@ sgs.ai_skill_use_func["XianzhenCard"]=function(card,use,self)
 	end
 end
 
+sgs.ai_skill_cardask["@xianzhen-slash"] = function(self)
+	if self.player:hasSkill("tianxiang") then
+		local dmgStr = {damage = 1, nature = 0}
+		local willTianxiang = sgs.ai_skill_use["@tianxiang"](self, dmgStr)
+		if willTianxiang ~= "." then return "." end
+	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
+		return "."
+	end
+	local target = self.player:getTag("XianzhenTarget"):toPlayer()
+	local slashes = self:getCards("Slash")
+	for _, slash in ipairs(slashes) do
+		if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
+	end
+	return "."
+end
+
 local xinzhan_skill={}
 xinzhan_skill.name="xinzhan"
 table.insert(sgs.ai_skills,xinzhan_skill)

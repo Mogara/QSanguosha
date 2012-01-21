@@ -10,3 +10,10 @@ end
 sgs.ai_skill_invoke["draw_1v3"] = function(self, data)
 	return not (self.player:hasSkill("kongcheng") and self.player:isKongcheng())
 end
+
+sgs.ai_skill_cardask["@xiuluo"] = function(self)
+	for _, card in sgs.qlist(self.player:getHandcards()) do
+		if card:getSuitString() == parsedPrompt[2] then return "$"..card:getEffectiveId() end
+	end
+	return "."
+end

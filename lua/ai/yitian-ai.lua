@@ -102,6 +102,16 @@ sgs.ai_choicemade_filter.cardResponsed["@lianli-jink"] = function(player, prompt
 	end
 end
 
+sgs.ai_skill_cardask["@lianli-jink"] = function(self)
+	local players = self.room:getOtherPlayers(self.player)
+	local target
+	for _, p in sgs.qlist(players) do
+		if p:getMark("@tied")>0 then target = p break end
+	end
+	if not self:isFriend(target) then return "." end
+	return self:getCardId("Jink") or "."
+end
+
 local lianli_slash_skill={name="lianli-slash"}
 table.insert(sgs.ai_skills, lianli_slash_skill)
 lianli_slash_skill.getTurnUseCard = function(self)
@@ -126,6 +136,16 @@ sgs.ai_choicemade_filter.cardResponsed["@lianli-slash"] = function(player, promp
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.lianlislash = true
 	end
+end
+
+sgs.ai_skill_cardask["@lianli-slash"] = function(self)
+	local players = self.room:getOtherPlayers(self.player)
+	local target
+	for _, p in sgs.qlist(players) do
+		if p:getMark("@tied")>0 then target = p break end
+	end
+	if not self:isFriend(target) then return "." end
+	return self:getCardId("Slash") or "."
 end
 
 -- tongxin

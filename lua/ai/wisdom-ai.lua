@@ -99,6 +99,19 @@ sgs.ai_skill_use_func["WeidaiCard"] = function(card, use, self)
 	use.card = card
 end
 
+sgs.ai_skill_cardask["@weidai-analeptic"] = function(self, data)
+	local who = data:toPlayer()
+	if self:isEnemy(who) then return "." end
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	for _, fcard in ipairs(cards) do
+		if fcard:getSuit() == sgs.Card_Spade and fcard:getNumber() > 1 and fcard:getNumber() < 10 then
+			return fcard:getEffectiveId()
+		end
+	end
+	return "."
+end
+
 -- fuzuo
 sgs.ai_skill_choice["fuzuo"] = function(self , choices)
 	return "cancel"

@@ -2466,16 +2466,16 @@ end
 
 function SmartAI:sortByUseValue(cards,inverse)
 	local compare_func = function(a,b)
-			local value1 = self:getUseValue(a)
-			local value2 = self:getUseValue(b)
+		local value1 = self:getUseValue(a)
+		local value2 = self:getUseValue(b)
 
-			if value1 ~= value2 then
-					if not inverse then return value1 > value2
-					else return value1 < value2
-					end
-			else
-					return a:getNumber() > b:getNumber()
-			end
+		if value1 ~= value2 then
+				if not inverse then return value1 > value2
+				else return value1 < value2
+				end
+		else
+				return a:getNumber() > b:getNumber()
+		end
 	end
 
 	table.sort(cards, compare_func)
@@ -2810,11 +2810,7 @@ end
 sgs.ai_skill_cardask = {}
 function SmartAI:askForCard(pattern, prompt, data)
 	self.room:output(prompt)
-	if sgs.ai_skill_cardask[pattern] then return sgs.ai_skill_cardask[pattern](self, prompt) end
-	if (pattern == ".H" or pattern == "..H") and self.player:hasSkill("hongyan") then return "." end
-
 	local target, target2
-	if not prompt then return end
 	local parsedPrompt = prompt:split(":")
 	if parsedPrompt[2] then
 		local others = self.room:getOtherPlayers(self.player)
@@ -2828,70 +2824,8 @@ function SmartAI:askForCard(pattern, prompt, data)
 			end
 		end
 	end
-
-	if parsedPrompt[1] == "@xiuluo" then
-		local hand_card = self.player:getHandcards()
-		for _, card in sgs.qlist(hand_card) do
-			if card:getSuitString() == parsedPrompt[2] then return "$"..card:getEffectiveId() end
-		end
-	elseif parsedPrompt[1] == "@enyuan" then
-		local cards = self.player:getHandcards()
-		for _, card in sgs.qlist(cards) do
-			if card:getSuit() == sgs.Card_Heart and not (card:inherits("Peach") or card:inherits("ExNihio")) then
-				return card:getEffectiveId()
-			end
-		end
-		return "."
-	elseif parsedPrompt[1] == "@xiangle-discard" then
-		local effect = data:toCardEffect()
-		if self:isFriend(effect.to) and not
-			(effect.to:hasSkill("leiji") and (self:getCardsNum("Jink", effect.to)>0 or (not self:isWeak(effect.to) and self:isEquip("EightDiagram",effect.to))))
-			then return "." end
-		local has_peach, has_anal, has_slash, slash_jink
-		for _, card in sgs.qlist(self.player:getHandcards()) do
-			if card:inherits("Peach") then has_peach = card
-			elseif card:inherits("Analeptic") then has_anal = card
-			elseif card:inherits("Slash") then has_slash = card
-			elseif card:inherits("Jink") then has_jink = card
-			end
-		end
-
-		if has_slash then return "$" .. has_slash:getEffectiveId()
-		elseif has_jink then return "$" .. has_jink:getEffectiveId()
-		elseif has_anal or has_peach then
-			if self:getCardsNum("Jink", effect.to) == 0 and self.player:hasFlag("drank") and self:getAllPeachNum(effect.to) == 0 then
-				if has_anal then return "$" .. has_anal:getEffectiveId()
-				else return "$" .. has_peach:getEffectiveId()
-				end
-			end
-		else return "."
-		end
-	elseif parsedPrompt[1] == "@hujia-jink" then
-		if not self:isFriend(sgs.hujiasource) then return "." end
-		return self:getCardId("Jink") or "."
-	elseif parsedPrompt[1] == "@lianli-jink" or parsedPrompt[1] == "@lianli-slash" then
-		local players = self.room:getOtherPlayers(self.player)
-		local target
-		for _, p in sgs.qlist(players) do
-			if p:getMark("@tied")>0 then target = p break end
-		end
-		if not self:isFriend(target) then return "." end
-		if parsedPrompt[1] == "@lianli-slash" then return self:getCardId("Slash") or "." else return self:getCardId("Jink") or "." end
-	elseif parsedPrompt[1] == "@jijiang-slash" then
-		if not self:isFriend(sgs.jijiangsource) then return "." end
-		return self:getCardId("Slash") or "."
-	elseif parsedPrompt[1] == "@weidai-analeptic" then
-		local who = data:toPlayer()
-		if self:isEnemy(who) then return "." end
-		local cards = self.player:getHandcards()
-		cards = sgs.QList2Table(cards)
-		for _, fcard in ipairs(cards) do
-			if fcard:getSuit() == sgs.Card_Spade and fcard:getNumber() > 1 and fcard:getNumber() < 10 then
-				return fcard:getEffectiveId()
-			end
-		end
-		return "."
-	end
+	if sgs.ai_skill_cardask[parsedPrompt[1]] then return sgs.ai_skill_cardask[parsedPrompt[1]](self, data, pattern, target, target2) end
+	if (pattern == ".H" or pattern == "..H") and self.player:hasSkill("hongyan") then return "." end
 
 	if parsedPrompt[1] == "double-sword-card" then
 		if target and self:isFriend(target) then return "." end
@@ -2970,13 +2904,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 				or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0 and not self.player:hasSkill("buqu")) then
 				return self:getCardId("Slash")
 			else return "." end
-		elseif (parsedPrompt[1] == "@jijiang-slash") then
-			if target and self:isFriend(target) then
-				if (self.player:hasSkill("longdan") and self:getCardsNum("Jink") > 1) then
-					self:speak("jijiang", self.player:getGeneral():isFemale())
-					return self:getCardId("Slash")
-				end
-			else return "." end
 		elseif parsedPrompt[1] == "savage-assault-slash"  then
 			if not self:damageIsEffective(nil, nil, target) then return "." end
 			local aoe = sgs.Sanguosha:cloneCard("savage_assault", sgs.Card_NoSuit , 0)
@@ -2985,13 +2912,6 @@ function SmartAI:askForCard(pattern, prompt, data)
 				or (self.player:hasSkill("yiji")) and self.player:getHp() > 2 then return "." end
 			if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 			if self.player:hasSkill("jieming") and self:getJiemingChaofeng() <= -6 and self.player:getHp() >= 2 then return "." end
-		elseif parsedPrompt[1] == "@xianzhen-slash" then
-			local target = self.player:getTag("XianzhenTarget"):toPlayer()
-			local slashes = self:getCards("Slash")
-			for _, slash in ipairs(slashes) do
-				if self:slashIsEffective(slash, target) then return slash:getEffectiveId() end
-			end
-			return "."
 		end
 		return self:getCardId("Slash") or "."
 	elseif pattern == "jink" then
