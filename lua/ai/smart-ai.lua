@@ -154,6 +154,21 @@ function SmartAI:initialize(player)
 
 	self.keepValue = {}
 	self.kept = {}
+	self.skills, self.view_as_skills, self.filter_skills = self:getSkillLists()
+end
+
+function SmartAI:getSkillLists(player)
+	player = player or self.player
+	local slist = player:getVisibleSkillList()
+	local snlist = {}
+	local vsnlist = {}
+	local fsnlist = {}
+	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
+		table.insert(snlist, askill:objectName())
+		if askill:inherits("ViewAsSkill") then table.insert(vsnlist, askill:objectName()) end
+		if askill:inherits("FilterSkill") then table.insert(fsnlist, askill:objectName()) end
+	end
+	return snlist, vsnlist, fsnlist
 end
 
 function SmartAI:printStand()
@@ -538,26 +553,10 @@ function SmartAI:filterEvent(event, player, data)
 		self:updatePlayers()
 	elseif event == sgs.Death then
 		self:updatePlayers()
-
-		if self == sgs.recorder then
-			speakTrigger(nil,player,nil,"death")
-			local selfexp = sgs.ai_explicit[player:objectName()]
-			if selfexp then
-				if selfexp == "loyalish" then selfexp = "loyalist"
-				elseif selfexp == "rebelish" then selfexp = "rebel"
-				end
-				sgs.ai_explicit[player:objectName()] = nil
-				sgs.ai_assumed[selfexp] = (sgs.ai_assumed[selfexp] or 0)+1
-			end
-			sgs.ai_assumed[player:getRole()] = (sgs.ai_assumed[player:getRole()] or 0)-1
-		end
 	end
 
 	if (event == sgs.PhaseChange) or (event == sgs.GameStart) then
 		self:updatePlayers()
-		if self.player:isLord() and player:isLord() and (player:getPhase() == sgs.Player_Play or event == sgs.GameStart) then
-			--self:printFEList()
-		end
 	end
 
 	if self ~= sgs.recorder then return end
