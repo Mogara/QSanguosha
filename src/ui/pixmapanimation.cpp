@@ -44,7 +44,7 @@ QRectF PixmapAnimation::boundingRect() const
 
 bool PixmapAnimation::valid()
 {
-    return frames.size();
+    return !frames.isEmpty();
 }
 
 void PixmapAnimation::timerEvent(QTimerEvent *e)
