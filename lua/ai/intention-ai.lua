@@ -1,8 +1,5 @@
 sgs.ai_card_intention={}
 sgs.ai_card_intention={}
-sgs.ai_assumed["rebel"]=0
-sgs.ai_assumed["loyalist"]=0
-sgs.ai_assumed["renegade"]=0
 sgs.ai_renegade_suspect={}
 sgs.ai_anti_lord={}
 sgs.ai_lord_tolerance={}
@@ -27,21 +24,7 @@ sgs.ai_card_intention["general"]=function(to,level)
 	elseif sgs.ai_explicit[to:objectName()]=="rebelish" then
 		return level
 	else
-		local nonloyals=sgs.ai_assumed["rebel"]--+sgs.ai_assumed["renegade"]
-		local loyals=sgs.ai_assumed["loyalist"]
-		if loyals+nonloyals<=1 then return 0 end
-
-		local ratio
-		if loyals<=0 then ratio=1
-		elseif nonloyals<=0 then ratio =-1 
-
-		else
-			local ratio1=(-loyals+nonloyals-1)/(loyals+nonloyals)
-			local ratio2=(-loyals+nonloyals+1)/(loyals+nonloyals)
-			ratio=1-math.sqrt((1-ratio1)*(1-ratio2))
-		end
-
-		return level*ratio
+		return 0
 	end
 end
 
@@ -80,16 +63,6 @@ function refreshLoyalty(player,intention)
 	end
 	sgs.ai_loyalty[name]=sgs.ai_loyalty[name]+intention
 
-	
-	if sgs.ai_explicit[name]=="loyalish" then
-		sgs.ai_assumed["loyalist"]=sgs.ai_assumed["loyalist"]+1
-	elseif sgs.ai_explicit[name]=="loyalist" then
-		sgs.ai_assumed["loyalist"]=sgs.ai_assumed["loyalist"]+1
-	elseif sgs.ai_explicit[name]=="rebelish" then
-		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]+1
-	elseif sgs.ai_explicit[name]=="rebel" then
-		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]+1
-	end
 
 	if (sgs.ai_renegade_suspect[name] or 0) > 1 then
 		if intention >0 then sgs.ai_explicit[name] = "loyalish" sgs.ai_assumed["loyalist"] = sgs.ai_assumed["loyalist"] - 1
@@ -98,18 +71,13 @@ function refreshLoyalty(player,intention)
 	end
 	
 	if sgs.ai_loyalty[name]<=-160 then
-		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]-1
-		sgs.ai_explicit[name]="rebel"
 		sgs.ai_loyalty[name]=-160
 	elseif sgs.ai_loyalty[name]<=-70 then
-		sgs.ai_assumed["rebel"]=sgs.ai_assumed["rebel"]-1
 		sgs.ai_explicit[name]="rebelish"
 	elseif sgs.ai_loyalty[name]>=160 then
-		sgs.ai_assumed["loyalist"]=sgs.ai_assumed["loyalist"]-1
 		sgs.ai_explicit[name]="loyalist"
 		sgs.ai_loyalty[name]=160
 	elseif sgs.ai_loyalty[name]>=70 then
-		sgs.ai_assumed["loyalist"]=sgs.ai_assumed["loyalist"]-1
 		sgs.ai_explicit[name]="loyalish"
 	end
 	--self:printAll(player, intention)
@@ -289,71 +257,3 @@ sgs.ai_card_intention["GaleShell"]=sgs.ai_card_intention["KuangfengCard"]
 
 sgs.ai_explicit={}
 sgs.ai_loyalty={}
-
---[[function SmartAI:printAll(player, intention)
-	local name = player:objectName()
-	self.room:writeToConsole(player:getGeneralName() .. math.floor(intention*10)/10 .. " Z" .. sgs.ai_assumed["loyalist"] .. " F" .. 
-	sgs.ai_assumed["rebel"]	.. " N" .. sgs.ai_assumed["renegade"] .. " S" .. (self:singleRole() or "nil") .. " L" 
-	.. (math.floor(sgs.ai_loyalty[name]*10)/10 or 0) .. " A" .. (sgs.ai_anti_lord[name] or 0) .. " RS" ..	(sgs.ai_renegade_suspect[name] or 0)
-	.. " E" .. (sgs.ai_explicit[name] or "nil"))
-end
-
-function SmartAI:checkMisjudge(player)
-	local name = player:objectName()
-	if ((sgs.ai_explicit[name] == "loyalist" or sgs.ai_explicit[name] == "loyalish") and player:getRole() == "rebel")
-		or ((sgs.ai_explicit[name] == "rebel" or sgs.ai_explicit[name] == "rebelish") and player:getRole() == "loyalist")
-		or ((sgs.ai_renegade_suspect[name] or 0)> 2 and player:getRole() ~= "renegade")
-		then
-		self.room:writeToConsole("<font color='yellow'>MISJUDGE</font> <font color='white'>" .. player:getGeneralName() .. " " .. 
-			sgs.ai_explicit[name] .. " " .. player:getRole() .. " " .. player:getRoom():alivePlayerCount() .. (sgs.ai_renegade_suspect[name] or 0)
-			.. "</font>")
-	end
-end
-
-function SmartAI:printAssume()
-	self.room:output(sgs.ai_assumed["rebel"])
-	self.room:output(sgs.ai_assumed["loyalist"])
-	self.room:output("----")
-end
-
-function SmartAI:singleRole()
-	local roles=0
-	local theRole
-	local selfexp=sgs.ai_explicit[self.player:objectName()]
-	if selfexp=="loyalish" then selfexp="loyalist"
-	elseif selfexp=="rebelish" then selfexp="rebel"
-	end
-	local selftru=self.role
-	
-	if (self.role~="lord") and (self.role~="renegade") then sgs.ai_assumed[self.role]=sgs.ai_assumed[self.role]-1 end
-	if selfexp then sgs.ai_assumed[selfexp]=(sgs.ai_assumed[selfexp] or 0)+1 end
-		
-	
-	if sgs.ai_assumed["rebel"]>0 then
-		roles=roles+1
-		theRole="rebel"
-	end
-	if sgs.ai_assumed["loyalist"]>-1 then
-		roles=roles+1
-		theRole="loyalist"
-	end
-	
-	if (self.role~="lord") and (self.role~="renegade") then sgs.ai_assumed[self.role]=sgs.ai_assumed[self.role]+1 end
-	if selfexp then sgs.ai_assumed[selfexp]=sgs.ai_assumed[selfexp]-1 end
-	
-	
-	if roles==1 then
-		if sgs.ai_assumed["loyalist"]==sgs.ai_assumed["rebel"] then return nil end
-		return theRole
-	end
-	return nil
-end
-
-function SmartAI:printCards(cards)
-	local string=""
-	for _,card in ipairs(cards) do
-		string=string.." "..card:className()
-	end
-	self.room:output(string)
-end
-]]
