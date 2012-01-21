@@ -154,11 +154,10 @@ function SmartAI:initialize(player)
 
 	self.keepValue = {}
 	self.kept = {}
-	self.skills, self.view_as_skills, self.filter_skills = self:getSkillLists()
+	self.skills, self.view_as_skills, self.filter_skills = self:getSkillLists(self.player)
 end
 
-function SmartAI:getSkillLists(player)
-	player = player or self.player
+function sgs.getSkillLists(player)
 	local slist = player:getVisibleSkillList()
 	local snlist = {}
 	local vsnlist = {}
@@ -947,7 +946,14 @@ function SmartAI:slashIsAvailable(player)
 	end
 end
 
+sgs.ai_filterskill_filter = {}
 local function prohibitUseDirectly(card, player)
+	local _, __, flist = sgs.getSkillLists(player)
+	for _, askill in ipairs(flist) do
+		local callback = sgs.ai_filterskill_filter[askill]
+		if callback and type(callback) == "function" and callback(card) then return true
+	end
+	return false
 	if player:hasSkill("jiejiu") then return card:inherits("Analeptic")
 	elseif player:hasSkill("wushen") then return card:getSuit() == sgs.Card_Heart
 	elseif player:hasSkill("ganran") then return card:getTypeId() == sgs.Card_Equip
@@ -963,6 +969,14 @@ local function zeroCardView(class_name, player)
 end
 
 local function isCompulsoryView(card, class_name, player, card_place)
+	local _, __, flist = sgs.getSkillLists(player)
+	for _, askill in ipairs(flist) do
+		local callback = sgs.ai_filterskill_filter[askill]
+		if callback and type(callback) == "function" and callback(card, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
+			return callback(card, card_place)
+		end
+	end
+	
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
@@ -972,7 +986,16 @@ local function isCompulsoryView(card, class_name, player, card_place)
 	end
 end
 
+sgs.ai_view_as = {}
 local function getSkillViewCard(card, class_name, player, card_place)
+	local _, vlist = sgs.getSkillLists(player)
+	for _, askill in ipairs(vlist) do
+		local callback = sgs.ai_view_as[askill]
+		if callback and type(callback) == "function" and callback(card, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
+			return callback(card, card_place)
+		end
+	end
+	
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
