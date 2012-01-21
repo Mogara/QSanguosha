@@ -521,8 +521,12 @@ sgs.ai_choicemade_filter = {
 dofile "lua/ai/intention-ai.lua"
 
 function SmartAI:filterEvent(event, player, data)
+	if not sgs.recorder then
+		sgs.recorder = self
+	end
 	sgs.lastevent = event
-	if event == sgs.ChoiceMade then
+	sgs.lasteventdata = eventdata
+	if event == sgs.ChoiceMade and self == sgs.recorder then
 		local carduse = data:toCardUse()
 		if carduse and carduse:isValid() then
 			for _, aflag in ipairs(sgs.ai_global_flags) do
@@ -571,10 +575,6 @@ function SmartAI:filterEvent(event, player, data)
 		if self.player:isLord() and player:isLord() and (player:getPhase() == sgs.Player_Play or event == sgs.GameStart) then
 			--self:printFEList()
 		end
-	end
-
-	if not sgs.recorder then
-		sgs.recorder = self
 	end
 
 	if self ~= sgs.recorder then return end

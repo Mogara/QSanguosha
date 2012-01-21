@@ -135,8 +135,8 @@ sgs.ai_card_intention.SupplyShortage = 120
 
 sgs.ai_card_intention["Slash"]=function(card,from,tos,source)
 	for _, to in ipairs(tos) do
-		if sgs.ai_liuliEffect then
-			sgs.ai_liuliEffect=false
+		if sgs.ai_liuli_effect then
+			sgs.ai_liuli_effect=false
 			return 0
 		end
 		local modifier=0
@@ -203,73 +203,43 @@ sgs.ai_card_intention["QixiCard"]=sgs.ai_card_intention["Dismantlement"]
 
 sgs.ai_card_intention["JixiCard"]=sgs.ai_card_intention["Snatch"]
 
-sgs.ai_card_intention["TuxiCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,80)
-end
+sgs.ai_card_intention["TuxiCard"]=80
 
-sgs.ai_card_intention["LeijiCard"]=function(card,from,to,source)
-	speakTrigger(card,from,to)
-	return sgs.ai_card_intention.general(to,80)
-end
+sgs.ai_card_intention["LeijiCard"]=80
 
-sgs.ai_card_intention["RendeCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-70)
-end
+sgs.ai_card_intention["RendeCard"]=-70
 
-sgs.ai_card_intention["QingnangCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-100)
-end
+sgs.ai_card_intention["QingnangCard"]=-100
 
-sgs.ai_card_intention["ShensuCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,80)
-end
+sgs.ai_card_intention["ShensuCard"]=80
 
-sgs.ai_card_intention["QiangxiCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,80)
-end
+sgs.ai_card_intention["QiangxiCard"]=80
 
-sgs.ai_card_intention["JieyinCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["JieyinCard"]=-80
 
 sgs.ai_card_intention["HuangtianCard"]=function(card,from,to,source)
 	sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1
-	return sgs.ai_card_intention.general(to,-80)
+	updateIntention(from, to, -80)
 end
 
-sgs.ai_card_intention["JiemingCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["JiemingCard"]=-80
 
-sgs.ai_card_intention["HaoshiCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-80)
-end
+sgs.ai_card_intention["HaoshiCard"]=-80
 
-sgs.ai_card_intention["FanjianCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
-end
+sgs.ai_card_intention["FanjianCard"]=70
 
-sgs.ai_card_intention["TianyiCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,30)
-end
+sgs.ai_card_intention["TianyiCard"]=30
 
 sgs.ai_card_intention["QuhuCard"] = sgs.ai_card_intention["TianyiCard"]
 
-sgs.ai_card_intention["JujianCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-70)
-end
+sgs.ai_card_intention["JujianCard"]=-70
 
-sgs.ai_card_intention["MingceCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,-70)
-end
+sgs.ai_card_intention["MingceCard"]=-70
 
-sgs.ai_card_intention["XianzhenCard"]=function(card,from,to,source)
-	return sgs.ai_card_intention.general(to,70)
-end
+sgs.ai_card_intention["XianzhenCard"]=70
 
 sgs.ai_card_intention["LiuliCard"]=function(card,from,to,source)
-	sgs.ai_liuliEffect=true
-	return sgs.ai_card_intention.general(to,70)
+	sgs.ai_liuli_effect=true
 end
 
 sgs.ai_card_intention["JujianCard"]=function(card,from,to,source)
