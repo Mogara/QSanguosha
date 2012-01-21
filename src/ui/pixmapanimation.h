@@ -21,18 +21,17 @@ public:
     void start(bool permanent = true,int interval = 50);
 
     static PixmapAnimation* GetPixmapAnimation(QGraphicsObject *parent,const QString & emotion);
-    static void LoadEmotion(const QString & emotion);
+    static QPixmap GetFrameFromCache(const QString &filename);
+    static int GetFrameCount(const QString &emotion);
+
 signals:
     void finished();
+    void frame_loaded();
 
 private:
     QString path;
-    QList<QPixmap*> frames;
+    QList<QPixmap> frames;
     int current,off_x,off_y;
 };
-
-
-static QMap<QString, QPixmap*> Loaded_animation_pixmaps;
-
 
 #endif // PIXMAPANIMATION_H

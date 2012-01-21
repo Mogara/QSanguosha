@@ -279,30 +279,39 @@ BackLoader::BackLoader(QObject * parent)
 
 void BackLoader::run()
 {
-    PixmapAnimation::LoadEmotion("peach");
-    emit completed(8);
-    PixmapAnimation::LoadEmotion("analeptic");
-    emit completed(16);
-    PixmapAnimation::LoadEmotion("chain");
-    emit completed(25);
-    PixmapAnimation::LoadEmotion("damage");
-    emit completed(33);
-    PixmapAnimation::LoadEmotion("fire_slash");
-    emit completed(41);
-    PixmapAnimation::LoadEmotion("thunder_slash");
-    emit completed(49);
-    PixmapAnimation::LoadEmotion("killer");
-    emit completed(58);
-    PixmapAnimation::LoadEmotion("jink");
-    emit completed(66);
-    PixmapAnimation::LoadEmotion("no-success");
-    emit completed(74);
-    PixmapAnimation::LoadEmotion("slash_black");
-    emit completed(82);
-    PixmapAnimation::LoadEmotion("slash_red");
-    emit completed(91);
-    PixmapAnimation::LoadEmotion("success");
-    emit completed(100);
+    QStringList emotions;
+    emotions << "peach"
+            << "analeptic"
+            << "chain"
+            << "damage"
+            << "fire_slash"
+            << "thunder_slash"
+            << "killer"
+            << "jink"
+            << "no-success"
+            << "slash_black"
+            << "slash_red"
+            << "success";
+
+    double total = 0;
+    foreach(QString emotion, emotions){
+        int n = PixmapAnimation::GetFrameCount(emotion);
+        total += n;
+    }
+
+    int loaded = 0;
+    foreach(QString emotion, emotions){
+        int n = PixmapAnimation::GetFrameCount(emotion);
+        for(int i=0; i<n; i++){
+            QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(i);
+            PixmapAnimation::GetFrameFromCache(filename);
+
+            loaded ++;
+
+            double process = (loaded / total) * 100;
+            emit completed(static_cast<int>(process));
+        }
+    }
 
     emit finished();
 }
@@ -1006,7 +1015,7 @@ void MeleeDialog::updateResultBox(QString role, int win){
     QLineEdit *total_edit = result_box->findChild<QLineEdit *>("total_edit");
     total_edit->setText(QString("%1 / %2 = %3%%").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount));
 
-    server_log->append(tr("End of game %1").arg(QString::number(totalCount)));
+    server_log->append(tr("End of game %1").arg(totalCount));
 }
 
 void MainWindow::on_actionView_ban_list_triggered()
