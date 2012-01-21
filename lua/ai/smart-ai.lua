@@ -2526,96 +2526,40 @@ function SmartAI:sortByCardNeed(cards)
 	table.sort(cards, compare_func)
 end
 
+sgs.ai_skill_discard = {}
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
-	if reason == "ganglie" then
-		if self.player:getHp() > self.player:getHandcardNum() then return {} end
-
-		if self.player:getHandcardNum() == 3 then
-			local to_discard = {}
-			local cards = self.player:getHandcards()
-			local index = 0
-			local all_peaches = 0
-			for _, card in sgs.qlist(cards) do
-				if card:inherits("Peach") then
-					all_peaches = all_peaches + 1
-				end
-			end
-			if all_peaches >= 2 then return {} end
-
-			for _, card in sgs.qlist(cards) do
-				if not card:inherits("Peach") then
-					table.insert(to_discard, card:getEffectiveId())
-					index = index + 1
-					if index == 2 then break end
-				end
-			end
-			return to_discard
-		end
-
-		if self.player:getHandcardNum() < 2 then return {} end
-	elseif optional then
-		return {}
+	local callback = sgs.ai_skill_discard[reason]
+	if callback and type(callback) == "function" then
+		return callback(self, discard_num, optional, include_equip)
 	end
+	if optional then return {} end
 
-	local cards = self.player:getCards("h")
-	if not cards then return {} end
+	local flag = "h"
+	if include_equip and (self.player:getEquips():isEmpty() or not self.player:isJilei(self.player:getEquips():first())) then flag = flag .. "e" end
+	local cards = self.player:getCards(flag)
 	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
-
-	local to_discard = {}
-
-	local weapon = self.player:getWeapon()
-	local armor = self.player:getArmor()
-	local offensive_horse = self.player:getOffensiveHorse()
-	local defensive_horse = self.player:getDefensiveHorse()
-
-	if reason == "gongmou" then
-		for _, card in ipairs(cards) do
-			if #to_discard >= discard_num then break end
-			if card:inherits("Shit") then table.insert(to_discard, card:getId()) end
-		end
+	local aux_func = function(card)
+		local key = {2,4,3,1}
+		local place = self.room:getCardPlace(card:getEffectiveId())
+		if place == sgs.Player_Equip then
+			if card:inherits("GaleShell") then return -2
+			elseif card:inherits("SilverLion") and self.player:isWounded() then return -2
+			elseif card:inherits("YitianSword") then return -1
+			else return key[card:getLocation()+1] end
+		elseif self:hasSkills(sgs.lose_equip_skills) then return 5
+		else return 0 end
+	end
+	local compare_func = function(a, b)
+		if aux_func(a) ~= aux_func(b) then return aux_func(a) < aux_func(b) end
+		return self:getKeepValue(a) < self:getKeepValue(b)
 	end
 
-	if include_equip and weapon and weapon:inherits("YitianSword") then
-		table.insert(to_discard, weapon:getId())
-		weapon = nil
-	end
-
-	if include_equip and armor and armor:inherits("SilverLion") and self.player:isWounded() then
-		table.insert(to_discard, armor:getId())
-		armor = nil
-	end
-
-	if include_equip and self:hasSkills(sgs.lose_equip_skill) and
-		not (not self.player:getCards("e"):isEmpty() and self.player:isJilei(self.player:getCards("e"):first())) then
-		if #to_discard < discard_num and armor then
-			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
-			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
-		end
-		if #to_discard < discard_num and offensive_horse then table.insert(to_discard, offensive_horse:getId()) offensive_horse = nil end
-		if #to_discard < discard_num and weapon then table.insert(to_discard, weapon:getId()) weapon = nil end
-		if #to_discard < discard_num and defensive_horse then table.insert(to_discard, defensive_horse:getId()) defensive_horse = nil end
-		if #to_discard < discard_num and armor then table.insert(to_discard, armor:getId()) armor = nil end
-	end
-
+	table.sort(cards, compare_func)
 	for _, card in ipairs(cards) do
 		if #to_discard >= discard_num then break end
-		if (not self.player:isJilei(card)) or (reason == "gongmou" and not card:inherits("Shit")) then
-			table.insert(to_discard, card:getEffectiveId())
-		end
+		table.insert(to_discard, card:getId())
 	end
-
-	if include_equip and
-		not (not self.player:getCards("e"):isEmpty() and self.player:isJilei(self.player:getCards("e"):first())) then
-		if #to_discard < discard_num and armor then
-			if armor:inherits("GaleShell") then table.insert(to_discard, armor:getId()) armor = nil
-			elseif armor:inherits("SilverLion") and self.player:isWounded() then table.insert(to_discard, armor:getId()) armor = nil end
-		end
-		if #to_discard < discard_num and offensive_horse then table.insert(to_discard, offensive_horse:getId()) end
-		if #to_discard < discard_num and weapon then table.insert(to_discard, weapon:getId()) end
-		if #to_discard < discard_num and defensive_horse then table.insert(to_discard, defensive_horse:getId()) end
-		if #to_discard < discard_num and armor then table.insert(to_discard, armor:getId()) end
-	end
+	
 	return to_discard
 end
 

@@ -252,3 +252,31 @@ sgs.ai_view_as["jijiu"] = function(card, player, card_place)
 		return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
+
+sgs.ai_skill_discard["ganglie"] = function(self, discard_num, optional, include_equip)
+	if self.player:getHp() > self.player:getHandcardNum() then return {} end
+
+	if self.player:getHandcardNum() == 3 then
+		local to_discard = {}
+		local cards = self.player:getHandcards()
+		local index = 0
+		local all_peaches = 0
+		for _, card in sgs.qlist(cards) do
+			if card:inherits("Peach") then
+				all_peaches = all_peaches + 1
+			end
+		end
+		if all_peaches >= 2 then return {} end
+
+		for _, card in sgs.qlist(cards) do
+			if not card:inherits("Peach") then
+				table.insert(to_discard, card:getEffectiveId())
+				index = index + 1
+				if index == 2 then break end
+			end
+		end
+		return to_discard
+	end
+
+	if self.player:getHandcardNum() < 2 then return {} end
+end

@@ -479,3 +479,20 @@ sgs.ai_skill_use_func["LexueCard"] = function(card, use, self)
 		if use.to then use.to:append(target) end
 	end
 end
+
+sgs.ai_skill_discard["gongmou"] = function(self, discard_num, optional, include_equip)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local to_discard = {}
+	local compare_func = function(a, b)
+		if a:inherits("Shit") ~= b:inherits("Shit") then return a:inherits("Shit") end
+		return self:getKeepValue(a) < self:getKeepValue(b)
+	end
+	table.sort(cards, compare_func)
+	for _, card in ipairs(cards) do
+		if #to_discard >= discard_num then break end
+		table.insert(to_discard, card:getId())
+	end
+	
+	return to_discard
+end
+	
