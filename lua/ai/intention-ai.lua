@@ -7,7 +7,7 @@ sgs.ai_lord_tolerance={}
 sgs.ai_card_intention["general"]=function(to,level)
 	if not to then return 0 end
 	local has_rebel = false
-	if not to.getRoom then global_room:writeToConsole(debug.traceback()) end
+	-- if not to.getRoom then global_room:writeToConsole(debug.traceback()) end
 	for _, aplayer in sgs.qlist(to:getRoom():getAlivePlayers()) do
 		if aplayer:getRole() == "rebel" then has_rebel = true break end
 	end
@@ -88,11 +88,11 @@ end
 
 function sgs.updateIntention(from, to, intention, card)
 	intention = sgs.ai_card_intention.general(to, intention)
-	if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
+	--[[if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
 		local str = from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName()
 		if card then str = str .. "#" .. card:className() end
 		from:getRoom():writeToConsole(str)
-	end
+	end]]
     sgs.refreshLoyalty(from, intention)
 	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
 end
