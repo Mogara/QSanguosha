@@ -644,6 +644,7 @@ function SmartAI:filterEvent(event, player, data)
 			sgs.refreshLoyalty(caiwenji, intention)
 		end
 	elseif event == sgs.TurnStart and player:isLord() then
+		sgs.turncount = (sgs.turncount or 0) + 1
 		self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
 	end
 end
