@@ -997,12 +997,13 @@ void MainWindow::on_actionSend_lowlevel_command_triggered()
     if(!command.isEmpty())
         ClientInstance->request(command);
 }
+
 void MeleeDialog::updateResultBox(QString role, int win){    
     QLineEdit *edit = result_box->findChild<QLineEdit *>(role + "_edit");
-    double roleCount = (this->roleCount[role] += win);
+    double roleCount = ++(this->roleCount[role]);
     double winCount = (this->winCount[role] += win);
-    double rate = roleCount / winCount;
-    edit->setText(QString("%1 / %2 = %3%%").arg(winCount).arg(roleCount).arg(rate));
+    double rate = winCount / roleCount * 100;
+    edit->setText(QString("%1 / %2 = %3 %").arg(winCount).arg(roleCount).arg(rate));
 
     double totalCount = 0, totalWinCount = 0;
 
@@ -1013,7 +1014,7 @@ void MeleeDialog::updateResultBox(QString role, int win){
         totalWinCount += count;
 
     QLineEdit *total_edit = result_box->findChild<QLineEdit *>("total_edit");
-    total_edit->setText(QString("%1 / %2 = %3%%").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount));
+    total_edit->setText(QString("%1 / %2 = %3 %").arg(totalWinCount).arg(totalCount).arg(totalWinCount/totalCount*100));
 
     server_log->append(tr("End of game %1").arg(totalCount));
 }
