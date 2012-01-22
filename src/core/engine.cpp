@@ -395,7 +395,7 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return tr("Chibi");
+    return tr("Chuxi");
 }
 
 QString Engine::getMODName() const{
