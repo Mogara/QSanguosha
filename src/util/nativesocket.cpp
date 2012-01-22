@@ -67,7 +67,18 @@ void NativeClientSocket::init(){
 }
 
 void NativeClientSocket::connectToHost(){
-    socket->connectToHost(Config.HostAddress, Config.ServerPort);
+    QString address = "127.0.0.1";
+    ushort port = Config.value("ServerPort","9527").toString().toUShort();
+
+    if(Config.HostAddress.contains(QChar(':'))){
+        QStringList texts = Config.HostAddress.split(QChar(':'));
+        address = texts.value(0);
+        port = texts.value(1).toUShort();
+    }else{
+        address = Config.HostAddress;
+    }
+
+    socket->connectToHost(address, port);
 }
 
 void NativeClientSocket::getMessage(){
