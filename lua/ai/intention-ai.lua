@@ -73,13 +73,14 @@ function sgs.refreshLoyalty(player,intention)
 	
 	if sgs.ai_loyalty[name]<=-160 then
 		sgs.ai_loyalty[name]=-160
+		sgs.ai_explicit[name] = "rebel"
 	elseif sgs.ai_loyalty[name]<=-70 then
-		sgs.ai_explicit[name]="rebelish"
+		sgs.ai_explicit[name] = "rebelish"
 	elseif sgs.ai_loyalty[name]>=160 then
-		sgs.ai_explicit[name]="loyalist"
+		sgs.ai_explicit[name] = "loyalist"
 		sgs.ai_loyalty[name]=160
 	elseif sgs.ai_loyalty[name]>=70 then
-		sgs.ai_explicit[name]="loyalish"
+		sgs.ai_explicit[name] = "loyalish"
 	end
 	--self:printAll(player, intention)
 	--self:checkMisjudge(player)
@@ -192,9 +193,11 @@ sgs.ai_card_intention["QiangxiCard"]=80
 
 sgs.ai_card_intention["JieyinCard"]=-80
 
-sgs.ai_card_intention["HuangtianCard"]=function(card,from,to,source)
-	sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1
-	sgs.updateIntention(from, to, -80)
+sgs.ai_card_intention["HuangtianCard"]=function(card,from,tos,source)
+	for _, to in ipairs(tos) do
+		sgs.updateIntention(from, to, -80)
+		if to:isLord() then sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1 end
+	end
 end
 
 sgs.ai_card_intention["JiemingCard"]=-80

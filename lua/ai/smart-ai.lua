@@ -502,6 +502,7 @@ function SmartAI:hasWizard(players,onlyharm)
 end
 
 function SmartAI:sort(players, key)
+	if not players then self.room:writeToConsole(debug.traceback()) end
 	local func =  sgs.ai_compare_funcs[key or "chaofeng"]
 	table.sort(players, func)
 end
