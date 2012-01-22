@@ -962,72 +962,71 @@
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="99"/>
+        <location filename="src/dialog/connectiondialog.ui" line="76"/>
         <source>Change avatar</source>
         <translation>修改头像</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="64"/>
+        <location filename="src/dialog/connectiondialog.ui" line="41"/>
         <source>Avatar:</source>
         <translation>头像:</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="154"/>
+        <location filename="src/dialog/connectiondialog.ui" line="131"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="141"/>
+        <location filename="src/dialog/connectiondialog.ui" line="118"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="125"/>
+        <location filename="src/dialog/connectiondialog.ui" line="102"/>
         <source>Clear history</source>
         <translation>清除历史记录</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="41"/>
         <source>Port</source>
-        <translation>端口</translation>
+        <translation type="obsolete">端口</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="112"/>
+        <location filename="src/dialog/connectiondialog.ui" line="89"/>
         <source>Detect LAN ...</source>
         <translation>探测局域网 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="168"/>
+        <location filename="src/dialog/connectiondialog.ui" line="145"/>
         <source>Password:</source>
         <translation>密码:</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="178"/>
+        <location filename="src/dialog/connectiondialog.ui" line="155"/>
         <source>Only used in contest</source>
         <translation>仅在比赛中使用</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="230"/>
+        <location filename="src/dialog/connectiondialog.ui" line="207"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="243"/>
+        <location filename="src/dialog/connectiondialog.ui" line="220"/>
         <source>Reconnection</source>
         <translation>断线重连</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.ui" line="217"/>
+        <location filename="src/dialog/connectiondialog.ui" line="194"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.cpp" line="63"/>
+        <location filename="src/dialog/connectiondialog.cpp" line="60"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.cpp" line="63"/>
+        <location filename="src/dialog/connectiondialog.cpp" line="60"/>
         <source>The user name can not be empty!</source>
         <translation>用户名不能为空!</translation>
     </message>
@@ -1562,8 +1561,9 @@
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="398"/>
-        <source>Chibi</source>
-        <translation>赤壁</translation>
+        <source>Chuxi</source>
+        <oldsource>Chibi</oldsource>
+        <translation>除夕</translation>
     </message>
     <message>
         <location filename="src/core/engine.cpp" line="480"/>
@@ -2025,13 +2025,13 @@
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="364"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1041"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1042"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.ui" line="369"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1064"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1065"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2151,24 +2151,24 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="476"/>
         <location filename="src/dialog/mainwindow.cpp" line="594"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1045"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1068"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1046"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1069"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1031"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1032"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1035"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1059"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1036"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1060"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1055"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1056"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2219,8 +2219,8 @@
         <translation>论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1038"/>
-        <location filename="src/dialog/mainwindow.cpp" line="1061"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1039"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1062"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
@@ -2334,7 +2334,7 @@
         <translation>总计</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1018"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1019"/>
         <source>End of game %1</source>
         <translation>第 %1 局结束</translation>
     </message>
@@ -2429,32 +2429,32 @@
 <context>
     <name>NativeClientSocket</name>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="113"/>
+        <location filename="src/util/nativesocket.cpp" line="124"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="115"/>
+        <location filename="src/util/nativesocket.cpp" line="126"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="117"/>
+        <location filename="src/util/nativesocket.cpp" line="128"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="119"/>
+        <location filename="src/util/nativesocket.cpp" line="130"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="122"/>
+        <location filename="src/util/nativesocket.cpp" line="133"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="src/util/nativesocket.cpp" line="125"/>
+        <location filename="src/util/nativesocket.cpp" line="136"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -3834,12 +3834,12 @@
 <context>
     <name>UdpDetectorDialog</name>
     <message>
-        <location filename="src/dialog/connectiondialog.cpp" line="139"/>
+        <location filename="src/dialog/connectiondialog.cpp" line="129"/>
         <source>Detect available server&apos;s addresses at LAN</source>
         <translation>在局域网内探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="src/dialog/connectiondialog.cpp" line="140"/>
+        <location filename="src/dialog/connectiondialog.cpp" line="130"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>

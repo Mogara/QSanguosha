@@ -66,5 +66,17 @@ int main(int argc, char *argv[])
     Sanguosha->setParent(main_window);
     main_window->show();
 
+    foreach(QString arg, qApp->arguments()){
+        if(arg.startsWith("-connect:")){
+            arg.remove("-connect:");
+            Config.HostAddress = arg;
+            Config.setValue("HostAddress", arg);
+
+            main_window->startConnection();
+
+            break;
+        }
+    }
+
     return qApp->exec();
 }
