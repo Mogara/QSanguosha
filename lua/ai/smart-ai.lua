@@ -154,21 +154,18 @@ function SmartAI:initialize(player)
 
 	self.keepValue = {}
 	self.kept = {}
-	self.skills, self.view_as_skills, self.filter_skills = sgs.getSkillLists(self.player)
 	global_room = self.room
 end
 
 function sgs.getSkillLists(player)
 	local slist = player:getVisibleSkillList()
-	local snlist = {}
 	local vsnlist = {}
 	local fsnlist = {}
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
-		table.insert(snlist, askill:objectName())
 		if askill:inherits("ViewAsSkill") then table.insert(vsnlist, askill:objectName()) end
 		if askill:inherits("FilterSkill") then table.insert(fsnlist, askill:objectName()) end
 	end
-	return snlist, vsnlist, fsnlist
+	return vsnlist, fsnlist
 end
 
 function SmartAI:printStand()
@@ -516,8 +513,6 @@ sgs.ai_choicemade_filter = {
 	skillChoice = {}
 }
 
-dofile "lua/ai/intention-ai.lua"
-
 function SmartAI:filterEvent(event, player, data)
 	if not sgs.recorder then
 		sgs.recorder = self
@@ -648,6 +643,8 @@ function SmartAI:filterEvent(event, player, data)
 			if player:objectName() == caiwenji:objectName() then intention = 0 end
 			sgs.refreshLoyalty(caiwenji, intention)
 		end
+	elseif event == sgs.TurnStart and player:isLord() then
+		self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
 	end
 end
 
@@ -949,7 +946,7 @@ end
 
 sgs.ai_filterskill_filter = {}
 local function prohibitUseDirectly(card, player)
-	local _, __, flist = sgs.getSkillLists(player)
+	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
 		if callback and type(callback) == "function" and callback(card) then return true end
@@ -966,7 +963,7 @@ local function zeroCardView(class_name, player)
 end
 
 local function isCompulsoryView(card, class_name, player, card_place)
-	local _, __, flist = sgs.getSkillLists(player)
+	local _, flist = sgs.getSkillLists(player)
 	for _, askill in ipairs(flist) do
 		local callback = sgs.ai_filterskill_filter[askill]
 		if callback and type(callback) == "function" and callback(card, card_place) and sgs.Card_Parse(callback(card)):inherits(class_name) then
@@ -977,7 +974,7 @@ end
 
 sgs.ai_view_as = {}
 local function getSkillViewCard(card, class_name, player, card_place)
-	local _, vlist = sgs.getSkillLists(player)
+	local vlist = sgs.getSkillLists(player)
 	for _, askill in ipairs(vlist) do
 		local callback = sgs.ai_view_as[askill]
 		if callback and type(callback) == "function" and callback(card, player, card_place)
@@ -3655,6 +3652,7 @@ function SmartAI:log(outString)
 end
 
 -- load other ai scripts
+dofile "lua/ai/intention-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard-skill-ai.lua"
 dofile "lua/ai/wind-ai.lua"

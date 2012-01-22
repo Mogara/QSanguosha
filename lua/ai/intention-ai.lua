@@ -223,9 +223,11 @@ sgs.ai_card_intention["TiaoxinCard"]=80
 
 sgs.ai_card_intention["ZhijianCard"]=-80
 
-sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
+sgs.ai_card_intention["QiaobianCard"] = function(card, from, tos, source)
 	if from:getPhase() == sgs.Player_Draw then
-		sgs.updateIntention(from, to, sgs.ai_card_intention["TuxiCard"])
+		for _, to in ipairs(tos) do
+			sgs.updateIntention(from, to, sgs.ai_card_intention["TuxiCard"])
+		end
 	end
 	return 0
 end
