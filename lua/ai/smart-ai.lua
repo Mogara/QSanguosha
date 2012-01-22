@@ -205,15 +205,14 @@ function SmartAI:updatePlayers(inclusive)
 	end
 
 	-- if self.player:isLord() then self:printFEList() end
-        if sgs.isRolePredictable() then
+	if sgs.isRolePredictable() then
 		if (self.role == "lord") or (self.role == "loyalist") then sgs.refreshLoyalty(self.player,300)
 		elseif (self.role == "rebel") then sgs.refreshLoyalty(self.player,-300)
 		end
 
 		self.retain = 2
 		self.harsh_retain = false
-
-		if useDefaultStrategy() then return end
+		return
 	end
 
 	inclusive = inclusive or true
