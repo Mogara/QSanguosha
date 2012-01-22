@@ -117,6 +117,9 @@ private:
 
     void restoreFromConfig();
 
+public slots:
+    void startConnection();
+
 private slots:
     void on_actionAbout_Lua_triggered();
     void on_actionAbout_fmod_triggered();
@@ -143,7 +146,6 @@ private slots:
     void on_actionExit_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
-    void startConnection();
     void networkError(const QString &error_msg);
     void enterRoom();
     void gotoScene(QGraphicsScene *scene);
