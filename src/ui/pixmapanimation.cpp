@@ -23,11 +23,12 @@ void PixmapAnimation::setPath(const QString &path)
 {
     frames.clear();
 
-    QDir dir(path);
-
-    foreach(QFileInfo info, dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)){
-        frames << GetFrameFromCache(info.filePath());
-    }
+    int i = 0;
+    QString pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+    do{
+        frames << GetFrameFromCache(pic_path);
+        pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+    }while(!GetFrameFromCache(pic_path).isNull());
 
     current = 0;
 }
