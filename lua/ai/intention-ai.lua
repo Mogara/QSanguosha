@@ -88,7 +88,9 @@ end
 function sgs.updateIntention(from, to, intention, card)
 	intention = sgs.ai_card_intention.general(to, intention)
 	if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
-		from:getRoom():writeToConsole(from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName() .. "#" .. card:className())
+		local str = from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName()
+		if card then str = str .. "#" .. card:className() end
+		from:getRoom():writeToConsole(str)
 	end
     sgs.refreshLoyalty(from, intention)
 	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
@@ -223,7 +225,7 @@ sgs.ai_card_intention["ZhijianCard"]=-80
 
 sgs.ai_card_intention["QiaobianCard"] = function(card, from, to, source)
 	if from:getPhase() == sgs.Player_Draw then
-		updateIntention(from, to, sgs.ai_card_intention["TuxiCard"])
+		sgs.updateIntention(from, to, sgs.ai_card_intention["TuxiCard"])
 	end
 	return 0
 end
