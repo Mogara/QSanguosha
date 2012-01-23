@@ -184,6 +184,8 @@ sgs.ai_card_intention["Dismantlement"]=function(card,from,tos,source)
 	end
 end
 
+sgs.ai_card_intention.Exnihilo = -80
+
 sgs.ai_card_intention["Snatch"]=sgs.ai_card_intention["Dismantlement"]
 
 sgs.ai_card_intention["QixiCard"]=sgs.ai_card_intention["Dismantlement"]

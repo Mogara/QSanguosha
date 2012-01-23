@@ -512,8 +512,30 @@ sgs.ai_choicemade_filter = {
 	cardUsed = {},
 	cardResponsed = {},
 	skillInvoke = {},
-	skillChoice = {}
+	skillChoice = {},
+	Nullification = {}
 }
+
+sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
+	if player:objectName() == promptlist[3] then return end
+	local positive = true
+	if promptlist[4] == "false" then positive = false end
+	local className, to = promptlist[2]
+	for _, aplayer in sgs.qlist(player:getRoom():getOtherPlayers(player)) do
+		if aplayer:objectName() == promptlist[3] then to = aplayer break end
+	end
+	local intention = 0
+	if type(sgs.ai_card_intention[className]) == "number" then intention = sgs.ai_card_intention[className]
+	elseif sgs.dynamic_value.damage_card[className] then intention = 70
+	elseif sgs.dynamic_value.benefit[className] then intention = -40
+	elseif (className == "Snatch" or className == "Dismantlement") and
+		(to:getCards("j"):isEmpty() and
+		not (to:getArmor() and (to:getArmor():inherits("GaleShell") or to:getArmor():inherits("SilverLion"))) then
+		intention = 80
+	end
+	if positive then intention = -intention end
+	sgs.updateIntention(player, to, intention)
+end
 
 function SmartAI:filterEvent(event, player, data)
 	if not sgs.recorder then
@@ -538,7 +560,7 @@ function SmartAI:filterEvent(event, player, data)
 			if callbacktable and type(callbacktable) == "table" then
 				local index = 2
 				if promptlist[1] == "cardResponsed" then index = 3 end
-				local callback = callbacktable[promptlist[index]]
+				local callback = callbacktable[promptlist[index]] or callbacktable.general
 				if callback and type(callback) == "function" then
 					callback(player, promptlist)
 				end
