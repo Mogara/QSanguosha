@@ -319,7 +319,7 @@ local function getGameProcessValues(self, players)
 			if aplayer:getWeapon() and aplayer:getWeapon():className() ~= "Weapon" then
 				loyal_value = loyal_value + math.min(1.5, sgs.weapon_range[aplayer:getWeapon():className()]/2) * 0.4/modifier
 			end
-                elseif (not aplayer:isLord() and not sgs.isRolePredictable()) then
+		elseif (not aplayer:isLord() and not sgs.isRolePredictable()) then
 			ambig_num = ambig_num + 1
 		end
 	end
@@ -352,7 +352,7 @@ function SmartAI:objectiveLevel(player)
 		if sgs.ai_explicit[aplayer:objectName()] == "rebel" then has_rebel = true end
 	end
 
-    if sgs.isRolePredictable() then
+	if sgs.isRolePredictable() then
 		if self.role == "renegade" then
 			local _, loyal_value, rebel_value = getGameProcessValues(self, players)
 			if (math.abs(loyal_value-rebel_value) < sgs.ai_renegade_threshold and loyal_value > 8) or (self:isWeak() and #self.enemies > 1) then return 0 end
@@ -475,7 +475,7 @@ function SmartAI:sortEnemies(players)
 		local blevel = self:objectiveLevel(b)
 
 		if alevel~= blevel then return alevel > blevel end
-                if alevel == 3 then return sgs.getDefense(a) >sgs.getDefense(b) end
+		if alevel == 3 then return sgs.getDefense(a) >sgs.getDefense(b) end
 
 		alevel = sgs.ai_chaofeng[a:getGeneralName()] or 0
 		blevel = sgs.ai_chaofeng[b:getGeneralName()] or 0
@@ -483,8 +483,8 @@ function SmartAI:sortEnemies(players)
 			return alevel > blevel
 		end
 
-                alevel = sgs.getDefense(a)
-                blevel = sgs.getDefense(b)
+		alevel = sgs.getDefense(a)
+		blevel = sgs.getDefense(b)
 		if alevel~= blevel then
 			return alevel < blevel
 		end
@@ -689,7 +689,7 @@ end
 
 function SmartAI:isFriend(other, another)
 	if another then return self:isFriend(other)==self:isFriend(another) end
-        if sgs.isRolePredictable() then return self.lua_ai:isFriend(other) end
+	if sgs.isRolePredictable() then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
 	if self:objectiveLevel(other) < 0 then return true end
 	return false
@@ -697,7 +697,7 @@ end
 
 function SmartAI:isEnemy(other, another)
 	if another then return self:isFriend(other)~=self:isFriend(another) end
-        if sgs.isRolePredictable() then return self.lua_ai:isEnemy(other) end
+	if sgs.isRolePredictable() then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
 	if self:objectiveLevel(other) >= 0 then return true end
 	return false
@@ -1154,7 +1154,7 @@ end
 
 local function hasExplicitRebel(room)
 	for _, player in sgs.qlist(room:getAllPlayers()) do
-        if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
+		if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
 		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
 	end
 	return false
@@ -1535,7 +1535,7 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 
 	self:sort(self.enemies,"defense")
-        if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
+	if sgs.getDefense(self.enemies[1]) >= 8 then self:sort(self.enemies, "threat") end
 
 	local enemies = self:exclude(self.enemies, snatch)
 	for _, enemy in ipairs(enemies) do

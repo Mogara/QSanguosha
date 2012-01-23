@@ -50,7 +50,7 @@ function sgs.refreshLoyalty(player,intention)
 	if math.abs(intention)>70 and math.abs(sgs.ai_loyalty[name] or 0) > 70 then
 		if sgs.ai_loyalty[name]*intention<0 then
 			sgs.ai_loyalty[name]=sgs.ai_loyalty[name]/2
-            sgs.refreshLoyalty(player,0)
+			sgs.refreshLoyalty(player,0)
 			sgs.ai_renegade_suspect[name]=(sgs.ai_renegade_suspect[name] or 0)+1
 		end
 	end
@@ -89,7 +89,7 @@ function sgs.updateIntention(from, to, intention, card)
 		if card then str = str .. "#" .. card:className() end
 		from:getRoom():writeToConsole(str)
 	end]]
-    sgs.refreshLoyalty(from, intention)
+	sgs.refreshLoyalty(from, intention)
 	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
 end
 
@@ -158,7 +158,7 @@ sgs.ai_card_intention["Duel"]=function(card,from,tos,source)
 		sgs.ai_lijian_effect = false
 		return
 	end
-    sgs.updateIntentions(from, tos, 80)
+	sgs.updateIntentions(from, tos, 80)
 end
 
 sgs.ai_card_intention.Collateral = 80

@@ -28,7 +28,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			end
 		end
 		
-                if sgs.getValue(self.player) < 6 then return "no" end
+		if sgs.getValue(self.player) < 6 then return "no" end
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if self:isFriend(player) then return "yes" end
 		end
@@ -141,7 +141,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			return -1
 		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) == -160 then return 5 + modifier
 		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) < -80 then return 4 + modifier
- 		end
+		end
 		
 		return 0
 	end
