@@ -408,8 +408,8 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_explicit[player:objectName()] == "rebelish" then return 5-modifier
 		elseif sgs.ai_explicit[player:objectName()] == "loyalist" then return -2
 		elseif sgs.ai_explicit[player:objectName()] == "loyalish" then return -1
-		-- elseif (self:singleRole()) == "rebel" then return 4.6-modifier
-		-- elseif (self:singleRole()) == "loyalist" then return -1
+		elseif sgs.singleRole(self.room, self.player) == "rebel" then return 4.6-modifier
+		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return -1
 		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3
@@ -422,8 +422,8 @@ function SmartAI:objectiveLevel(player)
 			((sgs.ai_anti_lord[player:objectName()] or 0) > 0 or (sgs.ai_renegade_suspect[player:objectName()]  or 0) > 2) then return 5
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return 5-modifier
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return -1
-		-- elseif (self:singleRole()) == "rebel" then return 4-modifier
-		-- elseif (self:singleRole()) == "loyalist" then return -1
+		elseif sgs.singleRole(self.room, self.player) == "rebel" then return 4-modifier
+		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return -1
 		elseif (sgs.ai_loyalty[player:objectName()] < 0) and
 			(sgs.ai_card_intention["general"](player,100) > 0)
 			then return 3.1
@@ -432,8 +432,8 @@ function SmartAI:objectiveLevel(player)
 		if player:isLord() then return 5
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("loyal") then return 5-modifier
 		elseif (sgs.ai_explicit[player:objectName()] or ""):match("rebel") then return -1
-		-- elseif (self:singleRole()) == "rebel" then return -1
-		-- elseif (self:singleRole()) == "loyalist" then return 4-modifier
+		elseif sgs.singleRole(self.room, self.player) == "rebel" then return -1
+		elseif sgs.singleRole(self.room, self.player) == "loyalist" then return 4-modifier
 		elseif (sgs.ai_loyalty[player:objectName()] > 0) and
 			(sgs.ai_card_intention["general"](player,100) < 0)
 			then return 3

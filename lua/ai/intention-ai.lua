@@ -105,6 +105,21 @@ function sgs.updateIntentions(from, tos, intention)
 	end
 end
 
+function sgs.singleRole(room, player)
+	local players
+	if player then players = room:getOtherPlayers(player) else players = room:getAlivePlayers() end
+	local loyal_num, rebel_num = 1, 0
+	for _, aplayer in sgs.qlist(players) do
+		if aplayer:getRole() == "loyalist" then loyal_num = loyal_num + 1
+		elseif aplayer:getRole() == "rebel" then rebel_num = rebel_num + 1 end
+		if (sgs.ai_explicit[aplayer:objectName()] or ""):match("loyal") then loyal_num = loyal_num - 1
+		elseif (sgs.ai_explicit[aplayer:objectName()] or ""):match("rebel") then rebel_num = rebel_num -1 end
+	end
+	if loyal_num <= 0 and rebel_num > 0 then return "rebel"
+	elseif loyal_num > 0 and rebel_num <= 0 then return "loyalist"
+	else return "neither" end
+end
+
 sgs.ai_card_intention.Indulgence = 120
 
 sgs.ai_card_intention.SupplyShortage = 120
