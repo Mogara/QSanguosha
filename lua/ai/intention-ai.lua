@@ -16,14 +16,10 @@ sgs.ai_card_intention["general"]=function(to,level)
 	end
 	if to:isLord() then
 		return -level*2
-	elseif sgs.ai_explicit[to:objectName()]=="loyalist" then
+	elseif sgs.ai_explicit[to:objectName()]:match("loyal") or sgs.singleRole(to:getRoom()) == "loyalist" then
 		return -level
-	elseif sgs.ai_explicit[to:objectName()]=="loyalish" then
-		return -level
-	elseif sgs.ai_explicit[to:objectName()]=="rebel" then
-		return level
-	elseif sgs.ai_explicit[to:objectName()]=="rebelish" then
-		return level
+	elseif sgs.ai_explicit[to:objectName()]:match("rebel") or sgs.singleRole(to:getRoom()) == "rebel" then
+		return level 
 	else
 		return 0
 	end
@@ -54,7 +50,7 @@ function sgs.refreshLoyalty(player,intention)
 	if math.abs(intention)>70 and math.abs(sgs.ai_loyalty[name] or 0) > 70 then
 		if sgs.ai_loyalty[name]*intention<0 then
 			sgs.ai_loyalty[name]=sgs.ai_loyalty[name]/2
-                        sgs.refreshLoyalty(player,0)
+            sgs.refreshLoyalty(player,0)
 			sgs.ai_renegade_suspect[name]=(sgs.ai_renegade_suspect[name] or 0)+1
 		end
 	end

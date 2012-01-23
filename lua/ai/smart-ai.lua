@@ -340,6 +340,7 @@ function SmartAI:objectiveLevel(player)
 	if #players == 1 then return 5 end
 
 	local rebel_num, loyalish_num, loyal_num, renegade_num = 0, 0, 0, 0
+	local has_rebel = false
 	for _, aplayer in ipairs (players) do
 		if aplayer:getRole() == "rebel" then
 			rebel_num = rebel_num + 1
@@ -348,9 +349,10 @@ function SmartAI:objectiveLevel(player)
 		elseif aplayer:getRole() == "renegade" then
 			renegade_num = renegade_num + 1
 		end
+		if sgs.ai_explicit[aplayer:objectName()] == "rebel" then has_rebel = true end
 	end
 
-        if sgs.isRolePredictable() then
+    if sgs.isRolePredictable() then
 		if self.role == "renegade" then
 			local _, loyal_value, rebel_value = getGameProcessValues(self, players)
 			if (math.abs(loyal_value-rebel_value) < sgs.ai_renegade_threshold and loyal_value > 8) or (self:isWeak() and #self.enemies > 1) then return 0 end
@@ -643,9 +645,9 @@ function SmartAI:filterEvent(event, player, data)
 			if player:objectName() == caiwenji:objectName() then intention = 0 end
 			sgs.refreshLoyalty(caiwenji, intention)
 		end
-	--[[elseif event == sgs.TurnStart and player:isLord() then
+	elseif event == sgs.TurnStart and player:isLord() then
 		sgs.turncount = (sgs.turncount or 0) + 1
-		self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)]]
+		self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
 	end
 end
 
