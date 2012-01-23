@@ -137,7 +137,7 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	return "."
 end
 
-sgs.ai_skill_invoke["@guidao"]=function(self,prompt)
+sgs.ai_skill_cardask["@guidao-card"]=function(self,prompt)
 	local judge = self.player:getTag("Judge"):toJudge()
 	local all_cards = self.player:getCards("he")
 	if all_cards:isEmpty() then return "." end

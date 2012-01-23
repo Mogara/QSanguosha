@@ -224,7 +224,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_skill_cardask["@guicai"]=function(self)
+sgs.ai_skill_cardask["@guicai-card"]=function(self)
 	local judge = self.player:getTag("Judge"):toJudge()
 
 	if self:needRetrial(judge) then
