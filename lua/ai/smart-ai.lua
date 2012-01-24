@@ -2763,24 +2763,25 @@ dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
-dofile "lua/ai/wind-ai.lua"
-dofile "lua/ai/fire-ai.lua"
-dofile "lua/ai/thicket-ai.lua"
-dofile "lua/ai/mountain-ai.lua"
-dofile "lua/ai/god-ai.lua"
-dofile "lua/ai/yitian-ai.lua"
-dofile "lua/ai/nostalgia-ai.lua"
-dofile "lua/ai/yjcm-ai.lua"
-dofile "lua/ai/sp-ai.lua"
-dofile "lua/ai/wisdom-ai.lua"
-dofile "lua/ai/joy-ai.lua"
-dofile "lua/ai/bgm-ai.lua"
-
 dofile "lua/ai/general_config.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/value_config.lua"
-
-dofile "lua/ai/fancheng-ai.lua"
-dofile "lua/ai/hulaoguan-ai.lua"
 dofile "lua/ai/basara-ai.lua"
 dofile "lua/ai/hegemony-ai.lua"
+dofile "lua/ai/hulaoguan-ai.lua"
+
+local loaded = "standard|standard_cards|maneuvering"
+
+local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
+
+for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
+	if not loaded:match(aextension) and files:match(string.lower(aextension)) then
+		dofile("lua/ai/" .. aextension .. "-ai.lua")
+	end
+end
+
+for _, ascenario in ipairs(sgs.Sanguosha:getScenarioNames()) do
+	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
+		dofile("lua/ai/" .. ascenario .. "-ai.lua")
+	end
+end
