@@ -1,117 +1,4 @@
---sp pangde
-local taichen_skill={}
-taichen_skill.name="taichen"
-table.insert(sgs.ai_skills,taichen_skill)
-taichen_skill.getTurnUseCard=function(self)
-	if self.player:hasUsed("TaichenCard") then return end
-	return sgs.Card_Parse("@TaichenCard=.")
-end
-
-sgs.ai_skill_use_func["TaichenCard"]=function(card,use,self)
-	local target, card_str
-	
-	local targets, friends, enemies = {}, {}, {}
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self.player:canSlash(player) then 
-			table.insert(targets, player) 
-			
-			if self:isFriend(player) then
-				table.insert(friends, player)
-			else 
-				table.insert(enemies, player)
-			end
-		end
-	end
-	
-	if #targets == 0 then return end
-	
-	if #friends ~= 0 then
-		for _, friend in ipairs(friends) do
-			local judge_card = friend:getCards("j")
-			local equip_card = friend:getCards("e")
-		
-			if judge_card and judge_card:length() > 0 and not (judge_card:length() == 1 and judge_card:at(0):objectName() == "lightning") then 
-				target = friend 
-				break 
-			end
-			if equip_card and equip_card:length() > 1 and self:hasSkills(sgs.lose_equip_skill, friend) then 
-				target = friend 
-				break 
-			end
-		end
-	end
-	
-	if not target and #enemies > 0 then
-		self:sort(enemies, "defense")
-		for _, enemy in ipairs(enemies) do
-			if enemy:getCards("he") and enemy:getCards("he"):length()>=2 then 
-				target = enemy 
-				break
-			end
-		end
-	end
-	
-	if not target then return end
-	
-	local weapon = self.player:getWeapon()
-	local hcards = self.player:getHandcards()
-	for _, hcard in sgs.qlist(hcards) do
-		if hcard:inherits("Weapon") then 
-			if weapon then card_str = "@TaichenCard=" .. hcard:getId() end
-		end
-	end
-	
-	if not card_str then
-		if weapon and self.player:getOffensiveHorse() then
-			card_str = "@TaichenCard=" .. weapon:getId() 
-		else
-			if self:isFriend(target) and self.player:getHp() > 2 then card_str = "@TaichenCard=." end
-			if self:isEnemy(target) and self.player:getHp() > 3 then card_str = "@TaichenCard=." end
-		end
-	end
-	
-	if card_str then
-		if use.to then
-			use.to:append(target)
-		end
-		use.card = sgs.Card_Parse(card_str)
-	end
-end
-
---shenlvbu2
-sgs.ai_skill_invoke.xiuluo = function(self, data)
-	local hand_card = self.player:getHandcards()
-	local judge_list = self.player:getCards("j")
-	for _, judge in sgs.qlist(judge_list) do
-		for _, card in sgs.qlist(hand_card) do
-			if card:getSuit() == judge:getSuit() then return true end
-		end
-	end
-	
-	return false
-end
-
--- chujia
-sgs.ai_skill_invoke.chujia = function(self, data)
-	return self.room:getLord():getKingdom() == "shu"
-end
-
--- guixiang
-sgs.ai_skill_invoke.guixiang = function(self, data)
-	return self.room:getLord():getKingdom() == "wei"
-end
-
--- fanqun
-sgs.ai_skill_invoke.fanqun = function(self, data)
-	local lord = self.room:getLord()
-	return self:isFriend(lord) and lord:getKingdom() == "qun"
-end
-
--- same as guixiang
-sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
-
-sgs.ai_skill_invoke.pangde_guiwei = sgs.ai_skill_invoke.guixiang
-	
+sgs.weapon_range.SPMoonSpear = 3
 
 sgs.ai_skill_invoke.sp_moonspear = function(self, data)
 	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
@@ -124,3 +11,55 @@ sgs.ai_skill_invoke.sp_moonspear = function(self, data)
 end
 
 sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
+
+sgs.ai_chaofeng.yuanshu = 3
+
+sgs.ai_skill_invoke.danlao = function(self, data)
+	local effect = data:toCardEffect()
+	if effect.card:inherits("GodSalvation") and self.player:isWounded() then
+		return false
+	else
+		return true
+	end
+end
+
+sgs.ai_skill_invoke.jilei = function(self, data)
+	local damage = data:toDamage()
+	if not damage then return false end
+	self.jilei_source = damage.from
+	return self:isEnemy(damage.from)
+end	
+
+sgs.ai_skill_choice.jilei = function(self, choices)
+	if (self.jilei_source:hasSkill("paoxiao") or self:isEquip("Crossbow",self.jilei_source)) and self.jilei_source:inMyAttackRange(self.player) then
+		return "basic"
+	else
+		return "trick"
+	end
+end
+
+sgs.ai_skill_invoke.chujia = function(self, data)
+	return self.room:getLord():getKingdom() == "shu"
+end
+
+sgs.ai_chaofeng.sp_sunshangxiang = sgs.ai_chaofeng.sunshangxiang
+
+sgs.ai_skill_invoke.guixiang = function(self, data)
+	return self.room:getLord():getKingdom() == "wei"
+end
+
+sgs.ai_chaofeng.sp_caiwenji = sgs.ai_chaofeng.caiwenji
+
+sgs.ai_skill_invoke.fanqun = function(self, data)
+	local lord = self.room:getLord()
+	return self:isFriend(lord) and lord:getKingdom() == "qun"
+end
+
+sgs.ai_chaofeng.sp_machao = sgs.ai_chaofeng.machao
+sgs.ai_chaofeng.sp_diaochan = sgs.ai_chaofeng.diaochan
+
+sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
+
+sgs.ai_skill_invoke.pangde_guiwei = sgs.ai_skill_invoke.guixiang
+
+

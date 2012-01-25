@@ -28,7 +28,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			end
 		end
 		
-                if sgs.getValue(self.player) < 6 then return "no" end
+		if sgs.getValue(self.player) < 6 then return "no" end
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if self:isFriend(player) then return "yes" end
 		end
@@ -141,7 +141,7 @@ if sgs.GetConfig("EnableHegemony", false) then
 			return -1
 		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) == -160 then return 5 + modifier
 		elseif (sgs.ai_loyalty[self:getHegKingdom()][player:objectName()] or 0) < -80 then return 4 + modifier
- 		end
+		end
 		
 		return 0
 	end
@@ -159,7 +159,8 @@ if sgs.GetConfig("EnableHegemony", false) then
 		return -level
 	end
 
-	SmartAI.refreshLoyalty = function(self, player, intention)
+	sgs.updateIntention = function(player, to, intention)
+		intention = -intention
 		local kingdoms = {"wei", "wu", "shu", "qun"}
 		if player:getKingdom() ~= "god" then
 			for _, akingdom in ipairs(kingdoms) do
@@ -169,7 +170,6 @@ if sgs.GetConfig("EnableHegemony", false) then
 			sgs.ai_explicit[player:objectName()] = player:getKingdom()
 			return
 		end
-		local to = sgs.hegemony_to
 		local kingdom = to:getKingdom()
 		if kingdom ~= "god" then
 			sgs.ai_loyalty[kingdom][player:objectName()] = (sgs.ai_loyalty[kingdom][player:objectName()] or 0) + intention

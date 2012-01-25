@@ -1203,13 +1203,18 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
+        if(Sanguosha->getBanPackages().contains("sp") && Sanguosha->getBanPackages().contains("BGM")) return false;
         return GameStartSkill::triggerable(target) && target->getGeneralName() == "diaochan";
     }
 
     virtual void onGameStart(ServerPlayer *player) const{
         if(player->askForSkillInvoke(objectName())){
             Room *room = player->getRoom();
-            QString choice = room->askForChoice(player, objectName(), "SP-Diaochan+BGM-Diaochan");
+            QString choice;
+            if(Sanguosha->getBanPackages().contains("sp")) choice = "BGM-Diaochan";
+            else if(Sanguosha->getBanPackages().contains("BGM")) choice = "SP-Diaochan";
+            else
+                choice = room->askForChoice(player, objectName(), "SP-Diaochan+BGM-Diaochan");
             if(choice == "SP-Diaochan") choice = "sp_diaochan"; else choice = "bgm_diaochan";
             room->transfigure(player, choice, true, false, "diaochan");
         }
