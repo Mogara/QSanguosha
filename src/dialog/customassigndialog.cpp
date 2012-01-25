@@ -48,11 +48,11 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
         QString player = (i == 0 ? "Player" : "AI");
         QString text = i == 0 ?
-                    QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("unknown"))
+                    QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("Unknown"))
                     : QString("%1%2[%3]")
                     .arg(Sanguosha->translate(player))
                     .arg(QString::number(i))
-                    .arg(tr("unknown"));
+                    .arg(tr("Unknown"));
         if(i != 0)
             player.append(QString::number(i));
         player_mapping[i] = player;
@@ -68,6 +68,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     role_combobox->addItem(tr("Loyalist"), "loyalist");
     role_combobox->addItem(tr("Renegade"), "renegade");
     role_combobox->addItem(tr("Rebel"), "rebel");
+    role_combobox->addItem(tr("Unknown"), "unknown");
 
     for(int i=0; i< num_combobox->currentIndex()+2; i++){
         list->addItem(item_map[i]);

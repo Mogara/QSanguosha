@@ -78,17 +78,17 @@
 <context>
     <name>CardAssignDialog</name>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1215"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1216"/>
         <source>Custom Card Chosen</source>
         <translation>自定义卡牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1221"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1222"/>
         <source>Get card</source>
         <translation>获取卡牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1222"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1223"/>
         <source>Back</source>
         <translation>返回</translation>
     </message>
@@ -1071,13 +1071,15 @@
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="51"/>
         <location filename="src/dialog/customassigndialog.cpp" line="55"/>
-        <source>unknown</source>
+        <location filename="src/dialog/customassigndialog.cpp" line="71"/>
+        <source>Unknown</source>
+        <oldsource>unknown</oldsource>
         <translation>未分配</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="67"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="137"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="145"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="138"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="146"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
@@ -1088,234 +1090,234 @@
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="69"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="138"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="146"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="139"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="147"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
         <location filename="src/dialog/customassigndialog.cpp" line="70"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="139"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="147"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="140"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="148"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="84"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="85"/>
         <source>Start Info</source>
         <translation>开局信息</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="85"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="86"/>
         <source>Starter</source>
         <translation>开局者</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="86"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="87"/>
         <source>Start Draw</source>
         <translation>开局摸牌数</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="95"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="96"/>
         <source>General</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="103"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="104"/>
         <source>General2</source>
         <translation>副将</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="108"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="109"/>
         <source>EquipAssign</source>
         <translation>分配装备</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="109"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="110"/>
         <source>HandcardAssign</source>
         <translation>分配手牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="110"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="111"/>
         <source>JudgeAssign</source>
         <translation>分配判定牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="111"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="112"/>
         <source>PileCardAssign</source>
         <translation>分配摸牌堆</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="113"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="114"/>
         <source>Max Hp</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="120"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="121"/>
         <source>Hp</source>
         <translation>体力值</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="127"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="128"/>
         <source>General Self Select</source>
         <translation>开局自选主将</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="128"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="129"/>
         <source>General2 Self Select</source>
         <translation>开局自选副将</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="130"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="131"/>
         <source>Player Turned</source>
         <translation>武将翻面</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="131"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="132"/>
         <source>Player Chained</source>
         <translation>武将横置</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="133"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="134"/>
         <source>After this turn </source>
         <translation>次回合结束后</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="134"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="142"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="135"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="143"/>
         <source>win</source>
         <translation>赢</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="136"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="137"/>
         <source>After this turn you lose</source>
         <translation>此回合结束后失败</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="141"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="142"/>
         <source>Before next turn </source>
         <translation>下回合开始前</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="144"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="145"/>
         <source>Before next turn begin player lose</source>
         <translation>下回合开始前失败</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="149"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="150"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="150"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="151"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="151"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="152"/>
         <source>load</source>
         <translation>装载</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="152"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="153"/>
         <source>save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="191"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="192"/>
         <source>Equips</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="192"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="193"/>
         <source>Handcards</source>
         <translation>手牌区</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="193"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="194"/>
         <source>Judges</source>
         <translation>判定区</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="194"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="195"/>
         <source>DrawPile</source>
         <translation>摸牌堆</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="200"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="201"/>
         <source>Remove Equip</source>
         <translation>移除此装备</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="201"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="202"/>
         <source>Remove Handcard</source>
         <translation>移除此手牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="202"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="203"/>
         <source>Remove Judge</source>
         <translation>移除此判定牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="203"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="204"/>
         <source>Remove Pilecard</source>
         <translation>移除此摸牌</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="781"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="782"/>
         <source>Open mini scenario settings</source>
         <translation>打开小型场景设置</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1086"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1087"/>
         <source>Save mini scenario settings</source>
         <translation>小型场景保存设置</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="783"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="1088"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="784"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1089"/>
         <source>Pure text replay file (*.txt)</source>
         <translation>场景信息文档(*.txt)</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="822"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="979"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="988"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="992"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="1011"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="1025"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="1035"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="823"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="980"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="989"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="993"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1012"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1026"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1036"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="822"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="823"/>
         <source>Data is unreadable</source>
         <translation>数据不可读</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="979"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="980"/>
         <source>Two many lords in the game</source>
         <translation>主公角色设置过多</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="988"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="989"/>
         <source>No lord in the game</source>
         <translation>没有主公信息</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="992"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="993"/>
         <source>No different camps in the game</source>
         <translation>没有相对立的阵营</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1011"/>
-        <location filename="src/dialog/customassigndialog.cpp" line="1025"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1012"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1026"/>
         <source>%1&apos;s general cannot be empty</source>
         <translation>%1 的主将不能为空</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1035"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1036"/>
         <source>%1&apos;s role cannot be unknown</source>
         <translation>%1 的身份不能为未知</translation>
     </message>
@@ -1592,22 +1594,22 @@
 <context>
     <name>GeneralAssignDialog</name>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1105"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1106"/>
         <source>Mini choose generals</source>
         <translation>小型场景选将</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1131"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1132"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1134"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1135"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="src/dialog/customassigndialog.cpp" line="1139"/>
+        <location filename="src/dialog/customassigndialog.cpp" line="1140"/>
         <source>Clear General</source>
         <translation>清除副将</translation>
     </message>

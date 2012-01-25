@@ -15,6 +15,7 @@ SOURCES += src/main.cpp \
 	src/client/client.cpp \
 	src/client/clientplayer.cpp \
 	src/client/clientstruct.cpp \
+	src/core/banpair.cpp \
 	src/core/card.cpp \
 	src/core/engine.cpp \
 	src/core/general.cpp \
@@ -27,6 +28,7 @@ SOURCES += src/main.cpp \
 	src/dialog/choosegeneraldialog.cpp \
 	src/dialog/configdialog.cpp \
 	src/dialog/connectiondialog.cpp \
+	src/dialog/customassigndialog.cpp \
 	src/dialog/distanceviewdialog.cpp \
 	src/dialog/generaloverview.cpp \
 	src/dialog/generalselector.cpp \
@@ -35,8 +37,8 @@ SOURCES += src/main.cpp \
 	src/dialog/playercarddialog.cpp \
 	src/dialog/roleassigndialog.cpp \
 	src/dialog/scenario-overview.cpp \
-        src/dialog/halldialog.cpp \
-        src/package/exppattern.cpp \
+	src/dialog/halldialog.cpp \
+	src/package/exppattern.cpp \
 	src/package/firepackage.cpp \
 	src/package/god.cpp \
 	src/package/joypackage.cpp \
@@ -53,13 +55,14 @@ SOURCES += src/main.cpp \
 	src/package/wisdompackage.cpp \
 	src/package/yitianpackage.cpp \
 	src/package/yjcm-package.cpp \
-        src/package/bgm-package.cpp \
+	src/package/bgm-package.cpp \
 	src/scenario/boss-mode-scenario.cpp \
 	src/scenario/couple-scenario.cpp \
 	src/scenario/fancheng-scenario.cpp \
 	src/scenario/guandu-scenario.cpp \
 	src/scenario/scenario.cpp \
 	src/scenario/scenerule.cpp \
+	src/scenario/miniscenarios.cpp \
 	src/scenario/zombie-mode-scenario.cpp \
 	src/server/ai.cpp \
 	src/server/contestdb.cpp \
@@ -73,60 +76,59 @@ SOURCES += src/main.cpp \
 	src/ui/button.cpp \
 	src/ui/cardcontainer.cpp \
 	src/ui/carditem.cpp \
+	src/ui/chatwidget.cpp \
 	src/ui/clientlogbox.cpp \
 	src/ui/dashboard.cpp \
 	src/ui/indicatoritem.cpp \
 	src/ui/photo.cpp \
 	src/ui/pixmap.cpp \
+	src/ui/pixmapanimation.cpp \
 	src/ui/rolecombobox.cpp \
 	src/ui/roomscene.cpp \
+	src/ui/sprite.cpp \
 	src/ui/startscene.cpp \
 	src/ui/window.cpp \
 	src/util/detector.cpp \
 	src/util/nativesocket.cpp \
 	src/util/recorder.cpp \
-	swig/sanguosha_wrap.cxx \
-    src/ui/pixmapanimation.cpp \
-    src/ui/sprite.cpp \
-    src/core/banpair.cpp \
-    src/ui/chatwidget.cpp \
-    src/scenario/miniscenarios.cpp \
-    src/dialog/customassigndialog.cpp \
-    src/lua/print.c \
-    src/lua/lzio.c \
-    src/lua/lvm.c \
-    src/lua/lundump.c \
-    src/lua/ltm.c \
-    src/lua/ltablib.c \
-    src/lua/ltable.c \
-    src/lua/lstrlib.c \
-    src/lua/lstring.c \
-    src/lua/lstate.c \
-    src/lua/lparser.c \
-    src/lua/loslib.c \
-    src/lua/lopcodes.c \
-    src/lua/lobject.c \
-    src/lua/loadlib.c \
-    src/lua/lmem.c \
-    src/lua/lmathlib.c \
-    src/lua/llex.c \
-    src/lua/liolib.c \
-    src/lua/linit.c \
-    src/lua/lgc.c \
-    src/lua/lfunc.c \
-    src/lua/ldump.c \
-    src/lua/ldo.c \
-    src/lua/ldebug.c \
-    src/lua/ldblib.c \
-    src/lua/lcode.c \
-    src/lua/lbaselib.c \
-    src/lua/lauxlib.c \
-    src/lua/lapi.c
+	src/lua/print.c \
+	src/lua/lzio.c \
+	src/lua/lvm.c \
+	src/lua/lundump.c \
+	src/lua/ltm.c \
+	src/lua/ltablib.c \
+	src/lua/ltable.c \
+	src/lua/lstrlib.c \
+	src/lua/lstring.c \
+	src/lua/lstate.c \
+	src/lua/lparser.c \
+	src/lua/loslib.c \
+	src/lua/lopcodes.c \
+	src/lua/lobject.c \
+	src/lua/loadlib.c \
+	src/lua/lmem.c \
+	src/lua/lmathlib.c \
+	src/lua/llex.c \
+	src/lua/liolib.c \
+	src/lua/linit.c \
+	src/lua/lgc.c \
+	src/lua/lfunc.c \
+	src/lua/ldump.c \
+	src/lua/ldo.c \
+	src/lua/ldebug.c \
+	src/lua/ldblib.c \
+	src/lua/lcode.c \
+	src/lua/lbaselib.c \
+	src/lua/lauxlib.c \
+	src/lua/lapi.c \
+	swig/sanguosha_wrap.cxx
 
 HEADERS += src/client/aux-skills.h \
 	src/client/client.h \
 	src/client/clientplayer.h \
 	src/client/clientstruct.h \
+	src/core/audio.h \
+	src/core/banpair.h \
 	src/core/card.h \
 	src/core/engine.h \
 	src/core/general.h \
@@ -139,6 +141,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/choosegeneraldialog.h \
 	src/dialog/configdialog.h \
 	src/dialog/connectiondialog.h \
+	src/dialog/customassigndialog.h \
 	src/dialog/distanceviewdialog.h \
 	src/dialog/generaloverview.h \
 	src/dialog/generalselector.h \
@@ -148,7 +151,7 @@ HEADERS += src/client/aux-skills.h \
 	src/dialog/playercarddialog.h \
 	src/dialog/roleassigndialog.h \ 
 	src/dialog/scenario-overview.h \
-        src/package/exppattern.h \
+	src/package/exppattern.h \
 	src/package/firepackage.h \
 	src/package/god.h \
 	src/package/joypackage.h \
@@ -165,11 +168,12 @@ HEADERS += src/client/aux-skills.h \
 	src/package/wisdompackage.h \
 	src/package/yitianpackage.h \
 	src/package/yjcm-package.h \
-        src/package/bgm-package.h \
+	src/package/bgm-package.h \
 	src/scenario/boss-mode-scenario.h \
 	src/scenario/couple-scenario.h \
 	src/scenario/fancheng-scenario.h \
 	src/scenario/guandu-scenario.h \
+	src/scenario/miniscenarios.h \
 	src/scenario/scenario.h \
 	src/scenario/scenerule.h \
 	src/scenario/zombie-mode-scenario.h \
@@ -186,50 +190,46 @@ HEADERS += src/client/aux-skills.h \
 	src/ui/button.h \
 	src/ui/cardcontainer.h \
 	src/ui/carditem.h \
+	src/ui/chatwidget.h \
 	src/ui/clientlogbox.h \
 	src/ui/dashboard.h \
 	src/ui/indicatoritem.h \
 	src/ui/photo.h \
 	src/ui/pixmap.h \
+	src/ui/pixmapanimation.h \
 	src/ui/rolecombobox.h \
 	src/ui/roomscene.h \
+	src/ui/sprite.h \
 	src/ui/startscene.h \
 	src/ui/window.h \
 	src/util/detector.h \
 	src/util/nativesocket.h \
 	src/util/recorder.h \
 	src/util/socket.h \
-    src/ui/pixmapanimation.h \
-    src/ui/sprite.h \
-    src/core/banpair.h \
-    src/ui/chatwidget.h \
-    src/scenario/miniscenarios.h \
-    src/dialog/customassigndialog.h \
-	src/core/audio.h \
-    src/lua/lzio.h \
-    src/lua/lvm.h \
-    src/lua/lundump.h \
-    src/lua/lualib.h \
-    src/lua/luaconf.h \
-    src/lua/lua.hpp \
-    src/lua/lua.h \
-    src/lua/ltm.h \
-    src/lua/ltable.h \
-    src/lua/lstring.h \
-    src/lua/lstate.h \
-    src/lua/lparser.h \
-    src/lua/lopcodes.h \
-    src/lua/lobject.h \
-    src/lua/lmem.h \
-    src/lua/llimits.h \
-    src/lua/llex.h \
-    src/lua/lgc.h \
-    src/lua/lfunc.h \
-    src/lua/ldo.h \
-    src/lua/ldebug.h \
-    src/lua/lcode.h \
-    src/lua/lauxlib.h \
-    src/lua/lapi.h
+	src/lua/lzio.h \
+	src/lua/lvm.h \
+	src/lua/lundump.h \
+	src/lua/lualib.h \
+	src/lua/luaconf.h \
+	src/lua/lua.hpp \
+	src/lua/lua.h \
+	src/lua/ltm.h \
+	src/lua/ltable.h \
+	src/lua/lstring.h \
+	src/lua/lstate.h \
+	src/lua/lparser.h \
+	src/lua/lopcodes.h \
+	src/lua/lobject.h \
+	src/lua/lmem.h \
+	src/lua/llimits.h \
+	src/lua/llex.h \
+	src/lua/lgc.h \
+	src/lua/lfunc.h \
+	src/lua/ldo.h \
+	src/lua/ldebug.h \
+	src/lua/lcode.h \
+	src/lua/lauxlib.h \
+	src/lua/lapi.h
 	
 FORMS += src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
@@ -249,30 +249,30 @@ INCLUDEPATH += src/util
 INCLUDEPATH += src/lua
 
 win32{
-    RC_FILE += resource/icon.rc
+	RC_FILE += resource/icon.rc
 }
 
 LIBS += -L. -lm
 
 CONFIG(audio){
-    DEFINES += AUDIO_SUPPORT
-    INCLUDEPATH += include/fmod
-    LIBS += -lfmodex
-    SOURCES += src/core/audio.cpp
+	DEFINES += AUDIO_SUPPORT
+	INCLUDEPATH += include/fmod
+	LIBS += -lfmodex
+	SOURCES += src/core/audio.cpp
 }
 
 CONFIG(joystick){
-    DEFINES += JOYSTICK_SUPPORT
-    HEADERS += src/ui/joystick.h
-    SOURCES += src/ui/joystick.cpp
-    win32: LIBS += -lplibjs -lplibul -lwinmm
-    unix: LIBS += -lplibjs -lplibul
+	DEFINES += JOYSTICK_SUPPORT
+	HEADERS += src/ui/joystick.h
+	SOURCES += src/ui/joystick.cpp
+	win32: LIBS += -lplibjs -lplibul -lwinmm
+	unix: LIBS += -lplibjs -lplibul
 }
 
 TRANSLATIONS += sanguosha.ts
 
 OTHER_FILES += \
-    sanguosha.qss \
-    acknowledgement/main.qml \
-    acknowledgement/list.png \
-    acknowledgement/back.png
+	sanguosha.qss \
+	acknowledgement/main.qml \
+	acknowledgement/list.png \
+	acknowledgement/back.png
