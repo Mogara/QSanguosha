@@ -122,7 +122,8 @@ public:
             if(!target)
                 return false;
 
-            if(diaochan->getCards("he").length() <= target->getHp()){
+            int hp = target->isAlive() ? target->getHp() : 0;
+            if(diaochan->getCards("he").length() <= hp){
                 foreach(const Card *card, diaochan->getCards("he")){
                     room->moveCardTo(card,
                                      target,
@@ -132,7 +133,7 @@ public:
             }
             else{
                 int i;
-                for(i = 0; i < target->getHp(); i++){
+                for(i = 0; i < hp; i++){
                     if(diaochan->isNude())
                         return false;
 
