@@ -106,9 +106,34 @@ sgs.ai_skill_use["@@shensu2"]=function(self,prompt)
 	return "."
 end
 
+sgs.ai_card_intention.ShensuCard = 80
+
+sgs.xiahouyuan_keep_value = 
+{
+	Peach = 6,
+	Jink = 5.1,
+	Crossbow = 5,
+	Blade = 5,
+	Spear = 5,
+	DoubleSword =5,
+	QinggangSword=5,
+	Axe=5,
+	KylinBow=5,
+	Halberd=5,
+	IceSword=5,
+	Fan=5,
+	MoonSpear=5,
+	GudingBlade=5,
+	DefensiveHorse = 5,
+	OffensiveHorse = 5
+}
+
 sgs.ai_skill_invoke.jushou = true
 
 sgs.ai_skill_invoke.liegong = sgs.ai_skill_invoke.tieji
+
+sgs.ai_chaofeng.huangzhong = 1
+sgs.ai_chaofeng.weiyan = -2
 
 sgs.ai_skill_cardask["@guidao-card"]=function(self,prompt)
 	local judge = self.player:getTag("Judge"):toJudge()
@@ -158,6 +183,8 @@ sgs.ai_skill_use["@@leiji"]=function(self,prompt)
 	end
 	return "."
 end
+
+sgs.ai_card_intention.LeijiCard = 80
 
 local huangtianv_skill={}
 huangtianv_skill.name="huangtianv"
@@ -210,6 +237,24 @@ sgs.ai_skill_use_func.HuangtianCard=function(card,use,self)
 	end
 end
 
+sgs.ai_card_intention.HuangtianCard = function(card,from,tos,source)
+	for _, to in ipairs(tos) do
+		sgs.updateIntention(from, to, -80)
+		if to:isLord() then sgs.ai_lord_tolerance[from:objectName()]=(sgs.ai_lord_tolerance[from:objectName()] or 0)+1 end
+	end
+end
+
+sgs.ai_use_priority.HuangtianCard = 10
+sgs.ai_use_value.HuangtianCard = 8.5
+
+sgs.zhangjiao_suit_value = 
+{
+	spade = 3.9,
+	club = 2.7
+}
+
+sgs.ai_chaofeng.zhangjiao = 4
+
 sgs.ai_skill_askforag.buqu = function(self, card_ids)
 	for i, card_id in ipairs(card_ids) do
 		for j, card_id2 in ipairs(card_ids) do
@@ -221,6 +266,8 @@ sgs.ai_skill_askforag.buqu = function(self, card_ids)
 
 	return card_ids[1]
 end
+
+sgs.ai_chaofeng.zhoutai = -4
 
 sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	local friend_lost_hp = 10
@@ -288,6 +335,11 @@ sgs.ai_skill_use["@tianxiang"]=function(self, data)
 	return "."
 end
 
+sgs.xiaoqiao_suit_value = 
+{
+	spade = 6,
+	heart = 6
+}
 
 table.insert(sgs.ai_global_flags, "questioner")
 
@@ -381,6 +433,8 @@ sgs.ai_skill_use_func.GuhuoCard=function(card,use,self)
 	use.card=card
 end
 
+sgs.ai_use_priority.GuhuoCard = 10
+
 local function getGuhuoViewCard(self, class_name, player)
 	local card_use = {}
 	card_use = self:getCards(class_name, player)
@@ -406,3 +460,8 @@ function SmartAI:getGuhuoCard(class_name, player, at_play)
 	end
 	return getGuhuoViewCard(self, class_name, player)
 end
+
+sgs.yuji_suit_value =
+{
+	heart = 5
+}

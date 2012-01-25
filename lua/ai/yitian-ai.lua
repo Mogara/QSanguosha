@@ -147,6 +147,8 @@ sgs.ai_skill_use["@@chengxiang"]=function(self,prompt)
 	return "."
 end
 
+sgs.ai_card_intention.ChengxiangCard = sgs.ai_card_intention.QingnangCard
+
 sgs.ai_skill_invoke.jueji = true
 
 sgs.ai_skill_use["@@jueji"]=function(self,prompt)
@@ -173,6 +175,8 @@ sgs.ai_skill_use["@@jueji"]=function(self,prompt)
 	end
 	if top_value >= 4.7 then return "." else return "@JuejiCard=" .. self:getMaxCard():getEffectiveId() .. "->" .. target:objectName() end
 end
+
+sgs.ai_card_intention.JuejiCard = 30
 
 sgs.ai_skill_invoke.lukang_weiyan = function(self, data)
 	local handcard = self.player:getHandcardNum()
@@ -248,6 +252,8 @@ sgs.ai_skill_use["@lianli"] = function(self, prompt)
 	return "."	
 end
 
+sgs.ai_card_intention.LianliCard = -80
+
 table.insert(sgs.ai_global_flags, "lianlisource")
 sgs.ai_skill_invoke.lianli_slash = function(self, data)
 	return self:getCardsNum("Slash")==0
@@ -320,6 +326,8 @@ sgs.ai_skill_cardask["@lianli-slash"] = function(self)
 	if not self:isFriend(target) then return "." end
 	return self:getCardId("Slash") or "."
 end
+
+sgs.ai_card_intention.QiaocaiCard = -70
 
 sgs.ai_skill_invoke.tongxin = true
 
@@ -425,6 +433,8 @@ sgs.ai_skill_use_func.LexueCard = function(card, use, self)
 		if use.to then use.to:append(target) end
 	end
 end
+
+sgs.ai_use_priority.LexueCard = 10
 
 sgs.ai_skill_invoke.zhenggong  = true
 

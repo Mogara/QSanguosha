@@ -66,6 +66,15 @@ sgs.ai_skill_cardask["@guicai-card"]=function(self)
 	return "."
 end
 
+sgs.simayi_suit_value = 
+{
+	heart = 3.9,
+	club = 3.9,
+	spade = 3.5
+}
+
+sgs.ai_chaofeng.simayi = -2
+
 sgs.ai_skill_invoke.ganglie = function(self, data)
 	return not self:isFriend(data:toPlayer())
 end
@@ -97,6 +106,8 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 
 	if self.player:getHandcardNum() < 2 then return {} end
 end
+
+sgs.ai_chaofeng.xiahoudun = -3
 
 sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	self:sort(self.enemies, "handcard")
@@ -132,6 +143,10 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	return ("@TuxiCard=.->%s+%s"):format(first, second)
 end
 
+sgs.ai_card_intention.TuxiCard = 80
+
+sgs.ai_chaofeng.zhangliao = 4
+
 sgs.ai_skill_invoke.luoyi=function(self,data)
 	local cards=self.player:getHandcards()
 	cards=sgs.QList2Table(cards)
@@ -155,7 +170,29 @@ sgs.ai_skill_invoke.luoyi=function(self,data)
 	return false
 end
 
+sgs.xuchu_keep_value = 
+{
+	Peach 			= 6,
+	Analeptic 		= 5.8,
+	Jink 			= 5.7,
+	FireSlash 		= 5.6,
+	Slash 			= 5.4,
+	ThunderSlash 	= 5.5,	
+	Axe				= 5,
+	Blade 			= 4.9,
+	Spear 			= 4.9,
+	Fan				= 4.8,
+	KylinBow		= 4.7,
+	Halberd			= 4.6,
+	MoonSpear		= 4.5,
+	DefensiveHorse 	= 4
+}
+
+sgs.ai_chaofeng.xuchu = 3
+
 sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
+
+sgs.ai_chaofeng.guojia = -4
 
 sgs.ai_view_as.qingguo = function(card, player, card_place)
 	local suit = card:getSuitString()
@@ -165,6 +202,12 @@ sgs.ai_view_as.qingguo = function(card, player, card_place)
 		return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
+
+sgs.zhenji_suit_value = 
+{
+	spade = 4.1,
+	club = 4.2
+}
 
 local rende_skill={}
 rende_skill.name="rende"
@@ -419,6 +462,13 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	end
 end
 
+sgs.ai_use_value.RendeCard = 8.5
+sgs.ai_use_priority.RendeCard = 5.8
+
+sgs.ai_card_intention.RendeCard = -70
+
+sgs.dynamic_value.benefit.RendeCard = true
+
 table.insert(sgs.ai_global_flags, "jijiangsource")
 local jijiang_filter = function(player, carduse)
 	if carduse.card:inherits("JijiangCard") then
@@ -475,6 +525,9 @@ sgs.ai_skill_use_func.JijiangCard=function(card,use,self)
 	end	
 end
 
+sgs.ai_use_value.JijiangCard = 8.5
+sgs.ai_use_priority.JijiangCard = 2.4
+
 sgs.ai_choicemade_filter.cardResponsed["@jijiang_slash"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.jijiangsource, -40)
@@ -486,6 +539,8 @@ sgs.ai_skill_cardask["@jijiang-slash"] = function(self)
 	if not self:isFriend(sgs.jijiangsource) then return "." end
 	return self:getCardId("Slash") or "."
 end
+
+sgs.ai_chaofeng.liubei = -2
 
 sgs.ai_view_as.wusheng = function(card, player, card_place)
 	local suit = card:getSuitString()
@@ -527,6 +582,19 @@ wusheng_skill.getTurnUseCard=function(self,inclusive)
 		return slash
 	end
 end
+
+sgs.zhangfei_keep_value = 
+{
+	Peach = 6,
+	Analeptic = 5.8,
+	Jink = 5.7,
+	FireSlash = 5.6,
+	Slash = 5.4,
+	ThunderSlash = 5.5,
+	ExNihilo = 4.7
+}
+
+sgs.ai_chaofeng.zhangfei = 3
 
 dofile "lua/ai/guanxing-ai.lua"
 
@@ -573,10 +641,42 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 	end
 end
 
+sgs.zhaoyun_keep_value = 
+{
+	Peach = 6,
+	Analeptic = 5.8,
+	Jink = 5.7,
+	FireSlash = 5.7,
+	Slash = 5.6,
+	ThunderSlash = 5.5,
+	ExNihilo = 4.7
+}
+
 sgs.ai_skill_invoke.tieji = function(self, data)
 	local effect = data:toSlashEffect()
 	return not self:isFriend(effect.to) and (not effect.to:isKongcheng() or effect.to:getArmor())
 end
+
+sgs.ai_chaofeng.machao = 1
+
+sgs.huangyueying_keep_value = 
+{
+	Peach 		= 6,
+	Analeptic 	= 5.9,
+	Jink 		= 5.8,
+	ExNihilo	= 5.7,
+	Snatch 		= 5.7,
+	Dismantlement = 5.6,
+	IronChain 	= 5.5,
+	SavageAssault=5.4,
+	Duel 		= 5.3,
+	ArcheryAttack = 5.2,
+	AmazingGrace = 5.1,
+	Collateral 	= 5,
+	FireAttack	=4.9
+}
+
+sgs.ai_chaofeng.huangyueying = 4
 
 local zhiheng_skill={}
 zhiheng_skill.name="zhiheng"
@@ -654,6 +754,10 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	end
 end
 
+sgs.ai_use_value.ZhihengCard = 9
+
+sgs.dynamic_value.benefit.ZhihengCard = true
+
 local qixi_skill={}
 qixi_skill.name="qixi"
 table.insert(sgs.ai_skills,qixi_skill)
@@ -716,6 +820,16 @@ qixi_skill.getTurnUseCard=function(self,inclusive)
 	end
 end
 
+sgs.ai_card_intention.QixiCard = sgs.ai_card_intention.Dismantlement
+
+sgs.ganning_suit_value = 
+{
+	spade = 3.9,
+	club = 3.9
+}
+
+sgs.ai_chaofeng.ganning = 2
+
 local kurou_skill={}
 kurou_skill.name="kurou"
 table.insert(sgs.ai_skills,kurou_skill)
@@ -724,9 +838,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 		(self.player:getHp() - self.player:getHandcardNum() >= 2) then
 		return sgs.Card_Parse("@KurouCard=.")
 	end
-		
-	--if not inclusive then return nil end
-		
+
 	if self.player:getWeapon() and self.player:getWeapon():inherits("Crossbow") then
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy,true) and self.player:getHp()>1 then
@@ -740,6 +852,8 @@ sgs.ai_skill_use_func.KurouCard=function(card,use,self)
 	if not use.isDummy then self:speak("kurou") end
 	use.card=card
 end
+
+sgs.ai_chaofeng.huanggai = 3
 
 local fanjian_skill={}
 fanjian_skill.name="fanjian"
@@ -776,6 +890,12 @@ sgs.ai_skill_use_func.FanjianCard=function(card,use,self)
 		end
 	end
 end
+
+sgs.ai_card_intention.FanjianCard = 70
+
+sgs.dynamic_value.damage_card.FanjianCard = true
+
+sgs.ai_chaofeng.zhouyu = 3
 
 local guose_skill={}
 guose_skill.name="guose"
@@ -873,6 +993,18 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_card_intention.LiuliCard = function(card,from,to,source)
+	sgs.ai_liuli_effect=true
+end
+
+sgs.daqiao_suit_value = 
+{
+	diamond = 3.9
+}
+
+sgs.ai_chaofeng.daqiao = 2
+sgs.ai_chaofeng.luxun = -1
+
 local jieyin_skill={}
 jieyin_skill.name="jieyin"
 table.insert(sgs.ai_skills,jieyin_skill)
@@ -912,6 +1044,33 @@ sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
 	end
 end
 
+sgs.ai_use_priority.JieyinCard = 2.5
+sgs.ai_card_intention.JieyinCard = -80
+
+sgs.dynamic_value.benefit.JieyinCard = true
+
+sgs.sunshangxiang_keep_value = 
+{
+	Peach = 6,
+	Jink = 5.1,
+	Crossbow = 5,
+	Blade = 5,
+	Spear = 5,
+	DoubleSword =5,
+	QinggangSword=5,
+	Axe=5,
+	KylinBow=5,
+	Halberd=5,
+	IceSword=5,
+	Fan=5,
+	MoonSpear=5,
+	GudingBlade=5,
+	DefensiveHorse = 5,
+	OffensiveHorse = 5
+}
+
+sgs.ai_chaofeng.sunshangxiang = 6
+
 local qingnang_skill={}
 qingnang_skill.name="qingnang"
 table.insert(sgs.ai_skills,qingnang_skill)
@@ -942,6 +1101,11 @@ sgs.ai_skill_use_func.QingnangCard=function(card,use,self)
 	end
 end
 
+sgs.ai_use_priority.QingnangCard = 4.2
+sgs.ai_card_intention.QingnangCard = -100
+
+sgs.dynamic_value.benefit.QingnangCard = true
+
 sgs.ai_view_as.jijiu = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
@@ -950,6 +1114,15 @@ sgs.ai_view_as.jijiu = function(card, player, card_place)
 		return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
+
+sgs.huatuo_suit_value = 
+{
+	heart = 6,
+	diamond = 6
+}
+
+sgs.ai_chaofeng.huatuo = 6
+sgs.ai_chaofeng.lubu = 1
 
 local lijian_skill={}
 lijian_skill.name="lijian"
@@ -1083,6 +1256,9 @@ sgs.ai_skill_use_func.LijianCard=function(card,use,self)
 	end
 end
 
+sgs.ai_use_value.LijianCard = 8.5
+sgs.ai_use_priority.LijianCard = 4
+
 lijian_filter = function(player, carduse)
 	if carduse.card:inherits("LijianCard") then
 		sgs.ai_lijian_effect = true
@@ -1100,3 +1276,7 @@ sgs.ai_card_intention.LijianCard = function(card, from, to, source)
 		end
 	end
 end
+
+sgs.dynamic_value.damage_card.LijianCard = true
+
+sgs.ai_chaofeng.diaochan = 4

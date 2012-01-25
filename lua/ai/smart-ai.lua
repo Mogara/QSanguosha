@@ -114,6 +114,8 @@ function SmartAI:assignKeep(num,start)
 	end
 end
 
+sgs.ai_keep_value = {}
+
 function SmartAI:getKeepValue(card,kept)
 	if not kept then return self.keepValue[card:getId()] or 0 end
 
@@ -136,6 +138,8 @@ function SmartAI:getKeepValue(card,kept)
 	if not value or newvalue > value then value = newvalue end
 	return value
 end
+
+sgs.ai_use_value = {}
 
 function SmartAI:getUseValue(card)
 	local class_name = card:className()
@@ -194,6 +198,8 @@ function SmartAI:getUseValue(card)
 	return v
 end
 
+sgs.ai_use_priority = {}
+
 function SmartAI:getUsePriority(card)
 	local class_name = card:className()
 	local v = 0
@@ -231,6 +237,14 @@ function SmartAI:getUsePriority(card)
 	if card:inherits("Slash") and (card:getSuit() == sgs.Card_NoSuit) then v = v-0.1 end
 	return v
 end
+
+sgs.dynamic_value = {
+	damage_card = {},
+	control_usecard = {},
+	control_card = {},
+	lucky_chance = {},
+	benefit = {},
+}
 
 function SmartAI:getDynamicUsePriority(card)
 	if not card then return 0 end
@@ -401,6 +415,8 @@ function SmartAI:cardNeed(card)
 	end
 	return self:getUseValue(card)
 end
+
+sgs.ai_chaofeng = {}
 
 -- compare functions
 sgs.ai_compare_funcs = {
@@ -2758,19 +2774,16 @@ function SmartAI:useEquipCard(card, use)
 	end
 end
 
-dofile "lua/ai/intention-ai.lua"
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
-dofile "lua/ai/general_config.lua"
 dofile "lua/ai/chat-ai.lua"
-dofile "lua/ai/value_config.lua"
 dofile "lua/ai/basara-ai.lua"
 dofile "lua/ai/hegemony-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
 
-local loaded = "standard|standard_cards|maneuvering"
+local loaded = "standard|standard_cards|maneuvering|sp"
 
 local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
 
@@ -2779,6 +2792,8 @@ for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
 		dofile("lua/ai/" .. aextension .. "-ai.lua")
 	end
 end
+
+dofile "lua/ai/sp-ai.lua"
 
 for _, ascenario in ipairs(sgs.Sanguosha:getScenarioNames()) do
 	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then

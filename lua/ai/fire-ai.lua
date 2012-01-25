@@ -66,6 +66,10 @@ end
 
 sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
 
+sgs.ai_card_intention.QuhuCard = 30
+
+sgs.dynamic_value.control_card.QuhuCard = true
+
 sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 	self:sort(self.friends)
 	
@@ -86,6 +90,10 @@ sgs.ai_skill_use["@@jieming"] = function(self, prompt)
 		return "."
 	end
 end
+
+sgs.ai_card_intention.JiemingCard =-80
+
+sgs.ai_chaofeng.xunyu = 3
 
 local qiangxi_skill={}
 qiangxi_skill.name="qiangxi"
@@ -138,6 +146,14 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 	end
 end
 
+sgs.ai_use_value.QiangxiCard = 2.5
+
+sgs.ai_card_intention.QiangxiCard = 80
+
+sgs.dynamic_value.damage_card.QiangxiCard = true
+
+sgs.ai_chaofeng.dianwei = 2
+
 local huoji_skill={}
 huoji_skill.name="huoji"
 table.insert(sgs.ai_skills,huoji_skill)
@@ -182,6 +198,12 @@ end
 
 sgs.ai_skill_invoke.bazhen = sgs.ai_skill_invoke.eight_diagram
 
+sgs.wolong_suit_value = 
+{
+	spade = 3.9,
+	club = 3.9
+}
+
 local lianhuan_skill={}
 lianhuan_skill.name="lianhuan"
 table.insert(sgs.ai_skills,lianhuan_skill)
@@ -223,6 +245,8 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 
 	return n < peaches
 end
+
+sgs.ai_chaofeng.pangtong = -1
 
 local tianyi_skill={}
 tianyi_skill.name="tianyi"
@@ -309,6 +333,15 @@ sgs.ai_skill_use_func.TianyiCard=function(card,use,self)
 	end
 end
 
+sgs.ai_card_intention.TianyiCard = 30
+
+sgs.dynamic_value.control_card.TianyiCard = true
+
+sgs.ai_use_value.TianyiCard = 8.5
+sgs.ai_use_priority.TianyiCard = 4.2
+
+sgs.ai_chaofeng.taishici = 3
+
 local luanji_skill={}
 luanji_skill.name="luanji"
 table.insert(sgs.ai_skills,luanji_skill)
@@ -346,6 +379,8 @@ luanji_skill.getTurnUseCard=function(self)
 		return archeryattack
 	end
 end
+
+sgs.ai_chaofeng.yuanshao = 1
 
 sgs.ai_skill_invoke.shuangxiong=function(self,data)
 	if self.player:isSkipped(sgs.Player_Play) or self.player:getHp() < 2 then
@@ -402,6 +437,8 @@ shuangxiong_skill.getTurnUseCard=function(self)
 	return skillcard
 
 end
+
+sgs.ai_chaofeng.shuangxiong = 1
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
 	local effect = data:toSlashEffect()

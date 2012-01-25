@@ -57,6 +57,8 @@ sgs.ai_skill_invoke.songwei = function(self, data)
 	return self:isFriend(who)
 end
 
+sgs.ai_chaofeng.caopi = -3
+
 duanliang_skill={}
 duanliang_skill.name="duanliang"
 table.insert(sgs.ai_skills,duanliang_skill)
@@ -87,6 +89,14 @@ duanliang_skill.getTurnUseCard=function(self)
 	return skillcard
 
 end
+
+sgs.xuhuang_suit_value = 
+{
+	spade = 3.9,
+	club = 3.9
+}
+
+sgs.ai_chaofeng.xuhuang = 4
 
 sgs.ai_skill_invoke.zaiqi = function(self, data)
 	return self.player:getLostHp() >= 2
@@ -193,6 +203,8 @@ sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "->" .. beggar:objectName()
 end
 
+sgs.ai_card_intention.HaoshiCard = -80
+
 dimeng_skill={}
 dimeng_skill.name="dimeng"
 table.insert(sgs.ai_skills,dimeng_skill)
@@ -243,6 +255,13 @@ sgs.ai_card_intention.DimengCard = function(card, from, to, source)
 		end
 	end
 end
+
+sgs.ai_use_value.DimengCard = 3.5
+sgs.ai_use_priority.DimengCard = 2.3
+
+sgs.dynamic_value.control_card.DimengCard = true
+
+sgs.ai_chaofeng.lusu = 4
 
 luanwu_skill={}
 luanwu_skill.name="luanwu"
@@ -299,6 +318,8 @@ end
 
 sgs.ai_skill_playerchosen.luanwu = sgs.ai_skill_playerchosen.zero_card_as_slash
 
+sgs.dynamic_value.damage_card.LuanwuCard = true
+
 jiuchi_skill={}
 jiuchi_skill.name="jiuchi"
 table.insert(sgs.ai_skills,jiuchi_skill)
@@ -341,3 +362,8 @@ sgs.ai_view_as.jiuchi = function(card, player, card_place)
 end
 
 sgs.ai_skill_invoke.baonue = sgs.ai_skill_invoke.songwei
+
+sgs.dongzhuo_suit_value = 
+{
+	spade = 5,
+}

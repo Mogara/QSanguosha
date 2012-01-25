@@ -156,6 +156,15 @@ sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_card_intention.QiaobianCard = function(card, from, tos, source)
+	if from:getPhase() == sgs.Player_Draw then
+		for _, to in ipairs(tos) do
+			sgs.updateIntention(from, to, sgs.ai_card_intention.TuxiCard)
+		end
+	end
+	return 0
+end
+
 sgs.ai_skill_invoke.tuntian = true
 
 local jixi_skill={}
@@ -202,6 +211,10 @@ sgs.ai_skill_playerchosen.jixi = function(self, targets)
 	self:sort(choices, "hp")
 	return choices[1]
 end
+
+sgs.ai_card_intention.JixiCard = sgs.ai_card_intention.Snatch
+
+sgs.dynamic_value.control_card.JixiCard = true
 
 sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	local effect = data:toCardEffect()
@@ -310,6 +323,8 @@ sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
 	end
 	use.card = sgs.Card_Parse("@TiaoxinCard=.")
 end
+
+sgs.ai_card_intention.TiaoxinCard = 80
 
 sgs.ai_skill_choice.zhiji = function(self, choice)
 	if self.player:getHp() < self.player:getMaxHP()-1 then return "recover" end
@@ -443,6 +458,8 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	use.card = zhijian
 end
 
+sgs.ai_card_intention.ZhijianCard = -80
+
 sgs.ai_skill_invoke.guzheng = function(self, data)
 	local player = self.room:getCurrent()
 	return (self:isFriend(player) and not self:hasSkills(sgs.need_kongcheng, player)) or data:toInt() >= 3
@@ -464,7 +481,11 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	return cards[1]:getEffectiveId()
 end
 
+sgs.ai_chaofeng.erzhang = 5
+
 sgs.ai_skill_invoke.beige = function(self, data)
 	local damage = data:toDamage()
 	return self:isFriend(damage.to) and not self:isFriend(damage.from)
 end
+
+sgs.ai_chaofeng.caiwenji = -5

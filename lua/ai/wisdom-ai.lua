@@ -125,6 +125,8 @@ end
 
 sgs.ai_skill_playerchosen.beifa = sgs.ai_skill_playerchosen.zero_card_as_slash
 
+sgs.ai_chaofeng.wisjiangwei = 2
+
 local houyuan_skill={}
 houyuan_skill.name="houyuan"
 table.insert(sgs.ai_skills,houyuan_skill)
@@ -162,6 +164,10 @@ sgs.ai_skill_use_func.HouyuanCard = function(card, use, self)
 	return
 end
 
+sgs.ai_card_intention.HouyuanCard = -70
+
+sgs.ai_chaofeng.wisjiangwan = 6
+
 sgs.ai_skill_invoke.bawang = function(self, data)
 	local effect = data:toSlashEffect()
 	local max_card = self:getMaxCard()
@@ -192,6 +198,8 @@ sgs.ai_skill_use["@@bawang"] = function(self, prompt)
 	end
 end
 
+sgs.ai_card_intention.BawangCard = sgs.ai_card_intention.ShensuCard
+
 sgs.ai_skill_use["@@weidai"] = function(self, prompt)
 	return "@WeidaiCard=.->."
 end
@@ -199,6 +207,8 @@ end
 sgs.ai_skill_use_func.WeidaiCard = function(card, use, self)
 	use.card = card
 end
+
+sgs.ai_card_intention.WeidaiCard = sgs.ai_card_intention.Peach
 
 sgs.ai_skill_cardask["@weidai-analeptic"] = function(self, data)
 	local who = data:toPlayer()
@@ -212,6 +222,8 @@ sgs.ai_skill_cardask["@weidai-analeptic"] = function(self, data)
 	end
 	return "."
 end
+
+sgs.ai_chaofeng.wissunce = 1
 
 sgs.ai_skill_playerchosen.longluo = function(self, targets)
 	for _, player in sgs.qlist(targets) do
@@ -249,6 +261,8 @@ sgs.ai_skill_choice.jincui = function(self, choices)
 	if sgs.jincui_discard then return "throw" else return "draw" end
 end
 
+sgs.ai_chaofeng.wiszhangzhao = -1
+
 sgs.ai_skill_invoke.badao = function(self, data)
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:canSlash(enemy, true) and self:getCardsNum("Slash") > 0 then return true end
@@ -262,6 +276,8 @@ sgs.ai_skill_invoke.shipo = function(self, data)
 		return self:isFriend(target)
 	end
 end
+
+sgs.ai_chaofeng.tianfeng = -3
 
 local shouye_skill={}
 shouye_skill.name = "shouye"
@@ -293,6 +309,10 @@ sgs.ai_skill_use_func.ShouyeCard = function(card, use, self)
 	return
 end
 
+sgs.ai_card_intention.ShouyeCard = -70
+
 sgs.ai_skill_invoke.shien = function(self, data)
 	return self:isFriend(data:toPlayer())
 end
+
+sgs.ai_chaofeng.wisshuijing = 5

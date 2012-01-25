@@ -90,6 +90,13 @@ sgs.ai_skill_use_func.JujianCard = function(card, use, self)
 	end
 end
 
+sgs.ai_use_priority.JujianCard = 4.5
+sgs.ai_use_value.JujianCard = 6.7
+
+sgs.ai_card_intention.JujianCard = -70
+
+sgs.dynamic_value.benefit.JujianCard = true
+
 local xinzhan_skill={}
 xinzhan_skill.name="xinzhan"
 table.insert(sgs.ai_skills,xinzhan_skill)
@@ -102,6 +109,11 @@ end
 sgs.ai_skill_use_func.XinzhanCard=function(card,use,self)
 	use.card = card
 end
+
+sgs.ai_use_value.XinzhanCard = 4.4
+sgs.ai_use_priority.XinzhanCard = 9.2
+
+sgs.ai_chaofeng.masu = -4
 
 sgs.ai_skill_cardask["@enyuan"] = function(self)
 	local cards = self.player:getHandcards()
@@ -170,6 +182,13 @@ sgs.ai_skill_playerchosen.xuanhuo = function(self, targets)
 		end
 	end
 end
+
+sgs.fazheng_suit_value = 
+{
+	heart = 3.9
+}
+
+sgs.ai_chaofeng.fazheng = -3
 
 sgs.ai_skill_choice.xuanfeng = function(self, choices)
 	self:sort(self.enemies, "defense")
@@ -264,6 +283,8 @@ sgs.ai_skill_use_func.GanluCard = function(card, use, self)
 		end
 	end
 end
+
+sgs.dynamic_value.control_card.GanluCard = true
 
 sgs.ai_skill_invoke.buyi = function(self, data)
 	local dying = data:toDying()
@@ -362,6 +383,11 @@ sgs.ai_skill_choice.mingce = function(self, choices)
 end
 
 sgs.ai_skill_playerchosen.mingce = sgs.ai_skill_playerchosen.zero_card_as_slash
+
+sgs.ai_use_value.MingceCard = 5.9
+sgs.ai_use_priority.MingceCard = 4
+
+sgs.ai_card_intention.MingceCard = -70
 
 local jiejiu_skill={}
 jiejiu_skill.name="jiejiu"
@@ -475,6 +501,13 @@ sgs.ai_skill_use_func.XianzhenCard=function(card,use,self)
 	end
 end
 
+sgs.ai_card_intention.XianzhenCard = 70
+
+sgs.dynamic_value.control_card.XianzhenCard = true
+
+sgs.ai_use_value.XianzhenCard = 9.2
+sgs.ai_use_priority.XianzhenCard = 9.2
+
 sgs.ai_skill_cardask["@xianzhen-slash"] = function(self)
 	if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = 0}
@@ -490,3 +523,6 @@ sgs.ai_skill_cardask["@xianzhen-slash"] = function(self)
 	end
 	return "."
 end
+
+sgs.ai_use_value.XianzhenSlashCard = 9.2
+sgs.ai_use_priority.XianzhenSlashCard = 2.6

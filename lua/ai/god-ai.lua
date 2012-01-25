@@ -50,6 +50,9 @@ sgs.ai_skill_playerchosen.wuhun = function(self, targets)
 	return targetlist[1]
 end
 
+sgs.ai_chaofeng.shenguanyu = -6
+
+
 sgs.ai_skill_invoke.shelie = true
 
 local gongxin_skill={}
@@ -76,6 +79,8 @@ sgs.ai_skill_use_func.GongxinCard=function(card,use,self)
 		end
 	end
 end
+
+sgs.ai_card_intention.GongxinCard = 80
 
 sgs.ai_skill_invoke.qinyin = function(self, data)
 	for _,friend in ipairs(self.friends) do
@@ -177,6 +182,11 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 	end
 end
 
+sgs.ai_use_value.GreatYeyanCard = 8
+sgs.ai_use_priority.GreatYeyanCard = 9
+
+sgs.ai_card_intention.GreatYeyanCard = 200
+
 sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
@@ -208,6 +218,11 @@ sgs.ai_skill_use_func.MediumYeyanCard=function(card,use,self)
 	use.card = sgs.Card_Parse("@MediumYeyanCard=" .. table.concat(need_cards, "+"))
 end
 
+sgs.ai_use_value.MediumYeyanCard = 5.6
+sgs.ai_use_priority.MediumYeyanCard = 6
+
+sgs.ai_card_intention.MediumYeyanCard = 200
+
 sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
 	local num = 0
 	self:sort(self.enemies, "hp")
@@ -237,6 +252,9 @@ sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
 	use.card = card
 end
 
+sgs.ai_card_intention.SmallYeyanCard = 80
+sgs.ai_use_priority.SmallYeyanCard = 2.3
+
 sgs.ai_skill_askforag.qixing = function(self, card_ids)
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
@@ -253,7 +271,7 @@ sgs.ai_skill_askforag.qixing = function(self, card_ids)
 	return -1
 end
 
-sgs.ai_skill_use["kuangfeng"]=function(self,prompt)
+sgs.ai_skill_use["@kuangfeng"]=function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends) do
 		if friend:hasSkill("huoji") or self:isEquip("Fan",friend) or (friend:hasSkill("smallyeyan") and friend:getMark("@flame")>0) then
@@ -288,6 +306,8 @@ sgs.ai_skill_use["kuangfeng"]=function(self,prompt)
 	end
 end
 
+sgs.ai_card_intention.KuangfengCard = 80
+
 sgs.ai_skill_use["@dawu"] = function(self, prompt)
 	self:sort(self.friends, "hp")
 	for _, friend in ipairs(self.friends) do
@@ -299,9 +319,13 @@ sgs.ai_skill_use["@dawu"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_card_intention.DawuCard = -70
+
 sgs.ai_skill_invoke.guixin = function(self,data)
 	return self.room:alivePlayerCount() > 2
 end
+
+sgs.ai_chaofeng.shencaocao = -6
 
 sgs.ai_skill_choice.wumou = function(self, choices)
 	if self.player:getHp() + self:getCardsNum("Peach") > 3 then return "losehp"
@@ -345,6 +369,8 @@ sgs.ai_skill_use_func.WuqianCard=function(card,use,self)
 	end
 end
 
+sgs.ai_card_intention.WuqianCard = 80
+
 local shenfen_skill={}
 shenfen_skill.name = "shenfen"
 table.insert(sgs.ai_skills, shenfen_skill)
@@ -357,6 +383,12 @@ sgs.ai_skill_use_func.ShenfenCard=function(card,use,self)
 	if self:isFriend(self.room:getLord()) and self:isWeak(self.room:getLord()) and not self.player:isLord() then return end
 	use.card = card
 end
+
+sgs.ai_use_value.ShenfenCard = 8
+sgs.ai_use_priority.ShenfenCard = 2.3
+
+sgs.dynamic_value.damage_card.ShenfenCard = true
+sgs.dynamic_value.control_card.ShenfenCard = true
 
 local longhun_skill={}
 longhun_skill.name="longhun"
@@ -387,6 +419,14 @@ sgs.ai_view_as.longhun = function(card, player, card_place)
 		return ("nullification:longhun[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
+
+sgs.shenzhaoyun_suit_value = 
+{
+	heart = 6.7,
+	spade = 5,
+	club = 4.2,
+	diamond = 3.9,
+}
 
 sgs.ai_skill_invoke.lianpo = true
 
@@ -422,6 +462,8 @@ sgs.ai_skill_choice.jilve="zhiheng"
 sgs.ai_skill_use_func.JilveCard=function(card,use,self)
 	use.card = card
 end
+
+sgs.ai_use_priority.JilveCard = 0.4
 
 sgs.ai_skill_use["@zhiheng"]=function(self,prompt)
 	local card=sgs.Card_Parse("@ZhihengCard=.")

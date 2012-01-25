@@ -12,6 +12,8 @@ end
 
 sgs.ai_skill_playerchosen.sp_moonspear = sgs.ai_skill_playerchosen.zero_card_as_slash
 
+sgs.ai_chaofeng.yuanshu = 3
+
 sgs.ai_skill_invoke.danlao = function(self, data)
 	local effect = data:toCardEffect()
 	if effect.card:inherits("GodSalvation") and self.player:isWounded() then
@@ -40,14 +42,21 @@ sgs.ai_skill_invoke.chujia = function(self, data)
 	return self.room:getLord():getKingdom() == "shu"
 end
 
+sgs.ai_chaofeng.sp_sunshangxiang = sgs.ai_chaofeng.sunshangxiang
+
 sgs.ai_skill_invoke.guixiang = function(self, data)
 	return self.room:getLord():getKingdom() == "wei"
 end
+
+sgs.ai_chaofeng.sp_caiwenji = sgs.ai_chaofeng.caiwenji
 
 sgs.ai_skill_invoke.fanqun = function(self, data)
 	local lord = self.room:getLord()
 	return self:isFriend(lord) and lord:getKingdom() == "qun"
 end
+
+sgs.ai_chaofeng.sp_machao = sgs.ai_chaofeng.machao
+sgs.ai_chaofeng.sp_diaochan = sgs.ai_chaofeng.diaochan
 
 sgs.ai_skill_invoke.guiwei = sgs.ai_skill_invoke.guixiang
 
