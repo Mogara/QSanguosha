@@ -11,12 +11,20 @@
 #include <QFile>
 #include <QFileDialog>
 
-static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL){
+static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
+                     QWidget *rear1 = NULL, QWidget *rear2 = NULL, QWidget *rear3 = NULL, QWidget *rear4 = NULL,
+                     QWidget *rear5 = NULL, QWidget *rear6 = NULL){
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(left);
     if(mid)
         layout->addWidget(mid);
     layout->addWidget(right);
+    if(rear1) layout->addWidget(rear1);
+    if(rear2) layout->addWidget(rear2);
+    if(rear3) layout->addWidget(rear3);
+    if(rear4) layout->addWidget(rear4);
+    if(rear5) layout->addWidget(rear5);
+    if(rear6) layout->addWidget(rear6);
 
     return layout;
 }
@@ -40,7 +48,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
 
     num_combobox = new QComboBox;
-    starter_box = new QComboBox;
 
     for(int i = 0; i <= 9; i++){
         if(i < 9)
@@ -64,16 +71,14 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     }
 
     role_combobox = new QComboBox;
+    role_combobox->addItem(tr("Unknown"), "unknown");
     role_combobox->addItem(tr("Lord"), "lord");
     role_combobox->addItem(tr("Loyalist"), "loyalist");
     role_combobox->addItem(tr("Renegade"), "renegade");
     role_combobox->addItem(tr("Rebel"), "rebel");
-    role_combobox->addItem(tr("Unknown"), "unknown");
 
     for(int i=0; i< num_combobox->currentIndex()+2; i++){
         list->addItem(item_map[i]);
-        QString name = player_mapping[i];
-        starter_box->addItem(Sanguosha->translate(name), name);
     }
     list->setCurrentItem(item_map[0]);
 
@@ -83,12 +88,50 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     player_draw->setEnabled(true);
 
     QGroupBox *starter_group = new QGroupBox(tr("Start Info"));
-    QLabel *start_text = new QLabel(tr("Starter"));
+    starter_box = new QCheckBox(tr("Set as Starter"));
     QLabel *draw_text = new QLabel(tr("Start Draw"));
+    QLabel *mark_text = new QLabel(tr("marks"));
+    QLabel *mark_num_text = new QLabel(tr("pieces"));
+
+    marks_combobox = new QComboBox;
+    marks_combobox->addItem(tr("None"));
+    QString path = "image/mark";
+    QDir *dir = new QDir(path);
+    QStringList filter;
+    filter << "*.png";
+    dir->setNameFilters(filter);
+    QList<QFileInfo> file_info(dir->entryInfoList(filter));
+    foreach(QFileInfo file, file_info){
+        QString mark_name = file.fileName().split(".").first();
+        QString mark_translate = Sanguosha->translate(mark_name);
+        if(!mark_translate.startsWith("@")){
+            marks_combobox->addItem(mark_translate, mark_name);
+            QLabel *mark_icon = new QLabel(mark_translate);
+            mark_icon->setPixmap(QPixmap(file.filePath()));
+            mark_icon->setObjectName(mark_name);
+            mark_icon->setToolTip(tr("%1 mark").arg(mark_translate));
+            mark_icons << mark_icon;
+        }
+    }
+
+    marks_count = new QSpinBox;
+    marks_count->setRange(0, 999);
+
     QVBoxLayout *starter_lay = new QVBoxLayout();
     starter_group->setLayout(starter_lay);
-    starter_lay->addLayout(HLay(start_text, draw_text));
-    starter_lay->addLayout(HLay(starter_box, player_draw));
+    starter_lay->addWidget(starter_box);
+    starter_lay->addLayout(HLay(draw_text, player_draw));
+    starter_lay->addLayout(HLay(marks_combobox, marks_count, mark_text, mark_num_text));
+
+    QGridLayout *grid_layout = new QGridLayout;
+    const int columns = mark_icons.length() > 10 ? 6 : 5;
+    for(int i=0; i<mark_icons.length(); i++){
+        int row = i / columns;
+        int column = i % columns;
+        grid_layout->addWidget(mark_icons.at(i), row, column+1);
+        mark_icons.at(i)->hide();
+    }
+    starter_lay->addLayout(grid_layout);
 
     general_label = new LabelButton;
     general_label->setPixmap(QPixmap("image/system/disabled.png"));
@@ -244,7 +287,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
     connect(player_draw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
-    connect(starter_box, SIGNAL(currentIndexChanged(int)), this, SLOT(setPlayerDrawNum(int)));
+    connect(starter_box, SIGNAL(toggled(bool)), this, SLOT(setStarter(bool)));
+    connect(marks_count, SIGNAL(valueChanged(int)), this, SLOT(setPlayerMarks(int)));
+    connect(marks_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(getPlayerMarks(int)));
     connect(removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
     connect(removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
     connect(removeJudgeButton, SIGNAL(clicked()), this, SLOT(removeJudgeCard()));
@@ -383,14 +428,11 @@ void CustomAssignDialog::updateNumber(int num){
     if(count < list->count()){
         for(int i = list->count() - 1; i >= count; i--){
             list->takeItem(i);
-            starter_box->removeItem(i);
         }
     }
     else{
         for(int i= list->count(); i< count; i++){
             list->addItem(item_map[i]);
-            QString name = player_mapping[i];
-            starter_box->addItem(Sanguosha->translate(name), name);
         }
     }
 }
@@ -453,6 +495,21 @@ void CustomAssignDialog::updatePlayerInfo(QString name)
     equip_list->setCurrentRow(0);
     hand_list->setCurrentRow(0);
     judge_list->setCurrentRow(0);
+
+    int i = 0;
+    for(i = 0; i < mark_icons.length(); i++)
+        mark_icons.at(i)->hide();
+
+    foreach(QString mark, player_marks[name].keys()){
+        if(player_marks[name][mark] > 0){
+            for(i = 0; i < mark_icons.length(); i++){
+                if(mark_icons.at(i)->objectName() == mark){
+                    mark_icons.at(i)->show();
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void CustomAssignDialog::updatePileInfo(){
@@ -528,15 +585,38 @@ void CustomAssignDialog::setPlayerMaxHpEnabled(bool toggled){
 }
 
 void CustomAssignDialog::setPlayerStartDraw(int draw_num){
-    QString name = starter_box->itemData(starter_box->currentIndex()).toString();
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
     player_start_draw[name] = draw_num;
 }
 
-void CustomAssignDialog::setPlayerDrawNum(int index){
-    QString name = starter_box->itemData(index).toString();
-    int val = 4;
-    if(player_start_draw.keys().contains(name)) val = player_start_draw[name];
-    player_draw->setValue(val);
+void CustomAssignDialog::setStarter(bool toggled){
+    if(toggled)
+        starter = list->currentItem()->data(Qt::UserRole).toString();
+    else
+        starter.clear();
+}
+
+void CustomAssignDialog::setPlayerMarks(int value){
+    QString mark_name = marks_combobox->itemData(marks_combobox->currentIndex()).toString();
+    QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
+    player_marks[player_name][mark_name] = value;
+
+    for(int i = 0; i < mark_icons.length(); i++){
+        if(mark_icons.at(i)->objectName() == mark_name){
+            if(value > 0)
+                mark_icons.at(i)->show();
+            else
+                mark_icons.at(i)->hide();
+
+            break;
+        }
+    }
+}
+
+void CustomAssignDialog::getPlayerMarks(int index){
+    QString mark_name = marks_combobox->itemData(index).toString();
+    QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
+    marks_count->setValue(player_marks[player_name][mark_name]);
 }
 
 void CustomAssignDialog::updateRole(int index){
@@ -734,6 +814,21 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
     single_turn->setChecked(is_single_turn);
     before_next->setChecked(is_before_next);
 
+    int val = 4;
+    if(player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
+    player_draw->setValue(val);
+
+    if(!starter.isEmpty() && starter != player_name)
+        starter_box->setEnabled(false);
+    else
+        starter_box->setEnabled(true);
+
+    QString mark_name = marks_combobox->itemData(marks_combobox->currentIndex()).toString();
+    if(!mark_name.isEmpty())
+        marks_count->setValue(player_marks.value(player_name)[mark_name]);
+    else
+        marks_count->setValue(0);
+
     updatePlayerInfo(player_name);
     updatePlayerHpInfo(player_name);
 }
@@ -877,6 +972,14 @@ void CustomAssignDialog::load()
             before_next_box->setCurrentIndex(role_index.value(player["beforeNext"], 0));
             is_before_next = true;
         }
+        if(player["marks"] != NULL){
+            foreach(QString mark, player["marks"].split(",")){
+                QString mark_name = mark.split("*").at(0);
+                int mark_number = mark.split("*").at(1).toInt();
+
+                player_marks[name][mark_name] = mark_number;
+            }
+        }
 
         if(player["hand"]!=NULL)
         {
@@ -935,15 +1038,15 @@ void CustomAssignDialog::load()
     }
 
     updateNumber(numPlayer-2);
-    list->setCurrentRow(0);
     for(int i=list->count()-1;i>=0;i--)
     {
         list->setCurrentItem(list->item(i));
         if(list->item(i)->data(Qt::UserRole).toString() == starter)
-            starter_box->setCurrentIndex(i);
+            starter_box->setChecked(true);
     }
+    list->setCurrentRow(0);
 
-    player_draw->setValue(player_start_draw[starter_box->itemData(starter_box->currentIndex()).toString()]);
+    player_draw->setValue(player_start_draw[list->currentItem()->data(Qt::UserRole).toString()]);
     num_combobox->setCurrentIndex(list->count()-2);
 
     updatePileInfo();
@@ -952,7 +1055,11 @@ void CustomAssignDialog::load()
 
 bool CustomAssignDialog::save(QString path)
 {
-    starter = starter_box->itemData(starter_box->currentIndex()).toString();
+    if(starter.isEmpty()){
+        QMessageBox::warning(NULL, tr("Warning"), tr("There is not a starter"));
+        return false;
+    }
+
     QMap<QString, int> role_index;
     role_index["loyalist"] = 0;
     role_index["lord"] = 0;
@@ -1038,6 +1145,15 @@ bool CustomAssignDialog::save(QString path)
         }
         line.append(QString("role:%1 ").arg(role_mapping[name]));
         if(starter == name)line.append("starter:true ");
+        if(!player_marks[name].isEmpty()){
+            line.append("marks:");
+            QMap<QString, int> marks = player_marks[name];
+            foreach(QString mark_name, marks.keys())
+                line.append(QString("%1*%2,").arg(mark_name).arg(QString::number(marks.value(mark_name))));
+
+            line.remove(line.length()-1, 1);
+            line.append(" ");
+        }
         if(player_maxhp[name]>0)line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
         if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));
         if(player_turned[name])line.append("turned:true ");
