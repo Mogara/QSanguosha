@@ -1153,8 +1153,12 @@ bool CustomAssignDialog::save(QString path)
                     line.append(QString("%1*%2,").arg(mark_name).arg(QString::number(marks.value(mark_name))));
             }
 
-            line.remove(line.length()-1, 1);
-            line.append(" ");
+            if(line.endsWith("marks:"))
+                line.remove(line.length()-7, 6);
+            else{
+                line.remove(line.length()-1, 1);
+                line.append(" ");
+            }
         }
         if(player_maxhp[name]>0)line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
         if(player_hp[name]>0)line.append(QString("hp:%1 ").arg(player_hp[name]));

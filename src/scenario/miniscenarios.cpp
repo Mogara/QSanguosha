@@ -224,7 +224,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             {
                 QStringList keys = qs.split("*");
                 str = keys.at(1);
-                sp->gainMark(keys.at(0),str.toInt());
+                room->setPlayerMark(sp, keys.at(0), str.toInt());
             }
         }
 
