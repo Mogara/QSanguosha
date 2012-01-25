@@ -1148,8 +1148,10 @@ bool CustomAssignDialog::save(QString path)
         if(!player_marks[name].isEmpty()){
             line.append("marks:");
             QMap<QString, int> marks = player_marks[name];
-            foreach(QString mark_name, marks.keys())
-                line.append(QString("%1*%2,").arg(mark_name).arg(QString::number(marks.value(mark_name))));
+            foreach(QString mark_name, marks.keys()){
+                if(marks.value(mark_name) > 0)
+                    line.append(QString("%1*%2,").arg(mark_name).arg(QString::number(marks.value(mark_name))));
+            }
 
             line.remove(line.length()-1, 1);
             line.append(" ");
