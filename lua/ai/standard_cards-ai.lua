@@ -1,3 +1,11 @@
+local function hasExplicitRebel(room)
+	for _, player in sgs.qlist(room:getAllPlayers()) do
+		if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
+		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
+	end
+	return false
+end
+
 function SmartAI:slashProhibit(card,enemy)
 	if card == nil then
 		card = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
@@ -304,28 +312,25 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 end
 
 sgs.ai_card_intention.Slash = function(card,from,tos,source)
+	if from:objectName() ~= source:objectName() then return end
+	if sgs.ai_liuli_effect then
+		sgs.ai_liuli_effect=false
+		return
+	end
 	for _, to in ipairs(tos) do
-		if sgs.ai_liuli_effect then
-			sgs.ai_liuli_effect=false
-			return
-		end
-		local modifier=0
-		if sgs.ai_collateral then sgs.ai_collateral=false modifier=-40 end
-		local value=80+modifier
+		local value = 80
+		if sgs.ai_collateral then sgs.ai_collateral=false value = 0 end
 
 		if sgs.ai_leiji_effect then
 			if from and from:hasSkill("liegong") then return end
 			sgs.ai_leiji_effect = false
 			if sgs.ai_pojun_effect then value = value/1.5 else value = -value/1.5 end
 		end
-		if sgs.ai_pojun_effect then
-			sgs.ai_pojun_effect=false
-			if to:getHandcardNum()>5 then value = -value end
-		end
 		speakTrigger(card,from,to)
 		if to:hasSkill("yiji") then 
 			value = value*(2-to:getHp())/1.1
 		end
+		if from:hasSkill("pojun") and to:getHp() > 3 then value = 0 end
 		sgs.updateIntention(from, to, value)
 	end
 end
@@ -667,15 +672,6 @@ function SmartAI:useCardSnatch(snatch, use)
 	end
 end
 
-sgs.ai_card_intention.Snatch = function(card,from,tos,source)
-	for _, to in ipairs(tos) do
-		if to:getCards("j"):isEmpty() and
-			not (to:getArmor() and (to:getArmor():inherits("GaleShell") or to:getArmor():inherits("SilverLion"))) then
-			sgs.updateIntention(from, to, 80)
-		end
-	end
-end
-
 sgs.ai_use_value.Snatch = 9
 sgs.ai_use_priority.Snatch = 4.3
 
@@ -761,8 +757,6 @@ end
 sgs.ai_use_value.Dismantlement = 5.6
 sgs.ai_use_priority.Dismantlement = 4.4
 
-sgs.ai_card_intention.Dismantlement=sgs.ai_card_intention.Snatch
-
 sgs.dynamic_value.control_card.Dismantlement = true
 
 function SmartAI:useCardCollateral(card, use)
@@ -818,7 +812,14 @@ end
 sgs.ai_use_value.Collateral = 8.8
 sgs.ai_use_priority.Collateral = 2.75
 
-sgs.ai_card_intention.Collateral = 80
+sgs.ai_card_intention.Collateral = function(card, from, tos, source)
+	assert(#tos == 2)
+	if tos[2]:objectName() == from:objectName() then
+		sgs.updateIntention(from, tos[1], 80)
+	elseif (sgs.ai_loyalty[tos[1]] or 0) * (sgs.ai_loyalty[tos[2]] or 0) > 0 then
+		sgs.updateIntention(from, tos[2], 80)
+	end
+end
 
 sgs.dynamic_value.control_card.Collateral = true
 

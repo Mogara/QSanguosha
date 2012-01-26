@@ -270,7 +270,7 @@ luanwu_skill.getTurnUseCard=function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
 	local good, bad = 0, 0
 	local lord = self.room:getLord()
-	if self:isFriend(lord) and self:isWeak(lord) then return end
+	if self.role ~= "rebel" and self:isWeak(lord) then return end
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
 			if self:isFriend(player) then bad = bad + 1
