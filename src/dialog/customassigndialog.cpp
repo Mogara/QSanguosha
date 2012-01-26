@@ -116,6 +116,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     marks_count = new QSpinBox;
     marks_count->setRange(0, 999);
+    marks_count->setEnabled(false);
 
     QVBoxLayout *starter_lay = new QVBoxLayout();
     starter_group->setLayout(starter_lay);
@@ -124,7 +125,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     starter_lay->addLayout(HLay(marks_combobox, marks_count, mark_text, mark_num_text));
 
     QGridLayout *grid_layout = new QGridLayout;
-    const int columns = mark_icons.length() > 10 ? 6 : 5;
+    const int columns = mark_icons.length() > 10 ? 5 : 4;
     for(int i=0; i<mark_icons.length(); i++){
         int row = i / columns;
         int column = i % columns;
@@ -616,6 +617,11 @@ void CustomAssignDialog::setPlayerMarks(int value){
 void CustomAssignDialog::getPlayerMarks(int index){
     QString mark_name = marks_combobox->itemData(index).toString();
     QString player_name = list->item(list->currentRow())->data(Qt::UserRole).toString();
+    if(mark_name.isEmpty())
+        marks_count->setEnabled(false);
+    else
+        marks_count->setEnabled(true);
+
     marks_count->setValue(player_marks[player_name][mark_name]);
 }
 
@@ -892,6 +898,7 @@ void CustomAssignDialog::load()
     player_start_draw.clear();
     player_chained.clear();
     player_turned.clear();
+    player_marks.clear();
 
     player_handcards.clear();
     player_equips.clear();
@@ -902,6 +909,10 @@ void CustomAssignDialog::load()
 
     is_single_turn = false;
     is_before_next = false;
+
+    int i = 0;
+    for(i = 0; i < mark_icons.length(); i++)
+        mark_icons.at(0)->hide();
 
     QTextStream in(&file);
     int numPlayer = 0;
