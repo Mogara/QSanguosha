@@ -912,7 +912,7 @@ void CustomAssignDialog::load()
 
     int i = 0;
     for(i = 0; i < mark_icons.length(); i++)
-        mark_icons.at(0)->hide();
+        mark_icons.at(i)->hide();
 
     QTextStream in(&file);
     int numPlayer = 0;
