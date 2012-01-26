@@ -13,6 +13,7 @@
 
 class AI;
 class Scenario;
+class QLibrary;
 
 struct lua_State;
 
@@ -57,6 +58,9 @@ public:
     QStringList getScenarioNames() const;
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
+
+    void addPackage(const QString &name);
+    void addScenario(const QString &name);
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -104,6 +108,8 @@ private:
     QSet<QString> ban_package;
 
     lua_State *lua;
+
+    QLibrary *lib;
 };
 
 extern Engine *Sanguosha;

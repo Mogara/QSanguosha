@@ -19,116 +19,83 @@
 Engine *Sanguosha = NULL;
 
 extern "C" {
-    Package *NewStandard();
-    Package *NewWind();
-    Package *NewFire();
-    Package *NewThicket();
-    Package *NewMountain();
-    Package *NewGod();
-    Package *NewYitian();
-    Package *NewSP();
-    Package *NewYJCM();
-    Package *NewBGM();
-    Package *NewWisdom();
-    Package *NewTest();
-
-    Package *NewStandardCard();
-    Package *NewStandardExCard();
-    Package *NewManeuvering();
-    Package *NewSPCard();
-    Package *NewNostalgia();
-    Package *NewYitianCard();
-    Package *NewJoy();
-    Package *NewDisaster();
-    Package *NewJoyEquip();
-
-    Scenario *NewGuanduScenario();
-    Scenario *NewFanchengScenario();
-    Scenario *NewCoupleScenario();
-    Scenario *NewZombieScenario();
-    Scenario *NewImpasseScenario();
-    Scenario *NewCustomScenario();
-
-    Scenario *NewMiniScene_01();
-    Scenario *NewMiniScene_02();
-    Scenario *NewMiniScene_03();
-    Scenario *NewMiniScene_04();
-    Scenario *NewMiniScene_05();
-    Scenario *NewMiniScene_06();
-    Scenario *NewMiniScene_07();
-    Scenario *NewMiniScene_08();
-    Scenario *NewMiniScene_09();
-    Scenario *NewMiniScene_10();
-    Scenario *NewMiniScene_11();
-    Scenario *NewMiniScene_12();
-    Scenario *NewMiniScene_13();
-    Scenario *NewMiniScene_14();
-    Scenario *NewMiniScene_15();
-    Scenario *NewMiniScene_16();
-    Scenario *NewMiniScene_17();
-    Scenario *NewMiniScene_18();
-    Scenario *NewMiniScene_19();
-    Scenario *NewMiniScene_20();
+    int luaopen_sgs(lua_State *);
 }
 
-extern "C" {
-    int luaopen_sgs(lua_State *);
+static inline void *GetSymbol(QLibrary *lib, const char *name){
+    char buffer[255] = "New";
+    strcat(buffer, name);
+
+    return lib->resolve(buffer);
+}
+
+void Engine::addPackage(const QString &name){
+    typedef Package * (*package_creator)();
+    void *func = GetSymbol(lib, name.toAscii());
+
+    if(func){
+        package_creator creator = reinterpret_cast<package_creator>(func);
+        addPackage(creator());
+    }else
+        qWarning("Package %s cannot be loaded!", qPrintable(name));
+}
+
+void Engine::addScenario(const QString &name){
+    typedef Scenario * (*scenario_creator)();
+    void *func = GetSymbol(lib, name.toAscii());
+
+    if(func){
+        scenario_creator creator = reinterpret_cast<scenario_creator>(func);
+        addScenario(creator());
+    }else
+        qWarning("Scenario %s cannot be loaded!", qPrintable(name));
 }
 
 Engine::Engine()
 {
     Sanguosha = this;
 
-    addPackage(NewStandard());
-    addPackage(NewWind());
-    addPackage(NewFire());
-    addPackage(NewThicket());
-    addPackage(NewMountain());
-    addPackage(NewGod());
-    addPackage(NewSP());
-    addPackage(NewYJCM());
-    addPackage(NewBGM());
-    addPackage(NewYitian());
-    addPackage(NewWisdom());
-    addPackage(NewTest());
+    lib = new QLibrary(qApp->applicationFilePath(), this);
 
-    addPackage(NewStandardCard());
-    addPackage(NewStandardExCard());
-    addPackage(NewManeuvering());
-    addPackage(NewSPCard());
-    addPackage(NewYitianCard());
-    addPackage(NewNostalgia());
-    addPackage(NewJoy());
-    addPackage(NewDisaster());
-    addPackage(NewJoyEquip());
+    QStringList package_names;
+    package_names << "Standard"
+                  << "Wind"
+                  << "Thicket"
+                  << "Mountain"
+                  << "God"
+                  << "SP"
+                  << "YJCM"
+                  << "BGM"
+                  << "Yitian"
+                  << "Wisdom"
+                  << "Test"
 
-    addScenario(NewGuanduScenario());
-    addScenario(NewFanchengScenario());
-    addScenario(NewCoupleScenario());
-    addScenario(NewZombieScenario());
-    addScenario(NewImpasseScenario());
-    addScenario(NewCustomScenario());
+                  << "StandardCard"
+                  << "StandardExCard"
+                  << "Maneuvering"
+                  << "SPCard"
+                  << "YitianCard"
+                  << "Nostalgia"
+                  << "Joy"
+                  << "Disaster"
+                  << "JoyEquip";
 
-    addScenario(NewMiniScene_01());
-    addScenario(NewMiniScene_02());
-    addScenario(NewMiniScene_03());
-    addScenario(NewMiniScene_04());
-    addScenario(NewMiniScene_05());
-    addScenario(NewMiniScene_06());
-    addScenario(NewMiniScene_07());
-    addScenario(NewMiniScene_08());
-    addScenario(NewMiniScene_09());
-    addScenario(NewMiniScene_10());
-    addScenario(NewMiniScene_11());
-    addScenario(NewMiniScene_12());
-    addScenario(NewMiniScene_13());
-    addScenario(NewMiniScene_14());
-    addScenario(NewMiniScene_15());
-    addScenario(NewMiniScene_16());
-    addScenario(NewMiniScene_17());
-    addScenario(NewMiniScene_18());
-    addScenario(NewMiniScene_19());
-    addScenario(NewMiniScene_20());
+    foreach(QString name, package_names)
+        addPackage(name);
+
+    QStringList scene_names;
+    scene_names << "GuanduScenario"
+                << "FanchengScenario"
+                << "ZombieScenario"
+                << "ImpasseScenario"
+                << "CustomScenario";
+
+    for(int i=1; i<=20; i++){
+        scene_names << QString("MiniScene_%1").arg(i, 2, 10, QChar('0'));
+    }
+
+    foreach(QString name, scene_names)
+        addScenario(name);
 
     // available game modes
     modes["02p"] = tr("2 players");
