@@ -69,10 +69,10 @@ private:
     QMap<QString, int> player_start_draw;
     QMap<QString, QMap<QString, int> > player_marks;
     QList<QLabel *> mark_icons;
+    QMap<QString, bool> free_choose_general, free_choose_general2;
 
     QString general_name, general_name2;
     bool choose_general2;
-    bool free_choose_general, free_choose_general2;
     QString starter;
     bool is_single_turn, is_before_next;
 

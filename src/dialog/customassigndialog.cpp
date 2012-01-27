@@ -33,7 +33,7 @@ CustomAssignDialog *CustomInstance = NULL;
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     :QDialog(parent),
-      choose_general2(false), free_choose_general(false), free_choose_general2(false),
+      choose_general2(false),
       is_single_turn(false), is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
@@ -563,6 +563,7 @@ void CustomAssignDialog::getPlayerHp(int hp)
 void CustomAssignDialog::getPlayerMaxHp(int maxhp){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     player_maxhp[name] = maxhp;
+    hp_spin->setRange(1, maxhp);
 }
 
 void CustomAssignDialog::setPlayerHpEnabled(bool toggled){
@@ -746,23 +747,19 @@ void CustomAssignDialog::getChosenGeneral(QString name){
 }
 
 void CustomAssignDialog::freeChoose(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
-        return;
-
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
     if(toggled)
-        free_choose_general = true;
+        free_choose_general[name] = true;
     else
-        free_choose_general = false;
+        free_choose_general[name] = false;
 }
 
 void CustomAssignDialog::freeChoose2(bool toggled){
-    if(list->currentItem()->data(Qt::UserRole).toString() != "Player")
-        return;
-
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
     if(toggled)
-        free_choose_general2 = true;
+        free_choose_general2[name] = true;
     else
-        free_choose_general2 = false;
+        free_choose_general2[name] = false;
 }
 
 void CustomAssignDialog::doPlayerChains(bool toggled){
@@ -801,18 +798,8 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
         }
     }
 
-    if(!player_name.contains("Player")){
-        self_select_general->setEnabled(false);
-        self_select_general2->setEnabled(false);
-        self_select_general->setChecked(false);
-        self_select_general2->setChecked(false);
-    }
-    else{
-        self_select_general->setEnabled(true);
-        self_select_general2->setEnabled(true);
-        self_select_general->setChecked(free_choose_general);
-        self_select_general2->setChecked(free_choose_general2);
-    }
+    self_select_general->setChecked(free_choose_general[player_name]);
+    self_select_general2->setChecked(free_choose_general2[player_name]);
 
     set_turned->setChecked(player_turned.value(player_name, false));
     set_chained->setChecked(player_chained.value(player_name, false));
@@ -904,8 +891,8 @@ void CustomAssignDialog::load()
     player_equips.clear();
     player_judges.clear();
 
-    free_choose_general = false;
-    free_choose_general2= false;
+    free_choose_general.clear();
+    free_choose_general2.clear();
 
     is_single_turn = false;
     is_before_next = false;
@@ -958,10 +945,10 @@ void CustomAssignDialog::load()
 
         if(player["role"]!= NULL)role_mapping[name] = player["role"];
 
-        if(player["general"]=="select")free_choose_general = true;
+        if(player["general"]=="select")free_choose_general[name] = true;
         else if(player["general"]!=NULL)general_mapping[name]=player["general"];
 
-        if(player["general2"]=="select")free_choose_general2 = true;
+        if(player["general2"]=="select")free_choose_general2[name] = true;
         else if(player["general2"]!=NULL)general2_mapping[name]=player["general2"];
 
         if(player["maxhp"]!=NULL){
@@ -1103,10 +1090,6 @@ bool CustomAssignDialog::save(QString path)
         }
     }
 
-    if(!has_lord){
-        QMessageBox::warning(this, tr("Warning"), tr("No lord in the game"));
-        return false;
-    }
     if(!has_diff_roles){
         QMessageBox::warning(this, tr("Warning"), tr("No different camps in the game"));
         return false;
@@ -1125,30 +1108,20 @@ bool CustomAssignDialog::save(QString path)
         line.append("\n");
     }
 
-    if(free_choose_general)line.append("general:select ");
-    else if(general_mapping["Player"].isEmpty()){
-        QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate("Player")));
-        return false;
-    }
-    else
-        line.append(QString("general:%1 ").arg(general_mapping["Player"]));
-
-    if(free_choose_general2)line.append("general2:select ");
-    else if(!general2_mapping["Player"].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping["Player"]));
-
     for(int i=0;i<list->count();i++)
     {
         QString name = i==0 ? "Player" : QString("AI%1").arg(i);
 
-        if(general_mapping[name].isEmpty() && !line.split('\n').last().contains("general:")){
+        if(free_choose_general[name])line.append("general:select ");
+        else if(general_mapping[name].isEmpty()){
             QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate(name)));
             return false;
         }
-        else if(!line.split('\n').last().contains(QString("general:")))
+        else
             line.append(QString("general:%1 ").arg(general_mapping[name]));
 
-        if(!general2_mapping[name].isEmpty() && !line.split('\n').last().contains(QString("general2:")))
-            line.append(QString("general2:%1 ").arg(general2_mapping[name]));
+        if(free_choose_general2[name])line.append("general2:select ");
+        else if(!general2_mapping[name].isEmpty())line.append(QString("general2:%1 ").arg(general2_mapping[name]));
 
         if(role_mapping[name] == "unknown"){
             QMessageBox::warning(this, tr("Warning"), tr("%1's role cannot be unknown").arg(Sanguosha->translate(name)));
