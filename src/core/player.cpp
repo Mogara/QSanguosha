@@ -727,20 +727,20 @@ void Player::jilei(const QString &type){
 }
 
 bool Player::isJilei(const Card *card) const{
-    Card::CardType type = card->getTypeId();
-    if(type == Card::Skill){
-        if(!card->willThrow())
-            return false;
+    if(card->getTypeId() == Card::Skill && !card->willThrow())
+        return false;
 
+    if(card->getSubcards().isEmpty())
+        return jilei_set.contains(card->getTypeId()) && !hasEquip(card);
+    else{
         foreach(int card_id, card->getSubcards()){
             const Card *c = Sanguosha->getCard(card_id);
-            if(jilei_set.contains(c->getTypeId())&&!hasEquip(c))
+            if(jilei_set.contains(c->getTypeId()) && !hasEquip(c))
                 return true;
         }
 
         return false;
-    }else
-        return jilei_set.contains(type)&&!hasEquip(card);
+    }
 }
 
 bool Player::isCaoCao() const{
