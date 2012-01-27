@@ -60,6 +60,7 @@ Engine::Engine()
     QStringList package_names;
     package_names << "Standard"
                   << "Wind"
+                  << "Fire"
                   << "Thicket"
                   << "Mountain"
                   << "God"
