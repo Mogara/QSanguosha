@@ -610,6 +610,8 @@ QGroupBox *ServerDialog::createGameModeBox(){
             mini_scene_combobox->setCurrentIndex(index);
             mini_scenes->setChecked(true);
         }
+        else if(Config.GameMode == "custom_scenario")
+            mini_scenes->setChecked(true);
 
 
 

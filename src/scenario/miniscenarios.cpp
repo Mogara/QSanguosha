@@ -75,69 +75,61 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
     {
         room->setPlayerProperty(sp,"role",this->players.at(i)["role"]);
 
-        if(sp->getState()!= "robot")
+        QString general = this->players.at(i)["general"];
         {
-            QString general = this->players.at(i)["general"];
+            QString original = sp->getGeneralName();
+            if(general == "select")
             {
-                QString original = sp->getGeneralName();
-                if(general == "select")
+                QStringList available,all,existed;
+                existed = existedGenerals();
+                all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+                qShuffle(all);
+                for(int i=0;i<5;i++)
                 {
-                    QStringList available,all,existed;
-                    existed = existedGenerals();
-                    all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
-                    qShuffle(all);
-                    for(int i=0;i<5;i++)
+                    sp->setGeneral(NULL);
+                    QString choice = sp->findReasonable(all);
+                    if(existed.contains(choice))
                     {
-                        sp->setGeneral(NULL);
-                        QString choice = sp->findReasonable(all);
-                        if(existed.contains(choice))
-                        {
-                            all.removeOne(choice);
-                            i--;
-                            continue;
-                        }
-                        available << choice;
                         all.removeOne(choice);
+                        i--;
+                        continue;
                     }
-                    general = room->askForGeneral(sp,available);
+                    available << choice;
+                    all.removeOne(choice);
                 }
-                QString trans = QString("%1:%2").arg(original).arg(general);
-                sp->invoke("transfigure",trans);
-                room->setPlayerProperty(sp,"general",general);
+                general = room->askForGeneral(sp,available);
             }
-            general = this->players.at(i)["general2"];
-            {
-                if(general == "select")
-                {
-                    QStringList available,all,existed;
-                    existed = existedGenerals();
-                    all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
-                    qShuffle(all);
-                    for(int i=0;i<5;i++)
-                    {
-                        room->setPlayerProperty(sp,"general2", QVariant());
-                        QString choice = sp->findReasonable(all);
-                        if(existed.contains(choice))
-                        {
-                            all.removeOne(choice);
-                            i--;
-                            continue;
-                        }
-                        available << choice;
-                        all.removeOne(choice);
-                    }
-                    general = room->askForGeneral(sp,available);
-                }
-                if(general == sp->getGeneralName())general = this->players.at(i)["general3"];
-                QString trans = QString("%1:%2").arg("sujiang").arg(general);
-                sp->invoke("transfigure",trans);
-                room->setPlayerProperty(sp,"general2",general);
-            }
+            QString trans = QString("%1:%2").arg(original).arg(general);
+            sp->invoke("transfigure",trans);
+            room->setPlayerProperty(sp,"general",general);
         }
-        else
-        {
-            room->setPlayerProperty(sp,"general",this->players.at(i)["general"]);
-            if(this->players.at(i)["general2"]!=NULL)room->setPlayerProperty(sp,"general2",this->players.at(i)["general2"]);
+        general = this->players.at(i)["general2"];
+        if(!general.isEmpty()){
+            if(general == "select")
+            {
+                QStringList available,all,existed;
+                existed = existedGenerals();
+                all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+                qShuffle(all);
+                for(int i=0;i<5;i++)
+                {
+                    room->setPlayerProperty(sp,"general2", QVariant());
+                    QString choice = sp->findReasonable(all);
+                    if(existed.contains(choice))
+                    {
+                        all.removeOne(choice);
+                        i--;
+                        continue;
+                    }
+                    available << choice;
+                    all.removeOne(choice);
+                }
+                general = room->askForGeneral(sp,available);
+            }
+            if(general == sp->getGeneralName())general = this->players.at(i)["general3"];
+            QString trans = QString("%1:%2").arg("sujiang").arg(general);
+            sp->invoke("transfigure",trans);
+            room->setPlayerProperty(sp,"general2",general);
         }
 
         room->setPlayerProperty(sp,"kingdom",sp->getGeneral()->getKingdom());
@@ -224,7 +216,7 @@ bool MiniSceneRule::trigger(TriggerEvent event, ServerPlayer *player, QVariant &
             {
                 QStringList keys = qs.split("*");
                 str = keys.at(1);
-                sp->gainMark(keys.at(0),str.toInt());
+                room->setPlayerMark(sp, keys.at(0), str.toInt());
             }
         }
 
