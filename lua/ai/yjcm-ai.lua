@@ -222,12 +222,6 @@ sgs.ai_skill_invoke.pojun = function(self, data)
 	end
 end
 
-sgs.ai_choicemade_filter.skillInvoke.pojun = function(player, promptlist)
-	if promptlist[#promptlist] == "yes" then
-		sgs.ai_pojun_effect = true
-	end
-end
-
 ganlu_skill={}
 ganlu_skill.name="ganlu"
 table.insert(sgs.ai_skills,ganlu_skill)
@@ -339,7 +333,7 @@ sgs.ai_skill_use_func.MingceCard=function(card,use,self)
 	self:sort(self.friends_noself, "defense")
 	local friends = self.friends_noself
 	for _, friend in ipairs(friends) do
-		if friend:getHp() <= 2 and friend:getHandcardNum() < 2 and not (friend:hasSkill("kongcheng") and friend:isKoncheng()) then
+		if friend:getHp() <= 2 and friend:getHandcardNum() < 2 and not (friend:hasSkill("kongcheng") and friend:isKongcheng()) then
 			target = friend
 			break
 		end

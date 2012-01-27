@@ -10,6 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
+version = "QSanguosha AI 20120126 (V0.7 Stable)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -55,10 +56,15 @@ function SmartAI:initialize(player)
 
 	self.keepValue = {}
 	self.kept = {}
+	if not sgs.aiversion then
+		sgs.aiversion = true
+		self.room:writeToConsole(version .. ", Powered by " .. _VERSION)
+	end
 	global_room = self.room
 end
 
 function sgs.getValue(player)
+	if not player then global_room:writeToConsole(debug.traceback()) end
 	return player:getHp() * 2 + player:getHandcardNum()
 end
 
@@ -381,6 +387,7 @@ function SmartAI:getDynamicUsePriority(card)
 end
 
 function SmartAI:cardNeed(card)
+	if not self.friends then self.room:writeToConsole(debug.traceback()) self.room:writeToConsole(sgs.turncount) return end
 	local class_name = card:className()
 	local suit_string = card:getSuitString()
 	local value
@@ -542,8 +549,8 @@ end
 
 function SmartAI:sortByCardNeed(cards)
 	local compare_func = function(a,b)
-				local value1 = self:cardNeed(a)
-				local value2 = self:cardNeed(b)
+		local value1 = self:cardNeed(a)
+		local value2 = self:cardNeed(b)
 
 		if value1 ~= value2 then
 			return value1 < value2
@@ -584,10 +591,14 @@ sgs.ai_card_intention.general=function(to,level)
 	end
 	if to:isLord() then
 		return -level*2
-	elseif (sgs.ai_explicit[to:objectName()] or ""):match("loyal") or sgs.singleRole(to:getRoom()) == "loyalist" then
+	elseif (sgs.ai_explicit[to:objectName()] or ""):match("loyal") then
 		return -level
-	elseif (sgs.ai_explicit[to:objectName()] or ""):match("rebel") or sgs.singleRole(to:getRoom()) == "rebel" then
-		return level 
+	elseif (sgs.ai_explicit[to:objectName()] or ""):match("rebel") then
+		return level
+	elseif sgs.singleRole(to:getRoom()) == "loyalist" then
+		return -level
+	elseif sgs.singleRole(to:getRoom()) == "rebel" then
+		return level
 	else
 		return 0
 	end
@@ -620,9 +631,10 @@ function sgs.refreshLoyalty(player,intention)
 		return
 	end
 	
-	local has_rebel = false
+	local has_rebel, has_renegade = false, false
 	for _, aplayer in sgs.qlist(player:getRoom():getAlivePlayers()) do
-		if aplayer:getRole() == "rebel" then has_rebel = true break end
+		if aplayer:getRole() == "rebel" then has_rebel = true end
+		if aplayer:getRole() == "renegade" then has_renegade = true end
 	end
 	if not has_rebel then
 		if intention < -80 then
@@ -644,7 +656,7 @@ function sgs.refreshLoyalty(player,intention)
 	sgs.ai_loyalty[name]=sgs.ai_loyalty[name]+intention
 
 
-	if (sgs.ai_renegade_suspect[name] or 0) > 1 then
+	if (sgs.ai_renegade_suspect[name] or 0) > 1 and has_renegade then
 		if intention >0 then sgs.ai_explicit[name] = "loyalish"
 		elseif intention < 0 then sgs.ai_explicit[name] = "rebelish" end
 		return
@@ -662,21 +674,27 @@ function sgs.refreshLoyalty(player,intention)
 		sgs.ai_explicit[name] = "loyalish"
 	end
 	--self:printAll(player, intention)
-	--self:checkMisjudge(player)
+	--sgs.checkMisjudge(player)
 end
 
 function sgs.updateIntention(from, to, intention, card)
 	intention = sgs.ai_card_intention.general(to, intention)
 	--[[if (from:getRole() == "loyalist" and intention < 0) or (from:getRole() == "rebel" and intention > 0) then
-		local str = from:getGeneralName() .. "->" .. to:getGeneralName() .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName()
+		from:getRoom():writeToConsole("---------")
+		if sgs.laststr then from:getRoom():writeToConsole(sgs.laststr) end
+		local str = from:getGeneralName() .. "(" .. from:getRole() .. ")->" .. to:getGeneralName() .. "(" .. to:getRole() 
+		.. ")" .. (sgs.ai_explicit[to:objectName()] or "nil") .. ":" .. intention .. "@" .. from:getRoom():getCurrent():getGeneralName()
 		if card then str = str .. "#" .. card:className() end
 		from:getRoom():writeToConsole(str)
+		if sgs.lastclass then from:getRoom():writeToConsole(sgs.lastclass) end
+		sgs.lastclass = nil
+		from:getRoom():writeToConsole("---------")
 	end]]
 	sgs.refreshLoyalty(from, intention)
 	if to:isLord() and intention < 0 then sgs.ai_anti_lord[from:objectName()] = (sgs.ai_anti_lord[from:objectName()] or 0) + 1 end
 end
 
-function sgs.updateIntentions(from, tos, intention)
+function sgs.updateIntentions(from, tos, intention, card)
 	for _, to in ipairs(tos) do
 		if from:objectName() ~= to:objectName() then
 			sgs.updateIntention(from, to, intention)
@@ -1011,15 +1029,17 @@ function SmartAI:updatePlayers(inclusive)
 	if self.player:getHp() < 2 then self.retain = 0 end
 	self:sortEnemies(players)
 	for _,player in ipairs(players) do
-		if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
-		if #elist == 0 then
-			table.insert(elist,player)
-			if self:objectiveLevel(player) < 4 then self.retain = 0 end
-		else
-			if self:objectiveLevel(player) <= 0 then return end
-			table.insert(elist,player)
-
+		if not (self.role == "loyalist" and player:isLord()) then
 			if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
+			if #elist == 0 then
+				table.insert(elist,player)
+				if self:objectiveLevel(player) < 4 then self.retain = 0 end
+			else
+				if self:objectiveLevel(player) <= 0 then return end
+				table.insert(elist,player)
+
+				if self:objectiveLevel(player) >= 4 then self.harsh_retain = false end
+			end
 		end
 	end
 end
@@ -1037,6 +1057,7 @@ sgs.ai_choicemade_filter.Nullification.general = function(player, promptlist)
 	local positive = true
 	if promptlist[4] == "false" then positive = false end
 	local className, to = promptlist[2]
+	sgs.lastclass = className
 	for _, aplayer in sgs.qlist(player:getRoom():getOtherPlayers(player)) do
 		if aplayer:objectName() == promptlist[3] then to = aplayer break end
 	end
@@ -1105,6 +1126,10 @@ function SmartAI:filterEvent(event, player, data)
 		if card:inherits("Dismantlment") or card:inherits("Snatch") or card:getSkillName() == "qixi" or card:getSkillName() == "jixi" then
 			sgs.ai_snat_disma_effect = true
 			sgs.ai_snat_dism_from = struct.from
+			if to:getCards("j"):isEmpty() and
+				not (to:getArmor() and (to:getArmor():inherits("GaleShell") or to:getArmor():inherits("SilverLion"))) then
+				sgs.updateIntention(from, to, 80)
+			end
 		end
 		if card:inherits("Slash") and to:hasSkill("leiji") and 
 			(getCardsNum("Jink", to)>0 or (to:getArmor() and to:getArmor():objectName() == "eight_diagram"))
@@ -1145,6 +1170,16 @@ function SmartAI:filterEvent(event, player, data)
 		to = sgs.QList2Table(to)
 		local from  = struct.from
 		local source =  self.room:getCurrent()
+		local str
+		str = card:className() .. card:toString() .. ":"
+		local toname = {}
+		for _, ato in ipairs(to) do
+			table.insert(toname, ato:getGeneralName())
+		end
+		if from then str = str .. from:getGeneralName() .. "->" .. table.concat(toname, "+") end
+		if source then str = str .. "#" .. source:getGeneralName() end
+		sgs.laststr = str
+		--self.room:writeToConsole(str)
 
 		local callback = sgs.ai_card_intention[card:className()]
 		if callback then
@@ -1185,7 +1220,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	elseif event == sgs.TurnStart and player:isLord() then
 		sgs.turncount = (sgs.turncount or 0) + 1
-		self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
+		--self.room:writeToConsole(self.player:objectName() .. " " .. sgs.turncount)
 	end
 end
 
@@ -2352,14 +2387,6 @@ function SmartAI:useSkillCard(card,use)
 		end
 	end
 	if shit - self.player:getHp() > self:getAllPeachNum() then use.card = nil end
-end
-
-local function hasExplicitRebel(room)
-	for _, player in sgs.qlist(room:getAllPlayers()) do
-		if sgs.isRolePredictable() and player:getRole() == "rebel" then return true end
-		if sgs.ai_explicit[player:objectName()] and sgs.ai_explicit[player:objectName()]:match("rebel") then return true end
-	end
-	return false
 end
 
 function SmartAI:useBasicCard(card, use)

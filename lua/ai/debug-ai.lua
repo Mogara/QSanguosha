@@ -25,3 +25,14 @@ end
 function SmartAI:log(outString)
 	self.room:output(outString)
 end
+
+function sgs.checkMisjudge(player)
+	local name = player:objectName()
+	if ((sgs.ai_explicit[name] or ""):match("loyal") and player:getRole() == "rebel")
+		or ((sgs.ai_explicit[name] or ""):match("rebel") and player:getRole() == "loyalist")
+		or ((sgs.ai_renegade_suspect[name] or 0)> 2 and player:getRole() ~= "renegade")
+		then
+		player:getRoom():writeToConsole("++++++++" .. player:getGeneralName() .. " " .. 
+			sgs.ai_explicit[name] .. " " .. player:getRole() .. " " .. player:getRoom():alivePlayerCount() .. (sgs.ai_renegade_suspect[name] or 0))
+	end
+end
