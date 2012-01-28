@@ -12,6 +12,7 @@
 #include <QMap>
 #include <QButtonGroup>
 #include <QLabel>
+#include <QTextEdit>
 
 class LabelButton : public QLabel {
     Q_OBJECT
@@ -57,6 +58,7 @@ private:
     QComboBox *single_turn_box, *before_next_box;
     QCheckBox *single_turn, *before_next;
     QLabel *single_turn_text, *single_turn_text2, *before_next_text, *before_next_text2;
+    QPushButton *extra_skill_set;
 
     QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
@@ -70,6 +72,7 @@ private:
     QMap<QString, QMap<QString, int> > player_marks;
     QList<QLabel *> mark_icons;
     QMap<QString, bool> free_choose_general, free_choose_general2;
+    QMap<QString, QStringList> player_exskills;
 
     QString general_name, general_name2;
     bool choose_general2;
@@ -87,6 +90,7 @@ private slots:
     void freeChoose2(bool toggled);
     void doPlayerTurns(bool toggled);
     void doPlayerChains(bool toggled);
+    void doSkillSelect();
 
     void setPlayerHpEnabled(bool toggled);
     void setPlayerMaxHpEnabled(bool toggled);
@@ -171,5 +175,19 @@ signals:
     void card_chosen(int card_id);
 };
 
+class SkillAssignDialog : public QDialog{
+    Q_OBJECT
+public:
+    SkillAssignDialog(QStringList player_skills);
+
+private:
+    QListWidget *skill_list;
+    QPushButton *select_skill, *delete_skill;
+    QTextEdit *skill_info;
+
+    QStringList update_skills;
+private slots:
+
+};
 
 #endif // CUSTOMASSIGNDIALOG_H

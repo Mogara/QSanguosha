@@ -12,6 +12,7 @@
 GuidaoCard::GuidaoCard(){
     target_fixed = true;
     will_throw = false;
+    can_jilei = true;
 }
 
 void GuidaoCard::use(Room *room, ServerPlayer *zhangjiao, const QList<ServerPlayer *> &targets) const{

@@ -111,6 +111,7 @@ public:
     bool isOnce() const;
     bool isMute() const;
     bool willThrow() const;
+    bool canJilei() const;
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source,  const QList<ServerPlayer *> &targets) const;
@@ -137,6 +138,7 @@ protected:
     QString skill_name;
     bool mute;
     bool will_throw;
+    bool can_jilei;
 
 private:
     Suit suit;
