@@ -153,6 +153,10 @@ QWidget *ServerDialog::createAdvancedTab(){
     free_choose_checkbox->setToolTip(tr("This option enables the cheat menu"));
     free_choose_checkbox->setChecked(Config.FreeChoose);
 
+    oneroom_checkbox=new QCheckBox(tr("One room only"));
+    oneroom_checkbox->setToolTip(tr("When the room is full,others can't connect to this server"));
+    oneroom_checkbox->setChecked(Config.OneRoomOnly);
+
     free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
     free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
 
@@ -223,6 +227,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     layout->addWidget(contest_mode_checkbox);
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
+    layout->addWidget(oneroom_checkbox);
     layout->addWidget(free_choose_checkbox);
     layout->addWidget(free_assign_checkbox);
     layout->addWidget(free_assign_self_checkbox);
@@ -847,6 +852,7 @@ bool ServerDialog::config(){
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.ContestMode = contest_mode_checkbox->isChecked();
+    Config.OneRoomOnly=oneroom_checkbox->isChecked();
     Config.FreeChoose = free_choose_checkbox->isChecked();
     Config.FreeAssignSelf = free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
@@ -885,6 +891,7 @@ bool ServerDialog::config(){
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("OneRoomOnly",Config.OneRoomOnly);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("EnableScene", Config.EnableScene);	//changjing
@@ -986,6 +993,12 @@ void Server::processNewConnection(ClientSocket *socket){
         }else
             addresses.insert(addr);
     }
+    
+    if((current!=NULL)&&(Config.OneRoomOnly)&&(current->isFull())&&(!current->isFinished()))
+    {
+        socket->disconnectFromHost();
+        return;
+    }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
     socket->send("checkVersion " + Sanguosha->getVersion());
@@ -1004,7 +1017,7 @@ void Server::processRequest(char *request){
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     socket->disconnect(this, SLOT(processRequest(char*)));
 
-    QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
+    QRegExp rx("(signupr?) ([\\w=]+):([\\w]+)(:[\\w]+)?\n");
     if(!rx.exactMatch(request)){
         emit server_message(tr("Invalid signup string: %1").arg(request));
         socket->send("warn INVALID_FORMAT");

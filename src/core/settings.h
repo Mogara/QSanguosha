@@ -34,6 +34,7 @@ public:
     bool DisableChat;
     bool FreeAssignSelf;
     bool Enable2ndGeneral;
+    bool OneRoomOnly;
     bool EnableScene;	//changjing
     bool EnableBasara;
     bool EnableHegemony;
