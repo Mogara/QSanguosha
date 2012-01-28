@@ -17,6 +17,8 @@ const Card::Suit Card::AllSuits[4] = {
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), once(false), mute(false), will_throw(true), suit(suit), number(number), id(-1)
 {
+    can_jilei = will_throw;
+
     if(number < 1 || number > 13)
         number = 0;
 }
@@ -501,6 +503,10 @@ bool Card::isMute() const{
 
 bool Card::willThrow() const{
     return will_throw;
+}
+
+bool Card::canJilei() const{
+    return can_jilei;
 }
 
 // ---------   Skill card     ------------------

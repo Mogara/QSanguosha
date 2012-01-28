@@ -175,6 +175,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     set_turned = new QCheckBox(tr("Player Turned"));
     set_chained = new QCheckBox(tr("Player Chained"));
 
+    extra_skill_set = new QPushButton(tr("Set Extra Skills"));
+
     single_turn_text = new QLabel(tr("After this turn "));
     single_turn_text2 = new QLabel(tr("win"));
     single_turn_box = new QComboBox();
@@ -208,6 +210,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addLayout(HLay(hp_prompt,hp_spin));
     vlayout->addWidget(set_turned);
     vlayout->addWidget(set_chained);
+    vlayout->addWidget(extra_skill_set);
     vlayout->addWidget(starter_group);
     vlayout->addWidget(single_turn);
     vlayout->addLayout(HLay(single_turn_text, single_turn_text2, single_turn_box));
@@ -285,6 +288,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
     connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
+    connect(extra_skill_set, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
     connect(player_draw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
@@ -770,6 +774,12 @@ void CustomAssignDialog::doPlayerChains(bool toggled){
 void CustomAssignDialog::doPlayerTurns(bool toggled){
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     player_turned[name] = toggled;
+}
+
+void CustomAssignDialog::doSkillSelect(){
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    SkillAssignDialog *dialog = new SkillAssignDialog(player_exskills[name]);
+    dialog->exec();
 }
 
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current){
@@ -1331,10 +1341,10 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString c
     vlayout->addWidget(getCardButton);
     vlayout->addWidget(back);
 
-    QHBoxLayout *layout = new QHBoxLayout();
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(card_list);
     layout->addLayout(vlayout);
-    QVBoxLayout *mainlayout = new QVBoxLayout();
+    QVBoxLayout *mainlayout = new QVBoxLayout;
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
@@ -1400,4 +1410,49 @@ void CardAssignDialog::updateCardList(){
 
     if(n>0)
         card_list->setCurrentRow(0);
+}
+
+//-----------------------------------
+
+SkillAssignDialog::SkillAssignDialog(QStringList player_skills){
+    setWindowTitle(tr("Skill Chosen"));
+    QHBoxLayout *vlayout = new QHBoxLayout;
+    skill_list = new QListWidget;
+
+    select_skill = new QPushButton(tr("Select Skill from Generals"));
+    delete_skill = new QPushButton(tr("Delete Current Skill"));
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+
+    foreach(QString skill_name, player_skills){
+        if(Sanguosha->getSkill(skill_name) != NULL){
+            QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(skill_name));
+            item->setData(Qt::UserRole, skill_name);
+            skill_list->addItem(item);
+        }
+    }
+
+    skill_list->setCurrentRow(0);
+
+    skill_info = new QTextEdit;
+    skill_info->setEnabled(false);
+    if(skill_list->count() > 0){
+        QString skill_script = skill_list->currentItem()->data(Qt::UserRole).toString();
+        skill_info->setText(Sanguosha->translate(":" + skill_script));
+    }
+
+    QVBoxLayout *sided_lay = new QVBoxLayout;
+    sided_lay->addWidget(skill_info);
+    sided_lay->addWidget(select_skill);
+    sided_lay->addWidget(delete_skill);
+    sided_lay->addStretch();
+    sided_lay->addWidget(ok_button);
+    sided_lay->addWidget(cancel_button);
+    vlayout->addWidget(skill_list);
+    vlayout->addLayout(sided_lay);
+
+    QVBoxLayout *mainlayout = new QVBoxLayout;
+    mainlayout->addLayout(vlayout);
+    setLayout(mainlayout);
 }
