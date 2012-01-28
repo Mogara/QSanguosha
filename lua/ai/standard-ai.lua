@@ -198,7 +198,7 @@ sgs.ai_view_as.qingguo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isBlack() then
+	if card:isBlack() and card_place ~= sgs.Player_Equip then
 		return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
