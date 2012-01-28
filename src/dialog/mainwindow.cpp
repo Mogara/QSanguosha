@@ -195,6 +195,8 @@ void MainWindow::on_actionStart_Server_triggered()
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if(start_scene){
         start_scene->switchToServer(server);
+        if(Config.value("EnableMinimizeDialog", false).toBool())
+            this->on_actionMinimize_to_system_tray_triggered();
     }
 }
 
