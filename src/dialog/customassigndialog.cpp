@@ -198,6 +198,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QPushButton *loadButton = new QPushButton(tr("load"));
     QPushButton *saveButton = new QPushButton(tr("save"));
+    QPushButton *defaultLoadButton = new QPushButton(tr("Default load"));
+    defaultLoadButton->setObjectName("default_load");
 
     vlayout->addWidget(role_combobox);
     vlayout->addWidget(num_combobox);
@@ -218,10 +220,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     vlayout->addWidget(before_next);
     vlayout->addLayout(HLay(before_next_text, before_next_text2, before_next_box));
     vlayout->addStretch();
-    vlayout->addWidget(loadButton);
-    vlayout->addWidget(saveButton);
-    vlayout->addWidget(okButton);
-    vlayout->addWidget(cancelButton);
+    vlayout->addWidget(defaultLoadButton);
+    vlayout->addLayout(HLay(loadButton, saveButton));
+    vlayout->addLayout(HLay(okButton, cancelButton));
 
     single_turn_text->hide();
     single_turn_text2->hide();
@@ -309,6 +310,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(loadButton,SIGNAL(clicked()),this,SLOT(load()));
     connect(saveButton,SIGNAL(clicked()),this,SLOT(save()));
+    connect(defaultLoadButton, SIGNAL(clicked()), this, SLOT(load()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
@@ -885,7 +887,9 @@ void CustomAssignDialog::checkSingleTurnBox(bool toggled){
 
 void CustomAssignDialog::load()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QString filename;
+    if(sender()->objectName() == "default_load") filename = "etc/customScenes/custom_scenario.txt";
+    else filename = QFileDialog::getOpenFileName(this,
                                                     tr("Open mini scenario settings"),
                                                     "etc/customScenes",
                                                     tr("Pure text replay file (*.txt)"));
@@ -1462,10 +1466,9 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     layout->addLayout(vlayout);
     QVBoxLayout *sided_lay = new QVBoxLayout;
     sided_lay->addWidget(skill_info);
-    sided_lay->addWidget(select_skill);
-    sided_lay->addWidget(delete_skill);
-    sided_lay->addWidget(ok_button);
-    sided_lay->addWidget(cancel_button);
+    sided_lay->addStretch();
+    sided_lay->addLayout(HLay(select_skill, delete_skill));
+    sided_lay->addLayout(HLay(ok_button, cancel_button));
     layout->addLayout(sided_lay);
     QVBoxLayout *mainlayout = new QVBoxLayout;
     mainlayout->addLayout(layout);
