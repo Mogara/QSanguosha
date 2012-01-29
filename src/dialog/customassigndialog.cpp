@@ -1452,7 +1452,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
 
     skill_info = new QTextEdit;
-    skill_info->setEnabled(false);
+    skill_info->setReadOnly(true);
 
     updateSkillList();
 
