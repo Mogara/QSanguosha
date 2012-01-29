@@ -85,6 +85,7 @@ private slots:
     void updatePileInfo();
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
+    void updatePlayerExSkills(QStringList update_skills);
 
     void freeChoose(bool toggled);
     void freeChoose2(bool toggled);
@@ -178,7 +179,7 @@ signals:
 class SkillAssignDialog : public QDialog{
     Q_OBJECT
 public:
-    SkillAssignDialog(QStringList player_skills);
+    SkillAssignDialog(QDialog *parent,QString player_name, QStringList &player_skills);
 
 private:
     QListWidget *skill_list;
@@ -186,8 +187,21 @@ private:
     QTextEdit *skill_info;
 
     QStringList update_skills;
-private slots:
 
+private slots:
+    void selectSkill();
+    void deleteSkill();
+    void addSkill();
+
+    void changeSkillInfo();
+    void updateSkillList();
+
+    void getSkillFromGeneral(QString general);
+
+    virtual void accept();
+
+signals:
+    void skill_update(QStringList);
 };
 
 #endif // CUSTOMASSIGNDIALOG_H
