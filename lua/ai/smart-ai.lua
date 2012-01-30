@@ -1269,7 +1269,7 @@ sgs.ai_skill_discard = {}
 
 function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	local callback = sgs.ai_skill_discard[reason]
-	if callback and type(callback) == "function" then
+	if callback and type(callback) == "function" and callback(self, discard_num, optional, include_equip) then
 		return callback(self, discard_num, optional, include_equip)
 	end
 	if optional then return {} end

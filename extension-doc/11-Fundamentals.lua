@@ -52,8 +52,8 @@ end
 --正是因为在编写技能时传入了 data，我们在 thicket-ai.lua 中才能根据 data 判断是否需要颂威（第 55 至 58 行）。
 
 sgs.ai_skill_invoke.songwei = function(self, data)
-	local who = data:toPlayer()
-	return self:isFriend(who)
+	local who = data:toPlayer() -- 将 data （QVariant 类型）转换为 ServerPlayer* 类型
+	return self:isFriend(who) -- 如果是对友方，则发动颂威
 end
 
 --[[

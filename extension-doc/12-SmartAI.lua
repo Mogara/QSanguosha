@@ -177,10 +177,10 @@ nature 为 sgs.DamgeStruct_Normal, sgs.DamageStruct_Thunder, sgs.DamageStruct_Fi
 其中 flags 的含义与 SmartAI.getCardRandomly 相同。
 * SmartAI:getCardsNum(class_name[, player[, flag[, selfonly]]])：与 getCards 一样，但不是返回表本身而是返回表长（即牌数）。
 selfonly 表示是否需要考虑房间里的其它玩家，当 selfonly 为 false 或缺省时，有两种情况会计入其它玩家的牌数：
-. 有激将技能且计算杀的张数时，会计入所有友方蜀将的杀；
-. 有护驾技能且计算闪的张数时，会计入所有友方魏将的闪；
-* SmartAI:getAllPeachNum([player])：获得玩家 player 及其友方所有的桃数。
-在这一组函数中，全部均已经考虑视为技。
+. player 有激将技能且计算【杀】的张数时，会计入所有友方蜀将的【杀】；
+. player 有护驾技能且计算【闪】的张数时，会计入所有友方魏将的【闪】；
+* SmartAI:getAllPeachNum([player])：获得玩家 player 及其友方所有的【桃】数。
+在这一组函数中，全部均已经考虑视为技，但是需要编写相关的代码来使 AI 会使用视为技，详见 13-ViewAs.lua。
 
 * SmartAI:hasSuit(suit_strings[, include_equip[, player]])：判断玩家 player 是否有由 suit_strings 指定的花色的手牌。
 include_equip 为 true 时，同时计入装备区的牌。
