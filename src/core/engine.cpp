@@ -56,6 +56,10 @@ Engine::Engine()
     Sanguosha = this;
 
     lib = new QLibrary(qApp->applicationFilePath(), this);
+    if(!lib->load()){
+        qWarning("Package can not be loaded \n Error string: %s", qPrintable(lib->errorString()));
+        exit(1);
+    }
 
     QStringList package_names;
     package_names << "Standard"
