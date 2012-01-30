@@ -1328,7 +1328,7 @@ void Room::reportDisconnection(){
 
         bool someone_is_online = false;
         foreach(ServerPlayer *player, players){
-            if(player->getState() == "online"){
+            if(player->getState() == "online" || player->getState() == "trust"){
                 someone_is_online = true;
                 break;
             }

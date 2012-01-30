@@ -124,6 +124,10 @@ Engine::Engine()
         QMessageBox::warning(NULL, tr("Lua script error"), error_msg);
         exit(1);
     }
+
+    foreach(QString ban, getBanPackages()){
+        addBanPackage(ban);
+    }
 }
 
 lua_State *Engine::createLuaState(bool load_ai, QString &error_msg){
