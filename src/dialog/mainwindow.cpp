@@ -589,7 +589,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     content = QString("<table border='1'>%1</table").arg(content);
 
-    Window *window = new Window(tr("Role assign table"), QSize(232, 342));
+    Window *window = new Window(tr("Role assign table"), QSize(280, 380));
     scene->addItem(window);
 
     window->addContent(content);
