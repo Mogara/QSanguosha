@@ -32,6 +32,16 @@ class QGroupBox;
 #include <QThread>
 #include <QHBoxLayout>
 
+class ScriptExecutor: public QDialog{
+    Q_OBJECT
+
+public:
+    ScriptExecutor(QWidget *parent);
+
+public slots:
+    void doScript();
+};
+
 class DeathNoteDialog: public QDialog{
     Q_OBJECT
 
@@ -151,6 +161,7 @@ public slots:
     void makeDamage();
     void makeKilling();
     void makeReviving();
+    void doScript();
 
     EffectAnimation * getEA() const{return animations;}
 
