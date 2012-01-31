@@ -2546,7 +2546,7 @@ ScriptExecutor::ScriptExecutor(QWidget *parent)
 
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    vlayout->addWidget(new QLabel(tr("Please input the script that should be executed at server side:")));
+    vlayout->addWidget(new QLabel(tr("Please input the script that should be executed at server side:\n P = you, R = your room")));
 
     QTextEdit *box = new QTextEdit;
     box->setObjectName("scriptBox");
