@@ -274,7 +274,7 @@ sgs.ai_choicemade_filter.skillInvoke.lianli_jink = function(player, promptlist)
 	end
 end
 
-sgs.ai_choicemade_filter.cardResponsed["@lianli_jink"] = function(player, promptlist)
+sgs.ai_choicemade_filter.cardResponsed["@lianli-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.lianlisource, -80)
 		sgs.lianlisource = nil
@@ -305,13 +305,15 @@ sgs.ai_skill_use_func.LianliSlashCard = function(card, use, self)
 	if use.card then use.card = card end
 end
 
-sgs.ai_choicemade_filter.cardUsed.LianliSlashCard = function(player, carduse)
+local lianli_slash_filter = function(player, carduse)
 	if carduse.card:inherits("LianliSlashCard") then
 		sgs.lianlislash = false
 	end
 end
 
-sgs.ai_choicemade_filter.cardResponsed["@lianli_slash"] = function(player, promptlist)
+table.insert(sgs.ai_choicemade_filter.cardUsed, lianli_slash_filter)
+
+sgs.ai_choicemade_filter.cardResponsed["@lianli-slash"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.lianlislash = true
 	end

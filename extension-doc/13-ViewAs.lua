@@ -11,7 +11,8 @@
 
 视为技是广义的说法，实际上包括所谓的“锁定视为技” FilterSkill，与一般视为技 ViewAsSkill。
 下面举例说明一下一些相关的表与其元素。
-* sgs.ai_filterskill_filter：与锁定视为技有关的表。例子如 god-ai.lua 第 32 至 37 行关于武神的代码：]]
+* sgs.ai_filterskill_filter：与锁定视为技有关的表。
+例子如 god-ai.lua 第 32 至 37 行关于武神的代码：]]
 sgs.ai_filterskill_filter.wushen = function(card, card_place) -- 武神技能的锁定视为技
 	local suit = card:getSuitString() -- 获得卡牌花色
 	local number = card:getNumberString() -- 获得卡牌点数
@@ -24,7 +25,8 @@ end
 所赋的值为一个函数，函数原型为 function(card, card_place)
 其中 card 表示需要处理的卡牌，而 card_place 表示卡牌所处的位置。
 card_place 为 sgs.Player_Hand 或 sgs.Player_Equip，分别表示手牌与装备区。
-返回值则为一个将会传递给 sgs.Card_Parse 函数的字符串。该字符串经 sgs.Card_Parse 函数处理之后得到实际的卡牌。
+返回值则为一个将会传递给 sgs.Card_Parse 函数的字符串。
+该字符串经 sgs.Card_Parse 函数处理之后得到实际的卡牌。
 
 因此，在这里有必要介绍两个重要的函数。
 * sgs.Card_Parse，这个函数实际上就是源码里头的 Card::Parse，这一函数的原型如下：
@@ -32,10 +34,12 @@ static const Card* Card::Parse(const QString &str);
 对于 AI 编写来说，只要知道这个函数的传入参数是一个字符串，而返回值是相应的卡牌就可以了。
 在 AI 编写中遇到的传入字符串主要有以下几种类型：
 
-. 一个整数 n，得到的卡牌是 ID 为 n 的卡牌。例如 sgs.Card_Parse("0") 和 sgs.Card_Parse(0) 都得到黑桃 7 的【杀】。
+. 一个整数 n，得到的卡牌是 ID 为 n 的卡牌。
+例如 sgs.Card_Parse("0") 和 sgs.Card_Parse(0) 都得到黑桃 7 的【杀】。
 后一种情况下，0 被 Lua 自动转型为字符串。 
 
-. 形如 "%object_name:%skill_name[%suit:%number]=%ids" 的字符串，注意整个字符串中没有多余的空格。
+. 形如 "%object_name:%skill_name[%suit:%number]=%ids" 的字符串，
+注意整个字符串中没有多余的空格。
 返回一张虚拟卡，其对象名（objectName）为 %object_name，技能名为 %skill_name，
 花色由 %suit （如 "spade", "no_suit"）确定，点数由 %number 确定（如 "0", "A", "10", "K"）
 %ids 是一串用加号连接起来的 ID，表示该虚拟卡的全部子卡的 ID，也可以为 "."，表示该卡没有子卡。
@@ -76,7 +80,7 @@ sgs.ai_view_as.qingguo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isBlack() and card_place ~= sgs.Player_Equip then --如果是黑色牌且不在装备区
+	if card:isBlack() and card_place ~= sgs.Player_Equip then -- 如果是黑色牌且不在装备区
 		return ("jink:qingguo[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
@@ -86,7 +90,7 @@ sgs.ai_view_as.jijiu = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isRed() and player:getPhase()==sgs.Player_NotActive then --是红色牌，且在华佗的回合外。
+	if card:isRed() and player:getPhase()==sgs.Player_NotActive then -- 是红色牌，且在华佗的回合外。
 		return ("peach:jijiu[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end

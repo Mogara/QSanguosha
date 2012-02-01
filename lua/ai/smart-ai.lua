@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20120128 (V0.7 Stable Patch 1)"
+version = "QSanguosha AI 20120201 (V0.7 Stable Patch 2)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -697,7 +697,7 @@ end
 function sgs.updateIntentions(from, tos, intention, card)
 	for _, to in ipairs(tos) do
 		if from:objectName() ~= to:objectName() then
-			sgs.updateIntention(from, to, intention)
+			sgs.updateIntention(from, to, intention, card)
 		end
 	end
 end
@@ -1300,7 +1300,7 @@ function SmartAI:askForDiscard(reason, discard_num, optional, include_equip)
 	table.sort(cards, compare_func)
 	for _, card in ipairs(cards) do
 		if #to_discard >= discard_num then break end
-		table.insert(to_discard, card:getId())
+		if not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 	end
 	
 	return to_discard

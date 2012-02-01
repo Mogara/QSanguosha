@@ -24,7 +24,7 @@ sgs.ai_choicemade_filter.skillInvoke.hujia = function(player, promptlist)
 	end
 end
 
-sgs.ai_choicemade_filter.cardResponsed["@hujia_jink"] = function(player, promptlist)
+sgs.ai_choicemade_filter.cardResponsed["@hujia-jink"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.hujiasource, -80)
 		sgs.hujiasource = nil
@@ -95,7 +95,7 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, optional, include_equ
 		if all_peaches >= 2 then return {} end
 
 		for _, card in sgs.qlist(cards) do
-			if not card:inherits("Peach") then
+			if not card:inherits("Peach") and not self.player:isJilei(card) then
 				table.insert(to_discard, card:getEffectiveId())
 				index = index + 1
 				if index == 2 then break end
@@ -528,7 +528,7 @@ end
 sgs.ai_use_value.JijiangCard = 8.5
 sgs.ai_use_priority.JijiangCard = 2.4
 
-sgs.ai_choicemade_filter.cardResponsed["@jijiang_slash"] = function(player, promptlist)
+sgs.ai_choicemade_filter.cardResponsed["@jijiang-slash"] = function(player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.jijiangsource, -40)
 		sgs.jijiangsource = nil

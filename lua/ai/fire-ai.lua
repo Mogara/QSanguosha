@@ -58,11 +58,13 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 	end
 end
 
-sgs.ai_choicemade_filter.cardUsed.QuhuCard = function(player, carduse)
+local quhu_filter = function(player, carduse)
 	if carduse.card:inherits("QuhuCard") then
 		sgs.ai_quhu_effect = true
 	end
 end
+
+table.insert(sgs.ai_choicemade_filter.cardUsed, quhu_filter)
 
 sgs.ai_skill_playerchosen.quhu = sgs.ai_skill_playerchosen.damage
 

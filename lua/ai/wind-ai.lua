@@ -343,12 +343,14 @@ sgs.xiaoqiao_suit_value =
 
 table.insert(sgs.ai_global_flags, "questioner")
 
-sgs.ai_choicemade_filter.cardUsed.GuhuoCard = function(player, carduse)
+local guhuo_filter = function(player, carduse)
 	if carduse.card:inherits("GuhuoCard") then
 		sgs.questioner = nil
 		sgs.guhuotype = carduse.card:toString():split(":")[2]
 	end
 end
+
+table.insert(sgs.ai_choicemade_filter.cardUsed, guhuo_filter)
 
 sgs.ai_skill_choice.guhuo = function(self, choices)
 	if sgs.guhuotype and (sgs.guhuotype == "shit" or sgs.guhuotype == "amazing_grace") then return "noquestion" end

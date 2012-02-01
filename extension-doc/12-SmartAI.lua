@@ -5,8 +5,10 @@ smart-ai.lua 是整个 AI 中最先载入的脚本，也是 AI 系统的核心�
 ++ 第一部分：初始化、取值、排序（第 1 至 572 行）
 ! 全局变量 version：当前 AI 的版本；
 ! SmartAI:initialize() ：对 AI 进行初始化。
-这些元素一般在编写 AI 时都不建议直接使用。在后续的文档中，以感叹号开头表示。
-相应的，在编写 AI 时需要直接用到的元素则用星号开头的行表示。而可以直接使用但是较少用到的则以问号开头的行表示。
+这些元素一般在编写 AI 时都不建议直接使用。
+在后续的文档中，以感叹号开头表示。
+相应的，在编写 AI 时需要直接用到的元素则用星号开头的行表示。
+可以直接使用但是较少用到的则以问号开头的行表示。
 另外有一些元素尽管曾经经常直接使用，但是在新的 AI 中已经很少使用，这类元素用 *? 开头表示。
 
 在后续文档中，如果没有特别说明，“玩家”一词指的是某个 ServerPlayer 对象。
@@ -35,7 +37,8 @@ sgs.zhangfei_keep_value =
 }
 --[[更多例子可以参考旧版 AI 的 value_config.lua 文件的第 57 行至第 152 行。
 
-* sgs.[[武将名]]_suit_value：与上面类似，不过这里的元素名是卡牌的花色名称（全部小写）
+* sgs.[[武将名]]_suit_value：与上面类似。
+不过这里的元素名是卡牌的花色名称（全部小写）
 god-ai.lua 第 423 行提供了一个例子：]]
 sgs.shenzhaoyun_suit_value = 
 {
@@ -62,7 +65,8 @@ sgs.ai_use_priority.XinzhanCard = 9.2
 
 ? SmartAI:getDynamicUsePriority(card)：获得一张卡牌的动态使用优先级。
 用 getUsePriority 得到的优先级没有考虑到其它可能使用的卡牌。
-事实上一张牌的优先级不是一成不变的。手牌中拥有某些牌可能会使一张牌的使用优先级上升或者下降。
+事实上一张牌的优先级不是一成不变的。
+手牌中拥有某些牌可能会使一张牌的使用优先级上升或者下降。
 该函数会载入表 sgs.dynamic_value。
 
 * sgs.dynamic_value：包含卡牌类型的表，这些类型用于调整其它卡牌的优先级。
@@ -94,7 +98,7 @@ smart-ai.lua 中提供了一系列对对象进行排序的函数。这些函数�
 * SmartAI:sort(players, key, inverse) :对表 players 中的玩家按照关键字 key 进行排序。
 inverse 参数若存在且为 true，表示排序之后要对整个表反序。
 可用的关键字有：
-* hp：按体力值从小到大排序，例如在 fire-ai.lua 第 136 行与典韦强袭有关的代码：]]
+* hp：按体力值从小到大排序，例如在 fire-ai.lua 第 138 行与典韦强袭有关的代码：]]
 self:sort(self.enemies, "hp") -- 将所有敌方玩家按体力值从小到大排序
 --[[这里，如果写成self:sort(self.enemies, "hp", true)，则表示将敌方玩家按体力值从大到小排序。
 * handcard: 按手牌数从小到大排序
@@ -111,7 +115,8 @@ self:sort(self.enemies, "hp") -- 将所有敌方玩家按体力值从小到大�
 local cards = self.player:getHandcards() -- 获得所有手牌
 cards=sgs.QList2Table(cards) -- 将列表转换为表
 self:sortByKeepValue(cards) -- 按保留值排序
-local card_str = ("@QingnangCard=%d"):format(cards[1]:getId()) -- 用排序后的第一张（保留值最小）的卡牌作为青囊的卡牌。
+local card_str = ("@QingnangCard=%d"):format(cards[1]:getId())
+-- 用排序后的第一张（保留值最小）的卡牌作为青囊的卡牌。
 
 --[[
 * SmartAI:sortByUseValue(cards, inverse)：将表 cards 中的牌按照使用价值从大到小排序。
@@ -120,7 +125,7 @@ local card_str = ("@QingnangCard=%d"):format(cards[1]:getId()) -- 用排序后�
 ? SmartAI:sortByCardNeed(cards)：将表 cards 中的牌按照需要程度从小到大排序。
 
 ++ 第二部分：身份、动机、仇恨值（第 565 至 1225 行）
-这一部分将在后面详述。对于一般的 AI 编写，所需要知道的函数是下面这些：
+这一部分将在 16-RoleJudgement.lua 中详细介绍。对于一般的 AI 编写，所需要知道的函数是下面这些：
 * SmartAI:isFriend(other, another)：判断友善的关系。参数均为 ServerPlayer* 类型。
 如果只有一个参数 other，判断 other 是否自己的友方，如果是则返回 true，否则返回 false。
 如果有两个参数，判断 other 与 another 之间是否互为友方。
@@ -130,17 +135,18 @@ local card_str = ("@QingnangCard=%d"):format(cards[1]:getId()) -- 用排序后�
 关于 SmartAI.isFriend 的例子，见 11-Fundamentals.lua 里面关于颂威代码的说明。
 
 ++ 第三部分：响应请求（第 1227 至 1910 行）
-这一部分包括所有响应 Room::askFor*** 请求的函数。具体将在后面详述。
+这一部分包括所有响应 Room::askFor*** 请求的函数。将在 14-Responsing.lua 详细介绍。
 这一部分引入了一个重要的辅助函数：
 ? SmartAI:getCardRandomly(who, flags)：
 在 ServerPlayer* 指针 who 指向的玩家（在下面中简称为玩家who）的由 flags 标志的牌中，随机选择一张牌，返回其 ID。
 flags: 为字母 h，e，j 的任意组合。这三个字母分别表示手牌，装备区和判定区。
 例如 self:getCardRandomly(sunshangxiang, "e") 表示在孙尚香的装备区里随便选择一张牌返回其 ID。
-（当然，在这句代码之前需要先定义 sunshangxiang 这个变量，例如通过下面的代码，在后续的例子中均假设这样的代码已经存在，不再重复。）]]
+（当然，在这句代码之前需要先定义 sunshangxiang 这个变量，例如通过下面的代码。
+在后续的例子中均假设这样的代码已经存在，不再重复。）]]
 local sunshangxiang = self.room:findPlayerBySkillName("xiaoji")
 --[[
 ++ 第四部分：主动出牌（第 1912 至 2802 行）
-这一部分主要包括出牌阶段主动出牌的相关策略，将在后面详述。
+这一部分主要包括出牌阶段主动出牌的相关策略，将在 15-Activate.lua 详细介绍。
 下面先对这一部分引入的众多辅助函数进行说明。
 下面为简洁起见，用 [] 注出可以缺省的参数，没有特殊说明时，player 缺省值均为 self.player。
 * SmartAI:getOverflow([player])：获得玩家 player 的手牌超额，即手牌数与手牌上限的差值。
@@ -162,30 +168,40 @@ fsnlist 为包含 player 的所有 FilterSkill 的技能名的表。
 * SmartAI:needRetrial(judge)：判断由 judge （为 JudgeStruct* 类型）指定的判定结果是否需要改判。
 如果需要改判，则返回 true，否则返回 false。
 
-* SmartAI:getRetrialCardId(cards, judge)：从表 cards 中选出适宜用于改判 judge 的判定结果的牌，返回其 ID。
+* SmartAI:getRetrialCardId(cards, judge)：
+从表 cards 中选出适宜用于改判 judge 的判定结果的牌，返回其 ID。
 若找不到可以改判的牌，则返回 -1。注意本函数并不检验是否需要改判。
 
-* SmartAI:damageIsEffective([player[, nature[, source]]])：判断玩家 source 对玩家 player 造成的 nature 属性的伤害是否有效。
-nature 为 sgs.DamgeStruct_Normal, sgs.DamageStruct_Thunder, sgs.DamageStruct_Fire 之一，分别表示无属性、雷属性和火属性。
+* SmartAI:damageIsEffective([player[, nature[, source]]])：
+判断玩家 source 对玩家 player 造成的 nature 属性的伤害是否有效。
+nature 为 sgs.DamgeStruct_Normal, sgs.DamageStruct_Thunder, sgs.DamageStruct_Fire 之一，
+分别表示无属性、雷属性和火属性。
 三个参数均可缺省。缺省时 player 和 source 为 self.player， nature 为 sgs.DamageStruct_Normal。
 
 * SmartAI:getMaxCard([player])：获得玩家 player 的手牌中点数最大的一张。
 
-* SmartAI:getCardId(class_name[, player])：在玩家 player 的手牌与装备区中获得一张类名为class_name的牌，返回其 ID。
+* SmartAI:getCardId(class_name[, player])：
+在玩家 player 的手牌与装备区中获得一张类名为class_name的牌，返回其 ID。
 * SmartAI:getCard(class_name[, player])：与 getCardId 一样，但是返回的是卡牌本身而不是其 ID。
-* SmartAI:getCards(class_name[, player[, flag]])：与 getCard 一样，但是获得的不是一张卡牌而是所有符合条件的卡牌的表。
+* SmartAI:getCards(class_name[, player[, flag]])：与 getCard 一样，
+但是获得的不是一张卡牌而是所有符合条件的卡牌的表。
 其中 flags 的含义与 SmartAI.getCardRandomly 相同。
-* SmartAI:getCardsNum(class_name[, player[, flag[, selfonly]]])：与 getCards 一样，但不是返回表本身而是返回表长（即牌数）。
-selfonly 表示是否需要考虑房间里的其它玩家，当 selfonly 为 false 或缺省时，有两种情况会计入其它玩家的牌数：
+* SmartAI:getCardsNum(class_name[, player[, flag[, selfonly]]])：
+与 getCards 一样，但不是返回表本身而是返回表长（即牌数）。
+selfonly 表示是否需要考虑房间里的其它玩家，
+当 selfonly 为 false 或缺省时，有两种情况会计入其它玩家的牌数：
 . player 有激将技能且计算【杀】的张数时，会计入所有友方蜀将的【杀】；
 . player 有护驾技能且计算【闪】的张数时，会计入所有友方魏将的【闪】；
 * SmartAI:getAllPeachNum([player])：获得玩家 player 及其友方所有的【桃】数。
 在这一组函数中，全部均已经考虑视为技，但是需要编写相关的代码来使 AI 会使用视为技，详见 13-ViewAs.lua。
 
-* SmartAI:hasSuit(suit_strings[, include_equip[, player]])：判断玩家 player 是否有由 suit_strings 指定的花色的手牌。
+* SmartAI:hasSuit(suit_strings[, include_equip[, player]])：
+判断玩家 player 是否有由 suit_strings 指定的花色的手牌。
 include_equip 为 true 时，同时计入装备区的牌。
-suit_string 为 "spade", "heart", "club", "diamond" 的任意组合，组合时以竖线分隔，例如 spade|club 表示黑色牌。
-* SmartAI:getSuitNum(suit_strings[, include_equip[, player]])：与 hasSuit 类似，但是返回的不是“有没有”而是“有多少张”。
+suit_string 为 "spade", "heart", "club", "diamond" 的任意组合，
+组合时以竖线分隔，例如 spade|club 表示黑色牌。
+* SmartAI:getSuitNum(suit_strings[, include_equip[, player]])：
+与 hasSuit 类似，但是返回的不是“有没有”而是“有多少张”。
 
 * SmartAI:hasSkill(skill)：判断自己是否有名称为 skill 的技能。
 * SmartAI:hasSkills(skill_names[, player])：判断玩家 player 是否有由字符串 skill_names 所指定的一系列技能。
@@ -198,12 +214,13 @@ sgs.wizard_harm_skill = "guicai|guidao"
 --说到这里，顺便提一下这种字符串与 table 之间的转换，用下面一个例子来说明再合适不过了。若
 s == "foo|bar|any", t == {"foo", "bar", "any"}
 --则
-table.concat(t, "|") == s
+table.concat(t, "|") == s -- 再插一句，对于 QList，相应的函数为 join。
 s:split("|") == t
 --[[
 * SmartAI:exclude(players, card)：从玩家表 players 中剔除卡牌 card 不能用在其上的玩家。
 例如]]
-players == {jiaxu, sunshangxiang, wolong}--，card 为黑色过河拆桥，则在执行 SmartAI:exclude(players, card) 之后，
+players == {jiaxu, sunshangxiang, wolong}
+-- 且 card 为黑色过河拆桥，则在执行 SmartAI:exclude(players, card) 之后，
 players == {sunshangxiang, wolong}
 --[[
 * SmartAI:trickProhibit(card, to)：判断卡牌 card 能否对 to 使用。
@@ -217,10 +234,12 @@ players == {sunshangxiang, wolong}
 这里的“种类”是指武器、防具、防御马、进攻马之一。
 
 ++ 第五部分：载入扩展的 AI （第 2804 至 2830 行）
-这部分没有需要扩展编写者注意的代码。
+对于这一部分，需要知道的是，standard-ai.lua, standard_cards-ai.lua 和 maneuvering-ai.lua 总是在其它扩展之前载入，
+因此在扩展的 AI 中，可以直接使用这三个文件中已经定义的元素。
 
 除了 smart-ai.lua 之外，在 standard_cards-ai.lua 里头还有几个编写 AI 时经常用到的函数，介绍如下：
 
 * SmartAI:slashProhibit(card, enemy)：从策略上判断是否不宜对玩家 enemy 使用【杀】card。
-* SmartAI:slashIsEffective(card, enemy)：判断【杀】card 是否对 enemy 有效（无效是指诸如智迟、大雾之类的技能）。
+* SmartAI:slashIsEffective(card, enemy)：判断【杀】card 是否对 enemy 有效
+（无效是指诸如智迟、大雾之类的技能）。
 * SmartAI:slashIsAvailable([player])：判断玩家 player 本回合还能否继续出【杀】。]]
